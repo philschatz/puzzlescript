@@ -1,0 +1,17 @@
+body {
+  padding-top: 50px;
+  padding-bottom:50px;
+}
+.starter-template {
+  padding: 40px 15px;
+  text-align: center;
+}
+
+
+dt {
+	margin-top:20px;
+	margin-left:-10px;
+	padding-left:0px;
+	margin-bottom:10px;
+/*	background-color:lightgray;*/
+}
