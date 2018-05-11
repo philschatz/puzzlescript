@@ -288,7 +288,12 @@ Puzzlescript {
 
 
 
-  WinConditionItem = winConditionItemPrefix varName (t_ON varName)? lineTerminator+
+  WinConditionItem
+    = WinConditionItemSimple
+    | WinConditionItemOn
+
+  WinConditionItemSimple = winConditionItemPrefix varName lineTerminator+
+  WinConditionItemOn = winConditionItemPrefix varName t_ON varName lineTerminator+
 
   winConditionItemPrefix =
       t_NO
@@ -469,6 +474,21 @@ class GameSoundMoveDirection extends GameSound {
 }
 
 
+
+class WinConditionSimple {
+  constructor(qualifierEnum, objectName) {
+    this._qualifierEnum = qualifierEnum
+    this._objectName = objectName
+  }
+}
+class WinConditionOn {
+  constructor(qualifierEnum, objectName, onObjectName) {
+    this._qualifierEnum = qualifierEnum
+    this._objectName = objectName
+    this._onObjectName = onObjectName
+  }
+}
+
 glob('./gists/*/script.txt', (err, files) => {
 // glob('./test-game.txt', (err, files) => {
 
@@ -616,19 +636,15 @@ glob('./gists/*/script.txt', (err, files) => {
           }
         },
 
-        WinConditionItem: function(_1, _2, _3, _4, _5) {
-          debugger
-          return {
-            __type: 'WinConditionItem',
-            _1: _1 ? _1.parse() : null,
-            _2: _2 ? _2.parse() : null,
-            _3: _3 ? _3.parse() : null,
-            _4: _4 ? _4.parse() : null,
-            _5: _5 ? _5.parse() : null,
-          }
+        WinConditionItemSimple: function(qualifierEnum, objectName, _whitespace) {
+          return new WinConditionSimple(qualifierEnum.parse(), objectName.parse())
+        },
+        WinConditionItemOn: function(qualifierEnum, objectName, _on, targetObjectName, _whitespace) {
+          return new WinConditionOn(qualifierEnum.parse(), objectName.parse(), targetObjectName.parse())
         },
         GameMessage: function(_1, _2) {
-          return new GameMessage(_2.parse())
+          // TODO: Maybe discard empty messages?
+          return new GameMessage(_2.parse()[0] /*Since the message is optional*/)
         },
         LevelItem: function(_1, _2) {
           return _1.parse()
