@@ -107,7 +107,7 @@ Puzzlescript {
 
   RuleItem = (RuleItemReal | t_STARTLOOP | t_ENDLOOP) lineTerminator+
 
-  RuleItemReal = t_GROUP_RULE_PLUS? t_RIGID? t_LATE? t_RANDOM? RuleCondition+ "->" RuleCondition* ruleCommand*
+  RuleItemReal = t_GROUP_RULE_PLUS? t_RIGID? RuleConditionWithLeftArgs+ "->" RuleCondition* ruleCommand*
 
   // Section titles
   t_OBJECTS = caseInsensitive<"OBJECTS">
@@ -203,6 +203,8 @@ Puzzlescript {
   ruleCommandMessage = t_MESSAGE (" " (~lineTerminator any)+)? // Some games just have a blank message
 
   RuleCondition = ruleDirection2* RuleConditionBracket
+
+  RuleConditionWithLeftArgs = (ruleDirection2 | t_LATE | t_RANDOM)* RuleConditionBracket // because of Bubble Butler... it has "right late [..."
 
   RuleConditionBracket = "[" ListOf<RuleConditionEntry?, "|"> "]"
 
