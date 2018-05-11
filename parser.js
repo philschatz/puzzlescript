@@ -17,6 +17,7 @@ Puzzlescript {
     Section<t_COLLISIONLAYERS, CollisionLayerItem>
     Section<t_RULES, RuleItem>
     Section<t_WINCONDITIONS, WinConditionItem>
+    Section<t_LEVELS, LevelItem>
 
   Title = "title " restOfLine
   Author = "author " restOfLine
@@ -74,6 +75,7 @@ Puzzlescript {
   t_COLLISIONLAYERS = caseInsensitive<"COLLISIONLAYERS">
   t_RULES = caseInsensitive<"RULES">
   t_WINCONDITIONS = caseInsensitive<"WINCONDITIONS">
+  t_LEVELS = caseInsensitive<"LEVELS">
 
   t_RIGID_PLUS = "+"
   t_LATE = caseInsensitive<"LATE">
@@ -180,6 +182,16 @@ Puzzlescript {
     | t_ANY
     | t_SOME
 
+
+
+  LevelItem =
+      levelMessage
+    | LevelMap
+
+  levelMessage = t_MESSAGE restOfLine lineTerminator*
+  LevelMap = levelMapRow+ lineTerminator*
+
+  levelMapRow = (~lineTerminator any)+ lineTerminator
 
 
   // ================
