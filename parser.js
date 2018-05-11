@@ -1,16 +1,13 @@
+const glob = require('glob')
 const ohm = require('ohm-js')
 const {readFileSync} = require('fs')
 
 const grammar = `
 Puzzlescript {
   Details =
-  	Title
-    Author?
-    Homepage?
-    ColorPalette?
-    RealtimeInterval?
-    Noaction?
-    lineTerminator*
+    lineTerminator* // Version information
+  	Title lineTerminator+
+    (OptionalSetting lineTerminator+)*
     Section<t_OBJECTS, ObjectsItem>
     Section<t_LEGEND, legendItem>
     Section<t_SOUNDS, SoundItem>
@@ -19,35 +16,79 @@ Puzzlescript {
     Section<t_WINCONDITIONS, WinConditionItem>
     Section<t_LEVELS, LevelItem>
 
-  Title = "title " restOfLine
-  Author = "author " restOfLine
-  Homepage = "homepage " restOfLine
-  ColorPalette = "color_palette " restOfLine
-  RealtimeInterval = "realtime_interval " restOfLine
-  Noaction = "noaction" lineTerminator
+  OptionalSetting =
+      author
+    | homepage
+    | youtube
+    | zoomscreen
+    | flickscreen
+    | colorPalette
+    | BackgroundColor
+    | TextColor
+    | realtimeInterval
+    | keyRepeatInterval
+    | againInterval
+    | t_NOACTION
+    | t_NOUNDO
+    | t_RUN_RULES_ON_LEVEL_START
+    | t_NOREPEAT_ACTION
+    | t_THROTTLE_MOVEMENT
+    | t_NORESTART
+    | t_REQUIRE_PLAYER_MOVEMENT
+    | t_VERBOSE_LOGGING
 
+  Title = "title" words
+  author = "author" words
+  homepage = "homepage" words
+  youtube = "youtube" words
+  zoomscreen = "zoomscreen " digit+ "x" digit+
+  flickscreen = "flickscreen " digit+ "x" digit+
+  colorPalette = "color_palette " words
+  BackgroundColor = "background_color" colorNameOrHex
+  TextColor = "text_color" colorNameOrHex
+  realtimeInterval = "realtime_interval " decimal
+  keyRepeatInterval = "key_repeat_interval " decimal
+  againInterval = "again_interval " decimal
+  t_NOACTION = caseInsensitive<"NOACTION">
+  t_NOUNDO = caseInsensitive<"NOUNDO">
+  t_RUN_RULES_ON_LEVEL_START = caseInsensitive<"RUN_RULES_ON_LEVEL_START">
+  t_NOREPEAT_ACTION = caseInsensitive<"NOREPEAT_ACTION">
+  t_THROTTLE_MOVEMENT = caseInsensitive<"THROTTLE_MOVEMENT">
+  t_NORESTART = caseInsensitive<"NORESTART">
+  t_REQUIRE_PLAYER_MOVEMENT = caseInsensitive<"REQUIRE_PLAYER_MOVEMENT">
+  t_VERBOSE_LOGGING = caseInsensitive<"VERBOSE_LOGGING">
+
+
+  words = (~lineTerminator any)+
+  decimal =
+      decimalWithLeadingNumber
+    | decimalWithLeadingPeriod
+  decimalWithLeadingNumber = digit+ ("." digit+)?
+  decimalWithLeadingPeriod = "." digit+
 
 
 
   ObjectsItem =
-  	objectName lineTerminator
-    nonemptyListOf<colorNameOrHex, " "> lineTerminator
+  	objectName legendShortcutChar? lineTerminator
+    nonemptyListOf<colorNameOrHex, spaces> lineTerminator+
     (pixelRow+)?
-    lineTerminator+
+    lineTerminator*
 
-  objectName = (~lineTerminator (letter|digit))+
+  objectName = varName
   colorTransparent = "transparent"
-  colorHex = "#" hexDigit hexDigit hexDigit hexDigit hexDigit hexDigit
-  colorNameOrHex = colorTransparent | colorHex | letter+
+  colorHex6 = "#" hexDigit hexDigit hexDigit hexDigit hexDigit hexDigit
+  colorHex3 = "#" hexDigit hexDigit hexDigit
+  colorNameOrHex = colorTransparent | colorHex6 | colorHex3 | letter+
   pixelRow = pixelDigit+ lineTerminator
   pixelDigit = (digit | ".")+
+  legendShortcutChar = (~lineTerminator any)
 
 
 
 
 
-  legendItem = legendVarName " = " nonemptyListOf<varName, andOr> lineTerminator+
-  andOr = " and " | " or "
+  legendItem = legendVarName spaces "=" spaces nonemptyListOf<varName, andOr> lineTerminator+ // TODO: Remove the 'spaces' in favor of an upper-case non-lexer rule
+  andOr = spaces (t_AND | t_OR) spaces
   legendChar = any // a single character that is allowed to be in a puzzle level
   legendVarName = varName | legendChar
 
@@ -61,12 +102,12 @@ Puzzlescript {
 
 
 
-  CollisionLayerItem = NonemptyListOf<varName, ","> lineTerminator+
+  CollisionLayerItem = NonemptyListOf<varName, ","?> ","? /*support a trailing comma*/ lineTerminator+
 
 
+  RuleItem = (RuleItemReal | t_STARTLOOP | t_ENDLOOP) lineTerminator+
 
-
-  RuleItem = t_RIGID_PLUS? rulePrefix? RuleCondition+ "->" RuleCondition* ruleCommand* lineTerminator+
+  RuleItemReal = t_GROUP_RULE_PLUS? t_RIGID? t_LATE? t_RANDOM? RuleCondition+ "->" RuleCondition* ruleCommand*
 
   // Section titles
   t_OBJECTS = caseInsensitive<"OBJECTS">
@@ -77,9 +118,16 @@ Puzzlescript {
   t_WINCONDITIONS = caseInsensitive<"WINCONDITIONS">
   t_LEVELS = caseInsensitive<"LEVELS">
 
-  t_RIGID_PLUS = "+"
+  t_GROUP_RULE_PLUS = "+"
+  t_ELLIPSIS = "..."
+  t_AND = caseInsensitive<"AND">
+  t_OR = caseInsensitive<"OR">
+
+  t_RIGID = caseInsensitive<"RIGID">
   t_LATE = caseInsensitive<"LATE">
   t_RANDOM = caseInsensitive<"RANDOM">
+  t_STARTLOOP = caseInsensitive<"STARTLOOP">
+  t_ENDLOOP = caseInsensitive<"ENDLOOP">
 
   t_UP = caseInsensitive<"UP">
   t_DOWN = caseInsensitive<"DOWN">
@@ -134,11 +182,12 @@ Puzzlescript {
     | t_SFX9
     | t_SFX10
 
-  rulePrefix =
-      t_LATE
-    | t_RANDOM
-    | t_UP
+
+  ruleDirection2 =
+      t_UP
     | t_DOWN
+    | t_LEFT
+    | t_RIGHT
     | t_HORIZONTAL
     | t_VERTICAL
 
@@ -151,14 +200,20 @@ Puzzlescript {
     | t_WIN
     | t_SFX
 
-  ruleCommandMessage = t_MESSAGE " " (~lineTerminator any)+
+  ruleCommandMessage = t_MESSAGE (" " (~lineTerminator any)+)? // Some games just have a blank message
 
-  RuleCondition = "[" ListOf<RuleConditionEntry?, "|"> "]"
+  RuleCondition = ruleDirection2* RuleConditionBracket
 
-  RuleConditionEntry = ruleDirection? varName+
+  RuleConditionBracket = "[" ListOf<RuleConditionEntry?, "|"> "]"
 
+  RuleConditionEntry =
+      RuleConditionEntryFull
+    | RuleConditionBracket
+    | t_ELLIPSIS
 
-  ruleDirection =
+  RuleConditionEntryFull = (ruleDirection3? varName)+
+
+  ruleDirection3 =
       t_MOVING
     | t_ORTHOGONAL
     | t_STATIONARY
@@ -174,7 +229,7 @@ Puzzlescript {
 
 
 
-  WinConditionItem = winConditionItemPrefix varName (t_ON varName)?
+  WinConditionItem = winConditionItemPrefix varName (t_ON varName)? lineTerminator+
 
   winConditionItemPrefix =
       t_NO
@@ -198,21 +253,20 @@ Puzzlescript {
   // SECTION_NAME
   // ================
   Section<Name, ItemExpr> =
-    headingBar lineTerminator
+    "===" headingBar lineTerminator
     Name lineTerminator
-    headingBar lineTerminator
-    lineTerminator*
-    ItemExpr+
+    "===" headingBar lineTerminator+
+    (space* ItemExpr)*
     lineTerminator*
 
   varName = letter (letter | digit | "_")*
-  headingBar = "="+
+  headingBar = "="*
   restOfLine = (~lineTerminator sourceCharacter)* lineTerminator
-  lineTerminator = space* "\\n"
+  lineTerminator = space* "\\n" space*
   sourceCharacter = any
 
   // redefine what a space is so we can ignore comments
-  space := " " | multiLineComment
+  space := " " | "\\u0009" /*tab*/ | multiLineComment
 
   multiLineComment = "(" textOrComment+ ")"
   textOrComment =
@@ -227,16 +281,28 @@ Puzzlescript {
 
 
 
+glob('./gists/*/script.txt', (err, files) => {
+// glob('./test-game.txt', (err, files) => {
 
-const code = readFileSync('./test-game.txt', 'utf-8')
+  console.log(`Looping over ${files.length} games...`);
 
-const g = ohm.grammar(grammar)
-const m = g.match(code)
+  files.forEach((filename, index) => {
 
-if (m.succeeded()) {
-  debugger
-  console.log('hooray!');
-} else {
-  console.log(g.trace(code).toString())
-  console.log(m.message)
-}
+    const code = readFileSync(filename, 'utf-8') + '\n' // Not all games have a trailing newline. this makes it easier on the parser
+
+    const g = ohm.grammar(grammar)
+    const m = g.match(code)
+
+    if (m.succeeded()) {
+      debugger
+      console.log(`hooray! ${index}`);
+    } else {
+      console.log(g.trace(code).toString())
+      console.log(m.message)
+      console.log(`Failed on game ${index}`)
+      throw new Error(filename)
+    }
+
+  })
+
+})
