@@ -41,8 +41,8 @@ Puzzlescript {
   Author = "author" words
   Homepage = "homepage" words
   Youtube = "youtube" words
-  Zoomscreen = "zoomscreen" digit+ "x" digit+
-  Flickscreen = "flickscreen" digit+ "x" digit+
+  Zoomscreen = "zoomscreen" widthAndHeight
+  Flickscreen = "flickscreen" widthAndHeight
   RequirePlayerMovement = t_REQUIRE_PLAYER_MOVEMENT "off"?
   RunRulesOnLevelStart = t_RUN_RULES_ON_LEVEL_START "true"?
   ColorPalette = "color_palette" words
@@ -60,8 +60,10 @@ Puzzlescript {
   t_REQUIRE_PLAYER_MOVEMENT = caseInsensitive<"REQUIRE_PLAYER_MOVEMENT">
   t_VERBOSE_LOGGING = caseInsensitive<"VERBOSE_LOGGING">
 
+  widthAndHeight = integer "x" integer
 
-  words = (~lineTerminator any)+
+  word = (~lineTerminator any)+
+  words = word+
   decimal =
       decimalWithLeadingNumber
     | decimalWithLeadingPeriod
@@ -73,16 +75,17 @@ Puzzlescript {
   ObjectsItem =
   	objectName legendShortcutChar? lineTerminator
     nonemptyListOf<colorNameOrHex, spaces> lineTerminator+
-    (pixelRow+)?
+    pixelRow*
     lineTerminator*
 
   objectName = varName
   colorTransparent = "transparent"
   colorHex6 = "#" hexDigit hexDigit hexDigit hexDigit hexDigit hexDigit
   colorHex3 = "#" hexDigit hexDigit hexDigit
-  colorNameOrHex = colorTransparent | colorHex6 | colorHex3 | letter+
+  colorNameOrHex = colorTransparent | colorHex6 | colorHex3 | colorName
+  colorName = letter+
   pixelRow = pixelDigit+ lineTerminator
-  pixelDigit = (digit | ".")+
+  pixelDigit = digit | "."
   legendShortcutChar = (~lineTerminator any)
 
 
@@ -153,7 +156,7 @@ Puzzlescript {
 
   RuleItem = (RuleItemReal | t_STARTLOOP | t_ENDLOOP) lineTerminator+
 
-  RuleItemReal = t_GROUP_RULE_PLUS? t_RIGID? RuleConditionWithLeftArgs+ "->" RuleCondition* ruleCommand*
+  RuleItemReal = t_GROUP_RULE_PLUS? t_RIGID? RuleConditionWithLeftArgs+ "->" RuleCondition* RuleCommand*
 
   // Section titles
   t_OBJECTS = caseInsensitive<"OBJECTS">
@@ -238,8 +241,8 @@ Puzzlescript {
     | t_HORIZONTAL
     | t_VERTICAL
 
-  ruleCommand =
-      ruleCommandMessage
+  RuleCommand =
+      GameMessage
     | t_AGAIN
     | t_CANCEL
     | t_CHECKPOINT
@@ -247,7 +250,7 @@ Puzzlescript {
     | t_WIN
     | t_SFX
 
-  ruleCommandMessage = t_MESSAGE (" " (~lineTerminator any)+)? // Some games just have a blank message
+  GameMessage = t_MESSAGE words*
 
   RuleCondition = ruleDirection2* RuleConditionBracket
 
@@ -288,14 +291,10 @@ Puzzlescript {
 
 
 
-  LevelItem =
-      levelMessage
-    | LevelMap
+  LevelItem = (GameMessage | LevelMap) lineTerminator*
+  LevelMap = levelMapRow+
 
-  levelMessage = t_MESSAGE restOfLine lineTerminator*
-  LevelMap = levelMapRow+ lineTerminator*
-
-  levelMapRow = (~lineTerminator any)+ lineTerminator
+  levelMapRow = (~lineTerminator ~t_MESSAGE any)+ lineTerminator
 
 
   // ================
@@ -311,7 +310,6 @@ Puzzlescript {
   // Must contain at least 1 letter. Otherwise sound effects are confused
   varName = digit* letter (letter | digit | "_")*
   headingBar = "="*
-  restOfLine = (~lineTerminator sourceCharacter)* lineTerminator
   lineTerminator = space* newline space*
   sourceCharacter = any
 
@@ -334,6 +332,94 @@ Puzzlescript {
 `// readFileSync('./grammar.ohm', 'utf-8')
 
 
+class LevelMap {
+  constructor(rows) {
+    this._rows = rows
+  }
+  isInvalid() {
+    const cols = this._rows[0].length
+    let isInvalid = false
+    this._rows.forEach((row, index) => {
+      if (cols !== row.length) {
+        isInvalid = `Row ${index+1} does not have the same column count as the first row. Expected ${cols} columns but found ${row.length}. Row contents:\n${row.join('')}`
+      }
+    })
+    return isInvalid
+  }
+}
+
+class GameMessage {
+  constructor(message) {
+    this._message = message
+  }
+  isInvalid() {
+    return false
+  }
+}
+
+class HexColor {
+  constructor(color) {
+    this._color = color
+  }
+}
+
+class NamedColor {
+  constructor(name) {
+    this._name = name
+  }
+}
+
+class GameObject {
+  constructor(name, colors, pixels) {
+    this._name = name
+    this._colors = colors
+    this._pixels = pixels // Pixel colors are 0-indexed.
+  }
+  isInvalid() {
+    let isInvalid = false
+    const colorLen = this._colors.length
+    if (this._pixels.length > 0) {
+      const rowLen = this._pixels[0].length
+      this._pixels.forEach((row) => {
+        if (row.length !== rowLen) {
+          isInvalid = `Row lengths do not match. Expected ${rowLen} but got ${row.length}. Row: ${row}`
+        }
+        // Check that only '.' or a digit that is less than the number of colors is present
+        row.forEach((pixel) => {
+          if ('.' !== pixel) {
+            if (pixel >= colorLen) {
+              isInvalid = `Pixel number is too high (${pixel}). There are only ${colorLen} colors defined`
+            }
+          }
+        })
+      })
+    }
+    return isInvalid
+  }
+}
+
+// TODO: Link up the aliases to objects rather than just storing strings
+// TODO: Also, maybe distinguish between legend items that may be in the LevelMap (1 character) from those that point to ObjectItems
+class GameLegendItem {
+  constructor(name, aliases) {
+    this._name = name
+    this._aliases = aliases
+  }
+  isInvalid() {
+    return true // until we map the aliases to actual Objects rather than strings to look up later
+  }
+}
+
+// TODO: Use the Objects rather than just the names
+class CollisionLayer {
+  constructor(objectNames) {
+    this._objectNames = objectNames
+  }
+  isInvalid() {
+    return true // until we map the aliases to actual Objects rather than strings to look up later
+  }
+}
+
 
 
 glob('./gists/*/script.txt', (err, files) => {
@@ -349,9 +435,246 @@ glob('./gists/*/script.txt', (err, files) => {
     const g = ohm.grammar(grammar)
     const m = g.match(code)
 
+    // See https://github.com/anarchistengineering/nasty-json/blob/master/lib/parser.js
+
+
     if (m.succeeded()) {
-      debugger
-      console.log(`hooray! ${index}`);
+      console.log(`hooray! ${index} ${filename}`);
+      const s = g.createSemantics()
+
+      function getConfigField(key, value) {
+        return [key.parse(), value.parse()]
+      }
+
+      s.addOperation('parse', {
+        Details: (_whitespace1, title, _whitespace2, settings, _whitespace3, objects, legends, sounds, collisionLayers, rules, winConditions, levels) => {
+          const ret = {
+            title: title.parse(),
+            settings: {}, // Filled in below
+            objects: objects.parse(),
+            legends: legends.parse(),
+            sounds: sounds.parse(),
+            collisionLayers: collisionLayers.parse(),
+            rules: rules.parse(),
+            winConditions: winConditions.parse(),
+            levels: levels.parse(),
+          }
+          settings.parse().forEach((setting) => {
+            if (Array.isArray(setting)) {
+              ret.settings[setting[0]] = setting[1]
+            } else {
+              ret.settings[setting] = true
+            }
+          })
+          return ret
+        },
+        Title: (_1, value) => {
+          return value.parse()
+        },
+        Author: getConfigField,
+        Homepage: getConfigField,
+        KeyRepeatInterval: getConfigField,
+        AgainInterval: getConfigField,
+        BackgroundColor: getConfigField,
+        TextColor: getConfigField,
+        RunRulesOnLevelStart: getConfigField,
+        RealtimeInterval: getConfigField,
+        Youtube: getConfigField,
+        Zoomscreen: getConfigField,
+        Flickscreen: getConfigField,
+        ColorPalette: getConfigField,
+        RequirePlayerMovement: getConfigField,
+
+        Section: (_threeDashes1, _headingBar1, _lineTerminator1, _sectionName, _lineTerminator2, _threeDashes2, _headingBar2, _8, _9, _10, _11) => {
+          return _10.parse()
+        },
+        ObjectsItem: (_1, _2, _3, _4, _5, _6, _7) => {
+          return new GameObject(_1.parse(), _4.parse(), _6.parse())
+        },
+        legendItem: function(_1, _space1, _equalSign, _space2, _5, _6) {
+          return new GameLegendItem(_1.parse(), _5.parse())
+        },
+        SoundItem: function(_1, _2, _3) {
+          debugger
+          return {
+            __type: 'SoundItem',
+            _1: _1 ? _1.parse() : null,
+            _2: _2 ? _2.parse() : null,
+            _3: _3 ? _3.parse() : null,
+          }
+        },
+        SoundItemNormal: function(_1, _2) {
+          debugger
+          return {
+            __type: 'SoundItemNormal',
+            _1: _1 ? _1.parse() : null,
+            _2: _2 ? _2.parse() : null,
+          }
+        },
+        SoundItemActionMove: function(_1, _2) {
+          debugger
+          return {
+            __type: 'SoundItemActionMove',
+            _1: _1 ? _1.parse() : null,
+            _2: _2 ? _2.parse() : null,
+          }
+        },
+        CollisionLayerItem: (objectNames, _2, _3) => {
+          return new CollisionLayer(objectNames.parse())
+        },
+        RuleItem: function(_1, _2) {
+          debugger
+          return {
+            __type: 'RuleItem',
+            _1: _1 ? _1.parse() : null,
+            _2: _2 ? _2.parse() : null,
+          }
+        },
+        RuleItemReal: function(_1, _2, _3, _4, _5, _6) {
+          debugger
+          return {
+            __type: 'RuleItemReal',
+            _1: _1 ? _1.parse() : null,
+            _2: _2 ? _2.parse() : null,
+            _3: _3 ? _3.parse() : null,
+            _4: _4 ? _4.parse() : null,
+            _5: _5 ? _5.parse() : null,
+            _6: _6 ? _6.parse() : null,
+          }
+        },
+        RuleConditionWithLeftArgs: function(_1, _2) {
+          debugger
+          return {
+            __type: 'RuleConditionWithLeftArgs',
+            _1: _1 ? _1.parse() : null,
+            _2: _2 ? _2.parse() : null,
+          }
+        },
+        RuleConditionBracket: function(_1, _2, _3) {
+          debugger
+          return {
+            __type: 'RuleConditionBracket',
+            _1: _1 ? _1.parse() : null,
+            _2: _2 ? _2.parse() : null,
+            _3: _3 ? _3.parse() : null,
+          }
+        },
+        RuleConditionEntryFull: function(_1, _2) {
+          debugger
+          return {
+            __type: 'RuleConditionEntryFull',
+            _1: _1 ? _1.parse() : null,
+            _2: _2 ? _2.parse() : null,
+          }
+        },
+        RuleCondition: function(_1, _2) {
+          debugger
+          return {
+            __type: 'RuleCondition',
+            _1: _1 ? _1.parse() : null,
+            _2: _2 ? _2.parse() : null,
+          }
+        },
+
+        WinConditionItem: function(_1, _2, _3, _4, _5) {
+          debugger
+          return {
+            __type: 'WinConditionItem',
+            _1: _1 ? _1.parse() : null,
+            _2: _2 ? _2.parse() : null,
+            _3: _3 ? _3.parse() : null,
+            _4: _4 ? _4.parse() : null,
+            _5: _5 ? _5.parse() : null,
+          }
+        },
+        GameMessage: function(_1, _2) {
+          return new GameMessage(_2.parse())
+        },
+        LevelItem: function(_1, _2) {
+          return _1.parse()
+        },
+        LevelMap: function(_1) {
+          return new LevelMap(_1.parse())
+        },
+        levelMapRow: function(_1, _2) {
+          return _1.parse()
+        },
+        andOr: (_1, _2, _3) => {
+          return {
+            __type: 'andOr',
+            _1: _1 ? _1.parse() : null,
+            _2: _2 ? _2.parse() : null,
+            _3: _3 ? _3.parse() : null,
+          }
+        },
+        widthAndHeight: function(_1, _2, _3) {
+          return {
+            __type: 'widthAndHeight',
+            width: _1.parse(),
+            height: _3.parse(),
+          }
+        },
+        pixelRow: function(_1, _2) {
+          return _1.parse()
+        },
+        colorHex3: function(_1, _2, _3, _4) {
+          return new HexColor(this.sourceString)
+        },
+        colorHex6: function(_1, _2, _3, _4, _5, _6, _7) {
+          return new HexColor(this.sourceString)
+        },
+        colorName: function(_1) {
+          return new NamedColor(this.sourceString)
+        },
+        NonemptyListOf: function(_1, _2, _3) {
+          return [_1.parse()].concat(_3.parse())
+        },
+        nonemptyListOf: function(_1, _2, _3) {
+          return [_1.parse()].concat(_3.parse())
+        },
+        integer: function(_1) {
+          return Number.parseInt(this.sourceString)
+        },
+        decimalWithLeadingNumber: function (_1, _2, _3) {
+          return Number.parseFloat(this.sourceString)
+        },
+        decimalWithLeadingPeriod: function (_1, _2) {
+          return Number.parseFloat(this.sourceString)
+        },
+        varName: function(_1, _2, _3) {
+          return this.sourceString;
+        },
+        words: function(_1) {
+          return this.sourceString
+        },
+        _terminal: function () { return this.primitiveValue },
+        lineTerminator: (v1, v2, v3) => {},
+        digit: (x) => {
+          return x.primitiveValue.charCodeAt(0) - '0'.charCodeAt(0)
+        },
+        // _default: function (exp1) {
+        //   debugger
+        //   return this.sourceString
+        // },
+
+      })
+      const game = s(m).parse()
+      console.log(game)
+
+      // Validate that the game objects are rectangular
+      game.objects.forEach((object) => {
+        if (object.isInvalid()) {
+          console.warn(`WARNING: ${filename} Game Object is Invalid. Reason: ${object.isInvalid()}`)
+        }
+      })
+
+      // Validate that the level maps are rectangular
+      game.levels.forEach((level) => {
+        if (level.isInvalid()) {
+          console.warn(`WARNING: ${filename} Level is Invalid. Reason: ${level.isInvalid()}`)
+        }
+      })
+
     } else {
       console.log(g.trace(code).toString())
       console.log(m.message)
