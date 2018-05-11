@@ -321,7 +321,7 @@ Puzzlescript {
   // redefine what a space is so we can ignore comments
   space := whitespace | multiLineComment
 
-  nonVarChar = whitespace | newline | "[" | "]"
+  nonVarChar = whitespace | newline | "[" | "]" | "(" | ")"
 
   multiLineComment = "(" textOrComment* ")"
   textOrComment =
