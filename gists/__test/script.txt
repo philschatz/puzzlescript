@@ -4,16 +4,20 @@ title test rules
 OBJECTS
 ========
 
-J
+
+vertibum
 transparent
 
-K
+j
 transparent
 
-L
+k
 transparent
 
-M
+l
+transparent
+
+m
 transparent
 
 =======
@@ -38,7 +42,10 @@ RULES
   [ E | F ] -> [ G | ]
   [ H | | I ] -> [ ]
 )
-[ J | ... | K ] -> [ L | ... | M ]
+[ j | ... | k ] -> [ RANDOm l | ... | m ]
+
+(Check that "v" does not accidentally match this in the rules)
+[ vertibum ] -> [ ]
 
 ==============
 WINCONDITIONS
