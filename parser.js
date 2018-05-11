@@ -17,38 +17,39 @@ Puzzlescript {
     Section<t_LEVELS, LevelItem>
 
   OptionalSetting =
-      author
-    | homepage
-    | youtube
-    | zoomscreen
-    | flickscreen
-    | colorPalette
+      Author
+    | Homepage
+    | Youtube
+    | Zoomscreen
+    | Flickscreen
+    | RequirePlayerMovement
+    | ColorPalette
     | BackgroundColor
     | TextColor
-    | realtimeInterval
-    | keyRepeatInterval
-    | againInterval
+    | RealtimeInterval
+    | KeyRepeatInterval
+    | AgainInterval
     | t_NOACTION
     | t_NOUNDO
     | t_RUN_RULES_ON_LEVEL_START
     | t_NOREPEAT_ACTION
     | t_THROTTLE_MOVEMENT
     | t_NORESTART
-    | t_REQUIRE_PLAYER_MOVEMENT
     | t_VERBOSE_LOGGING
 
   Title = "title" words
-  author = "author" words
-  homepage = "homepage" words
-  youtube = "youtube" words
-  zoomscreen = "zoomscreen " digit+ "x" digit+
-  flickscreen = "flickscreen " digit+ "x" digit+
-  colorPalette = "color_palette " words
+  Author = "author" words
+  Homepage = "homepage" words
+  Youtube = "youtube" words
+  Zoomscreen = "zoomscreen" digit+ "x" digit+
+  Flickscreen = "flickscreen" digit+ "x" digit+
+  RequirePlayerMovement = t_REQUIRE_PLAYER_MOVEMENT "off"?
+  ColorPalette = "color_palette" words
   BackgroundColor = "background_color" colorNameOrHex
   TextColor = "text_color" colorNameOrHex
-  realtimeInterval = "realtime_interval " decimal
-  keyRepeatInterval = "key_repeat_interval " decimal
-  againInterval = "again_interval " decimal
+  RealtimeInterval = "realtime_interval" decimal
+  KeyRepeatInterval = "key_repeat_interval" decimal
+  AgainInterval = "again_interval" decimal
   t_NOACTION = caseInsensitive<"NOACTION">
   t_NOUNDO = caseInsensitive<"NOUNDO">
   t_RUN_RULES_ON_LEVEL_START = caseInsensitive<"RUN_RULES_ON_LEVEL_START">
@@ -87,7 +88,7 @@ Puzzlescript {
 
 
 
-  legendItem = legendVarName spaces "=" spaces nonemptyListOf<varName, andOr> lineTerminator+ // TODO: Remove the 'spaces' in favor of an upper-case non-lexer rule
+  legendItem = legendVarName spaces "=" spaces nonemptyListOf<legendVarName, andOr> lineTerminator+ // TODO: Remove the 'spaces' in favor of an upper-case non-lexer rule
   andOr = spaces (t_AND | t_OR) spaces
   legendChar = any // a single character that is allowed to be in a puzzle level
   legendVarName = varName | legendChar
@@ -97,8 +98,50 @@ Puzzlescript {
 
   // TODO: Handle tokens like sfx0 and explicit args instead of just varName (like "Player CantMove up")
   // all of them are at https://www.puzzlescript.net/Documentation/sounds.html
-  SoundItem = varName+ integer lineTerminator+
+  SoundItem = SoundItemInner integer lineTerminator+
 
+  SoundItemInner =
+      t_RESTART
+    | t_UNDO
+    | t_TITLESCREEN
+    | t_STARTGAME
+    | t_STARTLEVEL
+    | t_ENDLEVEL
+    | t_ENDGAME
+    | t_SHOWMESSAGE
+    | t_CLOSEMESSAGE
+    | soundItemSfx
+    | SoundItemNormal
+
+  soundItemSfx = t_SFX
+  SoundItemNormal = varName SoundItemAction?
+
+  SoundItemAction =
+      t_CREATE
+    | t_DESTROY
+    | t_CANTMOVE
+    | SoundItemActionMove
+
+  SoundItemActionMove = t_MOVE soundItemActionMoveArg?
+  soundItemActionMoveArg =
+      t_UP
+    | t_DOWN
+    | t_LEFT
+    | t_RIGHT
+    | varName
+
+  t_MOVE = caseInsensitive<"MOVE">
+  t_DESTROY = caseInsensitive<"DESTROY">
+  t_CREATE = caseInsensitive<"CREATE">
+  t_CANTMOVE = caseInsensitive<"CANTMOVE">
+
+  t_TITLESCREEN = caseInsensitive<"TITLESCREEN">
+  t_STARTGAME = caseInsensitive<"STARTGAME">
+  t_STARTLEVEL = caseInsensitive<"STARTLEVEL">
+  t_ENDLEVEL = caseInsensitive<"ENDLEVEL">
+  t_ENDGAME = caseInsensitive<"ENDGAME">
+  t_SHOWMESSAGE = caseInsensitive<"SHOWMESSAGE">
+  t_CLOSEMESSAGE = caseInsensitive<"CLOSEMESSAGE">
 
 
 
@@ -147,6 +190,7 @@ Puzzlescript {
   t_CANCEL = caseInsensitive<"CANCEL">
   t_CHECKPOINT = caseInsensitive<"CHECKPOINT">
   t_RESTART = caseInsensitive<"RESTART">
+  t_UNDO = caseInsensitive<"UNDO">
   t_WIN = caseInsensitive<"WIN">
   t_MESSAGE = caseInsensitive<"MESSAGE">
 
@@ -170,7 +214,8 @@ Puzzlescript {
   t_SFX9 = caseInsensitive<"SFX9">
   t_SFX10 = caseInsensitive<"SFX10">
   t_SFX =
-      t_SFX0
+      t_SFX10 // needs to go 1st because of t_SFX1
+    | t_SFX0
     | t_SFX1
     | t_SFX2
     | t_SFX3
@@ -180,7 +225,6 @@ Puzzlescript {
     | t_SFX7
     | t_SFX8
     | t_SFX9
-    | t_SFX10
 
 
   ruleDirection2 =
@@ -261,7 +305,8 @@ Puzzlescript {
     (space* ItemExpr)*
     lineTerminator*
 
-  varName = letter (letter | digit | "_")*
+  // Must contain at least 1 letter. Otherwise sound effects are confused
+  varName = digit* letter (letter | digit | "_")*
   headingBar = "="*
   restOfLine = (~lineTerminator sourceCharacter)* lineTerminator
   lineTerminator = space* "\\n" space*
@@ -290,7 +335,8 @@ glob('./gists/*/script.txt', (err, files) => {
 
   files.forEach((filename, index) => {
 
-    const code = readFileSync(filename, 'utf-8') + '\n' // Not all games have a trailing newline. this makes it easier on the parser
+    // 8645c163ff321d2fd1bad3fcaf48c107 has a typo so we .replace()
+    const code = readFileSync(filename, 'utf-8').replace('][ ->', '] ->') + '\n' // Not all games have a trailing newline. this makes it easier on the parser
 
     const g = ohm.grammar(grammar)
     const m = g.match(code)
