@@ -4,7 +4,6 @@ title test rules
 OBJECTS
 ========
 
-
 vertibum
 transparent
 
@@ -23,6 +22,8 @@ transparent
 =======
 LEGEND
 =======
+
+0 = vertibum
 
 =======
 SOUNDS
@@ -45,7 +46,8 @@ RULES
 [ j | ... | k ] -> [ RANDOm l | ... | m ]
 
 (Check that "v" does not accidentally match this in the rules)
-[ vertibum ] -> [ ]
+[ vertibum ] -> [ j AGAIn ]
+[0 j] -> [ j ]
 
 ==============
 WINCONDITIONS

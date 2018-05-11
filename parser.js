@@ -104,7 +104,7 @@ Puzzlescript {
   legendCharDefn = any // a single character that is allowed to be in a puzzle level
   legendVarNameDefn = varName | legendCharDefn
   // You can define "[" in the legend but you cannot use it in the rules
-  legendVarNameUse = varName // | (~nonVarChar any)+
+  legendVarNameUse = varName | (~nonVarChar any)
 
 
 
@@ -192,6 +192,7 @@ Puzzlescript {
   t_RIGID = caseInsensitive<"RIGID">
   t_LATE = caseInsensitive<"LATE">
   t_RANDOM = caseInsensitive<"RANDOM">
+  t_RANDOMDIR = caseInsensitive<"RANDOMDIR">
   t_ACTION = caseInsensitive<"ACTION">
   t_STARTLOOP = caseInsensitive<"STARTLOOP">
   t_ENDLOOP = caseInsensitive<"ENDLOOP">
@@ -287,7 +288,7 @@ Puzzlescript {
     | RuleConditionBracket
 
   RuleConditionEntryLeaves = ruleConditionEntryLeaf+
-  ruleConditionEntryLeaf = (ruleDirection3 space+)? legendVarNameUse
+  ruleConditionEntryLeaf = (ruleDirection3 space+)? legendVarNameUse (space+ t_AGAIN)?
 
   ruleDirection3 =
       t_MOVING
@@ -304,6 +305,7 @@ Puzzlescript {
     | t_DOWN
     | t_LEFT
     | t_RIGHT
+    | t_RANDOMDIR
     | t_RANDOM
     | t_NO  // This guy is sooo annoying
     | t_ACTION
@@ -369,6 +371,9 @@ Puzzlescript {
 
 class BaseForLines {
   constructor(source) {
+    if (!source || !source.getLineAndColumnMessage) {
+      throw new Error(`BUG: failed to provide the source when constructing this object`)
+    }
     this.__source = source
   }
 }
@@ -595,10 +600,11 @@ class GameRuleConditionBracketEllipsis extends BaseForLines {
 
 
 class GameRuleConditionEntryLeaf extends BaseForLines {
-  constructor(source, optionalDirection, objectName) {
+  constructor(source, optionalDirection, objectName, optionalAgain) {
     super(source)
     this._optionalDirection = optionalDirection
     this._objectName = objectName
+    this._optionalAgain = optionalAgain
   }
 }
 
@@ -635,6 +641,7 @@ glob('./gists/*/script.txt', (err, files) => {
         return [key.parse(), value.parse()]
       }
 
+      const allSoundEffects = new Map()
       const allObjects = new Map()
       const allLegendItems = new Map()
       const allLevelChars = new Map()
@@ -645,6 +652,9 @@ glob('./gists/*/script.txt', (err, files) => {
           throw new Error(`ERROR: Duplicate object is defined named "${key}". They are case-sensitive!`)
         }
         map.set(key, value)
+      }
+      function addSoundEffect(key, soundEffect) {
+        addToHelper(allSoundEffects, key.toLowerCase(), soundEffect)
       }
       function addToAllObjects(gameObject) {
         addToHelper(allObjects, gameObject._name.toLowerCase(), gameObject)
@@ -664,6 +674,15 @@ glob('./gists/*/script.txt', (err, files) => {
       function lookupObjectOrLegendItem(source, key) {
         key = key.toLowerCase()
         const value = allObjects.get(key) || allLegendItems.get(key)
+        if (!value) {
+          console.error(source.getLineAndColumnMessage())
+          throw new Error(`ERROR: Could not look up "${key}". Has it been defined in the Objects section or the Legend section?`)
+        }
+        return value
+      }
+      function lookupObjectOrLegendItemOrSoundEffect(source, key) {
+        key = key.toLowerCase()
+        const value = allObjects.get(key) || allLegendItems.get(key) || allSoundEffects.get(key)
         if (!value) {
           console.error(source.getLineAndColumnMessage())
           throw new Error(`ERROR: Could not look up "${key}". Has it been defined in the Objects section or the Legend section?`)
@@ -730,7 +749,7 @@ glob('./gists/*/script.txt', (err, files) => {
         Section: (_threeDashes1, _headingBar1, _lineTerminator1, _sectionName, _lineTerminator2, _threeDashes2, _headingBar2, _8, _9, _10, _11) => {
           return _10.parse()
         },
-        ObjectsItem: (name, optionalLegendChar, _3, colors, _5, pixels, _7) => {
+        ObjectsItem: function(name, optionalLegendChar, _3, colors, _5, pixels, _7) {
           optionalLegendChar = optionalLegendChar.parse()[0]
           const gameObject = new GameObject(this.source, name.parse(), optionalLegendChar, colors.parse(), pixels.parse())
           addToAllObjects(gameObject)
@@ -771,7 +790,10 @@ glob('./gists/*/script.txt', (err, files) => {
           return new GameSoundSimpleEnum(this.source, simpleEnum.parse(), soundCode.parse())
         },
         SoundItemSfx: function(sfxName, soundCode) {
-          return new GameSoundSfx(this.source, sfxName.parse(), soundCode.parse())
+          sfxName = sfxName.parse()
+          const sound = new GameSoundSfx(this.source, sfxName, soundCode.parse())
+          addSoundEffect(sfxName, sound)
+          return sound
         },
         SoundItemMoveSimple: function(objectName, _2, soundCode) {
           return new GameSoundMoveSimple(this.source, lookupObjectOrLegendItem(this.source, objectName.parse()), soundCode.parse())
@@ -782,7 +804,7 @@ glob('./gists/*/script.txt', (err, files) => {
         SoundItemNormal: function(objectName, eventEnum, soundCode) {
           return new GameSoundNormal(this.source, lookupObjectOrLegendItem(this.source, objectName.parse()), eventEnum.parse(), soundCode.parse())
         },
-        CollisionLayerItem: (objectNames, _2, _3) => {
+        CollisionLayerItem: function(objectNames, _2, _3) {
           return new CollisionLayer(this.source, objectNames.parse().map((objectName) => lookupObjectOrLegendItem(this.source, objectName)))
         },
         RuleItem: function(_1) {
@@ -808,8 +830,8 @@ glob('./gists/*/script.txt', (err, files) => {
           const left = leftHandSide.parse()
           return new GameRuleConditionBracketEllipsis(this.source, left.slice(0, left.length - 1), rightHandSide.parse())
         },
-        ruleConditionEntryLeaf: function(optionalDirection, _whitespace, objectName) {
-          return new GameRuleConditionEntryLeaf(this.source, optionalDirection.parse(), lookupObjectOrLegendItem(this.source, objectName.parse()))
+        ruleConditionEntryLeaf: function(optionalDirection, _whitespace, objectName, _whitespace, optionalAgain) {
+          return new GameRuleConditionEntryLeaf(this.source, optionalDirection.parse(), lookupObjectOrLegendItemOrSoundEffect(this.source, objectName.parse()), optionalAgain.parse()[0])
         },
         RuleCondition: function(directions, bracket) {
           return new GameRuleCondition(this.source, directions.parse(), bracket.parse())
@@ -902,6 +924,7 @@ glob('./gists/*/script.txt', (err, files) => {
       game.objects.forEach((object) => {
         if (object.isInvalid()) {
           console.warn(`WARNING: ${filename} Game Object is Invalid. Reason: ${object.isInvalid()}`)
+          console.warn(object.__source.getLineAndColumnMessage())
         }
       })
 
@@ -909,6 +932,7 @@ glob('./gists/*/script.txt', (err, files) => {
       game.levels.forEach((level) => {
         if (level.isInvalid()) {
           console.warn(`WARNING: ${filename} Level is Invalid. Reason: ${level.isInvalid()}`)
+          console.warn(level.__source.getLineAndColumnMessage())
         }
       })
 
