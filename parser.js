@@ -321,7 +321,7 @@ Puzzlescript {
   LevelItem = (GameMessage | LevelMap) lineTerminator*
   LevelMap = levelMapRow+
 
-  levelMapRow = (~lineTerminator ~t_MESSAGE any)+ lineTerminator
+  levelMapRow = (~lineTerminator ~t_MESSAGE ~"(" any)+ lineTerminator
 
 
   // ================
@@ -348,7 +348,7 @@ Puzzlescript {
 
   nonVarChar = whitespace | newline | "[" | "]" | "(" | ")" | "|" | "."
 
-  multiLineComment = "(" textOrComment* ")"
+  multiLineComment = "(" textOrComment* (")" | end) // Some games do not close their comments
   textOrComment =
       multiLineComment
     | (~("(" | ")") sourceCharacter)+
@@ -368,7 +368,7 @@ class LevelMap {
     let isInvalid = false
     this._rows.forEach((row, index) => {
       if (cols !== row.length) {
-        isInvalid = `Row ${index+1} does not have the same column count as the first row. Expected ${cols} columns but found ${row.length}. Row contents:\n${row.join('')}`
+        isInvalid = `Row ${index+1} does not have the same column count as the first row. Expected ${cols} columns but found ${row.length}.`
       }
     })
     return isInvalid
@@ -397,8 +397,9 @@ class NamedColor {
 }
 
 class GameObject {
-  constructor(name, colors, pixels) {
+  constructor(name, optionalLegendChar, colors, pixels) {
     this._name = name
+    this._optionalLegendChar = optionalLegendChar
     this._colors = colors
     this._pixels = pixels // Pixel colors are 0-indexed.
   }
@@ -430,7 +431,7 @@ class GameObject {
 class GameLegendItemSimple {
   constructor(objectNameOrLevelChar, alias) {
     this._objectNameOrLevelChar = objectNameOrLevelChar
-    this._alias = alias
+    this._aliases = [alias]
   }
   isInvalid() {
     return true // until we map the aliases to actual Objects rather than strings to look up later
@@ -601,6 +602,57 @@ glob('./gists/*/script.txt', (err, files) => {
         return [key.parse(), value.parse()]
       }
 
+      const allObjects = new Map()
+      const allLegendItems = new Map()
+      const allLevelChars = new Map()
+
+      function addToHelper(map, key, value) {
+        if (map.has(key)) {
+          throw new Error(`ERROR: Duplicate object is defined named "${key}". They are case-sensitive!`)
+        }
+        map.set(key, value)
+      }
+      function addToAllObjects(gameObject) {
+        addToHelper(allObjects, gameObject._name.toLowerCase(), gameObject)
+      }
+      function addToAllLegendItems(legendItem) {
+        addToHelper(allLegendItems, legendItem._objectNameOrLevelChar.toLowerCase(), legendItem)
+      }
+      function addObjectToAllLegendItems(gameObject) {
+        addToHelper(allLegendItems, gameObject._name, gameObject)
+      }
+      function addObjectToAllLevelChars(levelChar, gameObject) {
+        addToHelper(allLevelChars, levelChar.toLowerCase(), gameObject)
+      }
+      function addLegendToAllLevelChars(legendItem) {
+        addToHelper(allLevelChars, legendItem._objectNameOrLevelChar.toLowerCase(), legendItem)
+      }
+      function lookupObjectOrLegendItem(key) {
+        key = key.toLowerCase()
+        const value = allObjects.get(key) || allLegendItems.get(key)
+        if (!value) {
+          throw new Error(`ERROR: Could not look up "${key}". Has it been defined in the Objects section or the Legend section?`)
+        }
+        return value
+      }
+      function lookupObjectName(key) {
+        key = key.toLowerCase()
+        const value = allObjects.get(key)
+        if (!value) {
+          throw new Error(`ERROR: Could not look up "${key}". Has it been defined in the Objects section? or maybe this also needs to look up in the Legend section?`)
+        }
+        return value
+      }
+      function lookupByLevelChar(key) {
+        const value = allLevelChars.get(key.toLowerCase())
+        if (!value) {
+          console.log(allLevelChars)
+          throw new Error(`ERROR: Could not look up "${key}" in the levelChars map. Has it been defined in the Objects section or the Legend section?`)
+        }
+        return value
+      }
+
+
       s.addOperation('parse', {
         Details: (_whitespace1, title, _whitespace2, settings, _whitespace3, objects, legends, sounds, collisionLayers, rules, winConditions, levels) => {
           const ret = {
@@ -643,13 +695,32 @@ glob('./gists/*/script.txt', (err, files) => {
         Section: (_threeDashes1, _headingBar1, _lineTerminator1, _sectionName, _lineTerminator2, _threeDashes2, _headingBar2, _8, _9, _10, _11) => {
           return _10.parse()
         },
-        ObjectsItem: (_1, _2, _3, _4, _5, _6, _7) => {
-          return new GameObject(_1.parse(), _4.parse(), _6.parse())
+        ObjectsItem: (name, optionalLegendChar, _3, colors, _5, pixels, _7) => {
+          optionalLegendChar = optionalLegendChar.parse()[0]
+          const gameObject = new GameObject(name.parse(), optionalLegendChar, colors.parse(), pixels.parse())
+          addToAllObjects(gameObject)
+          if (optionalLegendChar) {
+            // addObjectToAllLegendItems(gameObject)
+            addObjectToAllLevelChars(optionalLegendChar, gameObject)
+          } else if (gameObject._name.length === 1) {
+            addObjectToAllLevelChars(gameObject._name, gameObject)
+          }
+          return gameObject
         },
         LegendItem: function(_1) {
-          return _1.parse()
+          const legendItem = _1.parse()
+          // Replace all the Object Names with the actual objects
+          legendItem._aliases = legendItem._aliases.map((alias) => {
+            return lookupObjectOrLegendItem(alias)
+          })
+          addToAllLegendItems(legendItem)
+          if (legendItem._objectNameOrLevelChar.length === 1) {
+            addLegendToAllLevelChars(legendItem)
+          }
+          return legendItem
         },
         LegendItemSimple: function(objectNameOrLevelChar, _equals, alias, _whitespace) {
+          // TODO: Do the lookup and adding to sets here rather than rewiring in LegendItem
           return new GameLegendItemSimple(objectNameOrLevelChar.parse(), alias.parse())
         },
         LegendItemAnd: function(objectNameOrLevelChar, _equals, aliases, _whitespace) {
@@ -667,17 +738,17 @@ glob('./gists/*/script.txt', (err, files) => {
         SoundItemSfx: function(sfxName, soundCode) {
           return new GameSoundSfx(sfxName.parse(), soundCode.parse())
         },
-        SoundItemMoveSimple: function(_1, _2, _3) {
-          return new GameSoundMoveSimple(_1.parse(), _3.parse())
+        SoundItemMoveSimple: function(objectName, _2, soundCode) {
+          return new GameSoundMoveSimple(lookupObjectOrLegendItem(objectName.parse()), soundCode.parse())
         },
         SoundItemMoveDirection: function(objectName, _move, directionEnum, soundCode) {
-          return new GameSoundMoveDirection(objectName.parse(), directionEnum.parse(), soundCode.parse())
+          return new GameSoundMoveDirection(lookupObjectOrLegendItem(objectName.parse()), directionEnum.parse(), soundCode.parse())
         },
         SoundItemNormal: function(objectName, eventEnum, soundCode) {
-          return new GameSoundNormal(objectName.parse(), eventEnum.parse(), soundCode.parse())
+          return new GameSoundNormal(lookupObjectOrLegendItem(objectName.parse()), eventEnum.parse(), soundCode.parse())
         },
         CollisionLayerItem: (objectNames, _2, _3) => {
-          return new CollisionLayer(objectNames.parse())
+          return new CollisionLayer(objectNames.parse().map((objectName) => lookupObjectOrLegendItem(objectName)))
         },
         RuleItem: function(_1) {
           return _1.parse()
@@ -703,6 +774,7 @@ glob('./gists/*/script.txt', (err, files) => {
           return new GameRuleConditionBracketEllipsis(left.slice(0, left.length - 1), rightHandSide.parse())
         },
         RuleConditionEntryLeaf: function(optionalDirection, objectName) {
+          // TODO: Stopped Looking up objectName here
           return new GameRuleConditionEntryLeaf(optionalDirection.parse(), objectName.parse())
         },
         RuleCondition: function(directions, bracket) {
@@ -722,8 +794,13 @@ glob('./gists/*/script.txt', (err, files) => {
         LevelItem: function(_1, _2) {
           return _1.parse()
         },
-        LevelMap: function(_1) {
-          return new LevelMap(_1.parse())
+        LevelMap: function(rows) {
+          rows = rows.parse().map((row) => {
+            return row.map((levelChar) => {
+              return lookupByLevelChar(levelChar)
+            })
+          })
+          return new LevelMap(rows)
         },
         levelMapRow: function(_1, _2) {
           return _1.parse()
@@ -785,7 +862,7 @@ glob('./gists/*/script.txt', (err, files) => {
 
       })
       const game = s(m).parse()
-      // console.log(game.rules.map(({_left}) => _left[0]._directionsWithLateOrRandom))
+      // console.log(game)
 
       // Validate that the game objects are rectangular
       game.objects.forEach((object) => {

@@ -4,6 +4,17 @@ title test rules
 OBJECTS
 ========
 
+J
+transparent
+
+K
+transparent
+
+L
+transparent
+
+M
+transparent
 
 =======
 LEGEND
