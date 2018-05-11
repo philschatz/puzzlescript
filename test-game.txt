@@ -398,3 +398,10 @@ vertical [> Player | vertspike] -> [> DeadPlayer | vertspike]
 horizontal [> Player | horizspike] -> [> DeadPlayer | horizspike]
 late [DeadPlayer no spike] -> [Player]
 late [DeadPlayer no Sound] -> [DeadPlayer Sound] sfx7
+
+
+==============
+WINCONDITIONS
+==============
+
+Any Exit on Player

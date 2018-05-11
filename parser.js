@@ -16,6 +16,7 @@ Puzzlescript {
     Section<t_SOUNDS, SoundItem>
     Section<t_COLLISIONLAYERS, CollisionLayerItem>
     Section<t_RULES, RuleItem>
+    Section<t_WINCONDITIONS, WinConditionItem>
 
   Title = "title " restOfLine
   Author = "author " restOfLine
@@ -72,6 +73,7 @@ Puzzlescript {
   t_SOUNDS = caseInsensitive<"SOUNDS">
   t_COLLISIONLAYERS = caseInsensitive<"COLLISIONLAYERS">
   t_RULES = caseInsensitive<"RULES">
+  t_WINCONDITIONS = caseInsensitive<"WINCONDITIONS">
 
   t_RIGID_PLUS = "+"
   t_LATE = caseInsensitive<"LATE">
@@ -97,6 +99,14 @@ Puzzlescript {
   t_RESTART = caseInsensitive<"RESTART">
   t_WIN = caseInsensitive<"WIN">
   t_MESSAGE = caseInsensitive<"MESSAGE">
+
+  // WINCONDITIONS tokens
+  t_ON = caseInsensitive<"ON">
+  t_NO = caseInsensitive<"NO">
+  t_ALL = caseInsensitive<"ALL">
+  t_ANY = caseInsensitive<"ANY">
+  t_SOME = caseInsensitive<"SOME">
+
 
   t_SFX0 = caseInsensitive<"SFX0">
   t_SFX1 = caseInsensitive<"SFX1">
@@ -158,6 +168,19 @@ Puzzlescript {
     | t_DOWN
     | t_LEFT
     | t_RIGHT
+
+
+
+
+  WinConditionItem = winConditionItemPrefix varName (t_ON varName)?
+
+  winConditionItemPrefix =
+      t_NO
+    | t_ALL
+    | t_ANY
+    | t_SOME
+
+
 
   // ================
   // SECTION_NAME
