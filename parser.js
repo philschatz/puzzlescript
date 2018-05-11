@@ -104,10 +104,17 @@ Puzzlescript {
 
   // TODO: Handle tokens like sfx0 and explicit args instead of just varName (like "Player CantMove up")
   // all of them are at https://www.puzzlescript.net/Documentation/sounds.html
-  SoundItem = SoundItemInner integer lineTerminator+
+  SoundItem = SoundItemInner lineTerminator+
 
-  SoundItemInner =
-      t_RESTART
+  SoundItemInner
+    = SoundItemEnum
+    | SoundItemSfx
+    | SoundItemMoveDirection
+    | SoundItemMoveSimple
+    | SoundItemNormal
+
+  soundItemSimpleOptions
+    = t_RESTART
     | t_UNDO
     | t_TITLESCREEN
     | t_STARTGAME
@@ -116,25 +123,25 @@ Puzzlescript {
     | t_ENDGAME
     | t_SHOWMESSAGE
     | t_CLOSEMESSAGE
-    | soundItemSfx
-    | SoundItemNormal
 
-  soundItemSfx = t_SFX
-  SoundItemNormal = varName SoundItemAction?
+  SoundItemEnum = soundItemSimpleOptions integer
+  SoundItemSfx = t_SFX integer
+  SoundItemMoveDirection = varName t_MOVE soundItemActionMoveArg integer
+  SoundItemMoveSimple = varName t_MOVE integer
+  SoundItemNormal = varName SoundItemAction integer
 
-  SoundItemAction =
-      t_CREATE
+  SoundItemAction
+    = t_CREATE
     | t_DESTROY
     | t_CANTMOVE
-    | SoundItemActionMove
 
-  SoundItemActionMove = t_MOVE soundItemActionMoveArg?
-  soundItemActionMoveArg =
-      t_UP
+  soundItemActionMoveArg
+    = t_UP
     | t_DOWN
     | t_LEFT
     | t_RIGHT
-    | varName
+    | t_HORIZONTAL
+    | t_VERTICAL
 
   t_MOVE = caseInsensitive<"MOVE">
   t_DESTROY = caseInsensitive<"DESTROY">
@@ -421,6 +428,46 @@ class CollisionLayer {
 }
 
 
+// Abstract class
+class GameSound {
+  constructor(soundCode) {
+    this._soundCode = soundCode
+  }
+}
+class GameSoundSfx extends GameSound {
+  constructor(sfxName, soundCode) {
+    super(soundCode)
+    this._sfxName = sfxName
+  }
+}
+class GameSoundSimpleEnum extends GameSound {
+  constructor(simpleEventName, soundCode) {
+    super(soundCode)
+    this._simpleEventName = simpleEventName
+  }
+}
+// TODO: Link this up to the Object, rather than just storing the objectName
+class GameSoundNormal extends GameSound {
+  constructor(objectName, conditionEnum, soundCode) {
+    super(soundCode)
+    this._objectName = objectName
+    this._conditionEnum = conditionEnum
+  }
+}
+class GameSoundMoveSimple extends GameSound {
+  constructor(objectName, soundCode) {
+    super(soundCode)
+    this._objectName = objectName
+  }
+}
+class GameSoundMoveDirection extends GameSound {
+  constructor(objectName, directionEnum, soundCode) {
+    super(soundCode)
+    this._objectName = objectName
+    this._directionEnum = directionEnum
+  }
+}
+
 
 glob('./gists/*/script.txt', (err, files) => {
 // glob('./test-game.txt', (err, files) => {
@@ -494,30 +541,23 @@ glob('./gists/*/script.txt', (err, files) => {
         legendItem: function(_1, _space1, _equalSign, _space2, _5, _6) {
           return new GameLegendItem(_1.parse(), _5.parse())
         },
-        SoundItem: function(_1, _2, _3) {
-          debugger
-          return {
-            __type: 'SoundItem',
-            _1: _1 ? _1.parse() : null,
-            _2: _2 ? _2.parse() : null,
-            _3: _3 ? _3.parse() : null,
-          }
+        SoundItem: function(_1, _whitespace) {
+          return _1.parse()
         },
-        SoundItemNormal: function(_1, _2) {
-          debugger
-          return {
-            __type: 'SoundItemNormal',
-            _1: _1 ? _1.parse() : null,
-            _2: _2 ? _2.parse() : null,
-          }
+        SoundItemEnum: function(simpleEnum, soundCode) {
+          return new GameSoundSimpleEnum(simpleEnum.parse(), soundCode.parse())
         },
-        SoundItemActionMove: function(_1, _2) {
-          debugger
-          return {
-            __type: 'SoundItemActionMove',
-            _1: _1 ? _1.parse() : null,
-            _2: _2 ? _2.parse() : null,
-          }
+        SoundItemSfx: function(sfxName, soundCode) {
+          return new GameSoundSfx(sfxName.parse(), soundCode.parse())
+        },
+        SoundItemMoveSimple: function(_1, _2, _3) {
+          return new GameSoundMoveSimple(_1.parse(), _3.parse())
+        },
+        SoundItemMoveDirection: function(objectName, _move, directionEnum, soundCode) {
+          return new GameSoundMoveDirection(objectName.parse(), directionEnum.parse(), soundCode.parse())
+        },
+        SoundItemNormal: function(objectName, eventEnum, soundCode) {
+          return new GameSoundNormal(objectName.parse(), eventEnum.parse(), soundCode.parse())
         },
         CollisionLayerItem: (objectNames, _2, _3) => {
           return new CollisionLayer(objectNames.parse())
