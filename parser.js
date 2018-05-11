@@ -9,7 +9,7 @@ Puzzlescript {
   	Title lineTerminator+
     (OptionalSetting lineTerminator+)*
     Section<t_OBJECTS, ObjectsItem>
-    Section<t_LEGEND, legendItem>
+    Section<t_LEGEND, LegendItem>
     Section<t_SOUNDS, SoundItem>
     Section<t_COLLISIONLAYERS, CollisionLayerItem>
     Section<t_RULES, RuleItem>
@@ -74,7 +74,7 @@ Puzzlescript {
 
   ObjectsItem =
   	objectName legendShortcutChar? lineTerminator
-    nonemptyListOf<colorNameOrHex, spaces> lineTerminator+
+    NonemptyListOf<colorNameOrHex, spaces> lineTerminator+
     pixelRow*
     lineTerminator*
 
@@ -92,8 +92,15 @@ Puzzlescript {
 
 
 
-  legendItem = legendVarNameDefn spaces "=" spaces nonemptyListOf<legendVarNameDefn, andOr> lineTerminator+ // TODO: Remove the 'spaces' in favor of an upper-case non-lexer rule
-  andOr = spaces (t_AND | t_OR) spaces
+  LegendItem
+    = LegendItemSimple
+    | LegendItemAnd
+    | LegendItemOr
+
+  LegendItemSimple = legendVarNameDefn "=" legendVarNameDefn lineTerminator+
+  LegendItemAnd = legendVarNameDefn "=" NonemptyListOf<legendVarNameDefn, t_AND> lineTerminator+
+  LegendItemOr = legendVarNameDefn "=" NonemptyListOf<legendVarNameDefn, t_OR> lineTerminator+
+
   legendCharDefn = any // a single character that is allowed to be in a puzzle level
   legendVarNameDefn = varName | legendCharDefn
   // You can define "[" in the legend but you cannot use it in the rules
@@ -412,15 +419,36 @@ class GameObject {
 
 // TODO: Link up the aliases to objects rather than just storing strings
 // TODO: Also, maybe distinguish between legend items that may be in the LevelMap (1 character) from those that point to ObjectItems
-class GameLegendItem {
-  constructor(name, aliases) {
-    this._name = name
+class GameLegendItemSimple {
+  constructor(objectNameOrLevelChar, alias) {
+    this._objectNameOrLevelChar = objectNameOrLevelChar
+    this._alias = alias
+  }
+  isInvalid() {
+    return true // until we map the aliases to actual Objects rather than strings to look up later
+  }
+}
+
+class GameLegendItemAnd {
+  constructor(objectNameOrLevelChar, aliases) {
+    this._objectNameOrLevelChar = objectNameOrLevelChar
     this._aliases = aliases
   }
   isInvalid() {
     return true // until we map the aliases to actual Objects rather than strings to look up later
   }
 }
+
+class GameLegendItemOr {
+  constructor(objectNameOrLevelChar, aliases) {
+    this._objectNameOrLevelChar = objectNameOrLevelChar
+    this._aliases = aliases
+  }
+  isInvalid() {
+    return true // until we map the aliases to actual Objects rather than strings to look up later
+  }
+}
+
 
 // TODO: Use the Objects rather than just the names
 class CollisionLayer {
@@ -558,8 +586,17 @@ glob('./gists/*/script.txt', (err, files) => {
         ObjectsItem: (_1, _2, _3, _4, _5, _6, _7) => {
           return new GameObject(_1.parse(), _4.parse(), _6.parse())
         },
-        legendItem: function(_1, _space1, _equalSign, _space2, _5, _6) {
-          return new GameLegendItem(_1.parse(), _5.parse())
+        LegendItem: function(_1) {
+          return _1.parse()
+        },
+        LegendItemSimple: function(objectNameOrLevelChar, _equals, alias, _whitespace) {
+          return new GameLegendItemSimple(objectNameOrLevelChar.parse(), alias.parse())
+        },
+        LegendItemAnd: function(objectNameOrLevelChar, _equals, aliases, _whitespace) {
+          return new GameLegendItemAnd(objectNameOrLevelChar.parse(), aliases.parse())
+        },
+        LegendItemOr: function(objectNameOrLevelChar, _equals, aliases, _whitespace) {
+          return new GameLegendItemOr(objectNameOrLevelChar.parse(), aliases.parse())
         },
         SoundItem: function(_1, _whitespace) {
           return _1.parse()
@@ -655,14 +692,6 @@ glob('./gists/*/script.txt', (err, files) => {
         levelMapRow: function(_1, _2) {
           return _1.parse()
         },
-        andOr: (_1, _2, _3) => {
-          return {
-            __type: 'andOr',
-            _1: _1 ? _1.parse() : null,
-            _2: _2 ? _2.parse() : null,
-            _3: _3 ? _3.parse() : null,
-          }
-        },
         widthAndHeight: function(_1, _2, _3) {
           return {
             __type: 'widthAndHeight',
@@ -686,7 +715,12 @@ glob('./gists/*/script.txt', (err, files) => {
           return [_1.parse()].concat(_3.parse())
         },
         nonemptyListOf: function(_1, _2, _3) {
-          return [_1.parse()].concat(_3.parse())
+          // Do this special because LegendItem contains things like `X = A or B or C` and we need to know if they are `and` or `or`
+          return {
+            __type: 'nonemptyListOf',
+            values: [_1.parse()].concat(_3.parse()),
+            separators: [_2.parse()]
+          }
         },
         integer: function(_1) {
           return Number.parseInt(this.sourceString)
