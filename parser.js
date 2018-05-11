@@ -23,6 +23,7 @@ Puzzlescript {
     | Zoomscreen
     | Flickscreen
     | RequirePlayerMovement
+    | RunRulesOnLevelStart
     | ColorPalette
     | BackgroundColor
     | TextColor
@@ -31,7 +32,6 @@ Puzzlescript {
     | AgainInterval
     | t_NOACTION
     | t_NOUNDO
-    | t_RUN_RULES_ON_LEVEL_START
     | t_NOREPEAT_ACTION
     | t_THROTTLE_MOVEMENT
     | t_NORESTART
@@ -44,6 +44,7 @@ Puzzlescript {
   Zoomscreen = "zoomscreen" digit+ "x" digit+
   Flickscreen = "flickscreen" digit+ "x" digit+
   RequirePlayerMovement = t_REQUIRE_PLAYER_MOVEMENT "off"?
+  RunRulesOnLevelStart = t_RUN_RULES_ON_LEVEL_START "true"?
   ColorPalette = "color_palette" words
   BackgroundColor = "background_color" colorNameOrHex
   TextColor = "text_color" colorNameOrHex
@@ -88,10 +89,12 @@ Puzzlescript {
 
 
 
-  legendItem = legendVarName spaces "=" spaces nonemptyListOf<legendVarName, andOr> lineTerminator+ // TODO: Remove the 'spaces' in favor of an upper-case non-lexer rule
+  legendItem = legendVarNameDefn spaces "=" spaces nonemptyListOf<legendVarNameDefn, andOr> lineTerminator+ // TODO: Remove the 'spaces' in favor of an upper-case non-lexer rule
   andOr = spaces (t_AND | t_OR) spaces
-  legendChar = any // a single character that is allowed to be in a puzzle level
-  legendVarName = varName | legendChar
+  legendCharDefn = any // a single character that is allowed to be in a puzzle level
+  legendVarNameDefn = varName | legendCharDefn
+  // You can define "[" in the legend but you cannot use it in the rules
+  legendVarNameUse = varName | (~nonVarChar any)
 
 
 
@@ -257,7 +260,7 @@ Puzzlescript {
     | RuleConditionBracket
     | t_ELLIPSIS
 
-  RuleConditionEntryFull = (ruleDirection3? varName)+
+  RuleConditionEntryFull = (ruleDirection3? legendVarNameUse)+
 
   ruleDirection3 =
       t_MOVING
@@ -309,13 +312,18 @@ Puzzlescript {
   varName = digit* letter (letter | digit | "_")*
   headingBar = "="*
   restOfLine = (~lineTerminator sourceCharacter)* lineTerminator
-  lineTerminator = space* "\\n" space*
+  lineTerminator = space* newline space*
   sourceCharacter = any
 
-  // redefine what a space is so we can ignore comments
-  space := " " | "\\u0009" /*tab*/ | multiLineComment
+  newline = "\\n"
+  whitespace = " " | "\\u0009" /*tab*/
 
-  multiLineComment = "(" textOrComment+ ")"
+  // redefine what a space is so we can ignore comments
+  space := whitespace | multiLineComment
+
+  nonVarChar = whitespace | newline | "[" | "]"
+
+  multiLineComment = "(" textOrComment* ")"
   textOrComment =
       multiLineComment
     | (~("(" | ")") sourceCharacter)+
