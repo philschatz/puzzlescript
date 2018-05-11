@@ -168,9 +168,12 @@ Puzzlescript {
   CollisionLayerItem = NonemptyListOf<varName, ","?> ","? /*support a trailing comma*/ lineTerminator+
 
 
-  RuleItem = (RuleItemReal | t_STARTLOOP | t_ENDLOOP) lineTerminator+
+  RuleItem
+    = RuleItemProduction
+    | RuleItemLoop
 
-  RuleItemReal = t_GROUP_RULE_PLUS? t_RIGID? RuleConditionWithLeftArgs+ "->" RuleCondition* RuleCommand*
+  RuleItemProduction = t_GROUP_RULE_PLUS? t_RIGID? RuleConditionWithLeftArgs+ "->" RuleCondition* RuleCommand* lineTerminator+
+  RuleItemLoop = t_STARTLOOP lineTerminator+ RuleItemProduction+ t_ENDLOOP lineTerminator+
 
   // Section titles
   t_OBJECTS = caseInsensitive<"OBJECTS">
@@ -270,14 +273,19 @@ Puzzlescript {
 
   RuleConditionWithLeftArgs = (ruleDirection2 | t_LATE | t_RANDOM)* RuleConditionBracket // because of Bubble Butler... it has "right late [..."
 
-  RuleConditionBracket = "[" ListOf<RuleConditionEntry?, "|"> "]"
+  RuleConditionBracket
+    = RuleConditionBracketEllipsis
+    | RuleConditionBracketSimple
+
+  RuleConditionBracketEllipsis = "[" NonemptyListOf<RuleConditionEntry?, "|"> t_ELLIPSIS "|" NonemptyListOf<RuleConditionEntry?, "|"> "]"
+  RuleConditionBracketSimple = "[" NonemptyListOf<RuleConditionEntry?, "|"> "]"
 
   RuleConditionEntry =
-      RuleConditionEntryFull
+      RuleConditionEntryLeaves
     | RuleConditionBracket
-    | t_ELLIPSIS
 
-  RuleConditionEntryFull = (ruleDirection3? legendVarNameUse)+
+  RuleConditionEntryLeaves = RuleConditionEntryLeaf+
+  RuleConditionEntryLeaf = ruleDirection3? legendVarNameUse
 
   ruleDirection3 =
       t_MOVING
@@ -338,7 +346,7 @@ Puzzlescript {
   // redefine what a space is so we can ignore comments
   space := whitespace | multiLineComment
 
-  nonVarChar = whitespace | newline | "[" | "]" | "(" | ")"
+  nonVarChar = whitespace | newline | "[" | "]" | "(" | ")" | "|" | "."
 
   multiLineComment = "(" textOrComment* ")"
   textOrComment =
@@ -517,6 +525,58 @@ class WinConditionOn {
   }
 }
 
+
+
+class GameRuleProduction {
+  constructor(leftHandSide, rightHandSide, commands) {
+    this._left = leftHandSide
+    this._right = rightHandSide
+    this._commands = commands
+  }
+}
+
+class GameRuleLoop {
+  constructor(productions) {
+    this._rules = productions
+  }
+}
+
+class GameRuleCondition {
+  constructor(directions, bracket) {
+    this._directions = directions
+    this._bracket = bracket
+  }
+}
+
+class GameRuleConditionBracketSimple {
+  constructor(entriesSeparatedByPipe) {
+    this._entriesSeparatedByPipe = entriesSeparatedByPipe
+  }
+}
+
+class GameRuleConditionBracketEllipsis {
+  constructor(leftHandSide, rightHandSide) {
+    this._left = leftHandSide
+    this._right = rightHandSide
+  }
+}
+
+
+class GameRuleConditionEntryLeaf {
+  constructor(optionalDirection, objectName) {
+    this._optionalDirection = optionalDirection
+    this._objectName = objectName
+  }
+}
+
+class RuleConditionWithLeftArgs {
+  constructor(directionsWithLateOrRandom, bracket) {
+    this._directionsWithLateOrRandom = directionsWithLateOrRandom
+    this._bracket = bracket
+  }
+}
+
+
 glob('./gists/*/script.txt', (err, files) => {
 // glob('./test-game.txt', (err, files) => {
 
@@ -619,58 +679,34 @@ glob('./gists/*/script.txt', (err, files) => {
         CollisionLayerItem: (objectNames, _2, _3) => {
           return new CollisionLayer(objectNames.parse())
         },
-        RuleItem: function(_1, _2) {
-          debugger
-          return {
-            __type: 'RuleItem',
-            _1: _1 ? _1.parse() : null,
-            _2: _2 ? _2.parse() : null,
-          }
+        RuleItem: function(_1) {
+          return _1.parse()
         },
-        RuleItemReal: function(_1, _2, _3, _4, _5, _6) {
-          debugger
-          return {
-            __type: 'RuleItemReal',
-            _1: _1 ? _1.parse() : null,
-            _2: _2 ? _2.parse() : null,
-            _3: _3 ? _3.parse() : null,
-            _4: _4 ? _4.parse() : null,
-            _5: _5 ? _5.parse() : null,
-            _6: _6 ? _6.parse() : null,
-          }
+        RuleItemProduction: function(_whitespace1, _whitespace2, leftHandSide, _productionArrow, rightHandSide, commands, _whitespace3) {
+          return new GameRuleProduction(leftHandSide.parse(), rightHandSide.parse(), commands.parse())
         },
-        RuleConditionWithLeftArgs: function(_1, _2) {
-          debugger
-          return {
-            __type: 'RuleConditionWithLeftArgs',
-            _1: _1 ? _1.parse() : null,
-            _2: _2 ? _2.parse() : null,
-          }
+        RuleItemLoop: function(_startloop, _whitespace1, productions, _endloop, _whitespace2) {
+          return new GameRuleLoop(productions.parse())
         },
-        RuleConditionBracket: function(_1, _2, _3) {
-          debugger
-          return {
-            __type: 'RuleConditionBracket',
-            _1: _1 ? _1.parse() : null,
-            _2: _2 ? _2.parse() : null,
-            _3: _3 ? _3.parse() : null,
-          }
+
+        RuleConditionWithLeftArgs: function(directionsWithLateOrRandom, bracket) {
+          return new RuleConditionWithLeftArgs(directionsWithLateOrRandom.parse(), bracket.parse())
         },
-        RuleConditionEntryFull: function(_1, _2) {
-          debugger
-          return {
-            __type: 'RuleConditionEntryFull',
-            _1: _1 ? _1.parse() : null,
-            _2: _2 ? _2.parse() : null,
-          }
+        RuleConditionBracket: function(_1) {
+          return _1.parse()
         },
-        RuleCondition: function(_1, _2) {
-          debugger
-          return {
-            __type: 'RuleCondition',
-            _1: _1 ? _1.parse() : null,
-            _2: _2 ? _2.parse() : null,
-          }
+        RuleConditionBracketSimple: function(_leftBracket, entriesSeparatedByPipe, _rightBracket) {
+          return new GameRuleConditionBracketSimple(entriesSeparatedByPipe.parse())
+        },
+        RuleConditionBracketEllipsis: function(_leftBracket, leftHandSide, _ellipsis, _pipe, rightHandSide, _rightBracket) {
+          const left = leftHandSide.parse()
+          return new GameRuleConditionBracketEllipsis(left.slice(0, left.length - 1), rightHandSide.parse())
+        },
+        RuleConditionEntryLeaf: function(optionalDirection, objectName) {
+          return new GameRuleConditionEntryLeaf(optionalDirection.parse(), objectName.parse())
+        },
+        RuleCondition: function(directions, bracket) {
+          return new GameRuleCondition(directions.parse(), bracket.parse())
         },
 
         WinConditionItemSimple: function(qualifierEnum, objectName, _whitespace) {
@@ -749,7 +785,7 @@ glob('./gists/*/script.txt', (err, files) => {
 
       })
       const game = s(m).parse()
-      console.log(game)
+      // console.log(game.rules.map(({_left}) => _left[0]._directionsWithLateOrRandom))
 
       // Validate that the game objects are rectangular
       game.objects.forEach((object) => {
