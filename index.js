@@ -32,6 +32,10 @@ glob('./gists/*/script.txt', (err, files) => {
         axel.fg(255, 255, 255)
         axel.bg(0,0,0)
         axel.clear()
+
+        const magicBackgroundObject = data.objects.filter(({_name}) => _name.toLowerCase() === 'background')[0]
+
+
         level.getRows().forEach((row, rowIndex) => {
           // Don't draw too much for this demo
           if (data.settings.flickscreen && rowIndex > data.settings.flickscreen.height) {
@@ -44,6 +48,10 @@ glob('./gists/*/script.txt', (err, files) => {
             }
             const objectsToDraw = col.getObjects().reverse() // Not sure why, but entanglement renders properly when reversed
 
+            // If there is a magic background object then draw it first... TODO: This is a performance bottleneck. We only need to do this if any of the objects have transparency
+            if (magicBackgroundObject) {
+              objectsToDraw.unshift(magicBackgroundObject)
+            }
             objectsToDraw.forEach(objectToDraw => {
               let pixels = objectToDraw.getPixels()
               if (pixels.length === 0) {
