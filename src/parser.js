@@ -5,7 +5,7 @@ const grammar = `
 Puzzlescript {
   Details =
     lineTerminator* // Version information
-  	Title lineTerminator+
+    Title lineTerminator+
     (OptionalSetting lineTerminator+)*
     Section<t_OBJECTS, ObjectsItem>
     Section<t_LEGEND, LegendItem>
@@ -72,7 +72,7 @@ Puzzlescript {
 
 
   ObjectsItem =
-  	objectName legendShortcutChar? lineTerminator
+    objectName legendShortcutChar? lineTerminator
     NonemptyListOf<colorNameOrHex, spaces> lineTerminator+
     pixelRow*
     lineTerminator*
@@ -367,62 +367,61 @@ Puzzlescript {
 }
 `// readFileSync('./grammar.ohm', 'utf-8')
 
-
 class BaseForLines {
-  constructor(source) {
+  constructor (source) {
     if (!source || !source.getLineAndColumnMessage) {
       throw new Error(`BUG: failed to provide the source when constructing this object`)
     }
-    Object.defineProperty( this, '__source', {
-      get : function(){ return source; },
+    Object.defineProperty(this, '__source', {
+      get: function () { return source }
     })
   }
 }
 
 class LevelMap extends BaseForLines {
-  constructor(source, rows) {
+  constructor (source, rows) {
     super(source)
     this._rows = rows
   }
-  isInvalid() {
+  isInvalid () {
     const cols = this._rows[0].length
     let isInvalid = false
     this._rows.forEach((row, index) => {
       if (cols !== row.length) {
-        isInvalid = `Row ${index+1} does not have the same column count as the first row. Expected ${cols} columns but found ${row.length}.`
+        isInvalid = `Row ${index + 1} does not have the same column count as the first row. Expected ${cols} columns but found ${row.length}.`
       }
     })
     return isInvalid
   }
-  isMap() {
+  isMap () {
     return true
   }
-  getRows() {
+  getRows () {
     return this._rows
   }
 }
 
 class GameMessage extends BaseForLines {
-  constructor(source, message) {
+  constructor (source, message) {
     super(source)
     this._message = message
   }
-  isInvalid() {
+  isInvalid () {
     return false
   }
-  isMap() {
+  isMap () {
     return false
   }
 }
 
-function hexToRgb(hex) {
+function hexToRgb (hex) {
   if (!hex) {
     return {a: 0}
   }
   // https://stackoverflow.com/a/5624139
   // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
   const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i
-  hex = hex.replace(shorthandRegex, function(m, r, g, b) {
+  hex = hex.replace(shorthandRegex, function (m, r, g, b) {
     return r + r + g + g + b + b
   })
 
@@ -436,7 +435,7 @@ function hexToRgb(hex) {
 }
 
 class HexColor extends BaseForLines {
-  constructor(source, color) {
+  constructor (source, color) {
     super(source)
     // if (!color) {
     //   console.error(source.getLineAndColumnMessage())
@@ -445,20 +444,20 @@ class HexColor extends BaseForLines {
     this._color = color
   }
 
-  toRgba() {
+  toRgba () {
     return hexToRgb(this._color)
   }
 }
 
 class GameObject extends BaseForLines {
-  constructor(source, name, optionalLegendChar, colors, pixels) {
+  constructor (source, name, optionalLegendChar, colors, pixels) {
     super(source)
     this._name = name
     this._optionalLegendChar = optionalLegendChar
     this._colors = colors
     this._pixels = pixels // Pixel colors are 0-indexed.
   }
-  isInvalid() {
+  isInvalid () {
     let isInvalid = false
     const colorLen = this._colors.length
     if (this._pixels.length > 0) {
@@ -469,7 +468,7 @@ class GameObject extends BaseForLines {
         }
         // Check that only '.' or a digit that is less than the number of colors is present
         row.forEach((pixel) => {
-          if ('.' !== pixel) {
+          if (pixel !== '.') {
             if (pixel >= colorLen) {
               isInvalid = `Pixel number is too high (${pixel}). There are only ${colorLen} colors defined`
             }
@@ -479,11 +478,11 @@ class GameObject extends BaseForLines {
     }
     return isInvalid
   }
-  getObjects() {
+  getObjects () {
     // to match the signature of LegendItem
     return [this]
   }
-  getPixels() {
+  getPixels () {
     // When there are no pixels then it means "color the whole thing in the same color"
     if (this._pixels.length === 0) {
       const rows = []
@@ -494,7 +493,6 @@ class GameObject extends BaseForLines {
         }
       }
       return rows
-
     } else {
       return this._pixels.map(row => {
         return row.map(col => {
@@ -512,98 +510,87 @@ class GameObject extends BaseForLines {
 // TODO: Link up the aliases to objects rather than just storing strings
 // TODO: Also, maybe distinguish between legend items that may be in the LevelMap (1 character) from those that point to ObjectItems
 class GameLegendItemSimple extends BaseForLines {
-  constructor(source, objectNameOrLevelChar, alias) {
+  constructor (source, objectNameOrLevelChar, alias) {
     super(source)
     this._objectNameOrLevelChar = objectNameOrLevelChar
     this._aliases = Array.isArray(alias) ? alias : [alias]
   }
-  isInvalid() {
+  isInvalid () {
     return false
   }
-  getObjects() {
+  getObjects () {
     // 2 levels of indirection should be safe
     return this._aliases.map(alias => alias.getObjects()[0])
   }
 }
 
 class GameLegendItemAnd extends GameLegendItemSimple {
-  constructor(source, objectNameOrLevelChar, aliases) {
-    super(source, objectNameOrLevelChar, aliases)
-  }
 }
 
 class GameLegendItemOr extends GameLegendItemSimple {
-  constructor(source, objectNameOrLevelChar, aliases) {
-    super(source, objectNameOrLevelChar, aliases)
-  }
 }
-
-
 
 // TODO: Use the Objects rather than just the names
 class CollisionLayer extends BaseForLines {
-  constructor(source, objectNames) {
+  constructor (source, objectNames) {
     super(source)
     this._objectNames = objectNames
   }
-  isInvalid() {
+  isInvalid () {
     return true // until we map the aliases to actual Objects rather than strings to look up later
   }
 }
 
-
 // Abstract class
 class GameSound extends BaseForLines {
-  constructor(source, soundCode) {
+  constructor (source, soundCode) {
     super(source)
     this._soundCode = soundCode
   }
 }
 class GameSoundSfx extends GameSound {
-  constructor(source, sfxName, soundCode) {
+  constructor (source, sfxName, soundCode) {
     super(source, soundCode)
     this._sfxName = sfxName
   }
 }
 class GameSoundSimpleEnum extends GameSound {
-  constructor(source, simpleEventName, soundCode) {
+  constructor (source, simpleEventName, soundCode) {
     super(source, soundCode)
     this._simpleEventName = simpleEventName
   }
 }
 // TODO: Link this up to the Object, rather than just storing the objectName
 class GameSoundNormal extends GameSound {
-  constructor(source, objectName, conditionEnum, soundCode) {
+  constructor (source, objectName, conditionEnum, soundCode) {
     super(source, soundCode)
     this._objectName = objectName
     this._conditionEnum = conditionEnum
   }
 }
 class GameSoundMoveSimple extends GameSound {
-  constructor(source, objectName, soundCode) {
+  constructor (source, objectName, soundCode) {
     super(source, soundCode)
     this._objectName = objectName
   }
 }
 class GameSoundMoveDirection extends GameSound {
-  constructor(source, objectName, directionEnum, soundCode) {
+  constructor (source, objectName, directionEnum, soundCode) {
     super(source, soundCode)
     this._objectName = objectName
     this._directionEnum = directionEnum
   }
 }
 
-
-
 class WinConditionSimple extends BaseForLines {
-  constructor(source, qualifierEnum, objectName) {
+  constructor (source, qualifierEnum, objectName) {
     super(source)
     this._qualifierEnum = qualifierEnum
     this._objectName = objectName
   }
 }
 class WinConditionOn extends BaseForLines {
-  constructor(source, qualifierEnum, objectName, onObjectName) {
+  constructor (source, qualifierEnum, objectName, onObjectName) {
     super(source)
     this._qualifierEnum = qualifierEnum
     this._objectName = objectName
@@ -611,10 +598,8 @@ class WinConditionOn extends BaseForLines {
   }
 }
 
-
-
 class GameRuleProduction extends BaseForLines {
-  constructor(source, leftHandSide, rightHandSide, commands) {
+  constructor (source, leftHandSide, rightHandSide, commands) {
     super(source)
     this._left = leftHandSide
     this._right = rightHandSide
@@ -623,14 +608,14 @@ class GameRuleProduction extends BaseForLines {
 }
 
 class GameRuleLoop extends BaseForLines {
-  constructor(source, productions) {
+  constructor (source, productions) {
     super(source)
     this._rules = productions
   }
 }
 
 class GameRuleCondition extends BaseForLines {
-  constructor(source, directions, bracket) {
+  constructor (source, directions, bracket) {
     super(source)
     this._directions = directions
     this._bracket = bracket
@@ -638,23 +623,22 @@ class GameRuleCondition extends BaseForLines {
 }
 
 class GameRuleConditionBracketSimple extends BaseForLines {
-  constructor(source, entriesSeparatedByPipe) {
+  constructor (source, entriesSeparatedByPipe) {
     super(source)
     this._entriesSeparatedByPipe = entriesSeparatedByPipe
   }
 }
 
 class GameRuleConditionBracketEllipsis extends BaseForLines {
-  constructor(source, leftHandSide, rightHandSide) {
+  constructor (source, leftHandSide, rightHandSide) {
     super(source)
     this._left = leftHandSide
     this._right = rightHandSide
   }
 }
 
-
 class GameRuleConditionEntryLeaf extends BaseForLines {
-  constructor(source, optionalDirection, objectName, optionalAgain) {
+  constructor (source, optionalDirection, objectName, optionalAgain) {
     super(source)
     this._optionalDirection = optionalDirection
     this._objectName = objectName
@@ -663,16 +647,75 @@ class GameRuleConditionEntryLeaf extends BaseForLines {
 }
 
 class RuleConditionWithLeftArgs extends BaseForLines {
-  constructor(source, directionsWithLateOrRandom, bracket) {
+  constructor (source, directionsWithLateOrRandom, bracket) {
     super(source)
     this._directionsWithLateOrRandom = directionsWithLateOrRandom
     this._bracket = bracket
   }
 }
 
+class LookupHelper {
+  constructor () {
+    this._allSoundEffects = new Map()
+    this._allObjects = new Map()
+    this._allLegendItems = new Map()
+    this._allLevelChars = new Map()
+  }
 
+  _addToHelper (map, key, value) {
+    if (map.has(key)) {
+      throw new Error(`ERROR: Duplicate object is defined named "${key}". They are case-sensitive!`)
+    }
+    map.set(key, value)
+  }
+  addSoundEffect (key, soundEffect) {
+    this._addToHelper(this._allSoundEffects, key.toLowerCase(), soundEffect)
+  }
+  addToAllObjects (gameObject) {
+    this._addToHelper(this._allObjects, gameObject._name.toLowerCase(), gameObject)
+  }
+  addToAllLegendItems (legendItem) {
+    this._addToHelper(this._allLegendItems, legendItem._objectNameOrLevelChar.toLowerCase(), legendItem)
+  }
+  addObjectToAllLevelChars (levelChar, gameObject) {
+    this._addToHelper(this._allLevelChars, levelChar.toLowerCase(), gameObject)
+  }
+  addLegendToAllLevelChars (legendItem) {
+    this._addToHelper(this._allLevelChars, legendItem._objectNameOrLevelChar.toLowerCase(), legendItem)
+  }
+  lookupObjectOrLegendItem (source, key) {
+    key = key.toLowerCase()
+    const value = this._allObjects.get(key) || this._allLegendItems.get(key)
+    if (!value) {
+      console.error(source.getLineAndColumnMessage())
+      throw new Error(`ERROR: Could not look up "${key}". Has it been defined in the Objects section or the Legend section?`)
+    }
+    return value
+  }
+  lookupObjectOrLegendItemOrSoundEffect (source, key) {
+    key = key.toLowerCase()
+    const value = this._allObjects.get(key) || this._allLegendItems.get(key) || this._allSoundEffects.get(key)
+    if (!value) {
+      console.error(source.getLineAndColumnMessage())
+      throw new Error(`ERROR: Could not look up "${key}". Has it been defined in the Objects section or the Legend section?`)
+    }
+    return value
+  }
+  lookupByLevelChar (key) {
+    const value = this._allLevelChars.get(key.toLowerCase())
+    if (!value) {
+      throw new Error(`ERROR: Could not look up "${key}" in the levelChars map. Has it been defined in the Objects section or the Legend section?`)
+    }
+    return value
+  }
+}
 
-function parse(code) {
+// Helper for setting a config field
+function getConfigField (key, value) {
+  return [key.parse(), value.parse()]
+}
+
+function parse (code) {
   // 8645c163ff321d2fd1bad3fcaf48c107 has a typo so we .replace()
   code = code.replace('][ ->', '] ->') + '\n' // Not all games have a trailing newline. this makes it easier on the parser
 
@@ -680,77 +723,10 @@ function parse(code) {
   const m = g.match(code)
 
   if (m.succeeded()) {
+    const lookup = new LookupHelper()
     const s = g.createSemantics()
 
-    function getConfigField(key, value) {
-      return [key.parse(), value.parse()]
-    }
-
     let currentColorPalette = 'mastersystem' // default
-    const allSoundEffects = new Map()
-    const allObjects = new Map()
-    const allLegendItems = new Map()
-    const allLevelChars = new Map()
-
-    function addToHelper(map, key, value) {
-      if (map.has(key)) {
-
-        throw new Error(`ERROR: Duplicate object is defined named "${key}". They are case-sensitive!`)
-      }
-      map.set(key, value)
-    }
-    function addSoundEffect(key, soundEffect) {
-      addToHelper(allSoundEffects, key.toLowerCase(), soundEffect)
-    }
-    function addToAllObjects(gameObject) {
-      addToHelper(allObjects, gameObject._name.toLowerCase(), gameObject)
-    }
-    function addToAllLegendItems(legendItem) {
-      addToHelper(allLegendItems, legendItem._objectNameOrLevelChar.toLowerCase(), legendItem)
-    }
-    function addObjectToAllLegendItems(gameObject) {
-      addToHelper(allLegendItems, gameObject._name, gameObject)
-    }
-    function addObjectToAllLevelChars(levelChar, gameObject) {
-      addToHelper(allLevelChars, levelChar.toLowerCase(), gameObject)
-    }
-    function addLegendToAllLevelChars(legendItem) {
-      addToHelper(allLevelChars, legendItem._objectNameOrLevelChar.toLowerCase(), legendItem)
-    }
-    function lookupObjectOrLegendItem(source, key) {
-      key = key.toLowerCase()
-      const value = allObjects.get(key) || allLegendItems.get(key)
-      if (!value) {
-        console.error(source.getLineAndColumnMessage())
-        throw new Error(`ERROR: Could not look up "${key}". Has it been defined in the Objects section or the Legend section?`)
-      }
-      return value
-    }
-    function lookupObjectOrLegendItemOrSoundEffect(source, key) {
-      key = key.toLowerCase()
-      const value = allObjects.get(key) || allLegendItems.get(key) || allSoundEffects.get(key)
-      if (!value) {
-        console.error(source.getLineAndColumnMessage())
-        throw new Error(`ERROR: Could not look up "${key}". Has it been defined in the Objects section or the Legend section?`)
-      }
-      return value
-    }
-    function lookupObjectName(key) {
-      key = key.toLowerCase()
-      const value = allObjects.get(key)
-      if (!value) {
-        throw new Error(`ERROR: Could not look up "${key}". Has it been defined in the Objects section? or maybe this also needs to look up in the Legend section?`)
-      }
-      return value
-    }
-    function lookupByLevelChar(key) {
-      const value = allLevelChars.get(key.toLowerCase())
-      if (!value) {
-        throw new Error(`ERROR: Could not look up "${key}" in the levelChars map. Has it been defined in the Objects section or the Legend section?`)
-      }
-      return value
-    }
-
 
     s.addOperation('parse', {
       Details: (_whitespace1, title, _whitespace2, settings, _whitespace3, objects, legends, sounds, collisionLayers, rules, winConditions, levels) => {
@@ -763,7 +739,7 @@ function parse(code) {
           collisionLayers: collisionLayers.parse(),
           rules: rules.parse(),
           winConditions: winConditions.parse(),
-          levels: levels.parse(),
+          levels: levels.parse()
         }
         settings.parse().forEach((setting) => {
           if (Array.isArray(setting)) {
@@ -788,7 +764,7 @@ function parse(code) {
       Youtube: getConfigField,
       Zoomscreen: getConfigField,
       Flickscreen: getConfigField,
-      ColorPalette: function(_1, colorPaletteName) {
+      ColorPalette: function (_1, colorPaletteName) {
         // Set the color palette so we only need to use hex color codes
         currentColorPalette = colorPaletteName.parse()
         return getConfigField(_1, colorPaletteName)
@@ -798,141 +774,141 @@ function parse(code) {
       Section: (_threeDashes1, _headingBar1, _lineTerminator1, _sectionName, _lineTerminator2, _threeDashes2, _headingBar2, _8, _9, _10, _11) => {
         return _10.parse()
       },
-      ObjectsItem: function(name, optionalLegendChar, _3, colors, _5, pixels, _7) {
+      ObjectsItem: function (name, optionalLegendChar, _3, colors, _5, pixels, _7) {
         optionalLegendChar = optionalLegendChar.parse()[0]
         const gameObject = new GameObject(this.source, name.parse(), optionalLegendChar, colors.parse(), pixels.parse())
-        addToAllObjects(gameObject)
+        lookup.addToAllObjects(gameObject)
         if (optionalLegendChar) {
           // addObjectToAllLegendItems(gameObject)
-          addObjectToAllLevelChars(optionalLegendChar, gameObject)
+          lookup.addObjectToAllLevelChars(optionalLegendChar, gameObject)
         } else if (gameObject._name.length === 1) {
-          addObjectToAllLevelChars(gameObject._name, gameObject)
+          lookup.addObjectToAllLevelChars(gameObject._name, gameObject)
         }
         return gameObject
       },
-      LegendItem: function(_1) {
+      LegendItem: function (_1) {
         const legendItem = _1.parse()
         // Replace all the Object Names with the actual objects
         legendItem._aliases = legendItem._aliases.map((alias) => {
-          return lookupObjectOrLegendItem(this.source, alias)
+          return lookup.lookupObjectOrLegendItem(this.source, alias)
         })
-        addToAllLegendItems(legendItem)
+        lookup.addToAllLegendItems(legendItem)
         if (legendItem._objectNameOrLevelChar.length === 1) {
-          addLegendToAllLevelChars(legendItem)
+          lookup.addLegendToAllLevelChars(legendItem)
         }
         return legendItem
       },
-      LegendItemSimple: function(objectNameOrLevelChar, _equals, alias, _whitespace) {
+      LegendItemSimple: function (objectNameOrLevelChar, _equals, alias, _whitespace) {
         // TODO: Do the lookup and adding to sets here rather than rewiring in LegendItem
         return new GameLegendItemSimple(this.source, objectNameOrLevelChar.parse(), alias.parse())
       },
-      LegendItemAnd: function(objectNameOrLevelChar, _equals, aliases, _whitespace) {
+      LegendItemAnd: function (objectNameOrLevelChar, _equals, aliases, _whitespace) {
         return new GameLegendItemAnd(this.source, objectNameOrLevelChar.parse(), aliases.parse())
       },
-      LegendItemOr: function(objectNameOrLevelChar, _equals, aliases, _whitespace) {
+      LegendItemOr: function (objectNameOrLevelChar, _equals, aliases, _whitespace) {
         return new GameLegendItemOr(this.source, objectNameOrLevelChar.parse(), aliases.parse())
       },
-      SoundItem: function(_1, _whitespace) {
+      SoundItem: function (_1, _whitespace) {
         return _1.parse()
       },
-      SoundItemEnum: function(simpleEnum, soundCode) {
+      SoundItemEnum: function (simpleEnum, soundCode) {
         return new GameSoundSimpleEnum(this.source, simpleEnum.parse(), soundCode.parse())
       },
-      SoundItemSfx: function(sfxName, soundCode) {
+      SoundItemSfx: function (sfxName, soundCode) {
         sfxName = sfxName.parse()
         const sound = new GameSoundSfx(this.source, sfxName, soundCode.parse())
-        addSoundEffect(sfxName, sound)
+        lookup.addSoundEffect(sfxName, sound)
         return sound
       },
-      SoundItemMoveSimple: function(objectName, _2, soundCode) {
-        return new GameSoundMoveSimple(this.source, lookupObjectOrLegendItem(this.source, objectName.parse()), soundCode.parse())
+      SoundItemMoveSimple: function (objectName, _2, soundCode) {
+        return new GameSoundMoveSimple(this.source, lookup.lookupObjectOrLegendItem(this.source, objectName.parse()), soundCode.parse())
       },
-      SoundItemMoveDirection: function(objectName, _move, directionEnum, soundCode) {
-        return new GameSoundMoveDirection(this.source, lookupObjectOrLegendItem(this.source, objectName.parse()), directionEnum.parse(), soundCode.parse())
+      SoundItemMoveDirection: function (objectName, _move, directionEnum, soundCode) {
+        return new GameSoundMoveDirection(this.source, lookup.lookupObjectOrLegendItem(this.source, objectName.parse()), directionEnum.parse(), soundCode.parse())
       },
-      SoundItemNormal: function(objectName, eventEnum, soundCode) {
-        return new GameSoundNormal(this.source, lookupObjectOrLegendItem(this.source, objectName.parse()), eventEnum.parse(), soundCode.parse())
+      SoundItemNormal: function (objectName, eventEnum, soundCode) {
+        return new GameSoundNormal(this.source, lookup.lookupObjectOrLegendItem(this.source, objectName.parse()), eventEnum.parse(), soundCode.parse())
       },
-      CollisionLayerItem: function(objectNames, _2, _3) {
-        return new CollisionLayer(this.source, objectNames.parse().map((objectName) => lookupObjectOrLegendItem(this.source, objectName)))
+      CollisionLayerItem: function (objectNames, _2, _3) {
+        return new CollisionLayer(this.source, objectNames.parse().map((objectName) => lookup.lookupObjectOrLegendItem(this.source, objectName)))
       },
-      RuleItem: function(_1) {
+      RuleItem: function (_1) {
         return _1.parse()
       },
-      RuleItemProduction: function(_whitespace1, _whitespace2, leftHandSide, _productionArrow, rightHandSide, commands, _whitespace3) {
+      RuleItemProduction: function (_whitespace1, _whitespace2, leftHandSide, _productionArrow, rightHandSide, commands, _whitespace3) {
         return new GameRuleProduction(this.source, leftHandSide.parse(), rightHandSide.parse(), commands.parse())
       },
-      RuleItemLoop: function(_startloop, _whitespace1, productions, _endloop, _whitespace2) {
+      RuleItemLoop: function (_startloop, _whitespace1, productions, _endloop, _whitespace2) {
         return new GameRuleLoop(this.source, productions.parse())
       },
 
-      RuleConditionWithLeftArgs: function(directionsWithLateOrRandom, bracket) {
+      RuleConditionWithLeftArgs: function (directionsWithLateOrRandom, bracket) {
         return new RuleConditionWithLeftArgs(this.source, directionsWithLateOrRandom.parse(), bracket.parse())
       },
-      RuleConditionBracket: function(_1) {
+      RuleConditionBracket: function (_1) {
         return _1.parse()
       },
-      RuleConditionBracketSimple: function(_leftBracket, entriesSeparatedByPipe, _rightBracket) {
+      RuleConditionBracketSimple: function (_leftBracket, entriesSeparatedByPipe, _rightBracket) {
         return new GameRuleConditionBracketSimple(this.source, entriesSeparatedByPipe.parse())
       },
-      RuleConditionBracketEllipsis: function(_leftBracket, leftHandSide, _ellipsis, _pipe, rightHandSide, _rightBracket) {
+      RuleConditionBracketEllipsis: function (_leftBracket, leftHandSide, _ellipsis, _pipe, rightHandSide, _rightBracket) {
         const left = leftHandSide.parse()
         return new GameRuleConditionBracketEllipsis(this.source, left.slice(0, left.length - 1), rightHandSide.parse())
       },
-      ruleConditionEntryLeaf: function(optionalDirection, _whitespace, objectName, _whitespace, optionalAgain) {
-        return new GameRuleConditionEntryLeaf(this.source, optionalDirection.parse(), lookupObjectOrLegendItemOrSoundEffect(this.source, objectName.parse()), optionalAgain.parse()[0])
+      ruleConditionEntryLeaf: function (optionalDirection, _whitespace1, objectName, _whitespace2, optionalAgain) {
+        return new GameRuleConditionEntryLeaf(this.source, optionalDirection.parse(), lookup.lookupObjectOrLegendItemOrSoundEffect(this.source, objectName.parse()), optionalAgain.parse()[0])
       },
-      RuleCondition: function(directions, bracket) {
+      RuleCondition: function (directions, bracket) {
         return new GameRuleCondition(this.source, directions.parse(), bracket.parse())
       },
 
-      WinConditionItemSimple: function(qualifierEnum, objectName, _whitespace) {
+      WinConditionItemSimple: function (qualifierEnum, objectName, _whitespace) {
         return new WinConditionSimple(this.source, qualifierEnum.parse(), objectName.parse())
       },
-      WinConditionItemOn: function(qualifierEnum, objectName, _on, targetObjectName, _whitespace) {
+      WinConditionItemOn: function (qualifierEnum, objectName, _on, targetObjectName, _whitespace) {
         return new WinConditionOn(this.source, qualifierEnum.parse(), objectName.parse(), targetObjectName.parse())
       },
-      GameMessage: function(_1, optionalMessage) {
+      GameMessage: function (_1, optionalMessage) {
         // TODO: Maybe discard empty messages?
-        return new GameMessage(this.source, optionalMessage.parse()[0] /*Since the message is optional*/)
+        return new GameMessage(this.source, optionalMessage.parse()[0] /* Since the message is optional */)
       },
-      LevelItem: function(_1, _2) {
+      LevelItem: function (_1, _2) {
         return _1.parse()
       },
-      LevelMap: function(rows) {
+      LevelMap: function (rows) {
         rows = rows.parse().map((row) => {
           return row.map((levelChar) => {
-            return lookupByLevelChar(levelChar)
+            return lookup.lookupByLevelChar(levelChar)
           })
         })
         return new LevelMap(this.source, rows)
       },
-      levelMapRow: function(row, _2) {
+      levelMapRow: function (row, _2) {
         return row.parse()
       },
-      widthAndHeight: function(_1, _2, _3) {
+      widthAndHeight: function (_1, _2, _3) {
         return {
           __type: 'widthAndHeight',
           width: _1.parse(),
-          height: _3.parse(),
+          height: _3.parse()
         }
       },
-      pixelRow: function(_1, _2) {
+      pixelRow: function (_1, _2) {
         return _1.parse()
       },
-      colorHex3: function(_1, _2, _3, _4) {
+      colorHex3: function (_1, _2, _3, _4) {
         return new HexColor(this.source, this.sourceString)
       },
-      colorHex6: function(_1, _2, _3, _4, _5, _6, _7) {
+      colorHex6: function (_1, _2, _3, _4, _5, _6, _7) {
         return new HexColor(this.source, this.sourceString)
       },
-      colorName: function(_1) {
+      colorName: function (_1) {
         return new HexColor(this.source, COLOR_PALETTES[currentColorPalette][this.sourceString.toLowerCase()])
       },
-      NonemptyListOf: function(_1, _2, _3) {
+      NonemptyListOf: function (_1, _2, _3) {
         return [_1.parse()].concat(_3.parse())
       },
-      nonemptyListOf: function(_1, _2, _3) {
+      nonemptyListOf: function (_1, _2, _3) {
         // Do this special because LegendItem contains things like `X = A or B or C` and we need to know if they are `and` or `or`
         return {
           __type: 'nonemptyListOf',
@@ -940,7 +916,7 @@ function parse(code) {
           separators: [_2.parse()]
         }
       },
-      integer: function(_1) {
+      integer: function (_1) {
         return Number.parseInt(this.sourceString)
       },
       decimalWithLeadingNumber: function (_1, _2, _3) {
@@ -949,17 +925,17 @@ function parse(code) {
       decimalWithLeadingPeriod: function (_1, _2) {
         return Number.parseFloat(this.sourceString)
       },
-      varName: function(_1, _2, _3) {
-        return this.sourceString;
+      varName: function (_1, _2, _3) {
+        return this.sourceString
       },
-      words: function(_1) {
+      words: function (_1) {
         return this.sourceString
       },
       _terminal: function () { return this.primitiveValue },
       lineTerminator: (v1, v2, v3) => {},
       digit: (x) => {
         return x.primitiveValue.charCodeAt(0) - '0'.charCodeAt(0)
-      },
+      }
       // _default: function (exp1) {
       //   debugger
       //   return this.sourceString
@@ -986,14 +962,11 @@ function parse(code) {
     })
 
     return {data: game}
-
   } else {
     const trace = g.trace(code)
     return {error: m, trace: trace}
   }
-
 }
-
 
 module.exports = {
   parse,
@@ -1020,5 +993,5 @@ module.exports = {
   GameRuleConditionBracketSimple,
   GameRuleConditionBracketEllipsis,
   GameRuleConditionEntryLeaf,
-  RuleConditionWithLeftArgs,
+  RuleConditionWithLeftArgs
 }

@@ -2,7 +2,7 @@ const axel = require('axel')
 
 // First Tile one is on top.
 // This caused a 2x speedup while rendering.
-function collapseTilesToPixels(objectsToDraw, backgroundColor) {
+function collapseTilesToPixels (objectsToDraw, backgroundColor) {
   if (objectsToDraw.length === 1) {
     return objectsToDraw[0].getPixels()
   }
@@ -28,14 +28,12 @@ function collapseTilesToPixels(objectsToDraw, backgroundColor) {
   return tile
 }
 
-
-function renderLevel(data, level) {
+function renderLevel (data, level) {
   axel.fg(255, 255, 255)
-  axel.bg(0,0,0)
+  axel.bg(0, 0, 0)
   axel.clear()
 
   const magicBackgroundObject = data.objects.filter(({_name}) => _name.toLowerCase() === 'background')[0]
-
 
   level.getRows().forEach((row, rowIndex) => {
     // Don't draw too much for this demo
@@ -56,46 +54,42 @@ function renderLevel(data, level) {
 
       const pixels = collapseTilesToPixels(objectsToDraw, data.settings.background_color)
 
-        pixels.forEach((objRow, objRowIndex) => {
-          objRow.forEach((objColor, objColIndex) => {
-            let r
-            let g
-            let b
-            let a
+      pixels.forEach((objRow, objRowIndex) => {
+        objRow.forEach((objColor, objColIndex) => {
+          let r
+          let g
+          let b
+          let a
 
-            if (objColor && objColor !== 'transparent') { // could be transparent
-              const rgba = objColor.toRgba()
-              r = rgba.r
-              g = rgba.g
-              b = rgba.b
-              a = rgba.a
-            }
+          if (objColor && objColor !== 'transparent') { // could be transparent
+            const rgba = objColor.toRgba()
+            r = rgba.r
+            g = rgba.g
+            b = rgba.b
+            a = rgba.a
+          }
 
-            // Fallback to the game background color (e.g. entanglement)
-            if (a !== 1 && data.settings.background_color) {
-              const rgba = data.settings.background_color.toRgba()
-              r = rgba.r
-              g = rgba.g
-              b = rgba.b
-              a = rgba.a
-            }
+          // Fallback to the game background color (e.g. entanglement)
+          if (a !== 1 && data.settings.background_color) {
+            const rgba = data.settings.background_color.toRgba()
+            r = rgba.r
+            g = rgba.g
+            b = rgba.b
+            a = rgba.a
+          }
 
-            const x = (colIndex * 5 + objColIndex) * 2 // Use 2 characters for 1 pixel on the X-axis
-            const y = rowIndex * 5 + objRowIndex + 1 // Y column is 1-based
-            if (a) {
-              axel.brush = ' ' // " ░▒▓█"
-              axel.bg(r, g, b)
-              axel.point(x, y)
-              axel.point(x + 1, y) // double-width because the console is narrow
-            }
-
-          })
+          const x = (colIndex * 5 + objColIndex) * 2 // Use 2 characters for 1 pixel on the X-axis
+          const y = rowIndex * 5 + objRowIndex + 1 // Y column is 1-based
+          if (a) {
+            axel.brush = ' ' // " ░▒▓█"
+            axel.bg(r, g, b)
+            axel.point(x, y)
+            axel.point(x + 1, y) // double-width because the console is narrow
+          }
         })
-
-
+      })
     })
   })
 }
-
 
 module.exports = { renderLevel }

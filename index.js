@@ -4,16 +4,15 @@ const glob = require('glob')
 const {parse} = require('./src/parser')
 const {renderLevel} = require('./src/ui')
 
-
 let totalRenderTime = 0
 
-
 glob('./gists/*/script.txt', (err, files) => {
-
-  console.log(`Looping over ${files.length} games...`);
+  if (err) {
+    throw err
+  }
+  console.log(`Looping over ${files.length} games...`)
 
   files.forEach((filename, index) => {
-
     const code = readFileSync(filename, 'utf-8')
     const {data, error, trace} = parse(code)
 
@@ -38,12 +37,10 @@ glob('./gists/*/script.txt', (err, files) => {
       totalRenderTime += Date.now() - startTime
 
       if (index === files.length - 1) {
-        console.log('-----------------------');
+        console.log('-----------------------')
         console.log('Renderings took:', totalRenderTime)
-        console.log('-----------------------');
+        console.log('-----------------------')
       }
     }
-
   })
-
 })

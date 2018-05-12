@@ -1,19 +1,15 @@
 {
   "scripts": {
-    "start": "node ./download.js"
+    "start": "node index.js",
+    "test": "standard --fix index.js src/**/*.js"
   },
   "dependencies": {
-    "@octokit/rest": "^15.2.4",
     "axel": "0.0.3",
-    "dotenv": "^5.0.1",
     "glob": "^7.1.2",
-    "mkdirp": "^0.5.1",
-    "node-fetch": "^2.1.1",
-    "ohm-js": "^0.14.0",
-    "snapdragon": "^0.12.0",
-    "source-map": "^0.6.1"
+    "ohm-js": "^0.14.0"
   },
   "devDependencies": {
-    "http-server": "^0.11.1"
+    "http-server": "^0.11.1",
+    "standard": "^11.0.1"
   }
 }
