@@ -1,4 +1,5 @@
 const ohm = require('ohm-js')
+const {COLOR_PALETTES} = require('./colors')
 
 const grammar = `
 Puzzlescript {
@@ -393,6 +394,12 @@ class LevelMap extends BaseForLines {
     })
     return isInvalid
   }
+  isMap() {
+    return true
+  }
+  getRows() {
+    return this._rows
+  }
 }
 
 class GameMessage extends BaseForLines {
@@ -403,19 +410,43 @@ class GameMessage extends BaseForLines {
   isInvalid() {
     return false
   }
+  isMap() {
+    return false
+  }
+}
+
+function hexToRgb(hex) {
+  if (!hex) {
+    return {a: 0}
+  }
+  // https://stackoverflow.com/a/5624139
+  // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
+  const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i
+  hex = hex.replace(shorthandRegex, function(m, r, g, b) {
+    return r + r + g + g + b + b
+  })
+
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
+  return result ? {
+    r: parseInt(result[1], 16),
+    g: parseInt(result[2], 16),
+    b: parseInt(result[3], 16),
+    a: 1
+  } : null
 }
 
 class HexColor extends BaseForLines {
   constructor(source, color) {
     super(source)
+    // if (!color) {
+    //   console.error(source.getLineAndColumnMessage())
+    //   throw new Error(`BUG: Missing color arg`)
+    // }
     this._color = color
   }
-}
 
-class NamedColor extends BaseForLines {
-  constructor(source, name) {
-    super(source)
-    this._name = name
+  toRgba() {
+    return hexToRgb(this._color)
   }
 }
 
@@ -448,6 +479,21 @@ class GameObject extends BaseForLines {
     }
     return isInvalid
   }
+  getObjects() {
+    // to match the signature of LegendItem
+    return [this]
+  }
+  getPixels() {
+    return this._pixels.map(row => {
+      return row.map(col => {
+        if (col === '.') {
+          return null
+        } else {
+          return this._colors[col]
+        }
+      })
+    })
+  }
 }
 
 // TODO: Link up the aliases to objects rather than just storing strings
@@ -456,34 +502,29 @@ class GameLegendItemSimple extends BaseForLines {
   constructor(source, objectNameOrLevelChar, alias) {
     super(source)
     this._objectNameOrLevelChar = objectNameOrLevelChar
-    this._aliases = [alias]
+    this._aliases = Array.isArray(alias) ? alias : [alias]
   }
   isInvalid() {
-    return true // until we map the aliases to actual Objects rather than strings to look up later
+    return false
+  }
+  getObjects() {
+    // 2 levels of indirection should be safe
+    return this._aliases.map(alias => alias.getObjects()[0])
   }
 }
 
-class GameLegendItemAnd extends BaseForLines {
+class GameLegendItemAnd extends GameLegendItemSimple {
   constructor(source, objectNameOrLevelChar, aliases) {
-    super(source)
-    this._objectNameOrLevelChar = objectNameOrLevelChar
-    this._aliases = aliases
-  }
-  isInvalid() {
-    return true // until we map the aliases to actual Objects rather than strings to look up later
+    super(source, objectNameOrLevelChar, aliases)
   }
 }
 
-class GameLegendItemOr extends BaseForLines {
+class GameLegendItemOr extends GameLegendItemSimple {
   constructor(source, objectNameOrLevelChar, aliases) {
-    super(source)
-    this._objectNameOrLevelChar = objectNameOrLevelChar
-    this._aliases = aliases
-  }
-  isInvalid() {
-    return true // until we map the aliases to actual Objects rather than strings to look up later
+    super(source, objectNameOrLevelChar, aliases)
   }
 }
+
 
 
 // TODO: Use the Objects rather than just the names
@@ -632,6 +673,7 @@ function parse(code) {
       return [key.parse(), value.parse()]
     }
 
+    let currentColorPalette = 'mastersystem' // default
     const allSoundEffects = new Map()
     const allObjects = new Map()
     const allLegendItems = new Map()
@@ -733,7 +775,11 @@ function parse(code) {
       Youtube: getConfigField,
       Zoomscreen: getConfigField,
       Flickscreen: getConfigField,
-      ColorPalette: getConfigField,
+      ColorPalette: function(_1, colorPaletteName) {
+        // Set the color palette so we only need to use hex color codes
+        currentColorPalette = colorPaletteName.parse()
+        return getConfigField(_1, colorPaletteName)
+      },
       RequirePlayerMovement: getConfigField,
 
       Section: (_threeDashes1, _headingBar1, _lineTerminator1, _sectionName, _lineTerminator2, _threeDashes2, _headingBar2, _8, _9, _10, _11) => {
@@ -868,7 +914,7 @@ function parse(code) {
         return new HexColor(this.source, this.sourceString)
       },
       colorName: function(_1) {
-        return new NamedColor(this.source, this.sourceString)
+        return new HexColor(this.source, COLOR_PALETTES[currentColorPalette][this.sourceString.toLowerCase()])
       },
       NonemptyListOf: function(_1, _2, _3) {
         return [_1.parse()].concat(_3.parse())
@@ -930,7 +976,7 @@ function parse(code) {
 
   } else {
     const trace = g.trace(code)
-    return {error: m, trace: g}
+    return {error: m, trace: trace}
   }
 
 }
@@ -942,7 +988,6 @@ module.exports = {
   LevelMap,
   GameMessage,
   HexColor,
-  NamedColor,
   GameObject,
   GameLegendItemSimple,
   GameLegendItemAnd,
