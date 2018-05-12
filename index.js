@@ -29,6 +29,7 @@ glob('./gists/*/script.txt', (err, files) => {
       const level = data.levels.filter(level => level.isMap())[0]
       if (level) {
         // console.log(level)
+        axel.fg(255, 255, 255)
         axel.bg(0,0,0)
         axel.clear()
         level.getRows().forEach((row, rowIndex) => {
@@ -38,20 +39,26 @@ glob('./gists/*/script.txt', (err, files) => {
           }
           row.forEach((col, colIndex) => {
             // Don't draw too much for this demo
-            if (data.settings.flickscreen && rowIndex > data.settings.flickscreen.width) {
+            if (data.settings.flickscreen && colIndex > data.settings.flickscreen.width) {
               return
             }
-            if (!col.getObjects) {
-              axel.bg(0,0,0)
-              console.log(col)
-            }
-            const objectsToDraw = col.getObjects()
+            const objectsToDraw = col.getObjects().reverse() // Not sure why, but entanglement renders properly when reversed
+
             objectsToDraw.forEach(objectToDraw => {
-              if (!objectToDraw.getPixels) {
-                axel.bg(0,0,0)
-                console.log(col)
+              let pixels = objectToDraw.getPixels()
+              if (pixels.length === 0) {
+                // When there are no pixels then it means "color the whole thing in the same color"
+                const rows = []
+                for (let row = 0; row < 5; row++) {
+                  rows.push([])
+                  for (let col = 0; col < 5; col++) {
+                    rows[row].push(objectToDraw._colors[0])
+                  }
+                }
+                pixels = rows
               }
-              objectToDraw.getPixels().forEach((objRow, objRowIndex) => {
+
+              pixels.forEach((objRow, objRowIndex) => {
                 objRow.forEach((objColor, objColIndex) => {
                   let r
                   let g
@@ -66,24 +73,23 @@ glob('./gists/*/script.txt', (err, files) => {
                     a = rgba.a
                   }
 
-                  if (a === 0 && data.settings.background_color) {
-                    objColor = data.settings.background_color
-                    const rgba = objColor.toRgba()
+                  if (a !== 1 && data.settings.background_color) {
+                    const rgba = data.settings.background_color.toRgba()
                     r = rgba.r
                     g = rgba.g
                     b = rgba.b
                     a = rgba.a
+                    // console.log('USINGBACKGROUN!!!!!', filename, r, g, b, a);
                   }
 
-                  if (a === 0) {
-                    return
-                  }
+                  // if (a !== 1) {
+                  //   return
+                  // }
 
                   const x = (colIndex * 5 + objColIndex) * 2 // Use 2 characters for 1 pixel on the X-axis
-                  const y = rowIndex * 5 + objRowIndex
+                  const y = rowIndex * 5 + objRowIndex + 1 // Y column is 1-based
                   if (a) {
                     axel.brush = ' ' // " ░▒▓█"
-                    axel.fg(255, 255, 255)
                     axel.bg(r, g, b)
                     axel.point(x, y)
                     axel.point(x + 1, y) // double-width because the console is narrow
@@ -91,7 +97,9 @@ glob('./gists/*/script.txt', (err, files) => {
 
                 })
               })
-            })
+            }) // objectsToDraw
+
+
           })
         })
       }
