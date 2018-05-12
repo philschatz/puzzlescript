@@ -484,15 +484,28 @@ class GameObject extends BaseForLines {
     return [this]
   }
   getPixels() {
-    return this._pixels.map(row => {
-      return row.map(col => {
-        if (col === '.') {
-          return null
-        } else {
-          return this._colors[col]
+    // When there are no pixels then it means "color the whole thing in the same color"
+    if (this._pixels.length === 0) {
+      const rows = []
+      for (let row = 0; row < 5; row++) {
+        rows.push([])
+        for (let col = 0; col < 5; col++) {
+          rows[row].push(this._colors[0])
         }
+      }
+      return rows
+
+    } else {
+      return this._pixels.map(row => {
+        return row.map(col => {
+          if (col === '.') {
+            return null
+          } else {
+            return this._colors[col]
+          }
+        })
       })
-    })
+    }
   }
 }
 
