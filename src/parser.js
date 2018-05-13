@@ -7,13 +7,13 @@ Puzzlescript {
     lineTerminator* // Version information
     Title lineTerminator+
     (OptionalSetting lineTerminator+)*
-    Section<t_OBJECTS, ObjectsItem>
-    Section<t_LEGEND, LegendItem>
-    Section<t_SOUNDS, SoundItem>
-    Section<t_COLLISIONLAYERS, CollisionLayerItem>
-    Section<t_RULES, RuleItem>
-    Section<t_WINCONDITIONS, WinConditionItem>
-    Section<t_LEVELS, LevelItem>
+    Section<t_OBJECTS, ObjectsItem>?
+    Section<t_LEGEND, LegendItem>?
+    Section<t_SOUNDS, SoundItem>?
+    Section<t_COLLISIONLAYERS, CollisionLayerItem>?
+    Section<t_RULES, RuleItem>?
+    Section<t_WINCONDITIONS, WinConditionItem>?
+    Section<t_LEVELS, LevelItem>?
 
   OptionalSetting =
       Author
@@ -171,18 +171,16 @@ RuleItem
   = Rule
   | RuleLoop
 
-Rule = t_GROUP_RULE_PLUS? RuleProduction lineTerminator+
+Rule = t_GROUP_RULE_PLUS? RuleModifierLeft* CellSequenceBracket+ "->" RuleAction lineTerminator+
 
-RuleProduction = RuleModifierLeft* CellSequenceBracket+ "->" RuleRightSide
+RuleAction
+  = RuleActionBrackets
+  | RuleActionCommands1
+  | RuleActionCommands2
 
-RuleRightSide
-  = RightBrackets
-  | RightCommands1
-  | RightCommands2
-
-RightBrackets = CellSequenceBracket+ RuleCommand* MessageCommand? // Verify the left-hand structure matches the right-hand
-RightCommands1 = RuleCommand+ MessageCommand?
-RightCommands2 = RuleCommand* MessageCommand
+RuleActionBrackets = CellSequenceBracket+ RuleCommand* MessageCommand? // Verify the left-hand structure matches the right-hand
+RuleActionCommands1 = RuleCommand+ MessageCommand?
+RuleActionCommands2 = RuleCommand* MessageCommand
 
 
 CellSequenceBracket = RuleModifier* CellSequenceBracketOnly
@@ -192,8 +190,8 @@ CellSequenceBracketOnly
   | SimpleBracket
 
 
-EllipsisBracket = "[" NeighboringCells t_ELLIPSIS "|" NeighboringCells "]"
-SimpleBracket = "[" NeighboringCells "]"
+EllipsisBracket = "[" space* NeighboringCells t_ELLIPSIS "|" NeighboringCells "]"
+SimpleBracket = "[" space* NeighboringCells "]"
 
 NeighboringCells = NonemptyListOf<Cell, "|">
 
@@ -201,18 +199,21 @@ Cell
   = CellSequenceBracketHack // Uggh, some games mis-typed and have nested brackets
   | CellLayer*
 
-CellSequenceBracketHack = CellSequenceBracket  // Uggh, some games mis-typed and have nested brackets. They should be unwrapped as a Cell when semantically parsed
+CellSequenceBracketHack = SimpleBracket  // Uggh, some games mis-typed and have nested brackets. They should be unwrapped as a Cell when semantically parsed
 
-CellLayer = CellLayerModifier* cellName
+CellLayer = (CellLayerModifier)* CellName
 
-cellName = (~space ~lineTerminator ~t_ELLIPSIS ~"]" any)+ // Can be "."
+// CellName = (~whitespace ~lineTerminator ~t_ELLIPSIS ~"]" ~"|" ~" " any)+ // Can be "."
+CellName = (letter | digit)+ // Can be "."
 
 CellLayerModifier
   = t_NO
-  | t_ARROW
+  | T_ARROW_NODOWN
+  | T_RANDOM
+  | t_STATIONARY
 
 RuleModifier
-  = t_RANDOM
+  = T_RANDOM
   | t_UP
   | t_DOWN
   | t_LEFT
@@ -233,11 +234,11 @@ RuleLoop =
   t_ENDLOOP lineTerminator+
 
 
-t_ARROW
-  = t_UP_ARROW
-  | t_DOWN_ARROW
-  | t_LEFT_ARROW
-  | t_RIGHT_ARROW
+T_ARROW_NODOWN
+  = T_ARROW_UP
+  // | T_ARROW_DOWN // don't match this because it could be a legend variable
+  | T_ARROW_LEFT
+  | T_ARROW_RIGHT
 
 
 RuleCommand =
@@ -269,8 +270,8 @@ MessageCommand = t_MESSAGE words*
 
   t_RIGID = caseInsensitive<"RIGID">
   t_LATE = caseInsensitive<"LATE">
-  t_RANDOM = caseInsensitive<"RANDOM">
-  t_RANDOMDIR = caseInsensitive<"RANDOMDIR">
+  T_RANDOM = caseInsensitive<"RANDOM">
+  T_RANDOMDIR = caseInsensitive<"RANDOMDIR">
   t_ACTION = caseInsensitive<"ACTION">
   t_STARTLOOP = caseInsensitive<"STARTLOOP">
   t_ENDLOOP = caseInsensitive<"ENDLOOP">
@@ -279,10 +280,10 @@ MessageCommand = t_MESSAGE words*
   t_DOWN = caseInsensitive<"DOWN">
   t_LEFT = caseInsensitive<"LEFT">
   t_RIGHT = caseInsensitive<"RIGHT">
-  t_UP_ARROW = "^"
-  t_DOWN_ARROW = caseInsensitive<"V">
-  t_LEFT_ARROW = "<"
-  t_RIGHT_ARROW = ">"
+  T_ARROW_UP = "^"
+  T_ARROW_DOWN = caseInsensitive<"V">
+  T_ARROW_LEFT = "<"
+  T_ARROW_RIGHT = ">"
   t_MOVING = caseInsensitive<"MOVING">
   t_ORTHOGONAL = caseInsensitive<"ORTHOGONAL">
   t_PERPENDICULAR = caseInsensitive<"PERPENDICULAR">
@@ -622,19 +623,66 @@ class WinConditionOn extends BaseForLines {
   }
 }
 
-class GameRuleProduction extends BaseForLines {
-  constructor (source, leftHandSide, rightHandSide, commands) {
+class GameRuleLoop extends BaseForLines {
+  constructor (source, rules) {
     super(source)
-    this._left = leftHandSide
-    this._right = rightHandSide
+    this._rules = rules
+  }
+}
+
+class GameRule extends BaseForLines {
+  constructor (source, ruleModifiers, productionModifiers, cellSequenceBrackets, ruleAction) {
+    super(source)
+    this._ruleModifiers = ruleModifiers
+    this._productionModifiers = productionModifiers
+    this._cellSequenceBrackets = cellSequenceBrackets
+    this._ruleAction = ruleAction
+  }
+}
+
+class GameRuleActionBrackets extends BaseForLines {
+  constructor (source, cellSequenceBrackets, ruleCommands) {
+    super(source)
+    this._cellSequenceBrackets = cellSequenceBrackets
+    this._ruleCommands = ruleCommands
+  }
+}
+
+class GameRuleSequenceBracket extends BaseForLines {
+  constructor (source, ruleModifiers, bracket) {
+    super(source)
+    this._ruleModifiers = ruleModifiers
+    this._bracket = bracket
+  }
+}
+
+class RuleEllipsisBracket extends BaseForLines {
+  constructor (source, leftNeighboringCells, rightNeighboringCells) {
+    super(source)
+    this._leftNeighboringCells = leftNeighboringCells
+    this._rightNeighboringCells = rightNeighboringCells
+  }
+}
+
+class GameRuleSimpleBracket extends BaseForLines {
+  constructor (source, cellLayers) {
+    super(source)
+    this._cellLayers = cellLayers
+  }
+}
+
+class RuleRightCommands extends BaseForLines {
+  constructor (source, commands) {
+    super(source)
     this._commands = commands
   }
 }
 
-class GameRuleLoop extends BaseForLines {
-  constructor (source, productions) {
+class GameRuleCellLayer extends BaseForLines {
+  constructor (source, cellModifiers, objectName) {
     super(source)
-    this._rules = productions
+    this._cellModifiers = cellModifiers
+    this._objectName = objectName
   }
 }
 
@@ -699,12 +747,16 @@ function getConfigField (key, value) {
   return [key.parse(), value.parse()]
 }
 
-function parse (code) {
+function parseGrammar(code) {
   // 8645c163ff321d2fd1bad3fcaf48c107 has a typo so we .replace()
   code = code.replace('][ ->', '] ->') + '\n' // Not all games have a trailing newline. this makes it easier on the parser
 
   const g = ohm.grammar(grammar)
-  const m = g.match(code)
+  return {match: g.match(code), grammar: g, grammarStr: grammar}
+}
+
+function parse (code) {
+  const {match: m, grammar: g} = parseGrammar(code)
 
   if (m.succeeded()) {
     const lookup = new LookupHelper()
@@ -717,13 +769,14 @@ function parse (code) {
         const ret = {
           title: title.parse(),
           settings: {}, // Filled in below
-          objects: objects.parse(),
-          legends: legends.parse(),
-          sounds: sounds.parse(),
-          collisionLayers: collisionLayers.parse(),
-          rules: rules.parse(),
-          winConditions: winConditions.parse(),
-          levels: levels.parse()
+          // Use [0] because each of them are optional (at least because of unit tests)
+          objects: objects.parse()[0] || [],
+          legends: legends.parse()[0] || [],
+          sounds: sounds.parse()[0] || [],
+          collisionLayers: collisionLayers.parse()[0] || [],
+          rules: rules.parse()[0] || [],
+          winConditions: winConditions.parse()[0] || [],
+          levels: levels.parse()[0] || []
         }
         settings.parse().forEach((setting) => {
           if (Array.isArray(setting)) {
@@ -816,8 +869,44 @@ function parse (code) {
       CollisionLayerItem: function (objectNames, _2, _3) {
         return new CollisionLayer(this.source, objectNames.parse().map((objectName) => lookup.lookupObjectOrLegendItem(this.source, objectName)))
       },
+
       RuleItem: function (_1) {
         return _1.parse()
+      },
+
+      Rule: function (rulePlus, productionModifiers, cellSequenceBrackets, _arrow, ruleAction, _whitespace) {
+        return new GameRule(this.source, rulePlus.parse(), productionModifiers.parse(), cellSequenceBrackets.parse(), ruleAction.parse())
+      },
+      RuleLoop: function (_startloop, _whitespace1, rules, _endloop, _whitespace2) {
+        return new GameRuleLoop(this.source, rules.parse())
+      },
+      CellSequenceBracket: function (ruleModifiers, bracket) {
+        return new GameRuleSequenceBracket(this.source, ruleModifiers.parse(), bracket.parse())
+      },
+      EllipsisBracket: function (_leftBracket, _whitespace, leftNeighboringCells, _ellipsis, _pipe, rightNeighboringCells, _rightBracket) {
+        return new RuleEllipsisBracket(this.source, leftNeighboringCells.parse(), rightNeighboringCells.parse())
+      },
+      SimpleBracket: function (_leftBracket, _whitespace, cellLayers, _rightBracket) {
+        return new GameRuleSimpleBracket(this.source, cellLayers.parse())
+      },
+      CellLayer: function (cellModifiers, cellName) {
+        return new GameRuleCellLayer(this.source, cellModifiers.parse(), lookup.lookupObjectOrLegendItem(this.source, cellName.parse()))
+      },
+      CellName: function (_1) {
+        return _1.parse().join('')
+      },
+
+      RuleActionBrackets: function (cellSequenceBrackets, ruleCommands, optionalMessageCommand) {
+        return new GameRuleActionBrackets(this.source, cellSequenceBrackets.parse(), ruleCommands.parse().concat(optionalMessageCommand.parse()))
+      },
+      RuleActionCommands1: function (commands, message) {
+        return new RuleRightCommands(this.source, commands.parse().concat(message.parse()))
+      },
+      RuleActionCommands2: function (commands, message) {
+        return new RuleRightCommands(this.source, commands.parse().concat(message.parse()))
+      },
+      MessageCommand: function (_message, message) {
+        return new GameMessage(this.source, message.parse())
       },
 
       WinConditionItemSimple: function (qualifierEnum, objectName, _whitespace) {
@@ -893,13 +982,11 @@ function parse (code) {
       lineTerminator: (v1, v2, v3) => {},
       digit: (x) => {
         return x.primitiveValue.charCodeAt(0) - '0'.charCodeAt(0)
-      },
+      }
       // _default: function (exp1) {
       //   debugger
       //   return this.sourceString
       // },
-      Rule: function (_1, _2, _3) {},
-      RuleLoop: function (_1, _2, _3, _4, _5) {}
 
     })
     const game = s(m).parse()
@@ -930,6 +1017,7 @@ function parse (code) {
 
 module.exports = {
   parse,
+  parseGrammar,
   BaseForLines,
   LevelMap,
   GameMessage,
@@ -947,6 +1035,5 @@ module.exports = {
   GameSoundMoveDirection,
   WinConditionSimple,
   WinConditionOn,
-  GameRuleProduction,
   GameRuleLoop
 }

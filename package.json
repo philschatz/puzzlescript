@@ -1,11 +1,15 @@
 {
   "scripts": {
+    "lint": "standard --fix index.js src/**/*.js test/**/*.js",
     "start": "node index.js",
-    "test": "standard --fix index.js src/**/*.js"
+    "poststart": "npm run-script lint",
+    "test": "jest --updateSnapshot",
+    "test-debug": "node --inspect-brk $(npm bin)/jest -i --updateSnapshot $@"
   },
   "dependencies": {
     "axel": "0.0.3",
     "glob": "^7.1.2",
+    "jest": "^22.4.3",
     "ohm-js": "^0.14.0"
   },
   "devDependencies": {

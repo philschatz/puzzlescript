@@ -1,0 +1,2598 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`rules Cell Modifiers parses a rule with directions 1 1`] = `
+Object {
+  "__name": "Details",
+  "_i1": Object {
+    "__name": "Title",
+    "_i0": "title",
+    "_i1": Object {
+      "__name": "words",
+      "_i0": Array [
+        "checkGrammar",
+      ],
+    },
+  },
+  "_i2": Array [
+    Object {
+      "__name": "lineTerminator",
+      "_i1": Object {
+        "__name": "newline",
+        "_i0": "
+",
+      },
+    },
+    Object {
+      "__name": "lineTerminator",
+      "_i1": Object {
+        "__name": "newline",
+        "_i0": "
+",
+      },
+    },
+  ],
+  "_i9": Array [
+    Object {
+      "__name": "Section",
+      "_i0": "===",
+      "_i1": Object {
+        "__name": "headingBar",
+      },
+      "_i2": Object {
+        "__name": "lineTerminator",
+        "_i1": Object {
+          "__name": "newline",
+          "_i0": "
+",
+        },
+      },
+      "_i3": Object {
+        "__name": "t_RULES",
+        "_i0": Object {
+          "__name": "caseInsensitive",
+          "_i0": "RULES",
+        },
+      },
+      "_i4": Object {
+        "__name": "lineTerminator",
+        "_i1": Object {
+          "__name": "newline",
+          "_i0": "
+",
+        },
+      },
+      "_i5": "===",
+      "_i6": Object {
+        "__name": "headingBar",
+      },
+      "_i7": Array [
+        Object {
+          "__name": "lineTerminator",
+          "_i1": Object {
+            "__name": "newline",
+            "_i0": "
+",
+          },
+        },
+        Object {
+          "__name": "lineTerminator",
+          "_i1": Object {
+            "__name": "newline",
+            "_i0": "
+",
+          },
+        },
+      ],
+      "_i8": Array [
+        Array [],
+      ],
+      "_i9": Array [
+        Object {
+          "__name": "RuleItem",
+          "_i0": Object {
+            "__name": "Rule",
+            "_i2": Array [
+              Object {
+                "__name": "CellSequenceBracket",
+                "_i1": Object {
+                  "__name": "CellSequenceBracketOnly",
+                  "_i0": Object {
+                    "__name": "SimpleBracket",
+                    "_i0": "[",
+                    "_i2": Object {
+                      "__name": "NeighboringCells",
+                      "_i0": Object {
+                        "__name": "NonemptyListOf",
+                        "_i0": Object {
+                          "__name": "Cell",
+                          "_i0": Array [
+                            Object {
+                              "__name": "CellLayer",
+                              "_i0": Array [
+                                Object {
+                                  "__name": "CellLayerModifier",
+                                  "_i0": Object {
+                                    "__name": "T_ARROW_NODOWN",
+                                    "_i0": Object {
+                                      "__name": "T_ARROW_RIGHT",
+                                      "_i0": ">",
+                                    },
+                                  },
+                                },
+                              ],
+                              "_i1": Object {
+                                "__name": "CellName",
+                                "_i0": Array [
+                                  Object {
+                                    "__name": "letter",
+                                    "_i0": Object {
+                                      "__name": "lower",
+                                      "_i0": "z",
+                                    },
+                                  },
+                                ],
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    },
+                    "_i3": "]",
+                  },
+                },
+              },
+            ],
+            "_i3": "->",
+            "_i4": Object {
+              "__name": "RuleAction",
+              "_i0": Object {
+                "__name": "RuleActionBrackets",
+                "_i0": Array [
+                  Object {
+                    "__name": "CellSequenceBracket",
+                    "_i1": Object {
+                      "__name": "CellSequenceBracketOnly",
+                      "_i0": Object {
+                        "__name": "SimpleBracket",
+                        "_i0": "[",
+                        "_i2": Object {
+                          "__name": "NeighboringCells",
+                          "_i0": Object {
+                            "__name": "NonemptyListOf",
+                            "_i0": Object {
+                              "__name": "Cell",
+                              "_i0": Array [
+                                Object {
+                                  "__name": "CellLayer",
+                                  "_i1": Object {
+                                    "__name": "CellName",
+                                    "_i0": Array [
+                                      Object {
+                                        "__name": "letter",
+                                        "_i0": Object {
+                                          "__name": "lower",
+                                          "_i0": "z",
+                                        },
+                                      },
+                                    ],
+                                  },
+                                },
+                              ],
+                            },
+                          },
+                        },
+                        "_i3": "]",
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+            "_i5": Array [
+              Object {
+                "__name": "lineTerminator",
+                "_i1": Object {
+                  "__name": "newline",
+                  "_i0": "
+",
+                },
+              },
+            ],
+          },
+        },
+      ],
+    },
+  ],
+}
+`;
+
+exports[`rules Cell Modifiers parses a rule with directions 1 2`] = `
+Object {
+  "collisionLayers": Array [],
+  "legends": Array [],
+  "levels": Array [],
+  "objects": Array [
+    GameObject {
+      "_colors": Array [
+        "transparent",
+      ],
+      "_name": "z",
+      "_optionalLegendChar": undefined,
+      "_pixels": Array [],
+    },
+  ],
+  "rules": Array [
+    GameRule {
+      "_cellSequenceBrackets": Array [
+        GameRuleSequenceBracket {
+          "_bracket": GameRuleSimpleBracket {
+            "_cellLayers": Array [
+              Array [
+                GameRuleCellLayer {
+                  "_cellModifiers": Array [
+                    ">",
+                  ],
+                  "_objectName": GameObject {
+                    "_colors": Array [
+                      "transparent",
+                    ],
+                    "_name": "z",
+                    "_optionalLegendChar": undefined,
+                    "_pixels": Array [],
+                  },
+                },
+              ],
+            ],
+          },
+          "_ruleModifiers": Array [],
+        },
+      ],
+      "_productionModifiers": Array [],
+      "_ruleAction": GameRuleActionBrackets {
+        "_cellSequenceBrackets": Array [
+          GameRuleSequenceBracket {
+            "_bracket": GameRuleSimpleBracket {
+              "_cellLayers": Array [
+                Array [
+                  GameRuleCellLayer {
+                    "_cellModifiers": Array [],
+                    "_objectName": GameObject {
+                      "_colors": Array [
+                        "transparent",
+                      ],
+                      "_name": "z",
+                      "_optionalLegendChar": undefined,
+                      "_pixels": Array [],
+                    },
+                  },
+                ],
+              ],
+            },
+            "_ruleModifiers": Array [],
+          },
+        ],
+        "_ruleCommands": Array [],
+      },
+      "_ruleModifiers": Array [],
+    },
+  ],
+  "settings": Object {},
+  "sounds": Array [],
+  "title": "checkParse",
+  "winConditions": Array [],
+}
+`;
+
+exports[`rules Cell Modifiers parses a rule with directions 2 1`] = `
+Object {
+  "__name": "Details",
+  "_i1": Object {
+    "__name": "Title",
+    "_i0": "title",
+    "_i1": Object {
+      "__name": "words",
+      "_i0": Array [
+        "checkGrammar",
+      ],
+    },
+  },
+  "_i2": Array [
+    Object {
+      "__name": "lineTerminator",
+      "_i1": Object {
+        "__name": "newline",
+        "_i0": "
+",
+      },
+    },
+    Object {
+      "__name": "lineTerminator",
+      "_i1": Object {
+        "__name": "newline",
+        "_i0": "
+",
+      },
+    },
+  ],
+  "_i9": Array [
+    Object {
+      "__name": "Section",
+      "_i0": "===",
+      "_i1": Object {
+        "__name": "headingBar",
+      },
+      "_i2": Object {
+        "__name": "lineTerminator",
+        "_i1": Object {
+          "__name": "newline",
+          "_i0": "
+",
+        },
+      },
+      "_i3": Object {
+        "__name": "t_RULES",
+        "_i0": Object {
+          "__name": "caseInsensitive",
+          "_i0": "RULES",
+        },
+      },
+      "_i4": Object {
+        "__name": "lineTerminator",
+        "_i1": Object {
+          "__name": "newline",
+          "_i0": "
+",
+        },
+      },
+      "_i5": "===",
+      "_i6": Object {
+        "__name": "headingBar",
+      },
+      "_i7": Array [
+        Object {
+          "__name": "lineTerminator",
+          "_i1": Object {
+            "__name": "newline",
+            "_i0": "
+",
+          },
+        },
+        Object {
+          "__name": "lineTerminator",
+          "_i1": Object {
+            "__name": "newline",
+            "_i0": "
+",
+          },
+        },
+      ],
+      "_i8": Array [
+        Array [],
+      ],
+      "_i9": Array [
+        Object {
+          "__name": "RuleItem",
+          "_i0": Object {
+            "__name": "Rule",
+            "_i2": Array [
+              Object {
+                "__name": "CellSequenceBracket",
+                "_i1": Object {
+                  "__name": "CellSequenceBracketOnly",
+                  "_i0": Object {
+                    "__name": "SimpleBracket",
+                    "_i0": "[",
+                    "_i2": Object {
+                      "__name": "NeighboringCells",
+                      "_i0": Object {
+                        "__name": "NonemptyListOf",
+                        "_i0": Object {
+                          "__name": "Cell",
+                          "_i0": Array [
+                            Object {
+                              "__name": "CellLayer",
+                              "_i0": Array [
+                                Object {
+                                  "__name": "CellLayerModifier",
+                                  "_i0": Object {
+                                    "__name": "T_ARROW_NODOWN",
+                                    "_i0": Object {
+                                      "__name": "T_ARROW_UP",
+                                      "_i0": "^",
+                                    },
+                                  },
+                                },
+                              ],
+                              "_i1": Object {
+                                "__name": "CellName",
+                                "_i0": Array [
+                                  Object {
+                                    "__name": "letter",
+                                    "_i0": Object {
+                                      "__name": "lower",
+                                      "_i0": "z",
+                                    },
+                                  },
+                                ],
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    },
+                    "_i3": "]",
+                  },
+                },
+              },
+            ],
+            "_i3": "->",
+            "_i4": Object {
+              "__name": "RuleAction",
+              "_i0": Object {
+                "__name": "RuleActionBrackets",
+                "_i0": Array [
+                  Object {
+                    "__name": "CellSequenceBracket",
+                    "_i1": Object {
+                      "__name": "CellSequenceBracketOnly",
+                      "_i0": Object {
+                        "__name": "SimpleBracket",
+                        "_i0": "[",
+                        "_i2": Object {
+                          "__name": "NeighboringCells",
+                          "_i0": Object {
+                            "__name": "NonemptyListOf",
+                            "_i0": Object {
+                              "__name": "Cell",
+                              "_i0": Array [
+                                Object {
+                                  "__name": "CellLayer",
+                                  "_i1": Object {
+                                    "__name": "CellName",
+                                    "_i0": Array [
+                                      Object {
+                                        "__name": "letter",
+                                        "_i0": Object {
+                                          "__name": "lower",
+                                          "_i0": "z",
+                                        },
+                                      },
+                                    ],
+                                  },
+                                },
+                              ],
+                            },
+                          },
+                        },
+                        "_i3": "]",
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+            "_i5": Array [
+              Object {
+                "__name": "lineTerminator",
+                "_i1": Object {
+                  "__name": "newline",
+                  "_i0": "
+",
+                },
+              },
+            ],
+          },
+        },
+      ],
+    },
+  ],
+}
+`;
+
+exports[`rules Cell Modifiers parses a rule with directions 2 2`] = `
+Object {
+  "collisionLayers": Array [],
+  "legends": Array [],
+  "levels": Array [],
+  "objects": Array [
+    GameObject {
+      "_colors": Array [
+        "transparent",
+      ],
+      "_name": "z",
+      "_optionalLegendChar": undefined,
+      "_pixels": Array [],
+    },
+  ],
+  "rules": Array [
+    GameRule {
+      "_cellSequenceBrackets": Array [
+        GameRuleSequenceBracket {
+          "_bracket": GameRuleSimpleBracket {
+            "_cellLayers": Array [
+              Array [
+                GameRuleCellLayer {
+                  "_cellModifiers": Array [
+                    "^",
+                  ],
+                  "_objectName": GameObject {
+                    "_colors": Array [
+                      "transparent",
+                    ],
+                    "_name": "z",
+                    "_optionalLegendChar": undefined,
+                    "_pixels": Array [],
+                  },
+                },
+              ],
+            ],
+          },
+          "_ruleModifiers": Array [],
+        },
+      ],
+      "_productionModifiers": Array [],
+      "_ruleAction": GameRuleActionBrackets {
+        "_cellSequenceBrackets": Array [
+          GameRuleSequenceBracket {
+            "_bracket": GameRuleSimpleBracket {
+              "_cellLayers": Array [
+                Array [
+                  GameRuleCellLayer {
+                    "_cellModifiers": Array [],
+                    "_objectName": GameObject {
+                      "_colors": Array [
+                        "transparent",
+                      ],
+                      "_name": "z",
+                      "_optionalLegendChar": undefined,
+                      "_pixels": Array [],
+                    },
+                  },
+                ],
+              ],
+            },
+            "_ruleModifiers": Array [],
+          },
+        ],
+        "_ruleCommands": Array [],
+      },
+      "_ruleModifiers": Array [],
+    },
+  ],
+  "settings": Object {},
+  "sounds": Array [],
+  "title": "checkParse",
+  "winConditions": Array [],
+}
+`;
+
+exports[`rules Cell Modifiers parses a rule with modifiers 1`] = `
+Object {
+  "__name": "Details",
+  "_i1": Object {
+    "__name": "Title",
+    "_i0": "title",
+    "_i1": Object {
+      "__name": "words",
+      "_i0": Array [
+        "checkGrammar",
+      ],
+    },
+  },
+  "_i2": Array [
+    Object {
+      "__name": "lineTerminator",
+      "_i1": Object {
+        "__name": "newline",
+        "_i0": "
+",
+      },
+    },
+    Object {
+      "__name": "lineTerminator",
+      "_i1": Object {
+        "__name": "newline",
+        "_i0": "
+",
+      },
+    },
+  ],
+  "_i9": Array [
+    Object {
+      "__name": "Section",
+      "_i0": "===",
+      "_i1": Object {
+        "__name": "headingBar",
+      },
+      "_i2": Object {
+        "__name": "lineTerminator",
+        "_i1": Object {
+          "__name": "newline",
+          "_i0": "
+",
+        },
+      },
+      "_i3": Object {
+        "__name": "t_RULES",
+        "_i0": Object {
+          "__name": "caseInsensitive",
+          "_i0": "RULES",
+        },
+      },
+      "_i4": Object {
+        "__name": "lineTerminator",
+        "_i1": Object {
+          "__name": "newline",
+          "_i0": "
+",
+        },
+      },
+      "_i5": "===",
+      "_i6": Object {
+        "__name": "headingBar",
+      },
+      "_i7": Array [
+        Object {
+          "__name": "lineTerminator",
+          "_i1": Object {
+            "__name": "newline",
+            "_i0": "
+",
+          },
+        },
+        Object {
+          "__name": "lineTerminator",
+          "_i1": Object {
+            "__name": "newline",
+            "_i0": "
+",
+          },
+        },
+      ],
+      "_i8": Array [
+        Array [],
+      ],
+      "_i9": Array [
+        Object {
+          "__name": "RuleItem",
+          "_i0": Object {
+            "__name": "Rule",
+            "_i2": Array [
+              Object {
+                "__name": "CellSequenceBracket",
+                "_i1": Object {
+                  "__name": "CellSequenceBracketOnly",
+                  "_i0": Object {
+                    "__name": "SimpleBracket",
+                    "_i0": "[",
+                    "_i2": Object {
+                      "__name": "NeighboringCells",
+                      "_i0": Object {
+                        "__name": "NonemptyListOf",
+                        "_i0": Object {
+                          "__name": "Cell",
+                          "_i0": Array [
+                            Object {
+                              "__name": "CellLayer",
+                              "_i0": Array [
+                                Object {
+                                  "__name": "CellLayerModifier",
+                                  "_i0": Object {
+                                    "__name": "t_NO",
+                                    "_i0": Object {
+                                      "__name": "caseInsensitive",
+                                      "_i0": "NO",
+                                    },
+                                  },
+                                },
+                              ],
+                              "_i1": Object {
+                                "__name": "CellName",
+                                "_i0": Array [
+                                  Object {
+                                    "__name": "letter",
+                                    "_i0": Object {
+                                      "__name": "lower",
+                                      "_i0": "z",
+                                    },
+                                  },
+                                ],
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    },
+                    "_i3": "]",
+                  },
+                },
+              },
+            ],
+            "_i3": "->",
+            "_i4": Object {
+              "__name": "RuleAction",
+              "_i0": Object {
+                "__name": "RuleActionBrackets",
+                "_i0": Array [
+                  Object {
+                    "__name": "CellSequenceBracket",
+                    "_i1": Object {
+                      "__name": "CellSequenceBracketOnly",
+                      "_i0": Object {
+                        "__name": "SimpleBracket",
+                        "_i0": "[",
+                        "_i2": Object {
+                          "__name": "NeighboringCells",
+                          "_i0": Object {
+                            "__name": "NonemptyListOf",
+                            "_i0": Object {
+                              "__name": "Cell",
+                              "_i0": Array [
+                                Object {
+                                  "__name": "CellLayer",
+                                  "_i1": Object {
+                                    "__name": "CellName",
+                                    "_i0": Array [
+                                      Object {
+                                        "__name": "letter",
+                                        "_i0": Object {
+                                          "__name": "lower",
+                                          "_i0": "z",
+                                        },
+                                      },
+                                    ],
+                                  },
+                                },
+                              ],
+                            },
+                          },
+                        },
+                        "_i3": "]",
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+            "_i5": Array [
+              Object {
+                "__name": "lineTerminator",
+                "_i1": Object {
+                  "__name": "newline",
+                  "_i0": "
+",
+                },
+              },
+            ],
+          },
+        },
+      ],
+    },
+  ],
+}
+`;
+
+exports[`rules Cell Modifiers parses a rule with modifiers 2`] = `
+Object {
+  "collisionLayers": Array [],
+  "legends": Array [],
+  "levels": Array [],
+  "objects": Array [
+    GameObject {
+      "_colors": Array [
+        "transparent",
+      ],
+      "_name": "z",
+      "_optionalLegendChar": undefined,
+      "_pixels": Array [],
+    },
+  ],
+  "rules": Array [
+    GameRule {
+      "_cellSequenceBrackets": Array [
+        GameRuleSequenceBracket {
+          "_bracket": GameRuleSimpleBracket {
+            "_cellLayers": Array [
+              Array [
+                GameRuleCellLayer {
+                  "_cellModifiers": Array [
+                    "NO",
+                  ],
+                  "_objectName": GameObject {
+                    "_colors": Array [
+                      "transparent",
+                    ],
+                    "_name": "z",
+                    "_optionalLegendChar": undefined,
+                    "_pixels": Array [],
+                  },
+                },
+              ],
+            ],
+          },
+          "_ruleModifiers": Array [],
+        },
+      ],
+      "_productionModifiers": Array [],
+      "_ruleAction": GameRuleActionBrackets {
+        "_cellSequenceBrackets": Array [
+          GameRuleSequenceBracket {
+            "_bracket": GameRuleSimpleBracket {
+              "_cellLayers": Array [
+                Array [
+                  GameRuleCellLayer {
+                    "_cellModifiers": Array [],
+                    "_objectName": GameObject {
+                      "_colors": Array [
+                        "transparent",
+                      ],
+                      "_name": "z",
+                      "_optionalLegendChar": undefined,
+                      "_pixels": Array [],
+                    },
+                  },
+                ],
+              ],
+            },
+            "_ruleModifiers": Array [],
+          },
+        ],
+        "_ruleCommands": Array [],
+      },
+      "_ruleModifiers": Array [],
+    },
+  ],
+  "settings": Object {},
+  "sounds": Array [],
+  "title": "checkParse",
+  "winConditions": Array [],
+}
+`;
+
+exports[`rules Cell Modifiers parses a rule with modifiers 2 1`] = `
+Object {
+  "__name": "Details",
+  "_i1": Object {
+    "__name": "Title",
+    "_i0": "title",
+    "_i1": Object {
+      "__name": "words",
+      "_i0": Array [
+        "checkGrammar",
+      ],
+    },
+  },
+  "_i2": Array [
+    Object {
+      "__name": "lineTerminator",
+      "_i1": Object {
+        "__name": "newline",
+        "_i0": "
+",
+      },
+    },
+    Object {
+      "__name": "lineTerminator",
+      "_i1": Object {
+        "__name": "newline",
+        "_i0": "
+",
+      },
+    },
+  ],
+  "_i9": Array [
+    Object {
+      "__name": "Section",
+      "_i0": "===",
+      "_i1": Object {
+        "__name": "headingBar",
+      },
+      "_i2": Object {
+        "__name": "lineTerminator",
+        "_i1": Object {
+          "__name": "newline",
+          "_i0": "
+",
+        },
+      },
+      "_i3": Object {
+        "__name": "t_RULES",
+        "_i0": Object {
+          "__name": "caseInsensitive",
+          "_i0": "RULES",
+        },
+      },
+      "_i4": Object {
+        "__name": "lineTerminator",
+        "_i1": Object {
+          "__name": "newline",
+          "_i0": "
+",
+        },
+      },
+      "_i5": "===",
+      "_i6": Object {
+        "__name": "headingBar",
+      },
+      "_i7": Array [
+        Object {
+          "__name": "lineTerminator",
+          "_i1": Object {
+            "__name": "newline",
+            "_i0": "
+",
+          },
+        },
+        Object {
+          "__name": "lineTerminator",
+          "_i1": Object {
+            "__name": "newline",
+            "_i0": "
+",
+          },
+        },
+      ],
+      "_i8": Array [
+        Array [],
+      ],
+      "_i9": Array [
+        Object {
+          "__name": "RuleItem",
+          "_i0": Object {
+            "__name": "Rule",
+            "_i2": Array [
+              Object {
+                "__name": "CellSequenceBracket",
+                "_i1": Object {
+                  "__name": "CellSequenceBracketOnly",
+                  "_i0": Object {
+                    "__name": "SimpleBracket",
+                    "_i0": "[",
+                    "_i2": Object {
+                      "__name": "NeighboringCells",
+                      "_i0": Object {
+                        "__name": "NonemptyListOf",
+                        "_i0": Object {
+                          "__name": "Cell",
+                          "_i0": Array [
+                            Object {
+                              "__name": "CellLayer",
+                              "_i0": Array [
+                                Object {
+                                  "__name": "CellLayerModifier",
+                                  "_i0": Object {
+                                    "__name": "t_STATIONARY",
+                                    "_i0": Object {
+                                      "__name": "caseInsensitive",
+                                      "_i0": "STATIONARY",
+                                    },
+                                  },
+                                },
+                              ],
+                              "_i1": Object {
+                                "__name": "CellName",
+                                "_i0": Array [
+                                  Object {
+                                    "__name": "letter",
+                                    "_i0": Object {
+                                      "__name": "lower",
+                                      "_i0": "z",
+                                    },
+                                  },
+                                ],
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    },
+                    "_i3": "]",
+                  },
+                },
+              },
+            ],
+            "_i3": "->",
+            "_i4": Object {
+              "__name": "RuleAction",
+              "_i0": Object {
+                "__name": "RuleActionBrackets",
+                "_i0": Array [
+                  Object {
+                    "__name": "CellSequenceBracket",
+                    "_i1": Object {
+                      "__name": "CellSequenceBracketOnly",
+                      "_i0": Object {
+                        "__name": "SimpleBracket",
+                        "_i0": "[",
+                        "_i2": Object {
+                          "__name": "NeighboringCells",
+                          "_i0": Object {
+                            "__name": "NonemptyListOf",
+                            "_i0": Object {
+                              "__name": "Cell",
+                              "_i0": Array [
+                                Object {
+                                  "__name": "CellLayer",
+                                  "_i1": Object {
+                                    "__name": "CellName",
+                                    "_i0": Array [
+                                      Object {
+                                        "__name": "letter",
+                                        "_i0": Object {
+                                          "__name": "lower",
+                                          "_i0": "z",
+                                        },
+                                      },
+                                    ],
+                                  },
+                                },
+                              ],
+                            },
+                          },
+                        },
+                        "_i3": "]",
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+            "_i5": Array [
+              Object {
+                "__name": "lineTerminator",
+                "_i1": Object {
+                  "__name": "newline",
+                  "_i0": "
+",
+                },
+              },
+            ],
+          },
+        },
+      ],
+    },
+  ],
+}
+`;
+
+exports[`rules Cell Modifiers parses a rule with modifiers 2 2`] = `
+Object {
+  "collisionLayers": Array [],
+  "legends": Array [],
+  "levels": Array [],
+  "objects": Array [
+    GameObject {
+      "_colors": Array [
+        "transparent",
+      ],
+      "_name": "z",
+      "_optionalLegendChar": undefined,
+      "_pixels": Array [],
+    },
+  ],
+  "rules": Array [
+    GameRule {
+      "_cellSequenceBrackets": Array [
+        GameRuleSequenceBracket {
+          "_bracket": GameRuleSimpleBracket {
+            "_cellLayers": Array [
+              Array [
+                GameRuleCellLayer {
+                  "_cellModifiers": Array [
+                    "STATIONARY",
+                  ],
+                  "_objectName": GameObject {
+                    "_colors": Array [
+                      "transparent",
+                    ],
+                    "_name": "z",
+                    "_optionalLegendChar": undefined,
+                    "_pixels": Array [],
+                  },
+                },
+              ],
+            ],
+          },
+          "_ruleModifiers": Array [],
+        },
+      ],
+      "_productionModifiers": Array [],
+      "_ruleAction": GameRuleActionBrackets {
+        "_cellSequenceBrackets": Array [
+          GameRuleSequenceBracket {
+            "_bracket": GameRuleSimpleBracket {
+              "_cellLayers": Array [
+                Array [
+                  GameRuleCellLayer {
+                    "_cellModifiers": Array [],
+                    "_objectName": GameObject {
+                      "_colors": Array [
+                        "transparent",
+                      ],
+                      "_name": "z",
+                      "_optionalLegendChar": undefined,
+                      "_pixels": Array [],
+                    },
+                  },
+                ],
+              ],
+            },
+            "_ruleModifiers": Array [],
+          },
+        ],
+        "_ruleCommands": Array [],
+      },
+      "_ruleModifiers": Array [],
+    },
+  ],
+  "settings": Object {},
+  "sounds": Array [],
+  "title": "checkParse",
+  "winConditions": Array [],
+}
+`;
+
+exports[`rules parses a rule with ellpisis 1`] = `
+Object {
+  "__name": "Details",
+  "_i1": Object {
+    "__name": "Title",
+    "_i0": "title",
+    "_i1": Object {
+      "__name": "words",
+      "_i0": Array [
+        "checkGrammar",
+      ],
+    },
+  },
+  "_i2": Array [
+    Object {
+      "__name": "lineTerminator",
+      "_i1": Object {
+        "__name": "newline",
+        "_i0": "
+",
+      },
+    },
+    Object {
+      "__name": "lineTerminator",
+      "_i1": Object {
+        "__name": "newline",
+        "_i0": "
+",
+      },
+    },
+  ],
+  "_i9": Array [
+    Object {
+      "__name": "Section",
+      "_i0": "===",
+      "_i1": Object {
+        "__name": "headingBar",
+      },
+      "_i2": Object {
+        "__name": "lineTerminator",
+        "_i1": Object {
+          "__name": "newline",
+          "_i0": "
+",
+        },
+      },
+      "_i3": Object {
+        "__name": "t_RULES",
+        "_i0": Object {
+          "__name": "caseInsensitive",
+          "_i0": "RULES",
+        },
+      },
+      "_i4": Object {
+        "__name": "lineTerminator",
+        "_i1": Object {
+          "__name": "newline",
+          "_i0": "
+",
+        },
+      },
+      "_i5": "===",
+      "_i6": Object {
+        "__name": "headingBar",
+      },
+      "_i7": Array [
+        Object {
+          "__name": "lineTerminator",
+          "_i1": Object {
+            "__name": "newline",
+            "_i0": "
+",
+          },
+        },
+        Object {
+          "__name": "lineTerminator",
+          "_i1": Object {
+            "__name": "newline",
+            "_i0": "
+",
+          },
+        },
+      ],
+      "_i8": Array [
+        Array [],
+      ],
+      "_i9": Array [
+        Object {
+          "__name": "RuleItem",
+          "_i0": Object {
+            "__name": "Rule",
+            "_i2": Array [
+              Object {
+                "__name": "CellSequenceBracket",
+                "_i1": Object {
+                  "__name": "CellSequenceBracketOnly",
+                  "_i0": Object {
+                    "__name": "EllipsisBracket",
+                    "_i0": "[",
+                    "_i2": Object {
+                      "__name": "NeighboringCells",
+                      "_i0": Object {
+                        "__name": "NonemptyListOf",
+                        "_i0": Object {
+                          "__name": "Cell",
+                          "_i0": Array [
+                            Object {
+                              "__name": "CellLayer",
+                              "_i1": Object {
+                                "__name": "CellName",
+                                "_i0": Array [
+                                  Object {
+                                    "__name": "letter",
+                                    "_i0": Object {
+                                      "__name": "lower",
+                                      "_i0": "z",
+                                    },
+                                  },
+                                ],
+                              },
+                            },
+                          ],
+                        },
+                        "_i1": Array [
+                          "|",
+                        ],
+                        "_i2": Array [
+                          Object {
+                            "__name": "Cell",
+                          },
+                        ],
+                      },
+                    },
+                    "_i3": Object {
+                      "__name": "t_ELLIPSIS",
+                      "_i0": "...",
+                    },
+                    "_i4": "|",
+                    "_i5": Object {
+                      "__name": "NeighboringCells",
+                      "_i0": Object {
+                        "__name": "NonemptyListOf",
+                        "_i0": Object {
+                          "__name": "Cell",
+                          "_i0": Array [
+                            Object {
+                              "__name": "CellLayer",
+                              "_i1": Object {
+                                "__name": "CellName",
+                                "_i0": Array [
+                                  Object {
+                                    "__name": "letter",
+                                    "_i0": Object {
+                                      "__name": "lower",
+                                      "_i0": "x",
+                                    },
+                                  },
+                                ],
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    },
+                    "_i6": "]",
+                  },
+                },
+              },
+            ],
+            "_i3": "->",
+            "_i4": Object {
+              "__name": "RuleAction",
+              "_i0": Object {
+                "__name": "RuleActionBrackets",
+                "_i0": Array [
+                  Object {
+                    "__name": "CellSequenceBracket",
+                    "_i1": Object {
+                      "__name": "CellSequenceBracketOnly",
+                      "_i0": Object {
+                        "__name": "EllipsisBracket",
+                        "_i0": "[",
+                        "_i2": Object {
+                          "__name": "NeighboringCells",
+                          "_i0": Object {
+                            "__name": "NonemptyListOf",
+                            "_i0": Object {
+                              "__name": "Cell",
+                              "_i0": Array [
+                                Object {
+                                  "__name": "CellLayer",
+                                  "_i0": Array [
+                                    Object {
+                                      "__name": "CellLayerModifier",
+                                      "_i0": Object {
+                                        "__name": "T_RANDOM",
+                                        "_i0": Object {
+                                          "__name": "caseInsensitive",
+                                          "_i0": "RANDOM",
+                                        },
+                                      },
+                                    },
+                                  ],
+                                  "_i1": Object {
+                                    "__name": "CellName",
+                                    "_i0": Array [
+                                      Object {
+                                        "__name": "letter",
+                                        "_i0": Object {
+                                          "__name": "lower",
+                                          "_i0": "z",
+                                        },
+                                      },
+                                    ],
+                                  },
+                                },
+                              ],
+                            },
+                            "_i1": Array [
+                              "|",
+                            ],
+                            "_i2": Array [
+                              Object {
+                                "__name": "Cell",
+                              },
+                            ],
+                          },
+                        },
+                        "_i3": Object {
+                          "__name": "t_ELLIPSIS",
+                          "_i0": "...",
+                        },
+                        "_i4": "|",
+                        "_i5": Object {
+                          "__name": "NeighboringCells",
+                          "_i0": Object {
+                            "__name": "NonemptyListOf",
+                            "_i0": Object {
+                              "__name": "Cell",
+                              "_i0": Array [
+                                Object {
+                                  "__name": "CellLayer",
+                                  "_i1": Object {
+                                    "__name": "CellName",
+                                    "_i0": Array [
+                                      Object {
+                                        "__name": "letter",
+                                        "_i0": Object {
+                                          "__name": "lower",
+                                          "_i0": "x",
+                                        },
+                                      },
+                                    ],
+                                  },
+                                },
+                              ],
+                            },
+                          },
+                        },
+                        "_i6": "]",
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+            "_i5": Array [
+              Object {
+                "__name": "lineTerminator",
+                "_i1": Object {
+                  "__name": "newline",
+                  "_i0": "
+",
+                },
+              },
+            ],
+          },
+        },
+      ],
+    },
+  ],
+}
+`;
+
+exports[`rules parses a rule with ellpisis 2`] = `
+Object {
+  "collisionLayers": Array [],
+  "legends": Array [],
+  "levels": Array [],
+  "objects": Array [
+    GameObject {
+      "_colors": Array [
+        "transparent",
+      ],
+      "_name": "z",
+      "_optionalLegendChar": undefined,
+      "_pixels": Array [],
+    },
+    GameObject {
+      "_colors": Array [
+        "transparent",
+      ],
+      "_name": "x",
+      "_optionalLegendChar": undefined,
+      "_pixels": Array [],
+    },
+  ],
+  "rules": Array [
+    GameRule {
+      "_cellSequenceBrackets": Array [
+        GameRuleSequenceBracket {
+          "_bracket": RuleEllipsisBracket {
+            "_leftNeighboringCells": Array [
+              Array [
+                GameRuleCellLayer {
+                  "_cellModifiers": Array [],
+                  "_objectName": GameObject {
+                    "_colors": Array [
+                      "transparent",
+                    ],
+                    "_name": "z",
+                    "_optionalLegendChar": undefined,
+                    "_pixels": Array [],
+                  },
+                },
+              ],
+              Array [],
+            ],
+            "_rightNeighboringCells": Array [
+              Array [
+                GameRuleCellLayer {
+                  "_cellModifiers": Array [],
+                  "_objectName": GameObject {
+                    "_colors": Array [
+                      "transparent",
+                    ],
+                    "_name": "x",
+                    "_optionalLegendChar": undefined,
+                    "_pixels": Array [],
+                  },
+                },
+              ],
+            ],
+          },
+          "_ruleModifiers": Array [],
+        },
+      ],
+      "_productionModifiers": Array [],
+      "_ruleAction": GameRuleActionBrackets {
+        "_cellSequenceBrackets": Array [
+          GameRuleSequenceBracket {
+            "_bracket": RuleEllipsisBracket {
+              "_leftNeighboringCells": Array [
+                Array [
+                  GameRuleCellLayer {
+                    "_cellModifiers": Array [
+                      "RANDOM",
+                    ],
+                    "_objectName": GameObject {
+                      "_colors": Array [
+                        "transparent",
+                      ],
+                      "_name": "z",
+                      "_optionalLegendChar": undefined,
+                      "_pixels": Array [],
+                    },
+                  },
+                ],
+                Array [],
+              ],
+              "_rightNeighboringCells": Array [
+                Array [
+                  GameRuleCellLayer {
+                    "_cellModifiers": Array [],
+                    "_objectName": GameObject {
+                      "_colors": Array [
+                        "transparent",
+                      ],
+                      "_name": "x",
+                      "_optionalLegendChar": undefined,
+                      "_pixels": Array [],
+                    },
+                  },
+                ],
+              ],
+            },
+            "_ruleModifiers": Array [],
+          },
+        ],
+        "_ruleCommands": Array [],
+      },
+      "_ruleModifiers": Array [],
+    },
+  ],
+  "settings": Object {},
+  "sounds": Array [],
+  "title": "checkParse",
+  "winConditions": Array [],
+}
+`;
+
+exports[`rules parses a rule with multiple cells 1`] = `
+Object {
+  "__name": "Details",
+  "_i1": Object {
+    "__name": "Title",
+    "_i0": "title",
+    "_i1": Object {
+      "__name": "words",
+      "_i0": Array [
+        "checkGrammar",
+      ],
+    },
+  },
+  "_i2": Array [
+    Object {
+      "__name": "lineTerminator",
+      "_i1": Object {
+        "__name": "newline",
+        "_i0": "
+",
+      },
+    },
+    Object {
+      "__name": "lineTerminator",
+      "_i1": Object {
+        "__name": "newline",
+        "_i0": "
+",
+      },
+    },
+  ],
+  "_i9": Array [
+    Object {
+      "__name": "Section",
+      "_i0": "===",
+      "_i1": Object {
+        "__name": "headingBar",
+      },
+      "_i2": Object {
+        "__name": "lineTerminator",
+        "_i1": Object {
+          "__name": "newline",
+          "_i0": "
+",
+        },
+      },
+      "_i3": Object {
+        "__name": "t_RULES",
+        "_i0": Object {
+          "__name": "caseInsensitive",
+          "_i0": "RULES",
+        },
+      },
+      "_i4": Object {
+        "__name": "lineTerminator",
+        "_i1": Object {
+          "__name": "newline",
+          "_i0": "
+",
+        },
+      },
+      "_i5": "===",
+      "_i6": Object {
+        "__name": "headingBar",
+      },
+      "_i7": Array [
+        Object {
+          "__name": "lineTerminator",
+          "_i1": Object {
+            "__name": "newline",
+            "_i0": "
+",
+          },
+        },
+        Object {
+          "__name": "lineTerminator",
+          "_i1": Object {
+            "__name": "newline",
+            "_i0": "
+",
+          },
+        },
+      ],
+      "_i8": Array [
+        Array [],
+      ],
+      "_i9": Array [
+        Object {
+          "__name": "RuleItem",
+          "_i0": Object {
+            "__name": "Rule",
+            "_i2": Array [
+              Object {
+                "__name": "CellSequenceBracket",
+                "_i1": Object {
+                  "__name": "CellSequenceBracketOnly",
+                  "_i0": Object {
+                    "__name": "SimpleBracket",
+                    "_i0": "[",
+                    "_i2": Object {
+                      "__name": "NeighboringCells",
+                      "_i0": Object {
+                        "__name": "NonemptyListOf",
+                        "_i0": Object {
+                          "__name": "Cell",
+                          "_i0": Array [
+                            Object {
+                              "__name": "CellLayer",
+                              "_i1": Object {
+                                "__name": "CellName",
+                                "_i0": Array [
+                                  Object {
+                                    "__name": "letter",
+                                    "_i0": Object {
+                                      "__name": "lower",
+                                      "_i0": "z",
+                                    },
+                                  },
+                                ],
+                              },
+                            },
+                          ],
+                        },
+                        "_i1": Array [
+                          "|",
+                        ],
+                        "_i2": Array [
+                          Object {
+                            "__name": "Cell",
+                            "_i0": Array [
+                              Object {
+                                "__name": "CellLayer",
+                                "_i1": Object {
+                                  "__name": "CellName",
+                                  "_i0": Array [
+                                    Object {
+                                      "__name": "letter",
+                                      "_i0": Object {
+                                        "__name": "lower",
+                                        "_i0": "x",
+                                      },
+                                    },
+                                  ],
+                                },
+                              },
+                            ],
+                          },
+                        ],
+                      },
+                    },
+                    "_i3": "]",
+                  },
+                },
+              },
+            ],
+            "_i3": "->",
+            "_i4": Object {
+              "__name": "RuleAction",
+              "_i0": Object {
+                "__name": "RuleActionBrackets",
+                "_i0": Array [
+                  Object {
+                    "__name": "CellSequenceBracket",
+                    "_i1": Object {
+                      "__name": "CellSequenceBracketOnly",
+                      "_i0": Object {
+                        "__name": "SimpleBracket",
+                        "_i0": "[",
+                        "_i2": Object {
+                          "__name": "NeighboringCells",
+                          "_i0": Object {
+                            "__name": "NonemptyListOf",
+                            "_i0": Object {
+                              "__name": "Cell",
+                            },
+                          },
+                        },
+                        "_i3": "]",
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+            "_i5": Array [
+              Object {
+                "__name": "lineTerminator",
+                "_i1": Object {
+                  "__name": "newline",
+                  "_i0": "
+",
+                },
+              },
+            ],
+          },
+        },
+      ],
+    },
+  ],
+}
+`;
+
+exports[`rules parses a rule with multiple cells 2`] = `
+Object {
+  "collisionLayers": Array [],
+  "legends": Array [],
+  "levels": Array [],
+  "objects": Array [
+    GameObject {
+      "_colors": Array [
+        "transparent",
+      ],
+      "_name": "z",
+      "_optionalLegendChar": undefined,
+      "_pixels": Array [],
+    },
+    GameObject {
+      "_colors": Array [
+        "transparent",
+      ],
+      "_name": "x",
+      "_optionalLegendChar": undefined,
+      "_pixels": Array [],
+    },
+  ],
+  "rules": Array [
+    GameRule {
+      "_cellSequenceBrackets": Array [
+        GameRuleSequenceBracket {
+          "_bracket": GameRuleSimpleBracket {
+            "_cellLayers": Array [
+              Array [
+                GameRuleCellLayer {
+                  "_cellModifiers": Array [],
+                  "_objectName": GameObject {
+                    "_colors": Array [
+                      "transparent",
+                    ],
+                    "_name": "z",
+                    "_optionalLegendChar": undefined,
+                    "_pixels": Array [],
+                  },
+                },
+              ],
+              Array [
+                GameRuleCellLayer {
+                  "_cellModifiers": Array [],
+                  "_objectName": GameObject {
+                    "_colors": Array [
+                      "transparent",
+                    ],
+                    "_name": "x",
+                    "_optionalLegendChar": undefined,
+                    "_pixels": Array [],
+                  },
+                },
+              ],
+            ],
+          },
+          "_ruleModifiers": Array [],
+        },
+      ],
+      "_productionModifiers": Array [],
+      "_ruleAction": GameRuleActionBrackets {
+        "_cellSequenceBrackets": Array [
+          GameRuleSequenceBracket {
+            "_bracket": GameRuleSimpleBracket {
+              "_cellLayers": Array [
+                Array [],
+              ],
+            },
+            "_ruleModifiers": Array [],
+          },
+        ],
+        "_ruleCommands": Array [],
+      },
+      "_ruleModifiers": Array [],
+    },
+  ],
+  "settings": Object {},
+  "sounds": Array [],
+  "title": "checkParse",
+  "winConditions": Array [],
+}
+`;
+
+exports[`rules parses a simple rule 1`] = `
+Object {
+  "__name": "Details",
+  "_i1": Object {
+    "__name": "Title",
+    "_i0": "title",
+    "_i1": Object {
+      "__name": "words",
+      "_i0": Array [
+        "checkGrammar",
+      ],
+    },
+  },
+  "_i2": Array [
+    Object {
+      "__name": "lineTerminator",
+      "_i1": Object {
+        "__name": "newline",
+        "_i0": "
+",
+      },
+    },
+    Object {
+      "__name": "lineTerminator",
+      "_i1": Object {
+        "__name": "newline",
+        "_i0": "
+",
+      },
+    },
+  ],
+  "_i9": Array [
+    Object {
+      "__name": "Section",
+      "_i0": "===",
+      "_i1": Object {
+        "__name": "headingBar",
+      },
+      "_i2": Object {
+        "__name": "lineTerminator",
+        "_i1": Object {
+          "__name": "newline",
+          "_i0": "
+",
+        },
+      },
+      "_i3": Object {
+        "__name": "t_RULES",
+        "_i0": Object {
+          "__name": "caseInsensitive",
+          "_i0": "RULES",
+        },
+      },
+      "_i4": Object {
+        "__name": "lineTerminator",
+        "_i1": Object {
+          "__name": "newline",
+          "_i0": "
+",
+        },
+      },
+      "_i5": "===",
+      "_i6": Object {
+        "__name": "headingBar",
+      },
+      "_i7": Array [
+        Object {
+          "__name": "lineTerminator",
+          "_i1": Object {
+            "__name": "newline",
+            "_i0": "
+",
+          },
+        },
+        Object {
+          "__name": "lineTerminator",
+          "_i1": Object {
+            "__name": "newline",
+            "_i0": "
+",
+          },
+        },
+      ],
+      "_i8": Array [
+        Array [],
+      ],
+      "_i9": Array [
+        Object {
+          "__name": "RuleItem",
+          "_i0": Object {
+            "__name": "Rule",
+            "_i2": Array [
+              Object {
+                "__name": "CellSequenceBracket",
+                "_i1": Object {
+                  "__name": "CellSequenceBracketOnly",
+                  "_i0": Object {
+                    "__name": "SimpleBracket",
+                    "_i0": "[",
+                    "_i2": Object {
+                      "__name": "NeighboringCells",
+                      "_i0": Object {
+                        "__name": "NonemptyListOf",
+                        "_i0": Object {
+                          "__name": "Cell",
+                          "_i0": Array [
+                            Object {
+                              "__name": "CellLayer",
+                              "_i1": Object {
+                                "__name": "CellName",
+                                "_i0": Array [
+                                  Object {
+                                    "__name": "letter",
+                                    "_i0": Object {
+                                      "__name": "lower",
+                                      "_i0": "z",
+                                    },
+                                  },
+                                ],
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    },
+                    "_i3": "]",
+                  },
+                },
+              },
+            ],
+            "_i3": "->",
+            "_i4": Object {
+              "__name": "RuleAction",
+              "_i0": Object {
+                "__name": "RuleActionBrackets",
+                "_i0": Array [
+                  Object {
+                    "__name": "CellSequenceBracket",
+                    "_i1": Object {
+                      "__name": "CellSequenceBracketOnly",
+                      "_i0": Object {
+                        "__name": "SimpleBracket",
+                        "_i0": "[",
+                        "_i2": Object {
+                          "__name": "NeighboringCells",
+                          "_i0": Object {
+                            "__name": "NonemptyListOf",
+                            "_i0": Object {
+                              "__name": "Cell",
+                            },
+                          },
+                        },
+                        "_i3": "]",
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+            "_i5": Array [
+              Object {
+                "__name": "lineTerminator",
+                "_i1": Object {
+                  "__name": "newline",
+                  "_i0": "
+",
+                },
+              },
+            ],
+          },
+        },
+      ],
+    },
+  ],
+}
+`;
+
+exports[`rules parses a simple rule 2`] = `
+Object {
+  "collisionLayers": Array [],
+  "legends": Array [],
+  "levels": Array [],
+  "objects": Array [
+    GameObject {
+      "_colors": Array [
+        "transparent",
+      ],
+      "_name": "z",
+      "_optionalLegendChar": undefined,
+      "_pixels": Array [],
+    },
+  ],
+  "rules": Array [
+    GameRule {
+      "_cellSequenceBrackets": Array [
+        GameRuleSequenceBracket {
+          "_bracket": GameRuleSimpleBracket {
+            "_cellLayers": Array [
+              Array [
+                GameRuleCellLayer {
+                  "_cellModifiers": Array [],
+                  "_objectName": GameObject {
+                    "_colors": Array [
+                      "transparent",
+                    ],
+                    "_name": "z",
+                    "_optionalLegendChar": undefined,
+                    "_pixels": Array [],
+                  },
+                },
+              ],
+            ],
+          },
+          "_ruleModifiers": Array [],
+        },
+      ],
+      "_productionModifiers": Array [],
+      "_ruleAction": GameRuleActionBrackets {
+        "_cellSequenceBrackets": Array [
+          GameRuleSequenceBracket {
+            "_bracket": GameRuleSimpleBracket {
+              "_cellLayers": Array [
+                Array [],
+              ],
+            },
+            "_ruleModifiers": Array [],
+          },
+        ],
+        "_ruleCommands": Array [],
+      },
+      "_ruleModifiers": Array [],
+    },
+  ],
+  "settings": Object {},
+  "sounds": Array [],
+  "title": "checkParse",
+  "winConditions": Array [],
+}
+`;
+
+exports[`rules parses a simple rule 2 1`] = `
+Object {
+  "__name": "Details",
+  "_i1": Object {
+    "__name": "Title",
+    "_i0": "title",
+    "_i1": Object {
+      "__name": "words",
+      "_i0": Array [
+        "checkGrammar",
+      ],
+    },
+  },
+  "_i2": Array [
+    Object {
+      "__name": "lineTerminator",
+      "_i1": Object {
+        "__name": "newline",
+        "_i0": "
+",
+      },
+    },
+    Object {
+      "__name": "lineTerminator",
+      "_i1": Object {
+        "__name": "newline",
+        "_i0": "
+",
+      },
+    },
+  ],
+  "_i9": Array [
+    Object {
+      "__name": "Section",
+      "_i0": "===",
+      "_i1": Object {
+        "__name": "headingBar",
+      },
+      "_i2": Object {
+        "__name": "lineTerminator",
+        "_i1": Object {
+          "__name": "newline",
+          "_i0": "
+",
+        },
+      },
+      "_i3": Object {
+        "__name": "t_RULES",
+        "_i0": Object {
+          "__name": "caseInsensitive",
+          "_i0": "RULES",
+        },
+      },
+      "_i4": Object {
+        "__name": "lineTerminator",
+        "_i1": Object {
+          "__name": "newline",
+          "_i0": "
+",
+        },
+      },
+      "_i5": "===",
+      "_i6": Object {
+        "__name": "headingBar",
+      },
+      "_i7": Array [
+        Object {
+          "__name": "lineTerminator",
+          "_i1": Object {
+            "__name": "newline",
+            "_i0": "
+",
+          },
+        },
+        Object {
+          "__name": "lineTerminator",
+          "_i1": Object {
+            "__name": "newline",
+            "_i0": "
+",
+          },
+        },
+      ],
+      "_i8": Array [
+        Array [],
+      ],
+      "_i9": Array [
+        Object {
+          "__name": "RuleItem",
+          "_i0": Object {
+            "__name": "Rule",
+            "_i2": Array [
+              Object {
+                "__name": "CellSequenceBracket",
+                "_i1": Object {
+                  "__name": "CellSequenceBracketOnly",
+                  "_i0": Object {
+                    "__name": "SimpleBracket",
+                    "_i0": "[",
+                    "_i2": Object {
+                      "__name": "NeighboringCells",
+                      "_i0": Object {
+                        "__name": "NonemptyListOf",
+                        "_i0": Object {
+                          "__name": "Cell",
+                          "_i0": Array [
+                            Object {
+                              "__name": "CellLayer",
+                              "_i1": Object {
+                                "__name": "CellName",
+                                "_i0": Array [
+                                  Object {
+                                    "__name": "letter",
+                                    "_i0": Object {
+                                      "__name": "lower",
+                                      "_i0": "z",
+                                    },
+                                  },
+                                ],
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    },
+                    "_i3": "]",
+                  },
+                },
+              },
+            ],
+            "_i3": "->",
+            "_i4": Object {
+              "__name": "RuleAction",
+              "_i0": Object {
+                "__name": "RuleActionBrackets",
+                "_i0": Array [
+                  Object {
+                    "__name": "CellSequenceBracket",
+                    "_i1": Object {
+                      "__name": "CellSequenceBracketOnly",
+                      "_i0": Object {
+                        "__name": "SimpleBracket",
+                        "_i0": "[",
+                        "_i2": Object {
+                          "__name": "NeighboringCells",
+                          "_i0": Object {
+                            "__name": "NonemptyListOf",
+                            "_i0": Object {
+                              "__name": "Cell",
+                              "_i0": Array [
+                                Object {
+                                  "__name": "CellLayer",
+                                  "_i1": Object {
+                                    "__name": "CellName",
+                                    "_i0": Array [
+                                      Object {
+                                        "__name": "letter",
+                                        "_i0": Object {
+                                          "__name": "lower",
+                                          "_i0": "z",
+                                        },
+                                      },
+                                    ],
+                                  },
+                                },
+                              ],
+                            },
+                          },
+                        },
+                        "_i3": "]",
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+            "_i5": Array [
+              Object {
+                "__name": "lineTerminator",
+                "_i1": Object {
+                  "__name": "newline",
+                  "_i0": "
+",
+                },
+              },
+            ],
+          },
+        },
+      ],
+    },
+  ],
+}
+`;
+
+exports[`rules parses a simple rule 2 2`] = `
+Object {
+  "collisionLayers": Array [],
+  "legends": Array [],
+  "levels": Array [],
+  "objects": Array [
+    GameObject {
+      "_colors": Array [
+        "transparent",
+      ],
+      "_name": "z",
+      "_optionalLegendChar": undefined,
+      "_pixels": Array [],
+    },
+  ],
+  "rules": Array [
+    GameRule {
+      "_cellSequenceBrackets": Array [
+        GameRuleSequenceBracket {
+          "_bracket": GameRuleSimpleBracket {
+            "_cellLayers": Array [
+              Array [
+                GameRuleCellLayer {
+                  "_cellModifiers": Array [],
+                  "_objectName": GameObject {
+                    "_colors": Array [
+                      "transparent",
+                    ],
+                    "_name": "z",
+                    "_optionalLegendChar": undefined,
+                    "_pixels": Array [],
+                  },
+                },
+              ],
+            ],
+          },
+          "_ruleModifiers": Array [],
+        },
+      ],
+      "_productionModifiers": Array [],
+      "_ruleAction": GameRuleActionBrackets {
+        "_cellSequenceBrackets": Array [
+          GameRuleSequenceBracket {
+            "_bracket": GameRuleSimpleBracket {
+              "_cellLayers": Array [
+                Array [
+                  GameRuleCellLayer {
+                    "_cellModifiers": Array [],
+                    "_objectName": GameObject {
+                      "_colors": Array [
+                        "transparent",
+                      ],
+                      "_name": "z",
+                      "_optionalLegendChar": undefined,
+                      "_pixels": Array [],
+                    },
+                  },
+                ],
+              ],
+            },
+            "_ruleModifiers": Array [],
+          },
+        ],
+        "_ruleCommands": Array [],
+      },
+      "_ruleModifiers": Array [],
+    },
+  ],
+  "settings": Object {},
+  "sounds": Array [],
+  "title": "checkParse",
+  "winConditions": Array [],
+}
+`;
+
+exports[`rules parses a simple rule without whitespace 1`] = `
+Object {
+  "__name": "Details",
+  "_i1": Object {
+    "__name": "Title",
+    "_i0": "title",
+    "_i1": Object {
+      "__name": "words",
+      "_i0": Array [
+        "checkGrammar",
+      ],
+    },
+  },
+  "_i2": Array [
+    Object {
+      "__name": "lineTerminator",
+      "_i1": Object {
+        "__name": "newline",
+        "_i0": "
+",
+      },
+    },
+    Object {
+      "__name": "lineTerminator",
+      "_i1": Object {
+        "__name": "newline",
+        "_i0": "
+",
+      },
+    },
+  ],
+  "_i9": Array [
+    Object {
+      "__name": "Section",
+      "_i0": "===",
+      "_i1": Object {
+        "__name": "headingBar",
+      },
+      "_i2": Object {
+        "__name": "lineTerminator",
+        "_i1": Object {
+          "__name": "newline",
+          "_i0": "
+",
+        },
+      },
+      "_i3": Object {
+        "__name": "t_RULES",
+        "_i0": Object {
+          "__name": "caseInsensitive",
+          "_i0": "RULES",
+        },
+      },
+      "_i4": Object {
+        "__name": "lineTerminator",
+        "_i1": Object {
+          "__name": "newline",
+          "_i0": "
+",
+        },
+      },
+      "_i5": "===",
+      "_i6": Object {
+        "__name": "headingBar",
+      },
+      "_i7": Array [
+        Object {
+          "__name": "lineTerminator",
+          "_i1": Object {
+            "__name": "newline",
+            "_i0": "
+",
+          },
+        },
+        Object {
+          "__name": "lineTerminator",
+          "_i1": Object {
+            "__name": "newline",
+            "_i0": "
+",
+          },
+        },
+      ],
+      "_i8": Array [
+        Array [],
+      ],
+      "_i9": Array [
+        Object {
+          "__name": "RuleItem",
+          "_i0": Object {
+            "__name": "Rule",
+            "_i2": Array [
+              Object {
+                "__name": "CellSequenceBracket",
+                "_i1": Object {
+                  "__name": "CellSequenceBracketOnly",
+                  "_i0": Object {
+                    "__name": "SimpleBracket",
+                    "_i0": "[",
+                    "_i2": Object {
+                      "__name": "NeighboringCells",
+                      "_i0": Object {
+                        "__name": "NonemptyListOf",
+                        "_i0": Object {
+                          "__name": "Cell",
+                          "_i0": Array [
+                            Object {
+                              "__name": "CellLayer",
+                              "_i1": Object {
+                                "__name": "CellName",
+                                "_i0": Array [
+                                  Object {
+                                    "__name": "letter",
+                                    "_i0": Object {
+                                      "__name": "lower",
+                                      "_i0": "z",
+                                    },
+                                  },
+                                ],
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    },
+                    "_i3": "]",
+                  },
+                },
+              },
+            ],
+            "_i3": "->",
+            "_i4": Object {
+              "__name": "RuleAction",
+              "_i0": Object {
+                "__name": "RuleActionBrackets",
+                "_i0": Array [
+                  Object {
+                    "__name": "CellSequenceBracket",
+                    "_i1": Object {
+                      "__name": "CellSequenceBracketOnly",
+                      "_i0": Object {
+                        "__name": "SimpleBracket",
+                        "_i0": "[",
+                        "_i2": Object {
+                          "__name": "NeighboringCells",
+                          "_i0": Object {
+                            "__name": "NonemptyListOf",
+                            "_i0": Object {
+                              "__name": "Cell",
+                              "_i0": Array [
+                                Object {
+                                  "__name": "CellLayer",
+                                  "_i1": Object {
+                                    "__name": "CellName",
+                                    "_i0": Array [
+                                      Object {
+                                        "__name": "letter",
+                                        "_i0": Object {
+                                          "__name": "lower",
+                                          "_i0": "z",
+                                        },
+                                      },
+                                    ],
+                                  },
+                                },
+                              ],
+                            },
+                          },
+                        },
+                        "_i3": "]",
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+            "_i5": Array [
+              Object {
+                "__name": "lineTerminator",
+                "_i1": Object {
+                  "__name": "newline",
+                  "_i0": "
+",
+                },
+              },
+            ],
+          },
+        },
+      ],
+    },
+  ],
+}
+`;
+
+exports[`rules parses a simple rule without whitespace 2`] = `
+Object {
+  "collisionLayers": Array [],
+  "legends": Array [],
+  "levels": Array [],
+  "objects": Array [
+    GameObject {
+      "_colors": Array [
+        "transparent",
+      ],
+      "_name": "z",
+      "_optionalLegendChar": undefined,
+      "_pixels": Array [],
+    },
+  ],
+  "rules": Array [
+    GameRule {
+      "_cellSequenceBrackets": Array [
+        GameRuleSequenceBracket {
+          "_bracket": GameRuleSimpleBracket {
+            "_cellLayers": Array [
+              Array [
+                GameRuleCellLayer {
+                  "_cellModifiers": Array [],
+                  "_objectName": GameObject {
+                    "_colors": Array [
+                      "transparent",
+                    ],
+                    "_name": "z",
+                    "_optionalLegendChar": undefined,
+                    "_pixels": Array [],
+                  },
+                },
+              ],
+            ],
+          },
+          "_ruleModifiers": Array [],
+        },
+      ],
+      "_productionModifiers": Array [],
+      "_ruleAction": GameRuleActionBrackets {
+        "_cellSequenceBrackets": Array [
+          GameRuleSequenceBracket {
+            "_bracket": GameRuleSimpleBracket {
+              "_cellLayers": Array [
+                Array [
+                  GameRuleCellLayer {
+                    "_cellModifiers": Array [],
+                    "_objectName": GameObject {
+                      "_colors": Array [
+                        "transparent",
+                      ],
+                      "_name": "z",
+                      "_optionalLegendChar": undefined,
+                      "_pixels": Array [],
+                    },
+                  },
+                ],
+              ],
+            },
+            "_ruleModifiers": Array [],
+          },
+        ],
+        "_ruleCommands": Array [],
+      },
+      "_ruleModifiers": Array [],
+    },
+  ],
+  "settings": Object {},
+  "sounds": Array [],
+  "title": "checkParse",
+  "winConditions": Array [],
+}
+`;

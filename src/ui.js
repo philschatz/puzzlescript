@@ -90,6 +90,9 @@ function renderLevel (data, level) {
       })
     })
   })
+  // Clear back to sane colors
+  axel.fg(255, 255, 255)
+  axel.bg(0, 0, 0)
 }
 
 module.exports = { renderLevel }
