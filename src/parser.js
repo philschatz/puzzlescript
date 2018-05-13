@@ -167,12 +167,91 @@ Puzzlescript {
   CollisionLayerItem = NonemptyListOf<varName, ","?> ","? /*support a trailing comma*/ lineTerminator+
 
 
-  RuleItem
-    = RuleItemProduction
-    | RuleItemLoop
+RuleItem
+  = Rule
+  | RuleLoop
 
-  RuleItemProduction = t_GROUP_RULE_PLUS? t_RIGID? RuleConditionWithLeftArgs+ "->" RuleCondition* RuleCommand* lineTerminator+
-  RuleItemLoop = t_STARTLOOP lineTerminator+ RuleItemProduction+ t_ENDLOOP lineTerminator+
+Rule = t_GROUP_RULE_PLUS? RuleProduction lineTerminator+
+
+RuleProduction = RuleModifierLeft* CellSequenceBracket+ "->" RuleRightSide
+
+RuleRightSide
+  = RightBrackets
+  | RightCommands1
+  | RightCommands2
+
+RightBrackets = CellSequenceBracket+ RuleCommand* MessageCommand? // Verify the left-hand structure matches the right-hand
+RightCommands1 = RuleCommand+ MessageCommand?
+RightCommands2 = RuleCommand* MessageCommand
+
+
+CellSequenceBracket = RuleModifier* CellSequenceBracketOnly
+
+CellSequenceBracketOnly
+  = EllipsisBracket
+  | SimpleBracket
+
+
+EllipsisBracket = "[" NeighboringCells t_ELLIPSIS "|" NeighboringCells "]"
+SimpleBracket = "[" NeighboringCells "]"
+
+NeighboringCells = NonemptyListOf<Cell, "|">
+
+Cell
+  = CellSequenceBracketHack // Uggh, some games mis-typed and have nested brackets
+  | CellLayer*
+
+CellSequenceBracketHack = CellSequenceBracket  // Uggh, some games mis-typed and have nested brackets. They should be unwrapped as a Cell when semantically parsed
+
+CellLayer = CellLayerModifier* cellName
+
+cellName = (~space ~lineTerminator ~t_ELLIPSIS ~"]" any)+ // Can be "."
+
+CellLayerModifier
+  = t_NO
+  | t_ARROW
+
+RuleModifier
+  = t_RANDOM
+  | t_UP
+  | t_DOWN
+  | t_LEFT
+  | t_RIGHT
+  | t_VERTICAL
+  | t_HORIZONTAL
+  | t_ORTHOGONAL
+
+RuleModifierLeft
+  = RuleModifier // Sometimes people write "RIGHT LATE [..." instead of "LATE RIGHT [..."
+  | t_LATE
+  | t_RIGID
+
+
+RuleLoop =
+  t_STARTLOOP lineTerminator+
+  Rule+
+  t_ENDLOOP lineTerminator+
+
+
+t_ARROW
+  = t_UP_ARROW
+  | t_DOWN_ARROW
+  | t_LEFT_ARROW
+  | t_RIGHT_ARROW
+
+
+RuleCommand =
+    t_AGAIN
+  | t_CANCEL
+  | t_CHECKPOINT
+  | t_RESTART
+  | t_WIN
+  | t_SFX
+
+
+MessageCommand = t_MESSAGE words*
+
+
 
   // Section titles
   t_OBJECTS = caseInsensitive<"OBJECTS">
@@ -252,63 +331,8 @@ Puzzlescript {
     | t_SFX9
 
 
-  ruleDirection2 =
-      t_UP
-    | t_DOWN
-    | t_LEFT
-    | t_RIGHT
-    | t_HORIZONTAL
-    | t_VERTICAL
-
-  RuleCommand =
-      GameMessage
-    | t_AGAIN
-    | t_CANCEL
-    | t_CHECKPOINT
-    | t_RESTART
-    | t_WIN
-    | t_SFX
 
   GameMessage = t_MESSAGE words*
-
-  RuleCondition = ruleDirection2* RuleConditionBracket
-
-  RuleConditionWithLeftArgs = (ruleDirection2 | t_LATE | t_RANDOM)* RuleConditionBracket+ // because of Bubble Butler... it has "right late [..."
-
-  RuleConditionBracket
-    = RuleConditionBracketEllipsis
-    | RuleConditionBracketSimple
-
-  RuleConditionBracketEllipsis = "[" NonemptyListOf<RuleConditionEntry?, "|"> t_ELLIPSIS "|" NonemptyListOf<RuleConditionEntry?, "|"> "]"
-  RuleConditionBracketSimple = "[" NonemptyListOf<RuleConditionEntry?, "|"> "]"
-
-  RuleConditionEntry =
-      RuleConditionEntryLeaves
-    | RuleConditionBracket
-
-  RuleConditionEntryLeaves = ruleConditionEntryLeaf+
-  ruleConditionEntryLeaf = (ruleDirection3 space+)? legendVarNameUse (space+ t_AGAIN)?
-
-  ruleDirection3 =
-      t_MOVING
-    | t_ORTHOGONAL
-    | t_PERPENDICULAR
-    | t_VERTICAL
-    | t_HORIZONTAL
-    | t_STATIONARY
-    | t_UP_ARROW
-    | t_DOWN_ARROW // This guy is sooo annoying
-    | t_LEFT_ARROW
-    | t_RIGHT_ARROW
-    | t_UP
-    | t_DOWN
-    | t_LEFT
-    | t_RIGHT
-    | t_RANDOMDIR
-    | t_RANDOM
-    | t_NO  // This guy is sooo annoying
-    | t_ACTION
-
 
 
 
@@ -614,46 +638,6 @@ class GameRuleLoop extends BaseForLines {
   }
 }
 
-class GameRuleCondition extends BaseForLines {
-  constructor (source, directions, bracket) {
-    super(source)
-    this._directions = directions
-    this._bracket = bracket
-  }
-}
-
-class GameRuleConditionBracketSimple extends BaseForLines {
-  constructor (source, entriesSeparatedByPipe) {
-    super(source)
-    this._entriesSeparatedByPipe = entriesSeparatedByPipe
-  }
-}
-
-class GameRuleConditionBracketEllipsis extends BaseForLines {
-  constructor (source, leftHandSide, rightHandSide) {
-    super(source)
-    this._left = leftHandSide
-    this._right = rightHandSide
-  }
-}
-
-class GameRuleConditionEntryLeaf extends BaseForLines {
-  constructor (source, optionalDirection, objectName, optionalAgain) {
-    super(source)
-    this._optionalDirection = optionalDirection
-    this._objectName = objectName
-    this._optionalAgain = optionalAgain
-  }
-}
-
-class RuleConditionWithLeftArgs extends BaseForLines {
-  constructor (source, directionsWithLateOrRandom, bracket) {
-    super(source)
-    this._directionsWithLateOrRandom = directionsWithLateOrRandom
-    this._bracket = bracket
-  }
-}
-
 class LookupHelper {
   constructor () {
     this._allSoundEffects = new Map()
@@ -835,32 +819,6 @@ function parse (code) {
       RuleItem: function (_1) {
         return _1.parse()
       },
-      RuleItemProduction: function (_whitespace1, _whitespace2, leftHandSide, _productionArrow, rightHandSide, commands, _whitespace3) {
-        return new GameRuleProduction(this.source, leftHandSide.parse(), rightHandSide.parse(), commands.parse())
-      },
-      RuleItemLoop: function (_startloop, _whitespace1, productions, _endloop, _whitespace2) {
-        return new GameRuleLoop(this.source, productions.parse())
-      },
-
-      RuleConditionWithLeftArgs: function (directionsWithLateOrRandom, bracket) {
-        return new RuleConditionWithLeftArgs(this.source, directionsWithLateOrRandom.parse(), bracket.parse())
-      },
-      RuleConditionBracket: function (_1) {
-        return _1.parse()
-      },
-      RuleConditionBracketSimple: function (_leftBracket, entriesSeparatedByPipe, _rightBracket) {
-        return new GameRuleConditionBracketSimple(this.source, entriesSeparatedByPipe.parse())
-      },
-      RuleConditionBracketEllipsis: function (_leftBracket, leftHandSide, _ellipsis, _pipe, rightHandSide, _rightBracket) {
-        const left = leftHandSide.parse()
-        return new GameRuleConditionBracketEllipsis(this.source, left.slice(0, left.length - 1), rightHandSide.parse())
-      },
-      ruleConditionEntryLeaf: function (optionalDirection, _whitespace1, objectName, _whitespace2, optionalAgain) {
-        return new GameRuleConditionEntryLeaf(this.source, optionalDirection.parse(), lookup.lookupObjectOrLegendItemOrSoundEffect(this.source, objectName.parse()), optionalAgain.parse()[0])
-      },
-      RuleCondition: function (directions, bracket) {
-        return new GameRuleCondition(this.source, directions.parse(), bracket.parse())
-      },
 
       WinConditionItemSimple: function (qualifierEnum, objectName, _whitespace) {
         return new WinConditionSimple(this.source, qualifierEnum.parse(), objectName.parse())
@@ -935,11 +893,13 @@ function parse (code) {
       lineTerminator: (v1, v2, v3) => {},
       digit: (x) => {
         return x.primitiveValue.charCodeAt(0) - '0'.charCodeAt(0)
-      }
+      },
       // _default: function (exp1) {
       //   debugger
       //   return this.sourceString
       // },
+      Rule: function (_1, _2, _3) {},
+      RuleLoop: function (_1, _2, _3, _4, _5) {}
 
     })
     const game = s(m).parse()
@@ -988,10 +948,5 @@ module.exports = {
   WinConditionSimple,
   WinConditionOn,
   GameRuleProduction,
-  GameRuleLoop,
-  GameRuleCondition,
-  GameRuleConditionBracketSimple,
-  GameRuleConditionBracketEllipsis,
-  GameRuleConditionEntryLeaf,
-  RuleConditionWithLeftArgs
+  GameRuleLoop
 }
