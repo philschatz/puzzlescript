@@ -13,9 +13,15 @@ RULES
 `
 
 function checkGrammar(code) {
-  const {match, grammar} = parseGrammar(`title checkGrammar\n${RULE_HEADER}\n${code}`)
-  const {data, error, trace} = match
-  expect(error).toBeFalsy()
+  // add a header for the parser
+  code = `title checkGrammar\n${RULE_HEADER}\n${code}`
+
+  const {match, grammar} = parseGrammar(code)
+  if (!match.succeeded()) {
+    const trace = grammar.trace(code)
+    console.log(trace.toString())
+  }
+  expect(match.succeeded()).toBe(true)
 
   const s = grammar.createSemantics()
   s.addOperation('toJSON2', {
@@ -49,10 +55,34 @@ function checkGrammar(code) {
 
 function checkParse(code, varNames) {
   // Now check if the semantics parsed
-  const objectDefinitions = varNames.map(varName => {
-    return `${varName}\ntransparent\n\n`
+  const legendItems = varNames.map(varName => {
+    return `${varName} = testObject`
   })
-  const {data, error, trace} = parse(`title checkParse\n${OBJECT_HEADER}\n${objectDefinitions.join('\n')}\n${RULE_HEADER}\n${code}`)
+  const {data, error, trace} = parse(`
+title checkParse
+
+===
+OBJECTS
+===
+
+testObject
+transparent
+
+===
+LEGEND
+===
+
+${legendItems.join('\n')}
+
+====
+RULES
+====
+
+${code}
+`)
+  if (error) {
+    console.log(error.message)
+  }
   expect(error).toBeFalsy()
   expect(data).toMatchSnapshot()
   return data
@@ -75,28 +105,59 @@ describe('rules', () => {
     parseRule('[z]->[z]', ['z'])
   })
   it('parses a rule with multiple cells', () => {
-    parseRule('[ z | x ]->[ ]', ['z', 'x'])
+    parseRule('[ z | x ] -> [ ]', ['z', 'x'])
   })
-  // it('parses a rule with multiple layers', () => {
-  //   parseRule('[ z x ]->[ ]', ['z', 'x'])
-  // })
+  it('parses a rule with multiple layers', () => {
+    parseRule('[ z x ] -> [ ]', ['z', 'x'])
+  })
   it('parses a rule with ellpisis', () => {
     parseRule('[ z | ... | x ] -> [ RANDOM z | ... | x ]', ['z', 'x'])
   })
+  it('parses a rule with a period for a variable name', () => {
+    parseRule('[.] -> []', ['.'])
+  })
+  it('parses a rule with a _ for a variable name', () => {
+    parseRule('[z_x] -> []', ['z_x'])
+  })
+
 
   describe('Cell Modifiers', () => {
-    it('parses a rule with directions 1', () => {
-      parseRule('[ > z ] -> [ z ]', ['z'])
-    })
-    it('parses a rule with directions 2', () => {
-      parseRule('[ ^ z ] -> [ z ]', ['z'])
+    it('parses a rule with directions', () => {
+      parseRule('[ACTION z ] -> [ ]', ['z'])
+      parseRule('[^ z ] -> [ ]', ['z'])
+      parseRule('[v z ] -> [ ]', ['z']) // This needs to be the down arrow, not a variable
+      parseRule('[> z ] -> [ ]', ['z'])
+      parseRule('[< z ] -> [ ]', ['z'])
+      parseRule('[LEFT z ] -> [ ]', ['z'])
+      parseRule('[RIGHT z ] -> [ ]', ['z'])
+      parseRule('[UP z ] -> [ ]', ['z'])
+      parseRule('[DOWN z ] -> [ ]', ['z'])
+      parseRule('[STATIONARY z ] -> [ ]', ['z'])
+      parseRule('[MOVING z ] -> [ ]', ['z'])
+      parseRule('[VERTICAL z ] -> [ ]', ['z'])
+      parseRule('[HORIZONTAL z ] -> [ ]', ['z'])
+      parseRule('[PERPENDICULAR z ] -> [ ]', ['z'])
+      parseRule('[ORTHOGONAL z ] -> [ ]', ['z'])
+      parseRule('[RANDOMDIR z ] -> [ ]', ['z'])
     })
     it('parses a rule with modifiers', () => {
-      parseRule('[ NO z ] -> [ z ]', ['z'])
+      parseRule('[ NO z ] -> [ ]', ['z'])
+    })
+    it('parses a rule with a variable that begins with the name of a modifier', () => {
+      parseRule('[ stationaryz ] -> [ stationaryz ]', ['stationaryz'])
     })
     it('parses a rule with modifiers 2', () => {
       parseRule('[ STATIONARY z ] -> [ z ]', ['z'])
     })
   })
+
+  describe('Commands', () => {
+    it('parses a rule with a command inside the brackets (these should be moved up to the Action Commands)', () => {
+      parseRule('[z]->[SFX0]', ['z'])
+      parseRule('[z]->[z SFX1]', ['z'])
+      parseRule('[z]->[z winter]', ['z', 'winter'])
+    })
+  })
+
 
 })

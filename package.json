@@ -4,7 +4,8 @@
     "start": "node index.js",
     "poststart": "npm run-script lint",
     "test": "jest --updateSnapshot",
-    "test-debug": "node --inspect-brk $(npm bin)/jest -i --updateSnapshot $@"
+    "test-debug": "node --inspect-brk $(npm bin)/jest -i --updateSnapshot $@",
+    "watch": "jest --updateSnapshot --watch"
   },
   "dependencies": {
     "axel": "0.0.3",

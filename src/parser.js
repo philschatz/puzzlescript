@@ -201,19 +201,43 @@ Cell
 
 CellSequenceBracketHack = SimpleBracket  // Uggh, some games mis-typed and have nested brackets. They should be unwrapped as a Cell when semantically parsed
 
-CellLayer = (CellLayerModifier)* CellName
+CellLayer
+  = HackCellLayer1
+  | HackCellLayer2
+  | SimpleCellLayer
 
-// CellName = (~whitespace ~lineTerminator ~t_ELLIPSIS ~"]" ~"|" ~" " any)+ // Can be "."
-CellName = (letter | digit)+ // Can be "."
+SimpleCellLayer = (cellLayerModifier)* cellName
+HackCellLayer1 = HackRuleCommand
+HackCellLayer2 = cellName HackRuleCommand
 
-CellLayerModifier
+HackRuleCommand = RuleCommand ~letter // HACK: These should be moved up to the Rule Action, not nested way down here
+
+
+// cellName = (~whitespace ~lineTerminator ~t_ELLIPSIS ~"]" ~"|" ~" " any)+ // Can be "."
+cellName = ~t_ELLIPSIS (letter | digit | "." | "_")+
+
+cellLayerModifier = space* cellLayerModifierInner space+ // Force-check that there is whitespace after the cellLayerModifier so things like "STATIONARYZ" or "NOZ" are not parsed as a modifier (they are a variable that happens to begin with the same text as a modifier)
+
+cellLayerModifierInner
   = t_NO
-  | T_ARROW_NODOWN
-  | T_RANDOM
+  // The following are probably not actually cellLayerModifier's ... Check that they only exist at the beginning of a "["
+  | t_LEFT
+  | t_RIGHT
+  | t_UP
+  | t_DOWN
+  | t_RANDOMDIR
+  | t_RANDOM
   | t_STATIONARY
+  | t_MOVING
+  | t_ACTION
+  | t_VERTICAL
+  | t_HORIZONTAL
+  | t_PERPENDICULAR
+  | t_ORTHOGONAL
+  | t_ARROW_ANY // This can be a "v" so it needs to go at the end (behind t_VERTICAL)
 
 RuleModifier
-  = T_RANDOM
+  = t_RANDOM
   | t_UP
   | t_DOWN
   | t_LEFT
@@ -234,11 +258,11 @@ RuleLoop =
   t_ENDLOOP lineTerminator+
 
 
-T_ARROW_NODOWN
-  = T_ARROW_UP
-  // | T_ARROW_DOWN // don't match this because it could be a legend variable
-  | T_ARROW_LEFT
-  | T_ARROW_RIGHT
+t_ARROW_ANY
+  = t_ARROW_UP
+  | t_ARROW_DOWN // Because of this, "v" can never be an Object or Legend variable. TODO: Ensure "v" is never an Object or Legend variable
+  | t_ARROW_LEFT
+  | t_ARROW_RIGHT
 
 
 RuleCommand =
@@ -270,8 +294,8 @@ MessageCommand = t_MESSAGE words*
 
   t_RIGID = caseInsensitive<"RIGID">
   t_LATE = caseInsensitive<"LATE">
-  T_RANDOM = caseInsensitive<"RANDOM">
-  T_RANDOMDIR = caseInsensitive<"RANDOMDIR">
+  t_RANDOM = caseInsensitive<"RANDOM">
+  t_RANDOMDIR = caseInsensitive<"RANDOMDIR">
   t_ACTION = caseInsensitive<"ACTION">
   t_STARTLOOP = caseInsensitive<"STARTLOOP">
   t_ENDLOOP = caseInsensitive<"ENDLOOP">
@@ -280,10 +304,10 @@ MessageCommand = t_MESSAGE words*
   t_DOWN = caseInsensitive<"DOWN">
   t_LEFT = caseInsensitive<"LEFT">
   t_RIGHT = caseInsensitive<"RIGHT">
-  T_ARROW_UP = "^"
-  T_ARROW_DOWN = caseInsensitive<"V">
-  T_ARROW_LEFT = "<"
-  T_ARROW_RIGHT = ">"
+  t_ARROW_UP = "^"
+  t_ARROW_DOWN = caseInsensitive<"V">
+  t_ARROW_LEFT = "<"
+  t_ARROW_RIGHT = ">"
   t_MOVING = caseInsensitive<"MOVING">
   t_ORTHOGONAL = caseInsensitive<"ORTHOGONAL">
   t_PERPENDICULAR = caseInsensitive<"PERPENDICULAR">
@@ -686,6 +710,14 @@ class GameRuleCellLayer extends BaseForLines {
   }
 }
 
+class GameRuleCellLayerHack extends BaseForLines {
+  constructor (source, objectName, hackRuleCommand) {
+    super(source)
+    this._objectNameMaybeNull = objectName
+    this._hackRuleCommand = hackRuleCommand
+  }
+}
+
 class LookupHelper {
   constructor () {
     this._allSoundEffects = new Map()
@@ -710,6 +742,7 @@ class LookupHelper {
     this._addToHelper(this._allLegendItems, legendItem._objectNameOrLevelChar.toLowerCase(), legendItem)
   }
   addObjectToAllLevelChars (levelChar, gameObject) {
+    this._addToHelper(this._allLegendItems, levelChar.toLowerCase(), gameObject)
     this._addToHelper(this._allLevelChars, levelChar.toLowerCase(), gameObject)
   }
   addLegendToAllLevelChars (legendItem) {
@@ -889,11 +922,23 @@ function parse (code) {
       SimpleBracket: function (_leftBracket, _whitespace, cellLayers, _rightBracket) {
         return new GameRuleSimpleBracket(this.source, cellLayers.parse())
       },
-      CellLayer: function (cellModifiers, cellName) {
+      CellLayer: function(_1) {
+        return _1.parse()
+      },
+      SimpleCellLayer: function (cellModifiers, cellName) {
         return new GameRuleCellLayer(this.source, cellModifiers.parse(), lookup.lookupObjectOrLegendItem(this.source, cellName.parse()))
       },
-      CellName: function (_1) {
+      HackCellLayer1: function (hackRuleCommand) {
+        return new GameRuleCellLayerHack(this.source, null, hackRuleCommand.parse())
+      },
+      HackCellLayer2: function (cellName, hackRuleCommand) {
+        return new GameRuleCellLayerHack(this.source, lookup.lookupObjectOrLegendItem(this.source, cellName.parse()), hackRuleCommand.parse())
+      },
+      cellName: function (_1) {
         return _1.parse().join('')
+      },
+      cellLayerModifier: function(_whitespace1, cellLayerModifier, _whitespace2) {
+        return cellLayerModifier.parse()
       },
 
       RuleActionBrackets: function (cellSequenceBrackets, ruleCommands, optionalMessageCommand) {
