@@ -71,10 +71,18 @@ Puzzlescript {
 
 
 
-  ObjectsItem =
+  ObjectsItem
+    = ObjectsItemPixels
+    | ObjectsItemNoPixels
+
+  ObjectsItemNoPixels =
     objectName legendShortcutChar? lineTerminator
-    NonemptyListOf<colorNameOrHex, spaces> lineTerminator+
-    pixelRow*
+    colorNameOrHex+ lineTerminator+
+
+  ObjectsItemPixels =
+    objectName legendShortcutChar? lineTerminator
+    colorNameOrHex+ lineTerminator+
+    PixelRows
     lineTerminator*
 
   objectName = ruleVariableName
@@ -87,6 +95,7 @@ Puzzlescript {
   pixelDigit = digit | "."
   legendShortcutChar = (~lineTerminator any)
 
+  PixelRows = pixelRow pixelRow pixelRow pixelRow pixelRow
 
 
 
@@ -389,7 +398,7 @@ MessageCommand = t_MESSAGE words*
     lineTerminator*
 
   headingBar = "="*
-  lineTerminator = space* newline space*
+  lineTerminator = space* newline (space newline)*
   sourceCharacter = any
 
   newline = "\\n"
@@ -514,32 +523,60 @@ class HexColor extends BaseForLines {
 }
 
 class GameObject extends BaseForLines {
-  constructor (source, name, optionalLegendChar, colors, pixels) {
+  constructor(source, name, optionalLegendChar) {
     super(source)
     this._name = name
     this._optionalLegendChar = optionalLegendChar
+  }
+  getObjects () {
+    // to match the signature of LegendItem
+    return [this]
+  }
+}
+class GameObjectNoPixels extends GameObject {
+  constructor (source, name, optionalLegendChar, colors) {
+    super(source, name, optionalLegendChar)
+    this._color = colors[0] // Ignore if the user added multiple colors (like `transparent yellow`)
+  }
+  isInvalid () {
+    return false
+  }
+  getPixels () {
+    // When there are no pixels then it means "color the whole thing in the same color"
+    const rows = []
+    for (let row = 0; row < 5; row++) {
+      rows.push([])
+      for (let col = 0; col < 5; col++) {
+        rows[row].push(this._color)
+      }
+    }
+    return rows
+  }
+}
+
+class GameObjectPixels extends GameObject {
+  constructor (source, name, optionalLegendChar, colors, pixels) {
+    super(source, name, optionalLegendChar)
     this._colors = colors
     this._pixels = pixels // Pixel colors are 0-indexed.
   }
   isInvalid () {
     let isInvalid = false
     const colorLen = this._colors.length
-    if (this._pixels.length > 0) {
-      const rowLen = this._pixels[0].length
-      this._pixels.forEach((row) => {
-        if (row.length !== rowLen) {
-          isInvalid = `Row lengths do not match. Expected ${rowLen} but got ${row.length}. Row: ${row}`
-        }
-        // Check that only '.' or a digit that is less than the number of colors is present
-        row.forEach((pixel) => {
-          if (pixel !== '.') {
-            if (pixel >= colorLen) {
-              isInvalid = `Pixel number is too high (${pixel}). There are only ${colorLen} colors defined`
-            }
+    const rowLen = this._pixels[0].length
+    this._pixels.forEach((row) => {
+      if (row.length !== rowLen) {
+        isInvalid = `Row lengths do not match. Expected ${rowLen} but got ${row.length}. Row: ${row}`
+      }
+      // Check that only '.' or a digit that is less than the number of colors is present
+      row.forEach((pixel) => {
+        if (pixel !== '.') {
+          if (pixel >= colorLen) {
+            isInvalid = `Pixel number is too high (${pixel}). There are only ${colorLen} colors defined`
           }
-        })
+        }
       })
-    }
+    })
     return isInvalid
   }
   getObjects () {
@@ -547,27 +584,15 @@ class GameObject extends BaseForLines {
     return [this]
   }
   getPixels () {
-    // When there are no pixels then it means "color the whole thing in the same color"
-    if (this._pixels.length === 0) {
-      const rows = []
-      for (let row = 0; row < 5; row++) {
-        rows.push([])
-        for (let col = 0; col < 5; col++) {
-          rows[row].push(this._colors[0])
+    return this._pixels.map(row => {
+      return row.map(col => {
+        if (col === '.') {
+          return null
+        } else {
+          return this._colors[col]
         }
-      }
-      return rows
-    } else {
-      return this._pixels.map(row => {
-        return row.map(col => {
-          if (col === '.') {
-            return null
-          } else {
-            return this._colors[col]
-          }
-        })
       })
-    }
+    })
   }
 }
 
@@ -898,17 +923,34 @@ function parse (code) {
       Section: (_threeDashes1, _headingBar1, _lineTerminator1, _sectionName, _lineTerminator2, _threeDashes2, _headingBar2, _8, _9, _10, _11) => {
         return _10.parse()
       },
-      ObjectsItem: function (name, optionalLegendChar, _3, colors, _5, pixels, _7) {
-        optionalLegendChar = optionalLegendChar.parse()[0]
-        const gameObject = new GameObject(this.source, name.parse(), optionalLegendChar, colors.parse(), pixels.parse())
+      ObjectsItem: function (_1) {
+        const gameObject = _1.parse()
         lookup.addToAllObjects(gameObject)
-        if (optionalLegendChar) {
+        if (gameObject._optionalLegendChar) {
           // addObjectToAllLegendItems(gameObject)
-          lookup.addObjectToAllLevelChars(optionalLegendChar, gameObject)
+          lookup.addObjectToAllLevelChars(gameObject._optionalLegendChar, gameObject)
         } else if (gameObject._name.length === 1) {
           lookup.addObjectToAllLevelChars(gameObject._name, gameObject)
         }
         return gameObject
+      },
+      ObjectsItemPixels: function (name, optionalLegendChar, _3, colors, _5, pixels, _7) {
+        optionalLegendChar = optionalLegendChar.parse()[0]
+        return new GameObjectPixels(this.source, name.parse(), optionalLegendChar, colors.parse(), pixels.parse())
+      },
+      ObjectsItemNoPixels: function (name, optionalLegendChar, _3, colors, _5) {
+        optionalLegendChar = optionalLegendChar.parse()[0]
+        return new GameObjectNoPixels(this.source, name.parse(), optionalLegendChar, colors.parse())
+      },
+      PixelRows: function (row1, row2, row3, row4, row5) {
+        // Exactly 5 rows. We do this because some games contain vertical whitespace after, but not all
+        return [
+          row1.parse(),
+          row2.parse(),
+          row3.parse(),
+          row4.parse(),
+          row5.parse(),
+        ]
       },
       LegendItem: function (_1) {
         const legendItem = _1.parse()
@@ -1078,7 +1120,7 @@ function parse (code) {
         return this.sourceString
       },
       _terminal: function () { return this.primitiveValue },
-      lineTerminator: (v1, v2, v3) => {},
+      lineTerminator: (_1, _2, _3, _4) => {},
       digit: (x) => {
         return x.primitiveValue.charCodeAt(0) - '0'.charCodeAt(0)
       }

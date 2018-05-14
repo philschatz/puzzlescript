@@ -43,10 +43,7 @@ function checkGrammar (code) {
 
 function checkParse (code) {
   const {data, error} = Parser.parse(code)
-  if (error) {
-    console.log(error.message)
-  }
-  expect(error).toBeFalsy()
+  expect(error && error.message).toBeFalsy() // Use && so the error messages are shorter
   expect(data).toMatchSnapshot()
   return data
 }
@@ -231,7 +228,7 @@ OBJECTS
 player
 yellow
 `)
-      expect(data.objects[0]._colors[0]._color.toLowerCase()).toBe(COLOR_PALETTES['gameboycolour']['yellow'].toLowerCase())
+      expect(data.objects[0]._color._color.toLowerCase()).toBe(COLOR_PALETTES['gameboycolour']['yellow'].toLowerCase())
 
       data = checkParse(`
 title foo
@@ -243,7 +240,7 @@ OBJECTS
 player
 yellow
 `)
-      expect(data.objects[0]._colors[0]._color.toLowerCase()).toBe(COLOR_PALETTES['gameboycolour']['yellow'].toLowerCase())
+      expect(data.objects[0]._color._color.toLowerCase()).toBe(COLOR_PALETTES['gameboycolour']['yellow'].toLowerCase())
     })
 
     it('Supports characters that would be invalid in one scope but are valid in another scope', () => {
@@ -284,6 +281,56 @@ RULES
 
 [.]->[.]
 [♡]->[♡]
+
+`)
+    })
+
+    it('Supports objects named using only numbers (mirror-isles)', () => {
+      checkParse(`
+title foo
+
+===
+OBJECTS
+===
+
+Table
+Yellow Red White
+(12121
+21212
+12121
+21212
+0...0)
+.....
+.121.
+.212.
+.121.
+.0.0.
+
+ChairRightLoose
+Yellow Red
+
+`)
+
+      checkParse(`
+title foo
+
+===
+OBJECTS
+===
+
+player
+yellow
+00000
+00000
+00000
+00000
+00000
+
+00
+yellow
+
+01
+yellow
 
 `)
     })

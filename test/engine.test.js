@@ -211,10 +211,7 @@ LEVELS
 describe('engine', () => {
   it('evaluates a simple game', () => {
     const {data, error} = parse(SIMPLE_GAME)
-    if (error) {
-      console.log(error.message)
-    }
-    expect(error).toBeFalsy()
+    expect(error && error.message).toBeFalsy() // Use && so the error messages are shorter
 
     const engine = new Engine(data)
     engine.setLevel(0)

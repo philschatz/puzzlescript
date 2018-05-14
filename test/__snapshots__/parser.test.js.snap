@@ -355,14 +355,11 @@ Object {
     GameLegendItemSimple {
       "__astId": 236,
       "_aliases": Array [
-        GameObject {
+        GameObjectNoPixels {
           "__astId": 235,
-          "_colors": Array [
-            "transparent",
-          ],
+          "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
-          "_pixels": Array [],
         },
       ],
       "_objectNameOrLevelChar": "stationaryz",
@@ -370,14 +367,11 @@ Object {
   ],
   "levels": Array [],
   "objects": Array [
-    GameObject {
+    GameObjectNoPixels {
       "__astId": 235,
-      "_colors": Array [
-        "transparent",
-      ],
+      "_color": "transparent",
       "_name": "testObject",
       "_optionalLegendChar": undefined,
-      "_pixels": Array [],
     },
   ],
   "rules": Array [
@@ -396,14 +390,11 @@ Object {
                   "_objectName": GameLegendItemSimple {
                     "__astId": 236,
                     "_aliases": Array [
-                      GameObject {
+                      GameObjectNoPixels {
                         "__astId": 235,
-                        "_colors": Array [
-                          "transparent",
-                        ],
+                        "_color": "transparent",
                         "_name": "testObject",
                         "_optionalLegendChar": undefined,
-                        "_pixels": Array [],
                       },
                     ],
                     "_objectNameOrLevelChar": "stationaryz",
@@ -431,14 +422,11 @@ Object {
                     "_objectName": GameLegendItemSimple {
                       "__astId": 236,
                       "_aliases": Array [
-                        GameObject {
+                        GameObjectNoPixels {
                           "__astId": 235,
-                          "_colors": Array [
-                            "transparent",
-                          ],
+                          "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
-                          "_pixels": Array [],
                         },
                       ],
                       "_objectNameOrLevelChar": "stationaryz",
@@ -678,14 +666,11 @@ Object {
     GameLegendItemSimple {
       "__astId": 83,
       "_aliases": Array [
-        GameObject {
+        GameObjectNoPixels {
           "__astId": 82,
-          "_colors": Array [
-            "transparent",
-          ],
+          "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
-          "_pixels": Array [],
         },
       ],
       "_objectNameOrLevelChar": "z",
@@ -693,14 +678,11 @@ Object {
   ],
   "levels": Array [],
   "objects": Array [
-    GameObject {
+    GameObjectNoPixels {
       "__astId": 82,
-      "_colors": Array [
-        "transparent",
-      ],
+      "_color": "transparent",
       "_name": "testObject",
       "_optionalLegendChar": undefined,
-      "_pixels": Array [],
     },
   ],
   "rules": Array [
@@ -721,14 +703,11 @@ Object {
                   "_objectName": GameLegendItemSimple {
                     "__astId": 83,
                     "_aliases": Array [
-                      GameObject {
+                      GameObjectNoPixels {
                         "__astId": 82,
-                        "_colors": Array [
-                          "transparent",
-                        ],
+                        "_color": "transparent",
                         "_name": "testObject",
                         "_optionalLegendChar": undefined,
-                        "_pixels": Array [],
                       },
                     ],
                     "_objectNameOrLevelChar": "z",
@@ -983,14 +962,11 @@ Object {
     GameLegendItemSimple {
       "__astId": 92,
       "_aliases": Array [
-        GameObject {
+        GameObjectNoPixels {
           "__astId": 91,
-          "_colors": Array [
-            "transparent",
-          ],
+          "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
-          "_pixels": Array [],
         },
       ],
       "_objectNameOrLevelChar": "z",
@@ -998,14 +974,11 @@ Object {
   ],
   "levels": Array [],
   "objects": Array [
-    GameObject {
+    GameObjectNoPixels {
       "__astId": 91,
-      "_colors": Array [
-        "transparent",
-      ],
+      "_color": "transparent",
       "_name": "testObject",
       "_optionalLegendChar": undefined,
-      "_pixels": Array [],
     },
   ],
   "rules": Array [
@@ -1026,14 +999,11 @@ Object {
                   "_objectName": GameLegendItemSimple {
                     "__astId": 92,
                     "_aliases": Array [
-                      GameObject {
+                      GameObjectNoPixels {
                         "__astId": 91,
-                        "_colors": Array [
-                          "transparent",
-                        ],
+                        "_color": "transparent",
                         "_name": "testObject",
                         "_optionalLegendChar": undefined,
-                        "_pixels": Array [],
                       },
                     ],
                     "_objectNameOrLevelChar": "z",
@@ -1291,14 +1261,11 @@ Object {
     GameLegendItemSimple {
       "__astId": 101,
       "_aliases": Array [
-        GameObject {
+        GameObjectNoPixels {
           "__astId": 100,
-          "_colors": Array [
-            "transparent",
-          ],
+          "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
-          "_pixels": Array [],
         },
       ],
       "_objectNameOrLevelChar": "z",
@@ -1306,14 +1273,11 @@ Object {
   ],
   "levels": Array [],
   "objects": Array [
-    GameObject {
+    GameObjectNoPixels {
       "__astId": 100,
-      "_colors": Array [
-        "transparent",
-      ],
+      "_color": "transparent",
       "_name": "testObject",
       "_optionalLegendChar": undefined,
-      "_pixels": Array [],
     },
   ],
   "rules": Array [
@@ -1334,14 +1298,11 @@ Object {
                   "_objectName": GameLegendItemSimple {
                     "__astId": 101,
                     "_aliases": Array [
-                      GameObject {
+                      GameObjectNoPixels {
                         "__astId": 100,
-                        "_colors": Array [
-                          "transparent",
-                        ],
+                        "_color": "transparent",
                         "_name": "testObject",
                         "_optionalLegendChar": undefined,
-                        "_pixels": Array [],
                       },
                     ],
                     "_objectNameOrLevelChar": "z",
@@ -1596,14 +1557,11 @@ Object {
     GameLegendItemSimple {
       "__astId": 110,
       "_aliases": Array [
-        GameObject {
+        GameObjectNoPixels {
           "__astId": 109,
-          "_colors": Array [
-            "transparent",
-          ],
+          "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
-          "_pixels": Array [],
         },
       ],
       "_objectNameOrLevelChar": "z",
@@ -1611,14 +1569,11 @@ Object {
   ],
   "levels": Array [],
   "objects": Array [
-    GameObject {
+    GameObjectNoPixels {
       "__astId": 109,
-      "_colors": Array [
-        "transparent",
-      ],
+      "_color": "transparent",
       "_name": "testObject",
       "_optionalLegendChar": undefined,
-      "_pixels": Array [],
     },
   ],
   "rules": Array [
@@ -1639,14 +1594,11 @@ Object {
                   "_objectName": GameLegendItemSimple {
                     "__astId": 110,
                     "_aliases": Array [
-                      GameObject {
+                      GameObjectNoPixels {
                         "__astId": 109,
-                        "_colors": Array [
-                          "transparent",
-                        ],
+                        "_color": "transparent",
                         "_name": "testObject",
                         "_optionalLegendChar": undefined,
-                        "_pixels": Array [],
                       },
                     ],
                     "_objectNameOrLevelChar": "z",
@@ -1901,14 +1853,11 @@ Object {
     GameLegendItemSimple {
       "__astId": 119,
       "_aliases": Array [
-        GameObject {
+        GameObjectNoPixels {
           "__astId": 118,
-          "_colors": Array [
-            "transparent",
-          ],
+          "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
-          "_pixels": Array [],
         },
       ],
       "_objectNameOrLevelChar": "z",
@@ -1916,14 +1865,11 @@ Object {
   ],
   "levels": Array [],
   "objects": Array [
-    GameObject {
+    GameObjectNoPixels {
       "__astId": 118,
-      "_colors": Array [
-        "transparent",
-      ],
+      "_color": "transparent",
       "_name": "testObject",
       "_optionalLegendChar": undefined,
-      "_pixels": Array [],
     },
   ],
   "rules": Array [
@@ -1944,14 +1890,11 @@ Object {
                   "_objectName": GameLegendItemSimple {
                     "__astId": 119,
                     "_aliases": Array [
-                      GameObject {
+                      GameObjectNoPixels {
                         "__astId": 118,
-                        "_colors": Array [
-                          "transparent",
-                        ],
+                        "_color": "transparent",
                         "_name": "testObject",
                         "_optionalLegendChar": undefined,
-                        "_pixels": Array [],
                       },
                     ],
                     "_objectNameOrLevelChar": "z",
@@ -2206,14 +2149,11 @@ Object {
     GameLegendItemSimple {
       "__astId": 128,
       "_aliases": Array [
-        GameObject {
+        GameObjectNoPixels {
           "__astId": 127,
-          "_colors": Array [
-            "transparent",
-          ],
+          "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
-          "_pixels": Array [],
         },
       ],
       "_objectNameOrLevelChar": "z",
@@ -2221,14 +2161,11 @@ Object {
   ],
   "levels": Array [],
   "objects": Array [
-    GameObject {
+    GameObjectNoPixels {
       "__astId": 127,
-      "_colors": Array [
-        "transparent",
-      ],
+      "_color": "transparent",
       "_name": "testObject",
       "_optionalLegendChar": undefined,
-      "_pixels": Array [],
     },
   ],
   "rules": Array [
@@ -2249,14 +2186,11 @@ Object {
                   "_objectName": GameLegendItemSimple {
                     "__astId": 128,
                     "_aliases": Array [
-                      GameObject {
+                      GameObjectNoPixels {
                         "__astId": 127,
-                        "_colors": Array [
-                          "transparent",
-                        ],
+                        "_color": "transparent",
                         "_name": "testObject",
                         "_optionalLegendChar": undefined,
-                        "_pixels": Array [],
                       },
                     ],
                     "_objectNameOrLevelChar": "z",
@@ -2511,14 +2445,11 @@ Object {
     GameLegendItemSimple {
       "__astId": 137,
       "_aliases": Array [
-        GameObject {
+        GameObjectNoPixels {
           "__astId": 136,
-          "_colors": Array [
-            "transparent",
-          ],
+          "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
-          "_pixels": Array [],
         },
       ],
       "_objectNameOrLevelChar": "z",
@@ -2526,14 +2457,11 @@ Object {
   ],
   "levels": Array [],
   "objects": Array [
-    GameObject {
+    GameObjectNoPixels {
       "__astId": 136,
-      "_colors": Array [
-        "transparent",
-      ],
+      "_color": "transparent",
       "_name": "testObject",
       "_optionalLegendChar": undefined,
-      "_pixels": Array [],
     },
   ],
   "rules": Array [
@@ -2554,14 +2482,11 @@ Object {
                   "_objectName": GameLegendItemSimple {
                     "__astId": 137,
                     "_aliases": Array [
-                      GameObject {
+                      GameObjectNoPixels {
                         "__astId": 136,
-                        "_colors": Array [
-                          "transparent",
-                        ],
+                        "_color": "transparent",
                         "_name": "testObject",
                         "_optionalLegendChar": undefined,
-                        "_pixels": Array [],
                       },
                     ],
                     "_objectNameOrLevelChar": "z",
@@ -2816,14 +2741,11 @@ Object {
     GameLegendItemSimple {
       "__astId": 146,
       "_aliases": Array [
-        GameObject {
+        GameObjectNoPixels {
           "__astId": 145,
-          "_colors": Array [
-            "transparent",
-          ],
+          "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
-          "_pixels": Array [],
         },
       ],
       "_objectNameOrLevelChar": "z",
@@ -2831,14 +2753,11 @@ Object {
   ],
   "levels": Array [],
   "objects": Array [
-    GameObject {
+    GameObjectNoPixels {
       "__astId": 145,
-      "_colors": Array [
-        "transparent",
-      ],
+      "_color": "transparent",
       "_name": "testObject",
       "_optionalLegendChar": undefined,
-      "_pixels": Array [],
     },
   ],
   "rules": Array [
@@ -2859,14 +2778,11 @@ Object {
                   "_objectName": GameLegendItemSimple {
                     "__astId": 146,
                     "_aliases": Array [
-                      GameObject {
+                      GameObjectNoPixels {
                         "__astId": 145,
-                        "_colors": Array [
-                          "transparent",
-                        ],
+                        "_color": "transparent",
                         "_name": "testObject",
                         "_optionalLegendChar": undefined,
-                        "_pixels": Array [],
                       },
                     ],
                     "_objectNameOrLevelChar": "z",
@@ -3121,14 +3037,11 @@ Object {
     GameLegendItemSimple {
       "__astId": 155,
       "_aliases": Array [
-        GameObject {
+        GameObjectNoPixels {
           "__astId": 154,
-          "_colors": Array [
-            "transparent",
-          ],
+          "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
-          "_pixels": Array [],
         },
       ],
       "_objectNameOrLevelChar": "z",
@@ -3136,14 +3049,11 @@ Object {
   ],
   "levels": Array [],
   "objects": Array [
-    GameObject {
+    GameObjectNoPixels {
       "__astId": 154,
-      "_colors": Array [
-        "transparent",
-      ],
+      "_color": "transparent",
       "_name": "testObject",
       "_optionalLegendChar": undefined,
-      "_pixels": Array [],
     },
   ],
   "rules": Array [
@@ -3164,14 +3074,11 @@ Object {
                   "_objectName": GameLegendItemSimple {
                     "__astId": 155,
                     "_aliases": Array [
-                      GameObject {
+                      GameObjectNoPixels {
                         "__astId": 154,
-                        "_colors": Array [
-                          "transparent",
-                        ],
+                        "_color": "transparent",
                         "_name": "testObject",
                         "_optionalLegendChar": undefined,
-                        "_pixels": Array [],
                       },
                     ],
                     "_objectNameOrLevelChar": "z",
@@ -3426,14 +3333,11 @@ Object {
     GameLegendItemSimple {
       "__astId": 164,
       "_aliases": Array [
-        GameObject {
+        GameObjectNoPixels {
           "__astId": 163,
-          "_colors": Array [
-            "transparent",
-          ],
+          "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
-          "_pixels": Array [],
         },
       ],
       "_objectNameOrLevelChar": "z",
@@ -3441,14 +3345,11 @@ Object {
   ],
   "levels": Array [],
   "objects": Array [
-    GameObject {
+    GameObjectNoPixels {
       "__astId": 163,
-      "_colors": Array [
-        "transparent",
-      ],
+      "_color": "transparent",
       "_name": "testObject",
       "_optionalLegendChar": undefined,
-      "_pixels": Array [],
     },
   ],
   "rules": Array [
@@ -3469,14 +3370,11 @@ Object {
                   "_objectName": GameLegendItemSimple {
                     "__astId": 164,
                     "_aliases": Array [
-                      GameObject {
+                      GameObjectNoPixels {
                         "__astId": 163,
-                        "_colors": Array [
-                          "transparent",
-                        ],
+                        "_color": "transparent",
                         "_name": "testObject",
                         "_optionalLegendChar": undefined,
-                        "_pixels": Array [],
                       },
                     ],
                     "_objectNameOrLevelChar": "z",
@@ -3731,14 +3629,11 @@ Object {
     GameLegendItemSimple {
       "__astId": 173,
       "_aliases": Array [
-        GameObject {
+        GameObjectNoPixels {
           "__astId": 172,
-          "_colors": Array [
-            "transparent",
-          ],
+          "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
-          "_pixels": Array [],
         },
       ],
       "_objectNameOrLevelChar": "z",
@@ -3746,14 +3641,11 @@ Object {
   ],
   "levels": Array [],
   "objects": Array [
-    GameObject {
+    GameObjectNoPixels {
       "__astId": 172,
-      "_colors": Array [
-        "transparent",
-      ],
+      "_color": "transparent",
       "_name": "testObject",
       "_optionalLegendChar": undefined,
-      "_pixels": Array [],
     },
   ],
   "rules": Array [
@@ -3774,14 +3666,11 @@ Object {
                   "_objectName": GameLegendItemSimple {
                     "__astId": 173,
                     "_aliases": Array [
-                      GameObject {
+                      GameObjectNoPixels {
                         "__astId": 172,
-                        "_colors": Array [
-                          "transparent",
-                        ],
+                        "_color": "transparent",
                         "_name": "testObject",
                         "_optionalLegendChar": undefined,
-                        "_pixels": Array [],
                       },
                     ],
                     "_objectNameOrLevelChar": "z",
@@ -4036,14 +3925,11 @@ Object {
     GameLegendItemSimple {
       "__astId": 182,
       "_aliases": Array [
-        GameObject {
+        GameObjectNoPixels {
           "__astId": 181,
-          "_colors": Array [
-            "transparent",
-          ],
+          "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
-          "_pixels": Array [],
         },
       ],
       "_objectNameOrLevelChar": "z",
@@ -4051,14 +3937,11 @@ Object {
   ],
   "levels": Array [],
   "objects": Array [
-    GameObject {
+    GameObjectNoPixels {
       "__astId": 181,
-      "_colors": Array [
-        "transparent",
-      ],
+      "_color": "transparent",
       "_name": "testObject",
       "_optionalLegendChar": undefined,
-      "_pixels": Array [],
     },
   ],
   "rules": Array [
@@ -4079,14 +3962,11 @@ Object {
                   "_objectName": GameLegendItemSimple {
                     "__astId": 182,
                     "_aliases": Array [
-                      GameObject {
+                      GameObjectNoPixels {
                         "__astId": 181,
-                        "_colors": Array [
-                          "transparent",
-                        ],
+                        "_color": "transparent",
                         "_name": "testObject",
                         "_optionalLegendChar": undefined,
-                        "_pixels": Array [],
                       },
                     ],
                     "_objectNameOrLevelChar": "z",
@@ -4341,14 +4221,11 @@ Object {
     GameLegendItemSimple {
       "__astId": 191,
       "_aliases": Array [
-        GameObject {
+        GameObjectNoPixels {
           "__astId": 190,
-          "_colors": Array [
-            "transparent",
-          ],
+          "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
-          "_pixels": Array [],
         },
       ],
       "_objectNameOrLevelChar": "z",
@@ -4356,14 +4233,11 @@ Object {
   ],
   "levels": Array [],
   "objects": Array [
-    GameObject {
+    GameObjectNoPixels {
       "__astId": 190,
-      "_colors": Array [
-        "transparent",
-      ],
+      "_color": "transparent",
       "_name": "testObject",
       "_optionalLegendChar": undefined,
-      "_pixels": Array [],
     },
   ],
   "rules": Array [
@@ -4384,14 +4258,11 @@ Object {
                   "_objectName": GameLegendItemSimple {
                     "__astId": 191,
                     "_aliases": Array [
-                      GameObject {
+                      GameObjectNoPixels {
                         "__astId": 190,
-                        "_colors": Array [
-                          "transparent",
-                        ],
+                        "_color": "transparent",
                         "_name": "testObject",
                         "_optionalLegendChar": undefined,
-                        "_pixels": Array [],
                       },
                     ],
                     "_objectNameOrLevelChar": "z",
@@ -4646,14 +4517,11 @@ Object {
     GameLegendItemSimple {
       "__astId": 200,
       "_aliases": Array [
-        GameObject {
+        GameObjectNoPixels {
           "__astId": 199,
-          "_colors": Array [
-            "transparent",
-          ],
+          "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
-          "_pixels": Array [],
         },
       ],
       "_objectNameOrLevelChar": "z",
@@ -4661,14 +4529,11 @@ Object {
   ],
   "levels": Array [],
   "objects": Array [
-    GameObject {
+    GameObjectNoPixels {
       "__astId": 199,
-      "_colors": Array [
-        "transparent",
-      ],
+      "_color": "transparent",
       "_name": "testObject",
       "_optionalLegendChar": undefined,
-      "_pixels": Array [],
     },
   ],
   "rules": Array [
@@ -4689,14 +4554,11 @@ Object {
                   "_objectName": GameLegendItemSimple {
                     "__astId": 200,
                     "_aliases": Array [
-                      GameObject {
+                      GameObjectNoPixels {
                         "__astId": 199,
-                        "_colors": Array [
-                          "transparent",
-                        ],
+                        "_color": "transparent",
                         "_name": "testObject",
                         "_optionalLegendChar": undefined,
-                        "_pixels": Array [],
                       },
                     ],
                     "_objectNameOrLevelChar": "z",
@@ -4951,14 +4813,11 @@ Object {
     GameLegendItemSimple {
       "__astId": 209,
       "_aliases": Array [
-        GameObject {
+        GameObjectNoPixels {
           "__astId": 208,
-          "_colors": Array [
-            "transparent",
-          ],
+          "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
-          "_pixels": Array [],
         },
       ],
       "_objectNameOrLevelChar": "z",
@@ -4966,14 +4825,11 @@ Object {
   ],
   "levels": Array [],
   "objects": Array [
-    GameObject {
+    GameObjectNoPixels {
       "__astId": 208,
-      "_colors": Array [
-        "transparent",
-      ],
+      "_color": "transparent",
       "_name": "testObject",
       "_optionalLegendChar": undefined,
-      "_pixels": Array [],
     },
   ],
   "rules": Array [
@@ -4994,14 +4850,11 @@ Object {
                   "_objectName": GameLegendItemSimple {
                     "__astId": 209,
                     "_aliases": Array [
-                      GameObject {
+                      GameObjectNoPixels {
                         "__astId": 208,
-                        "_colors": Array [
-                          "transparent",
-                        ],
+                        "_color": "transparent",
                         "_name": "testObject",
                         "_optionalLegendChar": undefined,
-                        "_pixels": Array [],
                       },
                     ],
                     "_objectNameOrLevelChar": "z",
@@ -5256,14 +5109,11 @@ Object {
     GameLegendItemSimple {
       "__astId": 218,
       "_aliases": Array [
-        GameObject {
+        GameObjectNoPixels {
           "__astId": 217,
-          "_colors": Array [
-            "transparent",
-          ],
+          "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
-          "_pixels": Array [],
         },
       ],
       "_objectNameOrLevelChar": "z",
@@ -5271,14 +5121,11 @@ Object {
   ],
   "levels": Array [],
   "objects": Array [
-    GameObject {
+    GameObjectNoPixels {
       "__astId": 217,
-      "_colors": Array [
-        "transparent",
-      ],
+      "_color": "transparent",
       "_name": "testObject",
       "_optionalLegendChar": undefined,
-      "_pixels": Array [],
     },
   ],
   "rules": Array [
@@ -5299,14 +5146,11 @@ Object {
                   "_objectName": GameLegendItemSimple {
                     "__astId": 218,
                     "_aliases": Array [
-                      GameObject {
+                      GameObjectNoPixels {
                         "__astId": 217,
-                        "_colors": Array [
-                          "transparent",
-                        ],
+                        "_color": "transparent",
                         "_name": "testObject",
                         "_optionalLegendChar": undefined,
-                        "_pixels": Array [],
                       },
                     ],
                     "_objectNameOrLevelChar": "z",
@@ -5561,14 +5405,11 @@ Object {
     GameLegendItemSimple {
       "__astId": 227,
       "_aliases": Array [
-        GameObject {
+        GameObjectNoPixels {
           "__astId": 226,
-          "_colors": Array [
-            "transparent",
-          ],
+          "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
-          "_pixels": Array [],
         },
       ],
       "_objectNameOrLevelChar": "z",
@@ -5576,14 +5417,11 @@ Object {
   ],
   "levels": Array [],
   "objects": Array [
-    GameObject {
+    GameObjectNoPixels {
       "__astId": 226,
-      "_colors": Array [
-        "transparent",
-      ],
+      "_color": "transparent",
       "_name": "testObject",
       "_optionalLegendChar": undefined,
-      "_pixels": Array [],
     },
   ],
   "rules": Array [
@@ -5604,14 +5442,11 @@ Object {
                   "_objectName": GameLegendItemSimple {
                     "__astId": 227,
                     "_aliases": Array [
-                      GameObject {
+                      GameObjectNoPixels {
                         "__astId": 226,
-                        "_colors": Array [
-                          "transparent",
-                        ],
+                        "_color": "transparent",
                         "_name": "testObject",
                         "_optionalLegendChar": undefined,
-                        "_pixels": Array [],
                       },
                     ],
                     "_objectNameOrLevelChar": "z",
@@ -5889,14 +5724,11 @@ Object {
     GameLegendItemSimple {
       "__astId": 246,
       "_aliases": Array [
-        GameObject {
+        GameObjectNoPixels {
           "__astId": 245,
-          "_colors": Array [
-            "transparent",
-          ],
+          "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
-          "_pixels": Array [],
         },
       ],
       "_objectNameOrLevelChar": "z",
@@ -5904,14 +5736,11 @@ Object {
   ],
   "levels": Array [],
   "objects": Array [
-    GameObject {
+    GameObjectNoPixels {
       "__astId": 245,
-      "_colors": Array [
-        "transparent",
-      ],
+      "_color": "transparent",
       "_name": "testObject",
       "_optionalLegendChar": undefined,
-      "_pixels": Array [],
     },
   ],
   "rules": Array [
@@ -5932,14 +5761,11 @@ Object {
                   "_objectName": GameLegendItemSimple {
                     "__astId": 246,
                     "_aliases": Array [
-                      GameObject {
+                      GameObjectNoPixels {
                         "__astId": 245,
-                        "_colors": Array [
-                          "transparent",
-                        ],
+                        "_color": "transparent",
                         "_name": "testObject",
                         "_optionalLegendChar": undefined,
-                        "_pixels": Array [],
                       },
                     ],
                     "_objectNameOrLevelChar": "z",
@@ -5967,14 +5793,11 @@ Object {
                     "_objectName": GameLegendItemSimple {
                       "__astId": 246,
                       "_aliases": Array [
-                        GameObject {
+                        GameObjectNoPixels {
                           "__astId": 245,
-                          "_colors": Array [
-                            "transparent",
-                          ],
+                          "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
-                          "_pixels": Array [],
                         },
                       ],
                       "_objectNameOrLevelChar": "z",
@@ -6214,14 +6037,11 @@ Object {
     GameLegendItemSimple {
       "__astId": 256,
       "_aliases": Array [
-        GameObject {
+        GameObjectNoPixels {
           "__astId": 255,
-          "_colors": Array [
-            "transparent",
-          ],
+          "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
-          "_pixels": Array [],
         },
       ],
       "_objectNameOrLevelChar": "z",
@@ -6229,14 +6049,11 @@ Object {
   ],
   "levels": Array [],
   "objects": Array [
-    GameObject {
+    GameObjectNoPixels {
       "__astId": 255,
-      "_colors": Array [
-        "transparent",
-      ],
+      "_color": "transparent",
       "_name": "testObject",
       "_optionalLegendChar": undefined,
-      "_pixels": Array [],
     },
   ],
   "rules": Array [
@@ -6255,14 +6072,11 @@ Object {
                   "_objectName": GameLegendItemSimple {
                     "__astId": 256,
                     "_aliases": Array [
-                      GameObject {
+                      GameObjectNoPixels {
                         "__astId": 255,
-                        "_colors": Array [
-                          "transparent",
-                        ],
+                        "_color": "transparent",
                         "_name": "testObject",
                         "_optionalLegendChar": undefined,
-                        "_pixels": Array [],
                       },
                     ],
                     "_objectNameOrLevelChar": "z",
@@ -6538,14 +6352,11 @@ Object {
     GameLegendItemSimple {
       "__astId": 266,
       "_aliases": Array [
-        GameObject {
+        GameObjectNoPixels {
           "__astId": 265,
-          "_colors": Array [
-            "transparent",
-          ],
+          "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
-          "_pixels": Array [],
         },
       ],
       "_objectNameOrLevelChar": "z",
@@ -6553,14 +6364,11 @@ Object {
   ],
   "levels": Array [],
   "objects": Array [
-    GameObject {
+    GameObjectNoPixels {
       "__astId": 265,
-      "_colors": Array [
-        "transparent",
-      ],
+      "_color": "transparent",
       "_name": "testObject",
       "_optionalLegendChar": undefined,
-      "_pixels": Array [],
     },
   ],
   "rules": Array [
@@ -6579,14 +6387,11 @@ Object {
                   "_objectName": GameLegendItemSimple {
                     "__astId": 266,
                     "_aliases": Array [
-                      GameObject {
+                      GameObjectNoPixels {
                         "__astId": 265,
-                        "_colors": Array [
-                          "transparent",
-                        ],
+                        "_color": "transparent",
                         "_name": "testObject",
                         "_optionalLegendChar": undefined,
-                        "_pixels": Array [],
                       },
                     ],
                     "_objectNameOrLevelChar": "z",
@@ -6614,14 +6419,11 @@ Object {
                     "_objectNameMaybeNull": GameLegendItemSimple {
                       "__astId": 266,
                       "_aliases": Array [
-                        GameObject {
+                        GameObjectNoPixels {
                           "__astId": 265,
-                          "_colors": Array [
-                            "transparent",
-                          ],
+                          "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
-                          "_pixels": Array [],
                         },
                       ],
                       "_objectNameOrLevelChar": "z",
@@ -6916,14 +6718,11 @@ Object {
     GameLegendItemSimple {
       "__astId": 276,
       "_aliases": Array [
-        GameObject {
+        GameObjectNoPixels {
           "__astId": 275,
-          "_colors": Array [
-            "transparent",
-          ],
+          "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
-          "_pixels": Array [],
         },
       ],
       "_objectNameOrLevelChar": "z",
@@ -6931,14 +6730,11 @@ Object {
     GameLegendItemSimple {
       "__astId": 277,
       "_aliases": Array [
-        GameObject {
+        GameObjectNoPixels {
           "__astId": 275,
-          "_colors": Array [
-            "transparent",
-          ],
+          "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
-          "_pixels": Array [],
         },
       ],
       "_objectNameOrLevelChar": "winter",
@@ -6946,14 +6742,11 @@ Object {
   ],
   "levels": Array [],
   "objects": Array [
-    GameObject {
+    GameObjectNoPixels {
       "__astId": 275,
-      "_colors": Array [
-        "transparent",
-      ],
+      "_color": "transparent",
       "_name": "testObject",
       "_optionalLegendChar": undefined,
-      "_pixels": Array [],
     },
   ],
   "rules": Array [
@@ -6972,14 +6765,11 @@ Object {
                   "_objectName": GameLegendItemSimple {
                     "__astId": 276,
                     "_aliases": Array [
-                      GameObject {
+                      GameObjectNoPixels {
                         "__astId": 275,
-                        "_colors": Array [
-                          "transparent",
-                        ],
+                        "_color": "transparent",
                         "_name": "testObject",
                         "_optionalLegendChar": undefined,
-                        "_pixels": Array [],
                       },
                     ],
                     "_objectNameOrLevelChar": "z",
@@ -7007,14 +6797,11 @@ Object {
                     "_objectName": GameLegendItemSimple {
                       "__astId": 276,
                       "_aliases": Array [
-                        GameObject {
+                        GameObjectNoPixels {
                           "__astId": 275,
-                          "_colors": Array [
-                            "transparent",
-                          ],
+                          "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
-                          "_pixels": Array [],
                         },
                       ],
                       "_objectNameOrLevelChar": "z",
@@ -7026,14 +6813,11 @@ Object {
                     "_objectName": GameLegendItemSimple {
                       "__astId": 277,
                       "_aliases": Array [
-                        GameObject {
+                        GameObjectNoPixels {
                           "__astId": 275,
-                          "_colors": Array [
-                            "transparent",
-                          ],
+                          "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
-                          "_pixels": Array [],
                         },
                       ],
                       "_objectNameOrLevelChar": "winter",
@@ -7731,17 +7515,14 @@ Object {
   "legends": Array [],
   "levels": Array [],
   "objects": Array [
-    GameObject {
+    GameObjectNoPixels {
       "__astId": 288,
-      "_colors": Array [
-        HexColor {
-          "__astId": 287,
-          "_color": "#C0BA6F",
-        },
-      ],
+      "_color": HexColor {
+        "__astId": 287,
+        "_color": "#C0BA6F",
+      },
       "_name": "player",
       "_optionalLegendChar": undefined,
-      "_pixels": Array [],
     },
   ],
   "rules": Array [],
@@ -7760,17 +7541,14 @@ Object {
   "legends": Array [],
   "levels": Array [],
   "objects": Array [
-    GameObject {
+    GameObjectNoPixels {
       "__astId": 290,
-      "_colors": Array [
-        HexColor {
-          "__astId": 289,
-          "_color": "#C0BA6F",
-        },
-      ],
+      "_color": HexColor {
+        "__astId": 289,
+        "_color": "#C0BA6F",
+      },
       "_name": "player",
       "_optionalLegendChar": undefined,
-      "_pixels": Array [],
     },
   ],
   "rules": Array [],
@@ -7789,23 +7567,17 @@ Object {
     CollisionLayer {
       "__astId": 298,
       "_objectNames": Array [
-        GameObject {
+        GameObjectNoPixels {
           "__astId": 291,
-          "_colors": Array [
-            "transparent",
-          ],
+          "_color": "transparent",
           "_name": "hello",
           "_optionalLegendChar": ".",
-          "_pixels": Array [],
         },
-        GameObject {
+        GameObjectNoPixels {
           "__astId": 292,
-          "_colors": Array [
-            "transparent",
-          ],
+          "_color": "transparent",
           "_name": "hello2",
           "_optionalLegendChar": "]",
-          "_pixels": Array [],
         },
       ],
     },
@@ -7814,14 +7586,11 @@ Object {
     GameLegendItemSimple {
       "__astId": 294,
       "_aliases": Array [
-        GameObject {
+        GameObjectNoPixels {
           "__astId": 291,
-          "_colors": Array [
-            "transparent",
-          ],
+          "_color": "transparent",
           "_name": "hello",
           "_optionalLegendChar": ".",
-          "_pixels": Array [],
         },
       ],
       "_objectNameOrLevelChar": "[",
@@ -7829,14 +7598,11 @@ Object {
     GameLegendItemSimple {
       "__astId": 295,
       "_aliases": Array [
-        GameObject {
+        GameObjectNoPixels {
           "__astId": 292,
-          "_colors": Array [
-            "transparent",
-          ],
+          "_color": "transparent",
           "_name": "hello2",
           "_optionalLegendChar": "]",
-          "_pixels": Array [],
         },
       ],
       "_objectNameOrLevelChar": ",",
@@ -7844,14 +7610,11 @@ Object {
     GameLegendItemSimple {
       "__astId": 296,
       "_aliases": Array [
-        GameObject {
+        GameObjectNoPixels {
           "__astId": 293,
-          "_colors": Array [
-            "transparent",
-          ],
+          "_color": "transparent",
           "_name": "hello3",
           "_optionalLegendChar": "♡",
-          "_pixels": Array [],
         },
       ],
       "_objectNameOrLevelChar": "д",
@@ -7859,14 +7622,11 @@ Object {
     GameLegendItemSimple {
       "__astId": 297,
       "_aliases": Array [
-        GameObject {
+        GameObjectNoPixels {
           "__astId": 293,
-          "_colors": Array [
-            "transparent",
-          ],
+          "_color": "transparent",
           "_name": "hello3",
           "_optionalLegendChar": "♡",
-          "_pixels": Array [],
         },
       ],
       "_objectNameOrLevelChar": "sfx11",
@@ -7874,32 +7634,23 @@ Object {
   ],
   "levels": Array [],
   "objects": Array [
-    GameObject {
+    GameObjectNoPixels {
       "__astId": 291,
-      "_colors": Array [
-        "transparent",
-      ],
+      "_color": "transparent",
       "_name": "hello",
       "_optionalLegendChar": ".",
-      "_pixels": Array [],
     },
-    GameObject {
+    GameObjectNoPixels {
       "__astId": 292,
-      "_colors": Array [
-        "transparent",
-      ],
+      "_color": "transparent",
       "_name": "hello2",
       "_optionalLegendChar": "]",
-      "_pixels": Array [],
     },
-    GameObject {
+    GameObjectNoPixels {
       "__astId": 293,
-      "_colors": Array [
-        "transparent",
-      ],
+      "_color": "transparent",
       "_name": "hello3",
       "_optionalLegendChar": "♡",
-      "_pixels": Array [],
     },
   ],
   "rules": Array [
@@ -7915,14 +7666,11 @@ Object {
                 GameRuleCellLayer {
                   "__astId": 299,
                   "_cellModifiers": Array [],
-                  "_objectName": GameObject {
+                  "_objectName": GameObjectNoPixels {
                     "__astId": 291,
-                    "_colors": Array [
-                      "transparent",
-                    ],
+                    "_color": "transparent",
                     "_name": "hello",
                     "_optionalLegendChar": ".",
-                    "_pixels": Array [],
                   },
                 },
               ],
@@ -7944,14 +7692,11 @@ Object {
                   GameRuleCellLayer {
                     "__astId": 302,
                     "_cellModifiers": Array [],
-                    "_objectName": GameObject {
+                    "_objectName": GameObjectNoPixels {
                       "__astId": 291,
-                      "_colors": Array [
-                        "transparent",
-                      ],
+                      "_color": "transparent",
                       "_name": "hello",
                       "_optionalLegendChar": ".",
-                      "_pixels": Array [],
                     },
                   },
                 ],
@@ -7976,14 +7721,11 @@ Object {
                 GameRuleCellLayer {
                   "__astId": 307,
                   "_cellModifiers": Array [],
-                  "_objectName": GameObject {
+                  "_objectName": GameObjectNoPixels {
                     "__astId": 293,
-                    "_colors": Array [
-                      "transparent",
-                    ],
+                    "_color": "transparent",
                     "_name": "hello3",
                     "_optionalLegendChar": "♡",
-                    "_pixels": Array [],
                   },
                 },
               ],
@@ -8005,14 +7747,11 @@ Object {
                   GameRuleCellLayer {
                     "__astId": 310,
                     "_cellModifiers": Array [],
-                    "_objectName": GameObject {
+                    "_objectName": GameObjectNoPixels {
                       "__astId": 293,
-                      "_colors": Array [
-                        "transparent",
-                      ],
+                      "_color": "transparent",
                       "_name": "hello3",
                       "_optionalLegendChar": "♡",
-                      "_pixels": Array [],
                     },
                   },
                 ],
@@ -8026,6 +7765,167 @@ Object {
       "_ruleModifiers": Array [],
     },
   ],
+  "settings": Object {},
+  "sounds": Array [],
+  "title": "foo",
+  "winConditions": Array [],
+}
+`;
+
+exports[`rules General Formatting Supports objects named using only numbers (mirror-isles) 1`] = `
+Object {
+  "collisionLayers": Array [],
+  "legends": Array [],
+  "levels": Array [],
+  "objects": Array [
+    GameObjectPixels {
+      "__astId": 318,
+      "_colors": Array [
+        HexColor {
+          "__astId": 315,
+          "_color": "#FFFF55",
+        },
+        HexColor {
+          "__astId": 316,
+          "_color": "#FF0000",
+        },
+        HexColor {
+          "__astId": 317,
+          "_color": "#FFFFFF",
+        },
+      ],
+      "_name": "Table",
+      "_optionalLegendChar": undefined,
+      "_pixels": Array [
+        Array [
+          ".",
+          ".",
+          ".",
+          ".",
+          ".",
+        ],
+        Array [
+          ".",
+          1,
+          2,
+          1,
+          ".",
+        ],
+        Array [
+          ".",
+          2,
+          1,
+          2,
+          ".",
+        ],
+        Array [
+          ".",
+          1,
+          2,
+          1,
+          ".",
+        ],
+        Array [
+          ".",
+          0,
+          ".",
+          0,
+          ".",
+        ],
+      ],
+    },
+    GameObjectNoPixels {
+      "__astId": 321,
+      "_color": HexColor {
+        "__astId": 319,
+        "_color": "#FFFF55",
+      },
+      "_name": "ChairRightLoose",
+      "_optionalLegendChar": undefined,
+    },
+  ],
+  "rules": Array [],
+  "settings": Object {},
+  "sounds": Array [],
+  "title": "foo",
+  "winConditions": Array [],
+}
+`;
+
+exports[`rules General Formatting Supports objects named using only numbers (mirror-isles) 2`] = `
+Object {
+  "collisionLayers": Array [],
+  "legends": Array [],
+  "levels": Array [],
+  "objects": Array [
+    GameObjectPixels {
+      "__astId": 323,
+      "_colors": Array [
+        HexColor {
+          "__astId": 322,
+          "_color": "#FFFF55",
+        },
+      ],
+      "_name": "player",
+      "_optionalLegendChar": undefined,
+      "_pixels": Array [
+        Array [
+          0,
+          0,
+          0,
+          0,
+          0,
+        ],
+        Array [
+          0,
+          0,
+          0,
+          0,
+          0,
+        ],
+        Array [
+          0,
+          0,
+          0,
+          0,
+          0,
+        ],
+        Array [
+          0,
+          0,
+          0,
+          0,
+          0,
+        ],
+        Array [
+          0,
+          0,
+          0,
+          0,
+          0,
+        ],
+      ],
+    },
+    GameObjectNoPixels {
+      "__astId": 325,
+      "_color": HexColor {
+        "__astId": 324,
+        "_color": "#FFFF55",
+      },
+      "_name": "00",
+      "_optionalLegendChar": undefined,
+    },
+    GameObjectNoPixels {
+      "__astId": 327,
+      "_color": HexColor {
+        "__astId": 326,
+        "_color": "#FFFF55",
+      },
+      "_name": "01",
+      "_optionalLegendChar": undefined,
+    },
+  ],
+  "rules": Array [],
   "settings": Object {},
   "sounds": Array [],
   "title": "foo",
@@ -8239,14 +8139,11 @@ Object {
     GameLegendItemSimple {
       "__astId": 74,
       "_aliases": Array [
-        GameObject {
+        GameObjectNoPixels {
           "__astId": 73,
-          "_colors": Array [
-            "transparent",
-          ],
+          "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
-          "_pixels": Array [],
         },
       ],
       "_objectNameOrLevelChar": "z_x",
@@ -8254,14 +8151,11 @@ Object {
   ],
   "levels": Array [],
   "objects": Array [
-    GameObject {
+    GameObjectNoPixels {
       "__astId": 73,
-      "_colors": Array [
-        "transparent",
-      ],
+      "_color": "transparent",
       "_name": "testObject",
       "_optionalLegendChar": undefined,
-      "_pixels": Array [],
     },
   ],
   "rules": Array [
@@ -8280,14 +8174,11 @@ Object {
                   "_objectName": GameLegendItemSimple {
                     "__astId": 74,
                     "_aliases": Array [
-                      GameObject {
+                      GameObjectNoPixels {
                         "__astId": 73,
-                        "_colors": Array [
-                          "transparent",
-                        ],
+                        "_color": "transparent",
                         "_name": "testObject",
                         "_optionalLegendChar": undefined,
-                        "_pixels": Array [],
                       },
                     ],
                     "_objectNameOrLevelChar": "z_x",
@@ -8518,14 +8409,11 @@ Object {
     GameLegendItemSimple {
       "__astId": 65,
       "_aliases": Array [
-        GameObject {
+        GameObjectNoPixels {
           "__astId": 64,
-          "_colors": Array [
-            "transparent",
-          ],
+          "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
-          "_pixels": Array [],
         },
       ],
       "_objectNameOrLevelChar": ".",
@@ -8533,14 +8421,11 @@ Object {
   ],
   "levels": Array [],
   "objects": Array [
-    GameObject {
+    GameObjectNoPixels {
       "__astId": 64,
-      "_colors": Array [
-        "transparent",
-      ],
+      "_color": "transparent",
       "_name": "testObject",
       "_optionalLegendChar": undefined,
-      "_pixels": Array [],
     },
   ],
   "rules": Array [
@@ -8559,14 +8444,11 @@ Object {
                   "_objectName": GameLegendItemSimple {
                     "__astId": 65,
                     "_aliases": Array [
-                      GameObject {
+                      GameObjectNoPixels {
                         "__astId": 64,
-                        "_colors": Array [
-                          "transparent",
-                        ],
+                        "_color": "transparent",
                         "_name": "testObject",
                         "_optionalLegendChar": undefined,
-                        "_pixels": Array [],
                       },
                     ],
                     "_objectNameOrLevelChar": ".",
@@ -8934,14 +8816,11 @@ Object {
     GameLegendItemSimple {
       "__astId": 52,
       "_aliases": Array [
-        GameObject {
+        GameObjectNoPixels {
           "__astId": 51,
-          "_colors": Array [
-            "transparent",
-          ],
+          "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
-          "_pixels": Array [],
         },
       ],
       "_objectNameOrLevelChar": "z",
@@ -8949,14 +8828,11 @@ Object {
     GameLegendItemSimple {
       "__astId": 53,
       "_aliases": Array [
-        GameObject {
+        GameObjectNoPixels {
           "__astId": 51,
-          "_colors": Array [
-            "transparent",
-          ],
+          "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
-          "_pixels": Array [],
         },
       ],
       "_objectNameOrLevelChar": "x",
@@ -8964,14 +8840,11 @@ Object {
   ],
   "levels": Array [],
   "objects": Array [
-    GameObject {
+    GameObjectNoPixels {
       "__astId": 51,
-      "_colors": Array [
-        "transparent",
-      ],
+      "_color": "transparent",
       "_name": "testObject",
       "_optionalLegendChar": undefined,
-      "_pixels": Array [],
     },
   ],
   "rules": Array [
@@ -8990,14 +8863,11 @@ Object {
                   "_objectName": GameLegendItemSimple {
                     "__astId": 52,
                     "_aliases": Array [
-                      GameObject {
+                      GameObjectNoPixels {
                         "__astId": 51,
-                        "_colors": Array [
-                          "transparent",
-                        ],
+                        "_color": "transparent",
                         "_name": "testObject",
                         "_optionalLegendChar": undefined,
-                        "_pixels": Array [],
                       },
                     ],
                     "_objectNameOrLevelChar": "z",
@@ -9014,14 +8884,11 @@ Object {
                   "_objectName": GameLegendItemSimple {
                     "__astId": 53,
                     "_aliases": Array [
-                      GameObject {
+                      GameObjectNoPixels {
                         "__astId": 51,
-                        "_colors": Array [
-                          "transparent",
-                        ],
+                        "_color": "transparent",
                         "_name": "testObject",
                         "_optionalLegendChar": undefined,
-                        "_pixels": Array [],
                       },
                     ],
                     "_objectNameOrLevelChar": "x",
@@ -9051,14 +8918,11 @@ Object {
                     "_objectName": GameLegendItemSimple {
                       "__astId": 52,
                       "_aliases": Array [
-                        GameObject {
+                        GameObjectNoPixels {
                           "__astId": 51,
-                          "_colors": Array [
-                            "transparent",
-                          ],
+                          "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
-                          "_pixels": Array [],
                         },
                       ],
                       "_objectNameOrLevelChar": "z",
@@ -9075,14 +8939,11 @@ Object {
                     "_objectName": GameLegendItemSimple {
                       "__astId": 53,
                       "_aliases": Array [
-                        GameObject {
+                        GameObjectNoPixels {
                           "__astId": 51,
-                          "_colors": Array [
-                            "transparent",
-                          ],
+                          "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
-                          "_pixels": Array [],
                         },
                       ],
                       "_objectNameOrLevelChar": "x",
@@ -9329,14 +9190,11 @@ Object {
     GameLegendItemSimple {
       "__astId": 30,
       "_aliases": Array [
-        GameObject {
+        GameObjectNoPixels {
           "__astId": 29,
-          "_colors": Array [
-            "transparent",
-          ],
+          "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
-          "_pixels": Array [],
         },
       ],
       "_objectNameOrLevelChar": "z",
@@ -9344,14 +9202,11 @@ Object {
     GameLegendItemSimple {
       "__astId": 31,
       "_aliases": Array [
-        GameObject {
+        GameObjectNoPixels {
           "__astId": 29,
-          "_colors": Array [
-            "transparent",
-          ],
+          "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
-          "_pixels": Array [],
         },
       ],
       "_objectNameOrLevelChar": "x",
@@ -9359,14 +9214,11 @@ Object {
   ],
   "levels": Array [],
   "objects": Array [
-    GameObject {
+    GameObjectNoPixels {
       "__astId": 29,
-      "_colors": Array [
-        "transparent",
-      ],
+      "_color": "transparent",
       "_name": "testObject",
       "_optionalLegendChar": undefined,
-      "_pixels": Array [],
     },
   ],
   "rules": Array [
@@ -9385,14 +9237,11 @@ Object {
                   "_objectName": GameLegendItemSimple {
                     "__astId": 30,
                     "_aliases": Array [
-                      GameObject {
+                      GameObjectNoPixels {
                         "__astId": 29,
-                        "_colors": Array [
-                          "transparent",
-                        ],
+                        "_color": "transparent",
                         "_name": "testObject",
                         "_optionalLegendChar": undefined,
-                        "_pixels": Array [],
                       },
                     ],
                     "_objectNameOrLevelChar": "z",
@@ -9406,14 +9255,11 @@ Object {
                   "_objectName": GameLegendItemSimple {
                     "__astId": 31,
                     "_aliases": Array [
-                      GameObject {
+                      GameObjectNoPixels {
                         "__astId": 29,
-                        "_colors": Array [
-                          "transparent",
-                        ],
+                        "_color": "transparent",
                         "_name": "testObject",
                         "_optionalLegendChar": undefined,
-                        "_pixels": Array [],
                       },
                     ],
                     "_objectNameOrLevelChar": "x",
@@ -9665,14 +9511,11 @@ Object {
     GameLegendItemSimple {
       "__astId": 41,
       "_aliases": Array [
-        GameObject {
+        GameObjectNoPixels {
           "__astId": 40,
-          "_colors": Array [
-            "transparent",
-          ],
+          "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
-          "_pixels": Array [],
         },
       ],
       "_objectNameOrLevelChar": "z",
@@ -9680,14 +9523,11 @@ Object {
     GameLegendItemSimple {
       "__astId": 42,
       "_aliases": Array [
-        GameObject {
+        GameObjectNoPixels {
           "__astId": 40,
-          "_colors": Array [
-            "transparent",
-          ],
+          "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
-          "_pixels": Array [],
         },
       ],
       "_objectNameOrLevelChar": "x",
@@ -9695,14 +9535,11 @@ Object {
   ],
   "levels": Array [],
   "objects": Array [
-    GameObject {
+    GameObjectNoPixels {
       "__astId": 40,
-      "_colors": Array [
-        "transparent",
-      ],
+      "_color": "transparent",
       "_name": "testObject",
       "_optionalLegendChar": undefined,
-      "_pixels": Array [],
     },
   ],
   "rules": Array [
@@ -9721,14 +9558,11 @@ Object {
                   "_objectName": GameLegendItemSimple {
                     "__astId": 41,
                     "_aliases": Array [
-                      GameObject {
+                      GameObjectNoPixels {
                         "__astId": 40,
-                        "_colors": Array [
-                          "transparent",
-                        ],
+                        "_color": "transparent",
                         "_name": "testObject",
                         "_optionalLegendChar": undefined,
-                        "_pixels": Array [],
                       },
                     ],
                     "_objectNameOrLevelChar": "z",
@@ -9740,14 +9574,11 @@ Object {
                   "_objectName": GameLegendItemSimple {
                     "__astId": 42,
                     "_aliases": Array [
-                      GameObject {
+                      GameObjectNoPixels {
                         "__astId": 40,
-                        "_colors": Array [
-                          "transparent",
-                        ],
+                        "_color": "transparent",
                         "_name": "testObject",
                         "_optionalLegendChar": undefined,
-                        "_pixels": Array [],
                       },
                     ],
                     "_objectNameOrLevelChar": "x",
@@ -9978,14 +9809,11 @@ Object {
     GameLegendItemSimple {
       "__astId": 1,
       "_aliases": Array [
-        GameObject {
+        GameObjectNoPixels {
           "__astId": 0,
-          "_colors": Array [
-            "transparent",
-          ],
+          "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
-          "_pixels": Array [],
         },
       ],
       "_objectNameOrLevelChar": "z",
@@ -9993,14 +9821,11 @@ Object {
   ],
   "levels": Array [],
   "objects": Array [
-    GameObject {
+    GameObjectNoPixels {
       "__astId": 0,
-      "_colors": Array [
-        "transparent",
-      ],
+      "_color": "transparent",
       "_name": "testObject",
       "_optionalLegendChar": undefined,
-      "_pixels": Array [],
     },
   ],
   "rules": Array [
@@ -10019,14 +9844,11 @@ Object {
                   "_objectName": GameLegendItemSimple {
                     "__astId": 1,
                     "_aliases": Array [
-                      GameObject {
+                      GameObjectNoPixels {
                         "__astId": 0,
-                        "_colors": Array [
-                          "transparent",
-                        ],
+                        "_color": "transparent",
                         "_name": "testObject",
                         "_optionalLegendChar": undefined,
-                        "_pixels": Array [],
                       },
                     ],
                     "_objectNameOrLevelChar": "z",
@@ -10280,14 +10102,11 @@ Object {
     GameLegendItemSimple {
       "__astId": 10,
       "_aliases": Array [
-        GameObject {
+        GameObjectNoPixels {
           "__astId": 9,
-          "_colors": Array [
-            "transparent",
-          ],
+          "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
-          "_pixels": Array [],
         },
       ],
       "_objectNameOrLevelChar": "z",
@@ -10295,14 +10114,11 @@ Object {
   ],
   "levels": Array [],
   "objects": Array [
-    GameObject {
+    GameObjectNoPixels {
       "__astId": 9,
-      "_colors": Array [
-        "transparent",
-      ],
+      "_color": "transparent",
       "_name": "testObject",
       "_optionalLegendChar": undefined,
-      "_pixels": Array [],
     },
   ],
   "rules": Array [
@@ -10321,14 +10137,11 @@ Object {
                   "_objectName": GameLegendItemSimple {
                     "__astId": 10,
                     "_aliases": Array [
-                      GameObject {
+                      GameObjectNoPixels {
                         "__astId": 9,
-                        "_colors": Array [
-                          "transparent",
-                        ],
+                        "_color": "transparent",
                         "_name": "testObject",
                         "_optionalLegendChar": undefined,
-                        "_pixels": Array [],
                       },
                     ],
                     "_objectNameOrLevelChar": "z",
@@ -10356,14 +10169,11 @@ Object {
                     "_objectName": GameLegendItemSimple {
                       "__astId": 10,
                       "_aliases": Array [
-                        GameObject {
+                        GameObjectNoPixels {
                           "__astId": 9,
-                          "_colors": Array [
-                            "transparent",
-                          ],
+                          "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
-                          "_pixels": Array [],
                         },
                       ],
                       "_objectNameOrLevelChar": "z",
@@ -10602,14 +10412,11 @@ Object {
     GameLegendItemSimple {
       "__astId": 20,
       "_aliases": Array [
-        GameObject {
+        GameObjectNoPixels {
           "__astId": 19,
-          "_colors": Array [
-            "transparent",
-          ],
+          "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
-          "_pixels": Array [],
         },
       ],
       "_objectNameOrLevelChar": "z",
@@ -10617,14 +10424,11 @@ Object {
   ],
   "levels": Array [],
   "objects": Array [
-    GameObject {
+    GameObjectNoPixels {
       "__astId": 19,
-      "_colors": Array [
-        "transparent",
-      ],
+      "_color": "transparent",
       "_name": "testObject",
       "_optionalLegendChar": undefined,
-      "_pixels": Array [],
     },
   ],
   "rules": Array [
@@ -10643,14 +10447,11 @@ Object {
                   "_objectName": GameLegendItemSimple {
                     "__astId": 20,
                     "_aliases": Array [
-                      GameObject {
+                      GameObjectNoPixels {
                         "__astId": 19,
-                        "_colors": Array [
-                          "transparent",
-                        ],
+                        "_color": "transparent",
                         "_name": "testObject",
                         "_optionalLegendChar": undefined,
-                        "_pixels": Array [],
                       },
                     ],
                     "_objectNameOrLevelChar": "z",
@@ -10678,14 +10479,11 @@ Object {
                     "_objectName": GameLegendItemSimple {
                       "__astId": 20,
                       "_aliases": Array [
-                        GameObject {
+                        GameObjectNoPixels {
                           "__astId": 19,
-                          "_colors": Array [
-                            "transparent",
-                          ],
+                          "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
-                          "_pixels": Array [],
                         },
                       ],
                       "_objectNameOrLevelChar": "z",
