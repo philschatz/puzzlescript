@@ -1,5 +1,6 @@
 /* eslint-env jasmine */
 const {parse, parseGrammar} = require('../src/parser')
+const {COLOR_PALETTES} = require('../src/colors')
 
 function checkGrammar (code) {
   const {match, grammar} = parseGrammar(code)
@@ -39,13 +40,23 @@ function checkGrammar (code) {
   return tree
 }
 
-function checkParse (code, varNames) {
+function checkParse (code) {
+  const {data, error} = parse(code)
+  if (error) {
+    console.log(error.message)
+  }
+  expect(error).toBeFalsy()
+  expect(data).toMatchSnapshot()
+  return data
+}
+
+function checkParseRule (code, varNames) {
   // Now check if the semantics parsed
   const legendItems = varNames.map(varName => {
     return `${varName} = testObject`
   })
-  const {data, error} = parse(`
-title checkParse
+  return checkParse(`
+title checkParseRule
 
 ===
 OBJECTS
@@ -66,12 +77,6 @@ RULES
 
 ${code}
 `)
-  if (error) {
-    console.log(error.message)
-  }
-  expect(error).toBeFalsy()
-  expect(data).toMatchSnapshot()
-  return data
 }
 
 function parseRule (code, varNames) {
@@ -83,7 +88,7 @@ RULES
 ===
 ${code}
 `)
-  return checkParse(code, varNames)
+  return checkParseRule(code, varNames)
 }
 
 describe('rules', () => {
@@ -190,6 +195,33 @@ LEVELS
 ===
 
 P`)
+    })
+
+    it('Looks up color palettes using a string or an index', () => {
+      let data
+      data = checkParse(`
+title foo
+color_palette gameboycolour
+
+===
+OBJECTS
+===
+player
+yellow
+`)
+      expect(data.objects[0]._colors[0]._color.toLowerCase()).toBe(COLOR_PALETTES['gameboycolour']['yellow'].toLowerCase())
+
+      data = checkParse(`
+title foo
+color_palette 2
+
+===
+OBJECTS
+===
+player
+yellow
+`)
+      expect(data.objects[0]._colors[0]._color.toLowerCase()).toBe(COLOR_PALETTES['gameboycolour']['yellow'].toLowerCase())
     })
   })
 

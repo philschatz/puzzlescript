@@ -1,4 +1,4 @@
-const colorPaletteAliases = {
+const ALIASES = {
   1: 'mastersystem',
   2: 'gameboycolour',
   3: 'amiga',
@@ -390,4 +390,13 @@ const COLOR_PALETTES = {
   }
 }
 
-module.exports = {colorPaletteAliases, COLOR_PALETTES}
+module.exports = {
+  COLOR_PALETTES,
+  lookupColorPalette: function (alias) {
+    if (ALIASES[alias]) {
+      return COLOR_PALETTES[ALIASES[alias]]
+    } else {
+      return COLOR_PALETTES[alias]
+    }
+  }
+}

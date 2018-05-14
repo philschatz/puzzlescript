@@ -93,8 +93,6 @@ LEVELS
 
 ` // End SIMPLE_GAME
 
-
-
 const SIMPLE_GAME2 = `
 title foo
 ===
@@ -220,10 +218,10 @@ describe('engine', () => {
 
     const engine = new Engine(data)
     engine.setLevel(0)
-    renderScreen(data, engine.currentLevel)
+    // renderScreen(data, engine.currentLevel)
 
     console.log('tick-returned:', engine.tick())
-    console.log('gameaskldjalskjd');
-    console.log(JSON.stringify(data, null, 2));
+    console.log('gameaskldjalskjd')
+    console.log(JSON.stringify(data, null, 2))
   })
 })

@@ -3,6 +3,7 @@ const glob = require('glob')
 
 const {parse} = require('./src/parser')
 const {renderScreen} = require('./src/ui')
+const Engine = require('./src/engine')
 
 let totalRenderTime = 0
 
@@ -30,8 +31,14 @@ glob('./gists/*/script.txt', (err, files) => {
       // Draw the "last" level (after the messages)
       const level = data.levels.reverse().filter(level => level.isMap())[0]
       if (level) {
+        const engine = new Engine(data)
+        engine.setLevel(data.levels.indexOf(level))
+
         // console.log(level)
-        renderScreen(data, level.getRows())
+        renderScreen(data, engine.currentLevel)
+
+        // engine.tick()
+        // renderScreen(data, engine.currentLevel)
       }
 
       totalRenderTime += Date.now() - startTime

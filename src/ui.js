@@ -95,4 +95,8 @@ function renderScreen (data, levelRows) {
   axel.bg(0, 0, 0)
 }
 
-module.exports = { renderScreen }
+function clearScreen() {
+  axel.clear()
+}
+
+module.exports = { renderScreen, clearScreen }

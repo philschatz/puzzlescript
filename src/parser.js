@@ -1,5 +1,5 @@
 const ohm = require('ohm-js')
-const {COLOR_PALETTES} = require('./colors')
+const {lookupColorPalette} = require('./colors')
 
 const grammar = `
 Puzzlescript {
@@ -427,7 +427,7 @@ class BaseForLines {
     })
     this.__astId = astId++
   }
-  toString() {
+  toString () {
     return `astId=${this.__astId}\n${this.__source.getLineAndColumnMessage()}`
   }
 }
@@ -668,7 +668,7 @@ class GameRule extends BaseForLines {
     this._ruleAction = ruleAction
   }
 
-  doesntMatchCell(cell) {
+  doesntMatchCell (cell) {
     let allSequences = null
     for (const sequence of this._cellSequenceBrackets) {
       allSequences = sequence.doesntMatchCell(cell)
@@ -695,7 +695,7 @@ class GameRuleSequenceBracket extends BaseForLines {
     this._bracket = bracket
   }
 
-  doesntMatchCell(cell) {
+  doesntMatchCell (cell) {
     return this._bracket.doesntMatchCell(cell)
   }
 }
@@ -714,8 +714,8 @@ class GameRuleSimpleBracket extends BaseForLines {
     this._neighbors = neighbors
   }
 
-  doesntMatchCell(cell) {
-    if (this._neighbors.length > 1) { throw new Error(`BUG: checking neighbors not implemented yet`)}
+  doesntMatchCell (cell) {
+    if (this._neighbors.length > 1) { return `BUG: checking neighbors not implemented yet` }
     // Check if all the cellLayers are on the current cell
     let ret = null
     for (const layer of this._neighbors[0]) {
@@ -742,7 +742,7 @@ class GameRuleCellLayer extends BaseForLines {
     this._cellModifiers = cellModifiers
     this._objectName = objectName
   }
-  getObjects() {
+  getObjects () {
     return this._objectName.getObjects()
   }
 }
@@ -835,10 +835,18 @@ function parse (code) {
     let currentColorPalette = 'mastersystem' // default
 
     s.addOperation('parse', {
-      Details: (_whitespace1, title, _whitespace2, settings, _whitespace3, objects, legends, sounds, collisionLayers, rules, winConditions, levels) => {
-        const ret = {
+      Details: (_whitespace1, title, _whitespace2, settingsFields, _whitespace3, objects, legends, sounds, collisionLayers, rules, winConditions, levels) => {
+        const settings = {}
+        settingsFields.parse().forEach((setting) => {
+          if (Array.isArray(setting)) {
+            settings[setting[0]] = setting[1]
+          } else {
+            settings[setting] = true
+          }
+        })
+        return {
           title: title.parse(),
-          settings: {}, // Filled in below
+          settings: settings,
           // Use [0] because each of them are optional (at least because of unit tests)
           objects: objects.parse()[0] || [],
           legends: legends.parse()[0] || [],
@@ -848,14 +856,6 @@ function parse (code) {
           winConditions: winConditions.parse()[0] || [],
           levels: levels.parse()[0] || []
         }
-        settings.parse().forEach((setting) => {
-          if (Array.isArray(setting)) {
-            ret.settings[setting[0]] = setting[1]
-          } else {
-            ret.settings[setting] = true
-          }
-        })
-        return ret
       },
       Title: (_1, value) => {
         return value.parse()
@@ -1032,7 +1032,7 @@ function parse (code) {
         return new HexColor(this.source, this.sourceString)
       },
       colorName: function (_1) {
-        return new HexColor(this.source, COLOR_PALETTES[currentColorPalette][this.sourceString.toLowerCase()])
+        return new HexColor(this.source, lookupColorPalette(currentColorPalette)[this.sourceString.toLowerCase()])
       },
       NonemptyListOf: function (_1, _2, _3) {
         return [_1.parse()].concat(_3.parse())

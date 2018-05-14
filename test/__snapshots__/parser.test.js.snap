@@ -451,7 +451,7 @@ Object {
   ],
   "settings": Object {},
   "sounds": Array [],
-  "title": "checkParse",
+  "title": "checkParseRule",
   "winConditions": Array [],
 }
 `;
@@ -753,7 +753,7 @@ Object {
   ],
   "settings": Object {},
   "sounds": Array [],
-  "title": "checkParse",
+  "title": "checkParseRule",
   "winConditions": Array [],
 }
 `;
@@ -1055,7 +1055,7 @@ Object {
   ],
   "settings": Object {},
   "sounds": Array [],
-  "title": "checkParse",
+  "title": "checkParseRule",
   "winConditions": Array [],
 }
 `;
@@ -1360,7 +1360,7 @@ Object {
   ],
   "settings": Object {},
   "sounds": Array [],
-  "title": "checkParse",
+  "title": "checkParseRule",
   "winConditions": Array [],
 }
 `;
@@ -1662,7 +1662,7 @@ Object {
   ],
   "settings": Object {},
   "sounds": Array [],
-  "title": "checkParse",
+  "title": "checkParseRule",
   "winConditions": Array [],
 }
 `;
@@ -1964,7 +1964,7 @@ Object {
   ],
   "settings": Object {},
   "sounds": Array [],
-  "title": "checkParse",
+  "title": "checkParseRule",
   "winConditions": Array [],
 }
 `;
@@ -2266,7 +2266,7 @@ Object {
   ],
   "settings": Object {},
   "sounds": Array [],
-  "title": "checkParse",
+  "title": "checkParseRule",
   "winConditions": Array [],
 }
 `;
@@ -2568,7 +2568,7 @@ Object {
   ],
   "settings": Object {},
   "sounds": Array [],
-  "title": "checkParse",
+  "title": "checkParseRule",
   "winConditions": Array [],
 }
 `;
@@ -2870,7 +2870,7 @@ Object {
   ],
   "settings": Object {},
   "sounds": Array [],
-  "title": "checkParse",
+  "title": "checkParseRule",
   "winConditions": Array [],
 }
 `;
@@ -3172,7 +3172,7 @@ Object {
   ],
   "settings": Object {},
   "sounds": Array [],
-  "title": "checkParse",
+  "title": "checkParseRule",
   "winConditions": Array [],
 }
 `;
@@ -3474,7 +3474,7 @@ Object {
   ],
   "settings": Object {},
   "sounds": Array [],
-  "title": "checkParse",
+  "title": "checkParseRule",
   "winConditions": Array [],
 }
 `;
@@ -3776,7 +3776,7 @@ Object {
   ],
   "settings": Object {},
   "sounds": Array [],
-  "title": "checkParse",
+  "title": "checkParseRule",
   "winConditions": Array [],
 }
 `;
@@ -4078,7 +4078,7 @@ Object {
   ],
   "settings": Object {},
   "sounds": Array [],
-  "title": "checkParse",
+  "title": "checkParseRule",
   "winConditions": Array [],
 }
 `;
@@ -4380,7 +4380,7 @@ Object {
   ],
   "settings": Object {},
   "sounds": Array [],
-  "title": "checkParse",
+  "title": "checkParseRule",
   "winConditions": Array [],
 }
 `;
@@ -4682,7 +4682,7 @@ Object {
   ],
   "settings": Object {},
   "sounds": Array [],
-  "title": "checkParse",
+  "title": "checkParseRule",
   "winConditions": Array [],
 }
 `;
@@ -4984,7 +4984,7 @@ Object {
   ],
   "settings": Object {},
   "sounds": Array [],
-  "title": "checkParse",
+  "title": "checkParseRule",
   "winConditions": Array [],
 }
 `;
@@ -5286,7 +5286,7 @@ Object {
   ],
   "settings": Object {},
   "sounds": Array [],
-  "title": "checkParse",
+  "title": "checkParseRule",
   "winConditions": Array [],
 }
 `;
@@ -5588,7 +5588,7 @@ Object {
   ],
   "settings": Object {},
   "sounds": Array [],
-  "title": "checkParse",
+  "title": "checkParseRule",
   "winConditions": Array [],
 }
 `;
@@ -5930,7 +5930,7 @@ Object {
   ],
   "settings": Object {},
   "sounds": Array [],
-  "title": "checkParse",
+  "title": "checkParseRule",
   "winConditions": Array [],
 }
 `;
@@ -6236,7 +6236,7 @@ Object {
   ],
   "settings": Object {},
   "sounds": Array [],
-  "title": "checkParse",
+  "title": "checkParseRule",
   "winConditions": Array [],
 }
 `;
@@ -6568,7 +6568,7 @@ Object {
   ],
   "settings": Object {},
   "sounds": Array [],
-  "title": "checkParse",
+  "title": "checkParseRule",
   "winConditions": Array [],
 }
 `;
@@ -6971,7 +6971,65 @@ Object {
   ],
   "settings": Object {},
   "sounds": Array [],
-  "title": "checkParse",
+  "title": "checkParseRule",
+  "winConditions": Array [],
+}
+`;
+
+exports[`rules General Formatting Looks up color palettes using a string or an index 1`] = `
+Object {
+  "collisionLayers": Array [],
+  "legends": Array [],
+  "levels": Array [],
+  "objects": Array [
+    GameObject {
+      "__astId": 288,
+      "_colors": Array [
+        HexColor {
+          "__astId": 287,
+          "_color": "#C0BA6F",
+        },
+      ],
+      "_name": "player",
+      "_optionalLegendChar": undefined,
+      "_pixels": Array [],
+    },
+  ],
+  "rules": Array [],
+  "settings": Object {
+    "color_palette": "gameboycolour",
+  },
+  "sounds": Array [],
+  "title": "foo",
+  "winConditions": Array [],
+}
+`;
+
+exports[`rules General Formatting Looks up color palettes using a string or an index 2`] = `
+Object {
+  "collisionLayers": Array [],
+  "legends": Array [],
+  "levels": Array [],
+  "objects": Array [
+    GameObject {
+      "__astId": 290,
+      "_colors": Array [
+        HexColor {
+          "__astId": 289,
+          "_color": "#C0BA6F",
+        },
+      ],
+      "_name": "player",
+      "_optionalLegendChar": undefined,
+      "_pixels": Array [],
+    },
+  ],
+  "rules": Array [],
+  "settings": Object {
+    "color_palette": "2",
+  },
+  "sounds": Array [],
+  "title": "foo",
   "winConditions": Array [],
 }
 `;
@@ -7255,7 +7313,7 @@ Object {
   ],
   "settings": Object {},
   "sounds": Array [],
-  "title": "checkParse",
+  "title": "checkParseRule",
   "winConditions": Array [],
 }
 `;
@@ -7525,7 +7583,7 @@ Object {
   ],
   "settings": Object {},
   "sounds": Array [],
-  "title": "checkParse",
+  "title": "checkParseRule",
   "winConditions": Array [],
 }
 `;
@@ -8014,7 +8072,7 @@ Object {
   ],
   "settings": Object {},
   "sounds": Array [],
-  "title": "checkParse",
+  "title": "checkParseRule",
   "winConditions": Array [],
 }
 `;
@@ -8354,7 +8412,7 @@ Object {
   ],
   "settings": Object {},
   "sounds": Array [],
-  "title": "checkParse",
+  "title": "checkParseRule",
   "winConditions": Array [],
 }
 `;
@@ -8682,7 +8740,7 @@ Object {
   ],
   "settings": Object {},
   "sounds": Array [],
-  "title": "checkParse",
+  "title": "checkParseRule",
   "winConditions": Array [],
 }
 `;
@@ -8958,7 +9016,7 @@ Object {
   ],
   "settings": Object {},
   "sounds": Array [],
-  "title": "checkParse",
+  "title": "checkParseRule",
   "winConditions": Array [],
 }
 `;
@@ -9274,7 +9332,7 @@ Object {
   ],
   "settings": Object {},
   "sounds": Array [],
-  "title": "checkParse",
+  "title": "checkParseRule",
   "winConditions": Array [],
 }
 `;
@@ -9590,7 +9648,7 @@ Object {
   ],
   "settings": Object {},
   "sounds": Array [],
-  "title": "checkParse",
+  "title": "checkParseRule",
   "winConditions": Array [],
 }
 `;
