@@ -1,21 +1,7 @@
+/* eslint-env jasmine */
 const {parse, parseGrammar} = require('../src/parser')
 
-const OBJECT_HEADER = `
-===
-OBJECTS
-===
-`
-
-const RULE_HEADER = `
-===
-RULES
-===
-`
-
-function checkGrammar(code) {
-  // add a header for the parser
-  code = `title checkGrammar\n${RULE_HEADER}\n${code}`
-
+function checkGrammar (code) {
   const {match, grammar} = parseGrammar(code)
   if (!match.succeeded()) {
     const trace = grammar.trace(code)
@@ -26,10 +12,10 @@ function checkGrammar(code) {
   const s = grammar.createSemantics()
   s.addOperation('toJSON2', {
     _terminal: function () { return this.primitiveValue },
-    _iter: function(children) {
+    _iter: function (children) {
       return children.map(child => child.toJSON2())
     },
-    _default: function(children) {
+    _default: function (children) {
       if (this.ctorName === 'word') {
         return this.sourceString
       // } if (this.ctorName[0] === this.ctorName[0].toLowerCase()) {
@@ -53,12 +39,12 @@ function checkGrammar(code) {
   return tree
 }
 
-function checkParse(code, varNames) {
+function checkParse (code, varNames) {
   // Now check if the semantics parsed
   const legendItems = varNames.map(varName => {
     return `${varName} = testObject`
   })
-  const {data, error, trace} = parse(`
+  const {data, error} = parse(`
 title checkParse
 
 ===
@@ -88,11 +74,17 @@ ${code}
   return data
 }
 
-function parseRule(code, varNames) {
-  checkGrammar(code)
+function parseRule (code, varNames) {
+  // Add a header
+  checkGrammar(`
+title checkGrammar
+===
+RULES
+===
+${code}
+`)
   return checkParse(code, varNames)
 }
-
 
 describe('rules', () => {
   it('parses a simple rule', () => {
@@ -119,7 +111,6 @@ describe('rules', () => {
   it('parses a rule with a _ for a variable name', () => {
     parseRule('[z_x] -> []', ['z_x'])
   })
-
 
   describe('Cell Modifiers', () => {
     it('parses a rule with directions', () => {
@@ -159,5 +150,46 @@ describe('rules', () => {
     })
   })
 
+  describe('General Formatting', () => {
+    it('parses an almost-empty file', () => {
+      parseGrammar(`title foo`)
+    })
+    it('parses when there are empty blocks', () => {
+      parseGrammar(`
+title foo
+===
+objects
+===
+===
+legend
+===
+===
+rules
+===
+===
+levels
+===
+`)
+    })
+    it('parses object shortcut characters', () => {
+      parseGrammar(`
+title foo
+===
+OBJECTS
+===
+player Z
+transparent
 
+===
+RULES
+===
+[P]->[]
+
+===
+LEVELS
+===
+
+P`)
+    })
+  })
 })

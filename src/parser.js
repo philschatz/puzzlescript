@@ -780,7 +780,7 @@ function getConfigField (key, value) {
   return [key.parse(), value.parse()]
 }
 
-function parseGrammar(code) {
+function parseGrammar (code) {
   // 8645c163ff321d2fd1bad3fcaf48c107 has a typo so we .replace()
   code = code.replace('][ ->', '] ->') + '\n' // Not all games have a trailing newline. this makes it easier on the parser
 
@@ -922,7 +922,7 @@ function parse (code) {
       SimpleBracket: function (_leftBracket, _whitespace, cellLayers, _rightBracket) {
         return new GameRuleSimpleBracket(this.source, cellLayers.parse())
       },
-      CellLayer: function(_1) {
+      CellLayer: function (_1) {
         return _1.parse()
       },
       SimpleCellLayer: function (cellModifiers, cellName) {
@@ -937,7 +937,7 @@ function parse (code) {
       cellName: function (_1) {
         return _1.parse().join('')
       },
-      cellLayerModifier: function(_whitespace1, cellLayerModifier, _whitespace2) {
+      cellLayerModifier: function (_whitespace1, cellLayerModifier, _whitespace2) {
         return cellLayerModifier.parse()
       },
 

@@ -3,6 +3,16 @@
 exports[`rules Cell Modifiers parses a rule with a variable that begins with the name of a modifier 1`] = `
 Object {
   "__name": "Details",
+  "_i0": Array [
+    Object {
+      "__name": "lineTerminator",
+      "_i1": Object {
+        "__name": "newline",
+        "_i0": "
+",
+      },
+    },
+  ],
   "_i1": Object {
     "__name": "Title",
     "_i0": "title",
@@ -14,14 +24,6 @@ Object {
     },
   },
   "_i2": Array [
-    Object {
-      "__name": "lineTerminator",
-      "_i1": Object {
-        "__name": "newline",
-        "_i0": "
-",
-      },
-    },
     Object {
       "__name": "lineTerminator",
       "_i1": Object {
@@ -66,14 +68,6 @@ Object {
         "__name": "headingBar",
       },
       "_i7": Array [
-        Object {
-          "__name": "lineTerminator",
-          "_i1": Object {
-            "__name": "newline",
-            "_i0": "
-",
-          },
-        },
         Object {
           "__name": "lineTerminator",
           "_i1": Object {
@@ -331,6 +325,14 @@ Object {
 ",
                 },
               },
+              Object {
+                "__name": "lineTerminator",
+                "_i1": Object {
+                  "__name": "newline",
+                  "_i0": "
+",
+                },
+              },
             ],
           },
         },
@@ -442,6 +444,16 @@ Object {
 exports[`rules Cell Modifiers parses a rule with directions 1`] = `
 Object {
   "__name": "Details",
+  "_i0": Array [
+    Object {
+      "__name": "lineTerminator",
+      "_i1": Object {
+        "__name": "newline",
+        "_i0": "
+",
+      },
+    },
+  ],
   "_i1": Object {
     "__name": "Title",
     "_i0": "title",
@@ -453,14 +465,6 @@ Object {
     },
   },
   "_i2": Array [
-    Object {
-      "__name": "lineTerminator",
-      "_i1": Object {
-        "__name": "newline",
-        "_i0": "
-",
-      },
-    },
     Object {
       "__name": "lineTerminator",
       "_i1": Object {
@@ -505,14 +509,6 @@ Object {
         "__name": "headingBar",
       },
       "_i7": Array [
-        Object {
-          "__name": "lineTerminator",
-          "_i1": Object {
-            "__name": "newline",
-            "_i0": "
-",
-          },
-        },
         Object {
           "__name": "lineTerminator",
           "_i1": Object {
@@ -634,6 +630,14 @@ Object {
 ",
                 },
               },
+              Object {
+                "__name": "lineTerminator",
+                "_i1": Object {
+                  "__name": "newline",
+                  "_i0": "
+",
+                },
+              },
             ],
           },
         },
@@ -730,6 +734,16 @@ Object {
 exports[`rules Cell Modifiers parses a rule with directions 3`] = `
 Object {
   "__name": "Details",
+  "_i0": Array [
+    Object {
+      "__name": "lineTerminator",
+      "_i1": Object {
+        "__name": "newline",
+        "_i0": "
+",
+      },
+    },
+  ],
   "_i1": Object {
     "__name": "Title",
     "_i0": "title",
@@ -741,14 +755,6 @@ Object {
     },
   },
   "_i2": Array [
-    Object {
-      "__name": "lineTerminator",
-      "_i1": Object {
-        "__name": "newline",
-        "_i0": "
-",
-      },
-    },
     Object {
       "__name": "lineTerminator",
       "_i1": Object {
@@ -793,14 +799,6 @@ Object {
         "__name": "headingBar",
       },
       "_i7": Array [
-        Object {
-          "__name": "lineTerminator",
-          "_i1": Object {
-            "__name": "newline",
-            "_i0": "
-",
-          },
-        },
         Object {
           "__name": "lineTerminator",
           "_i1": Object {
@@ -922,6 +920,14 @@ Object {
 ",
                 },
               },
+              Object {
+                "__name": "lineTerminator",
+                "_i1": Object {
+                  "__name": "newline",
+                  "_i0": "
+",
+                },
+              },
             ],
           },
         },
@@ -1018,6 +1024,16 @@ Object {
 exports[`rules Cell Modifiers parses a rule with directions 5`] = `
 Object {
   "__name": "Details",
+  "_i0": Array [
+    Object {
+      "__name": "lineTerminator",
+      "_i1": Object {
+        "__name": "newline",
+        "_i0": "
+",
+      },
+    },
+  ],
   "_i1": Object {
     "__name": "Title",
     "_i0": "title",
@@ -1029,14 +1045,6 @@ Object {
     },
   },
   "_i2": Array [
-    Object {
-      "__name": "lineTerminator",
-      "_i1": Object {
-        "__name": "newline",
-        "_i0": "
-",
-      },
-    },
     Object {
       "__name": "lineTerminator",
       "_i1": Object {
@@ -1081,14 +1089,6 @@ Object {
         "__name": "headingBar",
       },
       "_i7": Array [
-        Object {
-          "__name": "lineTerminator",
-          "_i1": Object {
-            "__name": "newline",
-            "_i0": "
-",
-          },
-        },
         Object {
           "__name": "lineTerminator",
           "_i1": Object {
@@ -1213,6 +1213,14 @@ Object {
 ",
                 },
               },
+              Object {
+                "__name": "lineTerminator",
+                "_i1": Object {
+                  "__name": "newline",
+                  "_i0": "
+",
+                },
+              },
             ],
           },
         },
@@ -1309,6 +1317,16 @@ Object {
 exports[`rules Cell Modifiers parses a rule with directions 7`] = `
 Object {
   "__name": "Details",
+  "_i0": Array [
+    Object {
+      "__name": "lineTerminator",
+      "_i1": Object {
+        "__name": "newline",
+        "_i0": "
+",
+      },
+    },
+  ],
   "_i1": Object {
     "__name": "Title",
     "_i0": "title",
@@ -1320,14 +1338,6 @@ Object {
     },
   },
   "_i2": Array [
-    Object {
-      "__name": "lineTerminator",
-      "_i1": Object {
-        "__name": "newline",
-        "_i0": "
-",
-      },
-    },
     Object {
       "__name": "lineTerminator",
       "_i1": Object {
@@ -1372,14 +1382,6 @@ Object {
         "__name": "headingBar",
       },
       "_i7": Array [
-        Object {
-          "__name": "lineTerminator",
-          "_i1": Object {
-            "__name": "newline",
-            "_i0": "
-",
-          },
-        },
         Object {
           "__name": "lineTerminator",
           "_i1": Object {
@@ -1501,6 +1503,14 @@ Object {
 ",
                 },
               },
+              Object {
+                "__name": "lineTerminator",
+                "_i1": Object {
+                  "__name": "newline",
+                  "_i0": "
+",
+                },
+              },
             ],
           },
         },
@@ -1597,6 +1607,16 @@ Object {
 exports[`rules Cell Modifiers parses a rule with directions 9`] = `
 Object {
   "__name": "Details",
+  "_i0": Array [
+    Object {
+      "__name": "lineTerminator",
+      "_i1": Object {
+        "__name": "newline",
+        "_i0": "
+",
+      },
+    },
+  ],
   "_i1": Object {
     "__name": "Title",
     "_i0": "title",
@@ -1608,14 +1628,6 @@ Object {
     },
   },
   "_i2": Array [
-    Object {
-      "__name": "lineTerminator",
-      "_i1": Object {
-        "__name": "newline",
-        "_i0": "
-",
-      },
-    },
     Object {
       "__name": "lineTerminator",
       "_i1": Object {
@@ -1660,14 +1672,6 @@ Object {
         "__name": "headingBar",
       },
       "_i7": Array [
-        Object {
-          "__name": "lineTerminator",
-          "_i1": Object {
-            "__name": "newline",
-            "_i0": "
-",
-          },
-        },
         Object {
           "__name": "lineTerminator",
           "_i1": Object {
@@ -1789,6 +1793,14 @@ Object {
 ",
                 },
               },
+              Object {
+                "__name": "lineTerminator",
+                "_i1": Object {
+                  "__name": "newline",
+                  "_i0": "
+",
+                },
+              },
             ],
           },
         },
@@ -1885,6 +1897,16 @@ Object {
 exports[`rules Cell Modifiers parses a rule with directions 11`] = `
 Object {
   "__name": "Details",
+  "_i0": Array [
+    Object {
+      "__name": "lineTerminator",
+      "_i1": Object {
+        "__name": "newline",
+        "_i0": "
+",
+      },
+    },
+  ],
   "_i1": Object {
     "__name": "Title",
     "_i0": "title",
@@ -1896,14 +1918,6 @@ Object {
     },
   },
   "_i2": Array [
-    Object {
-      "__name": "lineTerminator",
-      "_i1": Object {
-        "__name": "newline",
-        "_i0": "
-",
-      },
-    },
     Object {
       "__name": "lineTerminator",
       "_i1": Object {
@@ -1948,14 +1962,6 @@ Object {
         "__name": "headingBar",
       },
       "_i7": Array [
-        Object {
-          "__name": "lineTerminator",
-          "_i1": Object {
-            "__name": "newline",
-            "_i0": "
-",
-          },
-        },
         Object {
           "__name": "lineTerminator",
           "_i1": Object {
@@ -2077,6 +2083,14 @@ Object {
 ",
                 },
               },
+              Object {
+                "__name": "lineTerminator",
+                "_i1": Object {
+                  "__name": "newline",
+                  "_i0": "
+",
+                },
+              },
             ],
           },
         },
@@ -2173,6 +2187,16 @@ Object {
 exports[`rules Cell Modifiers parses a rule with directions 13`] = `
 Object {
   "__name": "Details",
+  "_i0": Array [
+    Object {
+      "__name": "lineTerminator",
+      "_i1": Object {
+        "__name": "newline",
+        "_i0": "
+",
+      },
+    },
+  ],
   "_i1": Object {
     "__name": "Title",
     "_i0": "title",
@@ -2184,14 +2208,6 @@ Object {
     },
   },
   "_i2": Array [
-    Object {
-      "__name": "lineTerminator",
-      "_i1": Object {
-        "__name": "newline",
-        "_i0": "
-",
-      },
-    },
     Object {
       "__name": "lineTerminator",
       "_i1": Object {
@@ -2236,14 +2252,6 @@ Object {
         "__name": "headingBar",
       },
       "_i7": Array [
-        Object {
-          "__name": "lineTerminator",
-          "_i1": Object {
-            "__name": "newline",
-            "_i0": "
-",
-          },
-        },
         Object {
           "__name": "lineTerminator",
           "_i1": Object {
@@ -2365,6 +2373,14 @@ Object {
 ",
                 },
               },
+              Object {
+                "__name": "lineTerminator",
+                "_i1": Object {
+                  "__name": "newline",
+                  "_i0": "
+",
+                },
+              },
             ],
           },
         },
@@ -2461,6 +2477,16 @@ Object {
 exports[`rules Cell Modifiers parses a rule with directions 15`] = `
 Object {
   "__name": "Details",
+  "_i0": Array [
+    Object {
+      "__name": "lineTerminator",
+      "_i1": Object {
+        "__name": "newline",
+        "_i0": "
+",
+      },
+    },
+  ],
   "_i1": Object {
     "__name": "Title",
     "_i0": "title",
@@ -2472,14 +2498,6 @@ Object {
     },
   },
   "_i2": Array [
-    Object {
-      "__name": "lineTerminator",
-      "_i1": Object {
-        "__name": "newline",
-        "_i0": "
-",
-      },
-    },
     Object {
       "__name": "lineTerminator",
       "_i1": Object {
@@ -2524,14 +2542,6 @@ Object {
         "__name": "headingBar",
       },
       "_i7": Array [
-        Object {
-          "__name": "lineTerminator",
-          "_i1": Object {
-            "__name": "newline",
-            "_i0": "
-",
-          },
-        },
         Object {
           "__name": "lineTerminator",
           "_i1": Object {
@@ -2653,6 +2663,14 @@ Object {
 ",
                 },
               },
+              Object {
+                "__name": "lineTerminator",
+                "_i1": Object {
+                  "__name": "newline",
+                  "_i0": "
+",
+                },
+              },
             ],
           },
         },
@@ -2749,6 +2767,16 @@ Object {
 exports[`rules Cell Modifiers parses a rule with directions 17`] = `
 Object {
   "__name": "Details",
+  "_i0": Array [
+    Object {
+      "__name": "lineTerminator",
+      "_i1": Object {
+        "__name": "newline",
+        "_i0": "
+",
+      },
+    },
+  ],
   "_i1": Object {
     "__name": "Title",
     "_i0": "title",
@@ -2760,14 +2788,6 @@ Object {
     },
   },
   "_i2": Array [
-    Object {
-      "__name": "lineTerminator",
-      "_i1": Object {
-        "__name": "newline",
-        "_i0": "
-",
-      },
-    },
     Object {
       "__name": "lineTerminator",
       "_i1": Object {
@@ -2812,14 +2832,6 @@ Object {
         "__name": "headingBar",
       },
       "_i7": Array [
-        Object {
-          "__name": "lineTerminator",
-          "_i1": Object {
-            "__name": "newline",
-            "_i0": "
-",
-          },
-        },
         Object {
           "__name": "lineTerminator",
           "_i1": Object {
@@ -2941,6 +2953,14 @@ Object {
 ",
                 },
               },
+              Object {
+                "__name": "lineTerminator",
+                "_i1": Object {
+                  "__name": "newline",
+                  "_i0": "
+",
+                },
+              },
             ],
           },
         },
@@ -3037,6 +3057,16 @@ Object {
 exports[`rules Cell Modifiers parses a rule with directions 19`] = `
 Object {
   "__name": "Details",
+  "_i0": Array [
+    Object {
+      "__name": "lineTerminator",
+      "_i1": Object {
+        "__name": "newline",
+        "_i0": "
+",
+      },
+    },
+  ],
   "_i1": Object {
     "__name": "Title",
     "_i0": "title",
@@ -3048,14 +3078,6 @@ Object {
     },
   },
   "_i2": Array [
-    Object {
-      "__name": "lineTerminator",
-      "_i1": Object {
-        "__name": "newline",
-        "_i0": "
-",
-      },
-    },
     Object {
       "__name": "lineTerminator",
       "_i1": Object {
@@ -3100,14 +3122,6 @@ Object {
         "__name": "headingBar",
       },
       "_i7": Array [
-        Object {
-          "__name": "lineTerminator",
-          "_i1": Object {
-            "__name": "newline",
-            "_i0": "
-",
-          },
-        },
         Object {
           "__name": "lineTerminator",
           "_i1": Object {
@@ -3229,6 +3243,14 @@ Object {
 ",
                 },
               },
+              Object {
+                "__name": "lineTerminator",
+                "_i1": Object {
+                  "__name": "newline",
+                  "_i0": "
+",
+                },
+              },
             ],
           },
         },
@@ -3325,6 +3347,16 @@ Object {
 exports[`rules Cell Modifiers parses a rule with directions 21`] = `
 Object {
   "__name": "Details",
+  "_i0": Array [
+    Object {
+      "__name": "lineTerminator",
+      "_i1": Object {
+        "__name": "newline",
+        "_i0": "
+",
+      },
+    },
+  ],
   "_i1": Object {
     "__name": "Title",
     "_i0": "title",
@@ -3336,14 +3368,6 @@ Object {
     },
   },
   "_i2": Array [
-    Object {
-      "__name": "lineTerminator",
-      "_i1": Object {
-        "__name": "newline",
-        "_i0": "
-",
-      },
-    },
     Object {
       "__name": "lineTerminator",
       "_i1": Object {
@@ -3388,14 +3412,6 @@ Object {
         "__name": "headingBar",
       },
       "_i7": Array [
-        Object {
-          "__name": "lineTerminator",
-          "_i1": Object {
-            "__name": "newline",
-            "_i0": "
-",
-          },
-        },
         Object {
           "__name": "lineTerminator",
           "_i1": Object {
@@ -3517,6 +3533,14 @@ Object {
 ",
                 },
               },
+              Object {
+                "__name": "lineTerminator",
+                "_i1": Object {
+                  "__name": "newline",
+                  "_i0": "
+",
+                },
+              },
             ],
           },
         },
@@ -3613,6 +3637,16 @@ Object {
 exports[`rules Cell Modifiers parses a rule with directions 23`] = `
 Object {
   "__name": "Details",
+  "_i0": Array [
+    Object {
+      "__name": "lineTerminator",
+      "_i1": Object {
+        "__name": "newline",
+        "_i0": "
+",
+      },
+    },
+  ],
   "_i1": Object {
     "__name": "Title",
     "_i0": "title",
@@ -3624,14 +3658,6 @@ Object {
     },
   },
   "_i2": Array [
-    Object {
-      "__name": "lineTerminator",
-      "_i1": Object {
-        "__name": "newline",
-        "_i0": "
-",
-      },
-    },
     Object {
       "__name": "lineTerminator",
       "_i1": Object {
@@ -3676,14 +3702,6 @@ Object {
         "__name": "headingBar",
       },
       "_i7": Array [
-        Object {
-          "__name": "lineTerminator",
-          "_i1": Object {
-            "__name": "newline",
-            "_i0": "
-",
-          },
-        },
         Object {
           "__name": "lineTerminator",
           "_i1": Object {
@@ -3805,6 +3823,14 @@ Object {
 ",
                 },
               },
+              Object {
+                "__name": "lineTerminator",
+                "_i1": Object {
+                  "__name": "newline",
+                  "_i0": "
+",
+                },
+              },
             ],
           },
         },
@@ -3901,6 +3927,16 @@ Object {
 exports[`rules Cell Modifiers parses a rule with directions 25`] = `
 Object {
   "__name": "Details",
+  "_i0": Array [
+    Object {
+      "__name": "lineTerminator",
+      "_i1": Object {
+        "__name": "newline",
+        "_i0": "
+",
+      },
+    },
+  ],
   "_i1": Object {
     "__name": "Title",
     "_i0": "title",
@@ -3912,14 +3948,6 @@ Object {
     },
   },
   "_i2": Array [
-    Object {
-      "__name": "lineTerminator",
-      "_i1": Object {
-        "__name": "newline",
-        "_i0": "
-",
-      },
-    },
     Object {
       "__name": "lineTerminator",
       "_i1": Object {
@@ -3964,14 +3992,6 @@ Object {
         "__name": "headingBar",
       },
       "_i7": Array [
-        Object {
-          "__name": "lineTerminator",
-          "_i1": Object {
-            "__name": "newline",
-            "_i0": "
-",
-          },
-        },
         Object {
           "__name": "lineTerminator",
           "_i1": Object {
@@ -4093,6 +4113,14 @@ Object {
 ",
                 },
               },
+              Object {
+                "__name": "lineTerminator",
+                "_i1": Object {
+                  "__name": "newline",
+                  "_i0": "
+",
+                },
+              },
             ],
           },
         },
@@ -4189,6 +4217,16 @@ Object {
 exports[`rules Cell Modifiers parses a rule with directions 27`] = `
 Object {
   "__name": "Details",
+  "_i0": Array [
+    Object {
+      "__name": "lineTerminator",
+      "_i1": Object {
+        "__name": "newline",
+        "_i0": "
+",
+      },
+    },
+  ],
   "_i1": Object {
     "__name": "Title",
     "_i0": "title",
@@ -4200,14 +4238,6 @@ Object {
     },
   },
   "_i2": Array [
-    Object {
-      "__name": "lineTerminator",
-      "_i1": Object {
-        "__name": "newline",
-        "_i0": "
-",
-      },
-    },
     Object {
       "__name": "lineTerminator",
       "_i1": Object {
@@ -4252,14 +4282,6 @@ Object {
         "__name": "headingBar",
       },
       "_i7": Array [
-        Object {
-          "__name": "lineTerminator",
-          "_i1": Object {
-            "__name": "newline",
-            "_i0": "
-",
-          },
-        },
         Object {
           "__name": "lineTerminator",
           "_i1": Object {
@@ -4381,6 +4403,14 @@ Object {
 ",
                 },
               },
+              Object {
+                "__name": "lineTerminator",
+                "_i1": Object {
+                  "__name": "newline",
+                  "_i0": "
+",
+                },
+              },
             ],
           },
         },
@@ -4477,6 +4507,16 @@ Object {
 exports[`rules Cell Modifiers parses a rule with directions 29`] = `
 Object {
   "__name": "Details",
+  "_i0": Array [
+    Object {
+      "__name": "lineTerminator",
+      "_i1": Object {
+        "__name": "newline",
+        "_i0": "
+",
+      },
+    },
+  ],
   "_i1": Object {
     "__name": "Title",
     "_i0": "title",
@@ -4488,14 +4528,6 @@ Object {
     },
   },
   "_i2": Array [
-    Object {
-      "__name": "lineTerminator",
-      "_i1": Object {
-        "__name": "newline",
-        "_i0": "
-",
-      },
-    },
     Object {
       "__name": "lineTerminator",
       "_i1": Object {
@@ -4540,14 +4572,6 @@ Object {
         "__name": "headingBar",
       },
       "_i7": Array [
-        Object {
-          "__name": "lineTerminator",
-          "_i1": Object {
-            "__name": "newline",
-            "_i0": "
-",
-          },
-        },
         Object {
           "__name": "lineTerminator",
           "_i1": Object {
@@ -4669,6 +4693,14 @@ Object {
 ",
                 },
               },
+              Object {
+                "__name": "lineTerminator",
+                "_i1": Object {
+                  "__name": "newline",
+                  "_i0": "
+",
+                },
+              },
             ],
           },
         },
@@ -4765,6 +4797,16 @@ Object {
 exports[`rules Cell Modifiers parses a rule with directions 31`] = `
 Object {
   "__name": "Details",
+  "_i0": Array [
+    Object {
+      "__name": "lineTerminator",
+      "_i1": Object {
+        "__name": "newline",
+        "_i0": "
+",
+      },
+    },
+  ],
   "_i1": Object {
     "__name": "Title",
     "_i0": "title",
@@ -4776,14 +4818,6 @@ Object {
     },
   },
   "_i2": Array [
-    Object {
-      "__name": "lineTerminator",
-      "_i1": Object {
-        "__name": "newline",
-        "_i0": "
-",
-      },
-    },
     Object {
       "__name": "lineTerminator",
       "_i1": Object {
@@ -4828,14 +4862,6 @@ Object {
         "__name": "headingBar",
       },
       "_i7": Array [
-        Object {
-          "__name": "lineTerminator",
-          "_i1": Object {
-            "__name": "newline",
-            "_i0": "
-",
-          },
-        },
         Object {
           "__name": "lineTerminator",
           "_i1": Object {
@@ -4957,6 +4983,14 @@ Object {
 ",
                 },
               },
+              Object {
+                "__name": "lineTerminator",
+                "_i1": Object {
+                  "__name": "newline",
+                  "_i0": "
+",
+                },
+              },
             ],
           },
         },
@@ -5053,6 +5087,16 @@ Object {
 exports[`rules Cell Modifiers parses a rule with modifiers 1`] = `
 Object {
   "__name": "Details",
+  "_i0": Array [
+    Object {
+      "__name": "lineTerminator",
+      "_i1": Object {
+        "__name": "newline",
+        "_i0": "
+",
+      },
+    },
+  ],
   "_i1": Object {
     "__name": "Title",
     "_i0": "title",
@@ -5064,14 +5108,6 @@ Object {
     },
   },
   "_i2": Array [
-    Object {
-      "__name": "lineTerminator",
-      "_i1": Object {
-        "__name": "newline",
-        "_i0": "
-",
-      },
-    },
     Object {
       "__name": "lineTerminator",
       "_i1": Object {
@@ -5116,14 +5152,6 @@ Object {
         "__name": "headingBar",
       },
       "_i7": Array [
-        Object {
-          "__name": "lineTerminator",
-          "_i1": Object {
-            "__name": "newline",
-            "_i0": "
-",
-          },
-        },
         Object {
           "__name": "lineTerminator",
           "_i1": Object {
@@ -5245,6 +5273,14 @@ Object {
 ",
                 },
               },
+              Object {
+                "__name": "lineTerminator",
+                "_i1": Object {
+                  "__name": "newline",
+                  "_i0": "
+",
+                },
+              },
             ],
           },
         },
@@ -5341,6 +5377,16 @@ Object {
 exports[`rules Cell Modifiers parses a rule with modifiers 2 1`] = `
 Object {
   "__name": "Details",
+  "_i0": Array [
+    Object {
+      "__name": "lineTerminator",
+      "_i1": Object {
+        "__name": "newline",
+        "_i0": "
+",
+      },
+    },
+  ],
   "_i1": Object {
     "__name": "Title",
     "_i0": "title",
@@ -5352,14 +5398,6 @@ Object {
     },
   },
   "_i2": Array [
-    Object {
-      "__name": "lineTerminator",
-      "_i1": Object {
-        "__name": "newline",
-        "_i0": "
-",
-      },
-    },
     Object {
       "__name": "lineTerminator",
       "_i1": Object {
@@ -5404,14 +5442,6 @@ Object {
         "__name": "headingBar",
       },
       "_i7": Array [
-        Object {
-          "__name": "lineTerminator",
-          "_i1": Object {
-            "__name": "newline",
-            "_i0": "
-",
-          },
-        },
         Object {
           "__name": "lineTerminator",
           "_i1": Object {
@@ -5553,6 +5583,14 @@ Object {
 ",
                 },
               },
+              Object {
+                "__name": "lineTerminator",
+                "_i1": Object {
+                  "__name": "newline",
+                  "_i0": "
+",
+                },
+              },
             ],
           },
         },
@@ -5666,6 +5704,16 @@ Object {
 exports[`rules Commands parses a rule with a command inside the brackets (these should be moved up to the Action Commands) 1`] = `
 Object {
   "__name": "Details",
+  "_i0": Array [
+    Object {
+      "__name": "lineTerminator",
+      "_i1": Object {
+        "__name": "newline",
+        "_i0": "
+",
+      },
+    },
+  ],
   "_i1": Object {
     "__name": "Title",
     "_i0": "title",
@@ -5677,14 +5725,6 @@ Object {
     },
   },
   "_i2": Array [
-    Object {
-      "__name": "lineTerminator",
-      "_i1": Object {
-        "__name": "newline",
-        "_i0": "
-",
-      },
-    },
     Object {
       "__name": "lineTerminator",
       "_i1": Object {
@@ -5729,14 +5769,6 @@ Object {
         "__name": "headingBar",
       },
       "_i7": Array [
-        Object {
-          "__name": "lineTerminator",
-          "_i1": Object {
-            "__name": "newline",
-            "_i0": "
-",
-          },
-        },
         Object {
           "__name": "lineTerminator",
           "_i1": Object {
@@ -5858,6 +5890,14 @@ Object {
 ",
                 },
               },
+              Object {
+                "__name": "lineTerminator",
+                "_i1": Object {
+                  "__name": "newline",
+                  "_i0": "
+",
+                },
+              },
             ],
           },
         },
@@ -5957,6 +5997,16 @@ Object {
 exports[`rules Commands parses a rule with a command inside the brackets (these should be moved up to the Action Commands) 3`] = `
 Object {
   "__name": "Details",
+  "_i0": Array [
+    Object {
+      "__name": "lineTerminator",
+      "_i1": Object {
+        "__name": "newline",
+        "_i0": "
+",
+      },
+    },
+  ],
   "_i1": Object {
     "__name": "Title",
     "_i0": "title",
@@ -5968,14 +6018,6 @@ Object {
     },
   },
   "_i2": Array [
-    Object {
-      "__name": "lineTerminator",
-      "_i1": Object {
-        "__name": "newline",
-        "_i0": "
-",
-      },
-    },
     Object {
       "__name": "lineTerminator",
       "_i1": Object {
@@ -6020,14 +6062,6 @@ Object {
         "__name": "headingBar",
       },
       "_i7": Array [
-        Object {
-          "__name": "lineTerminator",
-          "_i1": Object {
-            "__name": "newline",
-            "_i0": "
-",
-          },
-        },
         Object {
           "__name": "lineTerminator",
           "_i1": Object {
@@ -6161,6 +6195,14 @@ Object {
 ",
                 },
               },
+              Object {
+                "__name": "lineTerminator",
+                "_i1": Object {
+                  "__name": "newline",
+                  "_i0": "
+",
+                },
+              },
             ],
           },
         },
@@ -6272,6 +6314,16 @@ Object {
 exports[`rules Commands parses a rule with a command inside the brackets (these should be moved up to the Action Commands) 5`] = `
 Object {
   "__name": "Details",
+  "_i0": Array [
+    Object {
+      "__name": "lineTerminator",
+      "_i1": Object {
+        "__name": "newline",
+        "_i0": "
+",
+      },
+    },
+  ],
   "_i1": Object {
     "__name": "Title",
     "_i0": "title",
@@ -6283,14 +6335,6 @@ Object {
     },
   },
   "_i2": Array [
-    Object {
-      "__name": "lineTerminator",
-      "_i1": Object {
-        "__name": "newline",
-        "_i0": "
-",
-      },
-    },
     Object {
       "__name": "lineTerminator",
       "_i1": Object {
@@ -6335,14 +6379,6 @@ Object {
         "__name": "headingBar",
       },
       "_i7": Array [
-        Object {
-          "__name": "lineTerminator",
-          "_i1": Object {
-            "__name": "newline",
-            "_i0": "
-",
-          },
-        },
         Object {
           "__name": "lineTerminator",
           "_i1": Object {
@@ -6513,6 +6549,14 @@ Object {
 ",
                 },
               },
+              Object {
+                "__name": "lineTerminator",
+                "_i1": Object {
+                  "__name": "newline",
+                  "_i0": "
+",
+                },
+              },
             ],
           },
         },
@@ -6653,6 +6697,16 @@ Object {
 exports[`rules parses a rule with a _ for a variable name 1`] = `
 Object {
   "__name": "Details",
+  "_i0": Array [
+    Object {
+      "__name": "lineTerminator",
+      "_i1": Object {
+        "__name": "newline",
+        "_i0": "
+",
+      },
+    },
+  ],
   "_i1": Object {
     "__name": "Title",
     "_i0": "title",
@@ -6664,14 +6718,6 @@ Object {
     },
   },
   "_i2": Array [
-    Object {
-      "__name": "lineTerminator",
-      "_i1": Object {
-        "__name": "newline",
-        "_i0": "
-",
-      },
-    },
     Object {
       "__name": "lineTerminator",
       "_i1": Object {
@@ -6716,14 +6762,6 @@ Object {
         "__name": "headingBar",
       },
       "_i7": Array [
-        Object {
-          "__name": "lineTerminator",
-          "_i1": Object {
-            "__name": "newline",
-            "_i0": "
-",
-          },
-        },
         Object {
           "__name": "lineTerminator",
           "_i1": Object {
@@ -6829,6 +6867,14 @@ Object {
 ",
                 },
               },
+              Object {
+                "__name": "lineTerminator",
+                "_i1": Object {
+                  "__name": "newline",
+                  "_i0": "
+",
+                },
+              },
             ],
           },
         },
@@ -6923,6 +6969,16 @@ Object {
 exports[`rules parses a rule with a period for a variable name 1`] = `
 Object {
   "__name": "Details",
+  "_i0": Array [
+    Object {
+      "__name": "lineTerminator",
+      "_i1": Object {
+        "__name": "newline",
+        "_i0": "
+",
+      },
+    },
+  ],
   "_i1": Object {
     "__name": "Title",
     "_i0": "title",
@@ -6934,14 +6990,6 @@ Object {
     },
   },
   "_i2": Array [
-    Object {
-      "__name": "lineTerminator",
-      "_i1": Object {
-        "__name": "newline",
-        "_i0": "
-",
-      },
-    },
     Object {
       "__name": "lineTerminator",
       "_i1": Object {
@@ -6986,14 +7034,6 @@ Object {
         "__name": "headingBar",
       },
       "_i7": Array [
-        Object {
-          "__name": "lineTerminator",
-          "_i1": Object {
-            "__name": "newline",
-            "_i0": "
-",
-          },
-        },
         Object {
           "__name": "lineTerminator",
           "_i1": Object {
@@ -7077,6 +7117,14 @@ Object {
               },
             },
             "_i5": Array [
+              Object {
+                "__name": "lineTerminator",
+                "_i1": Object {
+                  "__name": "newline",
+                  "_i0": "
+",
+                },
+              },
               Object {
                 "__name": "lineTerminator",
                 "_i1": Object {
@@ -7179,6 +7227,16 @@ Object {
 exports[`rules parses a rule with ellpisis 1`] = `
 Object {
   "__name": "Details",
+  "_i0": Array [
+    Object {
+      "__name": "lineTerminator",
+      "_i1": Object {
+        "__name": "newline",
+        "_i0": "
+",
+      },
+    },
+  ],
   "_i1": Object {
     "__name": "Title",
     "_i0": "title",
@@ -7190,14 +7248,6 @@ Object {
     },
   },
   "_i2": Array [
-    Object {
-      "__name": "lineTerminator",
-      "_i1": Object {
-        "__name": "newline",
-        "_i0": "
-",
-      },
-    },
     Object {
       "__name": "lineTerminator",
       "_i1": Object {
@@ -7242,14 +7292,6 @@ Object {
         "__name": "headingBar",
       },
       "_i7": Array [
-        Object {
-          "__name": "lineTerminator",
-          "_i1": Object {
-            "__name": "newline",
-            "_i0": "
-",
-          },
-        },
         Object {
           "__name": "lineTerminator",
           "_i1": Object {
@@ -7475,6 +7517,14 @@ Object {
 ",
                 },
               },
+              Object {
+                "__name": "lineTerminator",
+                "_i1": Object {
+                  "__name": "newline",
+                  "_i0": "
+",
+                },
+              },
             ],
           },
         },
@@ -7643,6 +7693,16 @@ Object {
 exports[`rules parses a rule with multiple cells 1`] = `
 Object {
   "__name": "Details",
+  "_i0": Array [
+    Object {
+      "__name": "lineTerminator",
+      "_i1": Object {
+        "__name": "newline",
+        "_i0": "
+",
+      },
+    },
+  ],
   "_i1": Object {
     "__name": "Title",
     "_i0": "title",
@@ -7654,14 +7714,6 @@ Object {
     },
   },
   "_i2": Array [
-    Object {
-      "__name": "lineTerminator",
-      "_i1": Object {
-        "__name": "newline",
-        "_i0": "
-",
-      },
-    },
     Object {
       "__name": "lineTerminator",
       "_i1": Object {
@@ -7706,14 +7758,6 @@ Object {
         "__name": "headingBar",
       },
       "_i7": Array [
-        Object {
-          "__name": "lineTerminator",
-          "_i1": Object {
-            "__name": "newline",
-            "_i0": "
-",
-          },
-        },
         Object {
           "__name": "lineTerminator",
           "_i1": Object {
@@ -7831,6 +7875,14 @@ Object {
               },
             },
             "_i5": Array [
+              Object {
+                "__name": "lineTerminator",
+                "_i1": Object {
+                  "__name": "newline",
+                  "_i0": "
+",
+                },
+              },
               Object {
                 "__name": "lineTerminator",
                 "_i1": Object {
@@ -7964,6 +8016,16 @@ Object {
 exports[`rules parses a rule with multiple layers 1`] = `
 Object {
   "__name": "Details",
+  "_i0": Array [
+    Object {
+      "__name": "lineTerminator",
+      "_i1": Object {
+        "__name": "newline",
+        "_i0": "
+",
+      },
+    },
+  ],
   "_i1": Object {
     "__name": "Title",
     "_i0": "title",
@@ -7975,14 +8037,6 @@ Object {
     },
   },
   "_i2": Array [
-    Object {
-      "__name": "lineTerminator",
-      "_i1": Object {
-        "__name": "newline",
-        "_i0": "
-",
-      },
-    },
     Object {
       "__name": "lineTerminator",
       "_i1": Object {
@@ -8027,14 +8081,6 @@ Object {
         "__name": "headingBar",
       },
       "_i7": Array [
-        Object {
-          "__name": "lineTerminator",
-          "_i1": Object {
-            "__name": "newline",
-            "_i0": "
-",
-          },
-        },
         Object {
           "__name": "lineTerminator",
           "_i1": Object {
@@ -8142,6 +8188,14 @@ Object {
               },
             },
             "_i5": Array [
+              Object {
+                "__name": "lineTerminator",
+                "_i1": Object {
+                  "__name": "newline",
+                  "_i0": "
+",
+                },
+              },
               Object {
                 "__name": "lineTerminator",
                 "_i1": Object {
@@ -8273,6 +8327,16 @@ Object {
 exports[`rules parses a simple rule 1`] = `
 Object {
   "__name": "Details",
+  "_i0": Array [
+    Object {
+      "__name": "lineTerminator",
+      "_i1": Object {
+        "__name": "newline",
+        "_i0": "
+",
+      },
+    },
+  ],
   "_i1": Object {
     "__name": "Title",
     "_i0": "title",
@@ -8284,14 +8348,6 @@ Object {
     },
   },
   "_i2": Array [
-    Object {
-      "__name": "lineTerminator",
-      "_i1": Object {
-        "__name": "newline",
-        "_i0": "
-",
-      },
-    },
     Object {
       "__name": "lineTerminator",
       "_i1": Object {
@@ -8336,14 +8392,6 @@ Object {
         "__name": "headingBar",
       },
       "_i7": Array [
-        Object {
-          "__name": "lineTerminator",
-          "_i1": Object {
-            "__name": "newline",
-            "_i0": "
-",
-          },
-        },
         Object {
           "__name": "lineTerminator",
           "_i1": Object {
@@ -8433,6 +8481,14 @@ Object {
               },
             },
             "_i5": Array [
+              Object {
+                "__name": "lineTerminator",
+                "_i1": Object {
+                  "__name": "newline",
+                  "_i0": "
+",
+                },
+              },
               Object {
                 "__name": "lineTerminator",
                 "_i1": Object {
@@ -8535,6 +8591,16 @@ Object {
 exports[`rules parses a simple rule 2 1`] = `
 Object {
   "__name": "Details",
+  "_i0": Array [
+    Object {
+      "__name": "lineTerminator",
+      "_i1": Object {
+        "__name": "newline",
+        "_i0": "
+",
+      },
+    },
+  ],
   "_i1": Object {
     "__name": "Title",
     "_i0": "title",
@@ -8546,14 +8612,6 @@ Object {
     },
   },
   "_i2": Array [
-    Object {
-      "__name": "lineTerminator",
-      "_i1": Object {
-        "__name": "newline",
-        "_i0": "
-",
-      },
-    },
     Object {
       "__name": "lineTerminator",
       "_i1": Object {
@@ -8598,14 +8656,6 @@ Object {
         "__name": "headingBar",
       },
       "_i7": Array [
-        Object {
-          "__name": "lineTerminator",
-          "_i1": Object {
-            "__name": "newline",
-            "_i0": "
-",
-          },
-        },
         Object {
           "__name": "lineTerminator",
           "_i1": Object {
@@ -8715,6 +8765,14 @@ Object {
               },
             },
             "_i5": Array [
+              Object {
+                "__name": "lineTerminator",
+                "_i1": Object {
+                  "__name": "newline",
+                  "_i0": "
+",
+                },
+              },
               Object {
                 "__name": "lineTerminator",
                 "_i1": Object {
@@ -8834,6 +8892,16 @@ Object {
 exports[`rules parses a simple rule without whitespace 1`] = `
 Object {
   "__name": "Details",
+  "_i0": Array [
+    Object {
+      "__name": "lineTerminator",
+      "_i1": Object {
+        "__name": "newline",
+        "_i0": "
+",
+      },
+    },
+  ],
   "_i1": Object {
     "__name": "Title",
     "_i0": "title",
@@ -8845,14 +8913,6 @@ Object {
     },
   },
   "_i2": Array [
-    Object {
-      "__name": "lineTerminator",
-      "_i1": Object {
-        "__name": "newline",
-        "_i0": "
-",
-      },
-    },
     Object {
       "__name": "lineTerminator",
       "_i1": Object {
@@ -8897,14 +8957,6 @@ Object {
         "__name": "headingBar",
       },
       "_i7": Array [
-        Object {
-          "__name": "lineTerminator",
-          "_i1": Object {
-            "__name": "newline",
-            "_i0": "
-",
-          },
-        },
         Object {
           "__name": "lineTerminator",
           "_i1": Object {
@@ -9014,6 +9066,14 @@ Object {
               },
             },
             "_i5": Array [
+              Object {
+                "__name": "lineTerminator",
+                "_i1": Object {
+                  "__name": "newline",
+                  "_i0": "
+",
+                },
+              },
               Object {
                 "__name": "lineTerminator",
                 "_i1": Object {

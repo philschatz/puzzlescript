@@ -2,9 +2,9 @@
   "scripts": {
     "lint": "standard --fix index.js src/**/*.js test/**/*.js",
     "start": "node index.js",
-    "poststart": "npm run-script lint",
     "test": "jest --updateSnapshot",
     "test-debug": "node --inspect-brk $(npm bin)/jest -i --updateSnapshot $@",
+    "posttest": "npm run-script lint",
     "watch": "jest --updateSnapshot --watch"
   },
   "dependencies": {
