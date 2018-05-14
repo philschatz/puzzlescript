@@ -95,7 +95,7 @@ function renderScreen (data, levelRows) {
   axel.bg(0, 0, 0)
 }
 
-function clearScreen() {
+function clearScreen () {
   axel.clear()
 }
 

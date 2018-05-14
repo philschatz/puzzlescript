@@ -77,7 +77,7 @@ Puzzlescript {
     pixelRow*
     lineTerminator*
 
-  objectName = varName
+  objectName = ruleVariableName
   colorTransparent = "transparent"
   colorHex6 = "#" hexDigit hexDigit hexDigit hexDigit hexDigit hexDigit
   colorHex3 = "#" hexDigit hexDigit hexDigit
@@ -96,11 +96,11 @@ Puzzlescript {
     | LegendItemAnd
     | LegendItemOr
 
-  LegendItemSimple = legendVarNameDefn "=" legendVarNameDefn lineTerminator+
-  LegendItemAnd = legendVarNameDefn "=" NonemptyListOf<legendVarNameDefn, t_AND> lineTerminator+
-  LegendItemOr = legendVarNameDefn "=" NonemptyListOf<legendVarNameDefn, t_OR> lineTerminator+
+  LegendItemSimple = LegendVarNameDefn "=" LegendVarNameDefn lineTerminator+
+  LegendItemAnd = LegendVarNameDefn "=" NonemptyListOf<LegendVarNameDefn, t_AND> lineTerminator+
+  LegendItemOr = LegendVarNameDefn "=" NonemptyListOf<LegendVarNameDefn, t_OR> lineTerminator+
 
-  legendVarNameDefn = varName | legendVariableChar
+  LegendVarNameDefn = ruleVariableName | legendVariableChar
 
 
 
@@ -129,9 +129,9 @@ Puzzlescript {
 
   SoundItemEnum = soundItemSimpleOptions integer
   SoundItemSfx = t_SFX integer
-  SoundItemMoveDirection = varName t_MOVE soundItemActionMoveArg integer
-  SoundItemMoveSimple = varName t_MOVE integer
-  SoundItemNormal = varName SoundItemAction integer
+  SoundItemMoveDirection = ruleVariableName t_MOVE soundItemActionMoveArg integer
+  SoundItemMoveSimple = ruleVariableName t_MOVE integer
+  SoundItemNormal = ruleVariableName SoundItemAction integer
 
   SoundItemAction
     = t_CREATE
@@ -161,7 +161,7 @@ Puzzlescript {
 
 
 
-  CollisionLayerItem = NonemptyListOf<varName, ","?> ","? /*support a trailing comma*/ lineTerminator+
+  CollisionLayerItem = NonemptyListOf<ruleVariableName, ","?> ","? /*support a trailing comma*/ lineTerminator+
 
 
 RuleItem
@@ -361,8 +361,8 @@ MessageCommand = t_MESSAGE words*
     = WinConditionItemSimple
     | WinConditionItemOn
 
-  WinConditionItemSimple = winConditionItemPrefix varName lineTerminator+
-  WinConditionItemOn = winConditionItemPrefix varName t_ON varName lineTerminator+
+  WinConditionItemSimple = winConditionItemPrefix ruleVariableName lineTerminator+
+  WinConditionItemOn = winConditionItemPrefix ruleVariableName t_ON ruleVariableName lineTerminator+
 
   winConditionItemPrefix =
       t_NO
@@ -412,16 +412,15 @@ MessageCommand = t_MESSAGE words*
   // -----------------------
 
   // There are 2 classes of restrictions on variable names:
+  // - in a Level. object shortcut characters, legend items : These cannot contain the character "="
   // - in Rules. object names, rule references, some legend items : These cannot contain characters like brackets and pipes because they can occur inside a Rule
-  // - in a Level. object shortcut characters, legend items
 
-  // Must contain at least 1 letter. Otherwise sound effects are confused
-  varName = digit* letter varNameChar*
-  varNameChar = letter | digit | "." | "_" | "?"
-
-
-  legendVariableChar = (~" " ~newline ~"=" any)
-  ruleVariableChar = (~" " ~newline ~"[" ~"]" ~"|" ~t_ELLIPSIS any)
+  legendVariableChar = (~space ~newline ~"=" any)
+  // Disallow:
+  // space [ ] | t_ELLIPSIS   because it can occur inside a Rule
+  // "," because it can occur inside a CollisionLayer
+  // "=" because it can occur inside a legend Variable
+  ruleVariableChar = (~space ~newline ~"=" ~"[" ~"]" ~"|" ~"," ~t_ELLIPSIS any)
 
   ruleVariableName = ruleVariableChar+
 }
@@ -828,8 +827,8 @@ function getConfigField (key, value) {
   return [key.parse(), value.parse()]
 }
 
-_GRAMMAR = null
-function getGrammar() {
+let _GRAMMAR = null
+function getGrammar () {
   _GRAMMAR = _GRAMMAR || ohm.grammar(GRAMMAR_STR)
   return _GRAMMAR
 }
@@ -990,7 +989,7 @@ function parse (code) {
         return new GameRuleCellLayerHack(this.source, lookup.lookupObjectOrLegendItem(this.source, cellName.parse()), hackRuleCommand.parse())
       },
       cellName: function (_1) {
-        return _1.parse().join('')
+        return _1.parse()
       },
       cellLayerModifier: function (_whitespace1, cellLayerModifier, _whitespace2) {
         return cellLayerModifier.parse()
@@ -1072,7 +1071,7 @@ function parse (code) {
       decimalWithLeadingPeriod: function (_1, _2) {
         return Number.parseFloat(this.sourceString)
       },
-      varName: function (_1, _2, _3) {
+      ruleVariableName: function (_1) {
         return this.sourceString
       },
       words: function (_1) {

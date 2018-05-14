@@ -7160,115 +7160,94 @@ Object {
           "_i0": Object {
             "__name": "LegendItemSimple",
             "_i0": Object {
-              "__name": "legendVarNameDefn",
+              "__name": "LegendVarNameDefn",
               "_i0": Object {
-                "__name": "varName",
-                "_i1": Object {
-                  "__name": "letter",
-                  "_i0": Object {
-                    "__name": "upper",
-                    "_i0": "B",
-                  },
-                },
-                "_i2": Array [
+                "__name": "ruleVariableName",
+                "_i0": Array [
                   Object {
-                    "__name": "varNameChar",
+                    "__name": "ruleVariableChar",
                     "_i0": Object {
-                      "__name": "letter",
-                      "_i0": Object {
-                        "__name": "lower",
-                        "_i0": "u",
-                      },
+                      "__name": "any",
+                      "_i0": "B",
                     },
                   },
                   Object {
-                    "__name": "varNameChar",
+                    "__name": "ruleVariableChar",
                     "_i0": Object {
-                      "__name": "letter",
-                      "_i0": Object {
-                        "__name": "lower",
-                        "_i0": "s",
-                      },
+                      "__name": "any",
+                      "_i0": "u",
                     },
                   },
                   Object {
-                    "__name": "varNameChar",
+                    "__name": "ruleVariableChar",
                     "_i0": Object {
-                      "__name": "letter",
-                      "_i0": Object {
-                        "__name": "lower",
-                        "_i0": "h",
-                      },
+                      "__name": "any",
+                      "_i0": "s",
                     },
                   },
                   Object {
-                    "__name": "varNameChar",
-                    "_i0": "?",
+                    "__name": "ruleVariableChar",
+                    "_i0": Object {
+                      "__name": "any",
+                      "_i0": "h",
+                    },
+                  },
+                  Object {
+                    "__name": "ruleVariableChar",
+                    "_i0": Object {
+                      "__name": "any",
+                      "_i0": "?",
+                    },
                   },
                 ],
               },
             },
             "_i1": "=",
             "_i2": Object {
-              "__name": "legendVarNameDefn",
+              "__name": "LegendVarNameDefn",
               "_i0": Object {
-                "__name": "varName",
-                "_i1": Object {
-                  "__name": "letter",
-                  "_i0": Object {
-                    "__name": "upper",
-                    "_i0": "P",
-                  },
-                },
-                "_i2": Array [
+                "__name": "ruleVariableName",
+                "_i0": Array [
                   Object {
-                    "__name": "varNameChar",
+                    "__name": "ruleVariableChar",
                     "_i0": Object {
-                      "__name": "letter",
-                      "_i0": Object {
-                        "__name": "lower",
-                        "_i0": "l",
-                      },
+                      "__name": "any",
+                      "_i0": "P",
                     },
                   },
                   Object {
-                    "__name": "varNameChar",
+                    "__name": "ruleVariableChar",
                     "_i0": Object {
-                      "__name": "letter",
-                      "_i0": Object {
-                        "__name": "lower",
-                        "_i0": "a",
-                      },
+                      "__name": "any",
+                      "_i0": "l",
                     },
                   },
                   Object {
-                    "__name": "varNameChar",
+                    "__name": "ruleVariableChar",
                     "_i0": Object {
-                      "__name": "letter",
-                      "_i0": Object {
-                        "__name": "lower",
-                        "_i0": "y",
-                      },
+                      "__name": "any",
+                      "_i0": "a",
                     },
                   },
                   Object {
-                    "__name": "varNameChar",
+                    "__name": "ruleVariableChar",
                     "_i0": Object {
-                      "__name": "letter",
-                      "_i0": Object {
-                        "__name": "lower",
-                        "_i0": "e",
-                      },
+                      "__name": "any",
+                      "_i0": "y",
                     },
                   },
                   Object {
-                    "__name": "varNameChar",
+                    "__name": "ruleVariableChar",
                     "_i0": Object {
-                      "__name": "letter",
-                      "_i0": Object {
-                        "__name": "lower",
-                        "_i0": "r",
-                      },
+                      "__name": "any",
+                      "_i0": "e",
+                    },
+                  },
+                  Object {
+                    "__name": "ruleVariableChar",
+                    "_i0": Object {
+                      "__name": "any",
+                      "_i0": "r",
                     },
                   },
                 ],
@@ -7291,76 +7270,66 @@ Object {
           "_i0": Object {
             "__name": "LegendItemSimple",
             "_i0": Object {
-              "__name": "legendVarNameDefn",
+              "__name": "LegendVarNameDefn",
               "_i0": Object {
-                "__name": "legendVariableChar",
-                "_i0": Object {
-                  "__name": "any",
-                  "_i0": ".",
-                },
+                "__name": "ruleVariableName",
+                "_i0": Array [
+                  Object {
+                    "__name": "ruleVariableChar",
+                    "_i0": Object {
+                      "__name": "any",
+                      "_i0": ".",
+                    },
+                  },
+                ],
               },
             },
             "_i1": "=",
             "_i2": Object {
-              "__name": "legendVarNameDefn",
+              "__name": "LegendVarNameDefn",
               "_i0": Object {
-                "__name": "varName",
-                "_i1": Object {
-                  "__name": "letter",
-                  "_i0": Object {
-                    "__name": "upper",
-                    "_i0": "P",
-                  },
-                },
-                "_i2": Array [
+                "__name": "ruleVariableName",
+                "_i0": Array [
                   Object {
-                    "__name": "varNameChar",
+                    "__name": "ruleVariableChar",
                     "_i0": Object {
-                      "__name": "letter",
-                      "_i0": Object {
-                        "__name": "lower",
-                        "_i0": "l",
-                      },
+                      "__name": "any",
+                      "_i0": "P",
                     },
                   },
                   Object {
-                    "__name": "varNameChar",
+                    "__name": "ruleVariableChar",
                     "_i0": Object {
-                      "__name": "letter",
-                      "_i0": Object {
-                        "__name": "lower",
-                        "_i0": "a",
-                      },
+                      "__name": "any",
+                      "_i0": "l",
                     },
                   },
                   Object {
-                    "__name": "varNameChar",
+                    "__name": "ruleVariableChar",
                     "_i0": Object {
-                      "__name": "letter",
-                      "_i0": Object {
-                        "__name": "lower",
-                        "_i0": "y",
-                      },
+                      "__name": "any",
+                      "_i0": "a",
                     },
                   },
                   Object {
-                    "__name": "varNameChar",
+                    "__name": "ruleVariableChar",
                     "_i0": Object {
-                      "__name": "letter",
-                      "_i0": Object {
-                        "__name": "lower",
-                        "_i0": "e",
-                      },
+                      "__name": "any",
+                      "_i0": "y",
                     },
                   },
                   Object {
-                    "__name": "varNameChar",
+                    "__name": "ruleVariableChar",
                     "_i0": Object {
-                      "__name": "letter",
-                      "_i0": Object {
-                        "__name": "lower",
-                        "_i0": "r",
-                      },
+                      "__name": "any",
+                      "_i0": "e",
+                    },
+                  },
+                  Object {
+                    "__name": "ruleVariableChar",
+                    "_i0": Object {
+                      "__name": "any",
+                      "_i0": "r",
                     },
                   },
                 ],

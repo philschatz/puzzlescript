@@ -5,10 +5,10 @@ const Parser = require('../src/parser')
 function checkGrammar (code) {
   const grammar = Parser.getGrammar()
   const start = Date.now()
-  console.log('Starting Match');
+  console.log('Starting Match')
   const match = grammar.match(code)
-  console.log('Completed Match. Took', Date.now() - start);
-  console.log(match.message);
+  console.log('Completed Match. Took', Date.now() - start)
+  console.log(match.message)
   expect(match.succeeded()).toBe(true)
 
   const s = grammar.createSemantics()
