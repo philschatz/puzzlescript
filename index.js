@@ -2,7 +2,7 @@ const {readFileSync} = require('fs')
 const glob = require('glob')
 
 const {parse} = require('./src/parser')
-const {renderLevel} = require('./src/ui')
+const {renderScreen} = require('./src/ui')
 
 let totalRenderTime = 0
 
@@ -31,7 +31,7 @@ glob('./gists/*/script.txt', (err, files) => {
       const level = data.levels.reverse().filter(level => level.isMap())[0]
       if (level) {
         // console.log(level)
-        renderLevel(data, level)
+        renderScreen(data, level.getRows())
       }
 
       totalRenderTime += Date.now() - startTime

@@ -28,14 +28,14 @@ function collapseTilesToPixels (objectsToDraw, backgroundColor) {
   return tile
 }
 
-function renderLevel (data, level) {
+function renderScreen (data, levelRows) {
   axel.fg(255, 255, 255)
   axel.bg(0, 0, 0)
   axel.clear()
 
   const magicBackgroundObject = data.objects.filter(({_name}) => _name.toLowerCase() === 'background')[0]
 
-  level.getRows().forEach((row, rowIndex) => {
+  levelRows.forEach((row, rowIndex) => {
     // Don't draw too much for this demo
     if (data.settings.flickscreen && rowIndex > data.settings.flickscreen.height) {
       return
@@ -95,4 +95,4 @@ function renderLevel (data, level) {
   axel.bg(0, 0, 0)
 }
 
-module.exports = { renderLevel }
+module.exports = { renderScreen }

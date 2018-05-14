@@ -416,6 +416,7 @@ MessageCommand = t_MESSAGE words*
 }
 `// readFileSync('./grammar.ohm', 'utf-8')
 
+let astId = 0
 class BaseForLines {
   constructor (source) {
     if (!source || !source.getLineAndColumnMessage) {
@@ -424,6 +425,10 @@ class BaseForLines {
     Object.defineProperty(this, '__source', {
       get: function () { return source }
     })
+    this.__astId = astId++
+  }
+  toString() {
+    return `astId=${this.__astId}\n${this.__source.getLineAndColumnMessage()}`
   }
 }
 
@@ -662,6 +667,17 @@ class GameRule extends BaseForLines {
     this._cellSequenceBrackets = cellSequenceBrackets
     this._ruleAction = ruleAction
   }
+
+  doesntMatchCell(cell) {
+    let allSequences = null
+    for (const sequence of this._cellSequenceBrackets) {
+      allSequences = sequence.doesntMatchCell(cell)
+      if (allSequences) {
+        break
+      }
+    }
+    return allSequences
+  }
 }
 
 class GameRuleActionBrackets extends BaseForLines {
@@ -678,6 +694,10 @@ class GameRuleSequenceBracket extends BaseForLines {
     this._ruleModifiers = ruleModifiers
     this._bracket = bracket
   }
+
+  doesntMatchCell(cell) {
+    return this._bracket.doesntMatchCell(cell)
+  }
 }
 
 class RuleEllipsisBracket extends BaseForLines {
@@ -689,9 +709,23 @@ class RuleEllipsisBracket extends BaseForLines {
 }
 
 class GameRuleSimpleBracket extends BaseForLines {
-  constructor (source, cellLayers) {
+  constructor (source, neighbors) {
     super(source)
-    this._cellLayers = cellLayers
+    this._neighbors = neighbors
+  }
+
+  doesntMatchCell(cell) {
+    if (this._neighbors.length > 1) { throw new Error(`BUG: checking neighbors not implemented yet`)}
+    // Check if all the cellLayers are on the current cell
+    let ret = null
+    for (const layer of this._neighbors[0]) {
+      for (const object of layer.getObjects()) {
+        if (!cell.getObjectsAsSet().has(object)) {
+          ret = object
+        }
+      }
+    }
+    return ret
   }
 }
 
@@ -707,6 +741,9 @@ class GameRuleCellLayer extends BaseForLines {
     super(source)
     this._cellModifiers = cellModifiers
     this._objectName = objectName
+  }
+  getObjects() {
+    return this._objectName.getObjects()
   }
 }
 

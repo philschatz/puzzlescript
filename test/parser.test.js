@@ -192,4 +192,9 @@ LEVELS
 P`)
     })
   })
+
+  describe('Expected Failures', () => {
+    // Something using collisionLayers. Like A and B are in the same layer and we try to run either: `[ A B ] -> []` or `[A] -> [A B]`
+    // Check that the magic objects `Background` and `Player` are set to something
+  })
 })

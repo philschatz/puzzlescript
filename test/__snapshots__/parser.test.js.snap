@@ -347,8 +347,10 @@ Object {
   "collisionLayers": Array [],
   "legends": Array [
     GameLegendItemSimple {
+      "__astId": 236,
       "_aliases": Array [
         GameObject {
+          "__astId": 235,
           "_colors": Array [
             "transparent",
           ],
@@ -363,6 +365,7 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameObject {
+      "__astId": 235,
       "_colors": Array [
         "transparent",
       ],
@@ -373,16 +376,22 @@ Object {
   ],
   "rules": Array [
     GameRule {
+      "__astId": 244,
       "_cellSequenceBrackets": Array [
         GameRuleSequenceBracket {
+          "__astId": 239,
           "_bracket": GameRuleSimpleBracket {
-            "_cellLayers": Array [
+            "__astId": 238,
+            "_neighbors": Array [
               Array [
                 GameRuleCellLayer {
+                  "__astId": 237,
                   "_cellModifiers": Array [],
                   "_objectName": GameLegendItemSimple {
+                    "__astId": 236,
                     "_aliases": Array [
                       GameObject {
+                        "__astId": 235,
                         "_colors": Array [
                           "transparent",
                         ],
@@ -402,16 +411,22 @@ Object {
       ],
       "_productionModifiers": Array [],
       "_ruleAction": GameRuleActionBrackets {
+        "__astId": 243,
         "_cellSequenceBrackets": Array [
           GameRuleSequenceBracket {
+            "__astId": 242,
             "_bracket": GameRuleSimpleBracket {
-              "_cellLayers": Array [
+              "__astId": 241,
+              "_neighbors": Array [
                 Array [
                   GameRuleCellLayer {
+                    "__astId": 240,
                     "_cellModifiers": Array [],
                     "_objectName": GameLegendItemSimple {
+                      "__astId": 236,
                       "_aliases": Array [
                         GameObject {
+                          "__astId": 235,
                           "_colors": Array [
                             "transparent",
                           ],
@@ -652,8 +667,10 @@ Object {
   "collisionLayers": Array [],
   "legends": Array [
     GameLegendItemSimple {
+      "__astId": 83,
       "_aliases": Array [
         GameObject {
+          "__astId": 82,
           "_colors": Array [
             "transparent",
           ],
@@ -668,6 +685,7 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameObject {
+      "__astId": 82,
       "_colors": Array [
         "transparent",
       ],
@@ -678,18 +696,24 @@ Object {
   ],
   "rules": Array [
     GameRule {
+      "__astId": 90,
       "_cellSequenceBrackets": Array [
         GameRuleSequenceBracket {
+          "__astId": 86,
           "_bracket": GameRuleSimpleBracket {
-            "_cellLayers": Array [
+            "__astId": 85,
+            "_neighbors": Array [
               Array [
                 GameRuleCellLayer {
+                  "__astId": 84,
                   "_cellModifiers": Array [
                     "ACTION",
                   ],
                   "_objectName": GameLegendItemSimple {
+                    "__astId": 83,
                     "_aliases": Array [
                       GameObject {
+                        "__astId": 82,
                         "_colors": Array [
                           "transparent",
                         ],
@@ -709,10 +733,13 @@ Object {
       ],
       "_productionModifiers": Array [],
       "_ruleAction": GameRuleActionBrackets {
+        "__astId": 89,
         "_cellSequenceBrackets": Array [
           GameRuleSequenceBracket {
+            "__astId": 88,
             "_bracket": GameRuleSimpleBracket {
-              "_cellLayers": Array [
+              "__astId": 87,
+              "_neighbors": Array [
                 Array [],
               ],
             },
@@ -942,8 +969,10 @@ Object {
   "collisionLayers": Array [],
   "legends": Array [
     GameLegendItemSimple {
+      "__astId": 92,
       "_aliases": Array [
         GameObject {
+          "__astId": 91,
           "_colors": Array [
             "transparent",
           ],
@@ -958,6 +987,7 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameObject {
+      "__astId": 91,
       "_colors": Array [
         "transparent",
       ],
@@ -968,18 +998,24 @@ Object {
   ],
   "rules": Array [
     GameRule {
+      "__astId": 99,
       "_cellSequenceBrackets": Array [
         GameRuleSequenceBracket {
+          "__astId": 95,
           "_bracket": GameRuleSimpleBracket {
-            "_cellLayers": Array [
+            "__astId": 94,
+            "_neighbors": Array [
               Array [
                 GameRuleCellLayer {
+                  "__astId": 93,
                   "_cellModifiers": Array [
                     "^",
                   ],
                   "_objectName": GameLegendItemSimple {
+                    "__astId": 92,
                     "_aliases": Array [
                       GameObject {
+                        "__astId": 91,
                         "_colors": Array [
                           "transparent",
                         ],
@@ -999,10 +1035,13 @@ Object {
       ],
       "_productionModifiers": Array [],
       "_ruleAction": GameRuleActionBrackets {
+        "__astId": 98,
         "_cellSequenceBrackets": Array [
           GameRuleSequenceBracket {
+            "__astId": 97,
             "_bracket": GameRuleSimpleBracket {
-              "_cellLayers": Array [
+              "__astId": 96,
+              "_neighbors": Array [
                 Array [],
               ],
             },
@@ -1235,8 +1274,10 @@ Object {
   "collisionLayers": Array [],
   "legends": Array [
     GameLegendItemSimple {
+      "__astId": 101,
       "_aliases": Array [
         GameObject {
+          "__astId": 100,
           "_colors": Array [
             "transparent",
           ],
@@ -1251,6 +1292,7 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameObject {
+      "__astId": 100,
       "_colors": Array [
         "transparent",
       ],
@@ -1261,18 +1303,24 @@ Object {
   ],
   "rules": Array [
     GameRule {
+      "__astId": 108,
       "_cellSequenceBrackets": Array [
         GameRuleSequenceBracket {
+          "__astId": 104,
           "_bracket": GameRuleSimpleBracket {
-            "_cellLayers": Array [
+            "__astId": 103,
+            "_neighbors": Array [
               Array [
                 GameRuleCellLayer {
+                  "__astId": 102,
                   "_cellModifiers": Array [
                     "V",
                   ],
                   "_objectName": GameLegendItemSimple {
+                    "__astId": 101,
                     "_aliases": Array [
                       GameObject {
+                        "__astId": 100,
                         "_colors": Array [
                           "transparent",
                         ],
@@ -1292,10 +1340,13 @@ Object {
       ],
       "_productionModifiers": Array [],
       "_ruleAction": GameRuleActionBrackets {
+        "__astId": 107,
         "_cellSequenceBrackets": Array [
           GameRuleSequenceBracket {
+            "__astId": 106,
             "_bracket": GameRuleSimpleBracket {
-              "_cellLayers": Array [
+              "__astId": 105,
+              "_neighbors": Array [
                 Array [],
               ],
             },
@@ -1525,8 +1576,10 @@ Object {
   "collisionLayers": Array [],
   "legends": Array [
     GameLegendItemSimple {
+      "__astId": 110,
       "_aliases": Array [
         GameObject {
+          "__astId": 109,
           "_colors": Array [
             "transparent",
           ],
@@ -1541,6 +1594,7 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameObject {
+      "__astId": 109,
       "_colors": Array [
         "transparent",
       ],
@@ -1551,18 +1605,24 @@ Object {
   ],
   "rules": Array [
     GameRule {
+      "__astId": 117,
       "_cellSequenceBrackets": Array [
         GameRuleSequenceBracket {
+          "__astId": 113,
           "_bracket": GameRuleSimpleBracket {
-            "_cellLayers": Array [
+            "__astId": 112,
+            "_neighbors": Array [
               Array [
                 GameRuleCellLayer {
+                  "__astId": 111,
                   "_cellModifiers": Array [
                     ">",
                   ],
                   "_objectName": GameLegendItemSimple {
+                    "__astId": 110,
                     "_aliases": Array [
                       GameObject {
+                        "__astId": 109,
                         "_colors": Array [
                           "transparent",
                         ],
@@ -1582,10 +1642,13 @@ Object {
       ],
       "_productionModifiers": Array [],
       "_ruleAction": GameRuleActionBrackets {
+        "__astId": 116,
         "_cellSequenceBrackets": Array [
           GameRuleSequenceBracket {
+            "__astId": 115,
             "_bracket": GameRuleSimpleBracket {
-              "_cellLayers": Array [
+              "__astId": 114,
+              "_neighbors": Array [
                 Array [],
               ],
             },
@@ -1815,8 +1878,10 @@ Object {
   "collisionLayers": Array [],
   "legends": Array [
     GameLegendItemSimple {
+      "__astId": 119,
       "_aliases": Array [
         GameObject {
+          "__astId": 118,
           "_colors": Array [
             "transparent",
           ],
@@ -1831,6 +1896,7 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameObject {
+      "__astId": 118,
       "_colors": Array [
         "transparent",
       ],
@@ -1841,18 +1907,24 @@ Object {
   ],
   "rules": Array [
     GameRule {
+      "__astId": 126,
       "_cellSequenceBrackets": Array [
         GameRuleSequenceBracket {
+          "__astId": 122,
           "_bracket": GameRuleSimpleBracket {
-            "_cellLayers": Array [
+            "__astId": 121,
+            "_neighbors": Array [
               Array [
                 GameRuleCellLayer {
+                  "__astId": 120,
                   "_cellModifiers": Array [
                     "<",
                   ],
                   "_objectName": GameLegendItemSimple {
+                    "__astId": 119,
                     "_aliases": Array [
                       GameObject {
+                        "__astId": 118,
                         "_colors": Array [
                           "transparent",
                         ],
@@ -1872,10 +1944,13 @@ Object {
       ],
       "_productionModifiers": Array [],
       "_ruleAction": GameRuleActionBrackets {
+        "__astId": 125,
         "_cellSequenceBrackets": Array [
           GameRuleSequenceBracket {
+            "__astId": 124,
             "_bracket": GameRuleSimpleBracket {
-              "_cellLayers": Array [
+              "__astId": 123,
+              "_neighbors": Array [
                 Array [],
               ],
             },
@@ -2105,8 +2180,10 @@ Object {
   "collisionLayers": Array [],
   "legends": Array [
     GameLegendItemSimple {
+      "__astId": 128,
       "_aliases": Array [
         GameObject {
+          "__astId": 127,
           "_colors": Array [
             "transparent",
           ],
@@ -2121,6 +2198,7 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameObject {
+      "__astId": 127,
       "_colors": Array [
         "transparent",
       ],
@@ -2131,18 +2209,24 @@ Object {
   ],
   "rules": Array [
     GameRule {
+      "__astId": 135,
       "_cellSequenceBrackets": Array [
         GameRuleSequenceBracket {
+          "__astId": 131,
           "_bracket": GameRuleSimpleBracket {
-            "_cellLayers": Array [
+            "__astId": 130,
+            "_neighbors": Array [
               Array [
                 GameRuleCellLayer {
+                  "__astId": 129,
                   "_cellModifiers": Array [
                     "LEFT",
                   ],
                   "_objectName": GameLegendItemSimple {
+                    "__astId": 128,
                     "_aliases": Array [
                       GameObject {
+                        "__astId": 127,
                         "_colors": Array [
                           "transparent",
                         ],
@@ -2162,10 +2246,13 @@ Object {
       ],
       "_productionModifiers": Array [],
       "_ruleAction": GameRuleActionBrackets {
+        "__astId": 134,
         "_cellSequenceBrackets": Array [
           GameRuleSequenceBracket {
+            "__astId": 133,
             "_bracket": GameRuleSimpleBracket {
-              "_cellLayers": Array [
+              "__astId": 132,
+              "_neighbors": Array [
                 Array [],
               ],
             },
@@ -2395,8 +2482,10 @@ Object {
   "collisionLayers": Array [],
   "legends": Array [
     GameLegendItemSimple {
+      "__astId": 137,
       "_aliases": Array [
         GameObject {
+          "__astId": 136,
           "_colors": Array [
             "transparent",
           ],
@@ -2411,6 +2500,7 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameObject {
+      "__astId": 136,
       "_colors": Array [
         "transparent",
       ],
@@ -2421,18 +2511,24 @@ Object {
   ],
   "rules": Array [
     GameRule {
+      "__astId": 144,
       "_cellSequenceBrackets": Array [
         GameRuleSequenceBracket {
+          "__astId": 140,
           "_bracket": GameRuleSimpleBracket {
-            "_cellLayers": Array [
+            "__astId": 139,
+            "_neighbors": Array [
               Array [
                 GameRuleCellLayer {
+                  "__astId": 138,
                   "_cellModifiers": Array [
                     "RIGHT",
                   ],
                   "_objectName": GameLegendItemSimple {
+                    "__astId": 137,
                     "_aliases": Array [
                       GameObject {
+                        "__astId": 136,
                         "_colors": Array [
                           "transparent",
                         ],
@@ -2452,10 +2548,13 @@ Object {
       ],
       "_productionModifiers": Array [],
       "_ruleAction": GameRuleActionBrackets {
+        "__astId": 143,
         "_cellSequenceBrackets": Array [
           GameRuleSequenceBracket {
+            "__astId": 142,
             "_bracket": GameRuleSimpleBracket {
-              "_cellLayers": Array [
+              "__astId": 141,
+              "_neighbors": Array [
                 Array [],
               ],
             },
@@ -2685,8 +2784,10 @@ Object {
   "collisionLayers": Array [],
   "legends": Array [
     GameLegendItemSimple {
+      "__astId": 146,
       "_aliases": Array [
         GameObject {
+          "__astId": 145,
           "_colors": Array [
             "transparent",
           ],
@@ -2701,6 +2802,7 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameObject {
+      "__astId": 145,
       "_colors": Array [
         "transparent",
       ],
@@ -2711,18 +2813,24 @@ Object {
   ],
   "rules": Array [
     GameRule {
+      "__astId": 153,
       "_cellSequenceBrackets": Array [
         GameRuleSequenceBracket {
+          "__astId": 149,
           "_bracket": GameRuleSimpleBracket {
-            "_cellLayers": Array [
+            "__astId": 148,
+            "_neighbors": Array [
               Array [
                 GameRuleCellLayer {
+                  "__astId": 147,
                   "_cellModifiers": Array [
                     "UP",
                   ],
                   "_objectName": GameLegendItemSimple {
+                    "__astId": 146,
                     "_aliases": Array [
                       GameObject {
+                        "__astId": 145,
                         "_colors": Array [
                           "transparent",
                         ],
@@ -2742,10 +2850,13 @@ Object {
       ],
       "_productionModifiers": Array [],
       "_ruleAction": GameRuleActionBrackets {
+        "__astId": 152,
         "_cellSequenceBrackets": Array [
           GameRuleSequenceBracket {
+            "__astId": 151,
             "_bracket": GameRuleSimpleBracket {
-              "_cellLayers": Array [
+              "__astId": 150,
+              "_neighbors": Array [
                 Array [],
               ],
             },
@@ -2975,8 +3086,10 @@ Object {
   "collisionLayers": Array [],
   "legends": Array [
     GameLegendItemSimple {
+      "__astId": 155,
       "_aliases": Array [
         GameObject {
+          "__astId": 154,
           "_colors": Array [
             "transparent",
           ],
@@ -2991,6 +3104,7 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameObject {
+      "__astId": 154,
       "_colors": Array [
         "transparent",
       ],
@@ -3001,18 +3115,24 @@ Object {
   ],
   "rules": Array [
     GameRule {
+      "__astId": 162,
       "_cellSequenceBrackets": Array [
         GameRuleSequenceBracket {
+          "__astId": 158,
           "_bracket": GameRuleSimpleBracket {
-            "_cellLayers": Array [
+            "__astId": 157,
+            "_neighbors": Array [
               Array [
                 GameRuleCellLayer {
+                  "__astId": 156,
                   "_cellModifiers": Array [
                     "DOWN",
                   ],
                   "_objectName": GameLegendItemSimple {
+                    "__astId": 155,
                     "_aliases": Array [
                       GameObject {
+                        "__astId": 154,
                         "_colors": Array [
                           "transparent",
                         ],
@@ -3032,10 +3152,13 @@ Object {
       ],
       "_productionModifiers": Array [],
       "_ruleAction": GameRuleActionBrackets {
+        "__astId": 161,
         "_cellSequenceBrackets": Array [
           GameRuleSequenceBracket {
+            "__astId": 160,
             "_bracket": GameRuleSimpleBracket {
-              "_cellLayers": Array [
+              "__astId": 159,
+              "_neighbors": Array [
                 Array [],
               ],
             },
@@ -3265,8 +3388,10 @@ Object {
   "collisionLayers": Array [],
   "legends": Array [
     GameLegendItemSimple {
+      "__astId": 164,
       "_aliases": Array [
         GameObject {
+          "__astId": 163,
           "_colors": Array [
             "transparent",
           ],
@@ -3281,6 +3406,7 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameObject {
+      "__astId": 163,
       "_colors": Array [
         "transparent",
       ],
@@ -3291,18 +3417,24 @@ Object {
   ],
   "rules": Array [
     GameRule {
+      "__astId": 171,
       "_cellSequenceBrackets": Array [
         GameRuleSequenceBracket {
+          "__astId": 167,
           "_bracket": GameRuleSimpleBracket {
-            "_cellLayers": Array [
+            "__astId": 166,
+            "_neighbors": Array [
               Array [
                 GameRuleCellLayer {
+                  "__astId": 165,
                   "_cellModifiers": Array [
                     "STATIONARY",
                   ],
                   "_objectName": GameLegendItemSimple {
+                    "__astId": 164,
                     "_aliases": Array [
                       GameObject {
+                        "__astId": 163,
                         "_colors": Array [
                           "transparent",
                         ],
@@ -3322,10 +3454,13 @@ Object {
       ],
       "_productionModifiers": Array [],
       "_ruleAction": GameRuleActionBrackets {
+        "__astId": 170,
         "_cellSequenceBrackets": Array [
           GameRuleSequenceBracket {
+            "__astId": 169,
             "_bracket": GameRuleSimpleBracket {
-              "_cellLayers": Array [
+              "__astId": 168,
+              "_neighbors": Array [
                 Array [],
               ],
             },
@@ -3555,8 +3690,10 @@ Object {
   "collisionLayers": Array [],
   "legends": Array [
     GameLegendItemSimple {
+      "__astId": 173,
       "_aliases": Array [
         GameObject {
+          "__astId": 172,
           "_colors": Array [
             "transparent",
           ],
@@ -3571,6 +3708,7 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameObject {
+      "__astId": 172,
       "_colors": Array [
         "transparent",
       ],
@@ -3581,18 +3719,24 @@ Object {
   ],
   "rules": Array [
     GameRule {
+      "__astId": 180,
       "_cellSequenceBrackets": Array [
         GameRuleSequenceBracket {
+          "__astId": 176,
           "_bracket": GameRuleSimpleBracket {
-            "_cellLayers": Array [
+            "__astId": 175,
+            "_neighbors": Array [
               Array [
                 GameRuleCellLayer {
+                  "__astId": 174,
                   "_cellModifiers": Array [
                     "MOVING",
                   ],
                   "_objectName": GameLegendItemSimple {
+                    "__astId": 173,
                     "_aliases": Array [
                       GameObject {
+                        "__astId": 172,
                         "_colors": Array [
                           "transparent",
                         ],
@@ -3612,10 +3756,13 @@ Object {
       ],
       "_productionModifiers": Array [],
       "_ruleAction": GameRuleActionBrackets {
+        "__astId": 179,
         "_cellSequenceBrackets": Array [
           GameRuleSequenceBracket {
+            "__astId": 178,
             "_bracket": GameRuleSimpleBracket {
-              "_cellLayers": Array [
+              "__astId": 177,
+              "_neighbors": Array [
                 Array [],
               ],
             },
@@ -3845,8 +3992,10 @@ Object {
   "collisionLayers": Array [],
   "legends": Array [
     GameLegendItemSimple {
+      "__astId": 182,
       "_aliases": Array [
         GameObject {
+          "__astId": 181,
           "_colors": Array [
             "transparent",
           ],
@@ -3861,6 +4010,7 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameObject {
+      "__astId": 181,
       "_colors": Array [
         "transparent",
       ],
@@ -3871,18 +4021,24 @@ Object {
   ],
   "rules": Array [
     GameRule {
+      "__astId": 189,
       "_cellSequenceBrackets": Array [
         GameRuleSequenceBracket {
+          "__astId": 185,
           "_bracket": GameRuleSimpleBracket {
-            "_cellLayers": Array [
+            "__astId": 184,
+            "_neighbors": Array [
               Array [
                 GameRuleCellLayer {
+                  "__astId": 183,
                   "_cellModifiers": Array [
                     "VERTICAL",
                   ],
                   "_objectName": GameLegendItemSimple {
+                    "__astId": 182,
                     "_aliases": Array [
                       GameObject {
+                        "__astId": 181,
                         "_colors": Array [
                           "transparent",
                         ],
@@ -3902,10 +4058,13 @@ Object {
       ],
       "_productionModifiers": Array [],
       "_ruleAction": GameRuleActionBrackets {
+        "__astId": 188,
         "_cellSequenceBrackets": Array [
           GameRuleSequenceBracket {
+            "__astId": 187,
             "_bracket": GameRuleSimpleBracket {
-              "_cellLayers": Array [
+              "__astId": 186,
+              "_neighbors": Array [
                 Array [],
               ],
             },
@@ -4135,8 +4294,10 @@ Object {
   "collisionLayers": Array [],
   "legends": Array [
     GameLegendItemSimple {
+      "__astId": 191,
       "_aliases": Array [
         GameObject {
+          "__astId": 190,
           "_colors": Array [
             "transparent",
           ],
@@ -4151,6 +4312,7 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameObject {
+      "__astId": 190,
       "_colors": Array [
         "transparent",
       ],
@@ -4161,18 +4323,24 @@ Object {
   ],
   "rules": Array [
     GameRule {
+      "__astId": 198,
       "_cellSequenceBrackets": Array [
         GameRuleSequenceBracket {
+          "__astId": 194,
           "_bracket": GameRuleSimpleBracket {
-            "_cellLayers": Array [
+            "__astId": 193,
+            "_neighbors": Array [
               Array [
                 GameRuleCellLayer {
+                  "__astId": 192,
                   "_cellModifiers": Array [
                     "HORIZONTAL",
                   ],
                   "_objectName": GameLegendItemSimple {
+                    "__astId": 191,
                     "_aliases": Array [
                       GameObject {
+                        "__astId": 190,
                         "_colors": Array [
                           "transparent",
                         ],
@@ -4192,10 +4360,13 @@ Object {
       ],
       "_productionModifiers": Array [],
       "_ruleAction": GameRuleActionBrackets {
+        "__astId": 197,
         "_cellSequenceBrackets": Array [
           GameRuleSequenceBracket {
+            "__astId": 196,
             "_bracket": GameRuleSimpleBracket {
-              "_cellLayers": Array [
+              "__astId": 195,
+              "_neighbors": Array [
                 Array [],
               ],
             },
@@ -4425,8 +4596,10 @@ Object {
   "collisionLayers": Array [],
   "legends": Array [
     GameLegendItemSimple {
+      "__astId": 200,
       "_aliases": Array [
         GameObject {
+          "__astId": 199,
           "_colors": Array [
             "transparent",
           ],
@@ -4441,6 +4614,7 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameObject {
+      "__astId": 199,
       "_colors": Array [
         "transparent",
       ],
@@ -4451,18 +4625,24 @@ Object {
   ],
   "rules": Array [
     GameRule {
+      "__astId": 207,
       "_cellSequenceBrackets": Array [
         GameRuleSequenceBracket {
+          "__astId": 203,
           "_bracket": GameRuleSimpleBracket {
-            "_cellLayers": Array [
+            "__astId": 202,
+            "_neighbors": Array [
               Array [
                 GameRuleCellLayer {
+                  "__astId": 201,
                   "_cellModifiers": Array [
                     "PERPENDICULAR",
                   ],
                   "_objectName": GameLegendItemSimple {
+                    "__astId": 200,
                     "_aliases": Array [
                       GameObject {
+                        "__astId": 199,
                         "_colors": Array [
                           "transparent",
                         ],
@@ -4482,10 +4662,13 @@ Object {
       ],
       "_productionModifiers": Array [],
       "_ruleAction": GameRuleActionBrackets {
+        "__astId": 206,
         "_cellSequenceBrackets": Array [
           GameRuleSequenceBracket {
+            "__astId": 205,
             "_bracket": GameRuleSimpleBracket {
-              "_cellLayers": Array [
+              "__astId": 204,
+              "_neighbors": Array [
                 Array [],
               ],
             },
@@ -4715,8 +4898,10 @@ Object {
   "collisionLayers": Array [],
   "legends": Array [
     GameLegendItemSimple {
+      "__astId": 209,
       "_aliases": Array [
         GameObject {
+          "__astId": 208,
           "_colors": Array [
             "transparent",
           ],
@@ -4731,6 +4916,7 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameObject {
+      "__astId": 208,
       "_colors": Array [
         "transparent",
       ],
@@ -4741,18 +4927,24 @@ Object {
   ],
   "rules": Array [
     GameRule {
+      "__astId": 216,
       "_cellSequenceBrackets": Array [
         GameRuleSequenceBracket {
+          "__astId": 212,
           "_bracket": GameRuleSimpleBracket {
-            "_cellLayers": Array [
+            "__astId": 211,
+            "_neighbors": Array [
               Array [
                 GameRuleCellLayer {
+                  "__astId": 210,
                   "_cellModifiers": Array [
                     "ORTHOGONAL",
                   ],
                   "_objectName": GameLegendItemSimple {
+                    "__astId": 209,
                     "_aliases": Array [
                       GameObject {
+                        "__astId": 208,
                         "_colors": Array [
                           "transparent",
                         ],
@@ -4772,10 +4964,13 @@ Object {
       ],
       "_productionModifiers": Array [],
       "_ruleAction": GameRuleActionBrackets {
+        "__astId": 215,
         "_cellSequenceBrackets": Array [
           GameRuleSequenceBracket {
+            "__astId": 214,
             "_bracket": GameRuleSimpleBracket {
-              "_cellLayers": Array [
+              "__astId": 213,
+              "_neighbors": Array [
                 Array [],
               ],
             },
@@ -5005,8 +5200,10 @@ Object {
   "collisionLayers": Array [],
   "legends": Array [
     GameLegendItemSimple {
+      "__astId": 218,
       "_aliases": Array [
         GameObject {
+          "__astId": 217,
           "_colors": Array [
             "transparent",
           ],
@@ -5021,6 +5218,7 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameObject {
+      "__astId": 217,
       "_colors": Array [
         "transparent",
       ],
@@ -5031,18 +5229,24 @@ Object {
   ],
   "rules": Array [
     GameRule {
+      "__astId": 225,
       "_cellSequenceBrackets": Array [
         GameRuleSequenceBracket {
+          "__astId": 221,
           "_bracket": GameRuleSimpleBracket {
-            "_cellLayers": Array [
+            "__astId": 220,
+            "_neighbors": Array [
               Array [
                 GameRuleCellLayer {
+                  "__astId": 219,
                   "_cellModifiers": Array [
                     "RANDOMDIR",
                   ],
                   "_objectName": GameLegendItemSimple {
+                    "__astId": 218,
                     "_aliases": Array [
                       GameObject {
+                        "__astId": 217,
                         "_colors": Array [
                           "transparent",
                         ],
@@ -5062,10 +5266,13 @@ Object {
       ],
       "_productionModifiers": Array [],
       "_ruleAction": GameRuleActionBrackets {
+        "__astId": 224,
         "_cellSequenceBrackets": Array [
           GameRuleSequenceBracket {
+            "__astId": 223,
             "_bracket": GameRuleSimpleBracket {
-              "_cellLayers": Array [
+              "__astId": 222,
+              "_neighbors": Array [
                 Array [],
               ],
             },
@@ -5295,8 +5502,10 @@ Object {
   "collisionLayers": Array [],
   "legends": Array [
     GameLegendItemSimple {
+      "__astId": 227,
       "_aliases": Array [
         GameObject {
+          "__astId": 226,
           "_colors": Array [
             "transparent",
           ],
@@ -5311,6 +5520,7 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameObject {
+      "__astId": 226,
       "_colors": Array [
         "transparent",
       ],
@@ -5321,18 +5531,24 @@ Object {
   ],
   "rules": Array [
     GameRule {
+      "__astId": 234,
       "_cellSequenceBrackets": Array [
         GameRuleSequenceBracket {
+          "__astId": 230,
           "_bracket": GameRuleSimpleBracket {
-            "_cellLayers": Array [
+            "__astId": 229,
+            "_neighbors": Array [
               Array [
                 GameRuleCellLayer {
+                  "__astId": 228,
                   "_cellModifiers": Array [
                     "NO",
                   ],
                   "_objectName": GameLegendItemSimple {
+                    "__astId": 227,
                     "_aliases": Array [
                       GameObject {
+                        "__astId": 226,
                         "_colors": Array [
                           "transparent",
                         ],
@@ -5352,10 +5568,13 @@ Object {
       ],
       "_productionModifiers": Array [],
       "_ruleAction": GameRuleActionBrackets {
+        "__astId": 233,
         "_cellSequenceBrackets": Array [
           GameRuleSequenceBracket {
+            "__astId": 232,
             "_bracket": GameRuleSimpleBracket {
-              "_cellLayers": Array [
+              "__astId": 231,
+              "_neighbors": Array [
                 Array [],
               ],
             },
@@ -5605,8 +5824,10 @@ Object {
   "collisionLayers": Array [],
   "legends": Array [
     GameLegendItemSimple {
+      "__astId": 246,
       "_aliases": Array [
         GameObject {
+          "__astId": 245,
           "_colors": Array [
             "transparent",
           ],
@@ -5621,6 +5842,7 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameObject {
+      "__astId": 245,
       "_colors": Array [
         "transparent",
       ],
@@ -5631,18 +5853,24 @@ Object {
   ],
   "rules": Array [
     GameRule {
+      "__astId": 254,
       "_cellSequenceBrackets": Array [
         GameRuleSequenceBracket {
+          "__astId": 249,
           "_bracket": GameRuleSimpleBracket {
-            "_cellLayers": Array [
+            "__astId": 248,
+            "_neighbors": Array [
               Array [
                 GameRuleCellLayer {
+                  "__astId": 247,
                   "_cellModifiers": Array [
                     "STATIONARY",
                   ],
                   "_objectName": GameLegendItemSimple {
+                    "__astId": 246,
                     "_aliases": Array [
                       GameObject {
+                        "__astId": 245,
                         "_colors": Array [
                           "transparent",
                         ],
@@ -5662,16 +5890,22 @@ Object {
       ],
       "_productionModifiers": Array [],
       "_ruleAction": GameRuleActionBrackets {
+        "__astId": 253,
         "_cellSequenceBrackets": Array [
           GameRuleSequenceBracket {
+            "__astId": 252,
             "_bracket": GameRuleSimpleBracket {
-              "_cellLayers": Array [
+              "__astId": 251,
+              "_neighbors": Array [
                 Array [
                   GameRuleCellLayer {
+                    "__astId": 250,
                     "_cellModifiers": Array [],
                     "_objectName": GameLegendItemSimple {
+                      "__astId": 246,
                       "_aliases": Array [
                         GameObject {
+                          "__astId": 245,
                           "_colors": Array [
                             "transparent",
                           ],
@@ -5912,8 +6146,10 @@ Object {
   "collisionLayers": Array [],
   "legends": Array [
     GameLegendItemSimple {
+      "__astId": 256,
       "_aliases": Array [
         GameObject {
+          "__astId": 255,
           "_colors": Array [
             "transparent",
           ],
@@ -5928,6 +6164,7 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameObject {
+      "__astId": 255,
       "_colors": Array [
         "transparent",
       ],
@@ -5938,16 +6175,22 @@ Object {
   ],
   "rules": Array [
     GameRule {
+      "__astId": 264,
       "_cellSequenceBrackets": Array [
         GameRuleSequenceBracket {
+          "__astId": 259,
           "_bracket": GameRuleSimpleBracket {
-            "_cellLayers": Array [
+            "__astId": 258,
+            "_neighbors": Array [
               Array [
                 GameRuleCellLayer {
+                  "__astId": 257,
                   "_cellModifiers": Array [],
                   "_objectName": GameLegendItemSimple {
+                    "__astId": 256,
                     "_aliases": Array [
                       GameObject {
+                        "__astId": 255,
                         "_colors": Array [
                           "transparent",
                         ],
@@ -5967,12 +6210,16 @@ Object {
       ],
       "_productionModifiers": Array [],
       "_ruleAction": GameRuleActionBrackets {
+        "__astId": 263,
         "_cellSequenceBrackets": Array [
           GameRuleSequenceBracket {
+            "__astId": 262,
             "_bracket": GameRuleSimpleBracket {
-              "_cellLayers": Array [
+              "__astId": 261,
+              "_neighbors": Array [
                 Array [
                   GameRuleCellLayerHack {
+                    "__astId": 260,
                     "_hackRuleCommand": "SFX0",
                     "_objectNameMaybeNull": null,
                   },
@@ -6217,8 +6464,10 @@ Object {
   "collisionLayers": Array [],
   "legends": Array [
     GameLegendItemSimple {
+      "__astId": 266,
       "_aliases": Array [
         GameObject {
+          "__astId": 265,
           "_colors": Array [
             "transparent",
           ],
@@ -6233,6 +6482,7 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameObject {
+      "__astId": 265,
       "_colors": Array [
         "transparent",
       ],
@@ -6243,16 +6493,22 @@ Object {
   ],
   "rules": Array [
     GameRule {
+      "__astId": 274,
       "_cellSequenceBrackets": Array [
         GameRuleSequenceBracket {
+          "__astId": 269,
           "_bracket": GameRuleSimpleBracket {
-            "_cellLayers": Array [
+            "__astId": 268,
+            "_neighbors": Array [
               Array [
                 GameRuleCellLayer {
+                  "__astId": 267,
                   "_cellModifiers": Array [],
                   "_objectName": GameLegendItemSimple {
+                    "__astId": 266,
                     "_aliases": Array [
                       GameObject {
+                        "__astId": 265,
                         "_colors": Array [
                           "transparent",
                         ],
@@ -6272,16 +6528,22 @@ Object {
       ],
       "_productionModifiers": Array [],
       "_ruleAction": GameRuleActionBrackets {
+        "__astId": 273,
         "_cellSequenceBrackets": Array [
           GameRuleSequenceBracket {
+            "__astId": 272,
             "_bracket": GameRuleSimpleBracket {
-              "_cellLayers": Array [
+              "__astId": 271,
+              "_neighbors": Array [
                 Array [
                   GameRuleCellLayerHack {
+                    "__astId": 270,
                     "_hackRuleCommand": "SFX1",
                     "_objectNameMaybeNull": GameLegendItemSimple {
+                      "__astId": 266,
                       "_aliases": Array [
                         GameObject {
+                          "__astId": 265,
                           "_colors": Array [
                             "transparent",
                           ],
@@ -6571,8 +6833,10 @@ Object {
   "collisionLayers": Array [],
   "legends": Array [
     GameLegendItemSimple {
+      "__astId": 276,
       "_aliases": Array [
         GameObject {
+          "__astId": 275,
           "_colors": Array [
             "transparent",
           ],
@@ -6584,8 +6848,10 @@ Object {
       "_objectNameOrLevelChar": "z",
     },
     GameLegendItemSimple {
+      "__astId": 277,
       "_aliases": Array [
         GameObject {
+          "__astId": 275,
           "_colors": Array [
             "transparent",
           ],
@@ -6600,6 +6866,7 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameObject {
+      "__astId": 275,
       "_colors": Array [
         "transparent",
       ],
@@ -6610,16 +6877,22 @@ Object {
   ],
   "rules": Array [
     GameRule {
+      "__astId": 286,
       "_cellSequenceBrackets": Array [
         GameRuleSequenceBracket {
+          "__astId": 280,
           "_bracket": GameRuleSimpleBracket {
-            "_cellLayers": Array [
+            "__astId": 279,
+            "_neighbors": Array [
               Array [
                 GameRuleCellLayer {
+                  "__astId": 278,
                   "_cellModifiers": Array [],
                   "_objectName": GameLegendItemSimple {
+                    "__astId": 276,
                     "_aliases": Array [
                       GameObject {
+                        "__astId": 275,
                         "_colors": Array [
                           "transparent",
                         ],
@@ -6639,16 +6912,22 @@ Object {
       ],
       "_productionModifiers": Array [],
       "_ruleAction": GameRuleActionBrackets {
+        "__astId": 285,
         "_cellSequenceBrackets": Array [
           GameRuleSequenceBracket {
+            "__astId": 284,
             "_bracket": GameRuleSimpleBracket {
-              "_cellLayers": Array [
+              "__astId": 283,
+              "_neighbors": Array [
                 Array [
                   GameRuleCellLayer {
+                    "__astId": 281,
                     "_cellModifiers": Array [],
                     "_objectName": GameLegendItemSimple {
+                      "__astId": 276,
                       "_aliases": Array [
                         GameObject {
+                          "__astId": 275,
                           "_colors": Array [
                             "transparent",
                           ],
@@ -6661,10 +6940,13 @@ Object {
                     },
                   },
                   GameRuleCellLayer {
+                    "__astId": 282,
                     "_cellModifiers": Array [],
                     "_objectName": GameLegendItemSimple {
+                      "__astId": 277,
                       "_aliases": Array [
                         GameObject {
+                          "__astId": 275,
                           "_colors": Array [
                             "transparent",
                           ],
@@ -6889,8 +7171,10 @@ Object {
   "collisionLayers": Array [],
   "legends": Array [
     GameLegendItemSimple {
+      "__astId": 74,
       "_aliases": Array [
         GameObject {
+          "__astId": 73,
           "_colors": Array [
             "transparent",
           ],
@@ -6905,6 +7189,7 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameObject {
+      "__astId": 73,
       "_colors": Array [
         "transparent",
       ],
@@ -6915,16 +7200,22 @@ Object {
   ],
   "rules": Array [
     GameRule {
+      "__astId": 81,
       "_cellSequenceBrackets": Array [
         GameRuleSequenceBracket {
+          "__astId": 77,
           "_bracket": GameRuleSimpleBracket {
-            "_cellLayers": Array [
+            "__astId": 76,
+            "_neighbors": Array [
               Array [
                 GameRuleCellLayer {
+                  "__astId": 75,
                   "_cellModifiers": Array [],
                   "_objectName": GameLegendItemSimple {
+                    "__astId": 74,
                     "_aliases": Array [
                       GameObject {
+                        "__astId": 73,
                         "_colors": Array [
                           "transparent",
                         ],
@@ -6944,10 +7235,13 @@ Object {
       ],
       "_productionModifiers": Array [],
       "_ruleAction": GameRuleActionBrackets {
+        "__astId": 80,
         "_cellSequenceBrackets": Array [
           GameRuleSequenceBracket {
+            "__astId": 79,
             "_bracket": GameRuleSimpleBracket {
-              "_cellLayers": Array [
+              "__astId": 78,
+              "_neighbors": Array [
                 Array [],
               ],
             },
@@ -7147,8 +7441,10 @@ Object {
   "collisionLayers": Array [],
   "legends": Array [
     GameLegendItemSimple {
+      "__astId": 65,
       "_aliases": Array [
         GameObject {
+          "__astId": 64,
           "_colors": Array [
             "transparent",
           ],
@@ -7163,6 +7459,7 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameObject {
+      "__astId": 64,
       "_colors": Array [
         "transparent",
       ],
@@ -7173,16 +7470,22 @@ Object {
   ],
   "rules": Array [
     GameRule {
+      "__astId": 72,
       "_cellSequenceBrackets": Array [
         GameRuleSequenceBracket {
+          "__astId": 68,
           "_bracket": GameRuleSimpleBracket {
-            "_cellLayers": Array [
+            "__astId": 67,
+            "_neighbors": Array [
               Array [
                 GameRuleCellLayer {
+                  "__astId": 66,
                   "_cellModifiers": Array [],
                   "_objectName": GameLegendItemSimple {
+                    "__astId": 65,
                     "_aliases": Array [
                       GameObject {
+                        "__astId": 64,
                         "_colors": Array [
                           "transparent",
                         ],
@@ -7202,10 +7505,13 @@ Object {
       ],
       "_productionModifiers": Array [],
       "_ruleAction": GameRuleActionBrackets {
+        "__astId": 71,
         "_cellSequenceBrackets": Array [
           GameRuleSequenceBracket {
+            "__astId": 70,
             "_bracket": GameRuleSimpleBracket {
-              "_cellLayers": Array [
+              "__astId": 69,
+              "_neighbors": Array [
                 Array [],
               ],
             },
@@ -7539,8 +7845,10 @@ Object {
   "collisionLayers": Array [],
   "legends": Array [
     GameLegendItemSimple {
+      "__astId": 52,
       "_aliases": Array [
         GameObject {
+          "__astId": 51,
           "_colors": Array [
             "transparent",
           ],
@@ -7552,8 +7860,10 @@ Object {
       "_objectNameOrLevelChar": "z",
     },
     GameLegendItemSimple {
+      "__astId": 53,
       "_aliases": Array [
         GameObject {
+          "__astId": 51,
           "_colors": Array [
             "transparent",
           ],
@@ -7568,6 +7878,7 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameObject {
+      "__astId": 51,
       "_colors": Array [
         "transparent",
       ],
@@ -7578,16 +7889,22 @@ Object {
   ],
   "rules": Array [
     GameRule {
+      "__astId": 63,
       "_cellSequenceBrackets": Array [
         GameRuleSequenceBracket {
+          "__astId": 57,
           "_bracket": RuleEllipsisBracket {
+            "__astId": 56,
             "_leftNeighboringCells": Array [
               Array [
                 GameRuleCellLayer {
+                  "__astId": 54,
                   "_cellModifiers": Array [],
                   "_objectName": GameLegendItemSimple {
+                    "__astId": 52,
                     "_aliases": Array [
                       GameObject {
+                        "__astId": 51,
                         "_colors": Array [
                           "transparent",
                         ],
@@ -7605,10 +7922,13 @@ Object {
             "_rightNeighboringCells": Array [
               Array [
                 GameRuleCellLayer {
+                  "__astId": 55,
                   "_cellModifiers": Array [],
                   "_objectName": GameLegendItemSimple {
+                    "__astId": 53,
                     "_aliases": Array [
                       GameObject {
+                        "__astId": 51,
                         "_colors": Array [
                           "transparent",
                         ],
@@ -7628,18 +7948,24 @@ Object {
       ],
       "_productionModifiers": Array [],
       "_ruleAction": GameRuleActionBrackets {
+        "__astId": 62,
         "_cellSequenceBrackets": Array [
           GameRuleSequenceBracket {
+            "__astId": 61,
             "_bracket": RuleEllipsisBracket {
+              "__astId": 60,
               "_leftNeighboringCells": Array [
                 Array [
                   GameRuleCellLayer {
+                    "__astId": 58,
                     "_cellModifiers": Array [
                       "RANDOM",
                     ],
                     "_objectName": GameLegendItemSimple {
+                      "__astId": 52,
                       "_aliases": Array [
                         GameObject {
+                          "__astId": 51,
                           "_colors": Array [
                             "transparent",
                           ],
@@ -7657,10 +7983,13 @@ Object {
               "_rightNeighboringCells": Array [
                 Array [
                   GameRuleCellLayer {
+                    "__astId": 59,
                     "_cellModifiers": Array [],
                     "_objectName": GameLegendItemSimple {
+                      "__astId": 53,
                       "_aliases": Array [
                         GameObject {
+                          "__astId": 51,
                           "_colors": Array [
                             "transparent",
                           ],
@@ -7905,8 +8234,10 @@ Object {
   "collisionLayers": Array [],
   "legends": Array [
     GameLegendItemSimple {
+      "__astId": 30,
       "_aliases": Array [
         GameObject {
+          "__astId": 29,
           "_colors": Array [
             "transparent",
           ],
@@ -7918,8 +8249,10 @@ Object {
       "_objectNameOrLevelChar": "z",
     },
     GameLegendItemSimple {
+      "__astId": 31,
       "_aliases": Array [
         GameObject {
+          "__astId": 29,
           "_colors": Array [
             "transparent",
           ],
@@ -7934,6 +8267,7 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameObject {
+      "__astId": 29,
       "_colors": Array [
         "transparent",
       ],
@@ -7944,16 +8278,22 @@ Object {
   ],
   "rules": Array [
     GameRule {
+      "__astId": 39,
       "_cellSequenceBrackets": Array [
         GameRuleSequenceBracket {
+          "__astId": 35,
           "_bracket": GameRuleSimpleBracket {
-            "_cellLayers": Array [
+            "__astId": 34,
+            "_neighbors": Array [
               Array [
                 GameRuleCellLayer {
+                  "__astId": 32,
                   "_cellModifiers": Array [],
                   "_objectName": GameLegendItemSimple {
+                    "__astId": 30,
                     "_aliases": Array [
                       GameObject {
+                        "__astId": 29,
                         "_colors": Array [
                           "transparent",
                         ],
@@ -7968,10 +8308,13 @@ Object {
               ],
               Array [
                 GameRuleCellLayer {
+                  "__astId": 33,
                   "_cellModifiers": Array [],
                   "_objectName": GameLegendItemSimple {
+                    "__astId": 31,
                     "_aliases": Array [
                       GameObject {
+                        "__astId": 29,
                         "_colors": Array [
                           "transparent",
                         ],
@@ -7991,10 +8334,13 @@ Object {
       ],
       "_productionModifiers": Array [],
       "_ruleAction": GameRuleActionBrackets {
+        "__astId": 38,
         "_cellSequenceBrackets": Array [
           GameRuleSequenceBracket {
+            "__astId": 37,
             "_bracket": GameRuleSimpleBracket {
-              "_cellLayers": Array [
+              "__astId": 36,
+              "_neighbors": Array [
                 Array [],
               ],
             },
@@ -8218,8 +8564,10 @@ Object {
   "collisionLayers": Array [],
   "legends": Array [
     GameLegendItemSimple {
+      "__astId": 41,
       "_aliases": Array [
         GameObject {
+          "__astId": 40,
           "_colors": Array [
             "transparent",
           ],
@@ -8231,8 +8579,10 @@ Object {
       "_objectNameOrLevelChar": "z",
     },
     GameLegendItemSimple {
+      "__astId": 42,
       "_aliases": Array [
         GameObject {
+          "__astId": 40,
           "_colors": Array [
             "transparent",
           ],
@@ -8247,6 +8597,7 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameObject {
+      "__astId": 40,
       "_colors": Array [
         "transparent",
       ],
@@ -8257,16 +8608,22 @@ Object {
   ],
   "rules": Array [
     GameRule {
+      "__astId": 50,
       "_cellSequenceBrackets": Array [
         GameRuleSequenceBracket {
+          "__astId": 46,
           "_bracket": GameRuleSimpleBracket {
-            "_cellLayers": Array [
+            "__astId": 45,
+            "_neighbors": Array [
               Array [
                 GameRuleCellLayer {
+                  "__astId": 43,
                   "_cellModifiers": Array [],
                   "_objectName": GameLegendItemSimple {
+                    "__astId": 41,
                     "_aliases": Array [
                       GameObject {
+                        "__astId": 40,
                         "_colors": Array [
                           "transparent",
                         ],
@@ -8279,10 +8636,13 @@ Object {
                   },
                 },
                 GameRuleCellLayer {
+                  "__astId": 44,
                   "_cellModifiers": Array [],
                   "_objectName": GameLegendItemSimple {
+                    "__astId": 42,
                     "_aliases": Array [
                       GameObject {
+                        "__astId": 40,
                         "_colors": Array [
                           "transparent",
                         ],
@@ -8302,10 +8662,13 @@ Object {
       ],
       "_productionModifiers": Array [],
       "_ruleAction": GameRuleActionBrackets {
+        "__astId": 49,
         "_cellSequenceBrackets": Array [
           GameRuleSequenceBracket {
+            "__astId": 48,
             "_bracket": GameRuleSimpleBracket {
-              "_cellLayers": Array [
+              "__astId": 47,
+              "_neighbors": Array [
                 Array [],
               ],
             },
@@ -8511,8 +8874,10 @@ Object {
   "collisionLayers": Array [],
   "legends": Array [
     GameLegendItemSimple {
+      "__astId": 1,
       "_aliases": Array [
         GameObject {
+          "__astId": 0,
           "_colors": Array [
             "transparent",
           ],
@@ -8527,6 +8892,7 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameObject {
+      "__astId": 0,
       "_colors": Array [
         "transparent",
       ],
@@ -8537,16 +8903,22 @@ Object {
   ],
   "rules": Array [
     GameRule {
+      "__astId": 8,
       "_cellSequenceBrackets": Array [
         GameRuleSequenceBracket {
+          "__astId": 4,
           "_bracket": GameRuleSimpleBracket {
-            "_cellLayers": Array [
+            "__astId": 3,
+            "_neighbors": Array [
               Array [
                 GameRuleCellLayer {
+                  "__astId": 2,
                   "_cellModifiers": Array [],
                   "_objectName": GameLegendItemSimple {
+                    "__astId": 1,
                     "_aliases": Array [
                       GameObject {
+                        "__astId": 0,
                         "_colors": Array [
                           "transparent",
                         ],
@@ -8566,10 +8938,13 @@ Object {
       ],
       "_productionModifiers": Array [],
       "_ruleAction": GameRuleActionBrackets {
+        "__astId": 7,
         "_cellSequenceBrackets": Array [
           GameRuleSequenceBracket {
+            "__astId": 6,
             "_bracket": GameRuleSimpleBracket {
-              "_cellLayers": Array [
+              "__astId": 5,
+              "_neighbors": Array [
                 Array [],
               ],
             },
@@ -8795,8 +9170,10 @@ Object {
   "collisionLayers": Array [],
   "legends": Array [
     GameLegendItemSimple {
+      "__astId": 10,
       "_aliases": Array [
         GameObject {
+          "__astId": 9,
           "_colors": Array [
             "transparent",
           ],
@@ -8811,6 +9188,7 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameObject {
+      "__astId": 9,
       "_colors": Array [
         "transparent",
       ],
@@ -8821,16 +9199,22 @@ Object {
   ],
   "rules": Array [
     GameRule {
+      "__astId": 18,
       "_cellSequenceBrackets": Array [
         GameRuleSequenceBracket {
+          "__astId": 13,
           "_bracket": GameRuleSimpleBracket {
-            "_cellLayers": Array [
+            "__astId": 12,
+            "_neighbors": Array [
               Array [
                 GameRuleCellLayer {
+                  "__astId": 11,
                   "_cellModifiers": Array [],
                   "_objectName": GameLegendItemSimple {
+                    "__astId": 10,
                     "_aliases": Array [
                       GameObject {
+                        "__astId": 9,
                         "_colors": Array [
                           "transparent",
                         ],
@@ -8850,16 +9234,22 @@ Object {
       ],
       "_productionModifiers": Array [],
       "_ruleAction": GameRuleActionBrackets {
+        "__astId": 17,
         "_cellSequenceBrackets": Array [
           GameRuleSequenceBracket {
+            "__astId": 16,
             "_bracket": GameRuleSimpleBracket {
-              "_cellLayers": Array [
+              "__astId": 15,
+              "_neighbors": Array [
                 Array [
                   GameRuleCellLayer {
+                    "__astId": 14,
                     "_cellModifiers": Array [],
                     "_objectName": GameLegendItemSimple {
+                      "__astId": 10,
                       "_aliases": Array [
                         GameObject {
+                          "__astId": 9,
                           "_colors": Array [
                             "transparent",
                           ],
@@ -9096,8 +9486,10 @@ Object {
   "collisionLayers": Array [],
   "legends": Array [
     GameLegendItemSimple {
+      "__astId": 20,
       "_aliases": Array [
         GameObject {
+          "__astId": 19,
           "_colors": Array [
             "transparent",
           ],
@@ -9112,6 +9504,7 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameObject {
+      "__astId": 19,
       "_colors": Array [
         "transparent",
       ],
@@ -9122,16 +9515,22 @@ Object {
   ],
   "rules": Array [
     GameRule {
+      "__astId": 28,
       "_cellSequenceBrackets": Array [
         GameRuleSequenceBracket {
+          "__astId": 23,
           "_bracket": GameRuleSimpleBracket {
-            "_cellLayers": Array [
+            "__astId": 22,
+            "_neighbors": Array [
               Array [
                 GameRuleCellLayer {
+                  "__astId": 21,
                   "_cellModifiers": Array [],
                   "_objectName": GameLegendItemSimple {
+                    "__astId": 20,
                     "_aliases": Array [
                       GameObject {
+                        "__astId": 19,
                         "_colors": Array [
                           "transparent",
                         ],
@@ -9151,16 +9550,22 @@ Object {
       ],
       "_productionModifiers": Array [],
       "_ruleAction": GameRuleActionBrackets {
+        "__astId": 27,
         "_cellSequenceBrackets": Array [
           GameRuleSequenceBracket {
+            "__astId": 26,
             "_bracket": GameRuleSimpleBracket {
-              "_cellLayers": Array [
+              "__astId": 25,
+              "_neighbors": Array [
                 Array [
                   GameRuleCellLayer {
+                    "__astId": 24,
                     "_cellModifiers": Array [],
                     "_objectName": GameLegendItemSimple {
+                      "__astId": 20,
                       "_aliases": Array [
                         GameObject {
+                          "__astId": 19,
                           "_colors": Array [
                             "transparent",
                           ],
