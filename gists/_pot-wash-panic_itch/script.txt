@@ -1,0 +1,321 @@
+title Pot Wash Panic
+author Dan Howard
+homepage https://twitter.com/DanHowardGames
+color_palette 2
+background_color darkblue
+require_player_movement
+noaction
+
+========
+OBJECTS
+========
+Player
+Pink white black
+.111.
+.000.
+11111
+.111.
+.222.
+
+Background
+grey darkblue
+00000
+01100
+01000
+00011
+00010
+
+
+TrolleyEmpty
+black darkgrey
+00000
+01110
+01110
+01110
+00000
+
+TrolleyFull
+grey yellow
+00000
+01110
+01110
+01110
+00000
+
+Wall
+orange red
+11000
+00110
+00011
+01100
+00011
+
+hobs
+orange darkgrey
+00000
+01010
+00000
+01010
+00000
+
+oven
+orange darkgrey black
+00000
+11111
+12221
+11111
+00000
+
+CleanDishes
+lightgrey White
+01000
+.010.
+.....
+01000
+.010.
+
+DirtyDishes
+darkbrown brown
+01000
+.010.
+.....
+01000
+.010.
+
+CleanWater
+lightBlue blue
+10101
+00000
+10001
+00000
+10101
+
+DirtyWater
+lightblue lightbrown black
+21212
+11111
+21112
+11111
+21212
+
+BucketFull
+green blue
+.....
+01110
+.000.
+.000.
+.....
+
+BucketEmpty
+green DARKGREEN
+.....
+01110
+.000.
+.000.
+.....
+=======
+LEGEND
+=======
+P = Player
+. = Background
+# = Wall
+$ = oven
+£ = hobs
+D = DirtyDishes
+C = CleanDishes
+W = CleanWater
+X = DirtyWater
+F = BucketFull
+E = BucketEmpty
+O = TrolleyEmpty
+Dishes = DirtyDishes or CleanDishes
+Water = DirtyWater or CleanWater
+Walls = wall or oven or hobs
+Buckets = BucketFull or BucketEmpty
+Target = TrolleyEmpty or TrolleyFull
+
+=======
+SOUNDS
+=======
+dishes move 49543106
+sfx0 83842103
+sfx1 38183900
+sfx2 91847302
+sfx3 11022909
+buckets move 3422907
+
+
+================
+COLLISIONLAYERS
+================
+
+Background
+Target, Water
+Player, Walls, Dishes, Buckets
+
+======
+RULES
+======
+
+[ >  Player | Dishes ] -> [  >  Player | > Dishes  ]
+[ >  Player | Buckets ] -> [  >  Player | > Buckets  ]
+
+[ > CleanDishes | DirtyWater ] -> [ > DirtyDishes | DirtyWater ] sfx3
+[ > DirtyDishes | CleanWater ] -> [ > CleanDishes | DirtyWater ] sfx0
+
+[ > BucketFull | DirtyWater ] -> [ > BucketEmpty | CleanWater ] sfx2
+
+late [ TrolleyEmpty CleanDishes] -> [TrolleyFull CleanDishes ] sfx1
+late [ TrolleyFull no CleanDishes] -> [TrolleyEmpty no CleanDishes ]
+
+
+==============
+WINCONDITIONS
+==============
+
+All Target on CleanDishes
+
+=======
+LEVELS
+=======
+
+message Wash up those dishes you flipping doyle. Then put them on the trolley. Level 1/14
+
+##########
+#p.d.w..o#
+##########
+
+message You can't wash clean dishes in dirty water! Level 2/14
+
+
+$##########£
+#####p.#####
+#..........#
+#.c.xoow.d.#
+#..........#
+#####..#####
+£##########$
+
+message I want to see my face in them! Level 3/14
+
+##########
+#....#..o#
+#..d.wp..#
+#.c..#..o#
+#..#######
+####......
+
+message Crockery Cupboard. Level 4/14
+
+#####...£
+#p..#....
+#.cc#####
+#.d.wooo#
+#..######
+####..£..
+
+message Round the breakfast bar. Level 5/14
+
+####...
+.d..o.o
+.###w#.
+.#$#.#.
+.###c#.
+p......
+#####..
+
+message The big spill. Level 6/14
+
+######£££#####
+#$...#####...#
+#..ddxwww.o#.#
+#.dd.xxxx.o#.#
+#p.....xx.o..#
+#$####.xw.o###
+##############
+
+message Use the bucket to clean your dirty water! Level 7/14
+
+$#########$
+#....#....#
+#.pd.x.fo.#
+#....#....#
+$#########$
+
+message Do the bucket shuffle. Level 8/14
+
+#########
+######..#
+#p...x.o#
+#..f.#c.#
+###..#..#
+#########
+
+message You missed a bit. Level 9/14
+
+############
+#.....#....#
+#pf.c.x.fo.#
+########...#
+#£$£$£##...#
+£$£$£$£#####
+
+message The Janitors Closet. Level 10/14
+
+##########
+###...####
+###.#.####
+#pc..e..##
+#####.#.##
+##....e..#
+###.#.#.##
+###...#o##
+##########
+
+message Buckets of fun. Level 11/14
+
+##############
+##...######..#
+#..f.#pox..d.#
+#.fff#####...#
+#..f..xxxx...#
+##....####...#
+##############
+
+message Everything in its right place. Level 12/14
+
+##############
+###..........#
+#...######.#.#
+#pdo..ocwo.co#
+###.##c##.##.#
+###....##....#
+##############
+
+
+message All in a row. Level 13/14
+
+############
+####..######
+##......f.##
+#.d...#o#..#
+#.pc.xxo#..#
+#..c..#o...#
+#.d...#o#..#
+##..#.f....#
+#########..#
+############
+
+message Hosepipe Ban. Level 14/14
+
+#############
+###...###...#
+###.#ffxx.#.#
+#...f.#x#...#
+#...cxxx#op##
+#...f.#x#...#
+###.#ffxx.#.#
+###...###...#
+#############
+
+message Congratulations! You did it! All the dishes are nice and shiny.

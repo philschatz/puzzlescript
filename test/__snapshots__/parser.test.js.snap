@@ -108,80 +108,113 @@ Object {
                                   "__name": "cellName",
                                   "_i0": Array [
                                     Object {
-                                      "__name": "letter",
+                                      "__name": "varNameChar",
                                       "_i0": Object {
-                                        "__name": "lower",
-                                        "_i0": "s",
+                                        "__name": "letter",
+                                        "_i0": Object {
+                                          "__name": "lower",
+                                          "_i0": "s",
+                                        },
                                       },
                                     },
                                     Object {
-                                      "__name": "letter",
+                                      "__name": "varNameChar",
                                       "_i0": Object {
-                                        "__name": "lower",
-                                        "_i0": "t",
+                                        "__name": "letter",
+                                        "_i0": Object {
+                                          "__name": "lower",
+                                          "_i0": "t",
+                                        },
                                       },
                                     },
                                     Object {
-                                      "__name": "letter",
+                                      "__name": "varNameChar",
                                       "_i0": Object {
-                                        "__name": "lower",
-                                        "_i0": "a",
+                                        "__name": "letter",
+                                        "_i0": Object {
+                                          "__name": "lower",
+                                          "_i0": "a",
+                                        },
                                       },
                                     },
                                     Object {
-                                      "__name": "letter",
+                                      "__name": "varNameChar",
                                       "_i0": Object {
-                                        "__name": "lower",
-                                        "_i0": "t",
+                                        "__name": "letter",
+                                        "_i0": Object {
+                                          "__name": "lower",
+                                          "_i0": "t",
+                                        },
                                       },
                                     },
                                     Object {
-                                      "__name": "letter",
+                                      "__name": "varNameChar",
                                       "_i0": Object {
-                                        "__name": "lower",
-                                        "_i0": "i",
+                                        "__name": "letter",
+                                        "_i0": Object {
+                                          "__name": "lower",
+                                          "_i0": "i",
+                                        },
                                       },
                                     },
                                     Object {
-                                      "__name": "letter",
+                                      "__name": "varNameChar",
                                       "_i0": Object {
-                                        "__name": "lower",
-                                        "_i0": "o",
+                                        "__name": "letter",
+                                        "_i0": Object {
+                                          "__name": "lower",
+                                          "_i0": "o",
+                                        },
                                       },
                                     },
                                     Object {
-                                      "__name": "letter",
+                                      "__name": "varNameChar",
                                       "_i0": Object {
-                                        "__name": "lower",
-                                        "_i0": "n",
+                                        "__name": "letter",
+                                        "_i0": Object {
+                                          "__name": "lower",
+                                          "_i0": "n",
+                                        },
                                       },
                                     },
                                     Object {
-                                      "__name": "letter",
+                                      "__name": "varNameChar",
                                       "_i0": Object {
-                                        "__name": "lower",
-                                        "_i0": "a",
+                                        "__name": "letter",
+                                        "_i0": Object {
+                                          "__name": "lower",
+                                          "_i0": "a",
+                                        },
                                       },
                                     },
                                     Object {
-                                      "__name": "letter",
+                                      "__name": "varNameChar",
                                       "_i0": Object {
-                                        "__name": "lower",
-                                        "_i0": "r",
+                                        "__name": "letter",
+                                        "_i0": Object {
+                                          "__name": "lower",
+                                          "_i0": "r",
+                                        },
                                       },
                                     },
                                     Object {
-                                      "__name": "letter",
+                                      "__name": "varNameChar",
                                       "_i0": Object {
-                                        "__name": "lower",
-                                        "_i0": "y",
+                                        "__name": "letter",
+                                        "_i0": Object {
+                                          "__name": "lower",
+                                          "_i0": "y",
+                                        },
                                       },
                                     },
                                     Object {
-                                      "__name": "letter",
+                                      "__name": "varNameChar",
                                       "_i0": Object {
-                                        "__name": "lower",
-                                        "_i0": "z",
+                                        "__name": "letter",
+                                        "_i0": Object {
+                                          "__name": "lower",
+                                          "_i0": "z",
+                                        },
                                       },
                                     },
                                   ],
@@ -225,80 +258,113 @@ Object {
                                       "__name": "cellName",
                                       "_i0": Array [
                                         Object {
-                                          "__name": "letter",
+                                          "__name": "varNameChar",
                                           "_i0": Object {
-                                            "__name": "lower",
-                                            "_i0": "s",
+                                            "__name": "letter",
+                                            "_i0": Object {
+                                              "__name": "lower",
+                                              "_i0": "s",
+                                            },
                                           },
                                         },
                                         Object {
-                                          "__name": "letter",
+                                          "__name": "varNameChar",
                                           "_i0": Object {
-                                            "__name": "lower",
-                                            "_i0": "t",
+                                            "__name": "letter",
+                                            "_i0": Object {
+                                              "__name": "lower",
+                                              "_i0": "t",
+                                            },
                                           },
                                         },
                                         Object {
-                                          "__name": "letter",
+                                          "__name": "varNameChar",
                                           "_i0": Object {
-                                            "__name": "lower",
-                                            "_i0": "a",
+                                            "__name": "letter",
+                                            "_i0": Object {
+                                              "__name": "lower",
+                                              "_i0": "a",
+                                            },
                                           },
                                         },
                                         Object {
-                                          "__name": "letter",
+                                          "__name": "varNameChar",
                                           "_i0": Object {
-                                            "__name": "lower",
-                                            "_i0": "t",
+                                            "__name": "letter",
+                                            "_i0": Object {
+                                              "__name": "lower",
+                                              "_i0": "t",
+                                            },
                                           },
                                         },
                                         Object {
-                                          "__name": "letter",
+                                          "__name": "varNameChar",
                                           "_i0": Object {
-                                            "__name": "lower",
-                                            "_i0": "i",
+                                            "__name": "letter",
+                                            "_i0": Object {
+                                              "__name": "lower",
+                                              "_i0": "i",
+                                            },
                                           },
                                         },
                                         Object {
-                                          "__name": "letter",
+                                          "__name": "varNameChar",
                                           "_i0": Object {
-                                            "__name": "lower",
-                                            "_i0": "o",
+                                            "__name": "letter",
+                                            "_i0": Object {
+                                              "__name": "lower",
+                                              "_i0": "o",
+                                            },
                                           },
                                         },
                                         Object {
-                                          "__name": "letter",
+                                          "__name": "varNameChar",
                                           "_i0": Object {
-                                            "__name": "lower",
-                                            "_i0": "n",
+                                            "__name": "letter",
+                                            "_i0": Object {
+                                              "__name": "lower",
+                                              "_i0": "n",
+                                            },
                                           },
                                         },
                                         Object {
-                                          "__name": "letter",
+                                          "__name": "varNameChar",
                                           "_i0": Object {
-                                            "__name": "lower",
-                                            "_i0": "a",
+                                            "__name": "letter",
+                                            "_i0": Object {
+                                              "__name": "lower",
+                                              "_i0": "a",
+                                            },
                                           },
                                         },
                                         Object {
-                                          "__name": "letter",
+                                          "__name": "varNameChar",
                                           "_i0": Object {
-                                            "__name": "lower",
-                                            "_i0": "r",
+                                            "__name": "letter",
+                                            "_i0": Object {
+                                              "__name": "lower",
+                                              "_i0": "r",
+                                            },
                                           },
                                         },
                                         Object {
-                                          "__name": "letter",
+                                          "__name": "varNameChar",
                                           "_i0": Object {
-                                            "__name": "lower",
-                                            "_i0": "y",
+                                            "__name": "letter",
+                                            "_i0": Object {
+                                              "__name": "lower",
+                                              "_i0": "y",
+                                            },
                                           },
                                         },
                                         Object {
-                                          "__name": "letter",
+                                          "__name": "varNameChar",
                                           "_i0": Object {
-                                            "__name": "lower",
-                                            "_i0": "z",
+                                            "__name": "letter",
+                                            "_i0": Object {
+                                              "__name": "lower",
+                                              "_i0": "z",
+                                            },
                                           },
                                         },
                                       ],
@@ -588,10 +654,13 @@ Object {
                                   "__name": "cellName",
                                   "_i0": Array [
                                     Object {
-                                      "__name": "letter",
+                                      "__name": "varNameChar",
                                       "_i0": Object {
-                                        "__name": "lower",
-                                        "_i0": "z",
+                                        "__name": "letter",
+                                        "_i0": Object {
+                                          "__name": "lower",
+                                          "_i0": "z",
+                                        },
                                       },
                                     },
                                   ],
@@ -890,10 +959,13 @@ Object {
                                   "__name": "cellName",
                                   "_i0": Array [
                                     Object {
-                                      "__name": "letter",
+                                      "__name": "varNameChar",
                                       "_i0": Object {
-                                        "__name": "lower",
-                                        "_i0": "z",
+                                        "__name": "letter",
+                                        "_i0": Object {
+                                          "__name": "lower",
+                                          "_i0": "z",
+                                        },
                                       },
                                     },
                                   ],
@@ -1195,10 +1267,13 @@ Object {
                                   "__name": "cellName",
                                   "_i0": Array [
                                     Object {
-                                      "__name": "letter",
+                                      "__name": "varNameChar",
                                       "_i0": Object {
-                                        "__name": "lower",
-                                        "_i0": "z",
+                                        "__name": "letter",
+                                        "_i0": Object {
+                                          "__name": "lower",
+                                          "_i0": "z",
+                                        },
                                       },
                                     },
                                   ],
@@ -1497,10 +1572,13 @@ Object {
                                   "__name": "cellName",
                                   "_i0": Array [
                                     Object {
-                                      "__name": "letter",
+                                      "__name": "varNameChar",
                                       "_i0": Object {
-                                        "__name": "lower",
-                                        "_i0": "z",
+                                        "__name": "letter",
+                                        "_i0": Object {
+                                          "__name": "lower",
+                                          "_i0": "z",
+                                        },
                                       },
                                     },
                                   ],
@@ -1799,10 +1877,13 @@ Object {
                                   "__name": "cellName",
                                   "_i0": Array [
                                     Object {
-                                      "__name": "letter",
+                                      "__name": "varNameChar",
                                       "_i0": Object {
-                                        "__name": "lower",
-                                        "_i0": "z",
+                                        "__name": "letter",
+                                        "_i0": Object {
+                                          "__name": "lower",
+                                          "_i0": "z",
+                                        },
                                       },
                                     },
                                   ],
@@ -2101,10 +2182,13 @@ Object {
                                   "__name": "cellName",
                                   "_i0": Array [
                                     Object {
-                                      "__name": "letter",
+                                      "__name": "varNameChar",
                                       "_i0": Object {
-                                        "__name": "lower",
-                                        "_i0": "z",
+                                        "__name": "letter",
+                                        "_i0": Object {
+                                          "__name": "lower",
+                                          "_i0": "z",
+                                        },
                                       },
                                     },
                                   ],
@@ -2403,10 +2487,13 @@ Object {
                                   "__name": "cellName",
                                   "_i0": Array [
                                     Object {
-                                      "__name": "letter",
+                                      "__name": "varNameChar",
                                       "_i0": Object {
-                                        "__name": "lower",
-                                        "_i0": "z",
+                                        "__name": "letter",
+                                        "_i0": Object {
+                                          "__name": "lower",
+                                          "_i0": "z",
+                                        },
                                       },
                                     },
                                   ],
@@ -2705,10 +2792,13 @@ Object {
                                   "__name": "cellName",
                                   "_i0": Array [
                                     Object {
-                                      "__name": "letter",
+                                      "__name": "varNameChar",
                                       "_i0": Object {
-                                        "__name": "lower",
-                                        "_i0": "z",
+                                        "__name": "letter",
+                                        "_i0": Object {
+                                          "__name": "lower",
+                                          "_i0": "z",
+                                        },
                                       },
                                     },
                                   ],
@@ -3007,10 +3097,13 @@ Object {
                                   "__name": "cellName",
                                   "_i0": Array [
                                     Object {
-                                      "__name": "letter",
+                                      "__name": "varNameChar",
                                       "_i0": Object {
-                                        "__name": "lower",
-                                        "_i0": "z",
+                                        "__name": "letter",
+                                        "_i0": Object {
+                                          "__name": "lower",
+                                          "_i0": "z",
+                                        },
                                       },
                                     },
                                   ],
@@ -3309,10 +3402,13 @@ Object {
                                   "__name": "cellName",
                                   "_i0": Array [
                                     Object {
-                                      "__name": "letter",
+                                      "__name": "varNameChar",
                                       "_i0": Object {
-                                        "__name": "lower",
-                                        "_i0": "z",
+                                        "__name": "letter",
+                                        "_i0": Object {
+                                          "__name": "lower",
+                                          "_i0": "z",
+                                        },
                                       },
                                     },
                                   ],
@@ -3611,10 +3707,13 @@ Object {
                                   "__name": "cellName",
                                   "_i0": Array [
                                     Object {
-                                      "__name": "letter",
+                                      "__name": "varNameChar",
                                       "_i0": Object {
-                                        "__name": "lower",
-                                        "_i0": "z",
+                                        "__name": "letter",
+                                        "_i0": Object {
+                                          "__name": "lower",
+                                          "_i0": "z",
+                                        },
                                       },
                                     },
                                   ],
@@ -3913,10 +4012,13 @@ Object {
                                   "__name": "cellName",
                                   "_i0": Array [
                                     Object {
-                                      "__name": "letter",
+                                      "__name": "varNameChar",
                                       "_i0": Object {
-                                        "__name": "lower",
-                                        "_i0": "z",
+                                        "__name": "letter",
+                                        "_i0": Object {
+                                          "__name": "lower",
+                                          "_i0": "z",
+                                        },
                                       },
                                     },
                                   ],
@@ -4215,10 +4317,13 @@ Object {
                                   "__name": "cellName",
                                   "_i0": Array [
                                     Object {
-                                      "__name": "letter",
+                                      "__name": "varNameChar",
                                       "_i0": Object {
-                                        "__name": "lower",
-                                        "_i0": "z",
+                                        "__name": "letter",
+                                        "_i0": Object {
+                                          "__name": "lower",
+                                          "_i0": "z",
+                                        },
                                       },
                                     },
                                   ],
@@ -4517,10 +4622,13 @@ Object {
                                   "__name": "cellName",
                                   "_i0": Array [
                                     Object {
-                                      "__name": "letter",
+                                      "__name": "varNameChar",
                                       "_i0": Object {
-                                        "__name": "lower",
-                                        "_i0": "z",
+                                        "__name": "letter",
+                                        "_i0": Object {
+                                          "__name": "lower",
+                                          "_i0": "z",
+                                        },
                                       },
                                     },
                                   ],
@@ -4819,10 +4927,13 @@ Object {
                                   "__name": "cellName",
                                   "_i0": Array [
                                     Object {
-                                      "__name": "letter",
+                                      "__name": "varNameChar",
                                       "_i0": Object {
-                                        "__name": "lower",
-                                        "_i0": "z",
+                                        "__name": "letter",
+                                        "_i0": Object {
+                                          "__name": "lower",
+                                          "_i0": "z",
+                                        },
                                       },
                                     },
                                   ],
@@ -5121,10 +5232,13 @@ Object {
                                   "__name": "cellName",
                                   "_i0": Array [
                                     Object {
-                                      "__name": "letter",
+                                      "__name": "varNameChar",
                                       "_i0": Object {
-                                        "__name": "lower",
-                                        "_i0": "z",
+                                        "__name": "letter",
+                                        "_i0": Object {
+                                          "__name": "lower",
+                                          "_i0": "z",
+                                        },
                                       },
                                     },
                                   ],
@@ -5423,10 +5537,13 @@ Object {
                                   "__name": "cellName",
                                   "_i0": Array [
                                     Object {
-                                      "__name": "letter",
+                                      "__name": "varNameChar",
                                       "_i0": Object {
-                                        "__name": "lower",
-                                        "_i0": "z",
+                                        "__name": "letter",
+                                        "_i0": Object {
+                                          "__name": "lower",
+                                          "_i0": "z",
+                                        },
                                       },
                                     },
                                   ],
@@ -5725,10 +5842,13 @@ Object {
                                   "__name": "cellName",
                                   "_i0": Array [
                                     Object {
-                                      "__name": "letter",
+                                      "__name": "varNameChar",
                                       "_i0": Object {
-                                        "__name": "lower",
-                                        "_i0": "z",
+                                        "__name": "letter",
+                                        "_i0": Object {
+                                          "__name": "lower",
+                                          "_i0": "z",
+                                        },
                                       },
                                     },
                                   ],
@@ -5772,10 +5892,13 @@ Object {
                                       "__name": "cellName",
                                       "_i0": Array [
                                         Object {
-                                          "__name": "letter",
+                                          "__name": "varNameChar",
                                           "_i0": Object {
-                                            "__name": "lower",
-                                            "_i0": "z",
+                                            "__name": "letter",
+                                            "_i0": Object {
+                                              "__name": "lower",
+                                              "_i0": "z",
+                                            },
                                           },
                                         },
                                       ],
@@ -6043,10 +6166,13 @@ Object {
                                   "__name": "cellName",
                                   "_i0": Array [
                                     Object {
-                                      "__name": "letter",
+                                      "__name": "varNameChar",
                                       "_i0": Object {
-                                        "__name": "lower",
-                                        "_i0": "z",
+                                        "__name": "letter",
+                                        "_i0": Object {
+                                          "__name": "lower",
+                                          "_i0": "z",
+                                        },
                                       },
                                     },
                                   ],
@@ -6349,10 +6475,13 @@ Object {
                                   "__name": "cellName",
                                   "_i0": Array [
                                     Object {
-                                      "__name": "letter",
+                                      "__name": "varNameChar",
                                       "_i0": Object {
-                                        "__name": "lower",
-                                        "_i0": "z",
+                                        "__name": "letter",
+                                        "_i0": Object {
+                                          "__name": "lower",
+                                          "_i0": "z",
+                                        },
                                       },
                                     },
                                   ],
@@ -6396,10 +6525,13 @@ Object {
                                       "__name": "cellName",
                                       "_i0": Array [
                                         Object {
-                                          "__name": "letter",
+                                          "__name": "varNameChar",
                                           "_i0": Object {
-                                            "__name": "lower",
-                                            "_i0": "z",
+                                            "__name": "letter",
+                                            "_i0": Object {
+                                              "__name": "lower",
+                                              "_i0": "z",
+                                            },
                                           },
                                         },
                                       ],
@@ -6681,10 +6813,13 @@ Object {
                                   "__name": "cellName",
                                   "_i0": Array [
                                     Object {
-                                      "__name": "letter",
+                                      "__name": "varNameChar",
                                       "_i0": Object {
-                                        "__name": "lower",
-                                        "_i0": "z",
+                                        "__name": "letter",
+                                        "_i0": Object {
+                                          "__name": "lower",
+                                          "_i0": "z",
+                                        },
                                       },
                                     },
                                   ],
@@ -6728,10 +6863,13 @@ Object {
                                       "__name": "cellName",
                                       "_i0": Array [
                                         Object {
-                                          "__name": "letter",
+                                          "__name": "varNameChar",
                                           "_i0": Object {
-                                            "__name": "lower",
-                                            "_i0": "z",
+                                            "__name": "letter",
+                                            "_i0": Object {
+                                              "__name": "lower",
+                                              "_i0": "z",
+                                            },
                                           },
                                         },
                                       ],
@@ -6746,45 +6884,63 @@ Object {
                                       "__name": "cellName",
                                       "_i0": Array [
                                         Object {
-                                          "__name": "letter",
+                                          "__name": "varNameChar",
                                           "_i0": Object {
-                                            "__name": "lower",
-                                            "_i0": "w",
+                                            "__name": "letter",
+                                            "_i0": Object {
+                                              "__name": "lower",
+                                              "_i0": "w",
+                                            },
                                           },
                                         },
                                         Object {
-                                          "__name": "letter",
+                                          "__name": "varNameChar",
                                           "_i0": Object {
-                                            "__name": "lower",
-                                            "_i0": "i",
+                                            "__name": "letter",
+                                            "_i0": Object {
+                                              "__name": "lower",
+                                              "_i0": "i",
+                                            },
                                           },
                                         },
                                         Object {
-                                          "__name": "letter",
+                                          "__name": "varNameChar",
                                           "_i0": Object {
-                                            "__name": "lower",
-                                            "_i0": "n",
+                                            "__name": "letter",
+                                            "_i0": Object {
+                                              "__name": "lower",
+                                              "_i0": "n",
+                                            },
                                           },
                                         },
                                         Object {
-                                          "__name": "letter",
+                                          "__name": "varNameChar",
                                           "_i0": Object {
-                                            "__name": "lower",
-                                            "_i0": "t",
+                                            "__name": "letter",
+                                            "_i0": Object {
+                                              "__name": "lower",
+                                              "_i0": "t",
+                                            },
                                           },
                                         },
                                         Object {
-                                          "__name": "letter",
+                                          "__name": "varNameChar",
                                           "_i0": Object {
-                                            "__name": "lower",
-                                            "_i0": "e",
+                                            "__name": "letter",
+                                            "_i0": Object {
+                                              "__name": "lower",
+                                              "_i0": "e",
+                                            },
                                           },
                                         },
                                         Object {
-                                          "__name": "letter",
+                                          "__name": "varNameChar",
                                           "_i0": Object {
-                                            "__name": "lower",
-                                            "_i0": "r",
+                                            "__name": "letter",
+                                            "_i0": Object {
+                                              "__name": "lower",
+                                              "_i0": "r",
+                                            },
                                           },
                                         },
                                       ],
@@ -6976,6 +7132,705 @@ Object {
 }
 `;
 
+exports[`rules General Formatting Correctly parses weird variable names 1`] = `
+Object {
+  "__name": "Details",
+  "_i0": Array [
+    Object {
+      "__name": "lineTerminator",
+      "_i1": Object {
+        "__name": "newline",
+        "_i0": "
+",
+      },
+    },
+  ],
+  "_i1": Object {
+    "__name": "Title",
+    "_i0": "title",
+    "_i1": Object {
+      "__name": "words",
+      "_i0": Array [
+        "foo",
+      ],
+    },
+  },
+  "_i2": Array [
+    Object {
+      "__name": "lineTerminator",
+      "_i1": Object {
+        "__name": "newline",
+        "_i0": "
+",
+      },
+    },
+    Object {
+      "__name": "lineTerminator",
+      "_i1": Object {
+        "__name": "newline",
+        "_i0": "
+",
+      },
+    },
+  ],
+  "_i6": Array [
+    Object {
+      "__name": "Section",
+      "_i0": "===",
+      "_i1": Object {
+        "__name": "headingBar",
+      },
+      "_i2": Object {
+        "__name": "lineTerminator",
+        "_i1": Object {
+          "__name": "newline",
+          "_i0": "
+",
+        },
+      },
+      "_i3": Object {
+        "__name": "t_LEGEND",
+        "_i0": Object {
+          "__name": "caseInsensitive",
+          "_i0": "LEGEND",
+        },
+      },
+      "_i4": Object {
+        "__name": "lineTerminator",
+        "_i1": Object {
+          "__name": "newline",
+          "_i0": "
+",
+        },
+      },
+      "_i5": "===",
+      "_i6": Object {
+        "__name": "headingBar",
+      },
+      "_i7": Array [
+        Object {
+          "__name": "lineTerminator",
+          "_i1": Object {
+            "__name": "newline",
+            "_i0": "
+",
+          },
+        },
+        Object {
+          "__name": "lineTerminator",
+          "_i1": Object {
+            "__name": "newline",
+            "_i0": "
+",
+          },
+        },
+      ],
+      "_i8": Array [
+        Array [],
+        Array [],
+      ],
+      "_i9": Array [
+        Object {
+          "__name": "LegendItem",
+          "_i0": Object {
+            "__name": "LegendItemSimple",
+            "_i0": Object {
+              "__name": "legendVarNameDefn",
+              "_i0": Object {
+                "__name": "varName",
+                "_i1": Object {
+                  "__name": "letter",
+                  "_i0": Object {
+                    "__name": "upper",
+                    "_i0": "B",
+                  },
+                },
+                "_i2": Array [
+                  Object {
+                    "__name": "varNameChar",
+                    "_i0": Object {
+                      "__name": "letter",
+                      "_i0": Object {
+                        "__name": "lower",
+                        "_i0": "u",
+                      },
+                    },
+                  },
+                  Object {
+                    "__name": "varNameChar",
+                    "_i0": Object {
+                      "__name": "letter",
+                      "_i0": Object {
+                        "__name": "lower",
+                        "_i0": "s",
+                      },
+                    },
+                  },
+                  Object {
+                    "__name": "varNameChar",
+                    "_i0": Object {
+                      "__name": "letter",
+                      "_i0": Object {
+                        "__name": "lower",
+                        "_i0": "h",
+                      },
+                    },
+                  },
+                  Object {
+                    "__name": "varNameChar",
+                    "_i0": "?",
+                  },
+                ],
+              },
+            },
+            "_i1": "=",
+            "_i2": Object {
+              "__name": "legendVarNameDefn",
+              "_i0": Object {
+                "__name": "varName",
+                "_i1": Object {
+                  "__name": "letter",
+                  "_i0": Object {
+                    "__name": "upper",
+                    "_i0": "P",
+                  },
+                },
+                "_i2": Array [
+                  Object {
+                    "__name": "varNameChar",
+                    "_i0": Object {
+                      "__name": "letter",
+                      "_i0": Object {
+                        "__name": "lower",
+                        "_i0": "l",
+                      },
+                    },
+                  },
+                  Object {
+                    "__name": "varNameChar",
+                    "_i0": Object {
+                      "__name": "letter",
+                      "_i0": Object {
+                        "__name": "lower",
+                        "_i0": "a",
+                      },
+                    },
+                  },
+                  Object {
+                    "__name": "varNameChar",
+                    "_i0": Object {
+                      "__name": "letter",
+                      "_i0": Object {
+                        "__name": "lower",
+                        "_i0": "y",
+                      },
+                    },
+                  },
+                  Object {
+                    "__name": "varNameChar",
+                    "_i0": Object {
+                      "__name": "letter",
+                      "_i0": Object {
+                        "__name": "lower",
+                        "_i0": "e",
+                      },
+                    },
+                  },
+                  Object {
+                    "__name": "varNameChar",
+                    "_i0": Object {
+                      "__name": "letter",
+                      "_i0": Object {
+                        "__name": "lower",
+                        "_i0": "r",
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+            "_i3": Array [
+              Object {
+                "__name": "lineTerminator",
+                "_i1": Object {
+                  "__name": "newline",
+                  "_i0": "
+",
+                },
+              },
+            ],
+          },
+        },
+        Object {
+          "__name": "LegendItem",
+          "_i0": Object {
+            "__name": "LegendItemSimple",
+            "_i0": Object {
+              "__name": "legendVarNameDefn",
+              "_i0": Object {
+                "__name": "legendCharDefn",
+                "_i0": Object {
+                  "__name": "any",
+                  "_i0": ".",
+                },
+              },
+            },
+            "_i1": "=",
+            "_i2": Object {
+              "__name": "legendVarNameDefn",
+              "_i0": Object {
+                "__name": "varName",
+                "_i1": Object {
+                  "__name": "letter",
+                  "_i0": Object {
+                    "__name": "upper",
+                    "_i0": "P",
+                  },
+                },
+                "_i2": Array [
+                  Object {
+                    "__name": "varNameChar",
+                    "_i0": Object {
+                      "__name": "letter",
+                      "_i0": Object {
+                        "__name": "lower",
+                        "_i0": "l",
+                      },
+                    },
+                  },
+                  Object {
+                    "__name": "varNameChar",
+                    "_i0": Object {
+                      "__name": "letter",
+                      "_i0": Object {
+                        "__name": "lower",
+                        "_i0": "a",
+                      },
+                    },
+                  },
+                  Object {
+                    "__name": "varNameChar",
+                    "_i0": Object {
+                      "__name": "letter",
+                      "_i0": Object {
+                        "__name": "lower",
+                        "_i0": "y",
+                      },
+                    },
+                  },
+                  Object {
+                    "__name": "varNameChar",
+                    "_i0": Object {
+                      "__name": "letter",
+                      "_i0": Object {
+                        "__name": "lower",
+                        "_i0": "e",
+                      },
+                    },
+                  },
+                  Object {
+                    "__name": "varNameChar",
+                    "_i0": Object {
+                      "__name": "letter",
+                      "_i0": Object {
+                        "__name": "lower",
+                        "_i0": "r",
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+            "_i3": Array [
+              Object {
+                "__name": "lineTerminator",
+                "_i1": Object {
+                  "__name": "newline",
+                  "_i0": "
+",
+                },
+              },
+              Object {
+                "__name": "lineTerminator",
+                "_i1": Object {
+                  "__name": "newline",
+                  "_i0": "
+",
+                },
+              },
+              Object {
+                "__name": "lineTerminator",
+                "_i1": Object {
+                  "__name": "newline",
+                  "_i0": "
+",
+                },
+              },
+            ],
+          },
+        },
+      ],
+    },
+  ],
+  "_i9": Array [
+    Object {
+      "__name": "Section",
+      "_i0": "===",
+      "_i1": Object {
+        "__name": "headingBar",
+        "_i0": Array [
+          "=",
+        ],
+      },
+      "_i2": Object {
+        "__name": "lineTerminator",
+        "_i1": Object {
+          "__name": "newline",
+          "_i0": "
+",
+        },
+      },
+      "_i3": Object {
+        "__name": "t_RULES",
+        "_i0": Object {
+          "__name": "caseInsensitive",
+          "_i0": "RULES",
+        },
+      },
+      "_i4": Object {
+        "__name": "lineTerminator",
+        "_i1": Object {
+          "__name": "newline",
+          "_i0": "
+",
+        },
+      },
+      "_i5": "===",
+      "_i6": Object {
+        "__name": "headingBar",
+        "_i0": Array [
+          "=",
+        ],
+      },
+      "_i7": Array [
+        Object {
+          "__name": "lineTerminator",
+          "_i1": Object {
+            "__name": "newline",
+            "_i0": "
+",
+          },
+        },
+        Object {
+          "__name": "lineTerminator",
+          "_i1": Object {
+            "__name": "newline",
+            "_i0": "
+",
+          },
+        },
+      ],
+      "_i8": Array [
+        Array [],
+        Array [],
+      ],
+      "_i9": Array [
+        Object {
+          "__name": "RuleItem",
+          "_i0": Object {
+            "__name": "Rule",
+            "_i2": Array [
+              Object {
+                "__name": "CellSequenceBracket",
+                "_i1": Object {
+                  "__name": "CellSequenceBracketOnly",
+                  "_i0": Object {
+                    "__name": "SimpleBracket",
+                    "_i0": "[",
+                    "_i2": Object {
+                      "__name": "NeighboringCells",
+                      "_i0": Object {
+                        "__name": "NonemptyListOf",
+                        "_i0": Object {
+                          "__name": "Cell",
+                          "_i0": Array [
+                            Object {
+                              "__name": "CellLayer",
+                              "_i0": Object {
+                                "__name": "SimpleCellLayer",
+                                "_i1": Object {
+                                  "__name": "cellName",
+                                  "_i0": Array [
+                                    Object {
+                                      "__name": "varNameChar",
+                                      "_i0": Object {
+                                        "__name": "letter",
+                                        "_i0": Object {
+                                          "__name": "upper",
+                                          "_i0": "B",
+                                        },
+                                      },
+                                    },
+                                    Object {
+                                      "__name": "varNameChar",
+                                      "_i0": Object {
+                                        "__name": "letter",
+                                        "_i0": Object {
+                                          "__name": "lower",
+                                          "_i0": "u",
+                                        },
+                                      },
+                                    },
+                                    Object {
+                                      "__name": "varNameChar",
+                                      "_i0": Object {
+                                        "__name": "letter",
+                                        "_i0": Object {
+                                          "__name": "lower",
+                                          "_i0": "s",
+                                        },
+                                      },
+                                    },
+                                    Object {
+                                      "__name": "varNameChar",
+                                      "_i0": Object {
+                                        "__name": "letter",
+                                        "_i0": Object {
+                                          "__name": "lower",
+                                          "_i0": "h",
+                                        },
+                                      },
+                                    },
+                                    Object {
+                                      "__name": "varNameChar",
+                                      "_i0": "?",
+                                    },
+                                  ],
+                                },
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    },
+                    "_i3": "]",
+                  },
+                },
+              },
+            ],
+            "_i3": "->",
+            "_i4": Object {
+              "__name": "RuleAction",
+              "_i0": Object {
+                "__name": "RuleActionBrackets",
+                "_i0": Array [
+                  Object {
+                    "__name": "CellSequenceBracket",
+                    "_i1": Object {
+                      "__name": "CellSequenceBracketOnly",
+                      "_i0": Object {
+                        "__name": "SimpleBracket",
+                        "_i0": "[",
+                        "_i2": Object {
+                          "__name": "NeighboringCells",
+                          "_i0": Object {
+                            "__name": "NonemptyListOf",
+                            "_i0": Object {
+                              "__name": "Cell",
+                              "_i0": Array [
+                                Object {
+                                  "__name": "CellLayer",
+                                  "_i0": Object {
+                                    "__name": "SimpleCellLayer",
+                                    "_i1": Object {
+                                      "__name": "cellName",
+                                      "_i0": Array [
+                                        Object {
+                                          "__name": "varNameChar",
+                                          "_i0": Object {
+                                            "__name": "letter",
+                                            "_i0": Object {
+                                              "__name": "upper",
+                                              "_i0": "B",
+                                            },
+                                          },
+                                        },
+                                        Object {
+                                          "__name": "varNameChar",
+                                          "_i0": Object {
+                                            "__name": "letter",
+                                            "_i0": Object {
+                                              "__name": "lower",
+                                              "_i0": "u",
+                                            },
+                                          },
+                                        },
+                                        Object {
+                                          "__name": "varNameChar",
+                                          "_i0": Object {
+                                            "__name": "letter",
+                                            "_i0": Object {
+                                              "__name": "lower",
+                                              "_i0": "s",
+                                            },
+                                          },
+                                        },
+                                        Object {
+                                          "__name": "varNameChar",
+                                          "_i0": Object {
+                                            "__name": "letter",
+                                            "_i0": Object {
+                                              "__name": "lower",
+                                              "_i0": "h",
+                                            },
+                                          },
+                                        },
+                                        Object {
+                                          "__name": "varNameChar",
+                                          "_i0": "?",
+                                        },
+                                      ],
+                                    },
+                                  },
+                                },
+                              ],
+                            },
+                          },
+                        },
+                        "_i3": "]",
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+            "_i5": Array [
+              Object {
+                "__name": "lineTerminator",
+                "_i1": Object {
+                  "__name": "newline",
+                  "_i0": "
+",
+                },
+              },
+            ],
+          },
+        },
+        Object {
+          "__name": "RuleItem",
+          "_i0": Object {
+            "__name": "Rule",
+            "_i2": Array [
+              Object {
+                "__name": "CellSequenceBracket",
+                "_i1": Object {
+                  "__name": "CellSequenceBracketOnly",
+                  "_i0": Object {
+                    "__name": "SimpleBracket",
+                    "_i0": "[",
+                    "_i2": Object {
+                      "__name": "NeighboringCells",
+                      "_i0": Object {
+                        "__name": "NonemptyListOf",
+                        "_i0": Object {
+                          "__name": "Cell",
+                          "_i0": Array [
+                            Object {
+                              "__name": "CellLayer",
+                              "_i0": Object {
+                                "__name": "SimpleCellLayer",
+                                "_i1": Object {
+                                  "__name": "cellName",
+                                  "_i0": Array [
+                                    Object {
+                                      "__name": "varNameChar",
+                                      "_i0": ".",
+                                    },
+                                  ],
+                                },
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    },
+                    "_i3": "]",
+                  },
+                },
+              },
+            ],
+            "_i3": "->",
+            "_i4": Object {
+              "__name": "RuleAction",
+              "_i0": Object {
+                "__name": "RuleActionBrackets",
+                "_i0": Array [
+                  Object {
+                    "__name": "CellSequenceBracket",
+                    "_i1": Object {
+                      "__name": "CellSequenceBracketOnly",
+                      "_i0": Object {
+                        "__name": "SimpleBracket",
+                        "_i0": "[",
+                        "_i2": Object {
+                          "__name": "NeighboringCells",
+                          "_i0": Object {
+                            "__name": "NonemptyListOf",
+                            "_i0": Object {
+                              "__name": "Cell",
+                              "_i0": Array [
+                                Object {
+                                  "__name": "CellLayer",
+                                  "_i0": Object {
+                                    "__name": "SimpleCellLayer",
+                                    "_i1": Object {
+                                      "__name": "cellName",
+                                      "_i0": Array [
+                                        Object {
+                                          "__name": "varNameChar",
+                                          "_i0": ".",
+                                        },
+                                      ],
+                                    },
+                                  },
+                                },
+                              ],
+                            },
+                          },
+                        },
+                        "_i3": "]",
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+            "_i5": Array [
+              Object {
+                "__name": "lineTerminator",
+                "_i1": Object {
+                  "__name": "newline",
+                  "_i0": "
+",
+                },
+              },
+              Object {
+                "__name": "lineTerminator",
+                "_i1": Object {
+                  "__name": "newline",
+                  "_i0": "
+",
+                },
+              },
+            ],
+          },
+        },
+      ],
+    },
+  ],
+}
+`;
+
 exports[`rules General Formatting Looks up color palettes using a string or an index 1`] = `
 Object {
   "collisionLayers": Array [],
@@ -7142,18 +7997,27 @@ Object {
                                   "__name": "cellName",
                                   "_i0": Array [
                                     Object {
-                                      "__name": "letter",
+                                      "__name": "varNameChar",
                                       "_i0": Object {
-                                        "__name": "lower",
-                                        "_i0": "z",
+                                        "__name": "letter",
+                                        "_i0": Object {
+                                          "__name": "lower",
+                                          "_i0": "z",
+                                        },
                                       },
                                     },
-                                    "_",
                                     Object {
-                                      "__name": "letter",
+                                      "__name": "varNameChar",
+                                      "_i0": "_",
+                                    },
+                                    Object {
+                                      "__name": "varNameChar",
                                       "_i0": Object {
-                                        "__name": "lower",
-                                        "_i0": "x",
+                                        "__name": "letter",
+                                        "_i0": Object {
+                                          "__name": "lower",
+                                          "_i0": "x",
+                                        },
                                       },
                                     },
                                   ],
@@ -7425,7 +8289,10 @@ Object {
                                 "_i1": Object {
                                   "__name": "cellName",
                                   "_i0": Array [
-                                    ".",
+                                    Object {
+                                      "__name": "varNameChar",
+                                      "_i0": ".",
+                                    },
                                   ],
                                 },
                               },
@@ -7696,10 +8563,13 @@ Object {
                                   "__name": "cellName",
                                   "_i0": Array [
                                     Object {
-                                      "__name": "letter",
+                                      "__name": "varNameChar",
                                       "_i0": Object {
-                                        "__name": "lower",
-                                        "_i0": "z",
+                                        "__name": "letter",
+                                        "_i0": Object {
+                                          "__name": "lower",
+                                          "_i0": "z",
+                                        },
                                       },
                                     },
                                   ],
@@ -7738,10 +8608,13 @@ Object {
                                   "__name": "cellName",
                                   "_i0": Array [
                                     Object {
-                                      "__name": "letter",
+                                      "__name": "varNameChar",
                                       "_i0": Object {
-                                        "__name": "lower",
-                                        "_i0": "x",
+                                        "__name": "letter",
+                                        "_i0": Object {
+                                          "__name": "lower",
+                                          "_i0": "x",
+                                        },
                                       },
                                     },
                                   ],
@@ -7809,10 +8682,13 @@ Object {
                                       "__name": "cellName",
                                       "_i0": Array [
                                         Object {
-                                          "__name": "letter",
+                                          "__name": "varNameChar",
                                           "_i0": Object {
-                                            "__name": "lower",
-                                            "_i0": "z",
+                                            "__name": "letter",
+                                            "_i0": Object {
+                                              "__name": "lower",
+                                              "_i0": "z",
+                                            },
                                           },
                                         },
                                       ],
@@ -7851,10 +8727,13 @@ Object {
                                       "__name": "cellName",
                                       "_i0": Array [
                                         Object {
-                                          "__name": "letter",
+                                          "__name": "varNameChar",
                                           "_i0": Object {
-                                            "__name": "lower",
-                                            "_i0": "x",
+                                            "__name": "letter",
+                                            "_i0": Object {
+                                              "__name": "lower",
+                                              "_i0": "x",
+                                            },
                                           },
                                         },
                                       ],
@@ -8185,10 +9064,13 @@ Object {
                                   "__name": "cellName",
                                   "_i0": Array [
                                     Object {
-                                      "__name": "letter",
+                                      "__name": "varNameChar",
                                       "_i0": Object {
-                                        "__name": "lower",
-                                        "_i0": "z",
+                                        "__name": "letter",
+                                        "_i0": Object {
+                                          "__name": "lower",
+                                          "_i0": "z",
+                                        },
                                       },
                                     },
                                   ],
@@ -8212,10 +9094,13 @@ Object {
                                     "__name": "cellName",
                                     "_i0": Array [
                                       Object {
-                                        "__name": "letter",
+                                        "__name": "varNameChar",
                                         "_i0": Object {
-                                          "__name": "lower",
-                                          "_i0": "x",
+                                          "__name": "letter",
+                                          "_i0": Object {
+                                            "__name": "lower",
+                                            "_i0": "x",
+                                          },
                                         },
                                       },
                                     ],
@@ -8525,10 +9410,13 @@ Object {
                                   "__name": "cellName",
                                   "_i0": Array [
                                     Object {
-                                      "__name": "letter",
+                                      "__name": "varNameChar",
                                       "_i0": Object {
-                                        "__name": "lower",
-                                        "_i0": "z",
+                                        "__name": "letter",
+                                        "_i0": Object {
+                                          "__name": "lower",
+                                          "_i0": "z",
+                                        },
                                       },
                                     },
                                   ],
@@ -8543,10 +9431,13 @@ Object {
                                   "__name": "cellName",
                                   "_i0": Array [
                                     Object {
-                                      "__name": "letter",
+                                      "__name": "varNameChar",
                                       "_i0": Object {
-                                        "__name": "lower",
-                                        "_i0": "x",
+                                        "__name": "letter",
+                                        "_i0": Object {
+                                          "__name": "lower",
+                                          "_i0": "x",
+                                        },
                                       },
                                     },
                                   ],
@@ -8853,10 +9744,13 @@ Object {
                                   "__name": "cellName",
                                   "_i0": Array [
                                     Object {
-                                      "__name": "letter",
+                                      "__name": "varNameChar",
                                       "_i0": Object {
-                                        "__name": "lower",
-                                        "_i0": "z",
+                                        "__name": "letter",
+                                        "_i0": Object {
+                                          "__name": "lower",
+                                          "_i0": "z",
+                                        },
                                       },
                                     },
                                   ],
@@ -9129,10 +10023,13 @@ Object {
                                   "__name": "cellName",
                                   "_i0": Array [
                                     Object {
-                                      "__name": "letter",
+                                      "__name": "varNameChar",
                                       "_i0": Object {
-                                        "__name": "lower",
-                                        "_i0": "z",
+                                        "__name": "letter",
+                                        "_i0": Object {
+                                          "__name": "lower",
+                                          "_i0": "z",
+                                        },
                                       },
                                     },
                                   ],
@@ -9176,10 +10073,13 @@ Object {
                                       "__name": "cellName",
                                       "_i0": Array [
                                         Object {
-                                          "__name": "letter",
+                                          "__name": "varNameChar",
                                           "_i0": Object {
-                                            "__name": "lower",
-                                            "_i0": "z",
+                                            "__name": "letter",
+                                            "_i0": Object {
+                                              "__name": "lower",
+                                              "_i0": "z",
+                                            },
                                           },
                                         },
                                       ],
@@ -9445,10 +10345,13 @@ Object {
                                   "__name": "cellName",
                                   "_i0": Array [
                                     Object {
-                                      "__name": "letter",
+                                      "__name": "varNameChar",
                                       "_i0": Object {
-                                        "__name": "lower",
-                                        "_i0": "z",
+                                        "__name": "letter",
+                                        "_i0": Object {
+                                          "__name": "lower",
+                                          "_i0": "z",
+                                        },
                                       },
                                     },
                                   ],
@@ -9492,10 +10395,13 @@ Object {
                                       "__name": "cellName",
                                       "_i0": Array [
                                         Object {
-                                          "__name": "letter",
+                                          "__name": "varNameChar",
                                           "_i0": Object {
-                                            "__name": "lower",
-                                            "_i0": "z",
+                                            "__name": "letter",
+                                            "_i0": Object {
+                                              "__name": "lower",
+                                              "_i0": "z",
+                                            },
                                           },
                                         },
                                       ],

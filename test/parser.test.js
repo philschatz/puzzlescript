@@ -197,6 +197,27 @@ LEVELS
 P`)
     })
 
+    it('Correctly parses weird variable names', () => {
+      checkGrammar(`
+title foo
+
+===
+LEGEND
+===
+
+Bush? = Player
+. = Player
+
+
+====
+RULES
+====
+
+[Bush?] -> [Bush?]
+[.] -> [.]
+`)
+    })
+
     it('Looks up color palettes using a string or an index', () => {
       let data
       data = checkParse(`

@@ -213,8 +213,7 @@ HackCellLayer2 = cellName HackRuleCommand
 HackRuleCommand = RuleCommand ~letter // HACK: These should be moved up to the Rule Action, not nested way down here
 
 
-// cellName = (~whitespace ~lineTerminator ~t_ELLIPSIS ~"]" ~"|" ~" " any)+ // Can be "."
-cellName = ~t_ELLIPSIS (letter | digit | "." | "_")+
+cellName = ~t_ELLIPSIS varNameChar+
 
 cellLayerModifier = space* cellLayerModifierInner space+ // Force-check that there is whitespace after the cellLayerModifier so things like "STATIONARYZ" or "NOZ" are not parsed as a modifier (they are a variable that happens to begin with the same text as a modifier)
 
@@ -393,7 +392,8 @@ MessageCommand = t_MESSAGE words*
     lineTerminator*
 
   // Must contain at least 1 letter. Otherwise sound effects are confused
-  varName = digit* letter (letter | digit | "_")*
+  varName = digit* letter varNameChar*
+  varNameChar = letter | digit | "." | "_" | "?"
   headingBar = "="*
   lineTerminator = space* newline space*
   sourceCharacter = any
