@@ -106,118 +106,88 @@ Object {
                                 "__name": "SimpleCellLayer",
                                 "_i1": Object {
                                   "__name": "cellName",
-                                  "_i0": Array [
-                                    Object {
-                                      "__name": "varNameChar",
-                                      "_i0": Object {
-                                        "__name": "letter",
+                                  "_i0": Object {
+                                    "__name": "ruleVariableName",
+                                    "_i0": Array [
+                                      Object {
+                                        "__name": "ruleVariableChar",
                                         "_i0": Object {
-                                          "__name": "lower",
+                                          "__name": "any",
                                           "_i0": "s",
                                         },
                                       },
-                                    },
-                                    Object {
-                                      "__name": "varNameChar",
-                                      "_i0": Object {
-                                        "__name": "letter",
+                                      Object {
+                                        "__name": "ruleVariableChar",
                                         "_i0": Object {
-                                          "__name": "lower",
+                                          "__name": "any",
                                           "_i0": "t",
                                         },
                                       },
-                                    },
-                                    Object {
-                                      "__name": "varNameChar",
-                                      "_i0": Object {
-                                        "__name": "letter",
+                                      Object {
+                                        "__name": "ruleVariableChar",
                                         "_i0": Object {
-                                          "__name": "lower",
+                                          "__name": "any",
                                           "_i0": "a",
                                         },
                                       },
-                                    },
-                                    Object {
-                                      "__name": "varNameChar",
-                                      "_i0": Object {
-                                        "__name": "letter",
+                                      Object {
+                                        "__name": "ruleVariableChar",
                                         "_i0": Object {
-                                          "__name": "lower",
+                                          "__name": "any",
                                           "_i0": "t",
                                         },
                                       },
-                                    },
-                                    Object {
-                                      "__name": "varNameChar",
-                                      "_i0": Object {
-                                        "__name": "letter",
+                                      Object {
+                                        "__name": "ruleVariableChar",
                                         "_i0": Object {
-                                          "__name": "lower",
+                                          "__name": "any",
                                           "_i0": "i",
                                         },
                                       },
-                                    },
-                                    Object {
-                                      "__name": "varNameChar",
-                                      "_i0": Object {
-                                        "__name": "letter",
+                                      Object {
+                                        "__name": "ruleVariableChar",
                                         "_i0": Object {
-                                          "__name": "lower",
+                                          "__name": "any",
                                           "_i0": "o",
                                         },
                                       },
-                                    },
-                                    Object {
-                                      "__name": "varNameChar",
-                                      "_i0": Object {
-                                        "__name": "letter",
+                                      Object {
+                                        "__name": "ruleVariableChar",
                                         "_i0": Object {
-                                          "__name": "lower",
+                                          "__name": "any",
                                           "_i0": "n",
                                         },
                                       },
-                                    },
-                                    Object {
-                                      "__name": "varNameChar",
-                                      "_i0": Object {
-                                        "__name": "letter",
+                                      Object {
+                                        "__name": "ruleVariableChar",
                                         "_i0": Object {
-                                          "__name": "lower",
+                                          "__name": "any",
                                           "_i0": "a",
                                         },
                                       },
-                                    },
-                                    Object {
-                                      "__name": "varNameChar",
-                                      "_i0": Object {
-                                        "__name": "letter",
+                                      Object {
+                                        "__name": "ruleVariableChar",
                                         "_i0": Object {
-                                          "__name": "lower",
+                                          "__name": "any",
                                           "_i0": "r",
                                         },
                                       },
-                                    },
-                                    Object {
-                                      "__name": "varNameChar",
-                                      "_i0": Object {
-                                        "__name": "letter",
+                                      Object {
+                                        "__name": "ruleVariableChar",
                                         "_i0": Object {
-                                          "__name": "lower",
+                                          "__name": "any",
                                           "_i0": "y",
                                         },
                                       },
-                                    },
-                                    Object {
-                                      "__name": "varNameChar",
-                                      "_i0": Object {
-                                        "__name": "letter",
+                                      Object {
+                                        "__name": "ruleVariableChar",
                                         "_i0": Object {
-                                          "__name": "lower",
+                                          "__name": "any",
                                           "_i0": "z",
                                         },
                                       },
-                                    },
-                                  ],
+                                    ],
+                                  },
                                 },
                               },
                             },
@@ -256,118 +226,88 @@ Object {
                                     "__name": "SimpleCellLayer",
                                     "_i1": Object {
                                       "__name": "cellName",
-                                      "_i0": Array [
-                                        Object {
-                                          "__name": "varNameChar",
-                                          "_i0": Object {
-                                            "__name": "letter",
+                                      "_i0": Object {
+                                        "__name": "ruleVariableName",
+                                        "_i0": Array [
+                                          Object {
+                                            "__name": "ruleVariableChar",
                                             "_i0": Object {
-                                              "__name": "lower",
+                                              "__name": "any",
                                               "_i0": "s",
                                             },
                                           },
-                                        },
-                                        Object {
-                                          "__name": "varNameChar",
-                                          "_i0": Object {
-                                            "__name": "letter",
+                                          Object {
+                                            "__name": "ruleVariableChar",
                                             "_i0": Object {
-                                              "__name": "lower",
+                                              "__name": "any",
                                               "_i0": "t",
                                             },
                                           },
-                                        },
-                                        Object {
-                                          "__name": "varNameChar",
-                                          "_i0": Object {
-                                            "__name": "letter",
+                                          Object {
+                                            "__name": "ruleVariableChar",
                                             "_i0": Object {
-                                              "__name": "lower",
+                                              "__name": "any",
                                               "_i0": "a",
                                             },
                                           },
-                                        },
-                                        Object {
-                                          "__name": "varNameChar",
-                                          "_i0": Object {
-                                            "__name": "letter",
+                                          Object {
+                                            "__name": "ruleVariableChar",
                                             "_i0": Object {
-                                              "__name": "lower",
+                                              "__name": "any",
                                               "_i0": "t",
                                             },
                                           },
-                                        },
-                                        Object {
-                                          "__name": "varNameChar",
-                                          "_i0": Object {
-                                            "__name": "letter",
+                                          Object {
+                                            "__name": "ruleVariableChar",
                                             "_i0": Object {
-                                              "__name": "lower",
+                                              "__name": "any",
                                               "_i0": "i",
                                             },
                                           },
-                                        },
-                                        Object {
-                                          "__name": "varNameChar",
-                                          "_i0": Object {
-                                            "__name": "letter",
+                                          Object {
+                                            "__name": "ruleVariableChar",
                                             "_i0": Object {
-                                              "__name": "lower",
+                                              "__name": "any",
                                               "_i0": "o",
                                             },
                                           },
-                                        },
-                                        Object {
-                                          "__name": "varNameChar",
-                                          "_i0": Object {
-                                            "__name": "letter",
+                                          Object {
+                                            "__name": "ruleVariableChar",
                                             "_i0": Object {
-                                              "__name": "lower",
+                                              "__name": "any",
                                               "_i0": "n",
                                             },
                                           },
-                                        },
-                                        Object {
-                                          "__name": "varNameChar",
-                                          "_i0": Object {
-                                            "__name": "letter",
+                                          Object {
+                                            "__name": "ruleVariableChar",
                                             "_i0": Object {
-                                              "__name": "lower",
+                                              "__name": "any",
                                               "_i0": "a",
                                             },
                                           },
-                                        },
-                                        Object {
-                                          "__name": "varNameChar",
-                                          "_i0": Object {
-                                            "__name": "letter",
+                                          Object {
+                                            "__name": "ruleVariableChar",
                                             "_i0": Object {
-                                              "__name": "lower",
+                                              "__name": "any",
                                               "_i0": "r",
                                             },
                                           },
-                                        },
-                                        Object {
-                                          "__name": "varNameChar",
-                                          "_i0": Object {
-                                            "__name": "letter",
+                                          Object {
+                                            "__name": "ruleVariableChar",
                                             "_i0": Object {
-                                              "__name": "lower",
+                                              "__name": "any",
                                               "_i0": "y",
                                             },
                                           },
-                                        },
-                                        Object {
-                                          "__name": "varNameChar",
-                                          "_i0": Object {
-                                            "__name": "letter",
+                                          Object {
+                                            "__name": "ruleVariableChar",
                                             "_i0": Object {
-                                              "__name": "lower",
+                                              "__name": "any",
                                               "_i0": "z",
                                             },
                                           },
-                                        },
-                                      ],
+                                        ],
+                                      },
                                     },
                                   },
                                 },
@@ -652,18 +592,18 @@ Object {
                                 ],
                                 "_i1": Object {
                                   "__name": "cellName",
-                                  "_i0": Array [
-                                    Object {
-                                      "__name": "varNameChar",
-                                      "_i0": Object {
-                                        "__name": "letter",
+                                  "_i0": Object {
+                                    "__name": "ruleVariableName",
+                                    "_i0": Array [
+                                      Object {
+                                        "__name": "ruleVariableChar",
                                         "_i0": Object {
-                                          "__name": "lower",
+                                          "__name": "any",
                                           "_i0": "z",
                                         },
                                       },
-                                    },
-                                  ],
+                                    ],
+                                  },
                                 },
                               },
                             },
@@ -957,18 +897,18 @@ Object {
                                 ],
                                 "_i1": Object {
                                   "__name": "cellName",
-                                  "_i0": Array [
-                                    Object {
-                                      "__name": "varNameChar",
-                                      "_i0": Object {
-                                        "__name": "letter",
+                                  "_i0": Object {
+                                    "__name": "ruleVariableName",
+                                    "_i0": Array [
+                                      Object {
+                                        "__name": "ruleVariableChar",
                                         "_i0": Object {
-                                          "__name": "lower",
+                                          "__name": "any",
                                           "_i0": "z",
                                         },
                                       },
-                                    },
-                                  ],
+                                    ],
+                                  },
                                 },
                               },
                             },
@@ -1265,18 +1205,18 @@ Object {
                                 ],
                                 "_i1": Object {
                                   "__name": "cellName",
-                                  "_i0": Array [
-                                    Object {
-                                      "__name": "varNameChar",
-                                      "_i0": Object {
-                                        "__name": "letter",
+                                  "_i0": Object {
+                                    "__name": "ruleVariableName",
+                                    "_i0": Array [
+                                      Object {
+                                        "__name": "ruleVariableChar",
                                         "_i0": Object {
-                                          "__name": "lower",
+                                          "__name": "any",
                                           "_i0": "z",
                                         },
                                       },
-                                    },
-                                  ],
+                                    ],
+                                  },
                                 },
                               },
                             },
@@ -1570,18 +1510,18 @@ Object {
                                 ],
                                 "_i1": Object {
                                   "__name": "cellName",
-                                  "_i0": Array [
-                                    Object {
-                                      "__name": "varNameChar",
-                                      "_i0": Object {
-                                        "__name": "letter",
+                                  "_i0": Object {
+                                    "__name": "ruleVariableName",
+                                    "_i0": Array [
+                                      Object {
+                                        "__name": "ruleVariableChar",
                                         "_i0": Object {
-                                          "__name": "lower",
+                                          "__name": "any",
                                           "_i0": "z",
                                         },
                                       },
-                                    },
-                                  ],
+                                    ],
+                                  },
                                 },
                               },
                             },
@@ -1875,18 +1815,18 @@ Object {
                                 ],
                                 "_i1": Object {
                                   "__name": "cellName",
-                                  "_i0": Array [
-                                    Object {
-                                      "__name": "varNameChar",
-                                      "_i0": Object {
-                                        "__name": "letter",
+                                  "_i0": Object {
+                                    "__name": "ruleVariableName",
+                                    "_i0": Array [
+                                      Object {
+                                        "__name": "ruleVariableChar",
                                         "_i0": Object {
-                                          "__name": "lower",
+                                          "__name": "any",
                                           "_i0": "z",
                                         },
                                       },
-                                    },
-                                  ],
+                                    ],
+                                  },
                                 },
                               },
                             },
@@ -2180,18 +2120,18 @@ Object {
                                 ],
                                 "_i1": Object {
                                   "__name": "cellName",
-                                  "_i0": Array [
-                                    Object {
-                                      "__name": "varNameChar",
-                                      "_i0": Object {
-                                        "__name": "letter",
+                                  "_i0": Object {
+                                    "__name": "ruleVariableName",
+                                    "_i0": Array [
+                                      Object {
+                                        "__name": "ruleVariableChar",
                                         "_i0": Object {
-                                          "__name": "lower",
+                                          "__name": "any",
                                           "_i0": "z",
                                         },
                                       },
-                                    },
-                                  ],
+                                    ],
+                                  },
                                 },
                               },
                             },
@@ -2485,18 +2425,18 @@ Object {
                                 ],
                                 "_i1": Object {
                                   "__name": "cellName",
-                                  "_i0": Array [
-                                    Object {
-                                      "__name": "varNameChar",
-                                      "_i0": Object {
-                                        "__name": "letter",
+                                  "_i0": Object {
+                                    "__name": "ruleVariableName",
+                                    "_i0": Array [
+                                      Object {
+                                        "__name": "ruleVariableChar",
                                         "_i0": Object {
-                                          "__name": "lower",
+                                          "__name": "any",
                                           "_i0": "z",
                                         },
                                       },
-                                    },
-                                  ],
+                                    ],
+                                  },
                                 },
                               },
                             },
@@ -2790,18 +2730,18 @@ Object {
                                 ],
                                 "_i1": Object {
                                   "__name": "cellName",
-                                  "_i0": Array [
-                                    Object {
-                                      "__name": "varNameChar",
-                                      "_i0": Object {
-                                        "__name": "letter",
+                                  "_i0": Object {
+                                    "__name": "ruleVariableName",
+                                    "_i0": Array [
+                                      Object {
+                                        "__name": "ruleVariableChar",
                                         "_i0": Object {
-                                          "__name": "lower",
+                                          "__name": "any",
                                           "_i0": "z",
                                         },
                                       },
-                                    },
-                                  ],
+                                    ],
+                                  },
                                 },
                               },
                             },
@@ -3095,18 +3035,18 @@ Object {
                                 ],
                                 "_i1": Object {
                                   "__name": "cellName",
-                                  "_i0": Array [
-                                    Object {
-                                      "__name": "varNameChar",
-                                      "_i0": Object {
-                                        "__name": "letter",
+                                  "_i0": Object {
+                                    "__name": "ruleVariableName",
+                                    "_i0": Array [
+                                      Object {
+                                        "__name": "ruleVariableChar",
                                         "_i0": Object {
-                                          "__name": "lower",
+                                          "__name": "any",
                                           "_i0": "z",
                                         },
                                       },
-                                    },
-                                  ],
+                                    ],
+                                  },
                                 },
                               },
                             },
@@ -3400,18 +3340,18 @@ Object {
                                 ],
                                 "_i1": Object {
                                   "__name": "cellName",
-                                  "_i0": Array [
-                                    Object {
-                                      "__name": "varNameChar",
-                                      "_i0": Object {
-                                        "__name": "letter",
+                                  "_i0": Object {
+                                    "__name": "ruleVariableName",
+                                    "_i0": Array [
+                                      Object {
+                                        "__name": "ruleVariableChar",
                                         "_i0": Object {
-                                          "__name": "lower",
+                                          "__name": "any",
                                           "_i0": "z",
                                         },
                                       },
-                                    },
-                                  ],
+                                    ],
+                                  },
                                 },
                               },
                             },
@@ -3705,18 +3645,18 @@ Object {
                                 ],
                                 "_i1": Object {
                                   "__name": "cellName",
-                                  "_i0": Array [
-                                    Object {
-                                      "__name": "varNameChar",
-                                      "_i0": Object {
-                                        "__name": "letter",
+                                  "_i0": Object {
+                                    "__name": "ruleVariableName",
+                                    "_i0": Array [
+                                      Object {
+                                        "__name": "ruleVariableChar",
                                         "_i0": Object {
-                                          "__name": "lower",
+                                          "__name": "any",
                                           "_i0": "z",
                                         },
                                       },
-                                    },
-                                  ],
+                                    ],
+                                  },
                                 },
                               },
                             },
@@ -4010,18 +3950,18 @@ Object {
                                 ],
                                 "_i1": Object {
                                   "__name": "cellName",
-                                  "_i0": Array [
-                                    Object {
-                                      "__name": "varNameChar",
-                                      "_i0": Object {
-                                        "__name": "letter",
+                                  "_i0": Object {
+                                    "__name": "ruleVariableName",
+                                    "_i0": Array [
+                                      Object {
+                                        "__name": "ruleVariableChar",
                                         "_i0": Object {
-                                          "__name": "lower",
+                                          "__name": "any",
                                           "_i0": "z",
                                         },
                                       },
-                                    },
-                                  ],
+                                    ],
+                                  },
                                 },
                               },
                             },
@@ -4315,18 +4255,18 @@ Object {
                                 ],
                                 "_i1": Object {
                                   "__name": "cellName",
-                                  "_i0": Array [
-                                    Object {
-                                      "__name": "varNameChar",
-                                      "_i0": Object {
-                                        "__name": "letter",
+                                  "_i0": Object {
+                                    "__name": "ruleVariableName",
+                                    "_i0": Array [
+                                      Object {
+                                        "__name": "ruleVariableChar",
                                         "_i0": Object {
-                                          "__name": "lower",
+                                          "__name": "any",
                                           "_i0": "z",
                                         },
                                       },
-                                    },
-                                  ],
+                                    ],
+                                  },
                                 },
                               },
                             },
@@ -4620,18 +4560,18 @@ Object {
                                 ],
                                 "_i1": Object {
                                   "__name": "cellName",
-                                  "_i0": Array [
-                                    Object {
-                                      "__name": "varNameChar",
-                                      "_i0": Object {
-                                        "__name": "letter",
+                                  "_i0": Object {
+                                    "__name": "ruleVariableName",
+                                    "_i0": Array [
+                                      Object {
+                                        "__name": "ruleVariableChar",
                                         "_i0": Object {
-                                          "__name": "lower",
+                                          "__name": "any",
                                           "_i0": "z",
                                         },
                                       },
-                                    },
-                                  ],
+                                    ],
+                                  },
                                 },
                               },
                             },
@@ -4925,18 +4865,18 @@ Object {
                                 ],
                                 "_i1": Object {
                                   "__name": "cellName",
-                                  "_i0": Array [
-                                    Object {
-                                      "__name": "varNameChar",
-                                      "_i0": Object {
-                                        "__name": "letter",
+                                  "_i0": Object {
+                                    "__name": "ruleVariableName",
+                                    "_i0": Array [
+                                      Object {
+                                        "__name": "ruleVariableChar",
                                         "_i0": Object {
-                                          "__name": "lower",
+                                          "__name": "any",
                                           "_i0": "z",
                                         },
                                       },
-                                    },
-                                  ],
+                                    ],
+                                  },
                                 },
                               },
                             },
@@ -5230,18 +5170,18 @@ Object {
                                 ],
                                 "_i1": Object {
                                   "__name": "cellName",
-                                  "_i0": Array [
-                                    Object {
-                                      "__name": "varNameChar",
-                                      "_i0": Object {
-                                        "__name": "letter",
+                                  "_i0": Object {
+                                    "__name": "ruleVariableName",
+                                    "_i0": Array [
+                                      Object {
+                                        "__name": "ruleVariableChar",
                                         "_i0": Object {
-                                          "__name": "lower",
+                                          "__name": "any",
                                           "_i0": "z",
                                         },
                                       },
-                                    },
-                                  ],
+                                    ],
+                                  },
                                 },
                               },
                             },
@@ -5535,18 +5475,18 @@ Object {
                                 ],
                                 "_i1": Object {
                                   "__name": "cellName",
-                                  "_i0": Array [
-                                    Object {
-                                      "__name": "varNameChar",
-                                      "_i0": Object {
-                                        "__name": "letter",
+                                  "_i0": Object {
+                                    "__name": "ruleVariableName",
+                                    "_i0": Array [
+                                      Object {
+                                        "__name": "ruleVariableChar",
                                         "_i0": Object {
-                                          "__name": "lower",
+                                          "__name": "any",
                                           "_i0": "z",
                                         },
                                       },
-                                    },
-                                  ],
+                                    ],
+                                  },
                                 },
                               },
                             },
@@ -5840,18 +5780,18 @@ Object {
                                 ],
                                 "_i1": Object {
                                   "__name": "cellName",
-                                  "_i0": Array [
-                                    Object {
-                                      "__name": "varNameChar",
-                                      "_i0": Object {
-                                        "__name": "letter",
+                                  "_i0": Object {
+                                    "__name": "ruleVariableName",
+                                    "_i0": Array [
+                                      Object {
+                                        "__name": "ruleVariableChar",
                                         "_i0": Object {
-                                          "__name": "lower",
+                                          "__name": "any",
                                           "_i0": "z",
                                         },
                                       },
-                                    },
-                                  ],
+                                    ],
+                                  },
                                 },
                               },
                             },
@@ -5890,18 +5830,18 @@ Object {
                                     "__name": "SimpleCellLayer",
                                     "_i1": Object {
                                       "__name": "cellName",
-                                      "_i0": Array [
-                                        Object {
-                                          "__name": "varNameChar",
-                                          "_i0": Object {
-                                            "__name": "letter",
+                                      "_i0": Object {
+                                        "__name": "ruleVariableName",
+                                        "_i0": Array [
+                                          Object {
+                                            "__name": "ruleVariableChar",
                                             "_i0": Object {
-                                              "__name": "lower",
+                                              "__name": "any",
                                               "_i0": "z",
                                             },
                                           },
-                                        },
-                                      ],
+                                        ],
+                                      },
                                     },
                                   },
                                 },
@@ -6164,18 +6104,18 @@ Object {
                                 "__name": "SimpleCellLayer",
                                 "_i1": Object {
                                   "__name": "cellName",
-                                  "_i0": Array [
-                                    Object {
-                                      "__name": "varNameChar",
-                                      "_i0": Object {
-                                        "__name": "letter",
+                                  "_i0": Object {
+                                    "__name": "ruleVariableName",
+                                    "_i0": Array [
+                                      Object {
+                                        "__name": "ruleVariableChar",
                                         "_i0": Object {
-                                          "__name": "lower",
+                                          "__name": "any",
                                           "_i0": "z",
                                         },
                                       },
-                                    },
-                                  ],
+                                    ],
+                                  },
                                 },
                               },
                             },
@@ -6473,18 +6413,18 @@ Object {
                                 "__name": "SimpleCellLayer",
                                 "_i1": Object {
                                   "__name": "cellName",
-                                  "_i0": Array [
-                                    Object {
-                                      "__name": "varNameChar",
-                                      "_i0": Object {
-                                        "__name": "letter",
+                                  "_i0": Object {
+                                    "__name": "ruleVariableName",
+                                    "_i0": Array [
+                                      Object {
+                                        "__name": "ruleVariableChar",
                                         "_i0": Object {
-                                          "__name": "lower",
+                                          "__name": "any",
                                           "_i0": "z",
                                         },
                                       },
-                                    },
-                                  ],
+                                    ],
+                                  },
                                 },
                               },
                             },
@@ -6523,18 +6463,18 @@ Object {
                                     "__name": "HackCellLayer2",
                                     "_i0": Object {
                                       "__name": "cellName",
-                                      "_i0": Array [
-                                        Object {
-                                          "__name": "varNameChar",
-                                          "_i0": Object {
-                                            "__name": "letter",
+                                      "_i0": Object {
+                                        "__name": "ruleVariableName",
+                                        "_i0": Array [
+                                          Object {
+                                            "__name": "ruleVariableChar",
                                             "_i0": Object {
-                                              "__name": "lower",
+                                              "__name": "any",
                                               "_i0": "z",
                                             },
                                           },
-                                        },
-                                      ],
+                                        ],
+                                      },
                                     },
                                     "_i1": Object {
                                       "__name": "HackRuleCommand",
@@ -6811,18 +6751,18 @@ Object {
                                 "__name": "SimpleCellLayer",
                                 "_i1": Object {
                                   "__name": "cellName",
-                                  "_i0": Array [
-                                    Object {
-                                      "__name": "varNameChar",
-                                      "_i0": Object {
-                                        "__name": "letter",
+                                  "_i0": Object {
+                                    "__name": "ruleVariableName",
+                                    "_i0": Array [
+                                      Object {
+                                        "__name": "ruleVariableChar",
                                         "_i0": Object {
-                                          "__name": "lower",
+                                          "__name": "any",
                                           "_i0": "z",
                                         },
                                       },
-                                    },
-                                  ],
+                                    ],
+                                  },
                                 },
                               },
                             },
@@ -6861,18 +6801,18 @@ Object {
                                     "__name": "SimpleCellLayer",
                                     "_i1": Object {
                                       "__name": "cellName",
-                                      "_i0": Array [
-                                        Object {
-                                          "__name": "varNameChar",
-                                          "_i0": Object {
-                                            "__name": "letter",
+                                      "_i0": Object {
+                                        "__name": "ruleVariableName",
+                                        "_i0": Array [
+                                          Object {
+                                            "__name": "ruleVariableChar",
                                             "_i0": Object {
-                                              "__name": "lower",
+                                              "__name": "any",
                                               "_i0": "z",
                                             },
                                           },
-                                        },
-                                      ],
+                                        ],
+                                      },
                                     },
                                   },
                                 },
@@ -6882,68 +6822,53 @@ Object {
                                     "__name": "SimpleCellLayer",
                                     "_i1": Object {
                                       "__name": "cellName",
-                                      "_i0": Array [
-                                        Object {
-                                          "__name": "varNameChar",
-                                          "_i0": Object {
-                                            "__name": "letter",
+                                      "_i0": Object {
+                                        "__name": "ruleVariableName",
+                                        "_i0": Array [
+                                          Object {
+                                            "__name": "ruleVariableChar",
                                             "_i0": Object {
-                                              "__name": "lower",
+                                              "__name": "any",
                                               "_i0": "w",
                                             },
                                           },
-                                        },
-                                        Object {
-                                          "__name": "varNameChar",
-                                          "_i0": Object {
-                                            "__name": "letter",
+                                          Object {
+                                            "__name": "ruleVariableChar",
                                             "_i0": Object {
-                                              "__name": "lower",
+                                              "__name": "any",
                                               "_i0": "i",
                                             },
                                           },
-                                        },
-                                        Object {
-                                          "__name": "varNameChar",
-                                          "_i0": Object {
-                                            "__name": "letter",
+                                          Object {
+                                            "__name": "ruleVariableChar",
                                             "_i0": Object {
-                                              "__name": "lower",
+                                              "__name": "any",
                                               "_i0": "n",
                                             },
                                           },
-                                        },
-                                        Object {
-                                          "__name": "varNameChar",
-                                          "_i0": Object {
-                                            "__name": "letter",
+                                          Object {
+                                            "__name": "ruleVariableChar",
                                             "_i0": Object {
-                                              "__name": "lower",
+                                              "__name": "any",
                                               "_i0": "t",
                                             },
                                           },
-                                        },
-                                        Object {
-                                          "__name": "varNameChar",
-                                          "_i0": Object {
-                                            "__name": "letter",
+                                          Object {
+                                            "__name": "ruleVariableChar",
                                             "_i0": Object {
-                                              "__name": "lower",
+                                              "__name": "any",
                                               "_i0": "e",
                                             },
                                           },
-                                        },
-                                        Object {
-                                          "__name": "varNameChar",
-                                          "_i0": Object {
-                                            "__name": "letter",
+                                          Object {
+                                            "__name": "ruleVariableChar",
                                             "_i0": Object {
-                                              "__name": "lower",
+                                              "__name": "any",
                                               "_i0": "r",
                                             },
                                           },
-                                        },
-                                      ],
+                                        ],
+                                      },
                                     },
                                   },
                                 },
@@ -7368,7 +7293,7 @@ Object {
             "_i0": Object {
               "__name": "legendVarNameDefn",
               "_i0": Object {
-                "__name": "legendCharDefn",
+                "__name": "legendVariableChar",
                 "_i0": Object {
                   "__name": "any",
                   "_i0": ".",
@@ -7560,52 +7485,46 @@ Object {
                                 "__name": "SimpleCellLayer",
                                 "_i1": Object {
                                   "__name": "cellName",
-                                  "_i0": Array [
-                                    Object {
-                                      "__name": "varNameChar",
-                                      "_i0": Object {
-                                        "__name": "letter",
+                                  "_i0": Object {
+                                    "__name": "ruleVariableName",
+                                    "_i0": Array [
+                                      Object {
+                                        "__name": "ruleVariableChar",
                                         "_i0": Object {
-                                          "__name": "upper",
+                                          "__name": "any",
                                           "_i0": "B",
                                         },
                                       },
-                                    },
-                                    Object {
-                                      "__name": "varNameChar",
-                                      "_i0": Object {
-                                        "__name": "letter",
+                                      Object {
+                                        "__name": "ruleVariableChar",
                                         "_i0": Object {
-                                          "__name": "lower",
+                                          "__name": "any",
                                           "_i0": "u",
                                         },
                                       },
-                                    },
-                                    Object {
-                                      "__name": "varNameChar",
-                                      "_i0": Object {
-                                        "__name": "letter",
+                                      Object {
+                                        "__name": "ruleVariableChar",
                                         "_i0": Object {
-                                          "__name": "lower",
+                                          "__name": "any",
                                           "_i0": "s",
                                         },
                                       },
-                                    },
-                                    Object {
-                                      "__name": "varNameChar",
-                                      "_i0": Object {
-                                        "__name": "letter",
+                                      Object {
+                                        "__name": "ruleVariableChar",
                                         "_i0": Object {
-                                          "__name": "lower",
+                                          "__name": "any",
                                           "_i0": "h",
                                         },
                                       },
-                                    },
-                                    Object {
-                                      "__name": "varNameChar",
-                                      "_i0": "?",
-                                    },
-                                  ],
+                                      Object {
+                                        "__name": "ruleVariableChar",
+                                        "_i0": Object {
+                                          "__name": "any",
+                                          "_i0": "?",
+                                        },
+                                      },
+                                    ],
+                                  },
                                 },
                               },
                             },
@@ -7644,52 +7563,46 @@ Object {
                                     "__name": "SimpleCellLayer",
                                     "_i1": Object {
                                       "__name": "cellName",
-                                      "_i0": Array [
-                                        Object {
-                                          "__name": "varNameChar",
-                                          "_i0": Object {
-                                            "__name": "letter",
+                                      "_i0": Object {
+                                        "__name": "ruleVariableName",
+                                        "_i0": Array [
+                                          Object {
+                                            "__name": "ruleVariableChar",
                                             "_i0": Object {
-                                              "__name": "upper",
+                                              "__name": "any",
                                               "_i0": "B",
                                             },
                                           },
-                                        },
-                                        Object {
-                                          "__name": "varNameChar",
-                                          "_i0": Object {
-                                            "__name": "letter",
+                                          Object {
+                                            "__name": "ruleVariableChar",
                                             "_i0": Object {
-                                              "__name": "lower",
+                                              "__name": "any",
                                               "_i0": "u",
                                             },
                                           },
-                                        },
-                                        Object {
-                                          "__name": "varNameChar",
-                                          "_i0": Object {
-                                            "__name": "letter",
+                                          Object {
+                                            "__name": "ruleVariableChar",
                                             "_i0": Object {
-                                              "__name": "lower",
+                                              "__name": "any",
                                               "_i0": "s",
                                             },
                                           },
-                                        },
-                                        Object {
-                                          "__name": "varNameChar",
-                                          "_i0": Object {
-                                            "__name": "letter",
+                                          Object {
+                                            "__name": "ruleVariableChar",
                                             "_i0": Object {
-                                              "__name": "lower",
+                                              "__name": "any",
                                               "_i0": "h",
                                             },
                                           },
-                                        },
-                                        Object {
-                                          "__name": "varNameChar",
-                                          "_i0": "?",
-                                        },
-                                      ],
+                                          Object {
+                                            "__name": "ruleVariableChar",
+                                            "_i0": Object {
+                                              "__name": "any",
+                                              "_i0": "?",
+                                            },
+                                          },
+                                        ],
+                                      },
                                     },
                                   },
                                 },
@@ -7741,12 +7654,18 @@ Object {
                                 "__name": "SimpleCellLayer",
                                 "_i1": Object {
                                   "__name": "cellName",
-                                  "_i0": Array [
-                                    Object {
-                                      "__name": "varNameChar",
-                                      "_i0": ".",
-                                    },
-                                  ],
+                                  "_i0": Object {
+                                    "__name": "ruleVariableName",
+                                    "_i0": Array [
+                                      Object {
+                                        "__name": "ruleVariableChar",
+                                        "_i0": Object {
+                                          "__name": "any",
+                                          "_i0": ".",
+                                        },
+                                      },
+                                    ],
+                                  },
                                 },
                               },
                             },
@@ -7785,12 +7704,18 @@ Object {
                                     "__name": "SimpleCellLayer",
                                     "_i1": Object {
                                       "__name": "cellName",
-                                      "_i0": Array [
-                                        Object {
-                                          "__name": "varNameChar",
-                                          "_i0": ".",
-                                        },
-                                      ],
+                                      "_i0": Object {
+                                        "__name": "ruleVariableName",
+                                        "_i0": Array [
+                                          Object {
+                                            "__name": "ruleVariableChar",
+                                            "_i0": Object {
+                                              "__name": "any",
+                                              "_i0": ".",
+                                            },
+                                          },
+                                        ],
+                                      },
                                     },
                                   },
                                 },
@@ -7883,6 +7808,256 @@ Object {
   "settings": Object {
     "color_palette": "2",
   },
+  "sounds": Array [],
+  "title": "foo",
+  "winConditions": Array [],
+}
+`;
+
+exports[`rules General Formatting Supports characters that would be invalid in one scope but are valid in another scope 1`] = `
+Object {
+  "collisionLayers": Array [
+    CollisionLayer {
+      "__astId": 298,
+      "_objectNames": Array [
+        GameObject {
+          "__astId": 291,
+          "_colors": Array [
+            "transparent",
+          ],
+          "_name": "hello",
+          "_optionalLegendChar": ".",
+          "_pixels": Array [],
+        },
+        GameObject {
+          "__astId": 292,
+          "_colors": Array [
+            "transparent",
+          ],
+          "_name": "hello2",
+          "_optionalLegendChar": "]",
+          "_pixels": Array [],
+        },
+      ],
+    },
+  ],
+  "legends": Array [
+    GameLegendItemSimple {
+      "__astId": 294,
+      "_aliases": Array [
+        GameObject {
+          "__astId": 291,
+          "_colors": Array [
+            "transparent",
+          ],
+          "_name": "hello",
+          "_optionalLegendChar": ".",
+          "_pixels": Array [],
+        },
+      ],
+      "_objectNameOrLevelChar": "[",
+    },
+    GameLegendItemSimple {
+      "__astId": 295,
+      "_aliases": Array [
+        GameObject {
+          "__astId": 292,
+          "_colors": Array [
+            "transparent",
+          ],
+          "_name": "hello2",
+          "_optionalLegendChar": "]",
+          "_pixels": Array [],
+        },
+      ],
+      "_objectNameOrLevelChar": ",",
+    },
+    GameLegendItemSimple {
+      "__astId": 296,
+      "_aliases": Array [
+        GameObject {
+          "__astId": 293,
+          "_colors": Array [
+            "transparent",
+          ],
+          "_name": "hello3",
+          "_optionalLegendChar": "♡",
+          "_pixels": Array [],
+        },
+      ],
+      "_objectNameOrLevelChar": "д",
+    },
+    GameLegendItemSimple {
+      "__astId": 297,
+      "_aliases": Array [
+        GameObject {
+          "__astId": 293,
+          "_colors": Array [
+            "transparent",
+          ],
+          "_name": "hello3",
+          "_optionalLegendChar": "♡",
+          "_pixels": Array [],
+        },
+      ],
+      "_objectNameOrLevelChar": "sfx11",
+    },
+  ],
+  "levels": Array [],
+  "objects": Array [
+    GameObject {
+      "__astId": 291,
+      "_colors": Array [
+        "transparent",
+      ],
+      "_name": "hello",
+      "_optionalLegendChar": ".",
+      "_pixels": Array [],
+    },
+    GameObject {
+      "__astId": 292,
+      "_colors": Array [
+        "transparent",
+      ],
+      "_name": "hello2",
+      "_optionalLegendChar": "]",
+      "_pixels": Array [],
+    },
+    GameObject {
+      "__astId": 293,
+      "_colors": Array [
+        "transparent",
+      ],
+      "_name": "hello3",
+      "_optionalLegendChar": "♡",
+      "_pixels": Array [],
+    },
+  ],
+  "rules": Array [
+    GameRule {
+      "__astId": 306,
+      "_cellSequenceBrackets": Array [
+        GameRuleSequenceBracket {
+          "__astId": 301,
+          "_bracket": GameRuleSimpleBracket {
+            "__astId": 300,
+            "_neighbors": Array [
+              Array [
+                GameRuleCellLayer {
+                  "__astId": 299,
+                  "_cellModifiers": Array [],
+                  "_objectName": GameObject {
+                    "__astId": 291,
+                    "_colors": Array [
+                      "transparent",
+                    ],
+                    "_name": "hello",
+                    "_optionalLegendChar": ".",
+                    "_pixels": Array [],
+                  },
+                },
+              ],
+            ],
+          },
+          "_ruleModifiers": Array [],
+        },
+      ],
+      "_productionModifiers": Array [],
+      "_ruleAction": GameRuleActionBrackets {
+        "__astId": 305,
+        "_cellSequenceBrackets": Array [
+          GameRuleSequenceBracket {
+            "__astId": 304,
+            "_bracket": GameRuleSimpleBracket {
+              "__astId": 303,
+              "_neighbors": Array [
+                Array [
+                  GameRuleCellLayer {
+                    "__astId": 302,
+                    "_cellModifiers": Array [],
+                    "_objectName": GameObject {
+                      "__astId": 291,
+                      "_colors": Array [
+                        "transparent",
+                      ],
+                      "_name": "hello",
+                      "_optionalLegendChar": ".",
+                      "_pixels": Array [],
+                    },
+                  },
+                ],
+              ],
+            },
+            "_ruleModifiers": Array [],
+          },
+        ],
+        "_ruleCommands": Array [],
+      },
+      "_ruleModifiers": Array [],
+    },
+    GameRule {
+      "__astId": 314,
+      "_cellSequenceBrackets": Array [
+        GameRuleSequenceBracket {
+          "__astId": 309,
+          "_bracket": GameRuleSimpleBracket {
+            "__astId": 308,
+            "_neighbors": Array [
+              Array [
+                GameRuleCellLayer {
+                  "__astId": 307,
+                  "_cellModifiers": Array [],
+                  "_objectName": GameObject {
+                    "__astId": 293,
+                    "_colors": Array [
+                      "transparent",
+                    ],
+                    "_name": "hello3",
+                    "_optionalLegendChar": "♡",
+                    "_pixels": Array [],
+                  },
+                },
+              ],
+            ],
+          },
+          "_ruleModifiers": Array [],
+        },
+      ],
+      "_productionModifiers": Array [],
+      "_ruleAction": GameRuleActionBrackets {
+        "__astId": 313,
+        "_cellSequenceBrackets": Array [
+          GameRuleSequenceBracket {
+            "__astId": 312,
+            "_bracket": GameRuleSimpleBracket {
+              "__astId": 311,
+              "_neighbors": Array [
+                Array [
+                  GameRuleCellLayer {
+                    "__astId": 310,
+                    "_cellModifiers": Array [],
+                    "_objectName": GameObject {
+                      "__astId": 293,
+                      "_colors": Array [
+                        "transparent",
+                      ],
+                      "_name": "hello3",
+                      "_optionalLegendChar": "♡",
+                      "_pixels": Array [],
+                    },
+                  },
+                ],
+              ],
+            },
+            "_ruleModifiers": Array [],
+          },
+        ],
+        "_ruleCommands": Array [],
+      },
+      "_ruleModifiers": Array [],
+    },
+  ],
+  "settings": Object {},
   "sounds": Array [],
   "title": "foo",
   "winConditions": Array [],
@@ -7995,32 +8170,32 @@ Object {
                                 "__name": "SimpleCellLayer",
                                 "_i1": Object {
                                   "__name": "cellName",
-                                  "_i0": Array [
-                                    Object {
-                                      "__name": "varNameChar",
-                                      "_i0": Object {
-                                        "__name": "letter",
+                                  "_i0": Object {
+                                    "__name": "ruleVariableName",
+                                    "_i0": Array [
+                                      Object {
+                                        "__name": "ruleVariableChar",
                                         "_i0": Object {
-                                          "__name": "lower",
+                                          "__name": "any",
                                           "_i0": "z",
                                         },
                                       },
-                                    },
-                                    Object {
-                                      "__name": "varNameChar",
-                                      "_i0": "_",
-                                    },
-                                    Object {
-                                      "__name": "varNameChar",
-                                      "_i0": Object {
-                                        "__name": "letter",
+                                      Object {
+                                        "__name": "ruleVariableChar",
                                         "_i0": Object {
-                                          "__name": "lower",
+                                          "__name": "any",
+                                          "_i0": "_",
+                                        },
+                                      },
+                                      Object {
+                                        "__name": "ruleVariableChar",
+                                        "_i0": Object {
+                                          "__name": "any",
                                           "_i0": "x",
                                         },
                                       },
-                                    },
-                                  ],
+                                    ],
+                                  },
                                 },
                               },
                             },
@@ -8288,12 +8463,18 @@ Object {
                                 "__name": "SimpleCellLayer",
                                 "_i1": Object {
                                   "__name": "cellName",
-                                  "_i0": Array [
-                                    Object {
-                                      "__name": "varNameChar",
-                                      "_i0": ".",
-                                    },
-                                  ],
+                                  "_i0": Object {
+                                    "__name": "ruleVariableName",
+                                    "_i0": Array [
+                                      Object {
+                                        "__name": "ruleVariableChar",
+                                        "_i0": Object {
+                                          "__name": "any",
+                                          "_i0": ".",
+                                        },
+                                      },
+                                    ],
+                                  },
                                 },
                               },
                             },
@@ -8561,18 +8742,18 @@ Object {
                                 "__name": "SimpleCellLayer",
                                 "_i1": Object {
                                   "__name": "cellName",
-                                  "_i0": Array [
-                                    Object {
-                                      "__name": "varNameChar",
-                                      "_i0": Object {
-                                        "__name": "letter",
+                                  "_i0": Object {
+                                    "__name": "ruleVariableName",
+                                    "_i0": Array [
+                                      Object {
+                                        "__name": "ruleVariableChar",
                                         "_i0": Object {
-                                          "__name": "lower",
+                                          "__name": "any",
                                           "_i0": "z",
                                         },
                                       },
-                                    },
-                                  ],
+                                    ],
+                                  },
                                 },
                               },
                             },
@@ -8606,18 +8787,18 @@ Object {
                                 "__name": "SimpleCellLayer",
                                 "_i1": Object {
                                   "__name": "cellName",
-                                  "_i0": Array [
-                                    Object {
-                                      "__name": "varNameChar",
-                                      "_i0": Object {
-                                        "__name": "letter",
+                                  "_i0": Object {
+                                    "__name": "ruleVariableName",
+                                    "_i0": Array [
+                                      Object {
+                                        "__name": "ruleVariableChar",
                                         "_i0": Object {
-                                          "__name": "lower",
+                                          "__name": "any",
                                           "_i0": "x",
                                         },
                                       },
-                                    },
-                                  ],
+                                    ],
+                                  },
                                 },
                               },
                             },
@@ -8680,18 +8861,18 @@ Object {
                                     ],
                                     "_i1": Object {
                                       "__name": "cellName",
-                                      "_i0": Array [
-                                        Object {
-                                          "__name": "varNameChar",
-                                          "_i0": Object {
-                                            "__name": "letter",
+                                      "_i0": Object {
+                                        "__name": "ruleVariableName",
+                                        "_i0": Array [
+                                          Object {
+                                            "__name": "ruleVariableChar",
                                             "_i0": Object {
-                                              "__name": "lower",
+                                              "__name": "any",
                                               "_i0": "z",
                                             },
                                           },
-                                        },
-                                      ],
+                                        ],
+                                      },
                                     },
                                   },
                                 },
@@ -8725,18 +8906,18 @@ Object {
                                     "__name": "SimpleCellLayer",
                                     "_i1": Object {
                                       "__name": "cellName",
-                                      "_i0": Array [
-                                        Object {
-                                          "__name": "varNameChar",
-                                          "_i0": Object {
-                                            "__name": "letter",
+                                      "_i0": Object {
+                                        "__name": "ruleVariableName",
+                                        "_i0": Array [
+                                          Object {
+                                            "__name": "ruleVariableChar",
                                             "_i0": Object {
-                                              "__name": "lower",
+                                              "__name": "any",
                                               "_i0": "x",
                                             },
                                           },
-                                        },
-                                      ],
+                                        ],
+                                      },
                                     },
                                   },
                                 },
@@ -9062,18 +9243,18 @@ Object {
                                 "__name": "SimpleCellLayer",
                                 "_i1": Object {
                                   "__name": "cellName",
-                                  "_i0": Array [
-                                    Object {
-                                      "__name": "varNameChar",
-                                      "_i0": Object {
-                                        "__name": "letter",
+                                  "_i0": Object {
+                                    "__name": "ruleVariableName",
+                                    "_i0": Array [
+                                      Object {
+                                        "__name": "ruleVariableChar",
                                         "_i0": Object {
-                                          "__name": "lower",
+                                          "__name": "any",
                                           "_i0": "z",
                                         },
                                       },
-                                    },
-                                  ],
+                                    ],
+                                  },
                                 },
                               },
                             },
@@ -9092,18 +9273,18 @@ Object {
                                   "__name": "SimpleCellLayer",
                                   "_i1": Object {
                                     "__name": "cellName",
-                                    "_i0": Array [
-                                      Object {
-                                        "__name": "varNameChar",
-                                        "_i0": Object {
-                                          "__name": "letter",
+                                    "_i0": Object {
+                                      "__name": "ruleVariableName",
+                                      "_i0": Array [
+                                        Object {
+                                          "__name": "ruleVariableChar",
                                           "_i0": Object {
-                                            "__name": "lower",
+                                            "__name": "any",
                                             "_i0": "x",
                                           },
                                         },
-                                      },
-                                    ],
+                                      ],
+                                    },
                                   },
                                 },
                               },
@@ -9408,18 +9589,18 @@ Object {
                                 "__name": "SimpleCellLayer",
                                 "_i1": Object {
                                   "__name": "cellName",
-                                  "_i0": Array [
-                                    Object {
-                                      "__name": "varNameChar",
-                                      "_i0": Object {
-                                        "__name": "letter",
+                                  "_i0": Object {
+                                    "__name": "ruleVariableName",
+                                    "_i0": Array [
+                                      Object {
+                                        "__name": "ruleVariableChar",
                                         "_i0": Object {
-                                          "__name": "lower",
+                                          "__name": "any",
                                           "_i0": "z",
                                         },
                                       },
-                                    },
-                                  ],
+                                    ],
+                                  },
                                 },
                               },
                             },
@@ -9429,18 +9610,18 @@ Object {
                                 "__name": "SimpleCellLayer",
                                 "_i1": Object {
                                   "__name": "cellName",
-                                  "_i0": Array [
-                                    Object {
-                                      "__name": "varNameChar",
-                                      "_i0": Object {
-                                        "__name": "letter",
+                                  "_i0": Object {
+                                    "__name": "ruleVariableName",
+                                    "_i0": Array [
+                                      Object {
+                                        "__name": "ruleVariableChar",
                                         "_i0": Object {
-                                          "__name": "lower",
+                                          "__name": "any",
                                           "_i0": "x",
                                         },
                                       },
-                                    },
-                                  ],
+                                    ],
+                                  },
                                 },
                               },
                             },
@@ -9742,18 +9923,18 @@ Object {
                                 "__name": "SimpleCellLayer",
                                 "_i1": Object {
                                   "__name": "cellName",
-                                  "_i0": Array [
-                                    Object {
-                                      "__name": "varNameChar",
-                                      "_i0": Object {
-                                        "__name": "letter",
+                                  "_i0": Object {
+                                    "__name": "ruleVariableName",
+                                    "_i0": Array [
+                                      Object {
+                                        "__name": "ruleVariableChar",
                                         "_i0": Object {
-                                          "__name": "lower",
+                                          "__name": "any",
                                           "_i0": "z",
                                         },
                                       },
-                                    },
-                                  ],
+                                    ],
+                                  },
                                 },
                               },
                             },
@@ -10021,18 +10202,18 @@ Object {
                                 "__name": "SimpleCellLayer",
                                 "_i1": Object {
                                   "__name": "cellName",
-                                  "_i0": Array [
-                                    Object {
-                                      "__name": "varNameChar",
-                                      "_i0": Object {
-                                        "__name": "letter",
+                                  "_i0": Object {
+                                    "__name": "ruleVariableName",
+                                    "_i0": Array [
+                                      Object {
+                                        "__name": "ruleVariableChar",
                                         "_i0": Object {
-                                          "__name": "lower",
+                                          "__name": "any",
                                           "_i0": "z",
                                         },
                                       },
-                                    },
-                                  ],
+                                    ],
+                                  },
                                 },
                               },
                             },
@@ -10071,18 +10252,18 @@ Object {
                                     "__name": "SimpleCellLayer",
                                     "_i1": Object {
                                       "__name": "cellName",
-                                      "_i0": Array [
-                                        Object {
-                                          "__name": "varNameChar",
-                                          "_i0": Object {
-                                            "__name": "letter",
+                                      "_i0": Object {
+                                        "__name": "ruleVariableName",
+                                        "_i0": Array [
+                                          Object {
+                                            "__name": "ruleVariableChar",
                                             "_i0": Object {
-                                              "__name": "lower",
+                                              "__name": "any",
                                               "_i0": "z",
                                             },
                                           },
-                                        },
-                                      ],
+                                        ],
+                                      },
                                     },
                                   },
                                 },
@@ -10343,18 +10524,18 @@ Object {
                                 "__name": "SimpleCellLayer",
                                 "_i1": Object {
                                   "__name": "cellName",
-                                  "_i0": Array [
-                                    Object {
-                                      "__name": "varNameChar",
-                                      "_i0": Object {
-                                        "__name": "letter",
+                                  "_i0": Object {
+                                    "__name": "ruleVariableName",
+                                    "_i0": Array [
+                                      Object {
+                                        "__name": "ruleVariableChar",
                                         "_i0": Object {
-                                          "__name": "lower",
+                                          "__name": "any",
                                           "_i0": "z",
                                         },
                                       },
-                                    },
-                                  ],
+                                    ],
+                                  },
                                 },
                               },
                             },
@@ -10393,18 +10574,18 @@ Object {
                                     "__name": "SimpleCellLayer",
                                     "_i1": Object {
                                       "__name": "cellName",
-                                      "_i0": Array [
-                                        Object {
-                                          "__name": "varNameChar",
-                                          "_i0": Object {
-                                            "__name": "letter",
+                                      "_i0": Object {
+                                        "__name": "ruleVariableName",
+                                        "_i0": Array [
+                                          Object {
+                                            "__name": "ruleVariableChar",
                                             "_i0": Object {
-                                              "__name": "lower",
+                                              "__name": "any",
                                               "_i0": "z",
                                             },
                                           },
-                                        },
-                                      ],
+                                        ],
+                                      },
                                     },
                                   },
                                 },

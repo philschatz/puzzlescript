@@ -1,9 +1,10 @@
 /* eslint-env jasmine */
-const {parse, parseGrammar} = require('../src/parser')
+const Parser = require('../src/parser')
 const {COLOR_PALETTES} = require('../src/colors')
 
 function checkGrammar (code) {
-  const {match, grammar} = parseGrammar(code)
+  const grammar = Parser.getGrammar()
+  const {match} = Parser.parseGrammar(code)
   if (!match.succeeded()) {
     const trace = grammar.trace(code)
     console.log(trace.toString())
@@ -41,7 +42,7 @@ function checkGrammar (code) {
 }
 
 function checkParse (code) {
-  const {data, error} = parse(code)
+  const {data, error} = Parser.parse(code)
   if (error) {
     console.log(error.message)
   }
@@ -157,10 +158,10 @@ describe('rules', () => {
 
   describe('General Formatting', () => {
     it('parses an almost-empty file', () => {
-      parseGrammar(`title foo`)
+      Parser.parseGrammar(`title foo`)
     })
     it('parses when there are empty blocks', () => {
-      parseGrammar(`
+      Parser.parseGrammar(`
 title foo
 ===
 objects
@@ -177,7 +178,7 @@ levels
 `)
     })
     it('parses object shortcut characters', () => {
-      parseGrammar(`
+      Parser.parseGrammar(`
 title foo
 ===
 OBJECTS
@@ -243,6 +244,48 @@ player
 yellow
 `)
       expect(data.objects[0]._colors[0]._color.toLowerCase()).toBe(COLOR_PALETTES['gameboycolour']['yellow'].toLowerCase())
+    })
+
+    it('Supports characters that would be invalid in one scope but are valid in another scope', () => {
+      checkParse(`
+title foo
+
+===
+OBJECTS
+===
+
+hello .
+transparent
+
+hello2 ]
+transparent
+
+hello3 ♡
+transparent
+
+=======
+LEGEND
+=======
+
+[ = hello
+, = hello2
+д = hello3
+sfx11 = hello3 (this is a valid variable name since there are only 10 SFX)
+
+=======
+COLLISIONLAYERS
+=======
+
+hello,hello2
+
+=======
+RULES
+=======
+
+[.]->[.]
+[♡]->[♡]
+
+`)
     })
   })
 

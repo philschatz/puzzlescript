@@ -1,0 +1,48 @@
+/* eslint-env jasmine */
+const {readFileSync} = require('fs')
+const Parser = require('../src/parser')
+
+function checkGrammar (code) {
+  const grammar = Parser.getGrammar()
+  const start = Date.now()
+  console.log('Starting Match');
+  const match = grammar.match(code)
+  console.log('Completed Match. Took', Date.now() - start);
+  console.log(match.message);
+  expect(match.succeeded()).toBe(true)
+
+  const s = grammar.createSemantics()
+  s.addOperation('toJSON2', {
+    _terminal: function () { return this.primitiveValue },
+    _iter: function (children) {
+      return children.map(child => child.toJSON2())
+    },
+    _default: function (children) {
+      if (this.ctorName === 'word') {
+        return this.sourceString
+      // } if (this.ctorName[0] === this.ctorName[0].toLowerCase()) {
+      //   return this.ctorName
+      } else {
+        const obj = {
+          __name: this.ctorName
+        }
+        children.forEach((child, index) => {
+          const value = child.toJSON2()
+          if (!Array.isArray(value) || value.length >= 1) {
+            obj[`_i${index}`] = value
+          }
+        })
+        return obj
+      }
+    }
+  })
+  const tree = s(match).toJSON2()
+  // expect(tree).toMatchSnapshot()
+  return tree
+}
+
+describe('BIG', () => {
+  it('Reads in a big file', () => {
+    checkGrammar(readFileSync('./gists/_on-board_itch/toobig-script.txt', 'utf-8'))
+  })
+})

@@ -1,7 +1,7 @@
 const ohm = require('ohm-js')
 const {lookupColorPalette} = require('./colors')
 
-const grammar = `
+const GRAMMAR_STR = `
 Puzzlescript {
   Details =
     lineTerminator* // Version information
@@ -100,10 +100,7 @@ Puzzlescript {
   LegendItemAnd = legendVarNameDefn "=" NonemptyListOf<legendVarNameDefn, t_AND> lineTerminator+
   LegendItemOr = legendVarNameDefn "=" NonemptyListOf<legendVarNameDefn, t_OR> lineTerminator+
 
-  legendCharDefn = any // a single character that is allowed to be in a puzzle level
-  legendVarNameDefn = varName | legendCharDefn
-  // You can define "[" in the legend but you cannot use it in the rules
-  legendVarNameUse = varName | (~nonVarChar any)
+  legendVarNameDefn = varName | legendVariableChar
 
 
 
@@ -213,7 +210,7 @@ HackCellLayer2 = cellName HackRuleCommand
 HackRuleCommand = RuleCommand ~letter // HACK: These should be moved up to the Rule Action, not nested way down here
 
 
-cellName = ~t_ELLIPSIS varNameChar+
+cellName = ruleVariableName
 
 cellLayerModifier = space* cellLayerModifierInner space+ // Force-check that there is whitespace after the cellLayerModifier so things like "STATIONARYZ" or "NOZ" are not parsed as a modifier (they are a variable that happens to begin with the same text as a modifier)
 
@@ -391,9 +388,6 @@ MessageCommand = t_MESSAGE words*
     (space* ItemExpr)*
     lineTerminator*
 
-  // Must contain at least 1 letter. Otherwise sound effects are confused
-  varName = digit* letter varNameChar*
-  varNameChar = letter | digit | "." | "_" | "?"
   headingBar = "="*
   lineTerminator = space* newline space*
   sourceCharacter = any
@@ -413,6 +407,23 @@ MessageCommand = t_MESSAGE words*
 
   integer = digit+
 
+  // -----------------------
+  // Variable Names
+  // -----------------------
+
+  // There are 2 classes of restrictions on variable names:
+  // - in Rules. object names, rule references, some legend items : These cannot contain characters like brackets and pipes because they can occur inside a Rule
+  // - in a Level. object shortcut characters, legend items
+
+  // Must contain at least 1 letter. Otherwise sound effects are confused
+  varName = digit* letter varNameChar*
+  varNameChar = letter | digit | "." | "_" | "?"
+
+
+  legendVariableChar = (~" " ~newline ~"=" any)
+  ruleVariableChar = (~" " ~newline ~"[" ~"]" ~"|" ~t_ELLIPSIS any)
+
+  ruleVariableName = ruleVariableChar+
 }
 `// readFileSync('./grammar.ohm', 'utf-8')
 
@@ -817,16 +828,23 @@ function getConfigField (key, value) {
   return [key.parse(), value.parse()]
 }
 
+_GRAMMAR = null
+function getGrammar() {
+  _GRAMMAR = _GRAMMAR || ohm.grammar(GRAMMAR_STR)
+  return _GRAMMAR
+}
+
 function parseGrammar (code) {
   // 8645c163ff321d2fd1bad3fcaf48c107 has a typo so we .replace()
   code = code.replace('][ ->', '] ->') + '\n' // Not all games have a trailing newline. this makes it easier on the parser
 
-  const g = ohm.grammar(grammar)
-  return {match: g.match(code), grammar: g, grammarStr: grammar}
+  const g = getGrammar()
+  return {match: g.match(code)}
 }
 
 function parse (code) {
-  const {match: m, grammar: g} = parseGrammar(code)
+  const g = getGrammar()
+  const {match: m} = parseGrammar(code)
 
   if (m.succeeded()) {
     const lookup = new LookupHelper()
@@ -1100,6 +1118,7 @@ function parse (code) {
 module.exports = {
   parse,
   parseGrammar,
+  getGrammar,
   BaseForLines,
   LevelMap,
   GameMessage,
