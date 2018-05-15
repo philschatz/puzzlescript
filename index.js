@@ -1,8 +1,8 @@
 const {readFileSync} = require('fs')
 const glob = require('glob')
 
-const {parse} = require('./src/parser')
-const {renderScreen} = require('./src/ui')
+const Parser = require('./src/parser')
+const UI = require('./src/ui')
 const Engine = require('./src/engine')
 
 let totalRenderTime = 0
@@ -16,7 +16,7 @@ glob('./gists/*/script.txt', (err, files) => {
   files.forEach((filename, index) => {
     console.log(`Parsing and rendering ${filename}`);
     const code = readFileSync(filename, 'utf-8')
-    const {data, error, trace} = parse(code)
+    const {data, error, trace} = Parser.parse(code)
 
     if (error) {
       console.log(trace.toString())
@@ -36,12 +36,17 @@ glob('./gists/*/script.txt', (err, files) => {
         engine.setLevel(data.levels.indexOf(level))
 
         // console.log(level)
-        renderScreen(data, engine.currentLevel)
+        UI.renderScreen(data, engine.currentLevel)
 
-        engine.tick()
-        // renderScreen(data, engine.currentLevel)
+        for (var i = 0; i < 100; i++) {
+          const changes = engine.tick()
+          changes.forEach(cell => {
+            UI.drawCellAt(data, cell, cell.rowIndex, cell.colIndex)
+          })
+        }
       }
 
+      UI.clearScreen()
       totalRenderTime += Date.now() - startTime
 
       if (index === files.length - 1) {

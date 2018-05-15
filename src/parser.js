@@ -721,8 +721,8 @@ class GameRuleLoop extends BaseForLines {
     super(source)
     this._rules = rules
   }
-  doesntMatchCell (cell) {
-    return 'Loops are not supported yet'
+  getActionsIfMatchedOrNull (cell, state) {
+    return null // TODO Loops are not supported yet
   }
 }
 
@@ -734,8 +734,15 @@ class GameRule extends BaseForLines {
     this._innerRule = innerRule
   }
 
-  doesntMatchCell (cell) {
-    return this._innerRule.doesntMatchCell(cell)
+  getActionsIfMatchedOrNull (cell, state) {
+    if (this._ruleModifiers.length > 0) {
+      return null // TODO: not supported yet
+    }
+    return this._innerRule.getActionsIfMatchedOrNull(cell, state)
+  }
+
+  mutate (cell, state) {
+    return this._innerRule.mutate(cell, state)
   }
 }
 
@@ -768,12 +775,45 @@ class BracketPair {
   constructor(neighbors) {
     this.neighbors = neighbors
   }
+  mutate (cell, state) {
+    return this.neighbors.map((neighbor) => neighbor.mutate(cell))
+  }
+}
+
+class EllipsisPair {
+  constructor() {
+    // TODO: Implement me
+  }
 }
 
 class CellPair {
   constructor(condition, action) {
     this.conditionLayers = condition
     this.actionLayers = action
+  }
+  mutate (cell) {
+    // Just remove all tiles for now and then add all of them back
+    // TODO: only remove tiles that are matching the collisionLayer but wait, they already need to be exclusive
+    const newSetOfSprites = new Set(cell.getSpritesAsSet())
+
+    // remove sprites that are listed on the condition side
+    this.conditionLayers.forEach(layer => {
+      layer.getSprites().forEach(sprite => {
+        newSetOfSprites.delete(sprite)
+      })
+    })
+    this.actionLayers.forEach(layer => {
+      layer.getSprites().forEach(sprite => {
+        newSetOfSprites.add(sprite)
+      })
+    })
+
+    if (!cell.equalsSprites(newSetOfSprites)) {
+      cell.updateSprites(newSetOfSprites)
+      return cell
+    } else {
+      return null
+    }
   }
 }
 
@@ -794,41 +834,59 @@ class RuleBracketsToZip extends BaseForLines {
       const conditionBracket = conditions[x]
       const actionBracket = actions[x]
 
-      if (conditionBracket._bracket._neighbors.length !== actionBracket._bracket._neighbors.length) {
-        throw new Error(`ERROR: Rule conditions (left side) and actions (right side) must match up structurally (must have the same number of brackets and each bracket must have the same number of pipe characters). Number of Pipe characters do not match`)
+      // TODO: Convert this to a conditionBracket._bracket.zipWith(actionBracket._bracket)
+      if (conditionBracket._bracket instanceof RuleEllipsisBracket) {
+        this._bracketPairs.push(new EllipsisPair())
+      } else {
+
+        if (!conditionBracket._bracket._neighbors) {
+          console.log(conditionBracket._bracket)
+          console.log(conditionBracket._bracket.toString())
+        }
+        if (conditionBracket._bracket._neighbors.length !== actionBracket._bracket._neighbors.length) {
+          throw new Error(`ERROR: Rule conditions (left side) and actions (right side) must match up structurally (must have the same number of brackets and each bracket must have the same number of pipe characters). Number of Pipe characters do not match`)
+        }
+
+        const resultNeighbors = []
+        for (let y = 0; y < conditionBracket._bracket._neighbors.length; y++) {
+          const conditionNeighbor = conditionBracket._bracket._neighbors[y]
+          const actionNeighbor = actionBracket._bracket._neighbors[y]
+
+          resultNeighbors.push(new CellPair(conditionNeighbor, actionNeighbor))
+        }
+
+        this._bracketPairs.push(new BracketPair(resultNeighbors))
+
       }
 
-      const resultNeighbors = []
-      for (let y = 0; y < conditionBracket._bracket._neighbors.length; y++) {
-        const conditionNeighbor = conditionBracket._bracket._neighbors[y]
-        const actionNeighbor = actionBracket._bracket._neighbors[y]
-
-        resultNeighbors.push(new CellPair(conditionNeighbor, actionNeighbor))
-      }
-
-      this._bracketPairs.push(new BracketPair(resultNeighbors))
     }
   }
 
-  doesntMatchCell (cell) {
-    let ret = null
+  getActionsIfMatchedOrNull (cell, state) {
+    let ret = []
     if (this._bracketPairs.length > 1) {
-      ret = `BUG: multiple bracket rules are not supported yet`
-      return ret
+      return null // `BUG: multiple bracket rules are not supported yet`
     }
 
     for (const bracketPair of this._bracketPairs) {
+      // HACK Since we don't support EllipsisPair yet
+      if (bracketPair instanceof EllipsisPair) {
+        return null
+      }
       if (bracketPair.neighbors.length > 1) {
-        ret = `BUG: bracket rules with "|" (neighbors) are not supported yet`
-        return ret
+        return null // `BUG: bracket rules with "|" (neighbors) are not supported yet`
       }
 
       for (const cellLayer of bracketPair.neighbors[0].conditionLayers) {
-        ret = cellLayer.doesntMatchCell(cell)
-        if (ret) return ret
+        const retChild = cellLayer.matchesCell(cell)
+        if (!retChild) return null
+        ret = ret.concat(retChild)
       }
     }
-    return ret
+    return this
+  }
+  mutate (cell, state) {
+    return this._bracketPairs.map((bracketPair) => bracketPair.mutate(cell, state))
   }
 
   doesntMatchConditionStructure (conditionBrackets) {
@@ -844,11 +902,11 @@ class GameRuleSequenceBracket extends BaseForLines {
     this._bracket = bracket
   }
 
-  doesntMatchCell (cell) {
+  getActionsIfMatchedOrNull (cell, state) {
     if (this._ruleModifiers.length > 0) {
-      return `BUG: evaluating rules with modifiers is not implemented yet`
+      return null // `BUG: evaluating rules with modifiers is not implemented yet`
     }
-    return this._bracket.doesntMatchCell(cell)
+    return this._bracket.getActionsIfMatchedOrNull(cell, state)
   }
 
   doesntMatchConditionStructure (condition) {
@@ -862,8 +920,8 @@ class RuleEllipsisBracket extends BaseForLines {
     this._leftNeighboringCells = leftNeighboringCells
     this._rightNeighboringCells = rightNeighboringCells
   }
-  doesntMatchCell (cell) {
-    return 'BUG: Checking neighbors (& ellipses) not implemented yet'
+  getActionsIfMatchedOrNull (cell) {
+    return null // 'BUG: Checking neighbors (& ellipses) not implemented yet'
   }
 
   doesntMatchConditionStructure (condition) {
@@ -880,15 +938,16 @@ class GameRuleSimpleBracket extends BaseForLines {
     this._neighbors = neighbors
   }
 
-  doesntMatchCell (cell) {
-    if (this._neighbors.length > 1) { return `BUG: checking neighbors not implemented yet` }
-    // Check if all the cellLayers are on the current cell
-    let ret = null
-    for (const child of this._neighbors[0]) {
-      ret = child.doesntMatchCell(cell)
-      if (ret) break
+  getActionsIfMatchedOrNull (cell, state) {
+    if (this._neighbors.length > 1) {
+      return null // `BUG: checking neighbors not implemented yet`
     }
-    return ret
+    // Check if all the cellLayers are on the current cell
+    for (const child of this._neighbors[0]) {
+      const retChild = child.matchesCell(cell)
+      if (!retChild) return null
+    }
+    return this
   }
 
   doesntMatchConditionStructure (conditionBracket) {
@@ -903,13 +962,17 @@ class RuleCommands extends BaseForLines {
     this._conditions = conditions
     this._commands = commands
   }
-  doesntMatchCell (cell) {
-    let ret = null
+  getActionsIfMatchedOrNull (cell, state) {
+    let ret = []
     for (const child of this._conditions) {
-      ret = child.doesntMatchCell(cell)
-      if (ret) break
+      const retChild = child.getActionsIfMatchedOrNull(cell, state)
+      if (!retChild) return null
+      ret = ret.concat(retChild)
     }
     return ret
+  }
+  mutate (cell, state) {
+    // console.log(`TODO: Execute these commands (which matched):`, this._commands)
   }
   doesntMatchConditionStructure () {
     // The left-hand-side structure does not matter since we are executing commands
@@ -928,19 +991,19 @@ class GameRuleCellLayer extends BaseForLines {
   getSprites () {
     return this._sprite.getSprites()
   }
-  doesntMatchCell (cell) {
+  matchesCell (cell) {
     let ret = null
     const mods = this._cellModifiers
     if (mods.size > 1 || mods.size === 1 && !mods.has(M_STATIONARY)) {
       // Not supported yet
-      return this
+      return false
     }
     for (const sprite of this.getSprites()) {
       if (!cell.getSpritesAsSet().has(sprite)) {
-        ret = sprite
+        return false
       }
     }
-    return ret
+    return true // we matched so return us as a mutator
   }
 
 }

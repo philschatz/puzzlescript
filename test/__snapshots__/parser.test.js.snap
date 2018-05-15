@@ -356,10 +356,10 @@ Object {
   "collisionLayers": Array [],
   "legends": Array [
     GameLegendItemSimple {
-      "__astId": 236,
+      "__astId": 237,
       "_aliases": Array [
         GameSpriteNoPixels {
-          "__astId": 235,
+          "__astId": 236,
           "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
@@ -371,7 +371,7 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameSpriteNoPixels {
-      "__astId": 235,
+      "__astId": 236,
       "_color": "transparent",
       "_name": "testObject",
       "_optionalLegendChar": undefined,
@@ -379,24 +379,24 @@ Object {
   ],
   "rules": Array [
     GameRule {
-      "__astId": 244,
+      "__astId": 245,
       "_innerRule": RuleBracketsToZip {
-        "__astId": 243,
+        "__astId": 244,
         "_actions": Array [
           GameRuleSequenceBracket {
-            "__astId": 242,
+            "__astId": 243,
             "_bracket": GameRuleSimpleBracket {
-              "__astId": 241,
+              "__astId": 242,
               "_neighbors": Array [
                 Array [
                   GameRuleCellLayer {
-                    "__astId": 240,
+                    "__astId": 241,
                     "_cellModifiers": Set {},
                     "_sprite": GameLegendItemSimple {
-                      "__astId": 236,
+                      "__astId": 237,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 235,
+                          "__astId": 236,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -417,13 +417,13 @@ Object {
               CellPair {
                 "actionLayers": Array [
                   GameRuleCellLayer {
-                    "__astId": 240,
+                    "__astId": 241,
                     "_cellModifiers": Set {},
                     "_sprite": GameLegendItemSimple {
-                      "__astId": 236,
+                      "__astId": 237,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 235,
+                          "__astId": 236,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -435,13 +435,13 @@ Object {
                 ],
                 "conditionLayers": Array [
                   GameRuleCellLayer {
-                    "__astId": 237,
+                    "__astId": 238,
                     "_cellModifiers": Set {},
                     "_sprite": GameLegendItemSimple {
-                      "__astId": 236,
+                      "__astId": 237,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 235,
+                          "__astId": 236,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -458,19 +458,19 @@ Object {
         "_commands": Array [],
         "_conditions": Array [
           GameRuleSequenceBracket {
-            "__astId": 239,
+            "__astId": 240,
             "_bracket": GameRuleSimpleBracket {
-              "__astId": 238,
+              "__astId": 239,
               "_neighbors": Array [
                 Array [
                   GameRuleCellLayer {
-                    "__astId": 237,
+                    "__astId": 238,
                     "_cellModifiers": Set {},
                     "_sprite": GameLegendItemSimple {
-                      "__astId": 236,
+                      "__astId": 237,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 235,
+                          "__astId": 236,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -714,10 +714,10 @@ Object {
   "collisionLayers": Array [],
   "legends": Array [
     GameLegendItemSimple {
-      "__astId": 83,
+      "__astId": 84,
       "_aliases": Array [
         GameSpriteNoPixels {
-          "__astId": 82,
+          "__astId": 83,
           "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
@@ -729,7 +729,7 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameSpriteNoPixels {
-      "__astId": 82,
+      "__astId": 83,
       "_color": "transparent",
       "_name": "testObject",
       "_optionalLegendChar": undefined,
@@ -737,14 +737,14 @@ Object {
   ],
   "rules": Array [
     GameRule {
-      "__astId": 90,
+      "__astId": 91,
       "_innerRule": RuleBracketsToZip {
-        "__astId": 89,
+        "__astId": 90,
         "_actions": Array [
           GameRuleSequenceBracket {
-            "__astId": 88,
+            "__astId": 89,
             "_bracket": GameRuleSimpleBracket {
-              "__astId": 87,
+              "__astId": 88,
               "_neighbors": Array [
                 Array [],
               ],
@@ -759,15 +759,15 @@ Object {
                 "actionLayers": Array [],
                 "conditionLayers": Array [
                   GameRuleCellLayer {
-                    "__astId": 84,
+                    "__astId": 85,
                     "_cellModifiers": Set {
                       "ACTION",
                     },
                     "_sprite": GameLegendItemSimple {
-                      "__astId": 83,
+                      "__astId": 84,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 82,
+                          "__astId": 83,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -784,21 +784,21 @@ Object {
         "_commands": Array [],
         "_conditions": Array [
           GameRuleSequenceBracket {
-            "__astId": 86,
+            "__astId": 87,
             "_bracket": GameRuleSimpleBracket {
-              "__astId": 85,
+              "__astId": 86,
               "_neighbors": Array [
                 Array [
                   GameRuleCellLayer {
-                    "__astId": 84,
+                    "__astId": 85,
                     "_cellModifiers": Set {
                       "ACTION",
                     },
                     "_sprite": GameLegendItemSimple {
-                      "__astId": 83,
+                      "__astId": 84,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 82,
+                          "__astId": 83,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -1042,10 +1042,10 @@ Object {
   "collisionLayers": Array [],
   "legends": Array [
     GameLegendItemSimple {
-      "__astId": 92,
+      "__astId": 93,
       "_aliases": Array [
         GameSpriteNoPixels {
-          "__astId": 91,
+          "__astId": 92,
           "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
@@ -1057,7 +1057,7 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameSpriteNoPixels {
-      "__astId": 91,
+      "__astId": 92,
       "_color": "transparent",
       "_name": "testObject",
       "_optionalLegendChar": undefined,
@@ -1065,14 +1065,14 @@ Object {
   ],
   "rules": Array [
     GameRule {
-      "__astId": 99,
+      "__astId": 100,
       "_innerRule": RuleBracketsToZip {
-        "__astId": 98,
+        "__astId": 99,
         "_actions": Array [
           GameRuleSequenceBracket {
-            "__astId": 97,
+            "__astId": 98,
             "_bracket": GameRuleSimpleBracket {
-              "__astId": 96,
+              "__astId": 97,
               "_neighbors": Array [
                 Array [],
               ],
@@ -1087,15 +1087,15 @@ Object {
                 "actionLayers": Array [],
                 "conditionLayers": Array [
                   GameRuleCellLayer {
-                    "__astId": 93,
+                    "__astId": 94,
                     "_cellModifiers": Set {
                       "^",
                     },
                     "_sprite": GameLegendItemSimple {
-                      "__astId": 92,
+                      "__astId": 93,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 91,
+                          "__astId": 92,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -1112,21 +1112,21 @@ Object {
         "_commands": Array [],
         "_conditions": Array [
           GameRuleSequenceBracket {
-            "__astId": 95,
+            "__astId": 96,
             "_bracket": GameRuleSimpleBracket {
-              "__astId": 94,
+              "__astId": 95,
               "_neighbors": Array [
                 Array [
                   GameRuleCellLayer {
-                    "__astId": 93,
+                    "__astId": 94,
                     "_cellModifiers": Set {
                       "^",
                     },
                     "_sprite": GameLegendItemSimple {
-                      "__astId": 92,
+                      "__astId": 93,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 91,
+                          "__astId": 92,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -1373,10 +1373,10 @@ Object {
   "collisionLayers": Array [],
   "legends": Array [
     GameLegendItemSimple {
-      "__astId": 101,
+      "__astId": 102,
       "_aliases": Array [
         GameSpriteNoPixels {
-          "__astId": 100,
+          "__astId": 101,
           "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
@@ -1388,7 +1388,7 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameSpriteNoPixels {
-      "__astId": 100,
+      "__astId": 101,
       "_color": "transparent",
       "_name": "testObject",
       "_optionalLegendChar": undefined,
@@ -1396,14 +1396,14 @@ Object {
   ],
   "rules": Array [
     GameRule {
-      "__astId": 108,
+      "__astId": 109,
       "_innerRule": RuleBracketsToZip {
-        "__astId": 107,
+        "__astId": 108,
         "_actions": Array [
           GameRuleSequenceBracket {
-            "__astId": 106,
+            "__astId": 107,
             "_bracket": GameRuleSimpleBracket {
-              "__astId": 105,
+              "__astId": 106,
               "_neighbors": Array [
                 Array [],
               ],
@@ -1418,15 +1418,15 @@ Object {
                 "actionLayers": Array [],
                 "conditionLayers": Array [
                   GameRuleCellLayer {
-                    "__astId": 102,
+                    "__astId": 103,
                     "_cellModifiers": Set {
                       "V",
                     },
                     "_sprite": GameLegendItemSimple {
-                      "__astId": 101,
+                      "__astId": 102,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 100,
+                          "__astId": 101,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -1443,21 +1443,21 @@ Object {
         "_commands": Array [],
         "_conditions": Array [
           GameRuleSequenceBracket {
-            "__astId": 104,
+            "__astId": 105,
             "_bracket": GameRuleSimpleBracket {
-              "__astId": 103,
+              "__astId": 104,
               "_neighbors": Array [
                 Array [
                   GameRuleCellLayer {
-                    "__astId": 102,
+                    "__astId": 103,
                     "_cellModifiers": Set {
                       "V",
                     },
                     "_sprite": GameLegendItemSimple {
-                      "__astId": 101,
+                      "__astId": 102,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 100,
+                          "__astId": 101,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -1701,10 +1701,10 @@ Object {
   "collisionLayers": Array [],
   "legends": Array [
     GameLegendItemSimple {
-      "__astId": 110,
+      "__astId": 111,
       "_aliases": Array [
         GameSpriteNoPixels {
-          "__astId": 109,
+          "__astId": 110,
           "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
@@ -1716,7 +1716,7 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameSpriteNoPixels {
-      "__astId": 109,
+      "__astId": 110,
       "_color": "transparent",
       "_name": "testObject",
       "_optionalLegendChar": undefined,
@@ -1724,14 +1724,14 @@ Object {
   ],
   "rules": Array [
     GameRule {
-      "__astId": 117,
+      "__astId": 118,
       "_innerRule": RuleBracketsToZip {
-        "__astId": 116,
+        "__astId": 117,
         "_actions": Array [
           GameRuleSequenceBracket {
-            "__astId": 115,
+            "__astId": 116,
             "_bracket": GameRuleSimpleBracket {
-              "__astId": 114,
+              "__astId": 115,
               "_neighbors": Array [
                 Array [],
               ],
@@ -1746,15 +1746,15 @@ Object {
                 "actionLayers": Array [],
                 "conditionLayers": Array [
                   GameRuleCellLayer {
-                    "__astId": 111,
+                    "__astId": 112,
                     "_cellModifiers": Set {
                       ">",
                     },
                     "_sprite": GameLegendItemSimple {
-                      "__astId": 110,
+                      "__astId": 111,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 109,
+                          "__astId": 110,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -1771,21 +1771,21 @@ Object {
         "_commands": Array [],
         "_conditions": Array [
           GameRuleSequenceBracket {
-            "__astId": 113,
+            "__astId": 114,
             "_bracket": GameRuleSimpleBracket {
-              "__astId": 112,
+              "__astId": 113,
               "_neighbors": Array [
                 Array [
                   GameRuleCellLayer {
-                    "__astId": 111,
+                    "__astId": 112,
                     "_cellModifiers": Set {
                       ">",
                     },
                     "_sprite": GameLegendItemSimple {
-                      "__astId": 110,
+                      "__astId": 111,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 109,
+                          "__astId": 110,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -2029,10 +2029,10 @@ Object {
   "collisionLayers": Array [],
   "legends": Array [
     GameLegendItemSimple {
-      "__astId": 119,
+      "__astId": 120,
       "_aliases": Array [
         GameSpriteNoPixels {
-          "__astId": 118,
+          "__astId": 119,
           "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
@@ -2044,7 +2044,7 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameSpriteNoPixels {
-      "__astId": 118,
+      "__astId": 119,
       "_color": "transparent",
       "_name": "testObject",
       "_optionalLegendChar": undefined,
@@ -2052,14 +2052,14 @@ Object {
   ],
   "rules": Array [
     GameRule {
-      "__astId": 126,
+      "__astId": 127,
       "_innerRule": RuleBracketsToZip {
-        "__astId": 125,
+        "__astId": 126,
         "_actions": Array [
           GameRuleSequenceBracket {
-            "__astId": 124,
+            "__astId": 125,
             "_bracket": GameRuleSimpleBracket {
-              "__astId": 123,
+              "__astId": 124,
               "_neighbors": Array [
                 Array [],
               ],
@@ -2074,15 +2074,15 @@ Object {
                 "actionLayers": Array [],
                 "conditionLayers": Array [
                   GameRuleCellLayer {
-                    "__astId": 120,
+                    "__astId": 121,
                     "_cellModifiers": Set {
                       "<",
                     },
                     "_sprite": GameLegendItemSimple {
-                      "__astId": 119,
+                      "__astId": 120,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 118,
+                          "__astId": 119,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -2099,21 +2099,21 @@ Object {
         "_commands": Array [],
         "_conditions": Array [
           GameRuleSequenceBracket {
-            "__astId": 122,
+            "__astId": 123,
             "_bracket": GameRuleSimpleBracket {
-              "__astId": 121,
+              "__astId": 122,
               "_neighbors": Array [
                 Array [
                   GameRuleCellLayer {
-                    "__astId": 120,
+                    "__astId": 121,
                     "_cellModifiers": Set {
                       "<",
                     },
                     "_sprite": GameLegendItemSimple {
-                      "__astId": 119,
+                      "__astId": 120,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 118,
+                          "__astId": 119,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -2357,10 +2357,10 @@ Object {
   "collisionLayers": Array [],
   "legends": Array [
     GameLegendItemSimple {
-      "__astId": 128,
+      "__astId": 129,
       "_aliases": Array [
         GameSpriteNoPixels {
-          "__astId": 127,
+          "__astId": 128,
           "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
@@ -2372,7 +2372,7 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameSpriteNoPixels {
-      "__astId": 127,
+      "__astId": 128,
       "_color": "transparent",
       "_name": "testObject",
       "_optionalLegendChar": undefined,
@@ -2380,14 +2380,14 @@ Object {
   ],
   "rules": Array [
     GameRule {
-      "__astId": 135,
+      "__astId": 136,
       "_innerRule": RuleBracketsToZip {
-        "__astId": 134,
+        "__astId": 135,
         "_actions": Array [
           GameRuleSequenceBracket {
-            "__astId": 133,
+            "__astId": 134,
             "_bracket": GameRuleSimpleBracket {
-              "__astId": 132,
+              "__astId": 133,
               "_neighbors": Array [
                 Array [],
               ],
@@ -2402,15 +2402,15 @@ Object {
                 "actionLayers": Array [],
                 "conditionLayers": Array [
                   GameRuleCellLayer {
-                    "__astId": 129,
+                    "__astId": 130,
                     "_cellModifiers": Set {
                       "LEFT",
                     },
                     "_sprite": GameLegendItemSimple {
-                      "__astId": 128,
+                      "__astId": 129,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 127,
+                          "__astId": 128,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -2427,21 +2427,21 @@ Object {
         "_commands": Array [],
         "_conditions": Array [
           GameRuleSequenceBracket {
-            "__astId": 131,
+            "__astId": 132,
             "_bracket": GameRuleSimpleBracket {
-              "__astId": 130,
+              "__astId": 131,
               "_neighbors": Array [
                 Array [
                   GameRuleCellLayer {
-                    "__astId": 129,
+                    "__astId": 130,
                     "_cellModifiers": Set {
                       "LEFT",
                     },
                     "_sprite": GameLegendItemSimple {
-                      "__astId": 128,
+                      "__astId": 129,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 127,
+                          "__astId": 128,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -2685,10 +2685,10 @@ Object {
   "collisionLayers": Array [],
   "legends": Array [
     GameLegendItemSimple {
-      "__astId": 137,
+      "__astId": 138,
       "_aliases": Array [
         GameSpriteNoPixels {
-          "__astId": 136,
+          "__astId": 137,
           "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
@@ -2700,7 +2700,7 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameSpriteNoPixels {
-      "__astId": 136,
+      "__astId": 137,
       "_color": "transparent",
       "_name": "testObject",
       "_optionalLegendChar": undefined,
@@ -2708,14 +2708,14 @@ Object {
   ],
   "rules": Array [
     GameRule {
-      "__astId": 144,
+      "__astId": 145,
       "_innerRule": RuleBracketsToZip {
-        "__astId": 143,
+        "__astId": 144,
         "_actions": Array [
           GameRuleSequenceBracket {
-            "__astId": 142,
+            "__astId": 143,
             "_bracket": GameRuleSimpleBracket {
-              "__astId": 141,
+              "__astId": 142,
               "_neighbors": Array [
                 Array [],
               ],
@@ -2730,15 +2730,15 @@ Object {
                 "actionLayers": Array [],
                 "conditionLayers": Array [
                   GameRuleCellLayer {
-                    "__astId": 138,
+                    "__astId": 139,
                     "_cellModifiers": Set {
                       "RIGHT",
                     },
                     "_sprite": GameLegendItemSimple {
-                      "__astId": 137,
+                      "__astId": 138,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 136,
+                          "__astId": 137,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -2755,21 +2755,21 @@ Object {
         "_commands": Array [],
         "_conditions": Array [
           GameRuleSequenceBracket {
-            "__astId": 140,
+            "__astId": 141,
             "_bracket": GameRuleSimpleBracket {
-              "__astId": 139,
+              "__astId": 140,
               "_neighbors": Array [
                 Array [
                   GameRuleCellLayer {
-                    "__astId": 138,
+                    "__astId": 139,
                     "_cellModifiers": Set {
                       "RIGHT",
                     },
                     "_sprite": GameLegendItemSimple {
-                      "__astId": 137,
+                      "__astId": 138,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 136,
+                          "__astId": 137,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -3013,10 +3013,10 @@ Object {
   "collisionLayers": Array [],
   "legends": Array [
     GameLegendItemSimple {
-      "__astId": 146,
+      "__astId": 147,
       "_aliases": Array [
         GameSpriteNoPixels {
-          "__astId": 145,
+          "__astId": 146,
           "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
@@ -3028,7 +3028,7 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameSpriteNoPixels {
-      "__astId": 145,
+      "__astId": 146,
       "_color": "transparent",
       "_name": "testObject",
       "_optionalLegendChar": undefined,
@@ -3036,14 +3036,14 @@ Object {
   ],
   "rules": Array [
     GameRule {
-      "__astId": 153,
+      "__astId": 154,
       "_innerRule": RuleBracketsToZip {
-        "__astId": 152,
+        "__astId": 153,
         "_actions": Array [
           GameRuleSequenceBracket {
-            "__astId": 151,
+            "__astId": 152,
             "_bracket": GameRuleSimpleBracket {
-              "__astId": 150,
+              "__astId": 151,
               "_neighbors": Array [
                 Array [],
               ],
@@ -3058,15 +3058,15 @@ Object {
                 "actionLayers": Array [],
                 "conditionLayers": Array [
                   GameRuleCellLayer {
-                    "__astId": 147,
+                    "__astId": 148,
                     "_cellModifiers": Set {
                       "UP",
                     },
                     "_sprite": GameLegendItemSimple {
-                      "__astId": 146,
+                      "__astId": 147,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 145,
+                          "__astId": 146,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -3083,21 +3083,21 @@ Object {
         "_commands": Array [],
         "_conditions": Array [
           GameRuleSequenceBracket {
-            "__astId": 149,
+            "__astId": 150,
             "_bracket": GameRuleSimpleBracket {
-              "__astId": 148,
+              "__astId": 149,
               "_neighbors": Array [
                 Array [
                   GameRuleCellLayer {
-                    "__astId": 147,
+                    "__astId": 148,
                     "_cellModifiers": Set {
                       "UP",
                     },
                     "_sprite": GameLegendItemSimple {
-                      "__astId": 146,
+                      "__astId": 147,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 145,
+                          "__astId": 146,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -3341,10 +3341,10 @@ Object {
   "collisionLayers": Array [],
   "legends": Array [
     GameLegendItemSimple {
-      "__astId": 155,
+      "__astId": 156,
       "_aliases": Array [
         GameSpriteNoPixels {
-          "__astId": 154,
+          "__astId": 155,
           "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
@@ -3356,7 +3356,7 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameSpriteNoPixels {
-      "__astId": 154,
+      "__astId": 155,
       "_color": "transparent",
       "_name": "testObject",
       "_optionalLegendChar": undefined,
@@ -3364,14 +3364,14 @@ Object {
   ],
   "rules": Array [
     GameRule {
-      "__astId": 162,
+      "__astId": 163,
       "_innerRule": RuleBracketsToZip {
-        "__astId": 161,
+        "__astId": 162,
         "_actions": Array [
           GameRuleSequenceBracket {
-            "__astId": 160,
+            "__astId": 161,
             "_bracket": GameRuleSimpleBracket {
-              "__astId": 159,
+              "__astId": 160,
               "_neighbors": Array [
                 Array [],
               ],
@@ -3386,15 +3386,15 @@ Object {
                 "actionLayers": Array [],
                 "conditionLayers": Array [
                   GameRuleCellLayer {
-                    "__astId": 156,
+                    "__astId": 157,
                     "_cellModifiers": Set {
                       "DOWN",
                     },
                     "_sprite": GameLegendItemSimple {
-                      "__astId": 155,
+                      "__astId": 156,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 154,
+                          "__astId": 155,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -3411,21 +3411,21 @@ Object {
         "_commands": Array [],
         "_conditions": Array [
           GameRuleSequenceBracket {
-            "__astId": 158,
+            "__astId": 159,
             "_bracket": GameRuleSimpleBracket {
-              "__astId": 157,
+              "__astId": 158,
               "_neighbors": Array [
                 Array [
                   GameRuleCellLayer {
-                    "__astId": 156,
+                    "__astId": 157,
                     "_cellModifiers": Set {
                       "DOWN",
                     },
                     "_sprite": GameLegendItemSimple {
-                      "__astId": 155,
+                      "__astId": 156,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 154,
+                          "__astId": 155,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -3669,10 +3669,10 @@ Object {
   "collisionLayers": Array [],
   "legends": Array [
     GameLegendItemSimple {
-      "__astId": 164,
+      "__astId": 165,
       "_aliases": Array [
         GameSpriteNoPixels {
-          "__astId": 163,
+          "__astId": 164,
           "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
@@ -3684,7 +3684,7 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameSpriteNoPixels {
-      "__astId": 163,
+      "__astId": 164,
       "_color": "transparent",
       "_name": "testObject",
       "_optionalLegendChar": undefined,
@@ -3692,14 +3692,14 @@ Object {
   ],
   "rules": Array [
     GameRule {
-      "__astId": 171,
+      "__astId": 172,
       "_innerRule": RuleBracketsToZip {
-        "__astId": 170,
+        "__astId": 171,
         "_actions": Array [
           GameRuleSequenceBracket {
-            "__astId": 169,
+            "__astId": 170,
             "_bracket": GameRuleSimpleBracket {
-              "__astId": 168,
+              "__astId": 169,
               "_neighbors": Array [
                 Array [],
               ],
@@ -3714,15 +3714,15 @@ Object {
                 "actionLayers": Array [],
                 "conditionLayers": Array [
                   GameRuleCellLayer {
-                    "__astId": 165,
+                    "__astId": 166,
                     "_cellModifiers": Set {
                       "STATIONARY",
                     },
                     "_sprite": GameLegendItemSimple {
-                      "__astId": 164,
+                      "__astId": 165,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 163,
+                          "__astId": 164,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -3739,21 +3739,21 @@ Object {
         "_commands": Array [],
         "_conditions": Array [
           GameRuleSequenceBracket {
-            "__astId": 167,
+            "__astId": 168,
             "_bracket": GameRuleSimpleBracket {
-              "__astId": 166,
+              "__astId": 167,
               "_neighbors": Array [
                 Array [
                   GameRuleCellLayer {
-                    "__astId": 165,
+                    "__astId": 166,
                     "_cellModifiers": Set {
                       "STATIONARY",
                     },
                     "_sprite": GameLegendItemSimple {
-                      "__astId": 164,
+                      "__astId": 165,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 163,
+                          "__astId": 164,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -3997,10 +3997,10 @@ Object {
   "collisionLayers": Array [],
   "legends": Array [
     GameLegendItemSimple {
-      "__astId": 173,
+      "__astId": 174,
       "_aliases": Array [
         GameSpriteNoPixels {
-          "__astId": 172,
+          "__astId": 173,
           "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
@@ -4012,7 +4012,7 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameSpriteNoPixels {
-      "__astId": 172,
+      "__astId": 173,
       "_color": "transparent",
       "_name": "testObject",
       "_optionalLegendChar": undefined,
@@ -4020,14 +4020,14 @@ Object {
   ],
   "rules": Array [
     GameRule {
-      "__astId": 180,
+      "__astId": 181,
       "_innerRule": RuleBracketsToZip {
-        "__astId": 179,
+        "__astId": 180,
         "_actions": Array [
           GameRuleSequenceBracket {
-            "__astId": 178,
+            "__astId": 179,
             "_bracket": GameRuleSimpleBracket {
-              "__astId": 177,
+              "__astId": 178,
               "_neighbors": Array [
                 Array [],
               ],
@@ -4042,15 +4042,15 @@ Object {
                 "actionLayers": Array [],
                 "conditionLayers": Array [
                   GameRuleCellLayer {
-                    "__astId": 174,
+                    "__astId": 175,
                     "_cellModifiers": Set {
                       "MOVING",
                     },
                     "_sprite": GameLegendItemSimple {
-                      "__astId": 173,
+                      "__astId": 174,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 172,
+                          "__astId": 173,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -4067,21 +4067,21 @@ Object {
         "_commands": Array [],
         "_conditions": Array [
           GameRuleSequenceBracket {
-            "__astId": 176,
+            "__astId": 177,
             "_bracket": GameRuleSimpleBracket {
-              "__astId": 175,
+              "__astId": 176,
               "_neighbors": Array [
                 Array [
                   GameRuleCellLayer {
-                    "__astId": 174,
+                    "__astId": 175,
                     "_cellModifiers": Set {
                       "MOVING",
                     },
                     "_sprite": GameLegendItemSimple {
-                      "__astId": 173,
+                      "__astId": 174,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 172,
+                          "__astId": 173,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -4325,10 +4325,10 @@ Object {
   "collisionLayers": Array [],
   "legends": Array [
     GameLegendItemSimple {
-      "__astId": 182,
+      "__astId": 183,
       "_aliases": Array [
         GameSpriteNoPixels {
-          "__astId": 181,
+          "__astId": 182,
           "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
@@ -4340,7 +4340,7 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameSpriteNoPixels {
-      "__astId": 181,
+      "__astId": 182,
       "_color": "transparent",
       "_name": "testObject",
       "_optionalLegendChar": undefined,
@@ -4348,14 +4348,14 @@ Object {
   ],
   "rules": Array [
     GameRule {
-      "__astId": 189,
+      "__astId": 190,
       "_innerRule": RuleBracketsToZip {
-        "__astId": 188,
+        "__astId": 189,
         "_actions": Array [
           GameRuleSequenceBracket {
-            "__astId": 187,
+            "__astId": 188,
             "_bracket": GameRuleSimpleBracket {
-              "__astId": 186,
+              "__astId": 187,
               "_neighbors": Array [
                 Array [],
               ],
@@ -4370,15 +4370,15 @@ Object {
                 "actionLayers": Array [],
                 "conditionLayers": Array [
                   GameRuleCellLayer {
-                    "__astId": 183,
+                    "__astId": 184,
                     "_cellModifiers": Set {
                       "VERTICAL",
                     },
                     "_sprite": GameLegendItemSimple {
-                      "__astId": 182,
+                      "__astId": 183,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 181,
+                          "__astId": 182,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -4395,21 +4395,21 @@ Object {
         "_commands": Array [],
         "_conditions": Array [
           GameRuleSequenceBracket {
-            "__astId": 185,
+            "__astId": 186,
             "_bracket": GameRuleSimpleBracket {
-              "__astId": 184,
+              "__astId": 185,
               "_neighbors": Array [
                 Array [
                   GameRuleCellLayer {
-                    "__astId": 183,
+                    "__astId": 184,
                     "_cellModifiers": Set {
                       "VERTICAL",
                     },
                     "_sprite": GameLegendItemSimple {
-                      "__astId": 182,
+                      "__astId": 183,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 181,
+                          "__astId": 182,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -4653,10 +4653,10 @@ Object {
   "collisionLayers": Array [],
   "legends": Array [
     GameLegendItemSimple {
-      "__astId": 191,
+      "__astId": 192,
       "_aliases": Array [
         GameSpriteNoPixels {
-          "__astId": 190,
+          "__astId": 191,
           "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
@@ -4668,7 +4668,7 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameSpriteNoPixels {
-      "__astId": 190,
+      "__astId": 191,
       "_color": "transparent",
       "_name": "testObject",
       "_optionalLegendChar": undefined,
@@ -4676,14 +4676,14 @@ Object {
   ],
   "rules": Array [
     GameRule {
-      "__astId": 198,
+      "__astId": 199,
       "_innerRule": RuleBracketsToZip {
-        "__astId": 197,
+        "__astId": 198,
         "_actions": Array [
           GameRuleSequenceBracket {
-            "__astId": 196,
+            "__astId": 197,
             "_bracket": GameRuleSimpleBracket {
-              "__astId": 195,
+              "__astId": 196,
               "_neighbors": Array [
                 Array [],
               ],
@@ -4698,15 +4698,15 @@ Object {
                 "actionLayers": Array [],
                 "conditionLayers": Array [
                   GameRuleCellLayer {
-                    "__astId": 192,
+                    "__astId": 193,
                     "_cellModifiers": Set {
                       "HORIZONTAL",
                     },
                     "_sprite": GameLegendItemSimple {
-                      "__astId": 191,
+                      "__astId": 192,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 190,
+                          "__astId": 191,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -4723,21 +4723,21 @@ Object {
         "_commands": Array [],
         "_conditions": Array [
           GameRuleSequenceBracket {
-            "__astId": 194,
+            "__astId": 195,
             "_bracket": GameRuleSimpleBracket {
-              "__astId": 193,
+              "__astId": 194,
               "_neighbors": Array [
                 Array [
                   GameRuleCellLayer {
-                    "__astId": 192,
+                    "__astId": 193,
                     "_cellModifiers": Set {
                       "HORIZONTAL",
                     },
                     "_sprite": GameLegendItemSimple {
-                      "__astId": 191,
+                      "__astId": 192,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 190,
+                          "__astId": 191,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -4981,10 +4981,10 @@ Object {
   "collisionLayers": Array [],
   "legends": Array [
     GameLegendItemSimple {
-      "__astId": 200,
+      "__astId": 201,
       "_aliases": Array [
         GameSpriteNoPixels {
-          "__astId": 199,
+          "__astId": 200,
           "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
@@ -4996,7 +4996,7 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameSpriteNoPixels {
-      "__astId": 199,
+      "__astId": 200,
       "_color": "transparent",
       "_name": "testObject",
       "_optionalLegendChar": undefined,
@@ -5004,14 +5004,14 @@ Object {
   ],
   "rules": Array [
     GameRule {
-      "__astId": 207,
+      "__astId": 208,
       "_innerRule": RuleBracketsToZip {
-        "__astId": 206,
+        "__astId": 207,
         "_actions": Array [
           GameRuleSequenceBracket {
-            "__astId": 205,
+            "__astId": 206,
             "_bracket": GameRuleSimpleBracket {
-              "__astId": 204,
+              "__astId": 205,
               "_neighbors": Array [
                 Array [],
               ],
@@ -5026,15 +5026,15 @@ Object {
                 "actionLayers": Array [],
                 "conditionLayers": Array [
                   GameRuleCellLayer {
-                    "__astId": 201,
+                    "__astId": 202,
                     "_cellModifiers": Set {
                       "PERPENDICULAR",
                     },
                     "_sprite": GameLegendItemSimple {
-                      "__astId": 200,
+                      "__astId": 201,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 199,
+                          "__astId": 200,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -5051,21 +5051,21 @@ Object {
         "_commands": Array [],
         "_conditions": Array [
           GameRuleSequenceBracket {
-            "__astId": 203,
+            "__astId": 204,
             "_bracket": GameRuleSimpleBracket {
-              "__astId": 202,
+              "__astId": 203,
               "_neighbors": Array [
                 Array [
                   GameRuleCellLayer {
-                    "__astId": 201,
+                    "__astId": 202,
                     "_cellModifiers": Set {
                       "PERPENDICULAR",
                     },
                     "_sprite": GameLegendItemSimple {
-                      "__astId": 200,
+                      "__astId": 201,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 199,
+                          "__astId": 200,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -5309,10 +5309,10 @@ Object {
   "collisionLayers": Array [],
   "legends": Array [
     GameLegendItemSimple {
-      "__astId": 209,
+      "__astId": 210,
       "_aliases": Array [
         GameSpriteNoPixels {
-          "__astId": 208,
+          "__astId": 209,
           "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
@@ -5324,7 +5324,7 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameSpriteNoPixels {
-      "__astId": 208,
+      "__astId": 209,
       "_color": "transparent",
       "_name": "testObject",
       "_optionalLegendChar": undefined,
@@ -5332,14 +5332,14 @@ Object {
   ],
   "rules": Array [
     GameRule {
-      "__astId": 216,
+      "__astId": 217,
       "_innerRule": RuleBracketsToZip {
-        "__astId": 215,
+        "__astId": 216,
         "_actions": Array [
           GameRuleSequenceBracket {
-            "__astId": 214,
+            "__astId": 215,
             "_bracket": GameRuleSimpleBracket {
-              "__astId": 213,
+              "__astId": 214,
               "_neighbors": Array [
                 Array [],
               ],
@@ -5354,15 +5354,15 @@ Object {
                 "actionLayers": Array [],
                 "conditionLayers": Array [
                   GameRuleCellLayer {
-                    "__astId": 210,
+                    "__astId": 211,
                     "_cellModifiers": Set {
                       "ORTHOGONAL",
                     },
                     "_sprite": GameLegendItemSimple {
-                      "__astId": 209,
+                      "__astId": 210,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 208,
+                          "__astId": 209,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -5379,21 +5379,21 @@ Object {
         "_commands": Array [],
         "_conditions": Array [
           GameRuleSequenceBracket {
-            "__astId": 212,
+            "__astId": 213,
             "_bracket": GameRuleSimpleBracket {
-              "__astId": 211,
+              "__astId": 212,
               "_neighbors": Array [
                 Array [
                   GameRuleCellLayer {
-                    "__astId": 210,
+                    "__astId": 211,
                     "_cellModifiers": Set {
                       "ORTHOGONAL",
                     },
                     "_sprite": GameLegendItemSimple {
-                      "__astId": 209,
+                      "__astId": 210,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 208,
+                          "__astId": 209,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -5637,10 +5637,10 @@ Object {
   "collisionLayers": Array [],
   "legends": Array [
     GameLegendItemSimple {
-      "__astId": 218,
+      "__astId": 219,
       "_aliases": Array [
         GameSpriteNoPixels {
-          "__astId": 217,
+          "__astId": 218,
           "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
@@ -5652,7 +5652,7 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameSpriteNoPixels {
-      "__astId": 217,
+      "__astId": 218,
       "_color": "transparent",
       "_name": "testObject",
       "_optionalLegendChar": undefined,
@@ -5660,14 +5660,14 @@ Object {
   ],
   "rules": Array [
     GameRule {
-      "__astId": 225,
+      "__astId": 226,
       "_innerRule": RuleBracketsToZip {
-        "__astId": 224,
+        "__astId": 225,
         "_actions": Array [
           GameRuleSequenceBracket {
-            "__astId": 223,
+            "__astId": 224,
             "_bracket": GameRuleSimpleBracket {
-              "__astId": 222,
+              "__astId": 223,
               "_neighbors": Array [
                 Array [],
               ],
@@ -5682,15 +5682,15 @@ Object {
                 "actionLayers": Array [],
                 "conditionLayers": Array [
                   GameRuleCellLayer {
-                    "__astId": 219,
+                    "__astId": 220,
                     "_cellModifiers": Set {
                       "RANDOMDIR",
                     },
                     "_sprite": GameLegendItemSimple {
-                      "__astId": 218,
+                      "__astId": 219,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 217,
+                          "__astId": 218,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -5707,21 +5707,21 @@ Object {
         "_commands": Array [],
         "_conditions": Array [
           GameRuleSequenceBracket {
-            "__astId": 221,
+            "__astId": 222,
             "_bracket": GameRuleSimpleBracket {
-              "__astId": 220,
+              "__astId": 221,
               "_neighbors": Array [
                 Array [
                   GameRuleCellLayer {
-                    "__astId": 219,
+                    "__astId": 220,
                     "_cellModifiers": Set {
                       "RANDOMDIR",
                     },
                     "_sprite": GameLegendItemSimple {
-                      "__astId": 218,
+                      "__astId": 219,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 217,
+                          "__astId": 218,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -5965,10 +5965,10 @@ Object {
   "collisionLayers": Array [],
   "legends": Array [
     GameLegendItemSimple {
-      "__astId": 227,
+      "__astId": 228,
       "_aliases": Array [
         GameSpriteNoPixels {
-          "__astId": 226,
+          "__astId": 227,
           "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
@@ -5980,7 +5980,7 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameSpriteNoPixels {
-      "__astId": 226,
+      "__astId": 227,
       "_color": "transparent",
       "_name": "testObject",
       "_optionalLegendChar": undefined,
@@ -5988,14 +5988,14 @@ Object {
   ],
   "rules": Array [
     GameRule {
-      "__astId": 234,
+      "__astId": 235,
       "_innerRule": RuleBracketsToZip {
-        "__astId": 233,
+        "__astId": 234,
         "_actions": Array [
           GameRuleSequenceBracket {
-            "__astId": 232,
+            "__astId": 233,
             "_bracket": GameRuleSimpleBracket {
-              "__astId": 231,
+              "__astId": 232,
               "_neighbors": Array [
                 Array [],
               ],
@@ -6010,15 +6010,15 @@ Object {
                 "actionLayers": Array [],
                 "conditionLayers": Array [
                   GameRuleCellLayer {
-                    "__astId": 228,
+                    "__astId": 229,
                     "_cellModifiers": Set {
                       "NO",
                     },
                     "_sprite": GameLegendItemSimple {
-                      "__astId": 227,
+                      "__astId": 228,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 226,
+                          "__astId": 227,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -6035,21 +6035,21 @@ Object {
         "_commands": Array [],
         "_conditions": Array [
           GameRuleSequenceBracket {
-            "__astId": 230,
+            "__astId": 231,
             "_bracket": GameRuleSimpleBracket {
-              "__astId": 229,
+              "__astId": 230,
               "_neighbors": Array [
                 Array [
                   GameRuleCellLayer {
-                    "__astId": 228,
+                    "__astId": 229,
                     "_cellModifiers": Set {
                       "NO",
                     },
                     "_sprite": GameLegendItemSimple {
-                      "__astId": 227,
+                      "__astId": 228,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 226,
+                          "__astId": 227,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -6316,10 +6316,10 @@ Object {
   "collisionLayers": Array [],
   "legends": Array [
     GameLegendItemSimple {
-      "__astId": 246,
+      "__astId": 247,
       "_aliases": Array [
         GameSpriteNoPixels {
-          "__astId": 245,
+          "__astId": 246,
           "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
@@ -6331,7 +6331,7 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameSpriteNoPixels {
-      "__astId": 245,
+      "__astId": 246,
       "_color": "transparent",
       "_name": "testObject",
       "_optionalLegendChar": undefined,
@@ -6339,24 +6339,24 @@ Object {
   ],
   "rules": Array [
     GameRule {
-      "__astId": 254,
+      "__astId": 255,
       "_innerRule": RuleBracketsToZip {
-        "__astId": 253,
+        "__astId": 254,
         "_actions": Array [
           GameRuleSequenceBracket {
-            "__astId": 252,
+            "__astId": 253,
             "_bracket": GameRuleSimpleBracket {
-              "__astId": 251,
+              "__astId": 252,
               "_neighbors": Array [
                 Array [
                   GameRuleCellLayer {
-                    "__astId": 250,
+                    "__astId": 251,
                     "_cellModifiers": Set {},
                     "_sprite": GameLegendItemSimple {
-                      "__astId": 246,
+                      "__astId": 247,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 245,
+                          "__astId": 246,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -6377,13 +6377,13 @@ Object {
               CellPair {
                 "actionLayers": Array [
                   GameRuleCellLayer {
-                    "__astId": 250,
+                    "__astId": 251,
                     "_cellModifiers": Set {},
                     "_sprite": GameLegendItemSimple {
-                      "__astId": 246,
+                      "__astId": 247,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 245,
+                          "__astId": 246,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -6395,15 +6395,15 @@ Object {
                 ],
                 "conditionLayers": Array [
                   GameRuleCellLayer {
-                    "__astId": 247,
+                    "__astId": 248,
                     "_cellModifiers": Set {
                       "STATIONARY",
                     },
                     "_sprite": GameLegendItemSimple {
-                      "__astId": 246,
+                      "__astId": 247,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 245,
+                          "__astId": 246,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -6420,21 +6420,21 @@ Object {
         "_commands": Array [],
         "_conditions": Array [
           GameRuleSequenceBracket {
-            "__astId": 249,
+            "__astId": 250,
             "_bracket": GameRuleSimpleBracket {
-              "__astId": 248,
+              "__astId": 249,
               "_neighbors": Array [
                 Array [
                   GameRuleCellLayer {
-                    "__astId": 247,
+                    "__astId": 248,
                     "_cellModifiers": Set {
                       "STATIONARY",
                     },
                     "_sprite": GameLegendItemSimple {
-                      "__astId": 246,
+                      "__astId": 247,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 245,
+                          "__astId": 246,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -6678,10 +6678,10 @@ Object {
   "collisionLayers": Array [],
   "legends": Array [
     GameLegendItemSimple {
-      "__astId": 256,
+      "__astId": 257,
       "_aliases": Array [
         GameSpriteNoPixels {
-          "__astId": 255,
+          "__astId": 256,
           "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
@@ -6693,7 +6693,7 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameSpriteNoPixels {
-      "__astId": 255,
+      "__astId": 256,
       "_color": "transparent",
       "_name": "testObject",
       "_optionalLegendChar": undefined,
@@ -6701,18 +6701,18 @@ Object {
   ],
   "rules": Array [
     GameRule {
-      "__astId": 264,
+      "__astId": 265,
       "_innerRule": RuleBracketsToZip {
-        "__astId": 263,
+        "__astId": 264,
         "_actions": Array [
           GameRuleSequenceBracket {
-            "__astId": 262,
+            "__astId": 263,
             "_bracket": GameRuleSimpleBracket {
-              "__astId": 261,
+              "__astId": 262,
               "_neighbors": Array [
                 Array [
                   GameRuleCellLayerHack {
-                    "__astId": 260,
+                    "__astId": 261,
                     "_hackRuleCommand": "SFX0",
                     "_spriteNameMaybeNull": null,
                   },
@@ -6728,20 +6728,20 @@ Object {
               CellPair {
                 "actionLayers": Array [
                   GameRuleCellLayerHack {
-                    "__astId": 260,
+                    "__astId": 261,
                     "_hackRuleCommand": "SFX0",
                     "_spriteNameMaybeNull": null,
                   },
                 ],
                 "conditionLayers": Array [
                   GameRuleCellLayer {
-                    "__astId": 257,
+                    "__astId": 258,
                     "_cellModifiers": Set {},
                     "_sprite": GameLegendItemSimple {
-                      "__astId": 256,
+                      "__astId": 257,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 255,
+                          "__astId": 256,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -6758,19 +6758,19 @@ Object {
         "_commands": Array [],
         "_conditions": Array [
           GameRuleSequenceBracket {
-            "__astId": 259,
+            "__astId": 260,
             "_bracket": GameRuleSimpleBracket {
-              "__astId": 258,
+              "__astId": 259,
               "_neighbors": Array [
                 Array [
                   GameRuleCellLayer {
-                    "__astId": 257,
+                    "__astId": 258,
                     "_cellModifiers": Set {},
                     "_sprite": GameLegendItemSimple {
-                      "__astId": 256,
+                      "__astId": 257,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 255,
+                          "__astId": 256,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -7029,10 +7029,10 @@ Object {
   "collisionLayers": Array [],
   "legends": Array [
     GameLegendItemSimple {
-      "__astId": 266,
+      "__astId": 267,
       "_aliases": Array [
         GameSpriteNoPixels {
-          "__astId": 265,
+          "__astId": 266,
           "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
@@ -7044,7 +7044,7 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameSpriteNoPixels {
-      "__astId": 265,
+      "__astId": 266,
       "_color": "transparent",
       "_name": "testObject",
       "_optionalLegendChar": undefined,
@@ -7052,24 +7052,24 @@ Object {
   ],
   "rules": Array [
     GameRule {
-      "__astId": 274,
+      "__astId": 275,
       "_innerRule": RuleBracketsToZip {
-        "__astId": 273,
+        "__astId": 274,
         "_actions": Array [
           GameRuleSequenceBracket {
-            "__astId": 272,
+            "__astId": 273,
             "_bracket": GameRuleSimpleBracket {
-              "__astId": 271,
+              "__astId": 272,
               "_neighbors": Array [
                 Array [
                   GameRuleCellLayerHack {
-                    "__astId": 270,
+                    "__astId": 271,
                     "_hackRuleCommand": "SFX1",
                     "_spriteNameMaybeNull": GameLegendItemSimple {
-                      "__astId": 266,
+                      "__astId": 267,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 265,
+                          "__astId": 266,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -7090,13 +7090,13 @@ Object {
               CellPair {
                 "actionLayers": Array [
                   GameRuleCellLayerHack {
-                    "__astId": 270,
+                    "__astId": 271,
                     "_hackRuleCommand": "SFX1",
                     "_spriteNameMaybeNull": GameLegendItemSimple {
-                      "__astId": 266,
+                      "__astId": 267,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 265,
+                          "__astId": 266,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -7108,13 +7108,13 @@ Object {
                 ],
                 "conditionLayers": Array [
                   GameRuleCellLayer {
-                    "__astId": 267,
+                    "__astId": 268,
                     "_cellModifiers": Set {},
                     "_sprite": GameLegendItemSimple {
-                      "__astId": 266,
+                      "__astId": 267,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 265,
+                          "__astId": 266,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -7131,19 +7131,19 @@ Object {
         "_commands": Array [],
         "_conditions": Array [
           GameRuleSequenceBracket {
-            "__astId": 269,
+            "__astId": 270,
             "_bracket": GameRuleSimpleBracket {
-              "__astId": 268,
+              "__astId": 269,
               "_neighbors": Array [
                 Array [
                   GameRuleCellLayer {
-                    "__astId": 267,
+                    "__astId": 268,
                     "_cellModifiers": Set {},
                     "_sprite": GameLegendItemSimple {
-                      "__astId": 266,
+                      "__astId": 267,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 265,
+                          "__astId": 266,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -7442,10 +7442,10 @@ Object {
   "collisionLayers": Array [],
   "legends": Array [
     GameLegendItemSimple {
-      "__astId": 276,
+      "__astId": 277,
       "_aliases": Array [
         GameSpriteNoPixels {
-          "__astId": 275,
+          "__astId": 276,
           "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
@@ -7454,10 +7454,10 @@ Object {
       "_spriteNameOrLevelChar": "z",
     },
     GameLegendItemSimple {
-      "__astId": 277,
+      "__astId": 278,
       "_aliases": Array [
         GameSpriteNoPixels {
-          "__astId": 275,
+          "__astId": 276,
           "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
@@ -7469,7 +7469,7 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameSpriteNoPixels {
-      "__astId": 275,
+      "__astId": 276,
       "_color": "transparent",
       "_name": "testObject",
       "_optionalLegendChar": undefined,
@@ -7477,24 +7477,24 @@ Object {
   ],
   "rules": Array [
     GameRule {
-      "__astId": 286,
+      "__astId": 287,
       "_innerRule": RuleBracketsToZip {
-        "__astId": 285,
+        "__astId": 286,
         "_actions": Array [
           GameRuleSequenceBracket {
-            "__astId": 284,
+            "__astId": 285,
             "_bracket": GameRuleSimpleBracket {
-              "__astId": 283,
+              "__astId": 284,
               "_neighbors": Array [
                 Array [
                   GameRuleCellLayer {
-                    "__astId": 281,
+                    "__astId": 282,
                     "_cellModifiers": Set {},
                     "_sprite": GameLegendItemSimple {
-                      "__astId": 276,
+                      "__astId": 277,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 275,
+                          "__astId": 276,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -7504,13 +7504,13 @@ Object {
                     },
                   },
                   GameRuleCellLayer {
-                    "__astId": 282,
+                    "__astId": 283,
                     "_cellModifiers": Set {},
                     "_sprite": GameLegendItemSimple {
-                      "__astId": 277,
+                      "__astId": 278,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 275,
+                          "__astId": 276,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -7531,13 +7531,13 @@ Object {
               CellPair {
                 "actionLayers": Array [
                   GameRuleCellLayer {
-                    "__astId": 281,
+                    "__astId": 282,
                     "_cellModifiers": Set {},
                     "_sprite": GameLegendItemSimple {
-                      "__astId": 276,
+                      "__astId": 277,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 275,
+                          "__astId": 276,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -7547,13 +7547,13 @@ Object {
                     },
                   },
                   GameRuleCellLayer {
-                    "__astId": 282,
+                    "__astId": 283,
                     "_cellModifiers": Set {},
                     "_sprite": GameLegendItemSimple {
-                      "__astId": 277,
+                      "__astId": 278,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 275,
+                          "__astId": 276,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -7565,13 +7565,13 @@ Object {
                 ],
                 "conditionLayers": Array [
                   GameRuleCellLayer {
-                    "__astId": 278,
+                    "__astId": 279,
                     "_cellModifiers": Set {},
                     "_sprite": GameLegendItemSimple {
-                      "__astId": 276,
+                      "__astId": 277,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 275,
+                          "__astId": 276,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -7588,19 +7588,19 @@ Object {
         "_commands": Array [],
         "_conditions": Array [
           GameRuleSequenceBracket {
-            "__astId": 280,
+            "__astId": 281,
             "_bracket": GameRuleSimpleBracket {
-              "__astId": 279,
+              "__astId": 280,
               "_neighbors": Array [
                 Array [
                   GameRuleCellLayer {
-                    "__astId": 278,
+                    "__astId": 279,
                     "_cellModifiers": Set {},
                     "_sprite": GameLegendItemSimple {
-                      "__astId": 276,
+                      "__astId": 277,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 275,
+                          "__astId": 276,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -8308,9 +8308,9 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameSpriteNoPixels {
-      "__astId": 288,
+      "__astId": 289,
       "_color": HexColor {
-        "__astId": 287,
+        "__astId": 288,
         "_color": "#C0BA6F",
       },
       "_name": "player",
@@ -8334,9 +8334,9 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameSpriteNoPixels {
-      "__astId": 290,
+      "__astId": 291,
       "_color": HexColor {
-        "__astId": 289,
+        "__astId": 290,
         "_color": "#C0BA6F",
       },
       "_name": "player",
@@ -8360,16 +8360,16 @@ Object {
   ],
   "legends": Array [
     GameLegendItemSimple {
-      "__astId": 294,
+      "__astId": 295,
       "_aliases": Array [
         GameSpriteNoPixels {
-          "__astId": 291,
+          "__astId": 292,
           "_collisionLayer": CollisionLayer {
-            "__astId": 298,
+            "__astId": 299,
             "_sprites": Array [
               [Circular],
               GameSpriteNoPixels {
-                "__astId": 292,
+                "__astId": 293,
                 "_collisionLayer": [Circular],
                 "_color": "transparent",
                 "_name": "hello2",
@@ -8385,15 +8385,15 @@ Object {
       "_spriteNameOrLevelChar": "[",
     },
     GameLegendItemSimple {
-      "__astId": 295,
+      "__astId": 296,
       "_aliases": Array [
         GameSpriteNoPixels {
-          "__astId": 292,
+          "__astId": 293,
           "_collisionLayer": CollisionLayer {
-            "__astId": 298,
+            "__astId": 299,
             "_sprites": Array [
               GameSpriteNoPixels {
-                "__astId": 291,
+                "__astId": 292,
                 "_collisionLayer": [Circular],
                 "_color": "transparent",
                 "_name": "hello",
@@ -8410,10 +8410,10 @@ Object {
       "_spriteNameOrLevelChar": ",",
     },
     GameLegendItemSimple {
-      "__astId": 296,
+      "__astId": 297,
       "_aliases": Array [
         GameSpriteNoPixels {
-          "__astId": 293,
+          "__astId": 294,
           "_color": "transparent",
           "_name": "hello3",
           "_optionalLegendChar": "♡",
@@ -8422,10 +8422,10 @@ Object {
       "_spriteNameOrLevelChar": "д",
     },
     GameLegendItemSimple {
-      "__astId": 297,
+      "__astId": 298,
       "_aliases": Array [
         GameSpriteNoPixels {
-          "__astId": 293,
+          "__astId": 294,
           "_color": "transparent",
           "_name": "hello3",
           "_optionalLegendChar": "♡",
@@ -8437,13 +8437,13 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameSpriteNoPixels {
-      "__astId": 291,
+      "__astId": 292,
       "_collisionLayer": CollisionLayer {
-        "__astId": 298,
+        "__astId": 299,
         "_sprites": Array [
           [Circular],
           GameSpriteNoPixels {
-            "__astId": 292,
+            "__astId": 293,
             "_collisionLayer": [Circular],
             "_color": "transparent",
             "_name": "hello2",
@@ -8456,12 +8456,12 @@ Object {
       "_optionalLegendChar": ".",
     },
     GameSpriteNoPixels {
-      "__astId": 292,
+      "__astId": 293,
       "_collisionLayer": CollisionLayer {
-        "__astId": 298,
+        "__astId": 299,
         "_sprites": Array [
           GameSpriteNoPixels {
-            "__astId": 291,
+            "__astId": 292,
             "_collisionLayer": [Circular],
             "_color": "transparent",
             "_name": "hello",
@@ -8475,7 +8475,7 @@ Object {
       "_optionalLegendChar": "]",
     },
     GameSpriteNoPixels {
-      "__astId": 293,
+      "__astId": 294,
       "_color": "transparent",
       "_name": "hello3",
       "_optionalLegendChar": "♡",
@@ -8483,27 +8483,27 @@ Object {
   ],
   "rules": Array [
     GameRule {
-      "__astId": 306,
+      "__astId": 307,
       "_innerRule": RuleBracketsToZip {
-        "__astId": 305,
+        "__astId": 306,
         "_actions": Array [
           GameRuleSequenceBracket {
-            "__astId": 304,
+            "__astId": 305,
             "_bracket": GameRuleSimpleBracket {
-              "__astId": 303,
+              "__astId": 304,
               "_neighbors": Array [
                 Array [
                   GameRuleCellLayer {
-                    "__astId": 302,
+                    "__astId": 303,
                     "_cellModifiers": Set {},
                     "_sprite": GameSpriteNoPixels {
-                      "__astId": 291,
+                      "__astId": 292,
                       "_collisionLayer": CollisionLayer {
-                        "__astId": 298,
+                        "__astId": 299,
                         "_sprites": Array [
                           [Circular],
                           GameSpriteNoPixels {
-                            "__astId": 292,
+                            "__astId": 293,
                             "_collisionLayer": [Circular],
                             "_color": "transparent",
                             "_name": "hello2",
@@ -8528,16 +8528,16 @@ Object {
               CellPair {
                 "actionLayers": Array [
                   GameRuleCellLayer {
-                    "__astId": 302,
+                    "__astId": 303,
                     "_cellModifiers": Set {},
                     "_sprite": GameSpriteNoPixels {
-                      "__astId": 291,
+                      "__astId": 292,
                       "_collisionLayer": CollisionLayer {
-                        "__astId": 298,
+                        "__astId": 299,
                         "_sprites": Array [
                           [Circular],
                           GameSpriteNoPixels {
-                            "__astId": 292,
+                            "__astId": 293,
                             "_collisionLayer": [Circular],
                             "_color": "transparent",
                             "_name": "hello2",
@@ -8553,16 +8553,16 @@ Object {
                 ],
                 "conditionLayers": Array [
                   GameRuleCellLayer {
-                    "__astId": 299,
+                    "__astId": 300,
                     "_cellModifiers": Set {},
                     "_sprite": GameSpriteNoPixels {
-                      "__astId": 291,
+                      "__astId": 292,
                       "_collisionLayer": CollisionLayer {
-                        "__astId": 298,
+                        "__astId": 299,
                         "_sprites": Array [
                           [Circular],
                           GameSpriteNoPixels {
-                            "__astId": 292,
+                            "__astId": 293,
                             "_collisionLayer": [Circular],
                             "_color": "transparent",
                             "_name": "hello2",
@@ -8583,22 +8583,22 @@ Object {
         "_commands": Array [],
         "_conditions": Array [
           GameRuleSequenceBracket {
-            "__astId": 301,
+            "__astId": 302,
             "_bracket": GameRuleSimpleBracket {
-              "__astId": 300,
+              "__astId": 301,
               "_neighbors": Array [
                 Array [
                   GameRuleCellLayer {
-                    "__astId": 299,
+                    "__astId": 300,
                     "_cellModifiers": Set {},
                     "_sprite": GameSpriteNoPixels {
-                      "__astId": 291,
+                      "__astId": 292,
                       "_collisionLayer": CollisionLayer {
-                        "__astId": 298,
+                        "__astId": 299,
                         "_sprites": Array [
                           [Circular],
                           GameSpriteNoPixels {
-                            "__astId": 292,
+                            "__astId": 293,
                             "_collisionLayer": [Circular],
                             "_color": "transparent",
                             "_name": "hello2",
@@ -8622,21 +8622,21 @@ Object {
       "_rulePlus": undefined,
     },
     GameRule {
-      "__astId": 314,
+      "__astId": 315,
       "_innerRule": RuleBracketsToZip {
-        "__astId": 313,
+        "__astId": 314,
         "_actions": Array [
           GameRuleSequenceBracket {
-            "__astId": 312,
+            "__astId": 313,
             "_bracket": GameRuleSimpleBracket {
-              "__astId": 311,
+              "__astId": 312,
               "_neighbors": Array [
                 Array [
                   GameRuleCellLayer {
-                    "__astId": 310,
+                    "__astId": 311,
                     "_cellModifiers": Set {},
                     "_sprite": GameSpriteNoPixels {
-                      "__astId": 293,
+                      "__astId": 294,
                       "_color": "transparent",
                       "_name": "hello3",
                       "_optionalLegendChar": "♡",
@@ -8654,10 +8654,10 @@ Object {
               CellPair {
                 "actionLayers": Array [
                   GameRuleCellLayer {
-                    "__astId": 310,
+                    "__astId": 311,
                     "_cellModifiers": Set {},
                     "_sprite": GameSpriteNoPixels {
-                      "__astId": 293,
+                      "__astId": 294,
                       "_color": "transparent",
                       "_name": "hello3",
                       "_optionalLegendChar": "♡",
@@ -8666,10 +8666,10 @@ Object {
                 ],
                 "conditionLayers": Array [
                   GameRuleCellLayer {
-                    "__astId": 307,
+                    "__astId": 308,
                     "_cellModifiers": Set {},
                     "_sprite": GameSpriteNoPixels {
-                      "__astId": 293,
+                      "__astId": 294,
                       "_color": "transparent",
                       "_name": "hello3",
                       "_optionalLegendChar": "♡",
@@ -8683,16 +8683,16 @@ Object {
         "_commands": Array [],
         "_conditions": Array [
           GameRuleSequenceBracket {
-            "__astId": 309,
+            "__astId": 310,
             "_bracket": GameRuleSimpleBracket {
-              "__astId": 308,
+              "__astId": 309,
               "_neighbors": Array [
                 Array [
                   GameRuleCellLayer {
-                    "__astId": 307,
+                    "__astId": 308,
                     "_cellModifiers": Set {},
                     "_sprite": GameSpriteNoPixels {
-                      "__astId": 293,
+                      "__astId": 294,
                       "_color": "transparent",
                       "_name": "hello3",
                       "_optionalLegendChar": "♡",
@@ -8723,18 +8723,18 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameSpritePixels {
-      "__astId": 318,
+      "__astId": 319,
       "_colors": Array [
         HexColor {
-          "__astId": 315,
+          "__astId": 316,
           "_color": "#FFFF55",
         },
         HexColor {
-          "__astId": 316,
+          "__astId": 317,
           "_color": "#FF0000",
         },
         HexColor {
-          "__astId": 317,
+          "__astId": 318,
           "_color": "#FFFFFF",
         },
       ],
@@ -8779,9 +8779,9 @@ Object {
       ],
     },
     GameSpriteNoPixels {
-      "__astId": 321,
+      "__astId": 322,
       "_color": HexColor {
-        "__astId": 319,
+        "__astId": 320,
         "_color": "#FFFF55",
       },
       "_name": "ChairRightLoose",
@@ -8803,10 +8803,10 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameSpritePixels {
-      "__astId": 323,
+      "__astId": 324,
       "_colors": Array [
         HexColor {
-          "__astId": 322,
+          "__astId": 323,
           "_color": "#FFFF55",
         },
       ],
@@ -8851,18 +8851,18 @@ Object {
       ],
     },
     GameSpriteNoPixels {
-      "__astId": 325,
+      "__astId": 326,
       "_color": HexColor {
-        "__astId": 324,
+        "__astId": 325,
         "_color": "#FFFF55",
       },
       "_name": "00",
       "_optionalLegendChar": undefined,
     },
     GameSpriteNoPixels {
-      "__astId": 327,
+      "__astId": 328,
       "_color": HexColor {
-        "__astId": 326,
+        "__astId": 327,
         "_color": "#FFFF55",
       },
       "_name": "01",
@@ -9084,10 +9084,10 @@ Object {
   "collisionLayers": Array [],
   "legends": Array [
     GameLegendItemSimple {
-      "__astId": 74,
+      "__astId": 75,
       "_aliases": Array [
         GameSpriteNoPixels {
-          "__astId": 73,
+          "__astId": 74,
           "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
@@ -9099,7 +9099,7 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameSpriteNoPixels {
-      "__astId": 73,
+      "__astId": 74,
       "_color": "transparent",
       "_name": "testObject",
       "_optionalLegendChar": undefined,
@@ -9107,14 +9107,14 @@ Object {
   ],
   "rules": Array [
     GameRule {
-      "__astId": 81,
+      "__astId": 82,
       "_innerRule": RuleBracketsToZip {
-        "__astId": 80,
+        "__astId": 81,
         "_actions": Array [
           GameRuleSequenceBracket {
-            "__astId": 79,
+            "__astId": 80,
             "_bracket": GameRuleSimpleBracket {
-              "__astId": 78,
+              "__astId": 79,
               "_neighbors": Array [
                 Array [],
               ],
@@ -9129,13 +9129,13 @@ Object {
                 "actionLayers": Array [],
                 "conditionLayers": Array [
                   GameRuleCellLayer {
-                    "__astId": 75,
+                    "__astId": 76,
                     "_cellModifiers": Set {},
                     "_sprite": GameLegendItemSimple {
-                      "__astId": 74,
+                      "__astId": 75,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 73,
+                          "__astId": 74,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -9152,19 +9152,19 @@ Object {
         "_commands": Array [],
         "_conditions": Array [
           GameRuleSequenceBracket {
-            "__astId": 77,
+            "__astId": 78,
             "_bracket": GameRuleSimpleBracket {
-              "__astId": 76,
+              "__astId": 77,
               "_neighbors": Array [
                 Array [
                   GameRuleCellLayer {
-                    "__astId": 75,
+                    "__astId": 76,
                     "_cellModifiers": Set {},
                     "_sprite": GameLegendItemSimple {
-                      "__astId": 74,
+                      "__astId": 75,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 73,
+                          "__astId": 74,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -9384,10 +9384,10 @@ Object {
   "collisionLayers": Array [],
   "legends": Array [
     GameLegendItemSimple {
-      "__astId": 65,
+      "__astId": 66,
       "_aliases": Array [
         GameSpriteNoPixels {
-          "__astId": 64,
+          "__astId": 65,
           "_color": "transparent",
           "_name": "testObject",
           "_optionalLegendChar": undefined,
@@ -9399,7 +9399,7 @@ Object {
   "levels": Array [],
   "objects": Array [
     GameSpriteNoPixels {
-      "__astId": 64,
+      "__astId": 65,
       "_color": "transparent",
       "_name": "testObject",
       "_optionalLegendChar": undefined,
@@ -9407,14 +9407,14 @@ Object {
   ],
   "rules": Array [
     GameRule {
-      "__astId": 72,
+      "__astId": 73,
       "_innerRule": RuleBracketsToZip {
-        "__astId": 71,
+        "__astId": 72,
         "_actions": Array [
           GameRuleSequenceBracket {
-            "__astId": 70,
+            "__astId": 71,
             "_bracket": GameRuleSimpleBracket {
-              "__astId": 69,
+              "__astId": 70,
               "_neighbors": Array [
                 Array [],
               ],
@@ -9429,13 +9429,13 @@ Object {
                 "actionLayers": Array [],
                 "conditionLayers": Array [
                   GameRuleCellLayer {
-                    "__astId": 66,
+                    "__astId": 67,
                     "_cellModifiers": Set {},
                     "_sprite": GameLegendItemSimple {
-                      "__astId": 65,
+                      "__astId": 66,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 64,
+                          "__astId": 65,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -9452,19 +9452,19 @@ Object {
         "_commands": Array [],
         "_conditions": Array [
           GameRuleSequenceBracket {
-            "__astId": 68,
+            "__astId": 69,
             "_bracket": GameRuleSimpleBracket {
-              "__astId": 67,
+              "__astId": 68,
               "_neighbors": Array [
                 Array [
                   GameRuleCellLayer {
-                    "__astId": 66,
+                    "__astId": 67,
                     "_cellModifiers": Set {},
                     "_sprite": GameLegendItemSimple {
-                      "__astId": 65,
+                      "__astId": 66,
                       "_aliases": Array [
                         GameSpriteNoPixels {
-                          "__astId": 64,
+                          "__astId": 65,
                           "_color": "transparent",
                           "_name": "testObject",
                           "_optionalLegendChar": undefined,
@@ -9951,7 +9951,9 @@ Object {
             "_ruleModifiers": Array [],
           },
         ],
-        "_bracketPairs": Array [],
+        "_bracketPairs": Array [
+          EllipsisPair {},
+        ],
         "_commands": Array [],
         "_conditions": Array [
           GameRuleSequenceBracket {

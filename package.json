@@ -12,6 +12,7 @@
     "eventemitter2": "^5.0.1",
     "glob": "^7.1.2",
     "jest": "^22.4.3",
+    "lodash": "^4.17.10",
     "ohm-js": "^0.14.0"
   },
   "devDependencies": {
