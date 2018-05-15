@@ -1,0 +1,73 @@
+title foo
+
+(verbose_logging)
+(debug)
+
+(run_rules_on_level_start)
+
+realtime_interval 0.1
+
+
+===
+OBJECTS
+===
+
+background .
+black
+
+Player P
+yellow
+..0..
+00000
+..0..
+.0.0.
+0...0
+
+Corpse
+red
+0...0
+.0.0.
+..0..
+.0.0.
+0...0
+
+Lava L
+orange
+
+===
+LEGEND
+===
+
+
+====
+SOUNDS
+====
+
+====
+COLLISIONLAYERS
+====
+
+background
+player
+
+
+====
+RULES
+====
+
+DOWN [ Player | Lava ]  -> [ Corpse | Lava ]
+
+
+===
+WINCONDITIONS
+===
+
+
+===
+LEVELS
+===
+
+...
+...
+.P.
+LLL

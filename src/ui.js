@@ -6,6 +6,18 @@ function collapseSpritesToPixels (spritesToDraw, backgroundColor) {
   if (spritesToDraw.length === 1) {
     return spritesToDraw[0].getPixels()
   }
+  if (spritesToDraw.length === 0) {
+    // Just draw the background
+    const sprite = []
+    for (let y = 0; y < 5; y++) {
+      sprite[y] = sprite[y] || []
+      for (let x = 0; x < 5; x++) {
+        // If this is the last sprite and nothing was found then use the game background color
+        sprite[y][x] = backgroundColor
+      }
+    }
+    return sprite
+  }
   const sprite = spritesToDraw[0].getPixels()
   spritesToDraw.slice(1).forEach((objectToDraw, spriteIndex) => {
     const pixels = objectToDraw.getPixels()
@@ -101,6 +113,12 @@ function drawCellAt(data, cell, rowIndex, colIndex) {
       }
     })
   })
+
+  restoreCursor()
+}
+
+function restoreCursor() {
+  axel.cursor.restore()
 }
 
 function clearScreen () {
@@ -109,4 +127,14 @@ function clearScreen () {
   axel.clear()
 }
 
-module.exports = { renderScreen, clearScreen, drawCellAt }
+function writeText(x, y, text) {
+  axel.text(x, y, text)
+  restoreCursor()
+}
+
+function writeDebug(text) {
+  axel.fg(255, 255, 255)
+  axel.bg(0, 0, 0)
+  writeText(0, 0, text)
+}
+module.exports = { renderScreen, clearScreen, drawCellAt, writeDebug }

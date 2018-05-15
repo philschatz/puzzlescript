@@ -44,8 +44,8 @@ async function run() {
 
         UI.renderScreen(data, engine.currentLevel)
 
-        for (var i = 0; i < 100; i++) {
-          await sleep(100)
+        for (var i = 0; i < 10; i++) {
+          await sleep(500)
           const changes = engine.tick()
           if (changes.length === 0) {
             break

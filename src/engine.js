@@ -1,6 +1,8 @@
 const EventEmitter2 = require('eventemitter2')
 const _ = require('lodash')
 
+const UI = require('./ui')
+
 function setEquals(set1, set2) {
   if (set1.size !== set2.size) return false
   for (var elem of set1) {
@@ -11,8 +13,8 @@ function setEquals(set1, set2) {
 
 // This Object exists so the UI has something to bind to
 class Cell {
-  constructor (emitter, sprites, rowIndex, colIndex) {
-    this._emitter = emitter
+  constructor (engine, sprites, rowIndex, colIndex) {
+    this._engine = engine
     this._sprites = sprites
     this.rowIndex = rowIndex
     this.colIndex = colIndex
@@ -26,10 +28,29 @@ class Cell {
   }
   updateSprites (newSetOfSprites) {
     this._sprites = newSetOfSprites
-    this._emitter.emit('cell:updated', this)
+    this._engine.emit('cell:updated', this)
   }
   equalsSprites (newSetOfSprites) {
     return setEquals(this._sprites, newSetOfSprites)
+  }
+  _getRelativeNeighbor(y, x) {
+    const row = this._engine.currentLevel[this.rowIndex + y]
+    if (!row) return null
+    return row[this.colIndex + x]
+  }
+  getNeighbor(direction) {
+    switch (direction) {
+      case 'UP':
+        return this._getRelativeNeighbor(-1, 0)
+      case 'DOWN':
+        return this._getRelativeNeighbor(1, 0)
+      case 'LEFT':
+        return this._getRelativeNeighbor(0, -1)
+      case 'RIGHT':
+        return this._getRelativeNeighbor(0, 1)
+      default:
+        throw new Error(`BUG: Unsupported direction "${direction}"`)
+    }
   }
 }
 
@@ -46,7 +67,7 @@ module.exports = class Engine extends EventEmitter2 {
       return row.map((col, colIndex) => new Cell(this, new Set(col.getSprites()), rowIndex, colIndex))
     })
     // Return the cells so the UI can listen to when they change
-    return _.flatten(this.currentLevel)
+    return _.flattenDeep(this.currentLevel)
   }
 
   tick () {
@@ -56,16 +77,17 @@ module.exports = class Engine extends EventEmitter2 {
       row.forEach(cell => {
         this.gameData.rules.forEach(rule => {
           // Check if the left-hand-side of the rule matches the current cell
-          const matches = rule.getActionsIfMatchedOrNull(cell)
-          if (matches) {
-            // Do the rule!
-            const updatedCells = rule.mutate(cell)
-            changes = changes.concat(updatedCells)
+          const mutators = _.flattenDeep(rule.getMatchedMutatorsOrNull(cell) || [])
+          if (mutators.length > 0) {
+            mutators.forEach(mutator => {
+              changes = changes.concat(mutator.mutate())
+            })
+            UI.writeDebug(`[${mutators.length}mut'rs]`)
           }
         })
       })
     })
-    return _.flatten(changes).filter(change => !!change) // Some rules only have actions and return null. Remove those from the set
+    return _.flattenDeep(changes).filter(change => !!change) // Some rules only have actions and return null. Remove those from the set
   }
 
   pressUp () { }
