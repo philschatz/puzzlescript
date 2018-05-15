@@ -38,16 +38,15 @@ async function run() {
       if (level) {
         const engine = new Engine(data)
         engine.setLevel(data.levels.indexOf(level))
+        engine.on('cell:updated', cell => {
+          UI.drawCellAt(data, cell, cell.rowIndex, cell.colIndex)
+        })
 
-        // console.log(level)
         UI.renderScreen(data, engine.currentLevel)
 
         for (var i = 0; i < 100; i++) {
           await sleep(100)
           const changes = engine.tick()
-          changes.forEach(cell => {
-            UI.drawCellAt(data, cell, cell.rowIndex, cell.colIndex)
-          })
           if (changes.length === 0) {
             break
           }

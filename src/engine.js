@@ -11,7 +11,8 @@ function setEquals(set1, set2) {
 
 // This Object exists so the UI has something to bind to
 class Cell {
-  constructor (sprites, rowIndex, colIndex) {
+  constructor (emitter, sprites, rowIndex, colIndex) {
+    this._emitter = emitter
     this._sprites = sprites
     this.rowIndex = rowIndex
     this.colIndex = colIndex
@@ -24,17 +25,17 @@ class Cell {
     return this._sprites
   }
   updateSprites (newSetOfSprites) {
-
-    this.__dirty = true
     this._sprites = newSetOfSprites
+    this._emitter.emit('cell:updated', this)
   }
   equalsSprites (newSetOfSprites) {
     return setEquals(this._sprites, newSetOfSprites)
   }
 }
 
-module.exports = class Engine /* extends EventEmitter */ {
+module.exports = class Engine extends EventEmitter2 {
   constructor (gameData) {
+    super()
     this.gameData = gameData
   }
 
@@ -42,8 +43,10 @@ module.exports = class Engine /* extends EventEmitter */ {
     const level = this.gameData.levels[levelNum]
     // Clone the board because we will be modifying it
     this.currentLevel = level.getRows().map((row, rowIndex) => {
-      return row.map((col, colIndex) => new Cell(new Set(col.getSprites()), rowIndex, colIndex))
+      return row.map((col, colIndex) => new Cell(this, new Set(col.getSprites()), rowIndex, colIndex))
     })
+    // Return the cells so the UI can listen to when they change
+    return _.flatten(this.currentLevel)
   }
 
   tick () {
