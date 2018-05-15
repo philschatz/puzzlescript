@@ -100,13 +100,13 @@ describe('rules', () => {
     parseRule('[z]->[z]', ['z'])
   })
   it('parses a rule with multiple cells', () => {
-    parseRule('[ z | x ] -> [ ]', ['z', 'x'])
+    parseRule('[ z | x ] -> [ | ]', ['z', 'x'])
   })
   it('parses a rule with multiple layers', () => {
     parseRule('[ z x ] -> [ ]', ['z', 'x'])
   })
   it('parses a rule with ellpisis', () => {
-    parseRule('[ z | ... | x ] -> [ RANDOM z | ... | x ]', ['z', 'x'])
+    parseRule('[ z | ... | x | z ] -> [ RANDOM z | ... | x | ]', ['z', 'x'])
   })
   it('parses a rule with a period for a variable name', () => {
     parseRule('[.] -> []', ['.'])

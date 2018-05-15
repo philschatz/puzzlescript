@@ -451,6 +451,10 @@ class BaseForLines {
       this.__validationMessages = []
     }
     this.__validationMessages.push({level, message})
+    if (level === 'ERROR') {
+      console.error(this.toString())
+      throw new Error(message)
+    }
   }
   toString () {
     return `astId=${this.__astId}\n${this.__source.getLineAndColumnMessage()}`
@@ -718,6 +722,9 @@ class GameRuleLoop extends BaseForLines {
     super(source)
     this._rules = rules
   }
+  doesntMatchCell (cell) {
+    return 'Loops are not supported yet'
+  }
 }
 
 class GameRule extends BaseForLines {
@@ -727,18 +734,47 @@ class GameRule extends BaseForLines {
     this._productionModifiers = productionModifiers
     this._cellSequenceBrackets = cellSequenceBrackets
     this._ruleAction = ruleAction
+
+    // Validate that the structure of the left side matches the structure of the right side
+    const mismatch = this._ruleAction.doesntMatchConditionStructure(this._cellSequenceBrackets)
+    if (mismatch) {
+      console.error(mismatch.toString())
+      this.addValidationMessage('ERROR', 'structure of left side of the rule does not match right side')
+    }
   }
 
   doesntMatchCell (cell) {
-    let allSequences = null
+    let ret = null
     for (const sequence of this._cellSequenceBrackets) {
-      allSequences = sequence.doesntMatchCell(cell)
-      if (allSequences) {
+      ret = sequence.doesntMatchCell(cell)
+      if (ret) {
         break
       }
     }
-    return allSequences
+    return ret
   }
+}
+
+function checkLength(conditions, actions) {
+  if (conditions.length !== actions.length) {
+    return `counts mismatch. Left is ${conditions.length} while Right is ${actions.length}`
+  }
+}
+function checkLengthAndRecurse(conditions, actions) {
+    // console.log('--------- START');
+    // console.log(conditions);
+    // console.log(actions);
+    // console.log('--------- END');
+
+    let ret = checkLength(conditions, actions)
+    if (ret) return ret
+    for (let i = 0; i < conditions.length; i++) {
+      const condition = conditions[i]
+      const action = actions[i]
+      ret = action.doesntMatchConditionStructure(condition)
+      if (ret) break
+    }
+    return ret
 }
 
 class GameRuleActionBrackets extends BaseForLines {
@@ -746,6 +782,11 @@ class GameRuleActionBrackets extends BaseForLines {
     super(source)
     this._cellSequenceBrackets = cellSequenceBrackets
     this._ruleCommands = ruleCommands
+  }
+
+  doesntMatchConditionStructure (conditionBrackets) {
+    const actionBrackets = this._cellSequenceBrackets
+    return checkLengthAndRecurse(conditionBrackets, actionBrackets)
   }
 }
 
@@ -759,6 +800,10 @@ class GameRuleSequenceBracket extends BaseForLines {
   doesntMatchCell (cell) {
     return this._bracket.doesntMatchCell(cell)
   }
+
+  doesntMatchConditionStructure (condition) {
+    return this._bracket.doesntMatchConditionStructure(condition._bracket)
+  }
 }
 
 class RuleEllipsisBracket extends BaseForLines {
@@ -766,6 +811,12 @@ class RuleEllipsisBracket extends BaseForLines {
     super(source)
     this._leftNeighboringCells = leftNeighboringCells
     this._rightNeighboringCells = rightNeighboringCells
+  }
+  doesntMatchConditionStructure (condition) {
+    // Only check the length because the number of cellLayers inside can be different (some are added and some are removed as part of the rule)
+    let ret = checkLength(condition._leftNeighboringCells, this._leftNeighboringCells)
+    if (ret) return ret
+    return checkLength(condition._rightNeighboringCells, this._rightNeighboringCells)
   }
 }
 
@@ -780,32 +831,55 @@ class GameRuleSimpleBracket extends BaseForLines {
     // Check if all the cellLayers are on the current cell
     let ret = null
     for (const layer of this._neighbors[0]) {
-      for (const object of layer.getSprites()) {
-        if (!cell.getSpritesAsSet().has(object)) {
-          ret = object
-        }
-      }
+      ret = layer.doesntMatchCell(cell)
+      if (ret) break
     }
     return ret
   }
+
+  doesntMatchConditionStructure (conditionBracket) {
+    // No need to check the number of cells inside a neighbor block because they can be added or removed so they do not have to match up
+    return checkLength(conditionBracket._neighbors, this._neighbors)
+  }
 }
 
-class RuleRightCommands extends BaseForLines {
+class RuleActionCommands extends BaseForLines {
   constructor (source, commands) {
     super(source)
     this._commands = commands
   }
+  doesntMatchConditionStructure () {
+    // The left-hand-side structure does not matter since we are executing commands
+    return false
+  }
 }
 
+const M_STATIONARY = 'STATIONARY'
+
 class GameRuleCellLayer extends BaseForLines {
-  constructor (source, cellModifiers, spriteName) {
+  constructor (source, cellModifiers, sprite) {
     super(source)
-    this._cellModifiers = cellModifiers
-    this._spriteName = spriteName
+    this._cellModifiers = new Set(cellModifiers)
+    this._sprite = sprite
   }
   getSprites () {
-    return this._spriteName.getSprites()
+    return this._sprite.getSprites()
   }
+  doesntMatchCell (cell) {
+    let ret = null
+    const mods = this._cellModifiers
+    if (mods.size > 1 || mods.size === 1 && !mods.has(M_STATIONARY)) {
+      // Not supported yet
+      return this
+    }
+    for (const sprite of this.getSprites()) {
+      if (!cell.getSpritesAsSet().has(sprite)) {
+        ret = sprite
+      }
+    }
+    return ret
+  }
+
 }
 
 class GameRuleCellLayerHack extends BaseForLines {
@@ -1072,10 +1146,10 @@ function parse (code) {
         return new GameRuleActionBrackets(this.source, cellSequenceBrackets.parse(), ruleCommands.parse().concat(optionalMessageCommand.parse()))
       },
       RuleActionCommands1: function (commands, message) {
-        return new RuleRightCommands(this.source, commands.parse().concat(message.parse()))
+        return new RuleActionCommands(this.source, commands.parse().concat(message.parse()))
       },
       RuleActionCommands2: function (commands, message) {
-        return new RuleRightCommands(this.source, commands.parse().concat(message.parse()))
+        return new RuleActionCommands(this.source, commands.parse().concat(message.parse()))
       },
       MessageCommand: function (_message, message) {
         return new GameMessage(this.source, message.parse())
