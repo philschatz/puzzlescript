@@ -14,6 +14,7 @@ glob('./gists/*/script.txt', (err, files) => {
   console.log(`Looping over ${files.length} games...`)
 
   files.forEach((filename, index) => {
+    console.log(`Parsing and rendering ${filename}`);
     const code = readFileSync(filename, 'utf-8')
     const {data, error, trace} = parse(code)
 

@@ -7564,23 +7564,7 @@ Object {
 exports[`rules General Formatting Supports characters that would be invalid in one scope but are valid in another scope 1`] = `
 Object {
   "collisionLayers": Array [
-    CollisionLayer {
-      "__astId": 298,
-      "_objectNames": Array [
-        GameObjectNoPixels {
-          "__astId": 291,
-          "_color": "transparent",
-          "_name": "hello",
-          "_optionalLegendChar": ".",
-        },
-        GameObjectNoPixels {
-          "__astId": 292,
-          "_color": "transparent",
-          "_name": "hello2",
-          "_optionalLegendChar": "]",
-        },
-      ],
-    },
+    undefined,
   ],
   "legends": Array [
     GameLegendItemSimple {
@@ -7588,6 +7572,19 @@ Object {
       "_aliases": Array [
         GameObjectNoPixels {
           "__astId": 291,
+          "_collisionLayer": CollisionLayer {
+            "__astId": 298,
+            "_objects": Array [
+              [Circular],
+              GameObjectNoPixels {
+                "__astId": 292,
+                "_collisionLayer": [Circular],
+                "_color": "transparent",
+                "_name": "hello2",
+                "_optionalLegendChar": "]",
+              },
+            ],
+          },
           "_color": "transparent",
           "_name": "hello",
           "_optionalLegendChar": ".",
@@ -7600,6 +7597,19 @@ Object {
       "_aliases": Array [
         GameObjectNoPixels {
           "__astId": 292,
+          "_collisionLayer": CollisionLayer {
+            "__astId": 298,
+            "_objects": Array [
+              GameObjectNoPixels {
+                "__astId": 291,
+                "_collisionLayer": [Circular],
+                "_color": "transparent",
+                "_name": "hello",
+                "_optionalLegendChar": ".",
+              },
+              [Circular],
+            ],
+          },
           "_color": "transparent",
           "_name": "hello2",
           "_optionalLegendChar": "]",
@@ -7636,12 +7646,38 @@ Object {
   "objects": Array [
     GameObjectNoPixels {
       "__astId": 291,
+      "_collisionLayer": CollisionLayer {
+        "__astId": 298,
+        "_objects": Array [
+          [Circular],
+          GameObjectNoPixels {
+            "__astId": 292,
+            "_collisionLayer": [Circular],
+            "_color": "transparent",
+            "_name": "hello2",
+            "_optionalLegendChar": "]",
+          },
+        ],
+      },
       "_color": "transparent",
       "_name": "hello",
       "_optionalLegendChar": ".",
     },
     GameObjectNoPixels {
       "__astId": 292,
+      "_collisionLayer": CollisionLayer {
+        "__astId": 298,
+        "_objects": Array [
+          GameObjectNoPixels {
+            "__astId": 291,
+            "_collisionLayer": [Circular],
+            "_color": "transparent",
+            "_name": "hello",
+            "_optionalLegendChar": ".",
+          },
+          [Circular],
+        ],
+      },
       "_color": "transparent",
       "_name": "hello2",
       "_optionalLegendChar": "]",
@@ -7668,6 +7704,19 @@ Object {
                   "_cellModifiers": Array [],
                   "_objectName": GameObjectNoPixels {
                     "__astId": 291,
+                    "_collisionLayer": CollisionLayer {
+                      "__astId": 298,
+                      "_objects": Array [
+                        [Circular],
+                        GameObjectNoPixels {
+                          "__astId": 292,
+                          "_collisionLayer": [Circular],
+                          "_color": "transparent",
+                          "_name": "hello2",
+                          "_optionalLegendChar": "]",
+                        },
+                      ],
+                    },
                     "_color": "transparent",
                     "_name": "hello",
                     "_optionalLegendChar": ".",
@@ -7694,6 +7743,19 @@ Object {
                     "_cellModifiers": Array [],
                     "_objectName": GameObjectNoPixels {
                       "__astId": 291,
+                      "_collisionLayer": CollisionLayer {
+                        "__astId": 298,
+                        "_objects": Array [
+                          [Circular],
+                          GameObjectNoPixels {
+                            "__astId": 292,
+                            "_collisionLayer": [Circular],
+                            "_color": "transparent",
+                            "_name": "hello2",
+                            "_optionalLegendChar": "]",
+                          },
+                        ],
+                      },
                       "_color": "transparent",
                       "_name": "hello",
                       "_optionalLegendChar": ".",

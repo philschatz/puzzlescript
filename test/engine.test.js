@@ -218,7 +218,5 @@ describe('engine', () => {
     // renderScreen(data, engine.currentLevel)
 
     console.log('tick-returned:', engine.tick())
-    console.log('gameaskldjalskjd')
-    console.log(JSON.stringify(data, null, 2))
   })
 })

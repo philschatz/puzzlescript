@@ -446,6 +446,12 @@ class BaseForLines {
     })
     this.__astId = astId++
   }
+  addValidationMessage(level, message) {
+    if (!this.__validationMessages) {
+      this.__validationMessages = []
+    }
+    this.__validationMessages.push({level, message})
+  }
   toString () {
     return `astId=${this.__astId}\n${this.__source.getLineAndColumnMessage()}`
   }
@@ -532,6 +538,15 @@ class GameObject extends BaseForLines {
     // to match the signature of LegendItem
     return [this]
   }
+  setCollisionLayer (collisionLayer) {
+    if (this._collisionLayer) {
+      this.addValidationMessage('WARNING', 'An Object should not belong to more than one collision layer')
+    }
+    this._collisionLayer = collisionLayer
+  }
+  isInvalid () {
+    return !this._collisionLayer // ensure that every object is on a CollisionLayer
+  }
 }
 class GameObjectNoPixels extends GameObject {
   constructor (source, name, optionalLegendChar, colors) {
@@ -611,6 +626,17 @@ class GameLegendItemSimple extends BaseForLines {
     // 2 levels of indirection should be safe
     return this._aliases.map(alias => alias.getObjects()[0])
   }
+  setCollisionLayer (collisionLayer) {
+    if (this._collisionLayer && this._collisionLayer !== collisionLayer) {
+      this.addValidationMessage('WARNING', 'An Object should not belong to more than one collision layer')
+    }
+    this._collisionLayer = collisionLayer
+
+    this._aliases.forEach((alias) => {
+      alias.setCollisionLayer(collisionLayer)
+    })
+  }
+
 }
 
 class GameLegendItemAnd extends GameLegendItemSimple {
@@ -621,9 +647,9 @@ class GameLegendItemOr extends GameLegendItemSimple {
 
 // TODO: Use the Objects rather than just the names
 class CollisionLayer extends BaseForLines {
-  constructor (source, objectNames) {
+  constructor (source, objects) {
     super(source)
-    this._objectNames = objectNames
+    this._objects = objects
   }
   isInvalid () {
     return true // until we map the aliases to actual Objects rather than strings to look up later
@@ -996,7 +1022,12 @@ function parse (code) {
         return new GameSoundNormal(this.source, lookup.lookupObjectOrLegendItem(this.source, objectName.parse()), eventEnum.parse(), soundCode.parse())
       },
       CollisionLayerItem: function (objectNames, _2, _3) {
-        return new CollisionLayer(this.source, objectNames.parse().map((objectName) => lookup.lookupObjectOrLegendItem(this.source, objectName)))
+        const objects = objectNames.parse().map((objectName) => lookup.lookupObjectOrLegendItem(this.source, objectName))
+        const collisionLayer = new CollisionLayer(this.source, objects)
+        // Map all the Objects to the layer
+        objects.forEach((object) => {
+          object.setCollisionLayer(collisionLayer)
+        })
       },
 
       RuleItem: function (_1) {
