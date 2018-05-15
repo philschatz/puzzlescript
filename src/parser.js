@@ -201,11 +201,7 @@ SimpleBracket = "[" space* NeighboringCells "]"
 
 NeighboringCells = NonemptyListOf<Cell, "|">
 
-Cell
-  = CellSequenceBracketHack // Uggh, some games mis-typed and have nested brackets
-  | CellLayer*
-
-CellSequenceBracketHack = SimpleBracket  // Uggh, some games mis-typed and have nested brackets. They should be unwrapped as a Cell when semantically parsed
+Cell = CellLayer*
 
 CellLayer
   = HackCellLayer1
@@ -798,6 +794,9 @@ class GameRuleSequenceBracket extends BaseForLines {
   }
 
   doesntMatchCell (cell) {
+    if (this._ruleModifiers.length > 0) {
+      return `BUG: evaluating rules with modifiers is not implemented yet`
+    }
     return this._bracket.doesntMatchCell(cell)
   }
 
@@ -812,6 +811,10 @@ class RuleEllipsisBracket extends BaseForLines {
     this._leftNeighboringCells = leftNeighboringCells
     this._rightNeighboringCells = rightNeighboringCells
   }
+  doesntMatchCell (cell) {
+    return 'BUG: Checking neighbors (& ellipses) not implemented yet'
+  }
+
   doesntMatchConditionStructure (condition) {
     // Only check the length because the number of cellLayers inside can be different (some are added and some are removed as part of the rule)
     let ret = checkLength(condition._leftNeighboringCells, this._leftNeighboringCells)
@@ -960,7 +963,9 @@ function getGrammar () {
 
 function parseGrammar (code) {
   // 8645c163ff321d2fd1bad3fcaf48c107 has a typo so we .replace()
-  code = code.replace('][ ->', '] ->') + '\n' // Not all games have a trailing newline. this makes it easier on the parser
+  // 0c2625672bf47fcf728fe787a2630df6 has a typo se we .replace()
+  // another couple of games do not have a trailing newline at the end of the file so we add that
+  code = code.replace('][ ->', '] ->').replace('[[spring]', '[spring][') + '\n' // Not all games have a trailing newline. this makes it easier on the parser
 
   const g = getGrammar()
   return {match: g.match(code)}
