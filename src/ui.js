@@ -1,31 +1,31 @@
 const axel = require('axel')
 
-// First Tile one is on top.
+// First Sprite one is on top.
 // This caused a 2x speedup while rendering.
-function collapseTilesToPixels (objectsToDraw, backgroundColor) {
+function collapseSpritesToPixels (objectsToDraw, backgroundColor) {
   if (objectsToDraw.length === 1) {
     return objectsToDraw[0].getPixels()
   }
-  const tile = objectsToDraw[0].getPixels()
-  objectsToDraw.slice(1).forEach((objectToDraw, tileIndex) => {
+  const sprite = objectsToDraw[0].getPixels()
+  objectsToDraw.slice(1).forEach((objectToDraw, spriteIndex) => {
     const pixels = objectToDraw.getPixels()
     for (let y = 0; y < 5; y++) {
-      tile[y] = tile[y] || []
+      sprite[y] = sprite[y] || []
       for (let x = 0; x < 5; x++) {
         const pixel = pixels[y][x]
         // try to pull it out of the current object
-        if (!tile[y][x] && pixel && pixel !== 'transparent' && pixel.toRgba().a === 1) {
-          tile[y][x] = pixel
+        if (!sprite[y][x] && pixel && pixel !== 'transparent' && pixel.toRgba().a === 1) {
+          sprite[y][x] = pixel
         }
 
-        // If this is the last tile and nothing was found then use the game background color
-        if (!tile[y][x] && tileIndex === objectsToDraw.length - 1) {
-          tile[y][x] = backgroundColor
+        // If this is the last sprite and nothing was found then use the game background color
+        if (!sprite[y][x] && spriteIndex === objectsToDraw.length - 1) {
+          sprite[y][x] = backgroundColor
         }
       }
     }
   })
-  return tile
+  return sprite
 }
 
 function renderScreen (data, levelRows) {
@@ -45,14 +45,14 @@ function renderScreen (data, levelRows) {
       if (data.settings.flickscreen && colIndex > data.settings.flickscreen.width) {
         return
       }
-      const objectsToDraw = col.getObjects() // Not sure why, but entanglement renders properly when reversed
+      const objectsToDraw = col.getSprites() // Not sure why, but entanglement renders properly when reversed
 
       // If there is a magic background object then rely on it last
       if (magicBackgroundObject) {
         objectsToDraw.push(magicBackgroundObject)
       }
 
-      const pixels = collapseTilesToPixels(objectsToDraw, data.settings.background_color)
+      const pixels = collapseSpritesToPixels(objectsToDraw, data.settings.background_color)
 
       pixels.forEach((objRow, objRowIndex) => {
         objRow.forEach((objColor, objColIndex) => {

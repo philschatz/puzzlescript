@@ -2,15 +2,15 @@ const EventEmitter2 = require('eventemitter2')
 
 // This Object exists so the UI has something to bind to
 class Cell {
-  constructor (objects) {
-    this._objects = objects
+  constructor (sprites) {
+    this._sprites = sprites
   }
 
-  getObjects () {
-    return [...this._objects] // TODO: sort this by collisionlayer so they render properly on top of each other
+  getSprites () {
+    return [...this._sprites] // TODO: sort this by collisionlayer so they render properly on top of each other
   }
-  getObjectsAsSet () {
-    return this._objects
+  getSpritesAsSet () {
+    return this._sprites
   }
 }
 
@@ -23,7 +23,7 @@ module.exports = class Engine /* extends EventEmitter */ {
     const level = this.gameData.levels[levelNum]
     // Clone the board because we will be modifying it
     this.currentLevel = level.getRows().map(row => {
-      return row.map(col => new Cell(new Set(col.getObjects())))
+      return row.map(col => new Cell(new Set(col.getSprites())))
     })
   }
 
@@ -41,7 +41,7 @@ module.exports = class Engine /* extends EventEmitter */ {
             // console.log('Skipping the rule because of', reasonForNotMatching.toString());
           } else {
             // Do the rule!
-            console.log('Doing the rule', rule.toString())
+            console.log('Applying the rule', rule.toString())
           }
         })
       })

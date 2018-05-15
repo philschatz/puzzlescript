@@ -38,7 +38,7 @@ glob('./gists/*/script.txt', (err, files) => {
         // console.log(level)
         renderScreen(data, engine.currentLevel)
 
-        // engine.tick()
+        engine.tick()
         // renderScreen(data, engine.currentLevel)
       }
 

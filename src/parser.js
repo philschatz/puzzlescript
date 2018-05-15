@@ -7,7 +7,7 @@ Puzzlescript {
     lineTerminator* // Version information
     Title lineTerminator+
     (OptionalSetting lineTerminator+)*
-    Section<t_OBJECTS, ObjectsItem>?
+    Section<t_OBJECTS, Sprite>?
     Section<t_LEGEND, LegendItem>?
     Section<t_SOUNDS, SoundItem>?
     Section<t_COLLISIONLAYERS, CollisionLayerItem>?
@@ -71,21 +71,21 @@ Puzzlescript {
 
 
 
-  ObjectsItem
-    = ObjectsItemPixels
-    | ObjectsItemNoPixels
+  Sprite
+    = SpritePixels
+    | SpriteNoPixels
 
-  ObjectsItemNoPixels =
-    objectName legendShortcutChar? lineTerminator
+  SpriteNoPixels =
+    spriteName legendShortcutChar? lineTerminator
     colorNameOrHex+ lineTerminator+
 
-  ObjectsItemPixels =
-    objectName legendShortcutChar? lineTerminator
+  SpritePixels =
+    spriteName legendShortcutChar? lineTerminator
     colorNameOrHex+ lineTerminator+
     PixelRows
     lineTerminator*
 
-  objectName = ruleVariableName
+  spriteName = ruleVariableName
   colorTransparent = "transparent"
   colorHex6 = "#" hexDigit hexDigit hexDigit hexDigit hexDigit hexDigit
   colorHex3 = "#" hexDigit hexDigit hexDigit
@@ -528,13 +528,13 @@ class HexColor extends BaseForLines {
   }
 }
 
-class GameObject extends BaseForLines {
+class GameSprite extends BaseForLines {
   constructor(source, name, optionalLegendChar) {
     super(source)
     this._name = name
     this._optionalLegendChar = optionalLegendChar
   }
-  getObjects () {
+  getSprites () {
     // to match the signature of LegendItem
     return [this]
   }
@@ -548,7 +548,7 @@ class GameObject extends BaseForLines {
     return !this._collisionLayer // ensure that every object is on a CollisionLayer
   }
 }
-class GameObjectNoPixels extends GameObject {
+class GameSpriteNoPixels extends GameSprite {
   constructor (source, name, optionalLegendChar, colors) {
     super(source, name, optionalLegendChar)
     this._color = colors[0] // Ignore if the user added multiple colors (like `transparent yellow`)
@@ -569,7 +569,7 @@ class GameObjectNoPixels extends GameObject {
   }
 }
 
-class GameObjectPixels extends GameObject {
+class GameSpritePixels extends GameSprite {
   constructor (source, name, optionalLegendChar, colors, pixels) {
     super(source, name, optionalLegendChar)
     this._colors = colors
@@ -594,7 +594,7 @@ class GameObjectPixels extends GameObject {
     })
     return isInvalid
   }
-  getObjects () {
+  getSprites () {
     // to match the signature of LegendItem
     return [this]
   }
@@ -614,17 +614,17 @@ class GameObjectPixels extends GameObject {
 // TODO: Link up the aliases to objects rather than just storing strings
 // TODO: Also, maybe distinguish between legend items that may be in the LevelMap (1 character) from those that point to ObjectItems
 class GameLegendItemSimple extends BaseForLines {
-  constructor (source, objectNameOrLevelChar, alias) {
+  constructor (source, spriteNameOrLevelChar, alias) {
     super(source)
-    this._objectNameOrLevelChar = objectNameOrLevelChar
+    this._spriteNameOrLevelChar = spriteNameOrLevelChar
     this._aliases = Array.isArray(alias) ? alias : [alias]
   }
   isInvalid () {
     return false
   }
-  getObjects () {
+  getSprites () {
     // 2 levels of indirection should be safe
-    return this._aliases.map(alias => alias.getObjects()[0])
+    return this._aliases.map(alias => alias.getSprites()[0])
   }
   setCollisionLayer (collisionLayer) {
     if (this._collisionLayer && this._collisionLayer !== collisionLayer) {
@@ -647,9 +647,9 @@ class GameLegendItemOr extends GameLegendItemSimple {
 
 // TODO: Use the Objects rather than just the names
 class CollisionLayer extends BaseForLines {
-  constructor (source, objects) {
+  constructor (source, sprites) {
     super(source)
-    this._objects = objects
+    this._sprites = sprites
   }
   isInvalid () {
     return true // until we map the aliases to actual Objects rather than strings to look up later
@@ -675,41 +675,41 @@ class GameSoundSimpleEnum extends GameSound {
     this._simpleEventName = simpleEventName
   }
 }
-// TODO: Link this up to the Object, rather than just storing the objectName
+// TODO: Link this up to the Object, rather than just storing the spriteName
 class GameSoundNormal extends GameSound {
-  constructor (source, objectName, conditionEnum, soundCode) {
+  constructor (source, sprite, conditionEnum, soundCode) {
     super(source, soundCode)
-    this._objectName = objectName
+    this._sprite = sprite
     this._conditionEnum = conditionEnum
   }
 }
 class GameSoundMoveSimple extends GameSound {
-  constructor (source, objectName, soundCode) {
+  constructor (source, sprite, soundCode) {
     super(source, soundCode)
-    this._objectName = objectName
+    this._sprite = sprite
   }
 }
 class GameSoundMoveDirection extends GameSound {
-  constructor (source, objectName, directionEnum, soundCode) {
+  constructor (source, sprite, directionEnum, soundCode) {
     super(source, soundCode)
-    this._objectName = objectName
+    this._sprite = sprite
     this._directionEnum = directionEnum
   }
 }
 
 class WinConditionSimple extends BaseForLines {
-  constructor (source, qualifierEnum, objectName) {
+  constructor (source, qualifierEnum, spriteName) {
     super(source)
     this._qualifierEnum = qualifierEnum
-    this._objectName = objectName
+    this._spriteName = spriteName
   }
 }
 class WinConditionOn extends BaseForLines {
-  constructor (source, qualifierEnum, objectName, onObjectName) {
+  constructor (source, qualifierEnum, spriteName, onSprite) {
     super(source)
     this._qualifierEnum = qualifierEnum
-    this._objectName = objectName
-    this._onObjectName = onObjectName
+    this._spriteName = spriteName
+    this._onSprite = onSprite
   }
 }
 
@@ -780,8 +780,8 @@ class GameRuleSimpleBracket extends BaseForLines {
     // Check if all the cellLayers are on the current cell
     let ret = null
     for (const layer of this._neighbors[0]) {
-      for (const object of layer.getObjects()) {
-        if (!cell.getObjectsAsSet().has(object)) {
+      for (const object of layer.getSprites()) {
+        if (!cell.getSpritesAsSet().has(object)) {
           ret = object
         }
       }
@@ -798,20 +798,20 @@ class RuleRightCommands extends BaseForLines {
 }
 
 class GameRuleCellLayer extends BaseForLines {
-  constructor (source, cellModifiers, objectName) {
+  constructor (source, cellModifiers, spriteName) {
     super(source)
     this._cellModifiers = cellModifiers
-    this._objectName = objectName
+    this._spriteName = spriteName
   }
-  getObjects () {
-    return this._objectName.getObjects()
+  getSprites () {
+    return this._spriteName.getSprites()
   }
 }
 
 class GameRuleCellLayerHack extends BaseForLines {
-  constructor (source, objectName, hackRuleCommand) {
+  constructor (source, spriteName, hackRuleCommand) {
     super(source)
-    this._objectNameMaybeNull = objectName
+    this._spriteNameMaybeNull = spriteName
     this._hackRuleCommand = hackRuleCommand
   }
 }
@@ -837,14 +837,14 @@ class LookupHelper {
     this._addToHelper(this._allObjects, gameObject._name.toLowerCase(), gameObject)
   }
   addToAllLegendItems (legendItem) {
-    this._addToHelper(this._allLegendItems, legendItem._objectNameOrLevelChar.toLowerCase(), legendItem)
+    this._addToHelper(this._allLegendItems, legendItem._spriteNameOrLevelChar.toLowerCase(), legendItem)
   }
   addObjectToAllLevelChars (levelChar, gameObject) {
     this._addToHelper(this._allLegendItems, levelChar.toLowerCase(), gameObject)
     this._addToHelper(this._allLevelChars, levelChar.toLowerCase(), gameObject)
   }
   addLegendToAllLevelChars (legendItem) {
-    this._addToHelper(this._allLevelChars, legendItem._objectNameOrLevelChar.toLowerCase(), legendItem)
+    this._addToHelper(this._allLevelChars, legendItem._spriteNameOrLevelChar.toLowerCase(), legendItem)
   }
   lookupObjectOrLegendItem (source, key) {
     key = key.toLowerCase()
@@ -949,7 +949,7 @@ function parse (code) {
       Section: (_threeDashes1, _headingBar1, _lineTerminator1, _sectionName, _lineTerminator2, _threeDashes2, _headingBar2, _8, _9, _10, _11) => {
         return _10.parse()
       },
-      ObjectsItem: function (_1) {
+      Sprite: function (_1) {
         const gameObject = _1.parse()
         lookup.addToAllObjects(gameObject)
         if (gameObject._optionalLegendChar) {
@@ -960,13 +960,13 @@ function parse (code) {
         }
         return gameObject
       },
-      ObjectsItemPixels: function (name, optionalLegendChar, _3, colors, _5, pixels, _7) {
+      SpritePixels: function (name, optionalLegendChar, _3, colors, _5, pixels, _7) {
         optionalLegendChar = optionalLegendChar.parse()[0]
-        return new GameObjectPixels(this.source, name.parse(), optionalLegendChar, colors.parse(), pixels.parse())
+        return new GameSpritePixels(this.source, name.parse(), optionalLegendChar, colors.parse(), pixels.parse())
       },
-      ObjectsItemNoPixels: function (name, optionalLegendChar, _3, colors, _5) {
+      SpriteNoPixels: function (name, optionalLegendChar, _3, colors, _5) {
         optionalLegendChar = optionalLegendChar.parse()[0]
-        return new GameObjectNoPixels(this.source, name.parse(), optionalLegendChar, colors.parse())
+        return new GameSpriteNoPixels(this.source, name.parse(), optionalLegendChar, colors.parse())
       },
       PixelRows: function (row1, row2, row3, row4, row5) {
         // Exactly 5 rows. We do this because some games contain vertical whitespace after, but not all
@@ -985,20 +985,20 @@ function parse (code) {
           return lookup.lookupObjectOrLegendItem(this.source, alias)
         })
         lookup.addToAllLegendItems(legendItem)
-        if (legendItem._objectNameOrLevelChar.length === 1) {
+        if (legendItem._spriteNameOrLevelChar.length === 1) {
           lookup.addLegendToAllLevelChars(legendItem)
         }
         return legendItem
       },
-      LegendItemSimple: function (objectNameOrLevelChar, _equals, alias, _whitespace) {
+      LegendItemSimple: function (spriteNameOrLevelChar, _equals, alias, _whitespace) {
         // TODO: Do the lookup and adding to sets here rather than rewiring in LegendItem
-        return new GameLegendItemSimple(this.source, objectNameOrLevelChar.parse(), alias.parse())
+        return new GameLegendItemSimple(this.source, spriteNameOrLevelChar.parse(), alias.parse())
       },
-      LegendItemAnd: function (objectNameOrLevelChar, _equals, aliases, _whitespace) {
-        return new GameLegendItemAnd(this.source, objectNameOrLevelChar.parse(), aliases.parse())
+      LegendItemAnd: function (spriteNameOrLevelChar, _equals, aliases, _whitespace) {
+        return new GameLegendItemAnd(this.source, spriteNameOrLevelChar.parse(), aliases.parse())
       },
-      LegendItemOr: function (objectNameOrLevelChar, _equals, aliases, _whitespace) {
-        return new GameLegendItemOr(this.source, objectNameOrLevelChar.parse(), aliases.parse())
+      LegendItemOr: function (spriteNameOrLevelChar, _equals, aliases, _whitespace) {
+        return new GameLegendItemOr(this.source, spriteNameOrLevelChar.parse(), aliases.parse())
       },
       SoundItem: function (_1, _whitespace) {
         return _1.parse()
@@ -1012,17 +1012,17 @@ function parse (code) {
         lookup.addSoundEffect(sfxName, sound)
         return sound
       },
-      SoundItemMoveSimple: function (objectName, _2, soundCode) {
-        return new GameSoundMoveSimple(this.source, lookup.lookupObjectOrLegendItem(this.source, objectName.parse()), soundCode.parse())
+      SoundItemMoveSimple: function (spriteName, _2, soundCode) {
+        return new GameSoundMoveSimple(this.source, lookup.lookupObjectOrLegendItem(this.source, spriteName.parse()), soundCode.parse())
       },
-      SoundItemMoveDirection: function (objectName, _move, directionEnum, soundCode) {
-        return new GameSoundMoveDirection(this.source, lookup.lookupObjectOrLegendItem(this.source, objectName.parse()), directionEnum.parse(), soundCode.parse())
+      SoundItemMoveDirection: function (spriteName, _move, directionEnum, soundCode) {
+        return new GameSoundMoveDirection(this.source, lookup.lookupObjectOrLegendItem(this.source, spriteName.parse()), directionEnum.parse(), soundCode.parse())
       },
-      SoundItemNormal: function (objectName, eventEnum, soundCode) {
-        return new GameSoundNormal(this.source, lookup.lookupObjectOrLegendItem(this.source, objectName.parse()), eventEnum.parse(), soundCode.parse())
+      SoundItemNormal: function (spriteName, eventEnum, soundCode) {
+        return new GameSoundNormal(this.source, lookup.lookupObjectOrLegendItem(this.source, spriteName.parse()), eventEnum.parse(), soundCode.parse())
       },
-      CollisionLayerItem: function (objectNames, _2, _3) {
-        const objects = objectNames.parse().map((objectName) => lookup.lookupObjectOrLegendItem(this.source, objectName))
+      CollisionLayerItem: function (spriteNames, _2, _3) {
+        const objects = spriteNames.parse().map((spriteName) => lookup.lookupObjectOrLegendItem(this.source, spriteName))
         const collisionLayer = new CollisionLayer(this.source, objects)
         // Map all the Objects to the layer
         objects.forEach((object) => {
@@ -1081,11 +1081,11 @@ function parse (code) {
         return new GameMessage(this.source, message.parse())
       },
 
-      WinConditionItemSimple: function (qualifierEnum, objectName, _whitespace) {
-        return new WinConditionSimple(this.source, qualifierEnum.parse(), objectName.parse())
+      WinConditionItemSimple: function (qualifierEnum, spriteName, _whitespace) {
+        return new WinConditionSimple(this.source, qualifierEnum.parse(), spriteName.parse())
       },
-      WinConditionItemOn: function (qualifierEnum, objectName, _on, targetObjectName, _whitespace) {
-        return new WinConditionOn(this.source, qualifierEnum.parse(), objectName.parse(), targetObjectName.parse())
+      WinConditionItemOn: function (qualifierEnum, spriteName, _on, targetObjectName, _whitespace) {
+        return new WinConditionOn(this.source, qualifierEnum.parse(), spriteName.parse(), targetObjectName.parse())
       },
       GameMessage: function (_1, optionalMessage) {
         // TODO: Maybe discard empty messages?
@@ -1195,7 +1195,7 @@ module.exports = {
   LevelMap,
   GameMessage,
   HexColor,
-  GameObject,
+  GameSprite,
   GameLegendItemSimple,
   GameLegendItemAnd,
   GameLegendItemOr,
