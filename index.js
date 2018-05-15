@@ -1,5 +1,6 @@
 const {readFileSync} = require('fs')
 const glob = require('glob')
+const pify = require('pify')
 
 const Parser = require('./src/parser')
 const UI = require('./src/ui')
@@ -7,13 +8,17 @@ const Engine = require('./src/engine')
 
 let totalRenderTime = 0
 
-glob('./gists/*/script.txt', (err, files) => {
-  if (err) {
-    throw err
-  }
+
+async function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
+
+async function run() {
+
+  const files = await pify(glob)('./gists/*/script.txt')
   console.log(`Looping over ${files.length} games...`)
 
-  files.forEach((filename, index) => {
+  for (let filename of files) {
     console.log(`Parsing and rendering ${filename}`);
     const code = readFileSync(filename, 'utf-8')
     const {data, error, trace} = Parser.parse(code)
@@ -21,7 +26,6 @@ glob('./gists/*/script.txt', (err, files) => {
     if (error) {
       console.log(trace.toString())
       console.log(error.message)
-      console.log(`Failed on game ${index}`)
       throw new Error(filename)
     } else {
       // console.log(data.title)
@@ -39,21 +43,26 @@ glob('./gists/*/script.txt', (err, files) => {
         UI.renderScreen(data, engine.currentLevel)
 
         for (var i = 0; i < 100; i++) {
+          await sleep(100)
           const changes = engine.tick()
           changes.forEach(cell => {
             UI.drawCellAt(data, cell, cell.rowIndex, cell.colIndex)
           })
+          if (changes.length === 0) {
+            break
+          }
         }
       }
 
       UI.clearScreen()
       totalRenderTime += Date.now() - startTime
-
-      if (index === files.length - 1) {
-        console.log('-----------------------')
-        console.log('Renderings took:', totalRenderTime)
-        console.log('-----------------------')
-      }
     }
-  })
-})
+  }
+
+  console.log('-----------------------')
+  console.log('Renderings took:', totalRenderTime)
+  console.log('-----------------------')
+
+}
+
+run()

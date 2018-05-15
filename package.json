@@ -13,7 +13,8 @@
     "glob": "^7.1.2",
     "jest": "^22.4.3",
     "lodash": "^4.17.10",
-    "ohm-js": "^0.14.0"
+    "ohm-js": "^0.14.0",
+    "pify": "^3.0.0"
   },
   "devDependencies": {
     "http-server": "^0.11.1",
