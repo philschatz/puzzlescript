@@ -25,8 +25,8 @@ function collapseSpritesToPixels (spritesToDraw, backgroundColor) {
       sprite[y] = sprite[y] || []
       for (let x = 0; x < 5; x++) {
         const pixel = pixels[y][x]
-        // try to pull it out of the current object
-        if (!sprite[y][x] && pixel && pixel !== 'transparent' && pixel.toRgba().a === 1) {
+        // try to pull it out of the current sprite
+        if ((!sprite[y][x] || sprite[y][x].isTransparent()) && pixel && !pixel.isTransparent()) {
           sprite[y][x] = pixel
         }
 
@@ -48,9 +48,9 @@ class UI {
   renderScreen (data, levelRows) {
     axel.fg(255, 255, 255)
     axel.bg(0, 0, 0)
-  
+
     data.settings.__magicBackgroundObject = data.objects.filter(({_name}) => _name.toLowerCase() === 'background')[0]
-  
+
     levelRows.forEach((row, rowIndex) => {
       // Don't draw too much for this demo
       if (data.settings.flickscreen && rowIndex > data.settings.flickscreen.height) {
@@ -61,7 +61,7 @@ class UI {
         if (data.settings.flickscreen && colIndex > data.settings.flickscreen.width) {
           return
         }
-  
+
         this.drawCellAt(data, col /* cell */, rowIndex, colIndex)
       })
     })
@@ -79,7 +79,7 @@ class UI {
         let g
         let b
         let a
-  
+
         if (spriteColor && spriteColor !== 'transparent') { // could be transparent
           const rgba = spriteColor.toRgba()
           r = rgba.r
@@ -87,7 +87,7 @@ class UI {
           b = rgba.b
           a = rgba.a
         }
-  
+
         // Fallback to the game background color (e.g. entanglement)
         if (a !== 1 && data.settings.background_color) {
           const rgba = data.settings.background_color.toRgba()
@@ -96,7 +96,7 @@ class UI {
           b = rgba.b
           a = rgba.a
         }
-  
+
         const x = (colIndex * 5 + spriteColIndex) * 2 // Use 2 characters for 1 pixel on the X-axis
         const y = rowIndex * 5 + spriteRowIndex + 1 // Y column is 1-based
         if (a) {
@@ -108,18 +108,18 @@ class UI {
         }
       })
     })
-  
+
     restoreCursor()
   }
 
   getPixelsForCell (data, cell) {
     const spritesToDraw = cell.getSprites() // Not sure why, but entanglement renders properly when reversed
-    
+
     // If there is a magic background object then rely on it last
     if (data.settings.__magicBackgroundObject) {
       spritesToDraw.push(data.settings.__magicBackgroundObject)
     }
-     
+
     const pixels = collapseSpritesToPixels(spritesToDraw, data.settings.background_color)
     return pixels
   }
@@ -133,7 +133,7 @@ class UI {
   writeDebug (text) {
     axel.fg(255, 255, 255)
     axel.bg(0, 0, 0)
-    writeText(0, 0, text)
+    writeText(0, 0, `[${text}]`)
   }
 }
 

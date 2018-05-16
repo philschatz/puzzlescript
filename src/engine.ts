@@ -80,6 +80,7 @@ export default class Engine extends EventEmitter2 {
   }
 
   tick () {
+    UI.writeDebug(`"${this.gameData.title}"`)
     let changes = []
     // Loop over all the cells, see if a Rule matches, apply the transition, and notify that cells changed
     this.currentLevel.forEach(row => {
@@ -91,7 +92,7 @@ export default class Engine extends EventEmitter2 {
             mutators.forEach(mutator => {
               changes = changes.concat(mutator.mutate())
             })
-            UI.writeDebug(`[${mutators.length}mut'rs]`)
+            UI.writeDebug(`"${this.gameData.title}" ${mutators.length}mut'rs`)
           }
         })
       })
