@@ -1,6 +1,6 @@
-import * as ohm from "ohm-js"
-import * as _ from "lodash"
-import { lookupColorPalette } from "./colors"
+import * as _ from 'lodash'
+import * as ohm from 'ohm-js'
+import { lookupColorPalette } from './colors'
 
 const GRAMMAR_STR = `
 Puzzlescript {
@@ -648,6 +648,7 @@ class GameSpritePixels extends GameSprite {
 // TODO: Link up the aliases to objects rather than just storing strings
 // TODO: Also, maybe distinguish between legend items that may be in the LevelMap (1 character) from those that point to ObjectItems
 export class GameLegendItemSimple extends BaseForLines {
+  _sprites: any
   _spriteNameOrLevelChar: any
   _aliases: any
   _collisionLayer: any
@@ -669,7 +670,7 @@ export class GameLegendItemSimple extends BaseForLines {
     if (!this._sprites) {
       // 2 levels of indirection should be safe
       // Sort by collisionLayer so that the most-important sprite is first
-      this._sprites = _.flattenDeep(this._aliases.map(alias => {if (!alias.getSprites) {console.log(alias)} return alias.getSprites()})).sort((a, b) => {
+      this._sprites = _.flattenDeep(this._aliases.map(alias => { if (!alias.getSprites) { console.log(alias) } return alias.getSprites() })).sort((a: GameLegendItemSimple, b: GameLegendItemSimple) => {
         return a.getCollisionLayerNum() - b.getCollisionLayerNum()
       }).reverse()
     }
@@ -1292,13 +1293,13 @@ class Parser {
     _GRAMMAR = _GRAMMAR || ohm.grammar(GRAMMAR_STR)
     return _GRAMMAR
   }
-  
+
   parseGrammar (code) {
     // 8645c163ff321d2fd1bad3fcaf48c107 has a typo so we .replace()
     // 0c2625672bf47fcf728fe787a2630df6 has a typo se we .replace()
     // another couple of games do not have a trailing newline at the end of the file so we add that
     code = code.replace('][ ->', '] ->').replace('[[spring]', '[spring][') + '\n' // Not all games have a trailing newline. this makes it easier on the parser
-  
+
     const g = this.getGrammar()
     return {match: g.match(code)}
   }
@@ -1306,13 +1307,13 @@ class Parser {
   parse (code) {
     const g = this.getGrammar()
     const {match: m} = this.parseGrammar(code)
-  
+
     if (m.succeeded()) {
       const lookup = new LookupHelper()
       const s = g.createSemantics()
-  
+
       let currentColorPalette = 'arnecolors' // default
-  
+
       s.addOperation('parse', {
         Details: (_whitespace1, title, _whitespace2, settingsFields, _whitespace3, objects, legends, sounds, collisionLayers, rules, winConditions, levels) => {
           const settings = {}
@@ -1356,7 +1357,7 @@ class Parser {
           return getConfigField(_1, colorPaletteName)
         },
         RequirePlayerMovement: getConfigField,
-  
+
         Section: (_threeDashes1, _headingBar1, _lineTerminator1, _sectionName, _lineTerminator2, _threeDashes2, _headingBar2, _8, _9, _10, _11) => {
           return _10.parse()
         },
@@ -1440,11 +1441,11 @@ class Parser {
             object.setCollisionLayer(collisionLayer)
           })
         },
-  
+
         RuleItem: function (_1) {
           return _1.parse()
         },
-  
+
         Rule: function (rulePlus, productionModifiers, innerRule, _whitespace) {
           return new GameRule(this.source, rulePlus.parse()[0], productionModifiers.parse(), innerRule.parse())
         },
@@ -1478,7 +1479,7 @@ class Parser {
         cellLayerModifier: function (_whitespace1, cellLayerModifier, _whitespace2) {
           return cellLayerModifier.parse()
         },
-  
+
         RuleBracketsToZip: function (conditions, actions, commands, optionalMessageCommand) {
           return new RuleBracketsToZip(this.source, conditions.parse(), actions.parse(), commands.parse().concat(optionalMessageCommand.parse()))
         },
@@ -1491,11 +1492,11 @@ class Parser {
         RuleConditions: function (brackets, _rightArrow) {
           return brackets.parse()
         },
-  
+
         MessageCommand: function (_message, message) {
           return new GameMessage(this.source, message.parse())
         },
-  
+
         WinConditionItemSimple: function (qualifierEnum, spriteName, _whitespace) {
           return new WinConditionSimple(this.source, qualifierEnum.parse(), spriteName.parse())
         },
@@ -1577,11 +1578,11 @@ class Parser {
         //   debugger
         //   return this.sourceString
         // },
-  
+
       })
       const game = s(m).parse()
       // console.log(game)
-  
+
       // Validate that the game objects are rectangular
       game.objects.forEach((object) => {
         if (object.isInvalid()) {
@@ -1589,7 +1590,7 @@ class Parser {
           console.warn(object.__source.getLineAndColumnMessage())
         }
       })
-  
+
       // Validate that the level maps are rectangular
       game.levels.forEach((level) => {
         if (level.isInvalid()) {
@@ -1597,7 +1598,7 @@ class Parser {
           console.warn(level.__source.getLineAndColumnMessage())
         }
       })
-  
+
       return {data: game}
     } else {
       const trace = g.trace(code)

@@ -1,8 +1,6 @@
-import * as _ from "lodash"
-import UI from "./ui"
-import { EventEmitter2 } from "eventemitter2"
-
-
+import * as _ from 'lodash'
+import UI from './ui'
+import { EventEmitter2 } from 'eventemitter2'
 
 function setEquals (set1, set2) {
   if (set1.size !== set2.size) return false
@@ -39,7 +37,7 @@ class Cell {
   equalsSprites (newSetOfSprites) {
     return setEquals(this._sprites, newSetOfSprites)
   }
-  _getRelativeNeighbor (y: number , x: number) {
+  _getRelativeNeighbor (y: number, x: number) {
     const row = this._engine.currentLevel[this.rowIndex + y]
     if (!row) return null
     return row[this.colIndex + x]
