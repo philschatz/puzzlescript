@@ -106,12 +106,12 @@ Puzzlescript {
     | LegendItemAnd
     | LegendItemOr
 
-  LegendItemSimple = LegendVarNameDefn "=" LegendVarNameDefn lineTerminator+
-  LegendItemAnd = LegendVarNameDefn "=" NonemptyListOf<LegendVarNameDefn, t_AND> lineTerminator+
-  LegendItemOr = LegendVarNameDefn "=" NonemptyListOf<LegendVarNameDefn, t_OR> lineTerminator+
+  LegendItemSimple = LegendVarNameDefn "=" LookupLegendVarName lineTerminator+
+  LegendItemAnd = LegendVarNameDefn "=" NonemptyListOf<LookupLegendVarName, t_AND> lineTerminator+
+  LegendItemOr = LegendVarNameDefn "=" NonemptyListOf<LookupLegendVarName, t_OR> lineTerminator+
 
   LegendVarNameDefn = ruleVariableName | legendVariableChar
-
+  LookupLegendVarName = LegendVarNameDefn
 
 
 
@@ -537,8 +537,16 @@ export class HexColor extends BaseForLines {
     this._color = color
   }
 
+  isTransparent () { return false }
   toRgba () {
     return hexToRgb(this._color)
+  }
+}
+
+class TransparentColor extends BaseForLines {
+  isTransparent () { return true }
+  toRgba () {
+    return {a: 0}
   }
 }
 
@@ -562,11 +570,14 @@ export class GameSprite extends BaseForLines {
     }
     this._collisionLayer = collisionLayer
   }
+  getCollisionLayerNum () {
+    return this._collisionLayer.__astId
+  }
   isInvalid () {
     return !this._collisionLayer // ensure that every object is on a CollisionLayer
   }
 }
-class GameSpriteNoPixels extends GameSprite {
+class GameSpriteSingleColor extends GameSprite {
   _color: any
 
   constructor (source, name, optionalLegendChar, colors) {
@@ -625,7 +636,7 @@ class GameSpritePixels extends GameSprite {
     return this._pixels.map(row => {
       return row.map(col => {
         if (col === '.') {
-          return null
+          return new TransparentColor(this.__source)
         } else {
           return this._colors[col]
         }
@@ -644,14 +655,25 @@ export class GameLegendItemSimple extends BaseForLines {
   constructor (source, spriteNameOrLevelChar, alias) {
     super(source)
     this._spriteNameOrLevelChar = spriteNameOrLevelChar
+
     this._aliases = Array.isArray(alias) ? alias : [alias]
   }
   isInvalid () {
     return false
   }
+  isAnd () {
+    return true
+  }
   getSprites () {
-    // 2 levels of indirection should be safe
-    return this._aliases.map(alias => alias.getSprites()[0])
+    // Use a cache because all the collision layers have not been loaded in time
+    if (!this._sprites) {
+      // 2 levels of indirection should be safe
+      // Sort by collisionLayer so that the most-important sprite is first
+      this._sprites = _.flattenDeep(this._aliases.map(alias => {if (!alias.getSprites) {console.log(alias)} return alias.getSprites()})).sort((a, b) => {
+        return a.getCollisionLayerNum() - b.getCollisionLayerNum()
+      }).reverse()
+    }
+    return this._sprites
   }
   setCollisionLayer (collisionLayer) {
     if (this._collisionLayer && this._collisionLayer !== collisionLayer) {
@@ -663,12 +685,21 @@ export class GameLegendItemSimple extends BaseForLines {
       alias.setCollisionLayer(collisionLayer)
     })
   }
+  getCollisionLayerNum () {
+    return this._collisionLayer.__astId
+  }
 }
 
 export class GameLegendItemAnd extends GameLegendItemSimple {
+  isAnd () {
+    return true
+  }
 }
 
 export class GameLegendItemOr extends GameLegendItemSimple {
+  isAnd () {
+    return false
+  }
 }
 
 // TODO: Use the Objects rather than just the names
@@ -1192,7 +1223,7 @@ class LookupHelper {
   _allObjects: any
   _allLegendItems: any
   _allLevelChars: any
-  
+
   constructor () {
     this._allSoundEffects = new Map()
     this._allObjects = new Map()
@@ -1344,7 +1375,7 @@ export function parse (code) {
       },
       SpriteNoPixels: function (name, optionalLegendChar, _3, colors, _5) {
         optionalLegendChar = optionalLegendChar.parse()[0]
-        return new GameSpriteNoPixels(this.source, name.parse(), optionalLegendChar, colors.parse())
+        return new GameSpriteSingleColor(this.source, name.parse(), optionalLegendChar, colors.parse())
       },
       PixelRows: function (row1, row2, row3, row4, row5) {
         // Exactly 5 rows. We do this because some games contain vertical whitespace after, but not all
@@ -1356,12 +1387,12 @@ export function parse (code) {
           row5.parse()
         ]
       },
+      LookupLegendVarName: function (alias) {
+        // Replace all the Sprite Names with the actual objects
+        return lookup.lookupObjectOrLegendItem(this.source, alias.parse())
+      },
       LegendItem: function (_1) {
         const legendItem = _1.parse()
-        // Replace all the Object Names with the actual objects
-        legendItem._aliases = legendItem._aliases.map((alias) => {
-          return lookup.lookupObjectOrLegendItem(this.source, alias)
-        })
         lookup.addToAllLegendItems(legendItem)
         if (legendItem._spriteNameOrLevelChar.length === 1) {
           lookup.addLegendToAllLevelChars(legendItem)
@@ -1505,6 +1536,9 @@ export function parse (code) {
       },
       colorName: function (_1) {
         return new HexColor(this.source, lookupColorPalette(currentColorPalette)[this.sourceString.toLowerCase()])
+      },
+      colorTransparent: function (_1) {
+        return new TransparentColor(this.source)
       },
       NonemptyListOf: function (_1, _2, _3) {
         return [_1.parse()].concat(_3.parse())
