@@ -1,7 +1,7 @@
 {
   "scripts": {
     "lint": "standard --fix index.js src/**/*.js test/**/*.js",
-    "tsc": "./node_modules/typescript/bin/tsc",
+    "tsc": "tsc src/*.ts --target ES2015 --lib ES2015 --module commonjs",
     "start": "node index.js",
     "test": "jest --coverage --updateSnapshot",
     "test-debug": "node --inspect-brk $(npm bin)/jest -i --updateSnapshot $@",
