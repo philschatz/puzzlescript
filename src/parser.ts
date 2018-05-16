@@ -648,6 +648,7 @@ class GameSpritePixels extends GameSprite {
 // TODO: Link up the aliases to objects rather than just storing strings
 // TODO: Also, maybe distinguish between legend items that may be in the LevelMap (1 character) from those that point to ObjectItems
 export class GameLegendItemSimple extends BaseForLines {
+  _sprites: any
   _spriteNameOrLevelChar: any
   _aliases: any
   _collisionLayer: any
@@ -669,7 +670,7 @@ export class GameLegendItemSimple extends BaseForLines {
     if (!this._sprites) {
       // 2 levels of indirection should be safe
       // Sort by collisionLayer so that the most-important sprite is first
-      this._sprites = _.flattenDeep(this._aliases.map(alias => {if (!alias.getSprites) {console.log(alias)} return alias.getSprites()})).sort((a, b) => {
+      this._sprites = _.flattenDeep(this._aliases.map(alias => {if (!alias.getSprites) {console.log(alias)} return alias.getSprites()})).sort((a: GameLegendItemSimple, b: GameLegendItemSimple) => {
         return a.getCollisionLayerNum() - b.getCollisionLayerNum()
       }).reverse()
     }

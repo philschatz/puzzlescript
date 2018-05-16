@@ -3,15 +3,14 @@ const {default: Parser} = require('../lib/parser')
 const {default: UI} = require('../lib/ui')
 
 const C_WHITE = {r: 255, g: 255, b: 255, a: 1}
-const C_BLACK = {r: 0,   g: 0,   b: 0,   a: 1}
+const C_BLACK = {r: 0, g: 0, b: 0, a: 1}
 
-function parseAndReturnFirstSpritePixels(code) {
+function parseAndReturnFirstSpritePixels (code) {
   const {data} = Parser.parse(code)
   const cell = data.levels[0].getRows()[0][0]
   // console.log(cell.getSprites())
   return UI.getPixelsForCell(data, cell)
 }
-
 
 describe('UI', () => {
   it('Renders a single sprite', () => {
@@ -47,7 +46,6 @@ w
     expect(pixels[3][3].toRgba()).toEqual(C_WHITE)
     expect(pixels[4][4].toRgba()).toEqual(C_WHITE)
   })
-
 
   it('Overlays sprites based on the collision layer', () => {
     const pixels = parseAndReturnFirstSpritePixels(`
@@ -101,5 +99,4 @@ W
     // Expect the other pixels to be black
     expect(pixels[0][1].toRgba()).toEqual(C_BLACK)
   })
-
 })
