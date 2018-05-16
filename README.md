@@ -16,7 +16,9 @@ This is a remake of PuzzleScript that has the following features:
 - `npm install`
 - `npm test`
 - `npm run watch` Run the tests and when you update the source, it re-runs the tests
+- `npm run test-debug` Run the tests but open a debugger (remember to add a `debugger` line into the JavaScript)
 - `node index.js` Run all the games (change the `glob(...)` line to load just one file)
+- `node --inspect-brk index.js` Run all the games with the Debugger open
 
 
 # File Layout
