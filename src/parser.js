@@ -446,7 +446,7 @@ class BaseForLines {
     })
     this.__astId = astId++
   }
-  addValidationMessage(level, message) {
+  addValidationMessage (level, message) {
     if (!this.__validationMessages) {
       this.__validationMessages = []
     }
@@ -533,7 +533,7 @@ class HexColor extends BaseForLines {
 }
 
 class GameSprite extends BaseForLines {
-  constructor(source, name, optionalLegendChar) {
+  constructor (source, name, optionalLegendChar) {
     super(source)
     this._name = name
     this._optionalLegendChar = optionalLegendChar
@@ -640,7 +640,6 @@ class GameLegendItemSimple extends BaseForLines {
       alias.setCollisionLayer(collisionLayer)
     })
   }
-
 }
 
 class GameLegendItemAnd extends GameLegendItemSimple {
@@ -743,33 +742,33 @@ class GameRule extends BaseForLines {
   }
 }
 
-function checkLength(conditions, actions) {
+function checkLength (conditions, actions) {
   if (conditions.length !== actions.length) {
     return `counts mismatch. Left is ${conditions.length} while Right is ${actions.length}`
   }
 }
-function checkLengthAndRecurse(conditions, actions) {
-    // console.log('--------- START');
-    // console.log(conditions);
-    // console.log(actions);
-    // console.log('--------- END');
+function checkLengthAndRecurse (conditions, actions) {
+  // console.log('--------- START');
+  // console.log(conditions);
+  // console.log(actions);
+  // console.log('--------- END');
 
-    let ret = checkLength(conditions, actions)
-    if (ret) return ret
-    for (let i = 0; i < conditions.length; i++) {
-      const condition = conditions[i]
-      const action = actions[i]
-      ret = action.doesntMatchConditionStructure(condition)
-      if (ret) break
-    }
-    return ret
+  let ret = checkLength(conditions, actions)
+  if (ret) return ret
+  for (let i = 0; i < conditions.length; i++) {
+    const condition = conditions[i]
+    const action = actions[i]
+    ret = action.doesntMatchConditionStructure(condition)
+    if (ret) break
+  }
+  return ret
 }
 
 // The idea is to convert something like `[A|B] [C|D|E] -> [N|O] [P|Q|R]`
 // into something like { ( (A,N), (B,O) ), ( (C,P), (D,Q), (E,R) ) }
 // That way it's easy to call `.mutate()` to change the cell.
 class BracketPair {
-  constructor(neighbors) {
+  constructor (neighbors) {
     this.neighbors = neighbors
   }
   mutate (cell, state) {
@@ -778,18 +777,18 @@ class BracketPair {
 }
 
 class EllipsisPair {
-  constructor() {
+  constructor () {
     // TODO: Implement me
   }
 }
 
 class CellPair extends BaseForLines {
-  constructor(source, condition, action) {
+  constructor (source, condition, action) {
     super(source)
     this.conditionLayers = condition
     this.actionLayers = action
   }
-  getMatchedMutatorsOrNull(cell) {
+  getMatchedMutatorsOrNull (cell) {
     for (const cellLayer of this.conditionLayers) {
       if (!cellLayer.matchesCell(cell)) return null
     }
@@ -798,7 +797,7 @@ class CellPair extends BaseForLines {
 }
 
 class CellPairMutator extends BaseForLines {
-  constructor(source, cell, cellPair) {
+  constructor (source, cell, cellPair) {
     super(source)
     this.cell = cell
     this.cellPair = cellPair
@@ -816,9 +815,9 @@ class CellPairMutator extends BaseForLines {
     })
     this.cellPair.actionLayers.forEach(layer => {
       if (!layer.getSprites) {
-        console.log('BUUUUUGGGG');
+        console.log('BUUUUUGGGG')
         console.log(layer)
-        console.log(layer.toString());
+        console.log(layer.toString())
       }
       layer.getSprites().forEach(sprite => {
         newSetOfSprites.add(sprite)
@@ -857,7 +856,6 @@ class RuleBracketsToZip extends BaseForLines {
       if (conditionBracket._bracket instanceof RuleEllipsisBracket) {
         this._bracketPairs.push(new EllipsisPair())
       } else {
-
         if (!conditionBracket._bracket._neighbors) {
           console.log(conditionBracket._bracket)
           console.log(conditionBracket._bracket.toString())
@@ -875,9 +873,7 @@ class RuleBracketsToZip extends BaseForLines {
         }
 
         this._bracketPairs.push(new BracketPair(resultNeighbors))
-
       }
-
     }
   }
 
@@ -901,7 +897,6 @@ class RuleBracketsToZip extends BaseForLines {
 
       let curCell = cell
       for (const direction of directions) {
-
         let neighborRet = []
         for (const neighbor of bracketPair.neighbors) {
           if (!curCell) break // If we hit the end of the level then this does not match
@@ -1021,12 +1016,12 @@ class RuleCommands extends BaseForLines {
 }
 
 class RuleCommandMutator {
-  constructor(commands, cell, state) {
+  constructor (commands, cell, state) {
     this.commands = commands
     this.cell = cell
     this.state = state
   }
-  mutate() {
+  mutate () {
     // console.log(`TODO: Execute these commands (which matched):`, this.commands)
   }
 }
@@ -1090,7 +1085,6 @@ class GameRuleCellLayer extends BaseForLines {
     }
     return true
   }
-
 }
 
 class GameRuleCellLayerHack extends BaseForLines {
@@ -1268,7 +1262,7 @@ function parse (code) {
           row2.parse(),
           row3.parse(),
           row4.parse(),
-          row5.parse(),
+          row5.parse()
         ]
       },
       LegendItem: function (_1) {

@@ -8,18 +8,16 @@ const Engine = require('./src/engine')
 
 let totalRenderTime = 0
 
-
-async function sleep(ms) {
+async function sleep (ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
-async function run() {
-
+async function run () {
   const files = await pify(glob)('./gists/*/script.txt')
   console.log(`Looping over ${files.length} games...`)
 
   for (let filename of files) {
-    console.log(`Parsing and rendering ${filename}`);
+    console.log(`Parsing and rendering ${filename}`)
     const code = readFileSync(filename, 'utf-8')
     const {data, error, trace} = Parser.parse(code)
 
@@ -61,7 +59,6 @@ async function run() {
   console.log('-----------------------')
   console.log('Renderings took:', totalRenderTime)
   console.log('-----------------------')
-
 }
 
 run()

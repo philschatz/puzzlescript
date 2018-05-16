@@ -3,7 +3,7 @@ const _ = require('lodash')
 
 const UI = require('./ui')
 
-function setEquals(set1, set2) {
+function setEquals (set1, set2) {
   if (set1.size !== set2.size) return false
   for (var elem of set1) {
     if (!set2.has(elem)) return false
@@ -33,12 +33,12 @@ class Cell {
   equalsSprites (newSetOfSprites) {
     return setEquals(this._sprites, newSetOfSprites)
   }
-  _getRelativeNeighbor(y, x) {
+  _getRelativeNeighbor (y, x) {
     const row = this._engine.currentLevel[this.rowIndex + y]
     if (!row) return null
     return row[this.colIndex + x]
   }
-  getNeighbor(direction) {
+  getNeighbor (direction) {
     switch (direction) {
       case 'UP':
         return this._getRelativeNeighbor(-1, 0)

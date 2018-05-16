@@ -61,7 +61,7 @@ function renderScreen (data, levelRows) {
         return
       }
 
-      drawCellAt(data, col /*cell*/, rowIndex, colIndex)
+      drawCellAt(data, col /* cell */, rowIndex, colIndex)
     })
   })
   // Clear back to sane colors
@@ -69,7 +69,7 @@ function renderScreen (data, levelRows) {
   axel.bg(0, 0, 0)
 }
 
-function drawCellAt(data, cell, rowIndex, colIndex) {
+function drawCellAt (data, cell, rowIndex, colIndex) {
   const spritesToDraw = cell.getSprites() // Not sure why, but entanglement renders properly when reversed
 
   // If there is a magic background object then rely on it last
@@ -117,7 +117,7 @@ function drawCellAt(data, cell, rowIndex, colIndex) {
   restoreCursor()
 }
 
-function restoreCursor() {
+function restoreCursor () {
   axel.cursor.restore()
 }
 
@@ -127,12 +127,12 @@ function clearScreen () {
   axel.clear()
 }
 
-function writeText(x, y, text) {
+function writeText (x, y, text) {
   axel.text(x, y, text)
   restoreCursor()
 }
 
-function writeDebug(text) {
+function writeDebug (text) {
   axel.fg(255, 255, 255)
   axel.bg(0, 0, 0)
   writeText(0, 0, text)
