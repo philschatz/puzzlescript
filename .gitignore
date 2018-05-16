@@ -57,5 +57,5 @@ typings/
 # dotenv environment variables file
 .env
 
-/src/engine.js
-/src/parser.js
+/src/*.js
+index.js

@@ -1,4 +1,4 @@
-const axel = require('axel')
+import * as axel from "axel"
 
 // First Sprite one is on top.
 // This caused a 2x speedup while rendering.
@@ -19,14 +19,14 @@ function collapseSpritesToPixels (spritesToDraw, backgroundColor) {
     return sprite
   }
   const sprite = spritesToDraw[0].getPixels()
-  spritesToDraw.slice(1).forEach((spriteToDraw, spriteIndex) => {
-    const pixels = spriteToDraw.getPixels()
+  spritesToDraw.slice(1).forEach((objectToDraw, spriteIndex) => {
+    const pixels = objectToDraw.getPixels()
     for (let y = 0; y < 5; y++) {
       sprite[y] = sprite[y] || []
       for (let x = 0; x < 5; x++) {
         const pixel = pixels[y][x]
-        // try to pull it out of the current sprite
-        if ((!sprite[y][x] || sprite[y][x].isTransparent()) && pixel && !pixel.isTransparent()) {
+        // try to pull it out of the current object
+        if (!sprite[y][x] && pixel && pixel !== 'transparent' && pixel.toRgba().a === 1) {
           sprite[y][x] = pixel
         }
 
@@ -40,19 +40,11 @@ function collapseSpritesToPixels (spritesToDraw, backgroundColor) {
   return sprite
 }
 
-function getPixelsForCell (data, cell) {
-  const spritesToDraw = cell.getSprites() // Not sure why, but entanglement renders properly when reversed
+function renderCell (cell) {
 
-  // If there is a magic background object then rely on it last
-  if (data.settings.__magicBackgroundObject) {
-    spritesToDraw.push(data.settings.__magicBackgroundObject)
-  }
-
-  const pixels = collapseSpritesToPixels(spritesToDraw, data.settings.background_color)
-  return pixels
 }
 
-function renderScreen (data, levelRows) {
+export function renderScreen (data, levelRows) {
   axel.fg(255, 255, 255)
   axel.bg(0, 0, 0)
 
@@ -77,8 +69,15 @@ function renderScreen (data, levelRows) {
   axel.bg(0, 0, 0)
 }
 
-function drawCellAt (data, cell, rowIndex, colIndex) {
-  const pixels = getPixelsForCell(data, cell)
+export function drawCellAt (data, cell, rowIndex, colIndex) {
+  const spritesToDraw = cell.getSprites() // Not sure why, but entanglement renders properly when reversed
+
+  // If there is a magic background object then rely on it last
+  if (data.settings.__magicBackgroundObject) {
+    spritesToDraw.push(data.settings.__magicBackgroundObject)
+  }
+
+  const pixels = collapseSpritesToPixels(spritesToDraw, data.settings.background_color)
 
   pixels.forEach((spriteRow, spriteRowIndex) => {
     spriteRow.forEach((spriteColor, spriteColIndex) => {
@@ -107,10 +106,11 @@ function drawCellAt (data, cell, rowIndex, colIndex) {
       const x = (colIndex * 5 + spriteColIndex) * 2 // Use 2 characters for 1 pixel on the X-axis
       const y = rowIndex * 5 + spriteRowIndex + 1 // Y column is 1-based
       if (a) {
-        axel.brush = ' ' // " ░▒▓█"
+        //TODO: brush is readonly. What are you trying to set here?
+        //axel.brush = ' ' // " ░▒▓█"
         axel.bg(r, g, b)
-        axel.point(x, y)
-        axel.point(x + 1, y) // double-width because the console is narrow
+        axel.point(x, y, "")
+        axel.point(x + 1, y, "") // double-width because the console is narrow
       }
     })
   })
@@ -122,7 +122,7 @@ function restoreCursor () {
   axel.cursor.restore()
 }
 
-function clearScreen () {
+export function clearScreen () {
   axel.fg(255, 255, 255)
   axel.bg(0, 0, 0)
   axel.clear()
@@ -133,9 +133,8 @@ function writeText (x, y, text) {
   restoreCursor()
 }
 
-function writeDebug (text) {
+export function writeDebug (text) {
   axel.fg(255, 255, 255)
   axel.bg(0, 0, 0)
   writeText(0, 0, text)
 }
-module.exports = { renderScreen, clearScreen, drawCellAt, writeDebug, getPixelsForCell }

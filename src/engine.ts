@@ -1,4 +1,4 @@
-import { _ } from "lodash"
+import * as _ from "lodash"
 import * as UI from "./ui"
 import { EventEmitter2 } from "eventemitter2"
 
