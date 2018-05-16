@@ -1,7 +1,6 @@
 /* eslint-env jasmine */
-const {default: Engine} = require('../lib/engine')
-const {default: Parser} = require('../lib/parser')
-const {default: UI} = require('../lib/ui')
+const {default: Engine} = require('../src/engine')
+const {default: Parser} = require('../src/parser')
 
 const SIMPLE_GAME = `
 title foo
@@ -93,121 +92,6 @@ LEVELS
 
 ` // End SIMPLE_GAME
 
-const SIMPLE_GAME2 = `
-title foo
-===
-OBJECTS
-===
-
-background
-transparent
-
-One
-Darkblue
-...0.
-..00.
-...0.
-...0.
-..000
-
-Two
-Darkblue
-.000.
-....0
-..00.
-.0...
-.0000
-
-Three
-Darkblue
-.000.
-....0
-..000
-....0
-.000.
-
-Four
-Darkblue
-.0..0
-.0..0
-.0000
-....0
-....0
-
-Five
-Darkblue
-.0000
-.0...
-.000.
-....0
-.000.
-
-Six
-Darkblue
-..00.
-.0...
-.000.
-.0..0
-..00.
-
-Seven
-Darkblue
-.0000
-....0
-...0.
-..0..
-.0...
-
-Eight
-Darkblue
-..00.
-.0..0
-..00.
-.0..0
-..00.
-
-Nine
-Darkblue
-..00.
-.0..0
-..000
-....0
-..00.
-
-Zero
-Darkblue
-..00.
-.0..0
-.0..0
-.0..0
-..00.
-
-===
-LEGEND
-===
-
-. = background
-0 = zero
-1 = one
-2 = two
-
-====
-RULES
-====
-[zero]-> message Zero!
-[zero]->[one]
-[one]->[two]
-[two]->[zero]
-
-===
-LEVELS
-===
-
-...
-.0.
-...
-
-` // End SIMPLE_GAME
 describe('engine', () => {
   it('evaluates a simple game', () => {
     const {data, error} = Parser.parse(SIMPLE_GAME)
@@ -215,7 +99,6 @@ describe('engine', () => {
 
     const engine = new Engine(data)
     engine.setLevel(0)
-    // UI.renderScreen(data, engine.currentLevel)
 
     console.log('tick-returned:', engine.tick())
   })

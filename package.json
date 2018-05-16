@@ -1,8 +1,8 @@
 {
   "scripts": {
-    "lint": "standard --fix index.js lib/**/*.js test/**/*.js",
+    "lint": "standard --fix preprocessor.js test/**/*.js",
     "tsc": "tsc --watch",
-    "start": "node lib/runGame.js",
+    "start": "tsc; node lib/runGame.js",
     "test": "jest --coverage --updateSnapshot",
     "test-debug": "node --inspect-brk $(npm bin)/jest -i --updateSnapshot $@",
     "posttest": "npm run-script lint",
@@ -21,8 +21,29 @@
     "pify": "^3.0.0"
   },
   "devDependencies": {
+    "eslint-plugin-typescript": "^0.12.0",
     "http-server": "^0.11.1",
     "standard": "^11.0.1",
-    "typescript": "^2.8.3"
+    "tslint": "^5.10.0",
+    "typescript": "^2.8.3",
+    "typescript-eslint-parser": "^15.0.0"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ],
+    "transform": {
+      ".ts": "<rootDir>/preprocessor.js"
+    },
+    "testMatch": [
+      "**/test/*.+(ts|js)"
+    ]
+  },
+  "standard": {
+    "parser": "typescript-eslint-parser",
+    "plugins": [
+      "typescript"
+    ]
   }
 }

@@ -1,6 +1,6 @@
 /* eslint-env jasmine */
 const {readFileSync} = require('fs')
-const {default: Parser} = require('../lib/parser')
+const {default: Parser} = require('../src/parser')
 
 function checkGrammar (code) {
   const grammar = Parser.getGrammar()

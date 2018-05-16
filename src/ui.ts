@@ -1,4 +1,4 @@
-import * as axel from "axel"
+import * as axel from 'axel'
 
 // First Sprite one is on top.
 // This caused a 2x speedup while rendering.
@@ -100,11 +100,11 @@ class UI {
         const x = (colIndex * 5 + spriteColIndex) * 2 // Use 2 characters for 1 pixel on the X-axis
         const y = rowIndex * 5 + spriteRowIndex + 1 // Y column is 1-based
         if (a) {
-          //TODO: brush is readonly. What are you trying to set here?
-          //axel.brush = ' ' // " ░▒▓█"
+          // TODO: brush is readonly. What are you trying to set here?
+          // axel.brush = ' ' // " ░▒▓█"
           axel.bg(r, g, b)
-          axel.point(x, y, "")
-          axel.point(x + 1, y, "") // double-width because the console is narrow
+          axel.point(x, y, '')
+          axel.point(x + 1, y, '') // double-width because the console is narrow
         }
       })
     })
