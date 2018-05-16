@@ -4,7 +4,7 @@ const pify = require('pify')
 
 const Parser = require('./src/parser')
 const UI = require('./src/ui')
-const Engine = require('./src/engine')
+const {default: Engine} = require('./src/engine')
 
 let totalRenderTime = 0
 
@@ -13,7 +13,7 @@ async function sleep (ms) {
 }
 
 async function run () {
-  const files = await pify(glob)('./gists/_roll-those-sixes-itch/script.txt')
+  const files = await pify(glob)('./gists/*/script.txt')
   console.log(`Looping over ${files.length} games...`)
 
   for (let filename of files) {
@@ -42,12 +42,12 @@ async function run () {
 
         UI.renderScreen(data, engine.currentLevel)
 
-        for (var i = 0; i < 10000; i++) {
+        for (var i = 0; i < 10; i++) {
           await sleep(500)
           const changes = engine.tick()
-          // if (changes.length === 0) {
-          //   break
-          // }
+          if (changes.length === 0) {
+            break
+          }
         }
       }
 
