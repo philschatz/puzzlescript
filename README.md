@@ -10,3 +10,25 @@ This is a remake of PuzzleScript that has the following features:
   - Inspired by https://askubuntu.com/questions/699159/ascii-animations-that-are-viewed-in-the-command-line#699161
 - The input code is abstracted out so gamepads, buttons, etc can easily be provided
   - This also allows computers to play the games!
+
+# Dev Commands
+
+- `npm install`
+- `npm test`
+- `npm run watch` Run the tests and when you update the source, it re-runs the tests
+- `node index.js` Run all the games (change the `glob(...)` line to load just one file)
+
+
+# File Layout
+
+- `parser.js` contains the Grammar as well as the Abstract Syntax Tree nodes that represent the game
+  - Many of those nodes also contain evaluation logic (like finding out if a Rule matches a Cell)
+- `engine.js` evaluates all the Rules when `tick()` is called. `tick()` returns a list of Cells to re-render
+- `ui.js` renders the Level (and individual Cells) on the screen
+
+# Objects
+
+- **Level** contains a table of Cells which contain a set of Sprites that should be rendered
+- **Rule** contains the conditions and actions to be executed.
+  - It also contains methods for checking if the Rule matches a Cell and methods for how to change the Cell
+- **Cell** contains a set of Sprites and is used to represent the current state of the Game

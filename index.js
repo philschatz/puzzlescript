@@ -32,7 +32,7 @@ async function run () {
       const startTime = Date.now()
 
       // Draw the "last" level (after the messages)
-      const level = data.levels.reverse().filter(level => level.isMap())[0]
+      const level = data.levels.filter(level => level.isMap())[0]
       if (level) {
         const engine = new Engine(data)
         engine.setLevel(data.levels.indexOf(level))
