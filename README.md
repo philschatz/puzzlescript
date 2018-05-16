@@ -19,6 +19,7 @@ This is a remake of PuzzleScript that has the following features:
 - `npm run test-debug` Run the tests but open a debugger (remember to add a `debugger` line into the JavaScript)
 - `node index.js` Run all the games (change the `glob(...)` line to load just one file)
 - `node --inspect-brk index.js` Run all the games with the Debugger open
+- `npm test; open coverage/lcov-report/index.html` to see test coverage
 
 
 # File Layout
