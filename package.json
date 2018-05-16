@@ -1,8 +1,8 @@
 {
   "scripts": {
-    "lint": "standard --fix index.js src/**/*.js test/**/*.js",
-    "tsc": "tsc --sourceMap --target ES2015 --lib ES2015 --module commonjs src/*.ts",
-    "start": "node index.js",
+    "lint": "standard --fix index.js lib/**/*.js test/**/*.js",
+    "tsc": "tsc --watch",
+    "start": "node lib/runGame.js",
     "test": "jest --coverage --updateSnapshot",
     "test-debug": "node --inspect-brk $(npm bin)/jest -i --updateSnapshot $@",
     "posttest": "npm run-script lint",
