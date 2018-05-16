@@ -1,5 +1,5 @@
 /* eslint-env jasmine */
-const Engine = require('../src/engine')
+const {default: Engine} = require('../src/engine')
 const {parse} = require('../src/parser')
 const {renderScreen} = require('../src/ui')
 

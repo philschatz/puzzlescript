@@ -4,7 +4,7 @@ const pify = require('pify')
 
 const Parser = require('./src/parser')
 const UI = require('./src/ui')
-const Engine = require('./src/engine')
+const {default: Engine} = require('./src/engine')
 
 let totalRenderTime = 0
 
