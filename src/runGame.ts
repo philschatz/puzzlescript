@@ -2,8 +2,8 @@ import {readFileSync} from "fs"
 import * as glob from "glob"
 import * as pify from "pify"
 
-import * as Parser from "./parser"
-import * as UI from "./ui"
+import Parser from "./parser"
+import UI from "./ui"
 import Engine from "./engine"
 
 let totalRenderTime = 0

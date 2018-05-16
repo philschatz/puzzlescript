@@ -1,6 +1,6 @@
 /* eslint-env jasmine */
-const Parser = require('../src/parser')
-const {COLOR_PALETTES} = require('../src/colors')
+const {default: Parser} = require('../lib/parser')
+const {COLOR_PALETTES} = require('../lib/colors')
 
 function checkGrammar (code) {
   const grammar = Parser.getGrammar()
