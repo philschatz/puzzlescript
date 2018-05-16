@@ -1,7 +1,7 @@
 /* eslint-env jasmine */
-const {default: Engine} = require('../src/engine')
-const {parse} = require('../src/parser')
-const {renderScreen} = require('../src/ui')
+const {default: Engine} = require('../lib/engine')
+const {default: Parser} = require('../lib/parser')
+const {default: UI} = require('../lib/ui')
 
 const SIMPLE_GAME = `
 title foo
@@ -210,12 +210,12 @@ LEVELS
 ` // End SIMPLE_GAME
 describe('engine', () => {
   it('evaluates a simple game', () => {
-    const {data, error} = parse(SIMPLE_GAME)
+    const {data, error} = Parser.parse(SIMPLE_GAME)
     expect(error && error.message).toBeFalsy() // Use && so the error messages are shorter
 
     const engine = new Engine(data)
     engine.setLevel(0)
-    // renderScreen(data, engine.currentLevel)
+    // UI.renderScreen(data, engine.currentLevel)
 
     console.log('tick-returned:', engine.tick())
   })

@@ -1286,319 +1286,324 @@ function getConfigField (key, value) {
 }
 
 let _GRAMMAR = null
-export function getGrammar () {
-  _GRAMMAR = _GRAMMAR || ohm.grammar(GRAMMAR_STR)
-  return _GRAMMAR
-}
 
-export function parseGrammar (code) {
-  // 8645c163ff321d2fd1bad3fcaf48c107 has a typo so we .replace()
-  // 0c2625672bf47fcf728fe787a2630df6 has a typo se we .replace()
-  // another couple of games do not have a trailing newline at the end of the file so we add that
-  code = code.replace('][ ->', '] ->').replace('[[spring]', '[spring][') + '\n' // Not all games have a trailing newline. this makes it easier on the parser
+class Parser {
+  getGrammar () {
+    _GRAMMAR = _GRAMMAR || ohm.grammar(GRAMMAR_STR)
+    return _GRAMMAR
+  }
+  
+  parseGrammar (code) {
+    // 8645c163ff321d2fd1bad3fcaf48c107 has a typo so we .replace()
+    // 0c2625672bf47fcf728fe787a2630df6 has a typo se we .replace()
+    // another couple of games do not have a trailing newline at the end of the file so we add that
+    code = code.replace('][ ->', '] ->').replace('[[spring]', '[spring][') + '\n' // Not all games have a trailing newline. this makes it easier on the parser
+  
+    const g = this.getGrammar()
+    return {match: g.match(code)}
+  }
 
-  const g = getGrammar()
-  return {match: g.match(code)}
-}
-
-export function parse (code) {
-  const g = getGrammar()
-  const {match: m} = parseGrammar(code)
-
-  if (m.succeeded()) {
-    const lookup = new LookupHelper()
-    const s = g.createSemantics()
-
-    let currentColorPalette = 'arnecolors' // default
-
-    s.addOperation('parse', {
-      Details: (_whitespace1, title, _whitespace2, settingsFields, _whitespace3, objects, legends, sounds, collisionLayers, rules, winConditions, levels) => {
-        const settings = {}
-        settingsFields.parse().forEach((setting) => {
-          if (Array.isArray(setting)) {
-            settings[setting[0]] = setting[1]
-          } else {
-            settings[setting] = true
-          }
-        })
-        return {
-          title: title.parse(),
-          settings: settings,
-          // Use [0] because each of them are optional (at least because of unit tests)
-          objects: objects.parse()[0] || [],
-          legends: legends.parse()[0] || [],
-          sounds: sounds.parse()[0] || [],
-          collisionLayers: collisionLayers.parse()[0] || [],
-          rules: rules.parse()[0] || [],
-          winConditions: winConditions.parse()[0] || [],
-          levels: levels.parse()[0] || []
-        }
-      },
-      Title: (_1, value) => {
-        return value.parse()
-      },
-      Author: getConfigField,
-      Homepage: getConfigField,
-      KeyRepeatInterval: getConfigField,
-      AgainInterval: getConfigField,
-      BackgroundColor: getConfigField,
-      TextColor: getConfigField,
-      RunRulesOnLevelStart: getConfigField,
-      RealtimeInterval: getConfigField,
-      Youtube: getConfigField,
-      Zoomscreen: getConfigField,
-      Flickscreen: getConfigField,
-      ColorPalette: function (_1, colorPaletteName) {
-        // Set the color palette so we only need to use hex color codes
-        currentColorPalette = colorPaletteName.parse()
-        return getConfigField(_1, colorPaletteName)
-      },
-      RequirePlayerMovement: getConfigField,
-
-      Section: (_threeDashes1, _headingBar1, _lineTerminator1, _sectionName, _lineTerminator2, _threeDashes2, _headingBar2, _8, _9, _10, _11) => {
-        return _10.parse()
-      },
-      Sprite: function (_1) {
-        const gameObject = _1.parse()
-        lookup.addToAllObjects(gameObject)
-        if (gameObject._optionalLegendChar) {
-          // addObjectToAllLegendItems(gameObject)
-          lookup.addObjectToAllLevelChars(gameObject._optionalLegendChar, gameObject)
-        } else if (gameObject._name.length === 1) {
-          lookup.addObjectToAllLevelChars(gameObject._name, gameObject)
-        }
-        return gameObject
-      },
-      SpritePixels: function (name, optionalLegendChar, _3, colors, _5, pixels, _7) {
-        optionalLegendChar = optionalLegendChar.parse()[0]
-        return new GameSpritePixels(this.source, name.parse(), optionalLegendChar, colors.parse(), pixels.parse())
-      },
-      SpriteNoPixels: function (name, optionalLegendChar, _3, colors, _5) {
-        optionalLegendChar = optionalLegendChar.parse()[0]
-        return new GameSpriteSingleColor(this.source, name.parse(), optionalLegendChar, colors.parse())
-      },
-      PixelRows: function (row1, row2, row3, row4, row5) {
-        // Exactly 5 rows. We do this because some games contain vertical whitespace after, but not all
-        return [
-          row1.parse(),
-          row2.parse(),
-          row3.parse(),
-          row4.parse(),
-          row5.parse()
-        ]
-      },
-      LookupLegendVarName: function (alias) {
-        // Replace all the Sprite Names with the actual objects
-        return lookup.lookupObjectOrLegendItem(this.source, alias.parse())
-      },
-      LegendItem: function (_1) {
-        const legendItem = _1.parse()
-        lookup.addToAllLegendItems(legendItem)
-        if (legendItem._spriteNameOrLevelChar.length === 1) {
-          lookup.addLegendToAllLevelChars(legendItem)
-        }
-        return legendItem
-      },
-      LegendItemSimple: function (spriteNameOrLevelChar, _equals, alias, _whitespace) {
-        // TODO: Do the lookup and adding to sets here rather than rewiring in LegendItem
-        return new GameLegendItemSimple(this.source, spriteNameOrLevelChar.parse(), alias.parse())
-      },
-      LegendItemAnd: function (spriteNameOrLevelChar, _equals, aliases, _whitespace) {
-        return new GameLegendItemAnd(this.source, spriteNameOrLevelChar.parse(), aliases.parse())
-      },
-      LegendItemOr: function (spriteNameOrLevelChar, _equals, aliases, _whitespace) {
-        return new GameLegendItemOr(this.source, spriteNameOrLevelChar.parse(), aliases.parse())
-      },
-      SoundItem: function (_1, _whitespace) {
-        return _1.parse()
-      },
-      SoundItemEnum: function (simpleEnum, soundCode) {
-        return new GameSoundSimpleEnum(this.source, simpleEnum.parse(), soundCode.parse())
-      },
-      SoundItemSfx: function (sfxName, soundCode) {
-        sfxName = sfxName.parse()
-        const sound = new GameSoundSfx(this.source, sfxName, soundCode.parse())
-        lookup.addSoundEffect(sfxName, sound)
-        return sound
-      },
-      SoundItemMoveSimple: function (spriteName, _2, soundCode) {
-        return new GameSoundMoveSimple(this.source, lookup.lookupObjectOrLegendItem(this.source, spriteName.parse()), soundCode.parse())
-      },
-      SoundItemMoveDirection: function (spriteName, _move, directionEnum, soundCode) {
-        return new GameSoundMoveDirection(this.source, lookup.lookupObjectOrLegendItem(this.source, spriteName.parse()), directionEnum.parse(), soundCode.parse())
-      },
-      SoundItemNormal: function (spriteName, eventEnum, soundCode) {
-        return new GameSoundNormal(this.source, lookup.lookupObjectOrLegendItem(this.source, spriteName.parse()), eventEnum.parse(), soundCode.parse())
-      },
-      CollisionLayerItem: function (spriteNames, _2, _3) {
-        const objects = spriteNames.parse().map((spriteName) => lookup.lookupObjectOrLegendItem(this.source, spriteName))
-        const collisionLayer = new CollisionLayer(this.source, objects)
-        // Map all the Objects to the layer
-        objects.forEach((object) => {
-          object.setCollisionLayer(collisionLayer)
-        })
-      },
-
-      RuleItem: function (_1) {
-        return _1.parse()
-      },
-
-      Rule: function (rulePlus, productionModifiers, innerRule, _whitespace) {
-        return new GameRule(this.source, rulePlus.parse()[0], productionModifiers.parse(), innerRule.parse())
-      },
-      RuleLoop: function (_startloop, _whitespace1, rules, _endloop, _whitespace2) {
-        return new GameRuleLoop(this.source, rules.parse())
-      },
-      CellSequenceBracket: function (ruleModifiers, bracket) {
-        return new GameRuleSequenceBracket(this.source, ruleModifiers.parse(), bracket.parse())
-      },
-      EllipsisBracket: function (_leftBracket, _whitespace, leftNeighboringCells, _ellipsis, _pipe, rightNeighboringCells, _rightBracket) {
-        return new RuleEllipsisBracket(this.source, leftNeighboringCells.parse(), rightNeighboringCells.parse())
-      },
-      SimpleBracket: function (_leftBracket, _whitespace, cellLayers, _rightBracket) {
-        return new GameRuleSimpleBracket(this.source, cellLayers.parse())
-      },
-      CellLayer: function (_1) {
-        return _1.parse()
-      },
-      SimpleCellLayer: function (cellModifiers, cellName) {
-        return new GameRuleCellLayer(this.source, cellModifiers.parse(), lookup.lookupObjectOrLegendItem(this.source, cellName.parse()))
-      },
-      HackCellLayer1: function (hackRuleCommand) {
-        return new GameRuleCellLayerHack(this.source, null, hackRuleCommand.parse())
-      },
-      HackCellLayer2: function (cellName, hackRuleCommand) {
-        return new GameRuleCellLayerHack(this.source, lookup.lookupObjectOrLegendItem(this.source, cellName.parse()), hackRuleCommand.parse())
-      },
-      cellName: function (_1) {
-        return _1.parse()
-      },
-      cellLayerModifier: function (_whitespace1, cellLayerModifier, _whitespace2) {
-        return cellLayerModifier.parse()
-      },
-
-      RuleBracketsToZip: function (conditions, actions, commands, optionalMessageCommand) {
-        return new RuleBracketsToZip(this.source, conditions.parse(), actions.parse(), commands.parse().concat(optionalMessageCommand.parse()))
-      },
-      RuleCommands1: function (conditions, commands, message) {
-        return new RuleCommands(this.source, conditions.parse(), commands.parse().concat(message.parse()))
-      },
-      RuleCommands2: function (conditions, commands, message) {
-        return new RuleCommands(this.source, conditions.parse(), commands.parse().concat(message.parse()))
-      },
-      RuleConditions: function (brackets, _rightArrow) {
-        return brackets.parse()
-      },
-
-      MessageCommand: function (_message, message) {
-        return new GameMessage(this.source, message.parse())
-      },
-
-      WinConditionItemSimple: function (qualifierEnum, spriteName, _whitespace) {
-        return new WinConditionSimple(this.source, qualifierEnum.parse(), spriteName.parse())
-      },
-      WinConditionItemOn: function (qualifierEnum, spriteName, _on, targetObjectName, _whitespace) {
-        return new WinConditionOn(this.source, qualifierEnum.parse(), spriteName.parse(), targetObjectName.parse())
-      },
-      GameMessage: function (_1, optionalMessage) {
-        // TODO: Maybe discard empty messages?
-        return new GameMessage(this.source, optionalMessage.parse()[0] /* Since the message is optional */)
-      },
-      LevelItem: function (_1, _2) {
-        return _1.parse()
-      },
-      LevelMap: function (rows) {
-        rows = rows.parse().map((row) => {
-          return row.map((levelChar) => {
-            return lookup.lookupByLevelChar(levelChar)
+  parse (code) {
+    const g = this.getGrammar()
+    const {match: m} = this.parseGrammar(code)
+  
+    if (m.succeeded()) {
+      const lookup = new LookupHelper()
+      const s = g.createSemantics()
+  
+      let currentColorPalette = 'arnecolors' // default
+  
+      s.addOperation('parse', {
+        Details: (_whitespace1, title, _whitespace2, settingsFields, _whitespace3, objects, legends, sounds, collisionLayers, rules, winConditions, levels) => {
+          const settings = {}
+          settingsFields.parse().forEach((setting) => {
+            if (Array.isArray(setting)) {
+              settings[setting[0]] = setting[1]
+            } else {
+              settings[setting] = true
+            }
           })
-        })
-        return new LevelMap(this.source, rows)
-      },
-      levelMapRow: function (row, _2) {
-        return row.parse()
-      },
-      widthAndHeight: function (_1, _2, _3) {
-        return {
-          __type: 'widthAndHeight',
-          width: _1.parse(),
-          height: _3.parse()
+          return {
+            title: title.parse(),
+            settings: settings,
+            // Use [0] because each of them are optional (at least because of unit tests)
+            objects: objects.parse()[0] || [],
+            legends: legends.parse()[0] || [],
+            sounds: sounds.parse()[0] || [],
+            collisionLayers: collisionLayers.parse()[0] || [],
+            rules: rules.parse()[0] || [],
+            winConditions: winConditions.parse()[0] || [],
+            levels: levels.parse()[0] || []
+          }
+        },
+        Title: (_1, value) => {
+          return value.parse()
+        },
+        Author: getConfigField,
+        Homepage: getConfigField,
+        KeyRepeatInterval: getConfigField,
+        AgainInterval: getConfigField,
+        BackgroundColor: getConfigField,
+        TextColor: getConfigField,
+        RunRulesOnLevelStart: getConfigField,
+        RealtimeInterval: getConfigField,
+        Youtube: getConfigField,
+        Zoomscreen: getConfigField,
+        Flickscreen: getConfigField,
+        ColorPalette: function (_1, colorPaletteName) {
+          // Set the color palette so we only need to use hex color codes
+          currentColorPalette = colorPaletteName.parse()
+          return getConfigField(_1, colorPaletteName)
+        },
+        RequirePlayerMovement: getConfigField,
+  
+        Section: (_threeDashes1, _headingBar1, _lineTerminator1, _sectionName, _lineTerminator2, _threeDashes2, _headingBar2, _8, _9, _10, _11) => {
+          return _10.parse()
+        },
+        Sprite: function (_1) {
+          const gameObject = _1.parse()
+          lookup.addToAllObjects(gameObject)
+          if (gameObject._optionalLegendChar) {
+            // addObjectToAllLegendItems(gameObject)
+            lookup.addObjectToAllLevelChars(gameObject._optionalLegendChar, gameObject)
+          } else if (gameObject._name.length === 1) {
+            lookup.addObjectToAllLevelChars(gameObject._name, gameObject)
+          }
+          return gameObject
+        },
+        SpritePixels: function (name, optionalLegendChar, _3, colors, _5, pixels, _7) {
+          optionalLegendChar = optionalLegendChar.parse()[0]
+          return new GameSpritePixels(this.source, name.parse(), optionalLegendChar, colors.parse(), pixels.parse())
+        },
+        SpriteNoPixels: function (name, optionalLegendChar, _3, colors, _5) {
+          optionalLegendChar = optionalLegendChar.parse()[0]
+          return new GameSpriteSingleColor(this.source, name.parse(), optionalLegendChar, colors.parse())
+        },
+        PixelRows: function (row1, row2, row3, row4, row5) {
+          // Exactly 5 rows. We do this because some games contain vertical whitespace after, but not all
+          return [
+            row1.parse(),
+            row2.parse(),
+            row3.parse(),
+            row4.parse(),
+            row5.parse()
+          ]
+        },
+        LookupLegendVarName: function (alias) {
+          // Replace all the Sprite Names with the actual objects
+          return lookup.lookupObjectOrLegendItem(this.source, alias.parse())
+        },
+        LegendItem: function (_1) {
+          const legendItem = _1.parse()
+          lookup.addToAllLegendItems(legendItem)
+          if (legendItem._spriteNameOrLevelChar.length === 1) {
+            lookup.addLegendToAllLevelChars(legendItem)
+          }
+          return legendItem
+        },
+        LegendItemSimple: function (spriteNameOrLevelChar, _equals, alias, _whitespace) {
+          // TODO: Do the lookup and adding to sets here rather than rewiring in LegendItem
+          return new GameLegendItemSimple(this.source, spriteNameOrLevelChar.parse(), alias.parse())
+        },
+        LegendItemAnd: function (spriteNameOrLevelChar, _equals, aliases, _whitespace) {
+          return new GameLegendItemAnd(this.source, spriteNameOrLevelChar.parse(), aliases.parse())
+        },
+        LegendItemOr: function (spriteNameOrLevelChar, _equals, aliases, _whitespace) {
+          return new GameLegendItemOr(this.source, spriteNameOrLevelChar.parse(), aliases.parse())
+        },
+        SoundItem: function (_1, _whitespace) {
+          return _1.parse()
+        },
+        SoundItemEnum: function (simpleEnum, soundCode) {
+          return new GameSoundSimpleEnum(this.source, simpleEnum.parse(), soundCode.parse())
+        },
+        SoundItemSfx: function (sfxName, soundCode) {
+          sfxName = sfxName.parse()
+          const sound = new GameSoundSfx(this.source, sfxName, soundCode.parse())
+          lookup.addSoundEffect(sfxName, sound)
+          return sound
+        },
+        SoundItemMoveSimple: function (spriteName, _2, soundCode) {
+          return new GameSoundMoveSimple(this.source, lookup.lookupObjectOrLegendItem(this.source, spriteName.parse()), soundCode.parse())
+        },
+        SoundItemMoveDirection: function (spriteName, _move, directionEnum, soundCode) {
+          return new GameSoundMoveDirection(this.source, lookup.lookupObjectOrLegendItem(this.source, spriteName.parse()), directionEnum.parse(), soundCode.parse())
+        },
+        SoundItemNormal: function (spriteName, eventEnum, soundCode) {
+          return new GameSoundNormal(this.source, lookup.lookupObjectOrLegendItem(this.source, spriteName.parse()), eventEnum.parse(), soundCode.parse())
+        },
+        CollisionLayerItem: function (spriteNames, _2, _3) {
+          const objects = spriteNames.parse().map((spriteName) => lookup.lookupObjectOrLegendItem(this.source, spriteName))
+          const collisionLayer = new CollisionLayer(this.source, objects)
+          // Map all the Objects to the layer
+          objects.forEach((object) => {
+            object.setCollisionLayer(collisionLayer)
+          })
+        },
+  
+        RuleItem: function (_1) {
+          return _1.parse()
+        },
+  
+        Rule: function (rulePlus, productionModifiers, innerRule, _whitespace) {
+          return new GameRule(this.source, rulePlus.parse()[0], productionModifiers.parse(), innerRule.parse())
+        },
+        RuleLoop: function (_startloop, _whitespace1, rules, _endloop, _whitespace2) {
+          return new GameRuleLoop(this.source, rules.parse())
+        },
+        CellSequenceBracket: function (ruleModifiers, bracket) {
+          return new GameRuleSequenceBracket(this.source, ruleModifiers.parse(), bracket.parse())
+        },
+        EllipsisBracket: function (_leftBracket, _whitespace, leftNeighboringCells, _ellipsis, _pipe, rightNeighboringCells, _rightBracket) {
+          return new RuleEllipsisBracket(this.source, leftNeighboringCells.parse(), rightNeighboringCells.parse())
+        },
+        SimpleBracket: function (_leftBracket, _whitespace, cellLayers, _rightBracket) {
+          return new GameRuleSimpleBracket(this.source, cellLayers.parse())
+        },
+        CellLayer: function (_1) {
+          return _1.parse()
+        },
+        SimpleCellLayer: function (cellModifiers, cellName) {
+          return new GameRuleCellLayer(this.source, cellModifiers.parse(), lookup.lookupObjectOrLegendItem(this.source, cellName.parse()))
+        },
+        HackCellLayer1: function (hackRuleCommand) {
+          return new GameRuleCellLayerHack(this.source, null, hackRuleCommand.parse())
+        },
+        HackCellLayer2: function (cellName, hackRuleCommand) {
+          return new GameRuleCellLayerHack(this.source, lookup.lookupObjectOrLegendItem(this.source, cellName.parse()), hackRuleCommand.parse())
+        },
+        cellName: function (_1) {
+          return _1.parse()
+        },
+        cellLayerModifier: function (_whitespace1, cellLayerModifier, _whitespace2) {
+          return cellLayerModifier.parse()
+        },
+  
+        RuleBracketsToZip: function (conditions, actions, commands, optionalMessageCommand) {
+          return new RuleBracketsToZip(this.source, conditions.parse(), actions.parse(), commands.parse().concat(optionalMessageCommand.parse()))
+        },
+        RuleCommands1: function (conditions, commands, message) {
+          return new RuleCommands(this.source, conditions.parse(), commands.parse().concat(message.parse()))
+        },
+        RuleCommands2: function (conditions, commands, message) {
+          return new RuleCommands(this.source, conditions.parse(), commands.parse().concat(message.parse()))
+        },
+        RuleConditions: function (brackets, _rightArrow) {
+          return brackets.parse()
+        },
+  
+        MessageCommand: function (_message, message) {
+          return new GameMessage(this.source, message.parse())
+        },
+  
+        WinConditionItemSimple: function (qualifierEnum, spriteName, _whitespace) {
+          return new WinConditionSimple(this.source, qualifierEnum.parse(), spriteName.parse())
+        },
+        WinConditionItemOn: function (qualifierEnum, spriteName, _on, targetObjectName, _whitespace) {
+          return new WinConditionOn(this.source, qualifierEnum.parse(), spriteName.parse(), targetObjectName.parse())
+        },
+        GameMessage: function (_1, optionalMessage) {
+          // TODO: Maybe discard empty messages?
+          return new GameMessage(this.source, optionalMessage.parse()[0] /* Since the message is optional */)
+        },
+        LevelItem: function (_1, _2) {
+          return _1.parse()
+        },
+        LevelMap: function (rows) {
+          rows = rows.parse().map((row) => {
+            return row.map((levelChar) => {
+              return lookup.lookupByLevelChar(levelChar)
+            })
+          })
+          return new LevelMap(this.source, rows)
+        },
+        levelMapRow: function (row, _2) {
+          return row.parse()
+        },
+        widthAndHeight: function (_1, _2, _3) {
+          return {
+            __type: 'widthAndHeight',
+            width: _1.parse(),
+            height: _3.parse()
+          }
+        },
+        pixelRow: function (_1, _2) {
+          return _1.parse()
+        },
+        colorHex3: function (_1, _2, _3, _4) {
+          return new HexColor(this.source, this.sourceString)
+        },
+        colorHex6: function (_1, _2, _3, _4, _5, _6, _7) {
+          return new HexColor(this.source, this.sourceString)
+        },
+        colorName: function (_1) {
+          return new HexColor(this.source, lookupColorPalette(currentColorPalette)[this.sourceString.toLowerCase()])
+        },
+        colorTransparent: function (_1) {
+          return new TransparentColor(this.source)
+        },
+        NonemptyListOf: function (_1, _2, _3) {
+          return [_1.parse()].concat(_3.parse())
+        },
+        nonemptyListOf: function (_1, _2, _3) {
+          // Do this special because LegendItem contains things like `X = A or B or C` and we need to know if they are `and` or `or`
+          return {
+            __type: 'nonemptyListOf',
+            values: [_1.parse()].concat(_3.parse()),
+            separators: [_2.parse()]
+          }
+        },
+        integer: function (_1) {
+          return parseInt(this.sourceString)
+        },
+        decimalWithLeadingNumber: function (_1, _2, _3) {
+          return parseFloat(this.sourceString)
+        },
+        decimalWithLeadingPeriod: function (_1, _2) {
+          return parseFloat(this.sourceString)
+        },
+        ruleVariableName: function (_1) {
+          return this.sourceString
+        },
+        words: function (_1) {
+          return this.sourceString
+        },
+        _terminal: function () { return this.primitiveValue },
+        lineTerminator: (_1, _2, _3, _4) => {},
+        digit: (x) => {
+          return x.primitiveValue.charCodeAt(0) - '0'.charCodeAt(0)
         }
-      },
-      pixelRow: function (_1, _2) {
-        return _1.parse()
-      },
-      colorHex3: function (_1, _2, _3, _4) {
-        return new HexColor(this.source, this.sourceString)
-      },
-      colorHex6: function (_1, _2, _3, _4, _5, _6, _7) {
-        return new HexColor(this.source, this.sourceString)
-      },
-      colorName: function (_1) {
-        return new HexColor(this.source, lookupColorPalette(currentColorPalette)[this.sourceString.toLowerCase()])
-      },
-      colorTransparent: function (_1) {
-        return new TransparentColor(this.source)
-      },
-      NonemptyListOf: function (_1, _2, _3) {
-        return [_1.parse()].concat(_3.parse())
-      },
-      nonemptyListOf: function (_1, _2, _3) {
-        // Do this special because LegendItem contains things like `X = A or B or C` and we need to know if they are `and` or `or`
-        return {
-          __type: 'nonemptyListOf',
-          values: [_1.parse()].concat(_3.parse()),
-          separators: [_2.parse()]
+        // _default: function (exp1) {
+        //   debugger
+        //   return this.sourceString
+        // },
+  
+      })
+      const game = s(m).parse()
+      // console.log(game)
+  
+      // Validate that the game objects are rectangular
+      game.objects.forEach((object) => {
+        if (object.isInvalid()) {
+          console.warn(`WARNING: Game Object is Invalid. Reason: ${object.isInvalid()}`)
+          console.warn(object.__source.getLineAndColumnMessage())
         }
-      },
-      integer: function (_1) {
-        return parseInt(this.sourceString)
-      },
-      decimalWithLeadingNumber: function (_1, _2, _3) {
-        return parseFloat(this.sourceString)
-      },
-      decimalWithLeadingPeriod: function (_1, _2) {
-        return parseFloat(this.sourceString)
-      },
-      ruleVariableName: function (_1) {
-        return this.sourceString
-      },
-      words: function (_1) {
-        return this.sourceString
-      },
-      _terminal: function () { return this.primitiveValue },
-      lineTerminator: (_1, _2, _3, _4) => {},
-      digit: (x) => {
-        return x.primitiveValue.charCodeAt(0) - '0'.charCodeAt(0)
-      }
-      // _default: function (exp1) {
-      //   debugger
-      //   return this.sourceString
-      // },
-
-    })
-    const game = s(m).parse()
-    // console.log(game)
-
-    // Validate that the game objects are rectangular
-    game.objects.forEach((object) => {
-      if (object.isInvalid()) {
-        console.warn(`WARNING: Game Object is Invalid. Reason: ${object.isInvalid()}`)
-        console.warn(object.__source.getLineAndColumnMessage())
-      }
-    })
-
-    // Validate that the level maps are rectangular
-    game.levels.forEach((level) => {
-      if (level.isInvalid()) {
-        console.warn(`WARNING: Level is Invalid. Reason: ${level.isInvalid()}`)
-        console.warn(level.__source.getLineAndColumnMessage())
-      }
-    })
-
-    return {data: game}
-  } else {
-    const trace = g.trace(code)
-    return {error: m, trace: trace}
+      })
+  
+      // Validate that the level maps are rectangular
+      game.levels.forEach((level) => {
+        if (level.isInvalid()) {
+          console.warn(`WARNING: Level is Invalid. Reason: ${level.isInvalid()}`)
+          console.warn(level.__source.getLineAndColumnMessage())
+        }
+      })
+  
+      return {data: game}
+    } else {
+      const trace = g.trace(code)
+      return {error: m, trace: trace}
+    }
   }
 }
+
+export default new Parser()
