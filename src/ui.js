@@ -19,14 +19,14 @@ function collapseSpritesToPixels (spritesToDraw, backgroundColor) {
     return sprite
   }
   const sprite = spritesToDraw[0].getPixels()
-  spritesToDraw.slice(1).forEach((objectToDraw, spriteIndex) => {
-    const pixels = objectToDraw.getPixels()
+  spritesToDraw.slice(1).forEach((spriteToDraw, spriteIndex) => {
+    const pixels = spriteToDraw.getPixels()
     for (let y = 0; y < 5; y++) {
       sprite[y] = sprite[y] || []
       for (let x = 0; x < 5; x++) {
         const pixel = pixels[y][x]
-        // try to pull it out of the current object
-        if (!sprite[y][x] && pixel && pixel !== 'transparent' && pixel.toRgba().a === 1) {
+        // try to pull it out of the current sprite
+        if ((!sprite[y][x] || sprite[y][x].isTransparent()) && pixel && !pixel.isTransparent()) {
           sprite[y][x] = pixel
         }
 
@@ -40,8 +40,16 @@ function collapseSpritesToPixels (spritesToDraw, backgroundColor) {
   return sprite
 }
 
-function renderCell (cell) {
+function getPixelsForCell (data, cell) {
+  const spritesToDraw = cell.getSprites() // Not sure why, but entanglement renders properly when reversed
 
+  // If there is a magic background object then rely on it last
+  if (data.settings.__magicBackgroundObject) {
+    spritesToDraw.push(data.settings.__magicBackgroundObject)
+  }
+
+  const pixels = collapseSpritesToPixels(spritesToDraw, data.settings.background_color)
+  return pixels
 }
 
 function renderScreen (data, levelRows) {
@@ -70,14 +78,7 @@ function renderScreen (data, levelRows) {
 }
 
 function drawCellAt (data, cell, rowIndex, colIndex) {
-  const spritesToDraw = cell.getSprites() // Not sure why, but entanglement renders properly when reversed
-
-  // If there is a magic background object then rely on it last
-  if (data.settings.__magicBackgroundObject) {
-    spritesToDraw.push(data.settings.__magicBackgroundObject)
-  }
-
-  const pixels = collapseSpritesToPixels(spritesToDraw, data.settings.background_color)
+  const pixels = getPixelsForCell(data, cell)
 
   pixels.forEach((spriteRow, spriteRowIndex) => {
     spriteRow.forEach((spriteColor, spriteColIndex) => {
@@ -137,4 +138,4 @@ function writeDebug (text) {
   axel.bg(0, 0, 0)
   writeText(0, 0, text)
 }
-module.exports = { renderScreen, clearScreen, drawCellAt, writeDebug }
+module.exports = { renderScreen, clearScreen, drawCellAt, writeDebug, getPixelsForCell }
