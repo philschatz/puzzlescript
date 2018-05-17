@@ -435,13 +435,20 @@ MessageCommand = t_MESSAGE words*
 }
 `// readFileSync('./grammar.ohm', 'utf-8')
 
+declare interface IGameCode {
+  sourceString: string
+  startIdx: number
+  endIdx: number
+  getLineAndColumnMessage: () => string
+}
+
 let astId: number = 0
 export class BaseForLines {
   __astId: number
   __validationMessages: {level:string, message:string}[]
-  __source: any
+  __source: IGameCode
 
-  constructor (source: any) {
+  constructor (source: IGameCode) {
     if (!source || !source.getLineAndColumnMessage) {
       throw new Error(`BUG: failed to provide the source when constructing this object`)
     }
@@ -476,7 +483,17 @@ export class GameData {
   winConditions: WinConditionSimple[]
   levels: LevelMap[]
 
-  constructor(title, settings, objects, legends, sounds, collisionLayers, rules, winConditions, levels) {
+  constructor(
+    title: string, 
+    settings: {}, 
+    objects: GameSprite[], 
+    legends: GameLegendItemSimple[], 
+    sounds: GameSound[], 
+    collisionLayers: CollisionLayer[], 
+    rules: GameRule[], 
+    winConditions: WinConditionSimple[], 
+    levels: LevelMap[]
+  ) {
     this.title = title
     this.settings = settings
     this.objects = objects
@@ -490,16 +507,16 @@ export class GameData {
 }
 
 declare interface IGameTile extends BaseForLines{
-  getSprites()
-  isInvalid()
-  setCollisionLayer(collisionLayer)
-  getCollisionLayerNum()
+  getSprites: () => GameSprite[]
+  isInvalid: () => boolean
+  setCollisionLayer: (collisionLayer: CollisionLayer) => void
+  getCollisionLayerNum: () => number
 }
 
 export class LevelMap extends BaseForLines {
   _rows: IGameTile[][]
 
-  constructor (source: any, rows: any[][]) {
+  constructor (source: IGameCode, rows: any[][]) {
     super(source)
     this._rows = rows
   }
@@ -524,7 +541,7 @@ export class LevelMap extends BaseForLines {
 export class GameMessage extends BaseForLines {
   _message: string
 
-  constructor (source, message: string) {
+  constructor (source: IGameCode, message: string) {
     super(source)
     this._message = message
   }
@@ -536,7 +553,7 @@ export class GameMessage extends BaseForLines {
   }
 }
 
-function hexToRgb (hex) {
+function hexToRgb (hex: string) {
   if (!hex) {
     return {a: 0}
   }
@@ -559,7 +576,7 @@ function hexToRgb (hex) {
 export class HexColor extends BaseForLines {
   _color: any
 
-  constructor (source, color) {
+  constructor (source: IGameCode, color: string) {
     super(source)
     // if (!color) {
     //   console.error(source.getLineAndColumnMessage())
@@ -582,11 +599,11 @@ class TransparentColor extends BaseForLines {
 }
 
 export class GameSprite extends BaseForLines implements IGameTile {
-  _name: any
-  _optionalLegendChar: any
-  _collisionLayer: any
+  _name: string
+  _optionalLegendChar: string
+  _collisionLayer: CollisionLayer
 
-  constructor (source, name, optionalLegendChar) {
+  constructor (source: IGameCode, name: string, optionalLegendChar: string) {
     super(source)
     this._name = name
     this._optionalLegendChar = optionalLegendChar
@@ -595,7 +612,7 @@ export class GameSprite extends BaseForLines implements IGameTile {
     // to match the signature of LegendItem
     return [this]
   }
-  setCollisionLayer (collisionLayer) {
+  setCollisionLayer (collisionLayer: CollisionLayer) {
     if (this._collisionLayer) {
       this.addValidationMessage('WARNING', 'An Object should not belong to more than one collision layer')
     }
@@ -609,9 +626,9 @@ export class GameSprite extends BaseForLines implements IGameTile {
   }
 }
 class GameSpriteSingleColor extends GameSprite {
-  _color: any
+  _color: string
 
-  constructor (source, name, optionalLegendChar, colors) {
+  constructor (source: IGameCode, name: string, optionalLegendChar, colors: string[]) {
     super(source, name, optionalLegendChar)
     this._color = colors[0] // Ignore if the user added multiple colors (like `transparent yellow`)
   }
@@ -632,10 +649,10 @@ class GameSpriteSingleColor extends GameSprite {
 }
 
 class GameSpritePixels extends GameSprite {
-  _colors: any
+  _colors: string[]
   _pixels: any
 
-  constructor (source, name, optionalLegendChar, colors, pixels) {
+  constructor (source: IGameCode, name: string, optionalLegendChar, colors: string[], pixels) {
     super(source, name, optionalLegendChar)
     this._colors = colors
     this._pixels = pixels // Pixel colors are 0-indexed.
@@ -644,7 +661,7 @@ class GameSpritePixels extends GameSprite {
     let isInvalid: any = false
     const colorLen = this._colors.length
     const rowLen = this._pixels[0].length
-    this._pixels.forEach((row) => {
+    this._pixels.forEach((row: any[]) => {
       if (row.length !== rowLen) {
         isInvalid = `Row lengths do not match. Expected ${rowLen} but got ${row.length}. Row: ${row}`
       }
@@ -679,12 +696,12 @@ class GameSpritePixels extends GameSprite {
 // TODO: Link up the aliases to objects rather than just storing strings
 // TODO: Also, maybe distinguish between legend items that may be in the LevelMap (1 character) from those that point to ObjectItems
 export class GameLegendItemSimple extends BaseForLines implements IGameTile {
-  _sprites: any
-  _spriteNameOrLevelChar: any
-  _aliases: any
-  _collisionLayer: any
+  _sprites: GameSprite[]
+  _spriteNameOrLevelChar: String
+  _aliases: IGameTile[]
+  _collisionLayer: CollisionLayer
 
-  constructor (source, spriteNameOrLevelChar, alias) {
+  constructor (source: IGameCode, spriteNameOrLevelChar: string, alias: any) {
     super(source)
     this._spriteNameOrLevelChar = spriteNameOrLevelChar
 
@@ -701,13 +718,17 @@ export class GameLegendItemSimple extends BaseForLines implements IGameTile {
     if (!this._sprites) {
       // 2 levels of indirection should be safe
       // Sort by collisionLayer so that the most-important sprite is first
-      this._sprites = _.flattenDeep(this._aliases.map(alias => { if (!alias.getSprites) { console.log(alias) } return alias.getSprites() })).sort((a: GameLegendItemSimple, b: GameLegendItemSimple) => {
+      this._sprites = _.flatten(
+        this._aliases.map(alias => { 
+          return alias.getSprites() 
+        })
+      ).sort((a, b) => {
         return a.getCollisionLayerNum() - b.getCollisionLayerNum()
       }).reverse()
     }
     return this._sprites
   }
-  setCollisionLayer (collisionLayer) {
+  setCollisionLayer (collisionLayer: CollisionLayer) {
     if (this._collisionLayer && this._collisionLayer !== collisionLayer) {
       this.addValidationMessage('WARNING', 'An Object should not belong to more than one collision layer')
     }
@@ -738,7 +759,7 @@ export class GameLegendItemOr extends GameLegendItemSimple {
 export class CollisionLayer extends BaseForLines {
   _sprites: any
 
-  constructor (source, sprites) {
+  constructor (source: IGameCode, sprites: any[]) {
     super(source)
     this._sprites = sprites
   }
@@ -751,7 +772,7 @@ export class CollisionLayer extends BaseForLines {
 export class GameSound extends BaseForLines {
   _soundCode: any
 
-  constructor (source, soundCode) {
+  constructor (source: IGameCode, soundCode: string) {
     super(source)
     this._soundCode = soundCode
   }
@@ -759,15 +780,15 @@ export class GameSound extends BaseForLines {
 export class GameSoundSfx extends GameSound {
   _sfxName: any
 
-  constructor (source, sfxName, soundCode) {
+  constructor (source: IGameCode, sfxName, soundCode) {
     super(source, soundCode)
     this._sfxName = sfxName
   }
 }
 export class GameSoundSimpleEnum extends GameSound {
-  _simpleEventName: any
+  _simpleEventName: string
 
-  constructor (source, simpleEventName, soundCode) {
+  constructor (source: IGameCode, simpleEventName, soundCode) {
     super(source, soundCode)
     this._simpleEventName = simpleEventName
   }
@@ -777,7 +798,7 @@ export class GameSoundNormal extends GameSound {
   _sprite: any
   _conditionEnum: any
 
-  constructor (source, sprite, conditionEnum, soundCode) {
+  constructor (source: IGameCode, sprite, conditionEnum, soundCode) {
     super(source, soundCode)
     this._sprite = sprite
     this._conditionEnum = conditionEnum
@@ -786,7 +807,7 @@ export class GameSoundNormal extends GameSound {
 export class GameSoundMoveSimple extends GameSound {
   _sprite: any
 
-  constructor (source, sprite, soundCode) {
+  constructor (source: IGameCode, sprite, soundCode) {
     super(source, soundCode)
     this._sprite = sprite
   }
@@ -795,7 +816,7 @@ export class GameSoundMoveDirection extends GameSound {
   _sprite: any
   _directionEnum: any
 
-  constructor (source, sprite, directionEnum, soundCode) {
+  constructor (source: IGameCode, sprite, directionEnum, soundCode) {
     super(source, soundCode)
     this._sprite = sprite
     this._directionEnum = directionEnum
@@ -806,7 +827,7 @@ export class WinConditionSimple extends BaseForLines {
   _qualifierEnum: any
   _spriteName: any
 
-  constructor (source, qualifierEnum, spriteName) {
+  constructor (source: IGameCode, qualifierEnum, spriteName: string) {
     super(source)
     this._qualifierEnum = qualifierEnum
     this._spriteName = spriteName
@@ -815,7 +836,7 @@ export class WinConditionSimple extends BaseForLines {
 export class WinConditionOn extends WinConditionSimple {
   _onSprite: any
 
-  constructor (source, qualifierEnum, spriteName, onSprite) {
+  constructor (source: IGameCode, qualifierEnum, spriteName: string, onSprite) {
     super(source, qualifierEnum, spriteName)
     this._onSprite = onSprite
   }
@@ -824,7 +845,7 @@ export class WinConditionOn extends WinConditionSimple {
 export class GameRuleLoop extends BaseForLines {
   _rules: any
 
-  constructor (source, rules) {
+  constructor (source: IGameCode, rules: GameRule[]) {
     super(source)
     this._rules = rules
   }
@@ -838,7 +859,7 @@ class GameRule extends BaseForLines {
   _ruleModifiers: any
   _innerRule: any
 
-  constructor (source, rulePlus, ruleModifiers, innerRule) {
+  constructor (source: IGameCode, rulePlus, ruleModifiers, innerRule) {
     super(source)
     this._rulePlus = rulePlus
     this._ruleModifiers = ruleModifiers
@@ -899,7 +920,7 @@ class CellPair extends BaseForLines {
   conditionLayers: any
   actionLayers: any
 
-  constructor (source, condition, action) {
+  constructor (source: IGameCode, condition, action) {
     super(source)
     this.conditionLayers = condition
     this.actionLayers = action
@@ -916,7 +937,7 @@ class CellPairMutator extends BaseForLines {
   cell: any
   cellPair: any
 
-  constructor (source, cell, cellPair) {
+  constructor (source: IGameCode, cell, cellPair: CellPair) {
     super(source)
     this.cell = cell
     this.cellPair = cellPair
@@ -960,7 +981,7 @@ class RuleBracketsToZip extends BaseForLines {
   _commands: any
   _bracketPairs: any[]
 
-  constructor (source, conditions, actions, commands) {
+  constructor (source: IGameCode, conditions, actions, commands) {
     super(source)
     this._conditions = conditions
     this._actions = actions
@@ -1055,7 +1076,7 @@ class GameRuleSequenceBracket extends BaseForLines {
   _ruleModifiers: any
   _bracket: any
 
-  constructor (source, ruleModifiers, bracket) {
+  constructor (source: IGameCode, ruleModifiers, bracket) {
     super(source)
     this._ruleModifiers = ruleModifiers
     this._bracket = bracket
@@ -1077,7 +1098,7 @@ class RuleEllipsisBracket extends BaseForLines {
   _leftNeighboringCells: any
   _rightNeighboringCells: any
 
-  constructor (source, leftNeighboringCells, rightNeighboringCells) {
+  constructor (source: IGameCode, leftNeighboringCells, rightNeighboringCells) {
     super(source)
     this._leftNeighboringCells = leftNeighboringCells
     this._rightNeighboringCells = rightNeighboringCells
@@ -1097,7 +1118,7 @@ class RuleEllipsisBracket extends BaseForLines {
 class GameRuleSimpleBracket extends BaseForLines {
   _neighbors: any
 
-  constructor (source, neighbors) {
+  constructor (source: IGameCode, neighbors) {
     super(source)
     this._neighbors = neighbors
   }
@@ -1132,7 +1153,7 @@ class RuleCommands extends BaseForLines {
   _conditions: any
   _commands: any
 
-  constructor (source, conditions, commands) {
+  constructor (source: IGameCode, conditions, commands) {
     super(source)
     this._conditions = conditions
     this._commands = commands
@@ -1173,7 +1194,7 @@ class GameRuleCellLayer extends BaseForLines {
   _cellModifiers: any
   _sprite: any
 
-  constructor (source, cellModifiers, sprite) {
+  constructor (source: IGameCode, cellModifiers, sprite) {
     super(source)
     this._cellModifiers = cellModifiers
     this._sprite = sprite
@@ -1233,7 +1254,7 @@ class GameRuleCellLayerHack extends BaseForLines {
   _spriteNameMaybeNull: any
   _hackRuleCommand: any
 
-  constructor (source, spriteName, hackRuleCommand) {
+  constructor (source: IGameCode, spriteName, hackRuleCommand) {
     super(source)
     this._spriteNameMaybeNull = spriteName
     this._hackRuleCommand = hackRuleCommand
@@ -1259,7 +1280,7 @@ class LookupHelper {
     this._allLevelChars = new Map()
   }
 
-  _addToHelper (map, key, value) {
+  _addToHelper (map, key: string, value: string) {
     if (map.has(key)) {
       throw new Error(`ERROR: Duplicate object is defined named "${key}". They are case-sensitive!`)
     }
@@ -1274,14 +1295,14 @@ class LookupHelper {
   addToAllLegendItems (legendItem) {
     this._addToHelper(this._allLegendItems, legendItem._spriteNameOrLevelChar.toLowerCase(), legendItem)
   }
-  addObjectToAllLevelChars (levelChar, gameObject) {
+  addObjectToAllLevelChars (levelChar: string, gameObject) {
     this._addToHelper(this._allLegendItems, levelChar.toLowerCase(), gameObject)
     this._addToHelper(this._allLevelChars, levelChar.toLowerCase(), gameObject)
   }
   addLegendToAllLevelChars (legendItem) {
     this._addToHelper(this._allLevelChars, legendItem._spriteNameOrLevelChar.toLowerCase(), legendItem)
   }
-  lookupObjectOrLegendItem (source, key) {
+  lookupObjectOrLegendItem (source: IGameCode, key: string) {
     key = key.toLowerCase()
     const value = this._allObjects.get(key) || this._allLegendItems.get(key)
     if (!value) {
@@ -1290,7 +1311,7 @@ class LookupHelper {
     }
     return value
   }
-  lookupObjectOrLegendItemOrSoundEffect (source, key) {
+  lookupObjectOrLegendItemOrSoundEffect (source: IGameCode, key) {
     key = key.toLowerCase()
     const value = this._allObjects.get(key) || this._allLegendItems.get(key) || this._allSoundEffects.get(key)
     if (!value) {
@@ -1342,7 +1363,7 @@ class Parser {
       let currentColorPalette = 'arnecolors' // default
 
       s.addOperation('parse', {
-        GameData: (_whitespace1, title, _whitespace2, settingsFields, _whitespace3, objects, legends, sounds, collisionLayers, rules, winConditions, levels) => {
+        GameData: function (_whitespace1, title, _whitespace2, settingsFields, _whitespace3, objects, legends, sounds, collisionLayers, rules, winConditions, levels) {
           const settings = {}
           settingsFields.parse().forEach((setting) => {
             if (Array.isArray(setting)) {
@@ -1363,7 +1384,7 @@ class Parser {
             levels.parse()[0] || []
           )
         },
-        Title: (_1, value) => {
+        Title: function (_1, value) {
           return value.parse()
         },
         Author: getConfigField,
@@ -1384,7 +1405,7 @@ class Parser {
         },
         RequirePlayerMovement: getConfigField,
 
-        Section: (_threeDashes1, _headingBar1, _lineTerminator1, _sectionName, _lineTerminator2, _threeDashes2, _headingBar2, _8, _9, _10, _11) => {
+        Section: function (_threeDashes1, _headingBar1, _lineTerminator1, _sectionName, _lineTerminator2, _threeDashes2, _headingBar2, _8, _9, _10, _11) {
           return _10.parse()
         },
         Sprite: function (_1) {
@@ -1463,7 +1484,7 @@ class Parser {
           const objects = spriteNames.parse().map((spriteName) => lookup.lookupObjectOrLegendItem(this.source, spriteName))
           const collisionLayer = new CollisionLayer(this.source, objects)
           // Map all the Objects to the layer
-          objects.forEach((object) => {
+          objects.forEach((object: IGameTile) => {
             object.setCollisionLayer(collisionLayer)
           })
         },
