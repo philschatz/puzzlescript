@@ -9,12 +9,12 @@ function parseAndReturnFirstSpritePixels (code) {
   const {data} = Parser.parse(code)
   const cell = data.levels[0].getRows()[0][0]
   // console.log(cell.getSprites())
-  return UI.getPixelsForCell(data, cell)
+  return {pixels: UI.getPixelsForCell(data, cell), data}
 }
 
 describe('UI', () => {
   it('Renders a single sprite', () => {
-    const pixels = parseAndReturnFirstSpritePixels(`
+    const {pixels} = parseAndReturnFirstSpritePixels(`
 title foo
 
 ===
@@ -48,7 +48,7 @@ w
   })
 
   it('Overlays sprites based on the collision layer', () => {
-    const pixels = parseAndReturnFirstSpritePixels(`
+    const {pixels} = parseAndReturnFirstSpritePixels(`
 title foo
 
 ===
@@ -98,5 +98,50 @@ W
 
     // Expect the other pixels to be black
     expect(pixels[0][1].toRgba()).toEqual(C_BLACK)
+  })
+
+  it('Verifies the transparent pixels pass through to sprites lower in the list of sprites (mirror isles)', () => {
+    const {pixels, data} = parseAndReturnFirstSpritePixels(`
+title Mirror Isles player transparent
+
+========
+OBJECTS
+========
+
+BackGround
+#ffffff
+
+Player
+#000000 #493c2b #000000
+..0..
+.111.
+01110
+02220
+.2.2.
+
+=======
+LEGEND
+=======
+
+P = Player
+
+================
+COLLISIONLAYERS
+================
+
+Background
+Player
+
+=======
+LEVELS
+=======
+
+P
+
+`)
+
+    expect(data.getMagicBackgroundSprite().getPixels()[0][0].toRgba()).toEqual(C_WHITE)
+    expect(pixels[0][0].toRgba()).toEqual(C_WHITE)
+    expect(pixels[0][2].toRgba()).toEqual(C_BLACK)
   })
 })
