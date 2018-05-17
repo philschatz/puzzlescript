@@ -989,7 +989,11 @@ class CellPairMutator extends BaseForLines {
         console.log(layer.toString())
       }
       layer.getSprites().forEach(sprite => {
-        newSetOfSprites.add(sprite)
+        if (layer.isNo()) {
+          newSetOfSprites.delete(sprite)
+        } else {
+          newSetOfSprites.add(sprite)
+        }
       })
     })
 
@@ -1217,7 +1221,25 @@ class RuleCommandMutator {
 
 const M_STATIONARY = 'STATIONARY'
 const M_NO = 'NO'
-const SUPPORTED_CELL_MODIFIERS = [M_STATIONARY, M_NO]
+const SUPPORTED_CELL_MODIFIERS = new Set([M_STATIONARY, M_NO])
+
+function setIntersection(setA, setB) {
+  const intersection = new Set()
+  for (const elem of setB) {
+    if (setA.has(elem)) {
+      intersection.add(elem)
+    }
+  }
+  return intersection
+}
+
+function setDifference(setA, setB) {
+    const difference = new Set(setA)
+    for (const elem of setB) {
+        difference.delete(elem)
+    }
+    return difference
+}
 
 class GameRuleCellLayer extends BaseForLines {
   _cellModifiers: any
@@ -1225,8 +1247,11 @@ class GameRuleCellLayer extends BaseForLines {
 
   constructor (source: IGameCode, cellModifiers, tile: IGameTile) {
     super(source)
-    this._cellModifiers = cellModifiers
+    this._cellModifiers = new Set(cellModifiers)
     this._tile = tile
+  }
+  isNo () {
+    return this._cellModifiers.has(M_NO)
   }
   getSprites () {
     return this._tile.getSprites()
@@ -1250,13 +1275,13 @@ class GameRuleCellLayer extends BaseForLines {
       | t_ORTHOGONAL
       | t_ARROW_ANY // This can be a "v" so it needs to go at the end (behind t_VERTICAL)
     */
-    const mods = new Set(_.intersection(this._cellModifiers, SUPPORTED_CELL_MODIFIERS))
-    if (this._cellModifiers.length > mods.size) {
+    const mods = setDifference(this._cellModifiers, SUPPORTED_CELL_MODIFIERS)
+    if (mods.size > 0) {
       // Not supported yet
       return false
     }
 
-    const negate = mods.has(M_NO)
+    const negate = this.isNo()
     // console.log(`Checking if ${cell.getSprites().map(s => s._name)} ${[...mods]} has ${this.getSprites().map(s => s._name)}`);
     if (negate) {
       return !this._tile.matchesCell(cell)

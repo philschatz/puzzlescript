@@ -87,7 +87,7 @@ class UI {
 
     pixels.forEach((spriteRow, spriteRowIndex) => {
       spriteRow.forEach((spriteColor, spriteColIndex) => {
-        const x = (colIndex * 5 + spriteColIndex) * 2 // Use 2 characters for 1 pixel on the X-axis
+        const x = (colIndex * 5 + spriteColIndex) * 2 + 1 // Use 2 characters for 1 pixel on the X-axis. X column is 1-based
         const y = rowIndex * 5 + spriteRowIndex + 1 // Y column is 1-based
         let r
         let g

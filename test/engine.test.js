@@ -158,11 +158,72 @@ RIGHT [ NO WaterHere NO RemoveLandR | WaterHere ] -> [ RemoveLandRUD | WaterHere
 LEVELS
 =======
 
-__
 ._
 
 
-`
+` // end game
+
+const SKIPPING_STONES_CORNERS = `title Skipping Stones corners
+
+========
+OBJECTS
+========
+
+Background
+blue
+
+Sand
+yellow
+
+Player
+DarkRed #493c2b #000000
+..0..
+.111.
+01110
+02220
+.2.2.
+
+RemoveLandRUD
+Blue
+....0
+.....
+.....
+.....
+....0
+
+=======
+LEGEND
+=======
+
+. = Sand
+P = Player
+_ = Background
+
+RemoveLandR = RemoveLandRUD
+
+================
+COLLISIONLAYERS
+================
+
+Background
+Player
+Sand
+RemoveLandR
+
+======
+RULES
+======
+
+RIGHT [ Sand NO RemoveLandR | NO Sand ] -> [ Sand RemoveLandRUD | NO Sand ]
+
+=======
+LEVELS
+=======
+
+.__
+
+
+` // end game
 
 function parseEngine (code) {
   const {data, error} = Parser.parse(code)
@@ -183,12 +244,29 @@ describe('engine', () => {
     engine.tick()
   })
 
-  it('draws corner sprites correctly', () => {
+  it('draws corner sprites correctly (according to mirror isles)', () => {
     const {engine, data} = parseEngine(MIRROR_ISLES_CORNERS)
     engine.tick()
     const expectedSprite = getSpriteByName(data, 'RemoveLandRUD')
     const interestingCell = engine.currentLevel[0][0]
     const sprites = interestingCell.getSpritesAsSet()
     expect(sprites.has(expectedSprite)).toBe(true)
+  })
+
+  it('draws corner sprites correctly (according to skipping stones)', () => {
+    const {engine, data} = parseEngine(SKIPPING_STONES_CORNERS)
+    engine.tick()
+    const expectedSprite = getSpriteByName(data, 'RemoveLandRUD')
+    const interestingCell = engine.currentLevel[0][0]
+    const sprites = interestingCell.getSpritesAsSet()
+    expect(sprites.has(expectedSprite)).toBe(true)
+
+    engine.tick()
+
+    expect(sprites.has(expectedSprite)).toBe(true)
+    const neighborCell = engine.currentLevel[0][1]
+    const neighborSprites = neighborCell.getSpritesAsSet()
+    expect(neighborSprites.has(expectedSprite)).toBe(false)
+
   })
 })

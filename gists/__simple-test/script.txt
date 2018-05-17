@@ -1,14 +1,14 @@
-title Mirror Isles corners
+title Skipping Stones corners
 
 ========
 OBJECTS
 ========
 
 Background
-yellow
-
-Hole
 blue
+
+Sand
+yellow
 
 Player
 DarkRed #493c2b #000000
@@ -38,12 +38,11 @@ Brown DarkBrown Blue
 LEGEND
 =======
 
-. = Background
+. = Sand
 P = Player
-_ = Hole
+_ = Background
 
 RemoveLandR = RemoveLandRUD
-WaterHere = Hole or CrateInHole
 
 ================
 COLLISIONLAYERS
@@ -51,18 +50,18 @@ COLLISIONLAYERS
 
 Background
 Player
-Hole, CrateInHole
+Sand
 RemoveLandR
 
 ======
 RULES
 ======
 
-RIGHT [ NO WaterHere NO RemoveLandR | WaterHere ] -> [ RemoveLandRUD | WaterHere ]
+RIGHT [ Sand NO RemoveLandR | NO Sand ] -> [ Sand RemoveLandRUD | NO Sand ]
 
 =======
 LEVELS
 =======
 
-__
-._
+____
+.___

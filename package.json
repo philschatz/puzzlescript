@@ -2,7 +2,7 @@
   "scripts": {
     "lint": "standard --fix preprocessor.js test/**/*.js",
     "tsc": "tsc --watch",
-    "start": "tsc; node -r source-map-support/register lib/runGame.js",
+    "start": "rm -rf ./lib/; tsc; node -r source-map-support/register lib/runGame.js",
     "test": "jest --coverage --updateSnapshot",
     "test-debug": "node --inspect-brk -r source-map-support/register $(npm bin)/jest -i --updateSnapshot $@",
     "posttest": "npm run-script lint",
