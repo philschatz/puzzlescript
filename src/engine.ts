@@ -1,7 +1,7 @@
 import * as _ from 'lodash'
 import UI from './ui'
 import { EventEmitter2 } from 'eventemitter2'
-import { LevelMap, GameData } from './parser';
+import { LevelMap, GameData, GameLegendTileSimple } from './parser';
 
 function setEquals (set1, set2) {
   if (set1.size !== set2.size) return false
@@ -12,7 +12,7 @@ function setEquals (set1, set2) {
 }
 
 // This Object exists so the UI has something to bind to
-class Cell {
+export class Cell {
   _engine: Engine
   _sprites: any
   rowIndex: number
@@ -26,7 +26,7 @@ class Cell {
   }
 
   getSprites () {
-    return [...this._sprites].sort((a: GameLegendItemSimple, b: GameLegendItemSimple) => {
+    return [...this._sprites].sort((a: GameLegendTileSimple, b: GameLegendTileSimple) => {
       return a.getCollisionLayerNum() - b.getCollisionLayerNum()
     }).reverse()
   }

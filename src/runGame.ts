@@ -8,7 +8,7 @@ import Engine from './engine'
 
 let totalRenderTime = 0
 
-async function sleep (ms) {
+async function sleep (ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
@@ -37,7 +37,7 @@ async function run () {
         const engine = new Engine(data)
         engine.setLevel(data.levels.indexOf(level))
         engine.on('cell:updated', cell => {
-          UI.drawCellAt(data, cell, cell.rowIndex, cell.colIndex)
+          UI.drawCellAt(data, cell, cell.rowIndex, cell.colIndex, false)
         })
 
         UI.renderScreen(data, engine.currentLevel)

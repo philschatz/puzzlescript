@@ -267,6 +267,5 @@ describe('engine', () => {
     const neighborCell = engine.currentLevel[0][1]
     const neighborSprites = neighborCell.getSpritesAsSet()
     expect(neighborSprites.has(expectedSprite)).toBe(false)
-
   })
 })
