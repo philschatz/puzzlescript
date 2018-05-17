@@ -101,24 +101,23 @@ class UI {
           return
         }
 
-        if (spriteColor && !spriteColor.isTransparent()) { // could be transparent
-          const rgba = spriteColor.toRgba()
+        let rgba: {a: number, r?: number, g?: number, b?: number}
+
+        if (spriteColor) {
+          if (!spriteColor.isTransparent()) {
+            rgba = spriteColor.toRgba()
+          }
+          else if (data.settings.background_color) {
+            rgba = data.settings.background_color.toRgba()
+          }
+        }
+
+        if (!!rgba) {
           r = rgba.r
           g = rgba.g
           b = rgba.b
           a = rgba.a
-        }
 
-        // Fallback to the game background color (e.g. entanglement)
-        if (a !== 1 && data.settings.background_color) {
-          const rgba = data.settings.background_color.toRgba()
-          r = rgba.r
-          g = rgba.g
-          b = rgba.b
-          a = rgba.a
-        }
-
-        if (a) {
           // TODO: brush is readonly. What are you trying to set here?
           // axel.brush = ' ' // " ░▒▓█"
           axel.fg(255, 255, 255)
