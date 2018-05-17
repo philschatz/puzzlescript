@@ -1670,12 +1670,12 @@ class Parser {
       // console.log(game)
 
       // Validate that the game objects are rectangular
-      game.objects.forEach((object) => {
-        if (object.isInvalid()) {
-          console.warn(`WARNING: Game Object is Invalid. Reason: ${object.isInvalid()}`)
-          console.warn(object.__source.getLineAndColumnMessage())
-        }
-      })
+      // game.objects.forEach((object) => {
+      //   if (object.isInvalid()) {
+      //     console.warn(`WARNING: Game Object is Invalid. Reason: ${object.isInvalid()}`)
+      //     console.warn(object.__source.getLineAndColumnMessage())
+      //   }
+      // })
 
       // Validate that the level maps are rectangular
       game.levels.forEach((level) => {

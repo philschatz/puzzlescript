@@ -46,6 +46,7 @@ class UI {
     this._resizeHandler = null
   }
   renderScreen (data, levelRows) {
+    // axel.cursor.off()
 
     // Handle resize events by redrawing the game. Ooh, we do not have Cells at this point.
     // TODO Run renderScreen on cells from the engine rather than cells from the Level data
@@ -79,9 +80,10 @@ class UI {
     // Clear back to sane colors
     axel.fg(255, 255, 255)
     axel.bg(0, 0, 0)
+    // axel.cursor.restore()
   }
 
-  drawCellAt (data, cell, rowIndex, colIndex) {
+  drawCellAt (data, cell, rowIndex, colIndex, dontRestoreCursor) {
     const pixels = this.getPixelsForCell(data, cell)
     const spritesForDebugging = cell.getSprites()
 
@@ -121,8 +123,8 @@ class UI {
           // axel.brush = ' ' // " ░▒▓█"
           axel.fg(255, 255, 255)
           axel.bg(r, g, b)
-          axel.point(x, y)
-          axel.point(x + 1, y) // double-width because the console is narrow
+          axel.point(x, y, ' ')
+          axel.point(x + 1, y, ' ') // double-width because the console is narrow
 
           // Print a debug number which contains the number of sprites in this cell
           // Change the foreground color to be black if the color is light
@@ -140,7 +142,9 @@ class UI {
       })
     })
 
-    restoreCursor()
+    if (!dontRestoreCursor) {
+      restoreCursor()
+    }
   }
 
   getPixelsForCell (data, cell) {
@@ -174,7 +178,6 @@ function restoreCursor () {
 
 function writeText (x, y, text) {
   axel.text(x, y, text)
-  restoreCursor()
 }
 
 export default new UI()
