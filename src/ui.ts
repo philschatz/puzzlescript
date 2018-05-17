@@ -119,11 +119,16 @@ class UI {
         if (a) {
           // TODO: brush is readonly. What are you trying to set here?
           // axel.brush = ' ' // " ░▒▓█"
+          axel.fg(255, 255, 255)
           axel.bg(r, g, b)
           axel.point(x, y)
           axel.point(x + 1, y) // double-width because the console is narrow
 
           // Print a debug number which contains the number of sprites in this cell
+          // Change the foreground color to be black if the color is light
+          if (r > 192 && g > 192 && b > 192) {
+            axel.fg(0, 0, 0)
+          }
           if (spritesForDebugging[spriteRowIndex]) {
             const spriteName = spritesForDebugging[spriteRowIndex]._name
             axel.text(x, y, `${spriteName.substring(spriteColIndex * 2, spriteColIndex * 2 + 2)}`)

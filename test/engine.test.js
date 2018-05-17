@@ -92,7 +92,7 @@ LEVELS
 
 ` // End SIMPLE_GAME
 
-const MIRROR_ISLES_CORNERS = `title Mirror Isles broken
+const MIRROR_ISLES_CORNERS = `title Mirror Isles corners
 
 ========
 OBJECTS
@@ -120,6 +120,14 @@ Blue
 .....
 ....0
 
+CrateInHole
+Brown DarkBrown Blue
+20002
+01110
+01110
+01110
+20002
+
 =======
 LEGEND
 =======
@@ -129,6 +137,7 @@ P = Player
 _ = Hole
 
 RemoveLandR = RemoveLandRUD
+WaterHere = Hole or CrateInHole
 
 ================
 COLLISIONLAYERS
@@ -136,19 +145,20 @@ COLLISIONLAYERS
 
 Background
 Player
-Hole
+Hole, CrateInHole
 RemoveLandR
 
 ======
 RULES
 ======
 
-RIGHT [ NO Hole NO RemoveLandR | Hole ] -> [ RemoveLandRUD | Hole ]
+RIGHT [ NO WaterHere NO RemoveLandR | WaterHere ] -> [ RemoveLandRUD | WaterHere ]
 
 =======
 LEVELS
 =======
 
+__
 ._
 
 
