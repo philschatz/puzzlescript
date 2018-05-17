@@ -2,7 +2,7 @@ import * as _ from 'lodash'
 import { EventEmitter2 } from 'eventemitter2'
 import { LevelMap, GameData, GameLegendTileSimple, IGameTile } from './parser';
 
-function setEquals (set1: Set<IGameTile>, set2: Set<IGameTile>) {
+function setEquals<T> (set1: Set<T>, set2: Set<T>) {
   if (set1.size !== set2.size) return false
   for (var elem of set1) {
     if (!set2.has(elem)) return false
