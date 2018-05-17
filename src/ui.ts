@@ -54,7 +54,7 @@ class UI {
     }
     this._resizeHandler = () => {
       this.renderScreen(data, levelRows)
-    })
+    }
     process.stdout.on('resize', this._resizeHandler)
 
     axel.fg(255, 255, 255)
