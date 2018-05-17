@@ -83,7 +83,7 @@ class UI {
     // axel.cursor.restore()
 
     // Just for debugging, print the game title (doing it here helps with Jest rendering correctly)
-    this.writeDebug(`"${this.gameData.title}"`)
+    this.writeDebug(`"${data.title}"`)
   }
 
   drawCellAt (data: GameData, cell: Cell, rowIndex: number, colIndex: number, dontRestoreCursor: boolean) {
