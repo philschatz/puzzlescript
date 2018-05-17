@@ -1,5 +1,5 @@
 import * as axel from 'axel'
-import { GameSpritePixels, GameData, IColor } from "./parser"
+import { GameSpritePixels, GameData, IColor, RGB } from "./parser"
 import { Cell } from './engine'
 
 // First Sprite one is on top.
@@ -84,7 +84,7 @@ class UI {
   }
 
   drawCellAt (data: GameData, cell: Cell, rowIndex: number, colIndex: number, dontRestoreCursor: boolean) {
-    const pixels: (IColor | string)[][] = this.getPixelsForCell(data, cell)
+    const pixels: IColor[][] = this.getPixelsForCell(data, cell)
     const spritesForDebugging = cell.getSprites()
 
     pixels.forEach((spriteRow, spriteRowIndex) => {
@@ -94,29 +94,27 @@ class UI {
         let r
         let g
         let b
-        let a
 
         // Don't draw below the edge of the screen. Otherwise, bad scrolling things will happen
         if (y >= process.stdout.rows) {
           return
         }
 
-        let rgba: {a: number, r?: number, g?: number, b?: number}
+        let rgb: RGB
 
         if (spriteColor) {
           if (!spriteColor.isTransparent()) {
-            rgba = spriteColor.toRgba()
+            rgb = spriteColor.toRgb()
           }
           else if (data.settings.background_color) {
-            rgba = data.settings.background_color.toRgba()
+            rgb = data.settings.background_color.toRgb()
           }
         }
 
-        if (!!rgba) {
-          r = rgba.r
-          g = rgba.g
-          b = rgba.b
-          a = rgba.a
+        if (!!rgb) {
+          r = rgb.r
+          g = rgb.g
+          b = rgb.b
 
           // TODO: brush is readonly. What are you trying to set here?
           // axel.brush = ' ' // " ░▒▓█"
@@ -165,7 +163,7 @@ class UI {
     axel.clear()
   }
 
-  writeDebug (text: any) {
+  writeDebug (text: string) {
     axel.fg(255, 255, 255)
     axel.bg(0, 0, 0)
     writeText(0, 0, `[${text}]`)
