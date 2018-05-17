@@ -125,7 +125,6 @@ class UI {
 
           // Print a debug number which contains the number of sprites in this cell
           if (spritesForDebugging[spriteRowIndex]) {
-            debugger
             const spriteName = spritesForDebugging[spriteRowIndex]._name
             axel.text(x, y, `${spriteName.substring(spriteColIndex * 2, spriteColIndex * 2 + 2)}`)
           }
