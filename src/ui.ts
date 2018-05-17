@@ -48,6 +48,7 @@ class UI {
     this._resizeHandler = null
   }
   renderScreen (data: GameData, levelRows: Cell[][]) {
+    // axel.cursor.off()
 
     // Handle resize events by redrawing the game. Ooh, we do not have Cells at this point.
     // TODO Run renderScreen on cells from the engine rather than cells from the Level data
@@ -73,21 +74,22 @@ class UI {
           return
         }
 
-        this.drawCellAt(data, col /* cell */, rowIndex, colIndex)
+        this.drawCellAt(data, col, rowIndex, colIndex, false)
       })
     })
     // Clear back to sane colors
     axel.fg(255, 255, 255)
     axel.bg(0, 0, 0)
+    // axel.cursor.restore()
   }
 
-  drawCellAt (data: GameData, cell: Cell, rowIndex: number, colIndex: number) {
+  drawCellAt (data: GameData, cell: Cell, rowIndex: number, colIndex: number, dontRestoreCursor: boolean) {
     const pixels: (IColor | string)[][] = this.getPixelsForCell(data, cell)
     const spritesForDebugging = cell.getSprites()
 
     pixels.forEach((spriteRow, spriteRowIndex) => {
       spriteRow.forEach((spriteColor: IColor, spriteColIndex) => {
-        const x = (colIndex * 5 + spriteColIndex) * 2 // Use 2 characters for 1 pixel on the X-axis
+        const x = (colIndex * 5 + spriteColIndex) * 2 + 1 // Use 2 characters for 1 pixel on the X-axis. X column is 1-based
         const y = rowIndex * 5 + spriteRowIndex + 1 // Y column is 1-based
         let r
         let g
@@ -119,11 +121,16 @@ class UI {
         if (a) {
           // TODO: brush is readonly. What are you trying to set here?
           // axel.brush = ' ' // " ░▒▓█"
+          axel.fg(255, 255, 255)
           axel.bg(r, g, b)
           axel.point(x, y, ' ')
           axel.point(x + 1, y, ' ') // double-width because the console is narrow
 
           // Print a debug number which contains the number of sprites in this cell
+          // Change the foreground color to be black if the color is light
+          if (r > 192 && g > 192 && b > 192) {
+            axel.fg(0, 0, 0)
+          }
           if (spritesForDebugging[spriteRowIndex]) {
             const spriteName = spritesForDebugging[spriteRowIndex]._name
             axel.text(x, y, `${spriteName.substring(spriteColIndex * 2, spriteColIndex * 2 + 2)}`)
@@ -135,7 +142,9 @@ class UI {
       })
     })
 
-    restoreCursor()
+    if (!dontRestoreCursor) {
+      restoreCursor()
+    }
   }
 
   getPixelsForCell (data: GameData, cell: Cell) {
@@ -170,7 +179,6 @@ function restoreCursor () {
 
 function writeText (x: number, y: number, text: string) {
   axel.text(x, y, text)
-  restoreCursor()
 }
 
 export default new UI()
