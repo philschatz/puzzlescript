@@ -92,14 +92,93 @@ LEVELS
 
 ` // End SIMPLE_GAME
 
+const MIRROR_ISLES_CORNERS = `title Mirror Isles broken
+
+========
+OBJECTS
+========
+
+Background
+yellow
+
+Hole
+blue
+
+Player
+DarkRed #493c2b #000000
+..0..
+.111.
+01110
+02220
+.2.2.
+
+RemoveLandRUD
+Blue
+....0
+.....
+.....
+.....
+....0
+
+=======
+LEGEND
+=======
+
+. = Background
+P = Player
+_ = Hole
+
+RemoveLandR = RemoveLandRUD
+
+================
+COLLISIONLAYERS
+================
+
+Background
+Player
+Hole
+RemoveLandR
+
+======
+RULES
+======
+
+RIGHT [ NO Hole NO RemoveLandR | Hole ] -> [ RemoveLandRUD | Hole ]
+
+=======
+LEVELS
+=======
+
+._
+
+
+`
+
+function parseEngine (code) {
+  const {data, error} = Parser.parse(code)
+  expect(error && error.message).toBeFalsy() // Use && so the error messages are shorter
+
+  const engine = new Engine(data)
+  engine.setLevel(0)
+  return {engine, data}
+}
+
+function getSpriteByName (data, name) {
+  return data.objects.filter((sprite) => sprite._name === name)[0]
+}
+
 describe('engine', () => {
   it('evaluates a simple game', () => {
-    const {data, error} = Parser.parse(SIMPLE_GAME)
-    expect(error && error.message).toBeFalsy() // Use && so the error messages are shorter
+    const {engine} = parseEngine(SIMPLE_GAME)
+    engine.tick()
+  })
 
-    const engine = new Engine(data)
-    engine.setLevel(0)
-
-    console.log('tick-returned:', engine.tick())
+  it('draws corner sprites correctly', () => {
+    const {engine, data} = parseEngine(MIRROR_ISLES_CORNERS)
+    engine.tick()
+    const expectedSprite = getSpriteByName(data, 'RemoveLandRUD')
+    const interestingCell = engine.currentLevel[0][0]
+    const sprites = interestingCell.getSpritesAsSet()
+    expect(sprites.has(expectedSprite)).toBe(true)
   })
 })

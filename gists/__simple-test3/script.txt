@@ -1,11 +1,28 @@
-title Mirror Isles working
+title Mirror Isles broken
+author Alan Hazelden
+homepage www.draknek.org
+
+norepeat_action
+run_rules_on_level_start
+
+youtube tI8IarSxiLk
+
+(realtime_interval 0.5)
+
+(verbose_logging)
 
 ========
 OBJECTS
 ========
 
 Background
-yellow
+#dfcc4f yellow
+11111
+01111
+11101
+11111
+10111
+
 
 
 Hole
@@ -23,6 +40,30 @@ DarkRed #493c2b #000000
 
 
 
+RemoveLandLUD
+Blue
+0....
+.....
+.....
+.....
+0....
+
+RemoveLandLU
+Blue
+0....
+.....
+.....
+.....
+.....
+
+RemoveLandLD
+Blue
+.....
+.....
+.....
+.....
+0....
+
 RemoveLandRUD
 Blue
 ....0
@@ -30,6 +71,24 @@ Blue
 .....
 .....
 ....0
+
+RemoveLandRU
+Blue
+....0
+.....
+.....
+.....
+.....
+
+RemoveLandRD
+Blue
+.....
+.....
+.....
+.....
+....0
+
+
 
 
 
@@ -42,7 +101,8 @@ P = Player
 _ = Hole
 
 
-RemoveLandR = RemoveLandRUD
+RemoveLandL = RemoveLandLUD or RemoveLandLU or RemoveLandLD
+RemoveLandR = RemoveLandRUD or RemoveLandRU or RemoveLandRD
 
 =======
 SOUNDS
@@ -56,7 +116,7 @@ COLLISIONLAYERS
 Background
 Player
 Hole
-RemoveLandR
+RemoveLandL, RemoveLandR
 
 ======
 RULES
@@ -77,7 +137,7 @@ LEVELS
 =======
 
 ___
-P__
+.__
 
 
 _____________

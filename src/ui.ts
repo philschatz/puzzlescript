@@ -40,12 +40,23 @@ function collapseSpritesToPixels (spritesToDraw, backgroundColor) {
   return sprite
 }
 
-function renderCell (cell) {
-
-}
-
 class UI {
+  _resizeHandler?: () => void
+  constructor() {
+    this._resizeHandler = null
+  }
   renderScreen (data, levelRows) {
+
+    // Handle resize events by redrawing the game. Ooh, we do not have Cells at this point.
+    // TODO Run renderScreen on cells from the engine rather than cells from the Level data
+    if (this._resizeHandler) {
+      process.stdout.off('resize', this._resizeHandler)
+    }
+    this._resizeHandler = () => {
+      this.renderScreen(data, levelRows)
+    })
+    process.stdout.on('resize', this._resizeHandler)
+
     axel.fg(255, 255, 255)
     axel.bg(0, 0, 0)
 
@@ -72,13 +83,21 @@ class UI {
 
   drawCellAt (data, cell, rowIndex, colIndex) {
     const pixels = this.getPixelsForCell(data, cell)
+    const spritesForDebugging = cell.getSprites()
 
     pixels.forEach((spriteRow, spriteRowIndex) => {
       spriteRow.forEach((spriteColor, spriteColIndex) => {
+        const x = (colIndex * 5 + spriteColIndex) * 2 // Use 2 characters for 1 pixel on the X-axis
+        const y = rowIndex * 5 + spriteRowIndex + 1 // Y column is 1-based
         let r
         let g
         let b
         let a
+
+        // Don't draw below the edge of the screen. Otherwise, bad scrolling things will happen
+        if (y >= process.stdout.rows) {
+          return
+        }
 
         if (spriteColor && spriteColor !== 'transparent') { // could be transparent
           const rgba = spriteColor.toRgba()
@@ -97,14 +116,21 @@ class UI {
           a = rgba.a
         }
 
-        const x = (colIndex * 5 + spriteColIndex) * 2 // Use 2 characters for 1 pixel on the X-axis
-        const y = rowIndex * 5 + spriteRowIndex + 1 // Y column is 1-based
         if (a) {
           // TODO: brush is readonly. What are you trying to set here?
           // axel.brush = ' ' // " ░▒▓█"
           axel.bg(r, g, b)
-          axel.point(x, y, '')
-          axel.point(x + 1, y, '') // double-width because the console is narrow
+          axel.point(x, y)
+          axel.point(x + 1, y) // double-width because the console is narrow
+
+          // Print a debug number which contains the number of sprites in this cell
+          if (spritesForDebugging[spriteRowIndex]) {
+            const spriteName = spritesForDebugging[spriteRowIndex]._name
+            axel.text(x, y, `${spriteName.substring(spriteColIndex * 2, spriteColIndex * 2 + 2)}`)
+          }
+          if (spriteRowIndex === 4 && spriteColIndex === 4) {
+            axel.text(x, y, `${spritesForDebugging.length}`)
+          }
         }
       })
     })
