@@ -1,6 +1,7 @@
 import * as _ from 'lodash'
 import UI from './ui'
 import { EventEmitter2 } from 'eventemitter2'
+import { LevelMap, GameData } from './parser';
 
 function setEquals (set1, set2) {
   if (set1.size !== set2.size) return false
@@ -61,8 +62,8 @@ class Cell {
 }
 
 export default class Engine extends EventEmitter2 {
-  gameData: any
-  currentLevel: any
+  gameData: GameData
+  currentLevel: Cell[][]
 
   constructor (gameData) {
     super()

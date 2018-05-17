@@ -21,6 +21,7 @@
     "pify": "^3.0.0"
   },
   "devDependencies": {
+    "@types/pify": "^3.0.2",
     "eslint-plugin-typescript": "^0.12.0",
     "http-server": "^0.11.1",
     "standard": "^11.0.1",
