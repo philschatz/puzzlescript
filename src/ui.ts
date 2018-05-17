@@ -1,5 +1,5 @@
 import * as axel from 'axel'
-import { GameSpritePixels, GameData, IColor, RGB } from "./parser"
+import { GameSpritePixels, GameData, IColor } from "./parser"
 import { Cell } from './engine'
 
 // First Sprite one is on top.
@@ -100,18 +100,19 @@ class UI {
           return
         }
 
-        let rgb: RGB
+        let color: IColor
 
         if (spriteColor) {
           if (!spriteColor.isTransparent()) {
-            rgb = spriteColor.toRgb()
+            color = spriteColor
           }
           else if (data.settings.background_color) {
-            rgb = data.settings.background_color.toRgb()
+            color = data.settings.background_color
           }
         }
 
-        if (!!rgb) {
+        if (!!color) {
+          const rgb = color.toRgb()
           r = rgb.r
           g = rgb.g
           b = rgb.b

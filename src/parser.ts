@@ -615,7 +615,7 @@ function hexToRgb (hex: string) {
   ) : null
 }
 
-export class RGB {
+class RGB {
   r?: number
   g?: number
   b?: number
