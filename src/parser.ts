@@ -605,10 +605,10 @@ class TransparentColor extends BaseForLines implements IColor {
 
 export class GameSprite extends BaseForLines implements IGameTile {
   _name: string
-  _optionalLegendChar: string
+  _optionalLegendChar?: string
   _collisionLayer: CollisionLayer
 
-  constructor (source: IGameCode, name: string, optionalLegendChar: string) {
+  constructor (source: IGameCode, name: string, optionalLegendChar?: string) {
     super(source)
     this._name = name
     this._optionalLegendChar = optionalLegendChar
@@ -800,9 +800,9 @@ export class GameSoundSimpleEnum extends GameSound {
 // TODO: Link this up to the Object, rather than just storing the spriteName
 export class GameSoundNormal extends GameSound {
   _sprite: string
-  _conditionEnum: number
+  _conditionEnum: string
 
-  constructor (source: IGameCode, sprite: string, conditionEnum: number, soundCode: number) {
+  constructor (source: IGameCode, sprite: string, conditionEnum: string, soundCode: number) {
     super(source, soundCode)
     this._sprite = sprite
     this._conditionEnum = conditionEnum
