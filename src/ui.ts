@@ -1,8 +1,9 @@
 import * as axel from 'axel'
+import { GameSpritePixels, GameData } from "./parser"
 
 // First Sprite one is on top.
 // This caused a 2x speedup while rendering.
-function collapseSpritesToPixels (spritesToDraw, backgroundColor) {
+function collapseSpritesToPixels (spritesToDraw: GameSpritePixels[], backgroundColor) {
   if (spritesToDraw.length === 1) {
     return spritesToDraw[0].getPixels()
   }
@@ -45,7 +46,7 @@ class UI {
   constructor() {
     this._resizeHandler = null
   }
-  renderScreen (data, levelRows) {
+  renderScreen (data: GameData, levelRows) {
 
     // Handle resize events by redrawing the game. Ooh, we do not have Cells at this point.
     // TODO Run renderScreen on cells from the engine rather than cells from the Level data
@@ -59,8 +60,6 @@ class UI {
 
     axel.fg(255, 255, 255)
     axel.bg(0, 0, 0)
-
-    data.settings.__magicBackgroundObject = data.objects.filter(({_name}) => _name.toLowerCase() === 'background')[0]
 
     levelRows.forEach((row, rowIndex) => {
       // Don't draw too much for this demo
@@ -120,8 +119,8 @@ class UI {
           // TODO: brush is readonly. What are you trying to set here?
           // axel.brush = ' ' // " ░▒▓█"
           axel.bg(r, g, b)
-          axel.point(x, y)
-          axel.point(x + 1, y) // double-width because the console is narrow
+          axel.point(x, y, ' ')
+          axel.point(x + 1, y, ' ') // double-width because the console is narrow
 
           // Print a debug number which contains the number of sprites in this cell
           if (spritesForDebugging[spriteRowIndex]) {
@@ -138,12 +137,13 @@ class UI {
     restoreCursor()
   }
 
-  getPixelsForCell (data, cell) {
+  getPixelsForCell (data: GameData, cell) {
     const spritesToDraw = cell.getSprites() // Not sure why, but entanglement renders properly when reversed
 
     // If there is a magic background object then rely on it last
-    if (data.settings.__magicBackgroundObject) {
-      spritesToDraw.push(data.settings.__magicBackgroundObject)
+    let magicBackgroundSprite = data.getMagicBackgroundSprite()
+    if (magicBackgroundSprite) {
+      spritesToDraw.push(magicBackgroundSprite)
     }
 
     const pixels = collapseSpritesToPixels(spritesToDraw, data.settings.background_color)

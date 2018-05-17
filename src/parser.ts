@@ -472,9 +472,37 @@ export class BaseForLines {
   }
 }
 
+class GameSettings {
+  author?: string
+  homepage?: string
+  youtube?: string
+  zoomscreen?: string
+  flickscreen?: {width: number, height: number}
+  color_palette?: string
+  background_color?: string
+  text_color?: string
+  realtime_interval?: string
+  key_repeat_interval?: string
+  again_interval?: string
+  noaction: false
+  noundo: false
+  run_rules_on_level_start?: string
+  norepeat_action: false
+  throttle_movement: false
+  norestart: false
+  require_player_movement: false
+  verbose_logging: false
+
+  constructor() {}
+
+  _setValue(key, value) {
+    this[key] = value
+  }
+}
+
 export class GameData {
   title: string
-  settings: {}
+  settings: GameSettings
   objects: GameSprite[]
   legends: GameLegendTileSimple[]
   sounds: GameSound[]
@@ -485,7 +513,7 @@ export class GameData {
 
   constructor(
     title: string, 
-    settings: {}, 
+    settings: GameSettings, 
     objects: GameSprite[], 
     legends: GameLegendTileSimple[], 
     sounds: GameSound[], 
@@ -503,6 +531,10 @@ export class GameData {
     this.rules= rules
     this.winConditions = winConditions
     this.levels = levels
+  }
+
+  getMagicBackgroundSprite() {
+    this.objects.filter(({_name}) => _name.toLowerCase() === 'background')[0]
   }
 }
 
@@ -653,7 +685,7 @@ class GameSpriteSingleColor extends GameSprite {
   }
 }
 
-class GameSpritePixels extends GameSprite {
+export class GameSpritePixels extends GameSprite {
   _colors: IColor[]
   _pixels: IColor[][]
 
@@ -1368,12 +1400,12 @@ class Parser {
 
       s.addOperation('parse', {
         GameData: function (_whitespace1, title, _whitespace2, settingsFields, _whitespace3, objects, legends, sounds, collisionLayers, rules, winConditions, levels) {
-          const settings = {}
+          const settings = new GameSettings()
           settingsFields.parse().forEach((setting) => {
             if (Array.isArray(setting)) {
-              settings[setting[0]] = setting[1]
+              settings._setValue(setting[0], setting[1])
             } else {
-              settings[setting] = true
+              settings._setValue(setting, true)
             }
           })
           return new GameData(
