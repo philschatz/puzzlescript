@@ -1,8 +1,8 @@
 import * as _ from 'lodash'
 import { EventEmitter2 } from 'eventemitter2'
-import { LevelMap, GameData, GameLegendTileSimple } from './parser';
+import { LevelMap, GameData, GameLegendTileSimple, IGameTile } from './parser';
 
-function setEquals (set1, set2) {
+function setEquals (set1: Set<IGameTile>, set2: Set<IGameTile>) {
   if (set1.size !== set2.size) return false
   for (var elem of set1) {
     if (!set2.has(elem)) return false
@@ -13,11 +13,11 @@ function setEquals (set1, set2) {
 // This Object exists so the UI has something to bind to
 export class Cell {
   _engine: Engine
-  _sprites: any
+  _sprites: Set<IGameTile>
   rowIndex: number
   colIndex: number
 
-  constructor (engine, sprites, rowIndex, colIndex) {
+  constructor (engine: Engine, sprites: Set<IGameTile>, rowIndex: number, colIndex: number) {
     this._engine = engine
     this._sprites = sprites
     this.rowIndex = rowIndex
@@ -25,18 +25,18 @@ export class Cell {
   }
 
   getSprites () {
-    return [...this._sprites].sort((a: GameLegendTileSimple, b: GameLegendTileSimple) => {
+    return [...this._sprites].sort((a, b) => {
       return a.getCollisionLayerNum() - b.getCollisionLayerNum()
     }).reverse()
   }
   getSpritesAsSet () {
     return this._sprites
   }
-  updateSprites (newSetOfSprites) {
+  updateSprites (newSetOfSprites: Set<IGameTile>) {
     this._sprites = newSetOfSprites
     this._engine.emit('cell:updated', this)
   }
-  equalsSprites (newSetOfSprites) {
+  equalsSprites (newSetOfSprites: Set<IGameTile>) {
     return setEquals(this._sprites, newSetOfSprites)
   }
   _getRelativeNeighbor (y: number, x: number) {
@@ -64,7 +64,7 @@ export default class Engine extends EventEmitter2 {
   gameData: GameData
   currentLevel: Cell[][]
 
-  constructor (gameData) {
+  constructor (gameData: GameData) {
     super()
     this.gameData = gameData
   }
