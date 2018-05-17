@@ -534,7 +534,7 @@ export class GameData {
   }
 
   getMagicBackgroundSprite() {
-    this.objects.filter(({_name}) => _name.toLowerCase() === 'background')[0]
+    return this.objects.filter(sprite => sprite._getName().toLowerCase() === 'background')[0]
   }
 }
 
@@ -645,6 +645,9 @@ export class GameSprite extends BaseForLines implements IGameTile {
     super(source)
     this._name = name
     this._optionalLegendChar = optionalLegendChar
+  }
+  _getName () {
+    return this._name
   }
   getSprites () {
     // to match the signature of LegendTile

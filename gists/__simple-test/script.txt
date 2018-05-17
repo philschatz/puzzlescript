@@ -5,10 +5,7 @@ OBJECTS
 ========
 
 Background
-blue
-
-Sand
-yellow
+#ffffff
 
 Player
 DarkRed #493c2b #000000
@@ -18,31 +15,11 @@ DarkRed #493c2b #000000
 02220
 .2.2.
 
-RemoveLandRUD
-Blue
-....0
-.....
-.....
-.....
-....0
-
-CrateInHole
-Brown DarkBrown Blue
-20002
-01110
-01110
-01110
-20002
-
 =======
 LEGEND
 =======
 
-. = Sand
 P = Player
-_ = Background
-
-RemoveLandR = RemoveLandRUD
 
 ================
 COLLISIONLAYERS
@@ -50,18 +27,9 @@ COLLISIONLAYERS
 
 Background
 Player
-Sand
-RemoveLandR
-
-======
-RULES
-======
-
-RIGHT [ Sand NO RemoveLandR | NO Sand ] -> [ Sand RemoveLandRUD | NO Sand ]
 
 =======
 LEVELS
 =======
 
-____
-.___
+P
