@@ -87,7 +87,7 @@ class UI {
   }
 
   drawCellAt (data: GameData, cell: Cell, rowIndex: number, colIndex: number, dontRestoreCursor: boolean) {
-    const pixels: (IColor | string)[][] = this.getPixelsForCell(data, cell)
+    const pixels: IColor[][] = this.getPixelsForCell(data, cell)
     const spritesForDebugging = cell.getSprites()
 
     pixels.forEach((spriteRow, spriteRowIndex) => {
@@ -97,29 +97,28 @@ class UI {
         let r
         let g
         let b
-        let a
 
         // Don't draw below the edge of the screen. Otherwise, bad scrolling things will happen
         if (y >= process.stdout.rows) {
           return
         }
 
-        let rgba: {a: number, r?: number, g?: number, b?: number}
+        let color: IColor
 
         if (spriteColor) {
           if (!spriteColor.isTransparent()) {
-            rgba = spriteColor.toRgba()
+            color = spriteColor
           }
           else if (data.settings.background_color) {
-            rgba = data.settings.background_color.toRgba()
+            color = data.settings.background_color
           }
         }
 
-        if (!!rgba) {
-          r = rgba.r
-          g = rgba.g
-          b = rgba.b
-          a = rgba.a
+        if (!!color) {
+          const rgb = color.toRgb()
+          r = rgb.r
+          g = rgb.g
+          b = rgb.b
 
           // TODO: brush is readonly. What are you trying to set here?
           // axel.brush = ' ' // " ░▒▓█"
@@ -168,7 +167,7 @@ class UI {
     axel.clear()
   }
 
-  writeDebug (text: any) {
+  writeDebug (text: string) {
     axel.fg(255, 255, 255)
     axel.bg(0, 0, 0)
     writeText(0, 0, `[${text}]`)

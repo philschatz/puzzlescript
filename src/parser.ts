@@ -472,12 +472,22 @@ export class BaseForLines {
   }
 }
 
+class Dimension {
+  width: number
+  height: number
+
+  constructor(width: number, height: number) {
+    this.width = width
+    this.height = height
+  }
+}
+
 class GameSettings {
   author?: string
   homepage?: string
   youtube?: string
-  zoomscreen?: {width: number, height: number}
-  flickscreen?: {width: number, height: number}
+  zoomscreen?: Dimension
+  flickscreen?: Dimension
   color_palette?: string
   background_color?: IColor
   text_color?: IColor
@@ -588,7 +598,7 @@ export class GameMessage extends BaseForLines {
 
 function hexToRgb (hex: string) {
   if (!hex) {
-    return {a: 0}
+    return new RGB()
   }
   // https://stackoverflow.com/a/5624139
   // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
@@ -598,17 +608,28 @@ function hexToRgb (hex: string) {
   })
 
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
-  return result ? {
-    r: parseInt(result[1], 16),
-    g: parseInt(result[2], 16),
-    b: parseInt(result[3], 16),
-    a: 1
-  } : null
+  return result ? new RGB(
+    parseInt(result[1], 16),
+    parseInt(result[2], 16),
+    parseInt(result[3], 16),
+  ) : null
+}
+
+class RGB {
+  r?: number
+  g?: number
+  b?: number
+
+  constructor(r?:number, g?:number, b?:number) {
+    this.r = r
+    this.g = g
+    this.b = b
+  }
 }
 
 export declare interface IColor {
   isTransparent: () => boolean
-  toRgba: () => {a: number, r?: number, g?: number, b?: number}
+  toRgb: () => RGB
 }
 
 export class HexColor extends BaseForLines implements IColor {
@@ -624,15 +645,15 @@ export class HexColor extends BaseForLines implements IColor {
   }
 
   isTransparent () { return false }
-  toRgba () {
+  toRgb () {
     return hexToRgb(this._color)
   }
 }
 
 class TransparentColor extends BaseForLines implements IColor {
   isTransparent () { return true }
-  toRgba () {
-    return {a: 0}
+  toRgb () {
+    return new RGB()
   }
 }
 
