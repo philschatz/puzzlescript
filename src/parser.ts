@@ -479,8 +479,8 @@ class GameSettings {
   zoomscreen?: string
   flickscreen?: {width: number, height: number}
   color_palette?: string
-  background_color?: string
-  text_color?: string
+  background_color?: IColor
+  text_color?: IColor
   realtime_interval?: string
   key_repeat_interval?: string
   again_interval?: string
@@ -495,7 +495,7 @@ class GameSettings {
 
   constructor() {}
 
-  _setValue(key, value) {
+  _setValue(key: any, value: any) {
     this[key] = value
   }
 }
@@ -512,14 +512,14 @@ export class GameData {
   levels: LevelMap[]
 
   constructor(
-    title: string, 
-    settings: GameSettings, 
-    objects: GameSprite[], 
-    legends: GameLegendTileSimple[], 
-    sounds: GameSound[], 
-    collisionLayers: CollisionLayer[], 
-    rules: GameRule[], 
-    winConditions: WinConditionSimple[], 
+    title: string,
+    settings: GameSettings,
+    objects: GameSprite[],
+    legends: GameLegendTileSimple[],
+    sounds: GameSound[],
+    collisionLayers: CollisionLayer[],
+    rules: GameRule[],
+    winConditions: WinConditionSimple[],
     levels: LevelMap[]
   ) {
     this.title = title
@@ -585,7 +585,7 @@ export class GameMessage extends BaseForLines {
   }
 }
 
-function hexToRgb (hex: string) {
+export function hexToRgb (hex: string) {
   if (!hex) {
     return {a: 0}
   }
@@ -605,9 +605,9 @@ function hexToRgb (hex: string) {
   } : null
 }
 
-declare interface IColor {
+export declare interface IColor {
   isTransparent: () => boolean
-  toRgba: () => {}
+  toRgba: () => {a: number, r?: number, g?: number, b?: number}
 }
 
 export class HexColor extends BaseForLines implements IColor {
@@ -755,8 +755,8 @@ export class GameLegendTileSimple extends BaseForLines implements IGameTile {
       // 2 levels of indirection should be safe
       // Sort by collisionLayer so that the most-important sprite is first
       this._sprites = _.flatten(
-        this._tiles.map(tile => { 
-          return tile.getSprites() 
+        this._tiles.map(tile => {
+          return tile.getSprites()
         })
       ).sort((a, b) => {
         return a.getCollisionLayerNum() - b.getCollisionLayerNum()
@@ -1409,7 +1409,7 @@ class Parser {
             }
           })
           return new GameData(
-            title.parse(), 
+            title.parse(),
             settings,
             objects.parse()[0] || [],
             legends.parse()[0] || [],

@@ -12,7 +12,7 @@ function setEquals (set1, set2) {
 }
 
 // This Object exists so the UI has something to bind to
-class Cell {
+export class Cell {
   _engine: Engine
   _sprites: any
   rowIndex: number

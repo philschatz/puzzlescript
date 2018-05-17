@@ -1,15 +1,16 @@
 import * as axel from 'axel'
-import { GameSpritePixels, GameData } from "./parser"
+import { GameSpritePixels, GameData, IColor } from "./parser"
+import { Cell } from './engine'
 
 // First Sprite one is on top.
 // This caused a 2x speedup while rendering.
-function collapseSpritesToPixels (spritesToDraw: GameSpritePixels[], backgroundColor) {
+function collapseSpritesToPixels (spritesToDraw: GameSpritePixels[], backgroundColor: IColor) {
   if (spritesToDraw.length === 1) {
     return spritesToDraw[0].getPixels()
   }
   if (spritesToDraw.length === 0) {
     // Just draw the background
-    const sprite = []
+    const sprite: IColor[][] = []
     for (let y = 0; y < 5; y++) {
       sprite[y] = sprite[y] || []
       for (let x = 0; x < 5; x++) {
@@ -46,7 +47,7 @@ class UI {
   constructor() {
     this._resizeHandler = null
   }
-  renderScreen (data: GameData, levelRows) {
+  renderScreen (data: GameData, levelRows: Cell[][]) {
 
     // Handle resize events by redrawing the game. Ooh, we do not have Cells at this point.
     // TODO Run renderScreen on cells from the engine rather than cells from the Level data
@@ -80,12 +81,12 @@ class UI {
     axel.bg(0, 0, 0)
   }
 
-  drawCellAt (data, cell, rowIndex, colIndex) {
-    const pixels = this.getPixelsForCell(data, cell)
+  drawCellAt (data: GameData, cell: Cell, rowIndex: number, colIndex: number) {
+    const pixels: (IColor | string)[][] = this.getPixelsForCell(data, cell)
     const spritesForDebugging = cell.getSprites()
 
     pixels.forEach((spriteRow, spriteRowIndex) => {
-      spriteRow.forEach((spriteColor, spriteColIndex) => {
+      spriteRow.forEach((spriteColor: IColor, spriteColIndex) => {
         const x = (colIndex * 5 + spriteColIndex) * 2 // Use 2 characters for 1 pixel on the X-axis
         const y = rowIndex * 5 + spriteRowIndex + 1 // Y column is 1-based
         let r
@@ -98,7 +99,7 @@ class UI {
           return
         }
 
-        if (spriteColor && spriteColor !== 'transparent') { // could be transparent
+        if (spriteColor && !spriteColor.isTransparent()) { // could be transparent
           const rgba = spriteColor.toRgba()
           r = rgba.r
           g = rgba.g
@@ -137,7 +138,7 @@ class UI {
     restoreCursor()
   }
 
-  getPixelsForCell (data: GameData, cell) {
+  getPixelsForCell (data: GameData, cell: Cell) {
     const spritesToDraw = cell.getSprites() // Not sure why, but entanglement renders properly when reversed
 
     // If there is a magic background object then rely on it last
@@ -156,7 +157,7 @@ class UI {
     axel.clear()
   }
 
-  writeDebug (text) {
+  writeDebug (text: any) {
     axel.fg(255, 255, 255)
     axel.bg(0, 0, 0)
     writeText(0, 0, `[${text}]`)
@@ -167,7 +168,7 @@ function restoreCursor () {
   axel.cursor.restore()
 }
 
-function writeText (x, y, text) {
+function writeText (x: number, y: number, text: string) {
   axel.text(x, y, text)
   restoreCursor()
 }
