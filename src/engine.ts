@@ -25,7 +25,9 @@ class Cell {
   }
 
   getSprites () {
-    return [...this._sprites] // TODO: sort this by collisionlayer so they render properly on top of each other
+    return [...this._sprites].sort((a: GameLegendItemSimple, b: GameLegendItemSimple) => {
+      return a.getCollisionLayerNum() - b.getCollisionLayerNum()
+    }).reverse()
   }
   getSpritesAsSet () {
     return this._sprites
