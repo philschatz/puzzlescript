@@ -395,8 +395,8 @@ GameData {
                 Array [
                   GameRuleCellLayer {
                     "__astId": 292,
-                    "_cellModifiers": Array [],
-                    "_sprite": GameLegendTileSimple {
+                    "_cellModifiers": Set {},
+                    "_tile": GameLegendTileSimple {
                       "__astId": 288,
                       "_spriteNameOrLevelChar": "stationaryz",
                       "_tiles": Array [
@@ -425,8 +425,8 @@ GameData {
                 "actionLayers": Array [
                   GameRuleCellLayer {
                     "__astId": 292,
-                    "_cellModifiers": Array [],
-                    "_sprite": GameLegendTileSimple {
+                    "_cellModifiers": Set {},
+                    "_tile": GameLegendTileSimple {
                       "__astId": 288,
                       "_spriteNameOrLevelChar": "stationaryz",
                       "_tiles": Array [
@@ -445,8 +445,8 @@ GameData {
                 "conditionLayers": Array [
                   GameRuleCellLayer {
                     "__astId": 289,
-                    "_cellModifiers": Array [],
-                    "_sprite": GameLegendTileSimple {
+                    "_cellModifiers": Set {},
+                    "_tile": GameLegendTileSimple {
                       "__astId": 288,
                       "_spriteNameOrLevelChar": "stationaryz",
                       "_tiles": Array [
@@ -476,8 +476,8 @@ GameData {
                 Array [
                   GameRuleCellLayer {
                     "__astId": 289,
-                    "_cellModifiers": Array [],
-                    "_sprite": GameLegendTileSimple {
+                    "_cellModifiers": Set {},
+                    "_tile": GameLegendTileSimple {
                       "__astId": 288,
                       "_spriteNameOrLevelChar": "stationaryz",
                       "_tiles": Array [
@@ -778,10 +778,10 @@ GameData {
                 "conditionLayers": Array [
                   GameRuleCellLayer {
                     "__astId": 102,
-                    "_cellModifiers": Array [
+                    "_cellModifiers": Set {
                       "ACTION",
-                    ],
-                    "_sprite": GameLegendTileSimple {
+                    },
+                    "_tile": GameLegendTileSimple {
                       "__astId": 101,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -811,10 +811,10 @@ GameData {
                 Array [
                   GameRuleCellLayer {
                     "__astId": 102,
-                    "_cellModifiers": Array [
+                    "_cellModifiers": Set {
                       "ACTION",
-                    ],
-                    "_sprite": GameLegendTileSimple {
+                    },
+                    "_tile": GameLegendTileSimple {
                       "__astId": 101,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -1115,10 +1115,10 @@ GameData {
                 "conditionLayers": Array [
                   GameRuleCellLayer {
                     "__astId": 113,
-                    "_cellModifiers": Array [
+                    "_cellModifiers": Set {
                       "^",
-                    ],
-                    "_sprite": GameLegendTileSimple {
+                    },
+                    "_tile": GameLegendTileSimple {
                       "__astId": 112,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -1148,10 +1148,10 @@ GameData {
                 Array [
                   GameRuleCellLayer {
                     "__astId": 113,
-                    "_cellModifiers": Array [
+                    "_cellModifiers": Set {
                       "^",
-                    ],
-                    "_sprite": GameLegendTileSimple {
+                    },
+                    "_tile": GameLegendTileSimple {
                       "__astId": 112,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -1455,10 +1455,10 @@ GameData {
                 "conditionLayers": Array [
                   GameRuleCellLayer {
                     "__astId": 124,
-                    "_cellModifiers": Array [
+                    "_cellModifiers": Set {
                       "V",
-                    ],
-                    "_sprite": GameLegendTileSimple {
+                    },
+                    "_tile": GameLegendTileSimple {
                       "__astId": 123,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -1488,10 +1488,10 @@ GameData {
                 Array [
                   GameRuleCellLayer {
                     "__astId": 124,
-                    "_cellModifiers": Array [
+                    "_cellModifiers": Set {
                       "V",
-                    ],
-                    "_sprite": GameLegendTileSimple {
+                    },
+                    "_tile": GameLegendTileSimple {
                       "__astId": 123,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -1792,10 +1792,10 @@ GameData {
                 "conditionLayers": Array [
                   GameRuleCellLayer {
                     "__astId": 135,
-                    "_cellModifiers": Array [
+                    "_cellModifiers": Set {
                       ">",
-                    ],
-                    "_sprite": GameLegendTileSimple {
+                    },
+                    "_tile": GameLegendTileSimple {
                       "__astId": 134,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -1825,10 +1825,10 @@ GameData {
                 Array [
                   GameRuleCellLayer {
                     "__astId": 135,
-                    "_cellModifiers": Array [
+                    "_cellModifiers": Set {
                       ">",
-                    ],
-                    "_sprite": GameLegendTileSimple {
+                    },
+                    "_tile": GameLegendTileSimple {
                       "__astId": 134,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -2129,10 +2129,10 @@ GameData {
                 "conditionLayers": Array [
                   GameRuleCellLayer {
                     "__astId": 146,
-                    "_cellModifiers": Array [
+                    "_cellModifiers": Set {
                       "<",
-                    ],
-                    "_sprite": GameLegendTileSimple {
+                    },
+                    "_tile": GameLegendTileSimple {
                       "__astId": 145,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -2162,10 +2162,10 @@ GameData {
                 Array [
                   GameRuleCellLayer {
                     "__astId": 146,
-                    "_cellModifiers": Array [
+                    "_cellModifiers": Set {
                       "<",
-                    ],
-                    "_sprite": GameLegendTileSimple {
+                    },
+                    "_tile": GameLegendTileSimple {
                       "__astId": 145,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -2466,10 +2466,10 @@ GameData {
                 "conditionLayers": Array [
                   GameRuleCellLayer {
                     "__astId": 157,
-                    "_cellModifiers": Array [
+                    "_cellModifiers": Set {
                       "LEFT",
-                    ],
-                    "_sprite": GameLegendTileSimple {
+                    },
+                    "_tile": GameLegendTileSimple {
                       "__astId": 156,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -2499,10 +2499,10 @@ GameData {
                 Array [
                   GameRuleCellLayer {
                     "__astId": 157,
-                    "_cellModifiers": Array [
+                    "_cellModifiers": Set {
                       "LEFT",
-                    ],
-                    "_sprite": GameLegendTileSimple {
+                    },
+                    "_tile": GameLegendTileSimple {
                       "__astId": 156,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -2803,10 +2803,10 @@ GameData {
                 "conditionLayers": Array [
                   GameRuleCellLayer {
                     "__astId": 168,
-                    "_cellModifiers": Array [
+                    "_cellModifiers": Set {
                       "RIGHT",
-                    ],
-                    "_sprite": GameLegendTileSimple {
+                    },
+                    "_tile": GameLegendTileSimple {
                       "__astId": 167,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -2836,10 +2836,10 @@ GameData {
                 Array [
                   GameRuleCellLayer {
                     "__astId": 168,
-                    "_cellModifiers": Array [
+                    "_cellModifiers": Set {
                       "RIGHT",
-                    ],
-                    "_sprite": GameLegendTileSimple {
+                    },
+                    "_tile": GameLegendTileSimple {
                       "__astId": 167,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -3140,10 +3140,10 @@ GameData {
                 "conditionLayers": Array [
                   GameRuleCellLayer {
                     "__astId": 179,
-                    "_cellModifiers": Array [
+                    "_cellModifiers": Set {
                       "UP",
-                    ],
-                    "_sprite": GameLegendTileSimple {
+                    },
+                    "_tile": GameLegendTileSimple {
                       "__astId": 178,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -3173,10 +3173,10 @@ GameData {
                 Array [
                   GameRuleCellLayer {
                     "__astId": 179,
-                    "_cellModifiers": Array [
+                    "_cellModifiers": Set {
                       "UP",
-                    ],
-                    "_sprite": GameLegendTileSimple {
+                    },
+                    "_tile": GameLegendTileSimple {
                       "__astId": 178,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -3477,10 +3477,10 @@ GameData {
                 "conditionLayers": Array [
                   GameRuleCellLayer {
                     "__astId": 190,
-                    "_cellModifiers": Array [
+                    "_cellModifiers": Set {
                       "DOWN",
-                    ],
-                    "_sprite": GameLegendTileSimple {
+                    },
+                    "_tile": GameLegendTileSimple {
                       "__astId": 189,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -3510,10 +3510,10 @@ GameData {
                 Array [
                   GameRuleCellLayer {
                     "__astId": 190,
-                    "_cellModifiers": Array [
+                    "_cellModifiers": Set {
                       "DOWN",
-                    ],
-                    "_sprite": GameLegendTileSimple {
+                    },
+                    "_tile": GameLegendTileSimple {
                       "__astId": 189,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -3814,10 +3814,10 @@ GameData {
                 "conditionLayers": Array [
                   GameRuleCellLayer {
                     "__astId": 201,
-                    "_cellModifiers": Array [
+                    "_cellModifiers": Set {
                       "STATIONARY",
-                    ],
-                    "_sprite": GameLegendTileSimple {
+                    },
+                    "_tile": GameLegendTileSimple {
                       "__astId": 200,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -3847,10 +3847,10 @@ GameData {
                 Array [
                   GameRuleCellLayer {
                     "__astId": 201,
-                    "_cellModifiers": Array [
+                    "_cellModifiers": Set {
                       "STATIONARY",
-                    ],
-                    "_sprite": GameLegendTileSimple {
+                    },
+                    "_tile": GameLegendTileSimple {
                       "__astId": 200,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -4151,10 +4151,10 @@ GameData {
                 "conditionLayers": Array [
                   GameRuleCellLayer {
                     "__astId": 212,
-                    "_cellModifiers": Array [
+                    "_cellModifiers": Set {
                       "MOVING",
-                    ],
-                    "_sprite": GameLegendTileSimple {
+                    },
+                    "_tile": GameLegendTileSimple {
                       "__astId": 211,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -4184,10 +4184,10 @@ GameData {
                 Array [
                   GameRuleCellLayer {
                     "__astId": 212,
-                    "_cellModifiers": Array [
+                    "_cellModifiers": Set {
                       "MOVING",
-                    ],
-                    "_sprite": GameLegendTileSimple {
+                    },
+                    "_tile": GameLegendTileSimple {
                       "__astId": 211,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -4488,10 +4488,10 @@ GameData {
                 "conditionLayers": Array [
                   GameRuleCellLayer {
                     "__astId": 223,
-                    "_cellModifiers": Array [
+                    "_cellModifiers": Set {
                       "VERTICAL",
-                    ],
-                    "_sprite": GameLegendTileSimple {
+                    },
+                    "_tile": GameLegendTileSimple {
                       "__astId": 222,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -4521,10 +4521,10 @@ GameData {
                 Array [
                   GameRuleCellLayer {
                     "__astId": 223,
-                    "_cellModifiers": Array [
+                    "_cellModifiers": Set {
                       "VERTICAL",
-                    ],
-                    "_sprite": GameLegendTileSimple {
+                    },
+                    "_tile": GameLegendTileSimple {
                       "__astId": 222,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -4825,10 +4825,10 @@ GameData {
                 "conditionLayers": Array [
                   GameRuleCellLayer {
                     "__astId": 234,
-                    "_cellModifiers": Array [
+                    "_cellModifiers": Set {
                       "HORIZONTAL",
-                    ],
-                    "_sprite": GameLegendTileSimple {
+                    },
+                    "_tile": GameLegendTileSimple {
                       "__astId": 233,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -4858,10 +4858,10 @@ GameData {
                 Array [
                   GameRuleCellLayer {
                     "__astId": 234,
-                    "_cellModifiers": Array [
+                    "_cellModifiers": Set {
                       "HORIZONTAL",
-                    ],
-                    "_sprite": GameLegendTileSimple {
+                    },
+                    "_tile": GameLegendTileSimple {
                       "__astId": 233,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -5162,10 +5162,10 @@ GameData {
                 "conditionLayers": Array [
                   GameRuleCellLayer {
                     "__astId": 245,
-                    "_cellModifiers": Array [
+                    "_cellModifiers": Set {
                       "PERPENDICULAR",
-                    ],
-                    "_sprite": GameLegendTileSimple {
+                    },
+                    "_tile": GameLegendTileSimple {
                       "__astId": 244,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -5195,10 +5195,10 @@ GameData {
                 Array [
                   GameRuleCellLayer {
                     "__astId": 245,
-                    "_cellModifiers": Array [
+                    "_cellModifiers": Set {
                       "PERPENDICULAR",
-                    ],
-                    "_sprite": GameLegendTileSimple {
+                    },
+                    "_tile": GameLegendTileSimple {
                       "__astId": 244,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -5499,10 +5499,10 @@ GameData {
                 "conditionLayers": Array [
                   GameRuleCellLayer {
                     "__astId": 256,
-                    "_cellModifiers": Array [
+                    "_cellModifiers": Set {
                       "ORTHOGONAL",
-                    ],
-                    "_sprite": GameLegendTileSimple {
+                    },
+                    "_tile": GameLegendTileSimple {
                       "__astId": 255,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -5532,10 +5532,10 @@ GameData {
                 Array [
                   GameRuleCellLayer {
                     "__astId": 256,
-                    "_cellModifiers": Array [
+                    "_cellModifiers": Set {
                       "ORTHOGONAL",
-                    ],
-                    "_sprite": GameLegendTileSimple {
+                    },
+                    "_tile": GameLegendTileSimple {
                       "__astId": 255,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -5836,10 +5836,10 @@ GameData {
                 "conditionLayers": Array [
                   GameRuleCellLayer {
                     "__astId": 267,
-                    "_cellModifiers": Array [
+                    "_cellModifiers": Set {
                       "RANDOMDIR",
-                    ],
-                    "_sprite": GameLegendTileSimple {
+                    },
+                    "_tile": GameLegendTileSimple {
                       "__astId": 266,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -5869,10 +5869,10 @@ GameData {
                 Array [
                   GameRuleCellLayer {
                     "__astId": 267,
-                    "_cellModifiers": Array [
+                    "_cellModifiers": Set {
                       "RANDOMDIR",
-                    ],
-                    "_sprite": GameLegendTileSimple {
+                    },
+                    "_tile": GameLegendTileSimple {
                       "__astId": 266,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -6173,10 +6173,10 @@ GameData {
                 "conditionLayers": Array [
                   GameRuleCellLayer {
                     "__astId": 278,
-                    "_cellModifiers": Array [
+                    "_cellModifiers": Set {
                       "NO",
-                    ],
-                    "_sprite": GameLegendTileSimple {
+                    },
+                    "_tile": GameLegendTileSimple {
                       "__astId": 277,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -6206,10 +6206,10 @@ GameData {
                 Array [
                   GameRuleCellLayer {
                     "__astId": 278,
-                    "_cellModifiers": Array [
+                    "_cellModifiers": Set {
                       "NO",
-                    ],
-                    "_sprite": GameLegendTileSimple {
+                    },
+                    "_tile": GameLegendTileSimple {
                       "__astId": 277,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -6521,8 +6521,8 @@ GameData {
                 Array [
                   GameRuleCellLayer {
                     "__astId": 304,
-                    "_cellModifiers": Array [],
-                    "_sprite": GameLegendTileSimple {
+                    "_cellModifiers": Set {},
+                    "_tile": GameLegendTileSimple {
                       "__astId": 300,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -6551,8 +6551,8 @@ GameData {
                 "actionLayers": Array [
                   GameRuleCellLayer {
                     "__astId": 304,
-                    "_cellModifiers": Array [],
-                    "_sprite": GameLegendTileSimple {
+                    "_cellModifiers": Set {},
+                    "_tile": GameLegendTileSimple {
                       "__astId": 300,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -6571,10 +6571,10 @@ GameData {
                 "conditionLayers": Array [
                   GameRuleCellLayer {
                     "__astId": 301,
-                    "_cellModifiers": Array [
+                    "_cellModifiers": Set {
                       "STATIONARY",
-                    ],
-                    "_sprite": GameLegendTileSimple {
+                    },
+                    "_tile": GameLegendTileSimple {
                       "__astId": 300,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -6604,10 +6604,10 @@ GameData {
                 Array [
                   GameRuleCellLayer {
                     "__astId": 301,
-                    "_cellModifiers": Array [
+                    "_cellModifiers": Set {
                       "STATIONARY",
-                    ],
-                    "_sprite": GameLegendTileSimple {
+                    },
+                    "_tile": GameLegendTileSimple {
                       "__astId": 300,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -6920,8 +6920,8 @@ GameData {
                 "conditionLayers": Array [
                   GameRuleCellLayer {
                     "__astId": 313,
-                    "_cellModifiers": Array [],
-                    "_sprite": GameLegendTileSimple {
+                    "_cellModifiers": Set {},
+                    "_tile": GameLegendTileSimple {
                       "__astId": 312,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -6951,8 +6951,8 @@ GameData {
                 Array [
                   GameRuleCellLayer {
                     "__astId": 313,
-                    "_cellModifiers": Array [],
-                    "_sprite": GameLegendTileSimple {
+                    "_cellModifiers": Set {},
+                    "_tile": GameLegendTileSimple {
                       "__astId": 312,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -7306,8 +7306,8 @@ GameData {
                 "conditionLayers": Array [
                   GameRuleCellLayer {
                     "__astId": 325,
-                    "_cellModifiers": Array [],
-                    "_sprite": GameLegendTileSimple {
+                    "_cellModifiers": Set {},
+                    "_tile": GameLegendTileSimple {
                       "__astId": 324,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -7337,8 +7337,8 @@ GameData {
                 Array [
                   GameRuleCellLayer {
                     "__astId": 325,
-                    "_cellModifiers": Array [],
-                    "_sprite": GameLegendTileSimple {
+                    "_cellModifiers": Set {},
+                    "_tile": GameLegendTileSimple {
                       "__astId": 324,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -7696,8 +7696,8 @@ GameData {
                 Array [
                   GameRuleCellLayer {
                     "__astId": 341,
-                    "_cellModifiers": Array [],
-                    "_sprite": GameLegendTileSimple {
+                    "_cellModifiers": Set {},
+                    "_tile": GameLegendTileSimple {
                       "__astId": 336,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -7714,8 +7714,8 @@ GameData {
                   },
                   GameRuleCellLayer {
                     "__astId": 342,
-                    "_cellModifiers": Array [],
-                    "_sprite": GameLegendTileSimple {
+                    "_cellModifiers": Set {},
+                    "_tile": GameLegendTileSimple {
                       "__astId": 337,
                       "_spriteNameOrLevelChar": "winter",
                       "_tiles": Array [
@@ -7744,8 +7744,8 @@ GameData {
                 "actionLayers": Array [
                   GameRuleCellLayer {
                     "__astId": 341,
-                    "_cellModifiers": Array [],
-                    "_sprite": GameLegendTileSimple {
+                    "_cellModifiers": Set {},
+                    "_tile": GameLegendTileSimple {
                       "__astId": 336,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -7762,8 +7762,8 @@ GameData {
                   },
                   GameRuleCellLayer {
                     "__astId": 342,
-                    "_cellModifiers": Array [],
-                    "_sprite": GameLegendTileSimple {
+                    "_cellModifiers": Set {},
+                    "_tile": GameLegendTileSimple {
                       "__astId": 337,
                       "_spriteNameOrLevelChar": "winter",
                       "_tiles": Array [
@@ -7782,8 +7782,8 @@ GameData {
                 "conditionLayers": Array [
                   GameRuleCellLayer {
                     "__astId": 338,
-                    "_cellModifiers": Array [],
-                    "_sprite": GameLegendTileSimple {
+                    "_cellModifiers": Set {},
+                    "_tile": GameLegendTileSimple {
                       "__astId": 336,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -7813,8 +7813,8 @@ GameData {
                 Array [
                   GameRuleCellLayer {
                     "__astId": 338,
-                    "_cellModifiers": Array [],
-                    "_sprite": GameLegendTileSimple {
+                    "_cellModifiers": Set {},
+                    "_tile": GameLegendTileSimple {
                       "__astId": 336,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -8743,8 +8743,8 @@ GameData {
                 Array [
                   GameRuleCellLayer {
                     "__astId": 366,
-                    "_cellModifiers": Array [],
-                    "_sprite": GameSpriteSingleColor {
+                    "_cellModifiers": Set {},
+                    "_tile": GameSpriteSingleColor {
                       "__astId": 353,
                       "_collisionLayer": CollisionLayer {
                         "__astId": 362,
@@ -8782,8 +8782,8 @@ GameData {
                 "actionLayers": Array [
                   GameRuleCellLayer {
                     "__astId": 366,
-                    "_cellModifiers": Array [],
-                    "_sprite": GameSpriteSingleColor {
+                    "_cellModifiers": Set {},
+                    "_tile": GameSpriteSingleColor {
                       "__astId": 353,
                       "_collisionLayer": CollisionLayer {
                         "__astId": 362,
@@ -8811,8 +8811,8 @@ GameData {
                 "conditionLayers": Array [
                   GameRuleCellLayer {
                     "__astId": 363,
-                    "_cellModifiers": Array [],
-                    "_sprite": GameSpriteSingleColor {
+                    "_cellModifiers": Set {},
+                    "_tile": GameSpriteSingleColor {
                       "__astId": 353,
                       "_collisionLayer": CollisionLayer {
                         "__astId": 362,
@@ -8851,8 +8851,8 @@ GameData {
                 Array [
                   GameRuleCellLayer {
                     "__astId": 363,
-                    "_cellModifiers": Array [],
-                    "_sprite": GameSpriteSingleColor {
+                    "_cellModifiers": Set {},
+                    "_tile": GameSpriteSingleColor {
                       "__astId": 353,
                       "_collisionLayer": CollisionLayer {
                         "__astId": 362,
@@ -8899,8 +8899,8 @@ GameData {
                 Array [
                   GameRuleCellLayer {
                     "__astId": 375,
-                    "_cellModifiers": Array [],
-                    "_sprite": GameSpriteSingleColor {
+                    "_cellModifiers": Set {},
+                    "_tile": GameSpriteSingleColor {
                       "__astId": 357,
                       "_color": TransparentColor {
                         "__astId": 356,
@@ -8923,8 +8923,8 @@ GameData {
                 "actionLayers": Array [
                   GameRuleCellLayer {
                     "__astId": 375,
-                    "_cellModifiers": Array [],
-                    "_sprite": GameSpriteSingleColor {
+                    "_cellModifiers": Set {},
+                    "_tile": GameSpriteSingleColor {
                       "__astId": 357,
                       "_color": TransparentColor {
                         "__astId": 356,
@@ -8937,8 +8937,8 @@ GameData {
                 "conditionLayers": Array [
                   GameRuleCellLayer {
                     "__astId": 372,
-                    "_cellModifiers": Array [],
-                    "_sprite": GameSpriteSingleColor {
+                    "_cellModifiers": Set {},
+                    "_tile": GameSpriteSingleColor {
                       "__astId": 357,
                       "_color": TransparentColor {
                         "__astId": 356,
@@ -8962,8 +8962,8 @@ GameData {
                 Array [
                   GameRuleCellLayer {
                     "__astId": 372,
-                    "_cellModifiers": Array [],
-                    "_sprite": GameSpriteSingleColor {
+                    "_cellModifiers": Set {},
+                    "_tile": GameSpriteSingleColor {
                       "__astId": 357,
                       "_color": TransparentColor {
                         "__astId": 356,
@@ -9545,8 +9545,8 @@ GameData {
                 "conditionLayers": Array [
                   GameRuleCellLayer {
                     "__astId": 91,
-                    "_cellModifiers": Array [],
-                    "_sprite": GameLegendTileSimple {
+                    "_cellModifiers": Set {},
+                    "_tile": GameLegendTileSimple {
                       "__astId": 90,
                       "_spriteNameOrLevelChar": "z_x",
                       "_tiles": Array [
@@ -9576,8 +9576,8 @@ GameData {
                 Array [
                   GameRuleCellLayer {
                     "__astId": 91,
-                    "_cellModifiers": Array [],
-                    "_sprite": GameLegendTileSimple {
+                    "_cellModifiers": Set {},
+                    "_tile": GameLegendTileSimple {
                       "__astId": 90,
                       "_spriteNameOrLevelChar": "z_x",
                       "_tiles": Array [
@@ -9854,8 +9854,8 @@ GameData {
                 "conditionLayers": Array [
                   GameRuleCellLayer {
                     "__astId": 80,
-                    "_cellModifiers": Array [],
-                    "_sprite": GameLegendTileSimple {
+                    "_cellModifiers": Set {},
+                    "_tile": GameLegendTileSimple {
                       "__astId": 79,
                       "_spriteNameOrLevelChar": ".",
                       "_tiles": Array [
@@ -9885,8 +9885,8 @@ GameData {
                 Array [
                   GameRuleCellLayer {
                     "__astId": 80,
-                    "_cellModifiers": Array [],
-                    "_sprite": GameLegendTileSimple {
+                    "_cellModifiers": Set {},
+                    "_tile": GameLegendTileSimple {
                       "__astId": 79,
                       "_spriteNameOrLevelChar": ".",
                       "_tiles": Array [
@@ -10341,10 +10341,10 @@ GameData {
                 Array [
                   GameRuleCellLayer {
                     "__astId": 71,
-                    "_cellModifiers": Array [
+                    "_cellModifiers": Set {
                       "RANDOM",
-                    ],
-                    "_sprite": GameLegendTileSimple {
+                    },
+                    "_tile": GameLegendTileSimple {
                       "__astId": 64,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -10366,8 +10366,8 @@ GameData {
                 Array [
                   GameRuleCellLayer {
                     "__astId": 72,
-                    "_cellModifiers": Array [],
-                    "_sprite": GameLegendTileSimple {
+                    "_cellModifiers": Set {},
+                    "_tile": GameLegendTileSimple {
                       "__astId": 65,
                       "_spriteNameOrLevelChar": "x",
                       "_tiles": Array [
@@ -10402,8 +10402,8 @@ GameData {
                 Array [
                   GameRuleCellLayer {
                     "__astId": 66,
-                    "_cellModifiers": Array [],
-                    "_sprite": GameLegendTileSimple {
+                    "_cellModifiers": Set {},
+                    "_tile": GameLegendTileSimple {
                       "__astId": 64,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -10425,8 +10425,8 @@ GameData {
                 Array [
                   GameRuleCellLayer {
                     "__astId": 67,
-                    "_cellModifiers": Array [],
-                    "_sprite": GameLegendTileSimple {
+                    "_cellModifiers": Set {},
+                    "_tile": GameLegendTileSimple {
                       "__astId": 65,
                       "_spriteNameOrLevelChar": "x",
                       "_tiles": Array [
@@ -10445,8 +10445,8 @@ GameData {
                 Array [
                   GameRuleCellLayer {
                     "__astId": 68,
-                    "_cellModifiers": Array [],
-                    "_sprite": GameLegendTileSimple {
+                    "_cellModifiers": Set {},
+                    "_tile": GameLegendTileSimple {
                       "__astId": 64,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -10777,8 +10777,8 @@ GameData {
                 "conditionLayers": Array [
                   GameRuleCellLayer {
                     "__astId": 39,
-                    "_cellModifiers": Array [],
-                    "_sprite": GameLegendTileSimple {
+                    "_cellModifiers": Set {},
+                    "_tile": GameLegendTileSimple {
                       "__astId": 37,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -10801,8 +10801,8 @@ GameData {
                 "conditionLayers": Array [
                   GameRuleCellLayer {
                     "__astId": 40,
-                    "_cellModifiers": Array [],
-                    "_sprite": GameLegendTileSimple {
+                    "_cellModifiers": Set {},
+                    "_tile": GameLegendTileSimple {
                       "__astId": 38,
                       "_spriteNameOrLevelChar": "x",
                       "_tiles": Array [
@@ -10832,8 +10832,8 @@ GameData {
                 Array [
                   GameRuleCellLayer {
                     "__astId": 39,
-                    "_cellModifiers": Array [],
-                    "_sprite": GameLegendTileSimple {
+                    "_cellModifiers": Set {},
+                    "_tile": GameLegendTileSimple {
                       "__astId": 37,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -10852,8 +10852,8 @@ GameData {
                 Array [
                   GameRuleCellLayer {
                     "__astId": 40,
-                    "_cellModifiers": Array [],
-                    "_sprite": GameLegendTileSimple {
+                    "_cellModifiers": Set {},
+                    "_tile": GameLegendTileSimple {
                       "__astId": 38,
                       "_spriteNameOrLevelChar": "x",
                       "_tiles": Array [
@@ -11165,8 +11165,8 @@ GameData {
                 "conditionLayers": Array [
                   GameRuleCellLayer {
                     "__astId": 53,
-                    "_cellModifiers": Array [],
-                    "_sprite": GameLegendTileSimple {
+                    "_cellModifiers": Set {},
+                    "_tile": GameLegendTileSimple {
                       "__astId": 51,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -11183,8 +11183,8 @@ GameData {
                   },
                   GameRuleCellLayer {
                     "__astId": 54,
-                    "_cellModifiers": Array [],
-                    "_sprite": GameLegendTileSimple {
+                    "_cellModifiers": Set {},
+                    "_tile": GameLegendTileSimple {
                       "__astId": 52,
                       "_spriteNameOrLevelChar": "x",
                       "_tiles": Array [
@@ -11214,8 +11214,8 @@ GameData {
                 Array [
                   GameRuleCellLayer {
                     "__astId": 53,
-                    "_cellModifiers": Array [],
-                    "_sprite": GameLegendTileSimple {
+                    "_cellModifiers": Set {},
+                    "_tile": GameLegendTileSimple {
                       "__astId": 51,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -11232,8 +11232,8 @@ GameData {
                   },
                   GameRuleCellLayer {
                     "__astId": 54,
-                    "_cellModifiers": Array [],
-                    "_sprite": GameLegendTileSimple {
+                    "_cellModifiers": Set {},
+                    "_tile": GameLegendTileSimple {
                       "__astId": 52,
                       "_spriteNameOrLevelChar": "x",
                       "_tiles": Array [
@@ -11510,8 +11510,8 @@ GameData {
                 "conditionLayers": Array [
                   GameRuleCellLayer {
                     "__astId": 3,
-                    "_cellModifiers": Array [],
-                    "_sprite": GameLegendTileSimple {
+                    "_cellModifiers": Set {},
+                    "_tile": GameLegendTileSimple {
                       "__astId": 2,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -11541,8 +11541,8 @@ GameData {
                 Array [
                   GameRuleCellLayer {
                     "__astId": 3,
-                    "_cellModifiers": Array [],
-                    "_sprite": GameLegendTileSimple {
+                    "_cellModifiers": Set {},
+                    "_tile": GameLegendTileSimple {
                       "__astId": 2,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -11830,8 +11830,8 @@ GameData {
                 Array [
                   GameRuleCellLayer {
                     "__astId": 17,
-                    "_cellModifiers": Array [],
-                    "_sprite": GameLegendTileSimple {
+                    "_cellModifiers": Set {},
+                    "_tile": GameLegendTileSimple {
                       "__astId": 13,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -11860,8 +11860,8 @@ GameData {
                 "actionLayers": Array [
                   GameRuleCellLayer {
                     "__astId": 17,
-                    "_cellModifiers": Array [],
-                    "_sprite": GameLegendTileSimple {
+                    "_cellModifiers": Set {},
+                    "_tile": GameLegendTileSimple {
                       "__astId": 13,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -11880,8 +11880,8 @@ GameData {
                 "conditionLayers": Array [
                   GameRuleCellLayer {
                     "__astId": 14,
-                    "_cellModifiers": Array [],
-                    "_sprite": GameLegendTileSimple {
+                    "_cellModifiers": Set {},
+                    "_tile": GameLegendTileSimple {
                       "__astId": 13,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -11911,8 +11911,8 @@ GameData {
                 Array [
                   GameRuleCellLayer {
                     "__astId": 14,
-                    "_cellModifiers": Array [],
-                    "_sprite": GameLegendTileSimple {
+                    "_cellModifiers": Set {},
+                    "_tile": GameLegendTileSimple {
                       "__astId": 13,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -12200,8 +12200,8 @@ GameData {
                 Array [
                   GameRuleCellLayer {
                     "__astId": 29,
-                    "_cellModifiers": Array [],
-                    "_sprite": GameLegendTileSimple {
+                    "_cellModifiers": Set {},
+                    "_tile": GameLegendTileSimple {
                       "__astId": 25,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -12230,8 +12230,8 @@ GameData {
                 "actionLayers": Array [
                   GameRuleCellLayer {
                     "__astId": 29,
-                    "_cellModifiers": Array [],
-                    "_sprite": GameLegendTileSimple {
+                    "_cellModifiers": Set {},
+                    "_tile": GameLegendTileSimple {
                       "__astId": 25,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -12250,8 +12250,8 @@ GameData {
                 "conditionLayers": Array [
                   GameRuleCellLayer {
                     "__astId": 26,
-                    "_cellModifiers": Array [],
-                    "_sprite": GameLegendTileSimple {
+                    "_cellModifiers": Set {},
+                    "_tile": GameLegendTileSimple {
                       "__astId": 25,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [
@@ -12281,8 +12281,8 @@ GameData {
                 Array [
                   GameRuleCellLayer {
                     "__astId": 26,
-                    "_cellModifiers": Array [],
-                    "_sprite": GameLegendTileSimple {
+                    "_cellModifiers": Set {},
+                    "_tile": GameLegendTileSimple {
                       "__astId": 25,
                       "_spriteNameOrLevelChar": "z",
                       "_tiles": Array [

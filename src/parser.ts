@@ -511,6 +511,7 @@ declare interface IGameTile extends BaseForLines{
   isInvalid: () => boolean
   setCollisionLayer: (collisionLayer: CollisionLayer) => void
   getCollisionLayerNum: () => number
+  matchesCell: (cell: any) => boolean
 }
 
 export class LevelMap extends BaseForLines {
@@ -627,7 +628,12 @@ export class GameSprite extends BaseForLines implements IGameTile {
     return this._collisionLayer.__astId
   }
   isInvalid () {
-    return !this._collisionLayer // ensure that every object is on a CollisionLayer
+    if (!this._collisionLayer) {
+      return 'This object does not have an entry in the COLLISIONLAYERS section.'
+    }
+  }
+  matchesCell (cell) {
+    return cell.getSpritesAsSet().has(this)
   }
 }
 class GameSpriteSingleColor extends GameSprite {
@@ -636,9 +642,6 @@ class GameSpriteSingleColor extends GameSprite {
   constructor (source: IGameCode, name: string, optionalLegendChar: string, colors: HexColor[]) {
     super(source, name, optionalLegendChar)
     this._color = colors[0] // Ignore if the user added multiple colors (like `transparent yellow`)
-  }
-  isInvalid () {
-    return false
   }
   getPixels () {
     // When there are no pixels then it means "color the whole thing in the same color"
@@ -671,6 +674,9 @@ class GameSpritePixels extends GameSprite {
     }) // Pixel colors are 0-indexed.
   }
   isInvalid () {
+    if (super.isInvalid()) {
+      return super.isInvalid()
+    }
     let isInvalid: boolean | string = false
     const colorLen = this._colors.length
     const rowLen = this._pixels[0].length
@@ -717,14 +723,24 @@ export class GameLegendTileSimple extends BaseForLines implements IGameTile {
   isAnd () {
     return true
   }
+  matchesCell (cell) {
+    // Check that the cell contains all of the tiles (ANDED)
+    // Since this is a Simple Tile it should only contain 1 tile so anding is the right way to go.
+    for (const tile of this._tiles) {
+      if (!cell.getSpritesAsSet().has(tile)) {
+        return false
+      }
+    }
+    return true
+  }
   getSprites () {
     // Use a cache because all the collision layers have not been loaded in time
     if (!this._sprites) {
       // 2 levels of indirection should be safe
       // Sort by collisionLayer so that the most-important sprite is first
       this._sprites = _.flatten(
-        this._tiles.map(tile => { 
-          return tile.getSprites() 
+        this._tiles.map(tile => {
+          return tile.getSprites()
         })
       ).sort((a, b) => {
         return a.getCollisionLayerNum() - b.getCollisionLayerNum()
@@ -755,6 +771,15 @@ export class GameLegendTileAnd extends GameLegendTileSimple {
 
 export class GameLegendTileOr extends GameLegendTileSimple {
   isAnd () {
+    return false
+  }
+  matchesCell (cell) {
+    // Check that the cell contains any of the tiles (OR)
+    for (const tile of this._tiles) {
+      if (cell.getSpritesAsSet().has(tile)) {
+        return true
+      }
+    }
     return false
   }
 }
@@ -964,7 +989,11 @@ class CellPairMutator extends BaseForLines {
         console.log(layer.toString())
       }
       layer.getSprites().forEach(sprite => {
-        newSetOfSprites.add(sprite)
+        if (layer.isNo()) {
+          newSetOfSprites.delete(sprite)
+        } else {
+          newSetOfSprites.add(sprite)
+        }
       })
     })
 
@@ -1192,19 +1221,40 @@ class RuleCommandMutator {
 
 const M_STATIONARY = 'STATIONARY'
 const M_NO = 'NO'
-const SUPPORTED_CELL_MODIFIERS = [M_STATIONARY, M_NO]
+const SUPPORTED_CELL_MODIFIERS = new Set([M_STATIONARY, M_NO])
+
+function setIntersection(setA, setB) {
+  const intersection = new Set()
+  for (const elem of setB) {
+    if (setA.has(elem)) {
+      intersection.add(elem)
+    }
+  }
+  return intersection
+}
+
+function setDifference(setA, setB) {
+    const difference = new Set(setA)
+    for (const elem of setB) {
+        difference.delete(elem)
+    }
+    return difference
+}
 
 class GameRuleCellLayer extends BaseForLines {
   _cellModifiers: any
-  _sprite: any
+  _tile: IGameTile
 
-  constructor (source: IGameCode, cellModifiers, sprite) {
+  constructor (source: IGameCode, cellModifiers, tile: IGameTile) {
     super(source)
-    this._cellModifiers = cellModifiers
-    this._sprite = sprite
+    this._cellModifiers = new Set(cellModifiers)
+    this._tile = tile
+  }
+  isNo () {
+    return this._cellModifiers.has(M_NO)
   }
   getSprites () {
-    return this._sprite.getSprites()
+    return this._tile.getSprites()
   }
   matchesCell (cell, state) {
     /* Modifiers
@@ -1225,32 +1275,19 @@ class GameRuleCellLayer extends BaseForLines {
       | t_ORTHOGONAL
       | t_ARROW_ANY // This can be a "v" so it needs to go at the end (behind t_VERTICAL)
     */
-    const mods = new Set(_.intersection(this._cellModifiers, SUPPORTED_CELL_MODIFIERS))
-    if (this._cellModifiers.length > mods.size) {
+    const mods = setDifference(this._cellModifiers, SUPPORTED_CELL_MODIFIERS)
+    if (mods.size > 0) {
       // Not supported yet
       return false
     }
 
-    const negate = mods.has(M_NO)
+    const negate = this.isNo()
     // console.log(`Checking if ${cell.getSprites().map(s => s._name)} ${[...mods]} has ${this.getSprites().map(s => s._name)}`);
     if (negate) {
-      for (const sprite of this.getSprites()) {
-        const hasSprite = cell.getSpritesAsSet().has(sprite)
-        if (hasSprite) {
-          return false
-        }
-      }
-      // console.log('Yay! sjdhfskd')
+      return !this._tile.matchesCell(cell)
     } else {
-      for (const sprite of this.getSprites()) {
-        const hasSprite = cell.getSpritesAsSet().has(sprite)
-        if (!hasSprite) {
-          return false
-        }
-      }
-      // console.log('Yay! woieurwoeiru')
+      return this._tile.matchesCell(cell)
     }
-    return true
   }
 }
 
@@ -1633,12 +1670,12 @@ class Parser {
       // console.log(game)
 
       // Validate that the game objects are rectangular
-      game.objects.forEach((object) => {
-        if (object.isInvalid()) {
-          console.warn(`WARNING: Game Object is Invalid. Reason: ${object.isInvalid()}`)
-          console.warn(object.__source.getLineAndColumnMessage())
-        }
-      })
+      // game.objects.forEach((object) => {
+      //   if (object.isInvalid()) {
+      //     console.warn(`WARNING: Game Object is Invalid. Reason: ${object.isInvalid()}`)
+      //     console.warn(object.__source.getLineAndColumnMessage())
+      //   }
+      // })
 
       // Validate that the level maps are rectangular
       game.levels.forEach((level) => {

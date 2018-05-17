@@ -2,9 +2,9 @@
   "scripts": {
     "lint": "standard --fix preprocessor.js test/**/*.js",
     "tsc": "tsc --watch",
-    "start": "tsc; node lib/runGame.js",
+    "start": "rm -rf ./lib/; tsc; node -r source-map-support/register lib/runGame.js",
     "test": "jest --coverage --updateSnapshot",
-    "test-debug": "node --inspect-brk $(npm bin)/jest -i --updateSnapshot $@",
+    "test-debug": "node --inspect-brk -r source-map-support/register $(npm bin)/jest -i --updateSnapshot $@",
     "posttest": "npm run-script lint",
     "watch": "jest --updateSnapshot --watch"
   },
@@ -18,7 +18,8 @@
     "jest": "^22.4.3",
     "lodash": "^4.17.10",
     "ohm-js": "^0.14.0",
-    "pify": "^3.0.0"
+    "pify": "^3.0.0",
+    "source-map-support": "^0.5.6"
   },
   "devDependencies": {
     "@types/pify": "^3.0.2",
