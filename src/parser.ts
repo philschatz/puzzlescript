@@ -4,7 +4,7 @@ import { lookupColorPalette } from './colors'
 
 const GRAMMAR_STR = `
 Puzzlescript {
-  Details =
+  GameData =
     lineTerminator* // Version information
     Title lineTerminator+
     (OptionalSetting lineTerminator+)*
@@ -465,6 +465,30 @@ export class BaseForLines {
   }
 }
 
+export class GameData {
+  title: string
+  settings: {}
+  objects: GameSprite[]
+  legends: GameLegendItemSimple[]
+  sounds: GameSound[]
+  collisionLayers: CollisionLayer[]
+  rules: GameRule[]
+  winConditions: WinConditionSimple[]
+  levels: LevelMap[]
+
+  constructor(title, settings, objects, legends, sounds, collisionLayers, rules, winConditions, levels) {
+    this.title = title
+    this.settings = settings
+    this.objects = objects
+    this.legends = legends
+    this.sounds = sounds
+    this.collisionLayers = collisionLayers
+    this.rules= rules
+    this.winConditions = winConditions
+    this.levels = levels
+  }
+}
+
 export class LevelMap extends BaseForLines {
   _rows: any[][]
 
@@ -781,15 +805,11 @@ export class WinConditionSimple extends BaseForLines {
     this._spriteName = spriteName
   }
 }
-export class WinConditionOn extends BaseForLines {
-  _qualifierEnum: any
-  _spriteName: any
+export class WinConditionOn extends WinConditionSimple {
   _onSprite: any
 
   constructor (source, qualifierEnum, spriteName, onSprite) {
-    super(source)
-    this._qualifierEnum = qualifierEnum
-    this._spriteName = spriteName
+    super(source, qualifierEnum, spriteName)
     this._onSprite = onSprite
   }
 }
@@ -1315,7 +1335,7 @@ class Parser {
       let currentColorPalette = 'arnecolors' // default
 
       s.addOperation('parse', {
-        Details: (_whitespace1, title, _whitespace2, settingsFields, _whitespace3, objects, legends, sounds, collisionLayers, rules, winConditions, levels) => {
+        GameData: (_whitespace1, title, _whitespace2, settingsFields, _whitespace3, objects, legends, sounds, collisionLayers, rules, winConditions, levels) => {
           const settings = {}
           settingsFields.parse().forEach((setting) => {
             if (Array.isArray(setting)) {
@@ -1324,18 +1344,17 @@ class Parser {
               settings[setting] = true
             }
           })
-          return {
-            title: title.parse(),
-            settings: settings,
-            // Use [0] because each of them are optional (at least because of unit tests)
-            objects: objects.parse()[0] || [],
-            legends: legends.parse()[0] || [],
-            sounds: sounds.parse()[0] || [],
-            collisionLayers: collisionLayers.parse()[0] || [],
-            rules: rules.parse()[0] || [],
-            winConditions: winConditions.parse()[0] || [],
-            levels: levels.parse()[0] || []
-          }
+          return new GameData(
+            title.parse(), 
+            settings,
+            objects.parse()[0] || [],
+            legends.parse()[0] || [],
+            sounds.parse()[0] || [],
+            collisionLayers.parse()[0] || [],
+            rules.parse()[0] || [],
+            winConditions.parse()[0] || [],
+            levels.parse()[0] || []
+          )
         },
         Title: (_1, value) => {
           return value.parse()
