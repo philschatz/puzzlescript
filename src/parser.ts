@@ -489,19 +489,26 @@ export class GameData {
   }
 }
 
+declare interface IGameTile extends BaseForLines{
+  getSprites()
+  isInvalid()
+  setCollisionLayer(collisionLayer)
+  getCollisionLayerNum()
+}
+
 export class LevelMap extends BaseForLines {
-  _rows: any[][]
+  _rows: IGameTile[][]
 
   constructor (source: any, rows: any[][]) {
     super(source)
     this._rows = rows
   }
   isInvalid () {
-    const cols = this._rows[0].length
+    const firstRowLength = this._rows[0].length
     let isInvalid: any = false
     this._rows.forEach((row, index) => {
-      if (cols !== row.length) {
-        isInvalid = `Row ${index + 1} does not have the same column count as the first row. Expected ${cols} columns but found ${row.length}.`
+      if (firstRowLength !== row.length) {
+        isInvalid = `Row ${index + 1} does not have the same column count as the first row. Expected ${firstRowLength} columns but found ${row.length}.`
       }
     })
     return isInvalid
@@ -574,7 +581,7 @@ class TransparentColor extends BaseForLines {
   }
 }
 
-export class GameSprite extends BaseForLines {
+export class GameSprite extends BaseForLines implements IGameTile {
   _name: any
   _optionalLegendChar: any
   _collisionLayer: any
@@ -671,7 +678,7 @@ class GameSpritePixels extends GameSprite {
 
 // TODO: Link up the aliases to objects rather than just storing strings
 // TODO: Also, maybe distinguish between legend items that may be in the LevelMap (1 character) from those that point to ObjectItems
-export class GameLegendItemSimple extends BaseForLines {
+export class GameLegendItemSimple extends BaseForLines implements IGameTile {
   _sprites: any
   _spriteNameOrLevelChar: any
   _aliases: any
@@ -1306,7 +1313,7 @@ function getConfigField (key, value) {
   return [key.parse(), value.parse()]
 }
 
-let _GRAMMAR = null
+let _GRAMMAR: ohm.Grammar = null
 
 class Parser {
   getGrammar () {
@@ -1314,7 +1321,7 @@ class Parser {
     return _GRAMMAR
   }
 
-  parseGrammar (code) {
+  parseGrammar (code: string) {
     // 8645c163ff321d2fd1bad3fcaf48c107 has a typo so we .replace()
     // 0c2625672bf47fcf728fe787a2630df6 has a typo se we .replace()
     // another couple of games do not have a trailing newline at the end of the file so we add that
@@ -1324,7 +1331,7 @@ class Parser {
     return {match: g.match(code)}
   }
 
-  parse (code) {
+  parse (code: string) {
     const g = this.getGrammar()
     const {match: m} = this.parseGrammar(code)
 
@@ -1530,12 +1537,12 @@ class Parser {
           return _1.parse()
         },
         LevelMap: function (rows) {
-          rows = rows.parse().map((row) => {
+          const levelRows = rows.parse().map((row) => {
             return row.map((levelChar) => {
               return lookup.lookupByLevelChar(levelChar)
             })
           })
-          return new LevelMap(this.source, rows)
+          return new LevelMap(this.source, levelRows)
         },
         levelMapRow: function (row, _2) {
           return row.parse()
@@ -1599,7 +1606,7 @@ class Parser {
         // },
 
       })
-      const game = s(m).parse()
+      const game:GameData = s(m).parse()
       // console.log(game)
 
       // Validate that the game objects are rectangular
