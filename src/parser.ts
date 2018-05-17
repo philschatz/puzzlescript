@@ -522,7 +522,7 @@ export class LevelMap extends BaseForLines {
   }
   isInvalid () {
     const firstRowLength = this._rows[0].length
-    let isInvalid: any = false
+    let isInvalid: boolean | string = false
     this._rows.forEach((row, index) => {
       if (firstRowLength !== row.length) {
         isInvalid = `Row ${index + 1} does not have the same column count as the first row. Expected ${firstRowLength} columns but found ${row.length}.`
@@ -605,10 +605,10 @@ class TransparentColor extends BaseForLines implements IColor {
 
 export class GameSprite extends BaseForLines implements IGameTile {
   _name: string
-  _optionalLegendChar: any
+  _optionalLegendChar: string
   _collisionLayer: CollisionLayer
 
-  constructor (source: IGameCode, name: string, optionalLegendChar: any) {
+  constructor (source: IGameCode, name: string, optionalLegendChar: string) {
     super(source)
     this._name = name
     this._optionalLegendChar = optionalLegendChar
@@ -633,7 +633,7 @@ export class GameSprite extends BaseForLines implements IGameTile {
 class GameSpriteSingleColor extends GameSprite {
   _color: HexColor
 
-  constructor (source: IGameCode, name: string, optionalLegendChar: ohm.Node, colors: HexColor[]) {
+  constructor (source: IGameCode, name: string, optionalLegendChar: string, colors: HexColor[]) {
     super(source, name, optionalLegendChar)
     this._color = colors[0] // Ignore if the user added multiple colors (like `transparent yellow`)
   }
@@ -657,7 +657,7 @@ class GameSpritePixels extends GameSprite {
   _colors: IColor[]
   _pixels: IColor[][]
 
-  constructor (source: IGameCode, name: string, optionalLegendChar: ohm.Node, colors: HexColor[], pixels: ('.' | number)[][]) {
+  constructor (source: IGameCode, name: string, optionalLegendChar: string, colors: HexColor[], pixels: ('.' | number)[][]) {
     super(source, name, optionalLegendChar)
     this._colors = colors
     this._pixels = pixels.map(row => {
@@ -671,7 +671,7 @@ class GameSpritePixels extends GameSprite {
     }) // Pixel colors are 0-indexed.
   }
   isInvalid () {
-    let isInvalid: any = false
+    let isInvalid: boolean | string = false
     const colorLen = this._colors.length
     const rowLen = this._pixels[0].length
     this._pixels.forEach((row: any[]) => {
@@ -761,9 +761,9 @@ export class GameLegendTileOr extends GameLegendTileSimple {
 
 // TODO: Use the Objects rather than just the names
 export class CollisionLayer extends BaseForLines {
-  _sprites: any
+  _sprites: GameSprite[]
 
-  constructor (source: IGameCode, sprites: any[]) {
+  constructor (source: IGameCode, sprites: GameSprite[]) {
     super(source)
     this._sprites = sprites
   }
@@ -782,9 +782,9 @@ export class GameSound extends BaseForLines {
   }
 }
 export class GameSoundSfx extends GameSound {
-  _sfxName: ohm.Node
+  _sfxName: string
 
-  constructor (source: IGameCode, sfxName: ohm.Node, soundCode: number) {
+  constructor (source: IGameCode, sfxName: string, soundCode: number) {
     super(source, soundCode)
     this._sfxName = sfxName
   }
@@ -799,8 +799,8 @@ export class GameSoundSimpleEnum extends GameSound {
 }
 // TODO: Link this up to the Object, rather than just storing the spriteName
 export class GameSoundNormal extends GameSound {
-  _sprite: any
-  _conditionEnum: any
+  _sprite: string
+  _conditionEnum: number
 
   constructor (source: IGameCode, sprite: string, conditionEnum: number, soundCode: number) {
     super(source, soundCode)
@@ -809,7 +809,7 @@ export class GameSoundNormal extends GameSound {
   }
 }
 export class GameSoundMoveSimple extends GameSound {
-  _sprite: any
+  _sprite: string
 
   constructor (source: IGameCode, sprite: string, soundCode: number) {
     super(source, soundCode)
@@ -817,8 +817,8 @@ export class GameSoundMoveSimple extends GameSound {
   }
 }
 export class GameSoundMoveDirection extends GameSound {
-  _sprite: any
-  _directionEnum: any
+  _sprite: string
+  _directionEnum: string
 
   constructor (source: IGameCode, sprite: string, directionEnum: string, soundCode: number) {
     super(source, soundCode)
@@ -828,8 +828,8 @@ export class GameSoundMoveDirection extends GameSound {
 }
 
 export class WinConditionSimple extends BaseForLines {
-  _qualifierEnum: any
-  _spriteName: any
+  _qualifierEnum: string
+  _spriteName: string
 
   constructor (source: IGameCode, qualifierEnum: string, spriteName: string) {
     super(source)
@@ -838,7 +838,7 @@ export class WinConditionSimple extends BaseForLines {
   }
 }
 export class WinConditionOn extends WinConditionSimple {
-  _onSprite: any
+  _onSprite: string
 
   constructor (source: IGameCode, qualifierEnum: string, spriteName: string, onSprite: string) {
     super(source, qualifierEnum, spriteName)
@@ -847,7 +847,7 @@ export class WinConditionOn extends WinConditionSimple {
 }
 
 export class GameRuleLoop extends BaseForLines {
-  _rules: any
+  _rules: GameRule[]
 
   constructor (source: IGameCode, rules: GameRule[]) {
     super(source)
@@ -1290,7 +1290,7 @@ class LookupHelper {
     }
     map.set(key, value)
   }
-  addSoundEffect (key: ohm.Node, soundEffect: GameSoundSfx) {
+  addSoundEffect (key: string, soundEffect: GameSoundSfx) {
     this._addToHelper(this._allSoundEffects, key.toLowerCase(), soundEffect)
   }
   addToAllObjects (gameObject: GameSprite) {
@@ -1424,12 +1424,10 @@ class Parser {
           return gameObject
         },
         SpritePixels: function (name, optionalLegendChar, _3, colors, _5, pixels, _7) {
-          optionalLegendChar = optionalLegendChar.parse()[0]
-          return new GameSpritePixels(this.source, name.parse(), optionalLegendChar, colors.parse(), pixels.parse())
+          return new GameSpritePixels(this.source, name.parse(), optionalLegendChar.parse()[0], colors.parse(), pixels.parse())
         },
         SpriteNoPixels: function (name, optionalLegendChar, _3, colors, _5) {
-          optionalLegendChar = optionalLegendChar.parse()[0]
-          return new GameSpriteSingleColor(this.source, name.parse(), optionalLegendChar, colors.parse())
+          return new GameSpriteSingleColor(this.source, name.parse(), optionalLegendChar.parse()[0], colors.parse())
         },
         PixelRows: function (row1, row2, row3, row4, row5) {
           // Exactly 5 rows. We do this because some games contain vertical whitespace after, but not all
@@ -1446,7 +1444,7 @@ class Parser {
           return lookup.lookupObjectOrLegendTile(this.source, tile.parse())
         },
         LegendTile: function (_1) {
-          const legendTile = _1.parse()
+          const legendTile: GameLegendTileSimple = _1.parse()
           lookup.addToAllLegendTiles(legendTile)
           if (legendTile._spriteNameOrLevelChar.length === 1) {
             lookup.addLegendToAllLevelChars(legendTile)
@@ -1470,9 +1468,9 @@ class Parser {
           return new GameSoundSimpleEnum(this.source, simpleEnum.parse(), soundCode.parse())
         },
         SoundItemSfx: function (sfxName, soundCode) {
-          sfxName = sfxName.parse()
-          const sound = new GameSoundSfx(this.source, sfxName, soundCode.parse())
-          lookup.addSoundEffect(sfxName, sound)
+          const soundEffect = sfxName.parse()
+          const sound = new GameSoundSfx(this.source, soundEffect, soundCode.parse())
+          lookup.addSoundEffect(soundEffect, sound)
           return sound
         },
         SoundItemMoveSimple: function (spriteName, _2, soundCode) {
