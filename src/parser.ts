@@ -1,6 +1,7 @@
 import * as _ from 'lodash'
 import * as ohm from 'ohm-js'
 import { lookupColorPalette } from './colors'
+import { Cell } from './engine';
 
 const GRAMMAR_STR = `
 Puzzlescript {
@@ -445,7 +446,7 @@ declare interface IGameCode {
 let astId: number = 0
 export class BaseForLines {
   __astId: number
-  __validationMessages: {level:string, message:string}[]
+  __validationMessages: {level: string, message: string}[]
   __source: IGameCode
 
   constructor (source: IGameCode) {
@@ -548,12 +549,12 @@ export class GameData {
   }
 }
 
-declare interface IGameTile extends BaseForLines{
+export declare interface IGameTile extends BaseForLines{
   getSprites: () => GameSprite[]
-  isInvalid: () => boolean
+  isInvalid: () => string
   setCollisionLayer: (collisionLayer: CollisionLayer) => void
   getCollisionLayerNum: () => number
-  matchesCell: (cell: any) => boolean
+  matchesCell: (cell: Cell) => boolean
 }
 
 export class LevelMap extends BaseForLines {
@@ -563,9 +564,9 @@ export class LevelMap extends BaseForLines {
     super(source)
     this._rows = rows
   }
-  isInvalid () {
+  isInvalid (): string {
     const firstRowLength = this._rows[0].length
-    let isInvalid: boolean | string = false
+    let isInvalid = null
     this._rows.forEach((row, index) => {
       if (firstRowLength !== row.length) {
         isInvalid = `Row ${index + 1} does not have the same column count as the first row. Expected ${firstRowLength} columns but found ${row.length}.`
@@ -588,8 +589,8 @@ export class GameMessage extends BaseForLines {
     super(source)
     this._message = message
   }
-  isInvalid () {
-    return false
+  isInvalid (): string {
+    return null
   }
   isMap () {
     return false
@@ -687,8 +688,9 @@ export class GameSprite extends BaseForLines implements IGameTile {
     if (!this._collisionLayer) {
       return 'This object does not have an entry in the COLLISIONLAYERS section.'
     }
+    return null
   }
-  matchesCell (cell) {
+  matchesCell (cell: Cell): any {
     return cell.getSpritesAsSet().has(this)
   }
 }
@@ -733,7 +735,7 @@ export class GameSpritePixels extends GameSprite {
     if (super.isInvalid()) {
       return super.isInvalid()
     }
-    let isInvalid: boolean | string = false
+    let isInvalid = null
     const colorLen = this._colors.length
     const rowLen = this._pixels[0].length
     this._pixels.forEach((row: any[]) => {
@@ -764,7 +766,7 @@ export class GameSpritePixels extends GameSprite {
 // TODO: Also, maybe distinguish between legend items that may be in the LevelMap (1 character) from those that point to ObjectItems
 export class GameLegendTileSimple extends BaseForLines implements IGameTile {
   _sprites: GameSprite[]
-  _spriteNameOrLevelChar: String
+  _spriteNameOrLevelChar: string
   _tiles: IGameTile[]
   _collisionLayer: CollisionLayer
 
@@ -773,13 +775,13 @@ export class GameLegendTileSimple extends BaseForLines implements IGameTile {
     this._spriteNameOrLevelChar = spriteNameOrLevelChar
     this._tiles = tiles
   }
-  isInvalid () {
-    return false
+  isInvalid (): string {
+    return null
   }
   isAnd () {
     return true
   }
-  matchesCell (cell) {
+  matchesCell (cell: Cell) {
     // Check that the cell contains all of the tiles (ANDED)
     // Since this is a Simple Tile it should only contain 1 tile so anding is the right way to go.
     for (const tile of this._tiles) {
@@ -829,7 +831,7 @@ export class GameLegendTileOr extends GameLegendTileSimple {
   isAnd () {
     return false
   }
-  matchesCell (cell) {
+  matchesCell (cell: Cell) {
     // Check that the cell contains any of the tiles (OR)
     for (const tile of this._tiles) {
       if (cell.getSpritesAsSet().has(tile)) {
@@ -848,8 +850,8 @@ export class CollisionLayer extends BaseForLines {
     super(source)
     this._sprites = sprites
   }
-  isInvalid () {
-    return true // until we map the tiles to actual Objects rather than strings to look up later
+  isInvalid (): string {
+    return null
   }
 }
 
@@ -934,7 +936,7 @@ export class GameRuleLoop extends BaseForLines {
     super(source)
     this._rules = rules
   }
-  getMatchedMutatorsOrNull (cell, state) {
+  getMatchedMutatorsOrNull (cell: Cell) {
     return null // TODO Loops are not supported yet
   }
 }
@@ -951,11 +953,11 @@ class GameRule extends BaseForLines {
     this._innerRule = innerRule
   }
 
-  getMatchedMutatorsOrNull (cell, state) {
+  getMatchedMutatorsOrNull (cell: Cell) {
     // if (_.difference(this._ruleModifiers, ALL_DIRECTIONS).length > 0) {
     //   return null // TODO: not supported yet
     // }
-    return this._innerRule.getMatchedMutatorsOrNull(cell, state, this._ruleModifiers)
+    return this._innerRule.getMatchedMutatorsOrNull(cell, this._ruleModifiers)
   }
 }
 
@@ -990,7 +992,7 @@ class BracketPair {
   constructor (neighbors) {
     this.neighbors = neighbors
   }
-  mutate (cell, state) {
+  mutate (cell: Cell) {
     return this.neighbors.map((neighbor) => neighbor.mutate(cell))
   }
 }
@@ -1010,7 +1012,7 @@ class CellPair extends BaseForLines {
     this.conditionLayers = condition
     this.actionLayers = action
   }
-  getMatchedMutatorsOrNull (cell) {
+  getMatchedMutatorsOrNull (cell: Cell) {
     for (const cellLayer of this.conditionLayers) {
       if (!cellLayer.matchesCell(cell)) return null
     }
@@ -1022,7 +1024,7 @@ class CellPairMutator extends BaseForLines {
   cell: any
   cellPair: CellPair
 
-  constructor (source: IGameCode, cell, cellPair: CellPair) {
+  constructor (source: IGameCode, cell: Cell, cellPair: CellPair) {
     super(source)
     this.cell = cell
     this.cellPair = cellPair
@@ -1111,7 +1113,7 @@ class RuleBracketsToZip extends BaseForLines {
     }
   }
 
-  getMatchedMutatorsOrNull (cell, state, parentRuleModifiers) {
+  getMatchedMutatorsOrNull (cell: Cell, parentRuleModifiers) {
     let ret = []
     if (this._bracketPairs.length > 1) {
       return null // `BUG: multiple bracket rules are not supported yet`
@@ -1135,7 +1137,7 @@ class RuleBracketsToZip extends BaseForLines {
         for (const neighbor of bracketPair.neighbors) {
           if (!curCell) break // If we hit the end of the level then this does not match
 
-          const mutators = neighbor.getMatchedMutatorsOrNull(curCell, state)
+          const mutators = neighbor.getMatchedMutatorsOrNull(curCell)
           if (!mutators) break
           neighborRet.push(mutators)
 
@@ -1151,8 +1153,8 @@ class RuleBracketsToZip extends BaseForLines {
     }
     return ret
   }
-  mutate (cell, state) {
-    return this._bracketPairs.map((bracketPair) => bracketPair.mutate(cell, state))
+  mutate (cell: Cell) {
+    return this._bracketPairs.map((bracketPair) => bracketPair.mutate(cell))
   }
 
   doesntMatchConditionStructure (conditionBrackets) {
@@ -1171,11 +1173,11 @@ class GameRuleSequenceBracket extends BaseForLines {
     this._bracket = bracket
   }
 
-  getMatchedMutatorsOrNull (cell, state) {
+  getMatchedMutatorsOrNull (cell: Cell) {
     if (this._ruleModifiers.length > 0) {
       return null // `BUG: evaluating rules with modifiers is not implemented yet`
     }
-    return this._bracket.getMatchedMutatorsOrNull(cell, state)
+    return this._bracket.getMatchedMutatorsOrNull(cell)
   }
 
   doesntMatchConditionStructure (condition) {
@@ -1192,7 +1194,7 @@ class RuleEllipsisBracket extends BaseForLines {
     this._leftNeighboringCells = leftNeighboringCells
     this._rightNeighboringCells = rightNeighboringCells
   }
-  getMatchedMutatorsOrNull (cell) {
+  getMatchedMutatorsOrNull (cell: Cell) {
     return null // 'BUG: Checking neighbors (& ellipses) not implemented yet'
   }
 
@@ -1212,7 +1214,7 @@ class GameRuleSimpleBracket extends BaseForLines {
     this._neighbors = neighbors
   }
 
-  getMatchedMutatorsOrNull (cell, state) {
+  getMatchedMutatorsOrNull (cell: Cell) {
     const ret = []
     for (const neighbor of this._neighbors) {
       // Check if all the cellLayers are on the current cell
@@ -1247,12 +1249,12 @@ class RuleCommands extends BaseForLines {
     this._conditions = conditions
     this._commands = commands
   }
-  getMatchedMutatorsOrNull (cell, state) {
+  getMatchedMutatorsOrNull (cell: Cell) {
     for (const child of this._conditions) {
-      const retChild = child.getMatchedMutatorsOrNull(cell, state)
+      const retChild = child.getMatchedMutatorsOrNull(cell)
       if (!retChild) return null
     }
-    return new RuleCommandMutator(this._commands, cell, state)
+    return new RuleCommandMutator(this._commands, cell)
   }
   doesntMatchConditionStructure () {
     // The left-hand-side structure does not matter since we are executing commands
@@ -1262,13 +1264,11 @@ class RuleCommands extends BaseForLines {
 
 class RuleCommandMutator {
   commands: any
-  cell: any
-  state: any
+  cell: Cell
 
-  constructor (commands, cell, state) {
+  constructor (commands, cell: Cell) {
     this.commands = commands
     this.cell = cell
-    this.state = state
   }
   mutate () {
     // console.log(`TODO: Execute these commands (which matched):`, this.commands)
@@ -1312,7 +1312,7 @@ class GameRuleCellLayer extends BaseForLines {
   getSprites () {
     return this._tile.getSprites()
   }
-  matchesCell (cell, state) {
+  matchesCell (cell: Cell) {
     /* Modifiers
       = t_NO
       // The following are probably not actually cellLayerModifier's ... Check that they only exist at the beginning of a "["
@@ -1348,10 +1348,10 @@ class GameRuleCellLayer extends BaseForLines {
 }
 
 class GameRuleCellLayerHack extends BaseForLines {
-  _spriteNameMaybeNull: any
+  _spriteNameMaybeNull: string | null
   _hackRuleCommand: any
 
-  constructor (source: IGameCode, spriteName, hackRuleCommand) {
+  constructor (source: IGameCode, spriteName: string, hackRuleCommand) {
     super(source)
     this._spriteNameMaybeNull = spriteName
     this._hackRuleCommand = hackRuleCommand
@@ -1427,7 +1427,7 @@ class LookupHelper {
 }
 
 // Helper for setting a config field
-function getConfigField (key, value) {
+function getConfigField (key: ohm.Node, value: ohm.Node) {
   return [key.parse(), value.parse()]
 }
 
