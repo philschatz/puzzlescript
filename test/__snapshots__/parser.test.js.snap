@@ -7847,6 +7847,50 @@ GameData {
 }
 `;
 
+exports[`rules Converts an invalid color to a Transparent one 1`] = `
+GameData {
+  "collisionLayers": Array [
+    CollisionLayer {
+      "__astId": 410,
+      "_sprites": Array [
+        GameSpriteSingleColor {
+          "__astId": 409,
+          "_collisionLayer": [Circular],
+          "_color": TransparentColor {
+            "__astId": 408,
+          },
+          "_name": "player",
+          "_optionalLegendChar": undefined,
+        },
+      ],
+    },
+  ],
+  "legends": Array [],
+  "levels": Array [],
+  "objects": Array [
+    GameSpriteSingleColor {
+      "__astId": 409,
+      "_collisionLayer": CollisionLayer {
+        "__astId": 410,
+        "_sprites": Array [
+          [Circular],
+        ],
+      },
+      "_color": TransparentColor {
+        "__astId": 408,
+      },
+      "_name": "player",
+      "_optionalLegendChar": undefined,
+    },
+  ],
+  "rules": Array [],
+  "settings": GameSettings {},
+  "sounds": Array [],
+  "title": "foo",
+  "winConditions": Array [],
+}
+`;
+
 exports[`rules General Formatting Correctly parses weird variable names 1`] = `
 Object {
   "__name": "GameData",
@@ -8592,7 +8636,29 @@ GameData {
 exports[`rules General Formatting Supports characters that would be invalid in one scope but are valid in another scope 1`] = `
 GameData {
   "collisionLayers": Array [
-    undefined,
+    CollisionLayer {
+      "__astId": 362,
+      "_sprites": Array [
+        GameSpriteSingleColor {
+          "__astId": 353,
+          "_collisionLayer": [Circular],
+          "_color": TransparentColor {
+            "__astId": 352,
+          },
+          "_name": "hello",
+          "_optionalLegendChar": ".",
+        },
+        GameSpriteSingleColor {
+          "__astId": 355,
+          "_collisionLayer": [Circular],
+          "_color": TransparentColor {
+            "__astId": 354,
+          },
+          "_name": "hello2",
+          "_optionalLegendChar": "]",
+        },
+      ],
+    },
   ],
   "legends": Array [
     GameLegendTileSimple {
@@ -9501,6 +9567,157 @@ GameData {
         "_colorName": "#f7e26b",
       },
       "_name": "01",
+      "_optionalLegendChar": undefined,
+    },
+  ],
+  "rules": Array [],
+  "settings": GameSettings {},
+  "sounds": Array [],
+  "title": "foo",
+  "winConditions": Array [],
+}
+`;
+
+exports[`rules Sets the collision layer for nested sprites 1`] = `
+GameData {
+  "collisionLayers": Array [
+    CollisionLayer {
+      "__astId": 415,
+      "_sprites": Array [
+        GameLegendTileSimple {
+          "__astId": 414,
+          "_collisionLayer": [Circular],
+          "_spriteNameOrLevelChar": "y",
+          "_tiles": Array [
+            GameLegendTileSimple {
+              "__astId": 413,
+              "_collisionLayer": [Circular],
+              "_spriteNameOrLevelChar": "x",
+              "_tiles": Array [
+                GameSpriteSingleColor {
+                  "__astId": 412,
+                  "_collisionLayer": [Circular],
+                  "_color": TransparentColor {
+                    "__astId": 411,
+                  },
+                  "_name": "player",
+                  "_optionalLegendChar": undefined,
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  ],
+  "legends": Array [
+    GameLegendTileSimple {
+      "__astId": 413,
+      "_collisionLayer": CollisionLayer {
+        "__astId": 415,
+        "_sprites": Array [
+          GameLegendTileSimple {
+            "__astId": 414,
+            "_collisionLayer": [Circular],
+            "_spriteNameOrLevelChar": "y",
+            "_tiles": Array [
+              [Circular],
+            ],
+          },
+        ],
+      },
+      "_spriteNameOrLevelChar": "x",
+      "_tiles": Array [
+        GameSpriteSingleColor {
+          "__astId": 412,
+          "_collisionLayer": CollisionLayer {
+            "__astId": 415,
+            "_sprites": Array [
+              GameLegendTileSimple {
+                "__astId": 414,
+                "_collisionLayer": [Circular],
+                "_spriteNameOrLevelChar": "y",
+                "_tiles": Array [
+                  [Circular],
+                ],
+              },
+            ],
+          },
+          "_color": TransparentColor {
+            "__astId": 411,
+          },
+          "_name": "player",
+          "_optionalLegendChar": undefined,
+        },
+      ],
+    },
+    GameLegendTileSimple {
+      "__astId": 414,
+      "_collisionLayer": CollisionLayer {
+        "__astId": 415,
+        "_sprites": Array [
+          [Circular],
+        ],
+      },
+      "_spriteNameOrLevelChar": "y",
+      "_tiles": Array [
+        GameLegendTileSimple {
+          "__astId": 413,
+          "_collisionLayer": CollisionLayer {
+            "__astId": 415,
+            "_sprites": Array [
+              [Circular],
+            ],
+          },
+          "_spriteNameOrLevelChar": "x",
+          "_tiles": Array [
+            GameSpriteSingleColor {
+              "__astId": 412,
+              "_collisionLayer": CollisionLayer {
+                "__astId": 415,
+                "_sprites": Array [
+                  [Circular],
+                ],
+              },
+              "_color": TransparentColor {
+                "__astId": 411,
+              },
+              "_name": "player",
+              "_optionalLegendChar": undefined,
+            },
+          ],
+        },
+      ],
+    },
+  ],
+  "levels": Array [],
+  "objects": Array [
+    GameSpriteSingleColor {
+      "__astId": 412,
+      "_collisionLayer": CollisionLayer {
+        "__astId": 415,
+        "_sprites": Array [
+          GameLegendTileSimple {
+            "__astId": 414,
+            "_collisionLayer": [Circular],
+            "_spriteNameOrLevelChar": "y",
+            "_tiles": Array [
+              GameLegendTileSimple {
+                "__astId": 413,
+                "_collisionLayer": [Circular],
+                "_spriteNameOrLevelChar": "x",
+                "_tiles": Array [
+                  [Circular],
+                ],
+              },
+            ],
+          },
+        ],
+      },
+      "_color": TransparentColor {
+        "__astId": 411,
+      },
+      "_name": "player",
       "_optionalLegendChar": undefined,
     },
   ],

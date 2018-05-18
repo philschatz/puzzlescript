@@ -445,10 +445,66 @@ declare interface IGameCode {
   getLineAndColumnMessage: () => string
 }
 
+
+// Return an object with the line and column information for the given
+// offset in `str`.
+// From https://github.com/harc/ohm/blob/b88336faf69e7bd89e309931b60445c3dfd495ab/src/util.js#L56
+function getLineAndColumn (str, offset) {
+  let lineNum = 1
+  let colNum = 1
+
+  let currOffset = 0
+  let lineStartOffset = 0
+
+  let nextLine = null
+  let prevLine = null
+  let prevLineStartOffset = -1
+
+  while (currOffset < offset) {
+    let c = str.charAt(currOffset++)
+    if (c === '\n') {
+      lineNum++
+      colNum = 1
+      prevLineStartOffset = lineStartOffset
+      lineStartOffset = currOffset
+    } else if (c !== '\r') {
+      colNum++
+    }
+  }
+  // Find the end of the target line.
+  let lineEndOffset = str.indexOf('\n', lineStartOffset)
+  if (lineEndOffset === -1) {
+    lineEndOffset = str.length
+  } else {
+    // Get the next line.
+    let nextLineEndOffset = str.indexOf('\n', lineEndOffset + 1)
+    nextLine = nextLineEndOffset === -1 ? str.slice(lineEndOffset)
+                                        : str.slice(lineEndOffset, nextLineEndOffset)
+    // Strip leading and trailing EOL char(s).
+    nextLine = nextLine.replace(/^\r?\n/, '').replace(/\r$/, '')
+  }
+
+  // Get the previous line.
+  if (prevLineStartOffset >= 0) {
+    prevLine = str.slice(prevLineStartOffset, lineStartOffset)
+                  .replace(/\r?\n$/, '')  // Strip trailing EOL char(s).
+  }
+
+  // Get the target line, stripping a trailing carriage return if necessary.
+  let line = str.slice(lineStartOffset, lineEndOffset).replace(/\r$/, '')
+
+  return {
+    lineNum: lineNum,
+    colNum: colNum,
+    line: line,
+    prevLine: prevLine,
+    nextLine: nextLine
+  }
+}
+
 let astId: number = 0
 export class BaseForLines {
   __astId: number
-  __validationMessages: {level: string, message: string}[]
   __source: IGameCode
 
   constructor (source: IGameCode) {
@@ -460,15 +516,8 @@ export class BaseForLines {
     })
     this.__astId = astId++
   }
-  addValidationMessage (level: string, message: string) {
-    if (!this.__validationMessages) {
-      this.__validationMessages = []
-    }
-    this.__validationMessages.push({level, message})
-    if (level === 'ERROR') {
-      console.error(this.toString())
-      throw new Error(message)
-    }
+  __getSourceLineAndColumn () {
+    return getLineAndColumn(this.__source.sourceString, this.__source.startIdx)
   }
   toString () {
     return `astId=${this.__astId}\n${this.__source.getLineAndColumnMessage()}`
@@ -546,14 +595,19 @@ export class GameData {
     this.levels = levels
   }
 
+  _getSpriteByName (name) {
+    return this.objects.filter(sprite => sprite._getName().toLowerCase() === name.toLowerCase())[0]
+  }
   getMagicBackgroundSprite() {
-    return this.objects.filter(sprite => sprite._getName().toLowerCase() === 'background')[0]
+    return this._getSpriteByName('background')
   }
 }
 
 export declare interface IGameTile extends BaseForLines{
+  _getDescendantTiles: () => IGameTile[]
   getSprites: () => GameSprite[]
   isInvalid: () => string
+  hasCollisionLayer: () => boolean
   setCollisionLayer: (collisionLayer: CollisionLayer) => void
   getCollisionLayerNum: () => number
   matchesCell: (cell: Cell) => boolean
@@ -654,7 +708,7 @@ export class HexColor extends BaseForLines implements IColor {
 
 class TransparentColor extends BaseForLines implements IColor {
   isTransparent () { return true }
-  toRgb () {
+  toRgb (): RGB {
     throw new Error('BUG: Transparent colors do not have RGB data')
   }
 }
@@ -672,17 +726,24 @@ export class GameSprite extends BaseForLines implements IGameTile {
   _getName () {
     return this._name
   }
+  _getDescendantTiles () {
+    return []
+  }
   getSprites () {
     // to match the signature of LegendTile
     return [this]
   }
+  hasCollisionLayer () {
+    return !!this._collisionLayer
+  }
   setCollisionLayer (collisionLayer: CollisionLayer) {
-    if (this._collisionLayer) {
-      this.addValidationMessage('WARNING', 'An Object should not belong to more than one collision layer')
-    }
     this._collisionLayer = collisionLayer
   }
   getCollisionLayerNum () {
+    if (!this._collisionLayer) {
+      console.error(this.__source.getLineAndColumnMessage())
+      console.error('ERROR: This sprite was not in a Collision Layer')
+    }
     return this._collisionLayer.__astId
   }
   isInvalid () {
@@ -792,6 +853,10 @@ export class GameLegendTileSimple extends BaseForLines implements IGameTile {
     }
     return true
   }
+  _getDescendantTiles () {
+    // recursively pull all the tiles out
+    return this._tiles.concat(_.flatten(this._tiles.map(tile => tile._getDescendantTiles()))
+  }
   getSprites () {
     // Use a cache because all the collision layers have not been loaded in time
     if (!this._sprites) {
@@ -807,15 +872,11 @@ export class GameLegendTileSimple extends BaseForLines implements IGameTile {
     }
     return this._sprites
   }
+  hasCollisionLayer () {
+    return !!this._collisionLayer
+  }
   setCollisionLayer (collisionLayer: CollisionLayer) {
-    if (this._collisionLayer && this._collisionLayer !== collisionLayer) {
-      this.addValidationMessage('WARNING', 'An Object should not belong to more than one collision layer')
-    }
     this._collisionLayer = collisionLayer
-
-    this._tiles.forEach((tile) => {
-      tile.setCollisionLayer(collisionLayer)
-    })
   }
   getCollisionLayerNum () {
     return this._collisionLayer.__astId
@@ -1434,6 +1495,24 @@ function getConfigField (key: ohm.Node, value: ohm.Node) {
 
 let _GRAMMAR: ohm.Grammar = null
 
+enum ValidationLevel {
+  ERROR,
+  WARNING,
+  INFO
+}
+
+class ValidationMessage {
+  gameNode: BaseForLines
+  level: ValidationLevel
+  message: string
+
+  constructor(gameNode, level, message) {
+    this.gameNode = gameNode
+    this.level = level
+    this.message = message
+  }
+}
+
 class Parser {
   getGrammar () {
     _GRAMMAR = _GRAMMAR || ohm.grammar(GRAMMAR_STR)
@@ -1453,6 +1532,11 @@ class Parser {
   parse (code: string) {
     const g = this.getGrammar()
     const {match: m} = this.parseGrammar(code)
+    const validationMessages = []
+
+    function addValidationMessage(source, level, message) {
+      validationMessages.push(new ValidationMessage(source, level, message))
+    }
 
     if (m.succeeded()) {
       const lookup = new LookupHelper()
@@ -1576,13 +1660,24 @@ class Parser {
         SoundItemNormal: function (spriteName, eventEnum, soundCode) {
           return new GameSoundNormal(this.source, lookup.lookupObjectOrLegendTile(this.source, spriteName.parse()), eventEnum.parse(), soundCode.parse())
         },
-        CollisionLayerItem: function (spriteNames, _2, _3) {
-          const objects = spriteNames.parse().map((spriteName) => lookup.lookupObjectOrLegendTile(this.source, spriteName))
-          const collisionLayer = new CollisionLayer(this.source, objects)
+        CollisionLayerItem: function (tileNames, _2, _3) {
+          const tiles = tileNames.parse().map((spriteName) => lookup.lookupObjectOrLegendTile(this.source, spriteName))
+          const collisionLayer = new CollisionLayer(this.source, tiles)
           // Map all the Objects to the layer
-          objects.forEach((object: IGameTile) => {
-            object.setCollisionLayer(collisionLayer)
+          tiles.forEach((tile: IGameTile) => {
+            if (tile.hasCollisionLayer()) {
+              addValidationMessage(tile, ValidationLevel.WARNING, 'An Object should not belong to more than one collision layer')
+            }
+            tile.setCollisionLayer(collisionLayer)
+            tile._getDescendantTiles().forEach((subTile) => {
+              if (subTile.hasCollisionLayer()) {
+                addValidationMessage(subTile, ValidationLevel.WARNING, 'An Object should not belong to more than one collision layer. This item was referenced indirectly by an entry in the LEGEND section')
+              }
+              subTile.setCollisionLayer(collisionLayer)
+            })
+
           })
+          return collisionLayer
         },
 
         RuleItem: function (_1) {
@@ -1683,11 +1778,13 @@ class Parser {
         colorName: function (_1) {
           const colorName = this.sourceString.toLowerCase()
           const hex = lookupColorPalette(currentColorPalette)[colorName]
-          if (!hex) {
-            console.warn(`Invalid color name. "${colorName}" is not a valid color. Using "transparent" instead`)
-            return new TransparentColor(this.source)
+          if (hex) {
+            return new HexColor(this.source, hex)
+          } else {
+            const transparent = new TransparentColor(this.source)
+            addValidationMessage(transparent, ValidationLevel.WARNING, `Invalid color name. "${colorName}" is not a valid color. Using "transparent" instead`)
+            return transparent
           }
-          return new HexColor(this.source, hex)
         },
         colorTransparent: function (_1) {
           return new TransparentColor(this.source)
@@ -1729,26 +1826,27 @@ class Parser {
         // },
 
       })
-      const game:GameData = s(m).parse()
+      const game: GameData = s(m).parse()
       // console.log(game)
 
       // Validate that the game objects are rectangular
-      // game.objects.forEach((object) => {
-      //   if (object.isInvalid()) {
-      //     console.warn(`WARNING: Game Object is Invalid. Reason: ${object.isInvalid()}`)
-      //     console.warn(object.__source.getLineAndColumnMessage())
-      //   }
-      // })
+      game.objects.forEach((sprite) => {
+        // if (!sprite.hasCollisionLayer()) {
+        //   addValidationMessage(sprite, ValidationLevel.WARNING, `Game object is not in a Collision Layer. All objects must be in exactly one collision layer`)
+        // }
+        if (sprite.isInvalid()) {
+          addValidationMessage(sprite, ValidationLevel.WARNING, `Game Object is Invalid. Reason: ${sprite.isInvalid()}`)
+        }
+      })
 
       // Validate that the level maps are rectangular
       game.levels.forEach((level) => {
         if (level.isInvalid()) {
-          console.warn(`WARNING: Level is Invalid. Reason: ${level.isInvalid()}`)
-          console.warn(level.__source.getLineAndColumnMessage())
+          addValidationMessage(level, ValidationLevel.WARNING, `Level is Invalid. Reason: ${level.isInvalid()}`)
         }
       })
 
-      return {data: game}
+      return {data: game, validationMessages }
     } else {
       const trace = g.trace(code)
       return {error: m, trace: trace}

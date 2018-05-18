@@ -42,10 +42,10 @@ function checkGrammar (code) {
 }
 
 function checkParse (code) {
-  const {data, error} = Parser.parse(code)
+  const {data, error, validationMessages} = Parser.parse(code)
   expect(error && error.message).toBeFalsy() // Use && so the error messages are shorter
   expect(data).toMatchSnapshot()
-  return data
+  return {data, validationMessages}
 }
 
 function checkParseRule (code, varNames) {
@@ -217,8 +217,7 @@ RULES
     })
 
     it('Looks up color palettes using a string or an index', () => {
-      let data
-      data = checkParse(`
+      const {data: data1} = checkParse(`
 title foo
 color_palette gameboycolour
 
@@ -228,9 +227,9 @@ OBJECTS
 player
 yellow
 `)
-      expect(data.objects[0]._color._colorName.toLowerCase()).toBe(COLOR_PALETTES['gameboycolour']['yellow'].toLowerCase())
+      expect(data1.objects[0]._color._colorName.toLowerCase()).toBe(COLOR_PALETTES['gameboycolour']['yellow'].toLowerCase())
 
-      data = checkParse(`
+      const {data: data2} = checkParse(`
 title foo
 color_palette 2
 
@@ -240,7 +239,7 @@ OBJECTS
 player
 yellow
 `)
-      expect(data.objects[0]._color._colorName.toLowerCase()).toBe(COLOR_PALETTES['gameboycolour']['yellow'].toLowerCase())
+      expect(data2.objects[0]._color._colorName.toLowerCase()).toBe(COLOR_PALETTES['gameboycolour']['yellow'].toLowerCase())
     })
 
     it('Supports characters that would be invalid in one scope but are valid in another scope', () => {
@@ -334,6 +333,63 @@ yellow
 
 `)
     })
+  })
+
+  it('Converts an invalid color to a Transparent one', () => {
+    const {data, validationMessages} = checkParse(`
+    title foo
+
+    ===
+    OBJECTS
+    ===
+
+    player
+    someInvalidColorName
+
+    ===
+    COLLISIONLAYERS
+    ===
+
+    player
+
+    `)
+
+    expect(data.objects[0].getPixels()[0][0].isTransparent()).toBe(true)
+    expect(validationMessages.length).toBe(1)
+    const {message, gameNode} = validationMessages[0]
+    expect(message).toBe('Invalid color name. "someinvalidcolorname" is not a valid color. Using "transparent" instead')
+    expect(gameNode.__getSourceLineAndColumn()).toBeTruthy()
+
+  })
+
+  it('Sets the collision layer for nested sprites', () => {
+    const {data, validationMessages} = checkParse(`
+    title foo
+
+    ===
+    OBJECTS
+    ===
+
+    player
+    TRANSPARENT
+
+    ===
+    LEGEND
+    ===
+
+    x = player
+    y = x
+
+    ===
+    COLLISIONLAYERS
+    ===
+
+    y
+
+    `)
+
+    // just make sure it doesn't throw an exception
+    expect(data._getSpriteByName('player').getCollisionLayerNum()).toBeGreaterThan(2)
   })
 
   describe('Expected Failures', () => {
