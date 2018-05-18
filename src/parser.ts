@@ -1013,23 +1013,59 @@ export class GameRuleLoop extends BaseForLines {
   }
 }
 
+export enum RuleModifier {
+  RANDOM = 'RANDOM',
+  UP = 'UP',
+  DOWN = 'DOWN',
+  LEFT = 'LEFT',
+  RIGHT = 'RIGHT',
+  VERTICAL = 'VERTICAL',
+  HORIZONTAL = 'HORIZONTAL',
+  ORTHOGONAL = 'ORTHOGONAL',
+  LATE = 'LATE',
+  RIGID = 'RIGID'
+}
+
+const SIMPLE_DIRECTIONS = new Set([
+  RuleModifier.UP,
+  RuleModifier.DOWN,
+  RuleModifier.LEFT,
+  RuleModifier.RIGHT
+])
+
 class GameRule extends BaseForLines {
   _rulePlus: any
-  _ruleModifiers: any
+  _ruleModifiers: Set<RuleModifier>
   _innerRule: any
 
   constructor (source: IGameCode, rulePlus, ruleModifiers, innerRule) {
     super(source)
     this._rulePlus = rulePlus
-    this._ruleModifiers = ruleModifiers
+    this._ruleModifiers = new Set(ruleModifiers)
     this._innerRule = innerRule
   }
 
   getMatchedMutatorsOrNull (cell: Cell) {
-    // if (_.difference(this._ruleModifiers, ALL_DIRECTIONS).length > 0) {
-    //   return null // TODO: not supported yet
-    // }
-    return this._innerRule.getMatchedMutatorsOrNull(cell, this._ruleModifiers)
+    if (this._ruleModifiers.has(RuleModifier.RANDOM) || this._ruleModifiers.has(RuleModifier.LATE) || this._ruleModifiers.has(RuleModifier.RIGID) || this._ruleModifiers.has(RuleModifier.ORTHOGONAL)) {
+      // These are not implemented yet so ignore them
+      return null
+    }
+
+    let directionsToCheck = new Set(setIntersection(this._ruleModifiers, SIMPLE_DIRECTIONS))
+    if (this._ruleModifiers.has(RuleModifier.HORIZONTAL)) {
+      directionsToCheck.add(RuleModifier.LEFT)
+      directionsToCheck.add(RuleModifier.RIGHT)
+    }
+    if (this._ruleModifiers.has(RuleModifier.VERTICAL)) {
+      directionsToCheck.add(RuleModifier.UP)
+      directionsToCheck.add(RuleModifier.DOWN)
+    }
+    // If no direction was specified then check UP, DOWN, LEFT, RIGHT
+    if (directionsToCheck.size === 0) {
+      directionsToCheck = new Set(SIMPLE_DIRECTIONS)
+    }
+
+    return this._innerRule.getMatchedMutatorsOrNull(cell, directionsToCheck)
   }
 }
 
@@ -1136,8 +1172,6 @@ class CellPairMutator extends BaseForLines {
   }
 }
 
-const ALL_DIRECTIONS = ['UP', 'DOWN', 'LEFT', 'RIGHT']
-
 class RuleBracketsToZip extends BaseForLines {
   _conditions: any
   _actions: any
@@ -1185,7 +1219,7 @@ class RuleBracketsToZip extends BaseForLines {
     }
   }
 
-  getMatchedMutatorsOrNull (cell: Cell, parentRuleModifiers) {
+  getMatchedMutatorsOrNull (cell: Cell, directionsToCheck) {
     let ret = []
     if (this._bracketPairs.length > 1) {
       return null // `BUG: multiple bracket rules are not supported yet`
@@ -1197,14 +1231,8 @@ class RuleBracketsToZip extends BaseForLines {
         return null
       }
 
-      // Try each direction. If the user specified some, then use those. Otherwise check in all directions
-      let directions = _.intersection(parentRuleModifiers, ALL_DIRECTIONS)
-      if (directions.length === 0) {
-        directions = ALL_DIRECTIONS
-      }
-
       let curCell = cell
-      for (const direction of directions) {
+      for (const direction of directionsToCheck) {
         let neighborRet = []
         for (const neighbor of bracketPair.neighbors) {
           if (!curCell) break // If we hit the end of the level then this does not match
