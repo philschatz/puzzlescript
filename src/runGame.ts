@@ -20,7 +20,7 @@ async function run () {
   for (let filename of files) {
     console.log(`Parsing and rendering ${filename}`)
     const code = readFileSync(filename, 'utf-8')
-    const {data, error, trace} = Parser.parse(code)
+    const {data, error, trace, validationMessages} = Parser.parse(code)
 
     if (error) {
       console.log(trace.toString())
@@ -29,6 +29,13 @@ async function run () {
     } else {
       // console.log(data.title)
       // return
+
+      if (validationMessages) {
+        validationMessages.forEach(({source, level, message}) => {
+          const {lineNum, colNum} = source.__getSourceLineAndColumn()
+          console.warn(`(${lineNum}:${colNum}) ${level} : ${message}`)
+        })
+      }
 
       const startTime = Date.now()
 
