@@ -522,6 +522,16 @@ export class BaseForLines {
   toString () {
     return `astId=${this.__astId}\n${this.__source.getLineAndColumnMessage()}`
   }
+
+  // This is mostly used for creating code coverage for the games. So we know which Rules (or objects) are not being matched
+  __getLineAndColumnRange() {
+    const start = getLineAndColumn(this.__source.sourceString, this.__source.startIdx)
+    const end   = getLineAndColumn(this.__source.sourceString, this.__source.endIdx - 1) // subtract one to hopefully get the previous line
+    return {
+      start: { line: start.lineNum, col: start.colNum },
+      end: { line: end.lineNum, col: end.colNum },
+    }
+  }
 }
 
 class Dimension {
@@ -1119,9 +1129,9 @@ class CellPairMutator extends BaseForLines {
 
     if (!this.cell.equalsSprites(newSetOfSprites)) {
       this.cell.updateSprites(newSetOfSprites)
-      return this.cell
+      return [this.cell]
     } else {
-      return null
+      return []
     }
   }
 }

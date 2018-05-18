@@ -1,8 +1,11 @@
 {
   "scripts": {
-    "lint": "standard --fix preprocessor.js test/**/*.js",
+    "lint": "standard --fix preprocessor.js ./test/**/*.js",
     "tsc": "tsc --watch",
-    "start": "rm -rf ./lib/; tsc; node -r source-map-support/register lib/runGame.js",
+    "prestart": "rm -rf ./lib/; rm ./coverage/coverage-gist*.json; rm -rf ./coverage/lcov-report/; tsc; echo 'Done preparing'",
+    "start": "node -r source-map-support/register ./lib/runGame.js",
+    "poststart": "npm run-script coverage && echo 'Generated coverage. Type open ./coverage/lcov-html/index.html to see it'",
+    "coverage": "istanbul report --root ./coverage/ lcov",
     "test": "jest --coverage --updateSnapshot",
     "test-debug": "node --inspect-brk -r source-map-support/register $(npm bin)/jest -i --updateSnapshot $@",
     "posttest": "npm run-script lint",
@@ -25,6 +28,7 @@
     "@types/pify": "^3.0.2",
     "eslint-plugin-typescript": "^0.12.0",
     "http-server": "^0.11.1",
+    "istanbul": "^0.4.5",
     "standard": "^11.0.1",
     "tslint": "^5.10.0",
     "typescript": "^2.8.3",

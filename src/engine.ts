@@ -80,7 +80,7 @@ export default class Engine extends EventEmitter2 {
   }
 
   tick () {
-    let changes = []
+    let rulesAndChanges = new Map()
     // Loop over all the cells, see if a Rule matches, apply the transition, and notify that cells changed
     this.currentLevel.forEach(row => {
       row.forEach(cell => {
@@ -88,14 +88,20 @@ export default class Engine extends EventEmitter2 {
           // Check if the left-hand-side of the rule matches the current cell
           const mutators = _.flattenDeep(rule.getMatchedMutatorsOrNull(cell) || [])
           if (mutators.length > 0) {
+            if (!rulesAndChanges.has(rule)) {
+              rulesAndChanges.set(rule, [])
+            }
             mutators.forEach(mutator => {
-              changes = changes.concat(mutator.mutate())
+              // Change the Grid based on the rules that matched
+              const changes = mutator.mutate()
+              // Add it to the set of changes
+              rulesAndChanges.set(rule, rulesAndChanges.get(rule).concat(changes.filter(change => !!change))) // Some rules only have actions and return null. Remove those from the set
             })
           }
         })
       })
     })
-    return _.flattenDeep(changes).filter(change => !!change) // Some rules only have actions and return null. Remove those from the set
+    return rulesAndChanges
   }
 
   pressUp () { }
