@@ -7847,6 +7847,50 @@ GameData {
 }
 `;
 
+exports[`rules Converts an invalid color to a Transparent one 1`] = `
+GameData {
+  "collisionLayers": Array [
+    CollisionLayer {
+      "__astId": 410,
+      "_sprites": Array [
+        GameSpriteSingleColor {
+          "__astId": 409,
+          "_collisionLayer": [Circular],
+          "_color": TransparentColor {
+            "__astId": 408,
+          },
+          "_name": "player",
+          "_optionalLegendChar": undefined,
+        },
+      ],
+    },
+  ],
+  "legends": Array [],
+  "levels": Array [],
+  "objects": Array [
+    GameSpriteSingleColor {
+      "__astId": 409,
+      "_collisionLayer": CollisionLayer {
+        "__astId": 410,
+        "_sprites": Array [
+          [Circular],
+        ],
+      },
+      "_color": TransparentColor {
+        "__astId": 408,
+      },
+      "_name": "player",
+      "_optionalLegendChar": undefined,
+    },
+  ],
+  "rules": Array [],
+  "settings": GameSettings {},
+  "sounds": Array [],
+  "title": "foo",
+  "winConditions": Array [],
+}
+`;
+
 exports[`rules General Formatting Correctly parses weird variable names 1`] = `
 Object {
   "__name": "GameData",
@@ -8537,7 +8581,12 @@ GameData {
       "__astId": 349,
       "_color": HexColor {
         "__astId": 348,
-        "_color": "#C0BA6F",
+        "_color": RGB {
+          "b": 111,
+          "g": 186,
+          "r": 192,
+        },
+        "_colorName": "#C0BA6F",
       },
       "_name": "player",
       "_optionalLegendChar": undefined,
@@ -8563,7 +8612,12 @@ GameData {
       "__astId": 351,
       "_color": HexColor {
         "__astId": 350,
-        "_color": "#C0BA6F",
+        "_color": RGB {
+          "b": 111,
+          "g": 186,
+          "r": 192,
+        },
+        "_colorName": "#C0BA6F",
       },
       "_name": "player",
       "_optionalLegendChar": undefined,
@@ -8582,7 +8636,29 @@ GameData {
 exports[`rules General Formatting Supports characters that would be invalid in one scope but are valid in another scope 1`] = `
 GameData {
   "collisionLayers": Array [
-    undefined,
+    CollisionLayer {
+      "__astId": 362,
+      "_sprites": Array [
+        GameSpriteSingleColor {
+          "__astId": 353,
+          "_collisionLayer": [Circular],
+          "_color": TransparentColor {
+            "__astId": 352,
+          },
+          "_name": "hello",
+          "_optionalLegendChar": ".",
+        },
+        GameSpriteSingleColor {
+          "__astId": 355,
+          "_collisionLayer": [Circular],
+          "_color": TransparentColor {
+            "__astId": 354,
+          },
+          "_name": "hello2",
+          "_optionalLegendChar": "]",
+        },
+      ],
+    },
   ],
   "legends": Array [
     GameLegendTileSimple {
@@ -9001,15 +9077,30 @@ GameData {
       "_colors": Array [
         HexColor {
           "__astId": 381,
-          "_color": "#f7e26b",
+          "_color": RGB {
+            "b": 107,
+            "g": 226,
+            "r": 247,
+          },
+          "_colorName": "#f7e26b",
         },
         HexColor {
           "__astId": 382,
-          "_color": "#be2633",
+          "_color": RGB {
+            "b": 51,
+            "g": 38,
+            "r": 190,
+          },
+          "_colorName": "#be2633",
         },
         HexColor {
           "__astId": 383,
-          "_color": "#FFFFFF",
+          "_color": RGB {
+            "b": 255,
+            "g": 255,
+            "r": 255,
+          },
+          "_colorName": "#FFFFFF",
         },
       ],
       "_name": "Table",
@@ -9038,15 +9129,30 @@ GameData {
           },
           HexColor {
             "__astId": 382,
-            "_color": "#be2633",
+            "_color": RGB {
+              "b": 51,
+              "g": 38,
+              "r": 190,
+            },
+            "_colorName": "#be2633",
           },
           HexColor {
             "__astId": 383,
-            "_color": "#FFFFFF",
+            "_color": RGB {
+              "b": 255,
+              "g": 255,
+              "r": 255,
+            },
+            "_colorName": "#FFFFFF",
           },
           HexColor {
             "__astId": 382,
-            "_color": "#be2633",
+            "_color": RGB {
+              "b": 51,
+              "g": 38,
+              "r": 190,
+            },
+            "_colorName": "#be2633",
           },
           TransparentColor {
             "__astId": 391,
@@ -9058,15 +9164,30 @@ GameData {
           },
           HexColor {
             "__astId": 383,
-            "_color": "#FFFFFF",
+            "_color": RGB {
+              "b": 255,
+              "g": 255,
+              "r": 255,
+            },
+            "_colorName": "#FFFFFF",
           },
           HexColor {
             "__astId": 382,
-            "_color": "#be2633",
+            "_color": RGB {
+              "b": 51,
+              "g": 38,
+              "r": 190,
+            },
+            "_colorName": "#be2633",
           },
           HexColor {
             "__astId": 383,
-            "_color": "#FFFFFF",
+            "_color": RGB {
+              "b": 255,
+              "g": 255,
+              "r": 255,
+            },
+            "_colorName": "#FFFFFF",
           },
           TransparentColor {
             "__astId": 393,
@@ -9078,15 +9199,30 @@ GameData {
           },
           HexColor {
             "__astId": 382,
-            "_color": "#be2633",
+            "_color": RGB {
+              "b": 51,
+              "g": 38,
+              "r": 190,
+            },
+            "_colorName": "#be2633",
           },
           HexColor {
             "__astId": 383,
-            "_color": "#FFFFFF",
+            "_color": RGB {
+              "b": 255,
+              "g": 255,
+              "r": 255,
+            },
+            "_colorName": "#FFFFFF",
           },
           HexColor {
             "__astId": 382,
-            "_color": "#be2633",
+            "_color": RGB {
+              "b": 51,
+              "g": 38,
+              "r": 190,
+            },
+            "_colorName": "#be2633",
           },
           TransparentColor {
             "__astId": 395,
@@ -9098,14 +9234,24 @@ GameData {
           },
           HexColor {
             "__astId": 381,
-            "_color": "#f7e26b",
+            "_color": RGB {
+              "b": 107,
+              "g": 226,
+              "r": 247,
+            },
+            "_colorName": "#f7e26b",
           },
           TransparentColor {
             "__astId": 397,
           },
           HexColor {
             "__astId": 381,
-            "_color": "#f7e26b",
+            "_color": RGB {
+              "b": 107,
+              "g": 226,
+              "r": 247,
+            },
+            "_colorName": "#f7e26b",
           },
           TransparentColor {
             "__astId": 398,
@@ -9117,7 +9263,12 @@ GameData {
       "__astId": 401,
       "_color": HexColor {
         "__astId": 399,
-        "_color": "#f7e26b",
+        "_color": RGB {
+          "b": 107,
+          "g": 226,
+          "r": 247,
+        },
+        "_colorName": "#f7e26b",
       },
       "_name": "ChairRightLoose",
       "_optionalLegendChar": undefined,
@@ -9142,7 +9293,12 @@ GameData {
       "_colors": Array [
         HexColor {
           "__astId": 402,
-          "_color": "#f7e26b",
+          "_color": RGB {
+            "b": 107,
+            "g": 226,
+            "r": 247,
+          },
+          "_colorName": "#f7e26b",
         },
       ],
       "_name": "player",
@@ -9151,111 +9307,236 @@ GameData {
         Array [
           HexColor {
             "__astId": 402,
-            "_color": "#f7e26b",
+            "_color": RGB {
+              "b": 107,
+              "g": 226,
+              "r": 247,
+            },
+            "_colorName": "#f7e26b",
           },
           HexColor {
             "__astId": 402,
-            "_color": "#f7e26b",
+            "_color": RGB {
+              "b": 107,
+              "g": 226,
+              "r": 247,
+            },
+            "_colorName": "#f7e26b",
           },
           HexColor {
             "__astId": 402,
-            "_color": "#f7e26b",
+            "_color": RGB {
+              "b": 107,
+              "g": 226,
+              "r": 247,
+            },
+            "_colorName": "#f7e26b",
           },
           HexColor {
             "__astId": 402,
-            "_color": "#f7e26b",
+            "_color": RGB {
+              "b": 107,
+              "g": 226,
+              "r": 247,
+            },
+            "_colorName": "#f7e26b",
           },
           HexColor {
             "__astId": 402,
-            "_color": "#f7e26b",
-          },
-        ],
-        Array [
-          HexColor {
-            "__astId": 402,
-            "_color": "#f7e26b",
-          },
-          HexColor {
-            "__astId": 402,
-            "_color": "#f7e26b",
-          },
-          HexColor {
-            "__astId": 402,
-            "_color": "#f7e26b",
-          },
-          HexColor {
-            "__astId": 402,
-            "_color": "#f7e26b",
-          },
-          HexColor {
-            "__astId": 402,
-            "_color": "#f7e26b",
-          },
-        ],
-        Array [
-          HexColor {
-            "__astId": 402,
-            "_color": "#f7e26b",
-          },
-          HexColor {
-            "__astId": 402,
-            "_color": "#f7e26b",
-          },
-          HexColor {
-            "__astId": 402,
-            "_color": "#f7e26b",
-          },
-          HexColor {
-            "__astId": 402,
-            "_color": "#f7e26b",
-          },
-          HexColor {
-            "__astId": 402,
-            "_color": "#f7e26b",
+            "_color": RGB {
+              "b": 107,
+              "g": 226,
+              "r": 247,
+            },
+            "_colorName": "#f7e26b",
           },
         ],
         Array [
           HexColor {
             "__astId": 402,
-            "_color": "#f7e26b",
+            "_color": RGB {
+              "b": 107,
+              "g": 226,
+              "r": 247,
+            },
+            "_colorName": "#f7e26b",
           },
           HexColor {
             "__astId": 402,
-            "_color": "#f7e26b",
+            "_color": RGB {
+              "b": 107,
+              "g": 226,
+              "r": 247,
+            },
+            "_colorName": "#f7e26b",
           },
           HexColor {
             "__astId": 402,
-            "_color": "#f7e26b",
+            "_color": RGB {
+              "b": 107,
+              "g": 226,
+              "r": 247,
+            },
+            "_colorName": "#f7e26b",
           },
           HexColor {
             "__astId": 402,
-            "_color": "#f7e26b",
+            "_color": RGB {
+              "b": 107,
+              "g": 226,
+              "r": 247,
+            },
+            "_colorName": "#f7e26b",
           },
           HexColor {
             "__astId": 402,
-            "_color": "#f7e26b",
+            "_color": RGB {
+              "b": 107,
+              "g": 226,
+              "r": 247,
+            },
+            "_colorName": "#f7e26b",
           },
         ],
         Array [
           HexColor {
             "__astId": 402,
-            "_color": "#f7e26b",
+            "_color": RGB {
+              "b": 107,
+              "g": 226,
+              "r": 247,
+            },
+            "_colorName": "#f7e26b",
           },
           HexColor {
             "__astId": 402,
-            "_color": "#f7e26b",
+            "_color": RGB {
+              "b": 107,
+              "g": 226,
+              "r": 247,
+            },
+            "_colorName": "#f7e26b",
           },
           HexColor {
             "__astId": 402,
-            "_color": "#f7e26b",
+            "_color": RGB {
+              "b": 107,
+              "g": 226,
+              "r": 247,
+            },
+            "_colorName": "#f7e26b",
           },
           HexColor {
             "__astId": 402,
-            "_color": "#f7e26b",
+            "_color": RGB {
+              "b": 107,
+              "g": 226,
+              "r": 247,
+            },
+            "_colorName": "#f7e26b",
           },
           HexColor {
             "__astId": 402,
-            "_color": "#f7e26b",
+            "_color": RGB {
+              "b": 107,
+              "g": 226,
+              "r": 247,
+            },
+            "_colorName": "#f7e26b",
+          },
+        ],
+        Array [
+          HexColor {
+            "__astId": 402,
+            "_color": RGB {
+              "b": 107,
+              "g": 226,
+              "r": 247,
+            },
+            "_colorName": "#f7e26b",
+          },
+          HexColor {
+            "__astId": 402,
+            "_color": RGB {
+              "b": 107,
+              "g": 226,
+              "r": 247,
+            },
+            "_colorName": "#f7e26b",
+          },
+          HexColor {
+            "__astId": 402,
+            "_color": RGB {
+              "b": 107,
+              "g": 226,
+              "r": 247,
+            },
+            "_colorName": "#f7e26b",
+          },
+          HexColor {
+            "__astId": 402,
+            "_color": RGB {
+              "b": 107,
+              "g": 226,
+              "r": 247,
+            },
+            "_colorName": "#f7e26b",
+          },
+          HexColor {
+            "__astId": 402,
+            "_color": RGB {
+              "b": 107,
+              "g": 226,
+              "r": 247,
+            },
+            "_colorName": "#f7e26b",
+          },
+        ],
+        Array [
+          HexColor {
+            "__astId": 402,
+            "_color": RGB {
+              "b": 107,
+              "g": 226,
+              "r": 247,
+            },
+            "_colorName": "#f7e26b",
+          },
+          HexColor {
+            "__astId": 402,
+            "_color": RGB {
+              "b": 107,
+              "g": 226,
+              "r": 247,
+            },
+            "_colorName": "#f7e26b",
+          },
+          HexColor {
+            "__astId": 402,
+            "_color": RGB {
+              "b": 107,
+              "g": 226,
+              "r": 247,
+            },
+            "_colorName": "#f7e26b",
+          },
+          HexColor {
+            "__astId": 402,
+            "_color": RGB {
+              "b": 107,
+              "g": 226,
+              "r": 247,
+            },
+            "_colorName": "#f7e26b",
+          },
+          HexColor {
+            "__astId": 402,
+            "_color": RGB {
+              "b": 107,
+              "g": 226,
+              "r": 247,
+            },
+            "_colorName": "#f7e26b",
           },
         ],
       ],
@@ -9264,7 +9545,12 @@ GameData {
       "__astId": 405,
       "_color": HexColor {
         "__astId": 404,
-        "_color": "#f7e26b",
+        "_color": RGB {
+          "b": 107,
+          "g": 226,
+          "r": 247,
+        },
+        "_colorName": "#f7e26b",
       },
       "_name": "00",
       "_optionalLegendChar": undefined,
@@ -9273,9 +9559,165 @@ GameData {
       "__astId": 407,
       "_color": HexColor {
         "__astId": 406,
-        "_color": "#f7e26b",
+        "_color": RGB {
+          "b": 107,
+          "g": 226,
+          "r": 247,
+        },
+        "_colorName": "#f7e26b",
       },
       "_name": "01",
+      "_optionalLegendChar": undefined,
+    },
+  ],
+  "rules": Array [],
+  "settings": GameSettings {},
+  "sounds": Array [],
+  "title": "foo",
+  "winConditions": Array [],
+}
+`;
+
+exports[`rules Sets the collision layer for nested sprites 1`] = `
+GameData {
+  "collisionLayers": Array [
+    CollisionLayer {
+      "__astId": 415,
+      "_sprites": Array [
+        GameLegendTileSimple {
+          "__astId": 414,
+          "_collisionLayer": [Circular],
+          "_spriteNameOrLevelChar": "y",
+          "_tiles": Array [
+            GameLegendTileSimple {
+              "__astId": 413,
+              "_collisionLayer": [Circular],
+              "_spriteNameOrLevelChar": "x",
+              "_tiles": Array [
+                GameSpriteSingleColor {
+                  "__astId": 412,
+                  "_collisionLayer": [Circular],
+                  "_color": TransparentColor {
+                    "__astId": 411,
+                  },
+                  "_name": "player",
+                  "_optionalLegendChar": undefined,
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  ],
+  "legends": Array [
+    GameLegendTileSimple {
+      "__astId": 413,
+      "_collisionLayer": CollisionLayer {
+        "__astId": 415,
+        "_sprites": Array [
+          GameLegendTileSimple {
+            "__astId": 414,
+            "_collisionLayer": [Circular],
+            "_spriteNameOrLevelChar": "y",
+            "_tiles": Array [
+              [Circular],
+            ],
+          },
+        ],
+      },
+      "_spriteNameOrLevelChar": "x",
+      "_tiles": Array [
+        GameSpriteSingleColor {
+          "__astId": 412,
+          "_collisionLayer": CollisionLayer {
+            "__astId": 415,
+            "_sprites": Array [
+              GameLegendTileSimple {
+                "__astId": 414,
+                "_collisionLayer": [Circular],
+                "_spriteNameOrLevelChar": "y",
+                "_tiles": Array [
+                  [Circular],
+                ],
+              },
+            ],
+          },
+          "_color": TransparentColor {
+            "__astId": 411,
+          },
+          "_name": "player",
+          "_optionalLegendChar": undefined,
+        },
+      ],
+    },
+    GameLegendTileSimple {
+      "__astId": 414,
+      "_collisionLayer": CollisionLayer {
+        "__astId": 415,
+        "_sprites": Array [
+          [Circular],
+        ],
+      },
+      "_spriteNameOrLevelChar": "y",
+      "_tiles": Array [
+        GameLegendTileSimple {
+          "__astId": 413,
+          "_collisionLayer": CollisionLayer {
+            "__astId": 415,
+            "_sprites": Array [
+              [Circular],
+            ],
+          },
+          "_spriteNameOrLevelChar": "x",
+          "_tiles": Array [
+            GameSpriteSingleColor {
+              "__astId": 412,
+              "_collisionLayer": CollisionLayer {
+                "__astId": 415,
+                "_sprites": Array [
+                  [Circular],
+                ],
+              },
+              "_color": TransparentColor {
+                "__astId": 411,
+              },
+              "_name": "player",
+              "_optionalLegendChar": undefined,
+            },
+          ],
+        },
+      ],
+    },
+  ],
+  "levels": Array [],
+  "objects": Array [
+    GameSpriteSingleColor {
+      "__astId": 412,
+      "_collisionLayer": CollisionLayer {
+        "__astId": 415,
+        "_sprites": Array [
+          GameLegendTileSimple {
+            "__astId": 414,
+            "_collisionLayer": [Circular],
+            "_spriteNameOrLevelChar": "y",
+            "_tiles": Array [
+              GameLegendTileSimple {
+                "__astId": 413,
+                "_collisionLayer": [Circular],
+                "_spriteNameOrLevelChar": "x",
+                "_tiles": Array [
+                  [Circular],
+                ],
+              },
+            ],
+          },
+        ],
+      },
+      "_color": TransparentColor {
+        "__astId": 411,
+      },
+      "_name": "player",
       "_optionalLegendChar": undefined,
     },
   ],
