@@ -228,7 +228,7 @@ OBJECTS
 player
 yellow
 `)
-      expect(data.objects[0]._color._color.toLowerCase()).toBe(COLOR_PALETTES['gameboycolour']['yellow'].toLowerCase())
+      expect(data.objects[0]._color._colorName.toLowerCase()).toBe(COLOR_PALETTES['gameboycolour']['yellow'].toLowerCase())
 
       data = checkParse(`
 title foo
@@ -240,7 +240,7 @@ OBJECTS
 player
 yellow
 `)
-      expect(data.objects[0]._color._color.toLowerCase()).toBe(COLOR_PALETTES['gameboycolour']['yellow'].toLowerCase())
+      expect(data.objects[0]._color._colorName.toLowerCase()).toBe(COLOR_PALETTES['gameboycolour']['yellow'].toLowerCase())
     })
 
     it('Supports characters that would be invalid in one scope but are valid in another scope', () => {

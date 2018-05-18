@@ -87,8 +87,10 @@ Puzzlescript {
     PixelRows
     lineTerminator*
 
+  t_TRANSPARENT = caseInsensitive<"TRANSPARENT">
+
   spriteName = ruleVariableName
-  colorTransparent = "transparent"
+  colorTransparent = t_TRANSPARENT
   colorHex6 = "#" hexDigit hexDigit hexDigit hexDigit hexDigit hexDigit
   colorHex3 = "#" hexDigit hexDigit hexDigit
   colorNameOrHex = colorTransparent | colorHex6 | colorHex3 | colorName
@@ -598,9 +600,6 @@ export class GameMessage extends BaseForLines {
 }
 
 function hexToRgb (hex: string) {
-  if (!hex) {
-    return new RGB()
-  }
   // https://stackoverflow.com/a/5624139
   // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
   const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i
@@ -609,19 +608,23 @@ function hexToRgb (hex: string) {
   })
 
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
-  return result ? new RGB(
-    parseInt(result[1], 16),
-    parseInt(result[2], 16),
-    parseInt(result[3], 16),
-  ) : null
+  if (result) {
+    return new RGB(
+      parseInt(result[1], 16),
+      parseInt(result[2], 16),
+      parseInt(result[3], 16),
+    )
+  } else {
+    throw new Error('BUG: hex color was invalid')
+  }
 }
 
 class RGB {
-  r?: number
-  g?: number
-  b?: number
+  r: number
+  g: number
+  b: number
 
-  constructor(r?:number, g?:number, b?:number) {
+  constructor(r:number, g:number, b:number) {
     this.r = r
     this.g = g
     this.b = b
@@ -634,27 +637,25 @@ export declare interface IColor {
 }
 
 export class HexColor extends BaseForLines implements IColor {
-  _color: string
+  _color: RGB
+  _colorName: string // only for unit tests & debugging
 
   constructor (source: IGameCode, color: string) {
     super(source)
-    // if (!color) {
-    //   console.error(source.getLineAndColumnMessage())
-    //   throw new Error(`BUG: Missing color arg`)
-    // }
-    this._color = color
+    this._color = hexToRgb(color)
+    this._colorName = color
   }
 
   isTransparent () { return false }
   toRgb () {
-    return hexToRgb(this._color)
+    return this._color
   }
 }
 
 class TransparentColor extends BaseForLines implements IColor {
   isTransparent () { return true }
   toRgb () {
-    return new RGB()
+    throw new Error('BUG: Transparent colors do not have RGB data')
   }
 }
 
@@ -1680,7 +1681,13 @@ class Parser {
           return new HexColor(this.source, this.sourceString)
         },
         colorName: function (_1) {
-          return new HexColor(this.source, lookupColorPalette(currentColorPalette)[this.sourceString.toLowerCase()])
+          const colorName = this.sourceString.toLowerCase()
+          const hex = lookupColorPalette(currentColorPalette)[colorName]
+          if (!hex) {
+            console.warn(`Invalid color name. "${colorName}" is not a valid color. Using "transparent" instead`)
+            return new TransparentColor(this.source)
+          }
+          return new HexColor(this.source, hex)
         },
         colorTransparent: function (_1) {
           return new TransparentColor(this.source)
