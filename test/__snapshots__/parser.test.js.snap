@@ -85,7 +85,7 @@ Object {
           "__name": "RuleItem",
           "_i0": Object {
             "__name": "Rule",
-            "_i2": Object {
+            "_i1": Object {
               "__name": "RuleInner",
               "_i0": Object {
                 "__name": "RuleBracketsToZip",
@@ -325,7 +325,7 @@ Object {
                 ],
               },
             },
-            "_i3": Array [
+            "_i2": Array [
               Object {
                 "__name": "lineTerminator",
                 "_i1": Object {
@@ -500,7 +500,6 @@ GameData {
         ],
       },
       "_ruleModifiers": Array [],
-      "_rulePlus": undefined,
     },
   ],
   "settings": GameSettings {},
@@ -595,7 +594,7 @@ Object {
           "__name": "RuleItem",
           "_i0": Object {
             "__name": "Rule",
-            "_i2": Object {
+            "_i1": Object {
               "__name": "RuleInner",
               "_i0": Object {
                 "__name": "RuleBracketsToZip",
@@ -696,7 +695,7 @@ Object {
                 ],
               },
             },
-            "_i3": Array [
+            "_i2": Array [
               Object {
                 "__name": "lineTerminator",
                 "_i1": Object {
@@ -837,7 +836,6 @@ GameData {
         ],
       },
       "_ruleModifiers": Array [],
-      "_rulePlus": undefined,
     },
   ],
   "settings": GameSettings {},
@@ -932,7 +930,7 @@ Object {
           "__name": "RuleItem",
           "_i0": Object {
             "__name": "Rule",
-            "_i2": Object {
+            "_i1": Object {
               "__name": "RuleInner",
               "_i0": Object {
                 "__name": "RuleBracketsToZip",
@@ -1033,7 +1031,7 @@ Object {
                 ],
               },
             },
-            "_i3": Array [
+            "_i2": Array [
               Object {
                 "__name": "lineTerminator",
                 "_i1": Object {
@@ -1174,7 +1172,6 @@ GameData {
         ],
       },
       "_ruleModifiers": Array [],
-      "_rulePlus": undefined,
     },
   ],
   "settings": GameSettings {},
@@ -1269,7 +1266,7 @@ Object {
           "__name": "RuleItem",
           "_i0": Object {
             "__name": "Rule",
-            "_i2": Object {
+            "_i1": Object {
               "__name": "RuleInner",
               "_i0": Object {
                 "__name": "RuleBracketsToZip",
@@ -1373,7 +1370,7 @@ Object {
                 ],
               },
             },
-            "_i3": Array [
+            "_i2": Array [
               Object {
                 "__name": "lineTerminator",
                 "_i1": Object {
@@ -1514,7 +1511,6 @@ GameData {
         ],
       },
       "_ruleModifiers": Array [],
-      "_rulePlus": undefined,
     },
   ],
   "settings": GameSettings {},
@@ -1609,7 +1605,7 @@ Object {
           "__name": "RuleItem",
           "_i0": Object {
             "__name": "Rule",
-            "_i2": Object {
+            "_i1": Object {
               "__name": "RuleInner",
               "_i0": Object {
                 "__name": "RuleBracketsToZip",
@@ -1710,7 +1706,7 @@ Object {
                 ],
               },
             },
-            "_i3": Array [
+            "_i2": Array [
               Object {
                 "__name": "lineTerminator",
                 "_i1": Object {
@@ -1851,7 +1847,6 @@ GameData {
         ],
       },
       "_ruleModifiers": Array [],
-      "_rulePlus": undefined,
     },
   ],
   "settings": GameSettings {},
@@ -1946,7 +1941,7 @@ Object {
           "__name": "RuleItem",
           "_i0": Object {
             "__name": "Rule",
-            "_i2": Object {
+            "_i1": Object {
               "__name": "RuleInner",
               "_i0": Object {
                 "__name": "RuleBracketsToZip",
@@ -2047,7 +2042,7 @@ Object {
                 ],
               },
             },
-            "_i3": Array [
+            "_i2": Array [
               Object {
                 "__name": "lineTerminator",
                 "_i1": Object {
@@ -2188,7 +2183,6 @@ GameData {
         ],
       },
       "_ruleModifiers": Array [],
-      "_rulePlus": undefined,
     },
   ],
   "settings": GameSettings {},
@@ -2283,7 +2277,7 @@ Object {
           "__name": "RuleItem",
           "_i0": Object {
             "__name": "Rule",
-            "_i2": Object {
+            "_i1": Object {
               "__name": "RuleInner",
               "_i0": Object {
                 "__name": "RuleBracketsToZip",
@@ -2384,7 +2378,7 @@ Object {
                 ],
               },
             },
-            "_i3": Array [
+            "_i2": Array [
               Object {
                 "__name": "lineTerminator",
                 "_i1": Object {
@@ -2525,7 +2519,6 @@ GameData {
         ],
       },
       "_ruleModifiers": Array [],
-      "_rulePlus": undefined,
     },
   ],
   "settings": GameSettings {},
@@ -2620,7 +2613,7 @@ Object {
           "__name": "RuleItem",
           "_i0": Object {
             "__name": "Rule",
-            "_i2": Object {
+            "_i1": Object {
               "__name": "RuleInner",
               "_i0": Object {
                 "__name": "RuleBracketsToZip",
@@ -2721,7 +2714,7 @@ Object {
                 ],
               },
             },
-            "_i3": Array [
+            "_i2": Array [
               Object {
                 "__name": "lineTerminator",
                 "_i1": Object {
@@ -2862,7 +2855,6 @@ GameData {
         ],
       },
       "_ruleModifiers": Array [],
-      "_rulePlus": undefined,
     },
   ],
   "settings": GameSettings {},
@@ -2957,7 +2949,7 @@ Object {
           "__name": "RuleItem",
           "_i0": Object {
             "__name": "Rule",
-            "_i2": Object {
+            "_i1": Object {
               "__name": "RuleInner",
               "_i0": Object {
                 "__name": "RuleBracketsToZip",
@@ -3058,7 +3050,7 @@ Object {
                 ],
               },
             },
-            "_i3": Array [
+            "_i2": Array [
               Object {
                 "__name": "lineTerminator",
                 "_i1": Object {
@@ -3199,7 +3191,6 @@ GameData {
         ],
       },
       "_ruleModifiers": Array [],
-      "_rulePlus": undefined,
     },
   ],
   "settings": GameSettings {},
@@ -3294,7 +3285,7 @@ Object {
           "__name": "RuleItem",
           "_i0": Object {
             "__name": "Rule",
-            "_i2": Object {
+            "_i1": Object {
               "__name": "RuleInner",
               "_i0": Object {
                 "__name": "RuleBracketsToZip",
@@ -3395,7 +3386,7 @@ Object {
                 ],
               },
             },
-            "_i3": Array [
+            "_i2": Array [
               Object {
                 "__name": "lineTerminator",
                 "_i1": Object {
@@ -3536,7 +3527,6 @@ GameData {
         ],
       },
       "_ruleModifiers": Array [],
-      "_rulePlus": undefined,
     },
   ],
   "settings": GameSettings {},
@@ -3631,7 +3621,7 @@ Object {
           "__name": "RuleItem",
           "_i0": Object {
             "__name": "Rule",
-            "_i2": Object {
+            "_i1": Object {
               "__name": "RuleInner",
               "_i0": Object {
                 "__name": "RuleBracketsToZip",
@@ -3732,7 +3722,7 @@ Object {
                 ],
               },
             },
-            "_i3": Array [
+            "_i2": Array [
               Object {
                 "__name": "lineTerminator",
                 "_i1": Object {
@@ -3873,7 +3863,6 @@ GameData {
         ],
       },
       "_ruleModifiers": Array [],
-      "_rulePlus": undefined,
     },
   ],
   "settings": GameSettings {},
@@ -3968,7 +3957,7 @@ Object {
           "__name": "RuleItem",
           "_i0": Object {
             "__name": "Rule",
-            "_i2": Object {
+            "_i1": Object {
               "__name": "RuleInner",
               "_i0": Object {
                 "__name": "RuleBracketsToZip",
@@ -4069,7 +4058,7 @@ Object {
                 ],
               },
             },
-            "_i3": Array [
+            "_i2": Array [
               Object {
                 "__name": "lineTerminator",
                 "_i1": Object {
@@ -4210,7 +4199,6 @@ GameData {
         ],
       },
       "_ruleModifiers": Array [],
-      "_rulePlus": undefined,
     },
   ],
   "settings": GameSettings {},
@@ -4305,7 +4293,7 @@ Object {
           "__name": "RuleItem",
           "_i0": Object {
             "__name": "Rule",
-            "_i2": Object {
+            "_i1": Object {
               "__name": "RuleInner",
               "_i0": Object {
                 "__name": "RuleBracketsToZip",
@@ -4406,7 +4394,7 @@ Object {
                 ],
               },
             },
-            "_i3": Array [
+            "_i2": Array [
               Object {
                 "__name": "lineTerminator",
                 "_i1": Object {
@@ -4547,7 +4535,6 @@ GameData {
         ],
       },
       "_ruleModifiers": Array [],
-      "_rulePlus": undefined,
     },
   ],
   "settings": GameSettings {},
@@ -4642,7 +4629,7 @@ Object {
           "__name": "RuleItem",
           "_i0": Object {
             "__name": "Rule",
-            "_i2": Object {
+            "_i1": Object {
               "__name": "RuleInner",
               "_i0": Object {
                 "__name": "RuleBracketsToZip",
@@ -4743,7 +4730,7 @@ Object {
                 ],
               },
             },
-            "_i3": Array [
+            "_i2": Array [
               Object {
                 "__name": "lineTerminator",
                 "_i1": Object {
@@ -4884,7 +4871,6 @@ GameData {
         ],
       },
       "_ruleModifiers": Array [],
-      "_rulePlus": undefined,
     },
   ],
   "settings": GameSettings {},
@@ -4979,7 +4965,7 @@ Object {
           "__name": "RuleItem",
           "_i0": Object {
             "__name": "Rule",
-            "_i2": Object {
+            "_i1": Object {
               "__name": "RuleInner",
               "_i0": Object {
                 "__name": "RuleBracketsToZip",
@@ -5080,7 +5066,7 @@ Object {
                 ],
               },
             },
-            "_i3": Array [
+            "_i2": Array [
               Object {
                 "__name": "lineTerminator",
                 "_i1": Object {
@@ -5221,7 +5207,6 @@ GameData {
         ],
       },
       "_ruleModifiers": Array [],
-      "_rulePlus": undefined,
     },
   ],
   "settings": GameSettings {},
@@ -5316,7 +5301,7 @@ Object {
           "__name": "RuleItem",
           "_i0": Object {
             "__name": "Rule",
-            "_i2": Object {
+            "_i1": Object {
               "__name": "RuleInner",
               "_i0": Object {
                 "__name": "RuleBracketsToZip",
@@ -5417,7 +5402,7 @@ Object {
                 ],
               },
             },
-            "_i3": Array [
+            "_i2": Array [
               Object {
                 "__name": "lineTerminator",
                 "_i1": Object {
@@ -5558,7 +5543,6 @@ GameData {
         ],
       },
       "_ruleModifiers": Array [],
-      "_rulePlus": undefined,
     },
   ],
   "settings": GameSettings {},
@@ -5653,7 +5637,7 @@ Object {
           "__name": "RuleItem",
           "_i0": Object {
             "__name": "Rule",
-            "_i2": Object {
+            "_i1": Object {
               "__name": "RuleInner",
               "_i0": Object {
                 "__name": "RuleBracketsToZip",
@@ -5754,7 +5738,7 @@ Object {
                 ],
               },
             },
-            "_i3": Array [
+            "_i2": Array [
               Object {
                 "__name": "lineTerminator",
                 "_i1": Object {
@@ -5895,7 +5879,6 @@ GameData {
         ],
       },
       "_ruleModifiers": Array [],
-      "_rulePlus": undefined,
     },
   ],
   "settings": GameSettings {},
@@ -5990,7 +5973,7 @@ Object {
           "__name": "RuleItem",
           "_i0": Object {
             "__name": "Rule",
-            "_i2": Object {
+            "_i1": Object {
               "__name": "RuleInner",
               "_i0": Object {
                 "__name": "RuleBracketsToZip",
@@ -6091,7 +6074,7 @@ Object {
                 ],
               },
             },
-            "_i3": Array [
+            "_i2": Array [
               Object {
                 "__name": "lineTerminator",
                 "_i1": Object {
@@ -6232,7 +6215,6 @@ GameData {
         ],
       },
       "_ruleModifiers": Array [],
-      "_rulePlus": undefined,
     },
   ],
   "settings": GameSettings {},
@@ -6327,7 +6309,7 @@ Object {
           "__name": "RuleItem",
           "_i0": Object {
             "__name": "Rule",
-            "_i2": Object {
+            "_i1": Object {
               "__name": "RuleInner",
               "_i0": Object {
                 "__name": "RuleBracketsToZip",
@@ -6451,7 +6433,7 @@ Object {
                 ],
               },
             },
-            "_i3": Array [
+            "_i2": Array [
               Object {
                 "__name": "lineTerminator",
                 "_i1": Object {
@@ -6630,7 +6612,6 @@ GameData {
         ],
       },
       "_ruleModifiers": Array [],
-      "_rulePlus": undefined,
     },
   ],
   "settings": GameSettings {},
@@ -6725,7 +6706,7 @@ Object {
           "__name": "RuleItem",
           "_i0": Object {
             "__name": "Rule",
-            "_i2": Object {
+            "_i1": Object {
               "__name": "RuleInner",
               "_i0": Object {
                 "__name": "RuleBracketsToZip",
@@ -6826,7 +6807,7 @@ Object {
                 ],
               },
             },
-            "_i3": Array [
+            "_i2": Array [
               Object {
                 "__name": "lineTerminator",
                 "_i1": Object {
@@ -6975,7 +6956,6 @@ GameData {
         ],
       },
       "_ruleModifiers": Array [],
-      "_rulePlus": undefined,
     },
   ],
   "settings": GameSettings {},
@@ -7070,7 +7050,7 @@ Object {
           "__name": "RuleItem",
           "_i0": Object {
             "__name": "Rule",
-            "_i2": Object {
+            "_i1": Object {
               "__name": "RuleInner",
               "_i0": Object {
                 "__name": "RuleBracketsToZip",
@@ -7186,7 +7166,7 @@ Object {
                 ],
               },
             },
-            "_i3": Array [
+            "_i2": Array [
               Object {
                 "__name": "lineTerminator",
                 "_i1": Object {
@@ -7361,7 +7341,6 @@ GameData {
         ],
       },
       "_ruleModifiers": Array [],
-      "_rulePlus": undefined,
     },
   ],
   "settings": GameSettings {},
@@ -7456,7 +7435,7 @@ Object {
           "__name": "RuleItem",
           "_i0": Object {
             "__name": "Rule",
-            "_i2": Object {
+            "_i1": Object {
               "__name": "RuleInner",
               "_i0": Object {
                 "__name": "RuleBracketsToZip",
@@ -7612,7 +7591,7 @@ Object {
                 ],
               },
             },
-            "_i3": Array [
+            "_i2": Array [
               Object {
                 "__name": "lineTerminator",
                 "_i1": Object {
@@ -7837,7 +7816,6 @@ GameData {
         ],
       },
       "_ruleModifiers": Array [],
-      "_rulePlus": undefined,
     },
   ],
   "settings": GameSettings {},
@@ -8273,7 +8251,7 @@ Object {
           "__name": "RuleItem",
           "_i0": Object {
             "__name": "Rule",
-            "_i2": Object {
+            "_i1": Object {
               "__name": "RuleInner",
               "_i0": Object {
                 "__name": "RuleBracketsToZip",
@@ -8429,7 +8407,7 @@ Object {
                 ],
               },
             },
-            "_i3": Array [
+            "_i2": Array [
               Object {
                 "__name": "lineTerminator",
                 "_i1": Object {
@@ -8445,7 +8423,7 @@ Object {
           "__name": "RuleItem",
           "_i0": Object {
             "__name": "Rule",
-            "_i2": Object {
+            "_i1": Object {
               "__name": "RuleInner",
               "_i0": Object {
                 "__name": "RuleBracketsToZip",
@@ -8545,7 +8523,7 @@ Object {
                 ],
               },
             },
-            "_i3": Array [
+            "_i2": Array [
               Object {
                 "__name": "lineTerminator",
                 "_i1": Object {
@@ -8960,7 +8938,6 @@ GameData {
         ],
       },
       "_ruleModifiers": Array [],
-      "_rulePlus": undefined,
     },
     GameRule {
       "__astId": 380,
@@ -9056,7 +9033,6 @@ GameData {
         ],
       },
       "_ruleModifiers": Array [],
-      "_rulePlus": undefined,
     },
   ],
   "settings": GameSettings {},
@@ -9814,7 +9790,7 @@ Object {
           "__name": "RuleItem",
           "_i0": Object {
             "__name": "Rule",
-            "_i2": Object {
+            "_i1": Object {
               "__name": "RuleInner",
               "_i0": Object {
                 "__name": "RuleBracketsToZip",
@@ -9905,7 +9881,7 @@ Object {
                 ],
               },
             },
-            "_i3": Array [
+            "_i2": Array [
               Object {
                 "__name": "lineTerminator",
                 "_i1": Object {
@@ -10042,7 +10018,6 @@ GameData {
         ],
       },
       "_ruleModifiers": Array [],
-      "_rulePlus": undefined,
     },
   ],
   "settings": GameSettings {},
@@ -10137,7 +10112,7 @@ Object {
           "__name": "RuleItem",
           "_i0": Object {
             "__name": "Rule",
-            "_i2": Object {
+            "_i1": Object {
               "__name": "RuleInner",
               "_i0": Object {
                 "__name": "RuleBracketsToZip",
@@ -10214,7 +10189,7 @@ Object {
                 ],
               },
             },
-            "_i3": Array [
+            "_i2": Array [
               Object {
                 "__name": "lineTerminator",
                 "_i1": Object {
@@ -10351,7 +10326,6 @@ GameData {
         ],
       },
       "_ruleModifiers": Array [],
-      "_rulePlus": undefined,
     },
   ],
   "settings": GameSettings {},
@@ -10446,7 +10420,7 @@ Object {
           "__name": "RuleItem",
           "_i0": Object {
             "__name": "Rule",
-            "_i2": Object {
+            "_i1": Object {
               "__name": "RuleInner",
               "_i0": Object {
                 "__name": "RuleBracketsToZip",
@@ -10699,7 +10673,7 @@ Object {
                 ],
               },
             },
-            "_i3": Array [
+            "_i2": Array [
               Object {
                 "__name": "lineTerminator",
                 "_i1": Object {
@@ -10911,7 +10885,6 @@ GameData {
         ],
       },
       "_ruleModifiers": Array [],
-      "_rulePlus": undefined,
     },
   ],
   "settings": GameSettings {},
@@ -11006,7 +10979,7 @@ Object {
           "__name": "RuleItem",
           "_i0": Object {
             "__name": "Rule",
-            "_i2": Object {
+            "_i1": Object {
               "__name": "RuleInner",
               "_i0": Object {
                 "__name": "RuleBracketsToZip",
@@ -11122,7 +11095,7 @@ Object {
                 ],
               },
             },
-            "_i3": Array [
+            "_i2": Array [
               Object {
                 "__name": "lineTerminator",
                 "_i1": Object {
@@ -11318,7 +11291,6 @@ GameData {
         ],
       },
       "_ruleModifiers": Array [],
-      "_rulePlus": undefined,
     },
   ],
   "settings": GameSettings {},
@@ -11413,7 +11385,7 @@ Object {
           "__name": "RuleItem",
           "_i0": Object {
             "__name": "Rule",
-            "_i2": Object {
+            "_i1": Object {
               "__name": "RuleInner",
               "_i0": Object {
                 "__name": "RuleBracketsToZip",
@@ -11511,7 +11483,7 @@ Object {
                 ],
               },
             },
-            "_i3": Array [
+            "_i2": Array [
               Object {
                 "__name": "lineTerminator",
                 "_i1": Object {
@@ -11698,7 +11670,6 @@ GameData {
         ],
       },
       "_ruleModifiers": Array [],
-      "_rulePlus": undefined,
     },
   ],
   "settings": GameSettings {},
@@ -11793,7 +11764,7 @@ Object {
           "__name": "RuleItem",
           "_i0": Object {
             "__name": "Rule",
-            "_i2": Object {
+            "_i1": Object {
               "__name": "RuleInner",
               "_i0": Object {
                 "__name": "RuleBracketsToZip",
@@ -11870,7 +11841,7 @@ Object {
                 ],
               },
             },
-            "_i3": Array [
+            "_i2": Array [
               Object {
                 "__name": "lineTerminator",
                 "_i1": Object {
@@ -12007,7 +11978,6 @@ GameData {
         ],
       },
       "_ruleModifiers": Array [],
-      "_rulePlus": undefined,
     },
   ],
   "settings": GameSettings {},
@@ -12102,7 +12072,7 @@ Object {
           "__name": "RuleItem",
           "_i0": Object {
             "__name": "Rule",
-            "_i2": Object {
+            "_i1": Object {
               "__name": "RuleInner",
               "_i0": Object {
                 "__name": "RuleBracketsToZip",
@@ -12202,7 +12172,7 @@ Object {
                 ],
               },
             },
-            "_i3": Array [
+            "_i2": Array [
               Object {
                 "__name": "lineTerminator",
                 "_i1": Object {
@@ -12377,7 +12347,6 @@ GameData {
         ],
       },
       "_ruleModifiers": Array [],
-      "_rulePlus": undefined,
     },
   ],
   "settings": GameSettings {},
@@ -12472,7 +12441,7 @@ Object {
           "__name": "RuleItem",
           "_i0": Object {
             "__name": "Rule",
-            "_i2": Object {
+            "_i1": Object {
               "__name": "RuleInner",
               "_i0": Object {
                 "__name": "RuleBracketsToZip",
@@ -12572,7 +12541,7 @@ Object {
                 ],
               },
             },
-            "_i3": Array [
+            "_i2": Array [
               Object {
                 "__name": "lineTerminator",
                 "_i1": Object {
@@ -12747,7 +12716,6 @@ GameData {
         ],
       },
       "_ruleModifiers": Array [],
-      "_rulePlus": undefined,
     },
   ],
   "settings": GameSettings {},
