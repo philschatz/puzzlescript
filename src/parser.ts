@@ -178,10 +178,11 @@ Puzzlescript {
 
 
 RuleItem
-  = Rule
-  | RuleLoop
+  = RuleLoop
+  | RuleGroup // Do this before Rule because we need to look for a "+" on the following Rule
+  | Rule
 
-Rule = t_GROUP_RULE_PLUS? RuleModifierLeft* RuleInner lineTerminator+
+Rule = RuleModifierLeft* RuleInner lineTerminator+
 
 RuleInner
   = RuleBracketsToZip
@@ -262,8 +263,12 @@ RuleModifierLeft
 
 RuleLoop =
   t_STARTLOOP lineTerminator+
-  Rule+
+  RuleItem+
   t_ENDLOOP lineTerminator+
+
+RuleGroup =
+  Rule
+  (t_GROUP_RULE_PLUS Rule)+
 
 
 t_ARROW_ANY
@@ -1013,14 +1018,16 @@ export class GameRuleLoop extends BaseForLines {
   }
 }
 
+class GameRuleGroup extends GameRuleLoop {
+  // Placeholder until we can verify that a Group is the same as a Loop
+}
+
 class GameRule extends BaseForLines {
-  _rulePlus: any
   _ruleModifiers: any
   _innerRule: any
 
-  constructor (source: IGameCode, rulePlus, ruleModifiers, innerRule) {
+  constructor (source: IGameCode, ruleModifiers, innerRule) {
     super(source)
-    this._rulePlus = rulePlus
     this._ruleModifiers = ruleModifiers
     this._innerRule = innerRule
   }
@@ -1694,11 +1701,14 @@ class Parser {
           return _1.parse()
         },
 
-        Rule: function (rulePlus, productionModifiers, innerRule, _whitespace) {
-          return new GameRule(this.source, rulePlus.parse()[0], productionModifiers.parse(), innerRule.parse())
+        Rule: function (productionModifiers, innerRule, _whitespace) {
+          return new GameRule(this.source, productionModifiers.parse(), innerRule.parse())
         },
         RuleLoop: function (_startloop, _whitespace1, rules, _endloop, _whitespace2) {
           return new GameRuleLoop(this.source, rules.parse())
+        },
+        RuleGroup: function (firstRule, _plusses, followingRules) {
+          return new GameRuleGroup(this.source, [firstRule.parse()].concat(followingRules.parse()))
         },
         CellSequenceBracket: function (ruleModifiers, bracket) {
           return new GameRuleSequenceBracket(this.source, ruleModifiers.parse(), bracket.parse())
