@@ -31,8 +31,8 @@ async function run () {
       // return
 
       if (validationMessages) {
-        validationMessages.forEach(({source, level, message}) => {
-          const {lineNum, colNum} = source.__getSourceLineAndColumn()
+        validationMessages.forEach(({gameNode, level, message}) => {
+          const {lineNum, colNum} = gameNode.__getSourceLineAndColumn()
           console.warn(`(${lineNum}:${colNum}) ${level} : ${message}`)
         })
       }
