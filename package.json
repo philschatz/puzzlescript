@@ -9,7 +9,8 @@
     "test": "jest --coverage --updateSnapshot",
     "test-debug": "node --inspect-brk -r source-map-support/register $(npm bin)/jest -i --updateSnapshot $@",
     "posttest": "npm run-script lint",
-    "watch": "jest --updateSnapshot --watch"
+    "watch": "jest --updateSnapshot --watch",
+    "debug": "tsc; node --inspect-brk lib/runGame.js"
   },
   "dependencies": {
     "@types/axel": "0.0.0",

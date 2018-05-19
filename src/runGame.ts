@@ -110,7 +110,7 @@ async function run() {
           f[index] = count
           fnMap[index] = {
             name: "foo",
-            decl: loc
+            decl: loc,
             loc: loc,
             line: loc.start.line
           }
