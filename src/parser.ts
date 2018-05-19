@@ -1104,6 +1104,16 @@ export class TileWithModifier extends BaseForLines {
   getMatchedMutatorsOrNull(cell: Cell) {
     return cell.getSpritesAsSet().has(this._tile)
   }
+
+  matchesCell(cell: Cell) {
+    const hasTile = cell.getSpritesAsSet().has(this._tile)
+    if (this.isNo()) {
+      return !hasTile
+    } else {
+      return hasTile
+    }
+  }
+
 }
 
 class HackNode extends BaseForLines {

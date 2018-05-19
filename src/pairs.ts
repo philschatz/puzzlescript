@@ -105,47 +105,24 @@ export class RuleBracketPair implements IMatcher {
 }
 
 class NeighborPair implements IMatcher {
-  _condition: RuleBracketNeighbor
-  _action: RuleBracketNeighbor
-  _tileWithModifierPairs: TileWithModifierPair[]
+  _condition: TileWithModifier[]
+  _action: TileWithModifier[]
 
   constructor(condition: RuleBracketNeighbor, action: RuleBracketNeighbor) {
-    this._condition = condition
-    this._action = action
-    this._tileWithModifierPairs = _.zip(this._condition._tilesWithModifier, this._action._tilesWithModifier).map(([conditionTileWithModifier, actionTileWithModifier]) => {
-      return new TileWithModifierPair(conditionTileWithModifier, actionTileWithModifier)
-    })
+    this._condition = condition._tilesWithModifier
+    this._action = action._tilesWithModifier
   }
 
   getMatchedMutatorsOrNull(cell: Cell) {
-    for (const tileWithModifier of this._tileWithModifierPairs) {
+    for (const tileWithModifier of this._condition) {
       if (!tileWithModifier.matchesCell(cell)) {
         return null
       }
     }
-    return [new CellMutator(this._condition._tilesWithModifier, this._action._tilesWithModifier, cell)]
+    return [new CellMutator(this._condition, this._action, cell)]
   }
 }
 
-class TileWithModifierPair {
-  _condition: TileWithModifier
-  _action: TileWithModifier
-  constructor(condition: TileWithModifier, action: TileWithModifier) {
-    if (!this._condition) {
-      throw new Error('sdklfjsldkjflsdkjflsdkfj')
-    }
-    this._condition = condition
-    this._action = action
-  }
-  matchesCell(cell: Cell) {
-    const hasTile = cell.getSpritesAsSet().has(this._condition._tile)
-    if (this._condition.isNo()) {
-      return !hasTile
-    } else {
-      return hasTile
-    }
-  }
-}
 
 class CellMutator implements IMutator {
   _condition: TileWithModifier[]
