@@ -2,7 +2,7 @@
 const { readFileSync } = require('fs')
 const { default: Parser } = require('../src/parser')
 
-function checkGrammar(code) {
+function checkGrammar (code) {
   const grammar = Parser.getGrammar()
   const match = grammar.match(code)
   expect(match.succeeded()).toBe(true)

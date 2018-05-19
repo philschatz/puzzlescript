@@ -225,7 +225,7 @@ LEVELS
 
 ` // end game
 
-function parseEngine(code) {
+function parseEngine (code) {
   const { data, error } = Parser.parse(code)
   expect(error && error.message).toBeFalsy() // Use && so the error messages are shorter
 
@@ -234,7 +234,7 @@ function parseEngine(code) {
   return { engine, data }
 }
 
-function getSpriteByName(data, name) {
+function getSpriteByName (data, name) {
   return data.objects.filter((sprite) => sprite._name === name)[0]
 }
 

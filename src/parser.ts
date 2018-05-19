@@ -1042,11 +1042,22 @@ export class GameRule extends BaseForLines implements IRule {
   _modifiers: Set<RULE_MODIFIER>
   _commands: string[]
   _bracketPairs: RuleBracketPair[]
+  _hasEllipsis: boolean
   // _conditionCommandPair: RuleConditionCommandPair[]
 
   constructor(source: IGameCode, modifiers: Set<RULE_MODIFIER>, conditions: RuleBracket[], actions: RuleBracket[], commands: string[]) {
     super(source)
     this._modifiers = modifiers
+    this._hasEllipsis = false
+
+    // Set _hasEllipsis value
+    for (let i = 0; i < conditions.length; i++) {
+      const condition = conditions[i]
+      if (condition.hasEllipsis()) {
+        this._hasEllipsis = true
+        break
+      }
+    }
 
     // Check if valid
     if (conditions.length !== actions.length && actions.length !== 0) {
@@ -1077,10 +1088,24 @@ export class GameRule extends BaseForLines implements IRule {
 
 export class RuleBracket extends BaseForLines {
   _neighbors: RuleBracketNeighbor[]
+  _hasEllipsis: boolean
 
   constructor(source: IGameCode, neighbors: RuleBracketNeighbor[], hack: string) {
     super(source)
     this._neighbors = neighbors
+    this._hasEllipsis = false
+
+    for (let i = 0; i < neighbors.length; i++) {
+      const neighbor = neighbors[i]
+      if (neighbor.isEllipsis()) {
+        this._hasEllipsis = true
+        break
+      }
+    }
+  }
+
+  hasEllipsis() {
+    return this._hasEllipsis
   }
 }
 
@@ -1114,7 +1139,7 @@ export class TileWithModifier extends BaseForLines {
   }
 
   matchesCell(cell: Cell) {
-    const hasTile = this._tile.matchesCell(cell)
+    const hasTile = this._tile && this._tile.matchesCell(cell)
     if (this.isNo()) {
       return !hasTile
     } else {
@@ -1130,6 +1155,10 @@ class HackNode extends BaseForLines {
   constructor(source: IGameCode, fields: object) {
     super(source)
     this.fields = fields
+  }
+
+  isEllipsis() {
+    return false
   }
 }
 
@@ -1409,8 +1438,9 @@ class Parser {
         RuleBracketNeighbor: function (_1) {
           return _1.parse()
         },
-        RuleBracketEllipsisNeighbor: function (tileWithModifier) {
-          return new RuleBracketNeighbor(this.source, tileWithModifier.parse(), true)
+        RuleBracketEllipsisNeighbor: function (_1) {
+          const tileWithModifier = new TileWithModifier(this.source, "...", null)
+          return new RuleBracketNeighbor(this.source, [tileWithModifier], true)
         },
         RuleBracketNoEllipsisNeighbor: function (tileWithModifier) {
           return new RuleBracketNeighbor(this.source, tileWithModifier.parse(), false)
