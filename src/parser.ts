@@ -1111,7 +1111,7 @@ export class TileWithModifier extends BaseForLines {
   }
 
   matchesCell(cell: Cell) {
-    const hasTile = cell.getSpritesAsSet().has(this._tile)
+    const hasTile = this._tile.matchesCell(cell)
     if (this.isNo()) {
       return !hasTile
     } else {
