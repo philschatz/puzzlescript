@@ -178,57 +178,26 @@ Puzzlescript {
 
 
 RuleItem
-  = Rule
-  | RuleLoop
+  = RuleLoop
+  | RuleGroup // Do this before Rule because we need to look for a "+" on the following Rule
+  | Rule
 
-Rule = t_GROUP_RULE_PLUS? RuleModifierLeft* RuleInner lineTerminator+
+Rule = (RuleModifierLeft* RuleBracket)+ "->" (RuleModifier? RuleBracket)* RuleCommand* MessageCommand? lineTerminator+
 
-RuleInner
-  = RuleBracketsToZip
-  | RuleCommands1
-  | RuleCommands2
+RuleBracket = "[" NonemptyListOf<RuleBracketNeighbor, "|"> "]"
+RuleBracketNeighbor
+  = RuleBracketEllipsisNeighbor
+  | RuleBracketNoEllipsisNeighbor
 
-RuleBracketsToZip = RuleConditions /* -> */ CellSequenceBracket+ RuleCommand* MessageCommand? // Verify the left-hand structure matches the right-hand
-RuleCommands1 = RuleConditions /* -> */ RuleCommand+ MessageCommand?
-RuleCommands2 = RuleConditions /* -> */ RuleCommand* MessageCommand
-
-RuleConditions = CellSequenceBracket+ "->"
-
-
-
-CellSequenceBracket = RuleModifier* CellSequenceBracketOnly
-
-CellSequenceBracketOnly
-  = EllipsisBracket
-  | SimpleBracket
-
-
-EllipsisBracket = "[" space* NeighboringCells t_ELLIPSIS "|" NeighboringCells "]"
-SimpleBracket = "[" space* NeighboringCells "]"
-
-NeighboringCells = NonemptyListOf<Cell, "|">
-
-Cell = CellLayer*
-
-CellLayer
-  = HackCellLayer1
-  | HackCellLayer2
-  | SimpleCellLayer
-
-SimpleCellLayer = (cellLayerModifier)* cellName
-HackCellLayer1 = HackRuleCommand
-HackCellLayer2 = cellName HackRuleCommand
-
-HackRuleCommand = RuleCommand ~letter // HACK: These should be moved up to the Rule Action, not nested way down here
-
+RuleBracketEllipsisNeighbor = space* t_ELLIPSIS space*
+RuleBracketNoEllipsisNeighbor = cellLayerModifier? ruleVariableName*
 
 cellName = ruleVariableName
 
-cellLayerModifier = space* cellLayerModifierInner space+ // Force-check that there is whitespace after the cellLayerModifier so things like "STATIONARYZ" or "NOZ" are not parsed as a modifier (they are a variable that happens to begin with the same text as a modifier)
+cellLayerModifier = space* cellLayerModifierInner (space|nonVarChar)+ // Force-check that there is whitespace or nonVarChar after the cellLayerModifier so things like "STATIONARYZ" or "NOZ" are not parsed as a modifier (they are a variable that happens to begin with the same text as a modifier)
 
 cellLayerModifierInner
   = t_NO
-  // The following are probably not actually cellLayerModifier's ... Check that they only exist at the beginning of a "["
   | t_LEFT
   | t_RIGHT
   | t_UP
@@ -262,8 +231,12 @@ RuleModifierLeft
 
 RuleLoop =
   t_STARTLOOP lineTerminator+
-  Rule+
+  RuleItem+
   t_ENDLOOP lineTerminator+
+
+RuleGroup =
+  Rule
+  (t_GROUP_RULE_PLUS Rule)+
 
 
 t_ARROW_ANY
@@ -394,9 +367,9 @@ MessageCommand = t_MESSAGE words*
   // SECTION_NAME
   // ================
   Section<Name, ItemExpr> =
-    "===" headingBar lineTerminator
+    "="+ headingBar lineTerminator
     Name lineTerminator
-    "===" headingBar lineTerminator+
+    "="+ headingBar lineTerminator+
     (space* ItemExpr)*
     lineTerminator*
 
@@ -766,6 +739,7 @@ export class GameSprite extends BaseForLines implements IGameTile {
     return cell.getSpritesAsSet().has(this)
   }
 }
+
 class GameSpriteSingleColor extends GameSprite {
   _color: HexColor
 
@@ -1008,342 +982,86 @@ export class GameRuleLoop extends BaseForLines {
     super(source)
     this._rules = rules
   }
-  getMatchedMutatorsOrNull (cell: Cell) {
-    return null // TODO Loops are not supported yet
-  }
-}
 
-class GameRule extends BaseForLines {
-  _rulePlus: any
-  _ruleModifiers: any
-  _innerRule: any
-
-  constructor (source: IGameCode, rulePlus, ruleModifiers, innerRule) {
-    super(source)
-    this._rulePlus = rulePlus
-    this._ruleModifiers = ruleModifiers
-    this._innerRule = innerRule
-  }
-
-  getMatchedMutatorsOrNull (cell: Cell) {
-    // if (_.difference(this._ruleModifiers, ALL_DIRECTIONS).length > 0) {
-    //   return null // TODO: not supported yet
-    // }
-    return this._innerRule.getMatchedMutatorsOrNull(cell, this._ruleModifiers)
-  }
-}
-
-function checkLength (conditions, actions) {
-  if (conditions.length !== actions.length) {
-    return `counts mismatch. Left is ${conditions.length} while Right is ${actions.length}`
-  }
-}
-function checkLengthAndRecurse (conditions, actions) {
-  // console.log('--------- START');
-  // console.log(conditions);
-  // console.log(actions);
-  // console.log('--------- END');
-
-  let ret = checkLength(conditions, actions)
-  if (ret) return ret
-  for (let i = 0; i < conditions.length; i++) {
-    const condition = conditions[i]
-    const action = actions[i]
-    ret = action.doesntMatchConditionStructure(condition)
-    if (ret) break
-  }
-  return ret
-}
-
-// The idea is to convert something like `[A|B] [C|D|E] -> [N|O] [P|Q|R]`
-// into something like { ( (A,N), (B,O) ), ( (C,P), (D,Q), (E,R) ) }
-// That way it's easy to call `.mutate()` to change the cell.
-class BracketPair {
-  neighbors: any
-
-  constructor (neighbors) {
-    this.neighbors = neighbors
-  }
-  mutate (cell: Cell) {
-    return this.neighbors.map((neighbor) => neighbor.mutate(cell))
-  }
-}
-
-class EllipsisPair {
-  constructor () {
-    // TODO: Implement me
-  }
-}
-
-class CellPair extends BaseForLines {
-  conditionLayers: any
-  actionLayers: any
-
-  constructor (source: IGameCode, condition, action) {
-    super(source)
-    this.conditionLayers = condition
-    this.actionLayers = action
-  }
-  getMatchedMutatorsOrNull (cell: Cell) {
-    for (const cellLayer of this.conditionLayers) {
-      if (!cellLayer.matchesCell(cell)) return null
-    }
-    return new CellPairMutator(this.__source, cell, this)
-  }
-}
-
-class CellPairMutator extends BaseForLines {
-  cell: any
-  cellPair: CellPair
-
-  constructor (source: IGameCode, cell: Cell, cellPair: CellPair) {
-    super(source)
-    this.cell = cell
-    this.cellPair = cellPair
-  }
-  mutate () {
-    // Just remove all tiles for now and then add all of them back
-    // TODO: only remove tiles that are matching the collisionLayer but wait, they already need to be exclusive
-    const newSetOfSprites = new Set(this.cell.getSpritesAsSet())
-
-    // remove sprites that are listed on the condition side
-    this.cellPair.conditionLayers.forEach(layer => {
-      layer.getSprites().forEach(sprite => {
-        newSetOfSprites.delete(sprite)
-      })
-    })
-    this.cellPair.actionLayers.forEach(layer => {
-      if (!layer.getSprites) {
-        console.log('BUUUUUGGGG')
-        console.log(layer)
-        console.log(layer.toString())
-      }
-      layer.getSprites().forEach(sprite => {
-        if (layer.isNo()) {
-          newSetOfSprites.delete(sprite)
-        } else {
-          newSetOfSprites.add(sprite)
-        }
-      })
-    })
-
-    if (!this.cell.equalsSprites(newSetOfSprites)) {
-      this.cell.updateSprites(newSetOfSprites)
-      return [this.cell]
-    } else {
-      return []
-    }
+  isValidRule() {
+    return false
   }
 }
 
 const ALL_DIRECTIONS = ['UP', 'DOWN', 'LEFT', 'RIGHT']
 
-class RuleBracketsToZip extends BaseForLines {
-  _conditions: any
-  _actions: any
-  _commands: any
-  _bracketPairs: any[]
+class GameRuleGroup  extends GameRuleLoop {
+  // do we really need this class?
+}
 
-  constructor (source: IGameCode, conditions, actions, commands) {
+class GameRule extends BaseForLines {
+  _modifiers: string[]
+  _conditions: RuleCondition[]
+  _actions: RuleAction[]
+  _commands: string[]
+
+  constructor (source: IGameCode, modifiers: string[], conditions: RuleCondition[], actions: RuleAction[], commands: string[]) {
     super(source)
+    this._modifiers = modifiers
     this._conditions = conditions
     this._actions = actions
     this._commands = commands
-
-    // Zip the Conditions and Actions into Pairs so we can mutate them better
-    if (conditions.length !== actions.length) {
-      throw new Error(`ERROR: Rule conditions (left side) and actions (right side) must match up structurally (must have the same number of brackets and each bracket must have the same number of pipe characters)`)
-    }
-
-    this._bracketPairs = []
-    for (let x = 0; x < conditions.length; x++) {
-      const conditionBracket = conditions[x]
-      const actionBracket = actions[x]
-
-      // TODO: Convert this to a conditionBracket._bracket.zipWith(actionBracket._bracket)
-      if (conditionBracket._bracket instanceof RuleEllipsisBracket) {
-        this._bracketPairs.push(new EllipsisPair())
-      } else {
-        if (!conditionBracket._bracket._neighbors) {
-          console.log(conditionBracket._bracket)
-          console.log(conditionBracket._bracket.toString())
-        }
-        if (conditionBracket._bracket._neighbors.length !== actionBracket._bracket._neighbors.length) {
-          throw new Error(`ERROR: Rule conditions (left side) and actions (right side) must match up structurally (must have the same number of brackets and each bracket must have the same number of pipe characters). Number of Pipe characters do not match`)
-        }
-
-        const resultNeighbors = []
-        for (let y = 0; y < conditionBracket._bracket._neighbors.length; y++) {
-          const conditionNeighbor = conditionBracket._bracket._neighbors[y]
-          const actionNeighbor = actionBracket._bracket._neighbors[y]
-
-          resultNeighbors.push(new CellPair(this.__source, conditionNeighbor, actionNeighbor))
-        }
-
-        this._bracketPairs.push(new BracketPair(resultNeighbors))
-      }
-    }
   }
 
-  getMatchedMutatorsOrNull (cell: Cell, parentRuleModifiers) {
-    let ret = []
-    if (this._bracketPairs.length > 1) {
-      return null // `BUG: multiple bracket rules are not supported yet`
+  isValidRule() {
+    if (this._conditions.length !== this._actions.length && this._actions.length !== 0) {
+      throw new Error(`Left side has "${this._conditions.length}" conditions and right side has "${this._actions.length}" actions!`)
     }
 
-    for (const bracketPair of this._bracketPairs) {
-      // HACK Since we don't support EllipsisPair yet
-      if (bracketPair instanceof EllipsisPair) {
-        return null
-      }
-
-      // Try each direction. If the user specified some, then use those. Otherwise check in all directions
-      let directions = _.intersection(parentRuleModifiers, ALL_DIRECTIONS)
-      if (directions.length === 0) {
-        directions = ALL_DIRECTIONS
-      }
-
-      let curCell = cell
-      for (const direction of directions) {
-        let neighborRet = []
-        for (const neighbor of bracketPair.neighbors) {
-          if (!curCell) break // If we hit the end of the level then this does not match
-
-          const mutators = neighbor.getMatchedMutatorsOrNull(curCell)
-          if (!mutators) break
-          neighborRet.push(mutators)
-
-          // Move to the next neighboring cell
-          curCell = curCell.getNeighbor(direction)
-        }
-
-        // If all the neighbors were matched then return the mutators
-        if (neighborRet.length === bracketPair.neighbors.length) {
-          ret.push(neighborRet)
-        }
-      }
-    }
-    return ret
-  }
-  mutate (cell: Cell) {
-    return this._bracketPairs.map((bracketPair) => bracketPair.mutate(cell))
-  }
-
-  doesntMatchConditionStructure (conditionBrackets) {
-    const actionBrackets = this._actions
-    return checkLengthAndRecurse(conditionBrackets, actionBrackets)
-  }
-}
-
-class GameRuleSequenceBracket extends BaseForLines {
-  _ruleModifiers: any
-  _bracket: any
-
-  constructor (source: IGameCode, ruleModifiers, bracket) {
-    super(source)
-    this._ruleModifiers = ruleModifiers
-    this._bracket = bracket
+    return true
   }
 
   getMatchedMutatorsOrNull (cell: Cell) {
-    if (this._ruleModifiers.length > 0) {
-      return null // `BUG: evaluating rules with modifiers is not implemented yet`
-    }
-    return this._bracket.getMatchedMutatorsOrNull(cell)
-  }
-
-  doesntMatchConditionStructure (condition) {
-    return this._bracket.doesntMatchConditionStructure(condition._bracket)
+    // TODO: rewrite this
   }
 }
 
-class RuleEllipsisBracket extends BaseForLines {
-  _leftNeighboringCells: any
-  _rightNeighboringCells: any
+class RuleCondition extends BaseForLines {
+  _brackets: RuleBracket[]
 
-  constructor (source: IGameCode, leftNeighboringCells, rightNeighboringCells) {
+  constructor (source: IGameCode, brackets: RuleBracket[]) {
     super(source)
-    this._leftNeighboringCells = leftNeighboringCells
-    this._rightNeighboringCells = rightNeighboringCells
-  }
-  getMatchedMutatorsOrNull (cell: Cell) {
-    return null // 'BUG: Checking neighbors (& ellipses) not implemented yet'
-  }
-
-  doesntMatchConditionStructure (condition) {
-    // Only check the length because the number of cellLayers inside can be different (some are added and some are removed as part of the rule)
-    let ret = checkLength(condition._leftNeighboringCells, this._leftNeighboringCells)
-    if (ret) return ret
-    return checkLength(condition._rightNeighboringCells, this._rightNeighboringCells)
+    this._brackets = brackets
   }
 }
 
-class GameRuleSimpleBracket extends BaseForLines {
-  _neighbors: any
+class RuleAction extends BaseForLines {
+  _brackets: RuleBracket[]
 
-  constructor (source: IGameCode, neighbors) {
+  constructor (source: IGameCode, brackets: RuleBracket[]) {
+    super(source)
+    this._brackets = brackets
+  }
+}
+
+class RuleBracket extends BaseForLines {
+  _neighbors: RuleBracketNeighbor[]
+
+  constructor (source: IGameCode, neighbors: any) {
     super(source)
     this._neighbors = neighbors
   }
 
-  getMatchedMutatorsOrNull (cell: Cell) {
-    const ret = []
-    for (const neighbor of this._neighbors) {
-      // Check if all the cellLayers are on the current cell
-      const retNeighbor = []
-      for (const child of neighbor) {
-        const retChild = child.matchesCell(cell)
-        if (!retChild) break
-        retNeighbor.push(retChild)
-      }
-      if (retNeighbor.length === neighbor.length) {
-        ret.push(retNeighbor)
-      }
-    }
-    if (ret.length === this._neighbors.length) {
-      return ret
-    }
-    return null
-  }
 
-  doesntMatchConditionStructure (conditionBracket) {
-    // No need to check the number of cells inside a neighbor block because they can be added or removed so they do not have to match up
-    return checkLength(conditionBracket._neighbors, this._neighbors)
-  }
 }
 
-class RuleCommands extends BaseForLines {
-  _conditions: any
-  _commands: any
+class RuleBracketNeighbor extends BaseForLines {
+  _modifier: string
+  _values: any
 
-  constructor (source: IGameCode, conditions, commands) {
+  constructor (source: IGameCode, modifier: string, values: any) {
     super(source)
-    this._conditions = conditions
-    this._commands = commands
+    this._modifier = modifier
+    this._values = values
   }
-  getMatchedMutatorsOrNull (cell: Cell) {
-    for (const child of this._conditions) {
-      const retChild = child.getMatchedMutatorsOrNull(cell)
-      if (!retChild) return null
-    }
-    return new RuleCommandMutator(this._commands, cell)
-  }
-  doesntMatchConditionStructure () {
-    // The left-hand-side structure does not matter since we are executing commands
-    return false
-  }
-}
 
-class RuleCommandMutator {
-  commands: any
-  cell: Cell
-
-  constructor (commands, cell: Cell) {
-    this.commands = commands
-    this.cell = cell
-  }
-  mutate () {
-    // console.log(`TODO: Execute these commands (which matched):`, this.commands)
+  iSEllipsis() {
+    return this._modifier = "..."
   }
 }
 
@@ -1367,73 +1085,6 @@ function setDifference(setA, setB) {
         difference.delete(elem)
     }
     return difference
-}
-
-class GameRuleCellLayer extends BaseForLines {
-  _cellModifiers: any
-  _tile: IGameTile
-
-  constructor (source: IGameCode, cellModifiers, tile: IGameTile) {
-    super(source)
-    this._cellModifiers = new Set(cellModifiers)
-    this._tile = tile
-  }
-  isNo () {
-    return this._cellModifiers.has(M_NO)
-  }
-  getSprites () {
-    return this._tile.getSprites()
-  }
-  matchesCell (cell: Cell) {
-    /* Modifiers
-      = t_NO
-      // The following are probably not actually cellLayerModifier's ... Check that they only exist at the beginning of a "["
-      | t_LEFT
-      | t_RIGHT
-      | t_UP
-      | t_DOWN
-      | t_RANDOMDIR
-      | t_RANDOM
-      | t_STATIONARY
-      | t_MOVING
-      | t_ACTION
-      | t_VERTICAL
-      | t_HORIZONTAL
-      | t_PERPENDICULAR
-      | t_ORTHOGONAL
-      | t_ARROW_ANY // This can be a "v" so it needs to go at the end (behind t_VERTICAL)
-    */
-    const mods = setDifference(this._cellModifiers, SUPPORTED_CELL_MODIFIERS)
-    if (mods.size > 0) {
-      // Not supported yet
-      return false
-    }
-
-    const negate = this.isNo()
-    // console.log(`Checking if ${cell.getSprites().map(s => s._name)} ${[...mods]} has ${this.getSprites().map(s => s._name)}`);
-    if (negate) {
-      return !this._tile.matchesCell(cell)
-    } else {
-      return this._tile.matchesCell(cell)
-    }
-  }
-}
-
-class GameRuleCellLayerHack extends BaseForLines {
-  _spriteNameMaybeNull: string | null
-  _hackRuleCommand: any
-
-  constructor (source: IGameCode, spriteName: string, hackRuleCommand) {
-    super(source)
-    this._spriteNameMaybeNull = spriteName
-    this._hackRuleCommand = hackRuleCommand
-  }
-  getSprites () {
-    if (!this._spriteNameMaybeNull) {
-      throw new Error('BUG: Need to fix this hack in the Rule tree so it is not executed')
-    }
-    return [this._spriteNameMaybeNull]
-  }
 }
 
 class LookupHelper {
@@ -1689,37 +1340,29 @@ class Parser {
           })
           return collisionLayer
         },
-
         RuleItem: function (_1) {
           return _1.parse()
-        },
-
-        Rule: function (rulePlus, productionModifiers, innerRule, _whitespace) {
-          return new GameRule(this.source, rulePlus.parse()[0], productionModifiers.parse(), innerRule.parse())
         },
         RuleLoop: function (_startloop, _whitespace1, rules, _endloop, _whitespace2) {
           return new GameRuleLoop(this.source, rules.parse())
         },
-        CellSequenceBracket: function (ruleModifiers, bracket) {
-          return new GameRuleSequenceBracket(this.source, ruleModifiers.parse(), bracket.parse())
+        RuleGroup: function (firstRule, _plusses, followingRules) {
+          return new GameRuleGroup(this.source, [firstRule.parse()].concat(followingRules.parse()))
         },
-        EllipsisBracket: function (_leftBracket, _whitespace, leftNeighboringCells, _ellipsis, _pipe, rightNeighboringCells, _rightBracket) {
-          return new RuleEllipsisBracket(this.source, leftNeighboringCells.parse(), rightNeighboringCells.parse())
+        Rule: function (modifiers, conditions, _arrow, _unusuedModifer, actions, commands, optionalMessageCommand, _whitespace) {
+          return new GameRule(this.source, _.flatten(modifiers.parse()), conditions.parse(), actions.parse(), commands.parse().concat(optionalMessageCommand.parse()))
         },
-        SimpleBracket: function (_leftBracket, _whitespace, cellLayers, _rightBracket) {
-          return new GameRuleSimpleBracket(this.source, cellLayers.parse())
+        RuleBracket: function (_openBracket, neighbors, _closeBracket) {
+          return new RuleBracket(this.source, neighbors.parse())
         },
-        CellLayer: function (_1) {
+        RuleBracketNeighbor: function (_1) {
           return _1.parse()
         },
-        SimpleCellLayer: function (cellModifiers, cellName) {
-          return new GameRuleCellLayer(this.source, cellModifiers.parse(), lookup.lookupObjectOrLegendTile(this.source, cellName.parse()))
+        RuleBracketEllipsisNeighbor: function (_1, modifier, _3) {
+          return new RuleBracketNeighbor(this.source, modifier.parse(), [])
         },
-        HackCellLayer1: function (hackRuleCommand) {
-          return new GameRuleCellLayerHack(this.source, null, hackRuleCommand.parse())
-        },
-        HackCellLayer2: function (cellName, hackRuleCommand) {
-          return new GameRuleCellLayerHack(this.source, lookup.lookupObjectOrLegendTile(this.source, cellName.parse()), hackRuleCommand.parse())
+        RuleBracketNoEllipsisNeighbor: function (modifier, values) {
+          return new RuleBracketNeighbor(this.source, modifier.parse(), values.parse())
         },
         cellName: function (_1) {
           return _1.parse()
@@ -1727,24 +1370,9 @@ class Parser {
         cellLayerModifier: function (_whitespace1, cellLayerModifier, _whitespace2) {
           return cellLayerModifier.parse()
         },
-
-        RuleBracketsToZip: function (conditions, actions, commands, optionalMessageCommand) {
-          return new RuleBracketsToZip(this.source, conditions.parse(), actions.parse(), commands.parse().concat(optionalMessageCommand.parse()))
-        },
-        RuleCommands1: function (conditions, commands, message) {
-          return new RuleCommands(this.source, conditions.parse(), commands.parse().concat(message.parse()))
-        },
-        RuleCommands2: function (conditions, commands, message) {
-          return new RuleCommands(this.source, conditions.parse(), commands.parse().concat(message.parse()))
-        },
-        RuleConditions: function (brackets, _rightArrow) {
-          return brackets.parse()
-        },
-
         MessageCommand: function (_message, message) {
           return new GameMessage(this.source, message.parse())
         },
-
         WinConditionItemSimple: function (qualifierEnum, spriteName, _whitespace) {
           return new WinConditionSimple(this.source, qualifierEnum.parse(), spriteName.parse())
         },
