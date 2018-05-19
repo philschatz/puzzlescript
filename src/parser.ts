@@ -1,8 +1,9 @@
 import * as _ from 'lodash'
 import * as ohm from 'ohm-js'
 import { lookupColorPalette } from './colors'
+import { IMutator, RuleConditionActionPair, getMatchedMutatorsHelper } from './pairs'
 import { Cell } from './engine';
-import { StringifyOptions } from 'querystring';
+import { RULE_MODIFIER, setIntersection, setDifference } from './util'
 
 const GRAMMAR_STR = `
 Puzzlescript {
@@ -480,6 +481,11 @@ function getLineAndColumn (str, offset) {
   }
 }
 
+interface IGameNode {
+  __getSourceLineAndColumn: () => {lineNum: string, colNum: string}
+  toString: () => string
+}
+
 let astId: number = 0
 export class BaseForLines {
   __astId: number
@@ -591,7 +597,7 @@ export class GameData {
   }
 }
 
-export declare interface IGameTile extends BaseForLines{
+export declare interface IGameTile extends IGameNode {
   _getDescendantTiles: () => IGameTile[]
   getSprites: () => GameSprite[]
   isInvalid: () => string
@@ -673,7 +679,7 @@ class RGB {
   }
 }
 
-export declare interface IColor {
+export declare interface IColor extends IGameNode {
   isTransparent: () => boolean
   toRgb: () => RGB
 }
@@ -980,7 +986,12 @@ export class WinConditionOn extends WinConditionSimple {
   }
 }
 
-export class GameRuleLoop extends BaseForLines {
+export declare interface IRule extends IGameNode {
+  getMatchedMutatorsOrNull: (ICell) => IMutator?[]
+}
+
+
+class GameRuleLoop implements IRule extends BaseForLines {
   _rules: GameRule[]
 
   constructor (source: IGameCode, rules: GameRule[]) {
@@ -988,77 +999,60 @@ export class GameRuleLoop extends BaseForLines {
     this._rules = rules
   }
 
-  isValidRule() {
-    return false
+  getMatchedMutatorsOrNull (cell) {
+    return null // Not implemented yet
+    // return getMatchedMutatorsHelper(this._rules, cell)
   }
+
 }
-
-export enum RuleModifier {
-  RANDOM = 'RANDOM',
-  UP = 'UP',
-  DOWN = 'DOWN',
-  LEFT = 'LEFT',
-  RIGHT = 'RIGHT',
-  VERTICAL = 'VERTICAL',
-  HORIZONTAL = 'HORIZONTAL',
-  ORTHOGONAL = 'ORTHOGONAL',
-  LATE = 'LATE',
-  RIGID = 'RIGID'
-}
-
-const SIMPLE_DIRECTIONS = new Set([
-  RuleModifier.UP,
-  RuleModifier.DOWN,
-  RuleModifier.LEFT,
-  RuleModifier.RIGHT
-])
-
-class GameRuleGroup  extends GameRuleLoop {
+class GameRuleGroup extends GameRuleLoop {
   // do we really need this class?
 }
 
-class GameRule extends BaseForLines {
-  _modifiers: string[]
-  _conditions: RuleBracket[]
-  _actions: RuleBracket[]
+const SUPPORTED_RULE_MODIFIERS = new Set([
+  // RuleModifier.UP,
+  // RuleModifier.DOWN
+])
+
+
+// TODO: We may not be able to be so smart about this; We may need to expand the
+// Rule into multiple Rules when HORIZONTAL, VERTICAL, ORTHOGONAL, or nothing
+// are passed in as directions.
+// Because of https://www.puzzlescript.net/Documentation/executionorder.html
+class GameRule implements IRule extends BaseForLines {
+  _modifiers: Set<RULE_MODIFIER>
   _commands: string[]
-  _isValid: boolean
+  _conditionActionPairs: RuleConditionActionPair[]
+  // _conditionCommandPair: RuleConditionCommandPair[]
 
   constructor (source: IGameCode, modifiers: string[], conditions: RuleBracket[], actions: RuleBracket[], commands: string[]) {
     super(source)
     this._modifiers = modifiers
-    this._conditions = conditions
-    this._actions = actions
-    this._commands = commands
-  }
 
-  isValidRule() {
-    if (this._isValid !== undefined) return this._isValid
-
-    if (this._conditions.length !== this._actions.length && this._actions.length !== 0) {
-      this._isValid = false
-      throw new Error(`Left side has "${this._conditions.length}" conditions and right side has "${this._actions.length}" actions!`)
+    // Check if valid
+    if (conditions.length !== actions.length && actions.length !== 0) {
+      throw new Error(`Left side has "${conditions.length}" conditions and right side has "${actions.length}" actions!`)
     }
 
-    return this._isValid = true
+    if (conditions.length === actions.length) {
+      this._conditionActionPairs = _.zip(conditions, actions).map(([condition, action]) => {
+        return new RuleConditionActionPair(this._modifiers, condition, action)
+      })
+    } else if (actions.length !== 0) {
+      throw new Error(`Invalid Rule. The number of brackets on the right must match the structure of the left hand side or be 0`)
+    }
+    // TODO: build the _conditionCommandPair
+    if (commands.length > 0) {
+      this._conditionActionPairs = []
+    }
   }
 
   getMatchedMutatorsOrNull (cell: Cell) {
-    if (this.isValidRule() || this._actions.length === 0) {
+    // If the rule has any modifiers that we do not understand, return null
+    if (setDifference(this._modifiers, SUPPORTED_RULE_MODIFIERS).size > 0) {
       return null
     }
-    else {
-      const matched = []
-      for (let i = 0; i < this._conditions.length; i++) {
-        const condition = this._conditions[i]
-        const match = condition.getMatchedMutatorsOrNull(cell)
-
-        if (match) {
-          const action = this._actions[i]
-          matched.push(action)
-        }
-      }
-    }
+    return getMatchedMutatorsHelper(this._conditionActionPairs, cell)
   }
 }
 
@@ -1068,16 +1062,6 @@ class RuleBracket extends BaseForLines {
   constructor (source: IGameCode, neighbors: RuleBracketNeighbor[], hack: string) {
     super(source)
     this._neighbors = neighbors
-  }
-
-  getMatchedMutatorsOrNull (cell: Cell) {
-    for (let i = 0; i < this._neighbors.length; i++) {
-      const neighhbor = this._neighbors[i]
-      const match = neighhbor.getMatchedMutatorsOrNull(cell)
-      if (!match) return false
-    }
-
-    return true
   }
 }
 
@@ -1115,23 +1099,6 @@ const M_STATIONARY = 'STATIONARY'
 const M_NO = 'NO'
 const SUPPORTED_CELL_MODIFIERS = new Set([M_STATIONARY, M_NO])
 
-function setIntersection(setA, setB) {
-  const intersection = new Set()
-  for (const elem of setB) {
-    if (setA.has(elem)) {
-      intersection.add(elem)
-    }
-  }
-  return intersection
-}
-
-function setDifference(setA, setB) {
-    const difference = new Set(setA)
-    for (const elem of setB) {
-        difference.delete(elem)
-    }
-    return difference
-}
 
 class LookupHelper {
   _allSoundEffects: Map<string, GameSound>
@@ -1396,7 +1363,7 @@ class Parser {
           return new GameRuleGroup(this.source, [firstRule.parse()].concat(followingRules.parse()))
         },
         Rule: function (modifiers, conditions, _arrow, _unusuedModifer, actions, commands, optionalMessageCommand, _whitespace) {
-          return new GameRule(this.source, _.flatten(modifiers.parse()), conditions.parse(), actions.parse(), commands.parse().concat(optionalMessageCommand.parse()))
+          return new GameRule(this.source, new Set(_.flatten(modifiers.parse())), conditions.parse(), actions.parse(), commands.parse().concat(optionalMessageCommand.parse()))
         },
         RuleBracket: function (_openBracket, neighbors, hackAgain, _closeBracket) {
           return new RuleBracket(this.source, neighbors.parse(), hackAgain.parse())

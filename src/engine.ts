@@ -85,10 +85,9 @@ export default class Engine extends EventEmitter2 {
     this.currentLevel.forEach(row => {
       row.forEach(cell => {
         this.gameData.rules.forEach(rule => {
-          if (!rule.isValidRule()) return
           // Check if the left-hand-side of the rule matches the current cell
-          const mutators = _.flattenDeep(rule.getMatchedMutatorsOrNull(cell) || [])
-          if (mutators.length > 0) {
+          const mutators = rule.getMatchedMutatorsOrNull(cell)
+          if (mutators) {
             if (!rulesAndChanges.has(rule)) {
               rulesAndChanges.set(rule, [])
             }
