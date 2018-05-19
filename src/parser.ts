@@ -2,6 +2,7 @@ import * as _ from 'lodash'
 import * as ohm from 'ohm-js'
 import { lookupColorPalette } from './colors'
 import { Cell } from './engine';
+import { StringifyOptions } from 'querystring';
 
 const GRAMMAR_STR = `
 Puzzlescript {
@@ -1018,28 +1019,17 @@ class GameRuleGroup  extends GameRuleLoop {
 
 class GameRule extends BaseForLines {
   _modifiers: string[]
-  _conditions: RuleCondition[]
-  _actions: RuleAction[]
+  _conditions: RuleBracket[]
+  _actions: RuleBracket[]
   _commands: string[]
-  // _conditionActionPair: RuleConditionActionPair[]
   _isValid: boolean
 
-  constructor (source: IGameCode, modifiers: string[], conditions: RuleCondition[], actions: RuleAction[], commands: string[]) {
+  constructor (source: IGameCode, modifiers: string[], conditions: RuleBracket[], actions: RuleBracket[], commands: string[]) {
     super(source)
     this._modifiers = modifiers
     this._conditions = conditions
     this._actions = actions
     this._commands = commands
-    // this._conditionActionPair = []
-
-    // if (!this.isValidRule()) {
-    //   for (let i = 0; i < conditions.length; i++) {
-    //     const condition = conditions[i]
-    //     const action = actions[i]
-    //     const conditionActionPair = new RuleConditionActionPair(condition, action)
-    //     this._conditionActionPair.push(conditionActionPair)
-    //   }
-    // }
   }
 
   isValidRule() {
@@ -1072,45 +1062,10 @@ class GameRule extends BaseForLines {
   }
 }
 
-// class RuleConditionActionPair {
-//   _condition: RuleCondition
-//   _action: RuleAction
-
-//   constructor (condition: RuleCondition, action: RuleAction) {
-//     this._condition = condition
-//     this._action = action
-//   }
-// }
-
-class RuleCondition extends BaseForLines {
-  _brackets: RuleBracket[]
-
-  constructor (source: IGameCode, brackets: RuleBracket[]) {
-    super(source)
-    this._brackets = brackets
-  }
-
-  getMatchedMutatorsOrNull (cell: Cell) {
-    for (let i = 0; i < this._brackets.length; i++) {
-      const bracket = this._brackets[i]
-      return bracket.getMatchedMutatorsOrNull(cell)
-    }
-  }
-}
-
-class RuleAction extends BaseForLines {
-  _brackets: RuleBracket[]
-
-  constructor (source: IGameCode, brackets: RuleBracket[]) {
-    super(source)
-    this._brackets = brackets
-  }
-}
-
 class RuleBracket extends BaseForLines {
   _neighbors: RuleBracketNeighbor[]
 
-  constructor (source: IGameCode, neighbors: any) {
+  constructor (source: IGameCode, neighbors: RuleBracketNeighbor[], hack: string) {
     super(source)
     this._neighbors = neighbors
   }
@@ -1127,35 +1082,19 @@ class RuleBracket extends BaseForLines {
 }
 
 class RuleBracketNeighbor extends BaseForLines {
-  _tilesWithModifier: TileWithModifier[]
+  _modifier?: string
+  _tile: IGameTile
   _isEllipsis: boolean
 
-  constructor (source: IGameCode, tilesWithModifier: TileWithModifier[], isEllipsis: boolean) {
+  constructor (source: IGameCode, modifier: string, tile: IGameTile, isEllipsis: boolean) {
     super(source)
-    this._tilesWithModifier = tilesWithModifier
+    this._modifier = modifier
+    this._tile = tile
     this._isEllipsis = isEllipsis
   }
 
   iSEllipsis() {
     return this._isEllipsis
-  }
-
-  getMatchedMutatorsOrNull (cell: Cell) {
-    for (let i = 0; i < this._tilesWithModifier.length; i++) {
-      const tileWithModifier = this._tilesWithModifier[i]
-      return tileWithModifier.getMatchedMutatorsOrNull(cell)
-    }
-  }
-}
-
-class TileWithModifier extends BaseForLines {
-  _modifier?: string
-  _tile: IGameTile
-
-  constructor (source: IGameCode, modifier: string, tile: IGameTile) {
-    super(source)
-    this._modifier = modifier
-    this._tile = tile
   }
 
   getMatchedMutatorsOrNull (cell: Cell) {
@@ -1465,14 +1404,14 @@ class Parser {
         RuleBracketNeighbor: function (_1) {
           return _1.parse()
         },
-        RuleBracketEllipsisNeighbor: function (modifier) {
-          return new RuleBracketNeighbor(this.source, modifier.parse(), true)
+        RuleBracketEllipsisNeighbor: function ({modifier, tile}) {
+          return new RuleBracketNeighbor(this.source, modifier, tile, true)
         },
-        RuleBracketNoEllipsisNeighbor: function (tileWithModifier) {
-          return new RuleBracketNeighbor(this.source, tileWithModifier.parse(), false)
+        RuleBracketNoEllipsisNeighbor: function ({modifier, tile}) {
+          return new RuleBracketNeighbor(this.source,modifier, tile, false)
         },
         TileWithModifier: function (optionalModifier, tile) {
-          return new TileWithModifier(this.source, optionalModifier.parse()[0], tile.parse())
+          return {modifier: optionalModifier.parse()[0], tile: tile.parse()}
         },
         tileModifier: function (_whitespace1, tileModifiers, _whitespace2) {
           return tileModifiers.parse()
