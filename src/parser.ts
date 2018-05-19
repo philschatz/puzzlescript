@@ -1025,7 +1025,7 @@ class GameRule implements IRule extends BaseForLines {
   _conditionActionPairs: RuleConditionActionPair[]
   // _conditionCommandPair: RuleConditionCommandPair[]
 
-  constructor (source: IGameCode, modifiers: string[], conditions: RuleCondition[], actions: RuleAction[], commands: string[]) {
+  constructor (source: IGameCode, modifiers: string[], conditions: RuleBracket[], actions: RuleBracket[], commands: string[]) {
     super(source)
     this._modifiers = modifiers
 
@@ -1056,57 +1056,33 @@ class GameRule implements IRule extends BaseForLines {
   }
 }
 
-
-export class RuleCondition extends BaseForLines {
-  _brackets: RuleBracket[]
-
-  constructor (source: IGameCode, brackets: RuleBracket[]) {
-    super(source)
-    this._brackets = brackets
-  }
-}
-
-export class RuleAction extends BaseForLines {
-  _brackets: RuleBracket[]
-
-  constructor (source: IGameCode, brackets: RuleBracket[]) {
-    super(source)
-    this._brackets = brackets
-  }
-}
-
 class RuleBracket extends BaseForLines {
   _neighbors: RuleBracketNeighbor[]
 
-  constructor (source: IGameCode, neighbors: any) {
+  constructor (source: IGameCode, neighbors: RuleBracketNeighbor[], hack: string) {
     super(source)
     this._neighbors = neighbors
   }
 }
 
 class RuleBracketNeighbor extends BaseForLines {
-  _tilesWithModifier: TileWithModifier[]
+  _modifier?: string
+  _tile: IGameTile
   _isEllipsis: boolean
 
-  constructor (source: IGameCode, tilesWithModifier: TileWithModifier[], isEllipsis: boolean) {
+  constructor (source: IGameCode, modifier: string, tile: IGameTile, isEllipsis: boolean) {
     super(source)
-    this._tilesWithModifier = tilesWithModifier
+    this._modifier = modifier
+    this._tile = tile
     this._isEllipsis = isEllipsis
   }
 
   iSEllipsis() {
     return this._isEllipsis
   }
-}
 
-class TileWithModifier extends BaseForLines {
-  _modifier?: string
-  _tile: IGameTile
-
-  constructor (source: IGameCode, modifier: string, tile: IGameTile) {
-    super(source)
-    this._modifier = modifier
-    this._tile = tile
+  getMatchedMutatorsOrNull (cell: Cell) {
+    return cell.getSpritesAsSet().has(this._tile)
   }
 }
 
@@ -1395,14 +1371,14 @@ class Parser {
         RuleBracketNeighbor: function (_1) {
           return _1.parse()
         },
-        RuleBracketEllipsisNeighbor: function (modifier) {
-          return new RuleBracketNeighbor(this.source, modifier.parse(), true)
+        RuleBracketEllipsisNeighbor: function ({modifier, tile}) {
+          return new RuleBracketNeighbor(this.source, modifier, tile, true)
         },
-        RuleBracketNoEllipsisNeighbor: function (tileWithModifier) {
-          return new RuleBracketNeighbor(this.source, tileWithModifier.parse(), false)
+        RuleBracketNoEllipsisNeighbor: function ({modifier, tile}) {
+          return new RuleBracketNeighbor(this.source,modifier, tile, false)
         },
         TileWithModifier: function (optionalModifier, tile) {
-          return new TileWithModifier(this.source, optionalModifier.parse()[0], tile.parse())
+          return {modifier: optionalModifier.parse()[0], tile: tile.parse()}
         },
         tileModifier: function (_whitespace1, tileModifiers, _whitespace2) {
           return tileModifiers.parse()
