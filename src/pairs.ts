@@ -14,16 +14,16 @@
    mutate: () => Cell[]
  }
  interface IMatcher {
-  getMatchedMutatorsOrNull: (cell: Cell) => IMutator[] | null
+   getMatchedMutatorsOrNull: (cell: Cell) => IMutator[] | null
  }
 
  export function getMatchedMutatorsHelper(pairs: IMatcher[], cell: Cell) {
-    let ret : IMutator[] = []
-    for (const pair of pairs) {
-      const retChild = pair.getMatchedMutatorsOrNull(cell)
-      if (!retChild) return null
-      ret = ret.concat(retChild)
-    }
+   let ret : IMutator[] = []
+   for (const pair of pairs) {
+     const retChild = pair.getMatchedMutatorsOrNull(cell)
+     if (!retChild) return null
+     ret = ret.concat(retChild)
+   }
    return ret
  }
 
@@ -35,6 +35,7 @@
    RULE_MODIFIER.LEFT,
    RULE_MODIFIER.RIGHT
  ])
+
 
  export class RuleBracketPair implements IMatcher {
    _modifiers: Set<RULE_MODIFIER>
@@ -81,9 +82,9 @@
        for (const neighbor of this._neighborPairs) {
          if (!curCell) break // If we hit the end of the level then this does not match
          // Check if the individual tiles match
-         const mutators = neighbor.matchesCell(curCell)
+         const mutators = neighbor.getMatchedMutatorsOrNull(curCell)
          if (!mutators) break
-         neighborRet.push(mutators)
+         neighborRet = neighborRet.concat(mutators)
 
          // Move to the next neighboring cell
          curCell = curCell.getNeighbor(direction)
@@ -103,26 +104,84 @@
    }
  }
 
- class NeighborPair {
+ class NeighborPair implements IMatcher {
+   _condition: RuleBracketNeighbor
+   _action: RuleBracketNeighbor
    _tileWithModifierPairs: TileWithModifierPair[]
 
    constructor(condition: RuleBracketNeighbor, action: RuleBracketNeighbor) {
-     this._tileWithModifierPairs = _.zip(condition._tilesWithModifier, action._tilesWithModifier).map(([conditionTileWithModifier, actionTileWithModifier]) => {
+     this._condition = condition
+     this._action = action
+     this._tileWithModifierPairs = _.zip(this._condition._tilesWithModifier, this._action._tilesWithModifier).map(([conditionTileWithModifier, actionTileWithModifier]) => {
        return new TileWithModifierPair(conditionTileWithModifier, actionTileWithModifier)
      })
+   }
+
+   getMatchedMutatorsOrNull (cell: Cell) {
+     for (const tileWithModifier of this._tileWithModifierPairs) {
+       if (!tileWithModifier.matchesCell(cell)) {
+         return null
+       }
+     }
+     return [new CellMutator(this._condition._tilesWithModifier, this._action._tilesWithModifier, cell)]
    }
  }
 
  class TileWithModifierPair {
    _condition: TileWithModifier
    _action: TileWithModifier
-
    constructor(condition: TileWithModifier, action: TileWithModifier) {
+     if (!this._condition) {
+       throw new Error('sdklfjsldkjflsdkjflsdkfj')
+     }
      this._condition = condition
      this._action = action
    }
+   matchesCell(cell: Cell) {
+     const hasTile = cell.getSpritesAsSet().has(this._condition._tile)
+     if (this._condition.isNo()) {
+       return !hasTile
+     } else {
+       return hasTile
+     }
+   }
+ }
 
-   matchesCell (cell: Cell) {
-     return this._condition._tile.matchesCell(cell)
+ class CellMutator implements IMutator {
+   _condition: TileWithModifier[]
+   _action: TileWithModifier[]
+   _cell: Cell
+   constructor(condition: TileWithModifier[], action: TileWithModifier[], cell) {
+     this._condition = condition
+     this._action = action
+     this._cell = cell
+   }
+   mutate() {
+     // Just remove all tiles for now and then add all of them back
+     // TODO: only remove tiles that are matching the collisionLayer but wait, they already need to be exclusive
+     const newSetOfSprites = new Set(this._cell.getSpritesAsSet())
+
+     // remove sprites that are listed on the condition side
+     this._condition.forEach(tileWithModifier => {
+       tileWithModifier._tile.getSprites().forEach(sprite => {
+         newSetOfSprites.delete(sprite)
+       })
+     })
+     this._action.forEach(tileWithModifier => {
+       tileWithModifier._tile.getSprites().forEach(sprite => {
+         if (tileWithModifier.isNo()) {
+           newSetOfSprites.delete(sprite)
+         } else {
+           newSetOfSprites.add(sprite)
+         }
+       })
+     })
+
+     if (!this._cell.equalsSprites(newSetOfSprites)) {
+       this._cell.updateSprites(newSetOfSprites)
+       return [this._cell]
+     } else {
+       return []
+     }
    }
  }

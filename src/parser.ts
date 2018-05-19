@@ -1097,6 +1097,10 @@ export class TileWithModifier extends BaseForLines {
     this._tile = tile
   }
 
+  isNo() {
+    return M_NO === this._modifier
+  }
+
   getMatchedMutatorsOrNull (cell: Cell) {
     return cell.getSpritesAsSet().has(this._tile)
   }

@@ -1,6 +1,7 @@
 import * as _ from 'lodash'
 import { EventEmitter2 } from 'eventemitter2'
-import { LevelMap, GameData, GameLegendTileSimple, IGameTile, RuleModifier} from './parser';
+import { LevelMap, GameData, GameLegendTileSimple, IGameTile} from './parser';
+import { RULE_MODIFIER } from './util'
 
 function setEquals<T> (set1: Set<T>, set2: Set<T>) {
   if (set1.size !== set2.size) return false
@@ -46,13 +47,13 @@ export class Cell {
   }
   getNeighbor (direction: string) {
     switch (direction) {
-      case RuleModifier.UP:
+      case RULE_MODIFIER.UP:
         return this._getRelativeNeighbor(-1, 0)
-      case RuleModifier.DOWN:
+      case RULE_MODIFIER.DOWN:
         return this._getRelativeNeighbor(1, 0)
-      case RuleModifier.LEFT:
+      case RULE_MODIFIER.LEFT:
         return this._getRelativeNeighbor(0, -1)
-      case RuleModifier.RIGHT:
+      case RULE_MODIFIER.RIGHT:
         return this._getRelativeNeighbor(0, 1)
       default:
         throw new Error(`BUG: Unsupported direction "${direction}"`)
