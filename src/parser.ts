@@ -850,7 +850,7 @@ export class GameLegendTileSimple extends BaseForLines implements IGameTile {
   }
   _getDescendantTiles () {
     // recursively pull all the tiles out
-    return this._tiles.concat(_.flatten(this._tiles.map(tile => tile._getDescendantTiles()))
+    return this._tiles.concat(_.flatten(this._tiles.map(tile => tile._getDescendantTiles())))
   }
   getSprites () {
     // Use a cache because all the collision layers have not been loaded in time
@@ -987,11 +987,11 @@ export class WinConditionOn extends WinConditionSimple {
 }
 
 export declare interface IRule extends IGameNode {
-  getMatchedMutatorsOrNull: (ICell) => IMutator?[]
+  getMatchedMutatorsOrNull: (cell: Cell) => IMutator[] | null
 }
 
 
-class GameRuleLoop implements IRule extends BaseForLines {
+class GameRuleLoop extends BaseForLines implements IRule {
   _rules: GameRule[]
 
   constructor (source: IGameCode, rules: GameRule[]) {
@@ -1019,7 +1019,7 @@ const SUPPORTED_RULE_MODIFIERS = new Set([
 // Rule into multiple Rules when HORIZONTAL, VERTICAL, ORTHOGONAL, or nothing
 // are passed in as directions.
 // Because of https://www.puzzlescript.net/Documentation/executionorder.html
-export class GameRule implements IRule extends BaseForLines {
+export class GameRule extends BaseForLines implements IRule {
   _modifiers: Set<RULE_MODIFIER>
   _commands: string[]
   _conditionActionPairs: RuleConditionActionPair[]
