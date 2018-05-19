@@ -966,7 +966,25 @@ export class GameRuleLoop extends BaseForLines {
   }
 }
 
-const ALL_DIRECTIONS = ['UP', 'DOWN', 'LEFT', 'RIGHT']
+export enum RuleModifier {
+  RANDOM = 'RANDOM',
+  UP = 'UP',
+  DOWN = 'DOWN',
+  LEFT = 'LEFT',
+  RIGHT = 'RIGHT',
+  VERTICAL = 'VERTICAL',
+  HORIZONTAL = 'HORIZONTAL',
+  ORTHOGONAL = 'ORTHOGONAL',
+  LATE = 'LATE',
+  RIGID = 'RIGID'
+}
+
+const SIMPLE_DIRECTIONS = new Set([
+  RuleModifier.UP,
+  RuleModifier.DOWN,
+  RuleModifier.LEFT,
+  RuleModifier.RIGHT
+])
 
 class GameRuleGroup  extends GameRuleLoop {
   // do we really need this class?
