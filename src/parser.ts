@@ -1066,19 +1066,35 @@ export class RuleBracket extends BaseForLines {
 }
 
 export class RuleBracketNeighbor extends BaseForLines {
-  _modifier?: string
-  _tile: IGameTile
+  _tilesWithModifier: TileWithModifier[]
   _isEllipsis: boolean
 
-  constructor (source: IGameCode, modifier: string, tile: IGameTile, isEllipsis: boolean) {
+  constructor (source: IGameCode, tilesWithModifier: TileWithModifier[], isEllipsis: boolean) {
     super(source)
-    this._modifier = modifier
-    this._tile = tile
+    this._tilesWithModifier = tilesWithModifier
     this._isEllipsis = isEllipsis
   }
 
-  iSEllipsis() {
+  isEllipsis() {
     return this._isEllipsis
+  }
+
+  getMatchedMutatorsOrNull (cell: Cell) {
+    for (let i = 0; i < this._tilesWithModifier.length; i++) {
+      const tileWithModifier = this._tilesWithModifier[i]
+      return tileWithModifier.getMatchedMutatorsOrNull(cell)
+    }
+  }
+}
+
+class TileWithModifier extends BaseForLines {
+  _modifier?: string
+  _tile: IGameTile
+
+  constructor (source: IGameCode, modifier: string, tile: IGameTile) {
+    super(source)
+    this._modifier = modifier
+    this._tile = tile
   }
 
   getMatchedMutatorsOrNull (cell: Cell) {
@@ -1371,14 +1387,14 @@ class Parser {
         RuleBracketNeighbor: function (_1) {
           return _1.parse()
         },
-        RuleBracketEllipsisNeighbor: function ({modifier, tile}) {
-          return new RuleBracketNeighbor(this.source, modifier, tile, true)
+        RuleBracketEllipsisNeighbor: function (tileWithModifier) {
+          return new RuleBracketNeighbor(this.source, tileWithModifier.parse(), true)
         },
-        RuleBracketNoEllipsisNeighbor: function ({modifier, tile}) {
-          return new RuleBracketNeighbor(this.source,modifier, tile, false)
+        RuleBracketNoEllipsisNeighbor: function (tileWithModifier) {
+          return new RuleBracketNeighbor(this.source, tileWithModifier.parse(), false)
         },
         TileWithModifier: function (optionalModifier, tile) {
-          return {modifier: optionalModifier.parse()[0], tile: tile.parse()}
+          return new TileWithModifier(this.source, optionalModifier.parse()[0], tile.parse())
         },
         tileModifier: function (_whitespace1, tileModifiers, _whitespace2) {
           return tileModifiers.parse()
