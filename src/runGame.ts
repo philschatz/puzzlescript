@@ -1,4 +1,4 @@
-import {readFileSync, writeFileSync} from 'fs'
+import { readFileSync, writeFileSync } from 'fs'
 import * as path from 'path'
 import * as glob from 'glob'
 import * as pify from 'pify'
@@ -9,18 +9,18 @@ import Engine from './engine'
 
 let totalRenderTime = 0
 
-async function sleep (ms: number) {
+async function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
-async function run () {
+async function run() {
   const files = await pify(glob)('./gists/*/script.txt')
   console.log(`Looping over ${files.length} games...`)
 
   for (let filename of files) {
     console.log(`Parsing and rendering ${filename}`)
     const code = readFileSync(filename, 'utf-8')
-    const {data, error, trace, validationMessages} = Parser.parse(code)
+    const { data, error, trace, validationMessages } = Parser.parse(code)
 
     if (error) {
       console.log(trace.toString())
@@ -31,8 +31,8 @@ async function run () {
       // return
 
       if (validationMessages) {
-        validationMessages.forEach(({gameNode, level, message}) => {
-          const {lineNum, colNum} = gameNode.__getSourceLineAndColumn()
+        validationMessages.forEach(({ gameNode, level, message }) => {
+          const { lineNum, colNum } = gameNode.__getSourceLineAndColumn()
           console.warn(`(${lineNum}:${colNum}) ${level} : ${message}`)
         })
       }
@@ -58,9 +58,9 @@ async function run () {
         function coverageKey(node) {
           // the HTML reporter does not like multiline fields. Rather than report multiple times, we just report the 1st line
           // This is a problem with `startloop`
-          const {start, end} = node.__getLineAndColumnRange()
+          const { start, end } = node.__getLineAndColumnRange()
           if (start.line !== end.line) {
-            return JSON.stringify({ start , end: { line: start.line, col: start.col + 3}})
+            return JSON.stringify({ start, end: { line: start.line, col: start.col + 3 } })
           }
           return JSON.stringify({ start, end })
         }
@@ -94,7 +94,7 @@ async function run () {
         }
 
         const codeCoverage2 = Object.entries(codeCoverageTemp).map(([key, value]) => {
-          return {loc: JSON.parse(key), count: value}
+          return { loc: JSON.parse(key), count: value }
         })
         // Generate the coverage.json file from which Rules were applied
         const statementMap = {}
@@ -103,7 +103,7 @@ async function run () {
         const s = {}
 
         // Add all the matched rules
-        codeCoverage2.forEach(({loc, count}, index) => {
+        codeCoverage2.forEach(({ loc, count }, index) => {
 
           s[index] = count
           statementMap[index] = loc

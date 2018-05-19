@@ -428,7 +428,7 @@ declare interface IGameCode {
 // Return an object with the line and column information for the given
 // offset in `str`.
 // From https://github.com/harc/ohm/blob/b88336faf69e7bd89e309931b60445c3dfd495ab/src/util.js#L56
-function getLineAndColumn (str, offset) {
+function getLineAndColumn(str, offset) {
   let lineNum = 1
   let colNum = 1
 
@@ -458,7 +458,7 @@ function getLineAndColumn (str, offset) {
     // Get the next line.
     let nextLineEndOffset = str.indexOf('\n', lineEndOffset + 1)
     nextLine = nextLineEndOffset === -1 ? str.slice(lineEndOffset)
-                                        : str.slice(lineEndOffset, nextLineEndOffset)
+      : str.slice(lineEndOffset, nextLineEndOffset)
     // Strip leading and trailing EOL char(s).
     nextLine = nextLine.replace(/^\r?\n/, '').replace(/\r$/, '')
   }
@@ -466,7 +466,7 @@ function getLineAndColumn (str, offset) {
   // Get the previous line.
   if (prevLineStartOffset >= 0) {
     prevLine = str.slice(prevLineStartOffset, lineStartOffset)
-                  .replace(/\r?\n$/, '')  // Strip trailing EOL char(s).
+      .replace(/\r?\n$/, '')  // Strip trailing EOL char(s).
   }
 
   // Get the target line, stripping a trailing carriage return if necessary.
@@ -482,7 +482,7 @@ function getLineAndColumn (str, offset) {
 }
 
 interface IGameNode {
-  __getSourceLineAndColumn: () => {lineNum: number, colNum: number}
+  __getSourceLineAndColumn: () => { lineNum: number, colNum: number }
   toString: () => string
 }
 
@@ -491,7 +491,7 @@ export class BaseForLines {
   __astId: number
   __source: IGameCode
 
-  constructor (source: IGameCode) {
+  constructor(source: IGameCode) {
     if (!source || !source.getLineAndColumnMessage) {
       throw new Error(`BUG: failed to provide the source when constructing this object`)
     }
@@ -500,17 +500,17 @@ export class BaseForLines {
     })
     this.__astId = astId++
   }
-  __getSourceLineAndColumn () {
+  __getSourceLineAndColumn() {
     return getLineAndColumn(this.__source.sourceString, this.__source.startIdx)
   }
-  toString () {
+  toString() {
     return `astId=${this.__astId}\n${this.__source.getLineAndColumnMessage()}`
   }
 
   // This is mostly used for creating code coverage for the games. So we know which Rules (or objects) are not being matched
   __getLineAndColumnRange() {
     const start = getLineAndColumn(this.__source.sourceString, this.__source.startIdx)
-    const end   = getLineAndColumn(this.__source.sourceString, this.__source.endIdx - 1) // subtract one to hopefully get the previous line
+    const end = getLineAndColumn(this.__source.sourceString, this.__source.endIdx - 1) // subtract one to hopefully get the previous line
     return {
       start: { line: start.lineNum, col: start.colNum },
       end: { line: end.lineNum, col: end.colNum },
@@ -549,7 +549,7 @@ class GameSettings {
   require_player_movement: false
   verbose_logging: false
 
-  constructor() {}
+  constructor() { }
 
   _setValue(key: any, value: any) {
     this[key] = value
@@ -584,12 +584,12 @@ export class GameData {
     this.legends = legends
     this.sounds = sounds
     this.collisionLayers = collisionLayers
-    this.rules= rules
+    this.rules = rules
     this.winConditions = winConditions
     this.levels = levels
   }
 
-  _getSpriteByName (name) {
+  _getSpriteByName(name) {
     return this.objects.filter(sprite => sprite._getName().toLowerCase() === name.toLowerCase())[0]
   }
   getMagicBackgroundSprite() {
@@ -610,11 +610,11 @@ export declare interface IGameTile extends IGameNode {
 export class LevelMap extends BaseForLines {
   _rows: IGameTile[][]
 
-  constructor (source: IGameCode, rows: any[][]) {
+  constructor(source: IGameCode, rows: any[][]) {
     super(source)
     this._rows = rows
   }
-  isInvalid (): string {
+  isInvalid(): string {
     const firstRowLength = this._rows[0].length
     let isInvalid = null
     this._rows.forEach((row, index) => {
@@ -624,10 +624,10 @@ export class LevelMap extends BaseForLines {
     })
     return isInvalid
   }
-  isMap () {
+  isMap() {
     return true
   }
-  getRows () {
+  getRows() {
     return this._rows
   }
 }
@@ -635,19 +635,19 @@ export class LevelMap extends BaseForLines {
 export class GameMessage extends BaseForLines {
   _message: string
 
-  constructor (source: IGameCode, message: string) {
+  constructor(source: IGameCode, message: string) {
     super(source)
     this._message = message
   }
-  isInvalid (): string {
+  isInvalid(): string {
     return null
   }
-  isMap () {
+  isMap() {
     return false
   }
 }
 
-function hexToRgb (hex: string) {
+function hexToRgb(hex: string) {
   // https://stackoverflow.com/a/5624139
   // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
   const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i
@@ -672,7 +672,7 @@ class RGB {
   g: number
   b: number
 
-  constructor(r:number, g:number, b:number) {
+  constructor(r: number, g: number, b: number) {
     this.r = r
     this.g = g
     this.b = b
@@ -688,21 +688,21 @@ export class HexColor extends BaseForLines implements IColor {
   _color: RGB
   _colorName: string // only for unit tests & debugging
 
-  constructor (source: IGameCode, color: string) {
+  constructor(source: IGameCode, color: string) {
     super(source)
     this._color = hexToRgb(color)
     this._colorName = color
   }
 
-  isTransparent () { return false }
-  toRgb () {
+  isTransparent() { return false }
+  toRgb() {
     return this._color
   }
 }
 
 class TransparentColor extends BaseForLines implements IColor {
-  isTransparent () { return true }
-  toRgb (): RGB {
+  isTransparent() { return true }
+  toRgb(): RGB {
     throw new Error('BUG: Transparent colors do not have RGB data')
   }
 }
@@ -712,41 +712,41 @@ export class GameSprite extends BaseForLines implements IGameTile {
   _optionalLegendChar?: string
   _collisionLayer: CollisionLayer
 
-  constructor (source: IGameCode, name: string, optionalLegendChar?: string) {
+  constructor(source: IGameCode, name: string, optionalLegendChar?: string) {
     super(source)
     this._name = name
     this._optionalLegendChar = optionalLegendChar
   }
-  _getName () {
+  _getName() {
     return this._name
   }
-  _getDescendantTiles () {
+  _getDescendantTiles() {
     return []
   }
-  getSprites () {
+  getSprites() {
     // to match the signature of LegendTile
     return [this]
   }
-  hasCollisionLayer () {
+  hasCollisionLayer() {
     return !!this._collisionLayer
   }
-  setCollisionLayer (collisionLayer: CollisionLayer) {
+  setCollisionLayer(collisionLayer: CollisionLayer) {
     this._collisionLayer = collisionLayer
   }
-  getCollisionLayerNum () {
+  getCollisionLayerNum() {
     if (!this._collisionLayer) {
       console.error(this.__source.getLineAndColumnMessage())
       console.error('ERROR: This sprite was not in a Collision Layer')
     }
     return this._collisionLayer.__astId
   }
-  isInvalid () {
+  isInvalid() {
     if (!this._collisionLayer) {
       return 'This object does not have an entry in the COLLISIONLAYERS section.'
     }
     return null
   }
-  matchesCell (cell: Cell): any {
+  matchesCell(cell: Cell): any {
     return cell.getSpritesAsSet().has(this)
   }
 }
@@ -754,11 +754,11 @@ export class GameSprite extends BaseForLines implements IGameTile {
 class GameSpriteSingleColor extends GameSprite {
   _color: HexColor
 
-  constructor (source: IGameCode, name: string, optionalLegendChar: string, colors: HexColor[]) {
+  constructor(source: IGameCode, name: string, optionalLegendChar: string, colors: HexColor[]) {
     super(source, name, optionalLegendChar)
     this._color = colors[0] // Ignore if the user added multiple colors (like `transparent yellow`)
   }
-  getPixels () {
+  getPixels() {
     // When there are no pixels then it means "color the whole thing in the same color"
     const rows: HexColor[][] = []
     for (let row = 0; row < 5; row++) {
@@ -775,7 +775,7 @@ export class GameSpritePixels extends GameSprite {
   _colors: IColor[]
   _pixels: IColor[][]
 
-  constructor (source: IGameCode, name: string, optionalLegendChar: string, colors: HexColor[], pixels: ('.' | number)[][]) {
+  constructor(source: IGameCode, name: string, optionalLegendChar: string, colors: HexColor[], pixels: ('.' | number)[][]) {
     super(source, name, optionalLegendChar)
     this._colors = colors
     this._pixels = pixels.map(row => {
@@ -788,7 +788,7 @@ export class GameSpritePixels extends GameSprite {
       })
     }) // Pixel colors are 0-indexed.
   }
-  isInvalid () {
+  isInvalid() {
     if (super.isInvalid()) {
       return super.isInvalid()
     }
@@ -810,11 +810,11 @@ export class GameSpritePixels extends GameSprite {
     })
     return isInvalid
   }
-  getSprites () {
+  getSprites() {
     // to match the signature of LegendTile
     return [this]
   }
-  getPixels () {
+  getPixels() {
     return this._pixels
   }
 }
@@ -827,18 +827,18 @@ export class GameLegendTileSimple extends BaseForLines implements IGameTile {
   _tiles: IGameTile[]
   _collisionLayer: CollisionLayer
 
-  constructor (source: IGameCode, spriteNameOrLevelChar: string, tiles: IGameTile[]) {
+  constructor(source: IGameCode, spriteNameOrLevelChar: string, tiles: IGameTile[]) {
     super(source)
     this._spriteNameOrLevelChar = spriteNameOrLevelChar
     this._tiles = tiles
   }
-  isInvalid (): string {
+  isInvalid(): string {
     return null
   }
-  isAnd () {
+  isAnd() {
     return true
   }
-  matchesCell (cell: Cell) {
+  matchesCell(cell: Cell) {
     // Check that the cell contains all of the tiles (ANDED)
     // Since this is a Simple Tile it should only contain 1 tile so anding is the right way to go.
     for (const tile of this._tiles) {
@@ -848,11 +848,11 @@ export class GameLegendTileSimple extends BaseForLines implements IGameTile {
     }
     return true
   }
-  _getDescendantTiles () {
+  _getDescendantTiles() {
     // recursively pull all the tiles out
     return this._tiles.concat(_.flatten(this._tiles.map(tile => tile._getDescendantTiles())))
   }
-  getSprites () {
+  getSprites() {
     // Use a cache because all the collision layers have not been loaded in time
     if (!this._sprites) {
       // 2 levels of indirection should be safe
@@ -867,28 +867,28 @@ export class GameLegendTileSimple extends BaseForLines implements IGameTile {
     }
     return this._sprites
   }
-  hasCollisionLayer () {
+  hasCollisionLayer() {
     return !!this._collisionLayer
   }
-  setCollisionLayer (collisionLayer: CollisionLayer) {
+  setCollisionLayer(collisionLayer: CollisionLayer) {
     this._collisionLayer = collisionLayer
   }
-  getCollisionLayerNum () {
+  getCollisionLayerNum() {
     return this._collisionLayer.__astId
   }
 }
 
 export class GameLegendTileAnd extends GameLegendTileSimple {
-  isAnd () {
+  isAnd() {
     return true
   }
 }
 
 export class GameLegendTileOr extends GameLegendTileSimple {
-  isAnd () {
+  isAnd() {
     return false
   }
-  matchesCell (cell: Cell) {
+  matchesCell(cell: Cell) {
     // Check that the cell contains any of the tiles (OR)
     for (const tile of this._tiles) {
       if (cell.getSpritesAsSet().has(tile)) {
@@ -903,11 +903,11 @@ export class GameLegendTileOr extends GameLegendTileSimple {
 export class CollisionLayer extends BaseForLines {
   _sprites: GameSprite[]
 
-  constructor (source: IGameCode, sprites: GameSprite[]) {
+  constructor(source: IGameCode, sprites: GameSprite[]) {
     super(source)
     this._sprites = sprites
   }
-  isInvalid (): string {
+  isInvalid(): string {
     return null
   }
 }
@@ -916,7 +916,7 @@ export class CollisionLayer extends BaseForLines {
 export class GameSound extends BaseForLines {
   _soundCode: number
 
-  constructor (source: IGameCode, soundCode: number) {
+  constructor(source: IGameCode, soundCode: number) {
     super(source)
     this._soundCode = soundCode
   }
@@ -924,7 +924,7 @@ export class GameSound extends BaseForLines {
 export class GameSoundSfx extends GameSound {
   _sfxName: string
 
-  constructor (source: IGameCode, sfxName: string, soundCode: number) {
+  constructor(source: IGameCode, sfxName: string, soundCode: number) {
     super(source, soundCode)
     this._sfxName = sfxName
   }
@@ -932,7 +932,7 @@ export class GameSoundSfx extends GameSound {
 export class GameSoundSimpleEnum extends GameSound {
   _simpleEventName: number
 
-  constructor (source: IGameCode, simpleEventName: number, soundCode: number) {
+  constructor(source: IGameCode, simpleEventName: number, soundCode: number) {
     super(source, soundCode)
     this._simpleEventName = simpleEventName
   }
@@ -942,7 +942,7 @@ export class GameSoundNormal extends GameSound {
   _sprite: IGameTile
   _conditionEnum: string
 
-  constructor (source: IGameCode, sprite: IGameTile, conditionEnum: string, soundCode: number) {
+  constructor(source: IGameCode, sprite: IGameTile, conditionEnum: string, soundCode: number) {
     super(source, soundCode)
     this._sprite = sprite
     this._conditionEnum = conditionEnum
@@ -951,7 +951,7 @@ export class GameSoundNormal extends GameSound {
 export class GameSoundMoveSimple extends GameSound {
   _sprite: IGameTile
 
-  constructor (source: IGameCode, sprite: IGameTile, soundCode: number) {
+  constructor(source: IGameCode, sprite: IGameTile, soundCode: number) {
     super(source, soundCode)
     this._sprite = sprite
   }
@@ -960,7 +960,7 @@ export class GameSoundMoveDirection extends GameSound {
   _sprite: IGameTile
   _directionEnum: string
 
-  constructor (source: IGameCode, sprite: IGameTile, directionEnum: string, soundCode: number) {
+  constructor(source: IGameCode, sprite: IGameTile, directionEnum: string, soundCode: number) {
     super(source, soundCode)
     this._sprite = sprite
     this._directionEnum = directionEnum
@@ -971,7 +971,7 @@ export class WinConditionSimple extends BaseForLines {
   _qualifierEnum: string
   _spriteName: string
 
-  constructor (source: IGameCode, qualifierEnum: string, spriteName: string) {
+  constructor(source: IGameCode, qualifierEnum: string, spriteName: string) {
     super(source)
     this._qualifierEnum = qualifierEnum
     this._spriteName = spriteName
@@ -980,7 +980,7 @@ export class WinConditionSimple extends BaseForLines {
 export class WinConditionOn extends WinConditionSimple {
   _onSprite: string
 
-  constructor (source: IGameCode, qualifierEnum: string, spriteName: string, onSprite: string) {
+  constructor(source: IGameCode, qualifierEnum: string, spriteName: string, onSprite: string) {
     super(source, qualifierEnum, spriteName)
     this._onSprite = onSprite
   }
@@ -994,12 +994,12 @@ export declare interface IRule extends IGameNode {
 class GameRuleLoop extends BaseForLines implements IRule {
   _rules: GameRule[]
 
-  constructor (source: IGameCode, rules: GameRule[]) {
+  constructor(source: IGameCode, rules: GameRule[]) {
     super(source)
     this._rules = rules
   }
 
-  getMatchedMutatorsOrNull (cell) {
+  getMatchedMutatorsOrNull(cell) {
     return null // Not implemented yet
     // return getMatchedMutatorsHelper(this._rules, cell)
   }
@@ -1025,7 +1025,7 @@ export class GameRule extends BaseForLines implements IRule {
   _bracketPairs: RuleBracketPair[]
   // _conditionCommandPair: RuleConditionCommandPair[]
 
-  constructor (source: IGameCode, modifiers: Set<RULE_MODIFIER>, conditions: RuleBracket[], actions: RuleBracket[], commands: string[]) {
+  constructor(source: IGameCode, modifiers: Set<RULE_MODIFIER>, conditions: RuleBracket[], actions: RuleBracket[], commands: string[]) {
     super(source)
     this._modifiers = modifiers
 
@@ -1047,7 +1047,7 @@ export class GameRule extends BaseForLines implements IRule {
     }
   }
 
-  getMatchedMutatorsOrNull (cell: Cell) {
+  getMatchedMutatorsOrNull(cell: Cell) {
     // If the rule has any modifiers that we do not understand, return null
     if (setDifference(this._modifiers, SUPPORTED_RULE_MODIFIERS).size > 0) {
       return null
@@ -1059,7 +1059,7 @@ export class GameRule extends BaseForLines implements IRule {
 export class RuleBracket extends BaseForLines {
   _neighbors: RuleBracketNeighbor[]
 
-  constructor (source: IGameCode, neighbors: RuleBracketNeighbor[], hack: string) {
+  constructor(source: IGameCode, neighbors: RuleBracketNeighbor[], hack: string) {
     super(source)
     this._neighbors = neighbors
   }
@@ -1069,7 +1069,7 @@ export class RuleBracketNeighbor extends BaseForLines {
   _tilesWithModifier: TileWithModifier[]
   _isEllipsis: boolean
 
-  constructor (source: IGameCode, tilesWithModifier: TileWithModifier[], isEllipsis: boolean) {
+  constructor(source: IGameCode, tilesWithModifier: TileWithModifier[], isEllipsis: boolean) {
     super(source)
     this._tilesWithModifier = tilesWithModifier
     this._isEllipsis = isEllipsis
@@ -1079,7 +1079,7 @@ export class RuleBracketNeighbor extends BaseForLines {
     return this._isEllipsis
   }
 
-  getMatchedMutatorsOrNull (cell: Cell) {
+  getMatchedMutatorsOrNull(cell: Cell) {
     for (let i = 0; i < this._tilesWithModifier.length; i++) {
       const tileWithModifier = this._tilesWithModifier[i]
       return tileWithModifier.getMatchedMutatorsOrNull(cell)
@@ -1091,7 +1091,7 @@ export class TileWithModifier extends BaseForLines {
   _modifier?: string
   _tile: IGameTile
 
-  constructor (source: IGameCode, modifier: string, tile: IGameTile) {
+  constructor(source: IGameCode, modifier: string, tile: IGameTile) {
     super(source)
     this._modifier = modifier
     this._tile = tile
@@ -1101,7 +1101,7 @@ export class TileWithModifier extends BaseForLines {
     return M_NO === this._modifier
   }
 
-  getMatchedMutatorsOrNull (cell: Cell) {
+  getMatchedMutatorsOrNull(cell: Cell) {
     return cell.getSpritesAsSet().has(this._tile)
   }
 }
@@ -1109,7 +1109,7 @@ export class TileWithModifier extends BaseForLines {
 class HackNode extends BaseForLines {
   fields: object
   // These should be addressed as we write the interpreter
-  constructor (source: IGameCode, fields: object) {
+  constructor(source: IGameCode, fields: object) {
     super(source)
     this.fields = fields
   }
@@ -1126,36 +1126,36 @@ class LookupHelper {
   _allLegendTiles: Map<string, IGameTile>
   _allLevelChars: Map<string, IGameTile>
 
-  constructor () {
+  constructor() {
     this._allSoundEffects = new Map()
     this._allObjects = new Map()
     this._allLegendTiles = new Map()
     this._allLevelChars = new Map()
   }
 
-  _addToHelper (map, key: string, value: any) {
+  _addToHelper(map, key: string, value: any) {
     if (map.has(key)) {
       throw new Error(`ERROR: Duplicate object is defined named "${key}". They are case-sensitive!`)
     }
     map.set(key, value)
   }
-  addSoundEffect (key: string, soundEffect: GameSoundSfx) {
+  addSoundEffect(key: string, soundEffect: GameSoundSfx) {
     this._addToHelper(this._allSoundEffects, key.toLowerCase(), soundEffect)
   }
-  addToAllObjects (gameObject: GameSprite) {
+  addToAllObjects(gameObject: GameSprite) {
     this._addToHelper(this._allObjects, gameObject._name.toLowerCase(), gameObject)
   }
-  addToAllLegendTiles (legendTile: GameLegendTileSimple) {
+  addToAllLegendTiles(legendTile: GameLegendTileSimple) {
     this._addToHelper(this._allLegendTiles, legendTile._spriteNameOrLevelChar.toLowerCase(), legendTile)
   }
-  addObjectToAllLevelChars (levelChar: string, gameObject: GameSprite) {
+  addObjectToAllLevelChars(levelChar: string, gameObject: GameSprite) {
     this._addToHelper(this._allLegendTiles, levelChar.toLowerCase(), gameObject)
     this._addToHelper(this._allLevelChars, levelChar.toLowerCase(), gameObject)
   }
-  addLegendToAllLevelChars (legendTile: GameLegendTileSimple) {
+  addLegendToAllLevelChars(legendTile: GameLegendTileSimple) {
     this._addToHelper(this._allLevelChars, legendTile._spriteNameOrLevelChar.toLowerCase(), legendTile)
   }
-  lookupObjectOrLegendTile (source: IGameCode, key: string) {
+  lookupObjectOrLegendTile(source: IGameCode, key: string) {
     key = key.toLowerCase()
     const value = this._allObjects.get(key) || this._allLegendTiles.get(key)
     if (!value) {
@@ -1164,7 +1164,7 @@ class LookupHelper {
     }
     return value
   }
-  lookupObjectOrLegendTileOrSoundEffect (source: IGameCode, key: string) {
+  lookupObjectOrLegendTileOrSoundEffect(source: IGameCode, key: string) {
     key = key.toLowerCase()
     const value = this._allObjects.get(key) || this._allLegendTiles.get(key) || this._allSoundEffects.get(key)
     if (!value) {
@@ -1173,7 +1173,7 @@ class LookupHelper {
     }
     return value
   }
-  lookupByLevelChar (key: string) {
+  lookupByLevelChar(key: string) {
     const value = this._allLevelChars.get(key.toLowerCase())
     if (!value) {
       throw new Error(`ERROR: Could not look up "${key}" in the levelChars map. Has it been defined in the Objects section or the Legend section?`)
@@ -1183,7 +1183,7 @@ class LookupHelper {
 }
 
 // Helper for setting a config field
-function getConfigField (key: ohm.Node, value: ohm.Node) {
+function getConfigField(key: ohm.Node, value: ohm.Node) {
   return [key.parse(), value.parse()]
 }
 
@@ -1208,24 +1208,24 @@ class ValidationMessage {
 }
 
 class Parser {
-  getGrammar () {
+  getGrammar() {
     _GRAMMAR = _GRAMMAR || ohm.grammar(GRAMMAR_STR)
     return _GRAMMAR
   }
 
-  parseGrammar (code: string) {
+  parseGrammar(code: string) {
     // 8645c163ff321d2fd1bad3fcaf48c107 has a typo so we .replace()
     // 0c2625672bf47fcf728fe787a2630df6 has a typo se we .replace()
     // another couple of games do not have a trailing newline at the end of the file so we add that
     code = code.replace('][ ->', '] ->').replace('[[spring]', '[spring][') + '\n' // Not all games have a trailing newline. this makes it easier on the parser
 
     const g = this.getGrammar()
-    return {match: g.match(code)}
+    return { match: g.match(code) }
   }
 
-  parse (code: string) {
+  parse(code: string) {
     const g = this.getGrammar()
-    const {match: m} = this.parseGrammar(code)
+    const { match: m } = this.parseGrammar(code)
     const validationMessages = []
 
     function addValidationMessage(source, level, message) {
@@ -1285,7 +1285,7 @@ class Parser {
           return _10.parse()
         },
         Sprite: function (_1) {
-          const gameObject:GameSprite = _1.parse()
+          const gameObject: GameSprite = _1.parse()
           lookup.addToAllObjects(gameObject)
           if (gameObject._optionalLegendChar) {
             // addObjectToAllLegendTiles(gameObject)
@@ -1434,7 +1434,7 @@ class Parser {
           return new HackNode(this.source, sfx.parse())
         },
         HackTileNameIsSFX2: function (tile, sfx) {
-          return new HackNode(this.source, {tile: tile.parse(), sfx: sfx.parse()})
+          return new HackNode(this.source, { tile: tile.parse(), sfx: sfx.parse() })
         },
         widthAndHeight: function (_1, _2, _3) {
           return {
@@ -1496,7 +1496,7 @@ class Parser {
           return this.sourceString
         },
         _terminal: function () { return this.primitiveValue },
-        lineTerminator: (_1, _2, _3, _4) => {},
+        lineTerminator: (_1, _2, _3, _4) => { },
         digit: (x) => {
           return x.primitiveValue.charCodeAt(0) - '0'.charCodeAt(0)
         }
@@ -1526,10 +1526,10 @@ class Parser {
         }
       })
 
-      return {data: game, validationMessages }
+      return { data: game, validationMessages }
     } else {
       const trace = g.trace(code)
-      return {error: m, trace: trace}
+      return { error: m, trace: trace }
     }
   }
 }

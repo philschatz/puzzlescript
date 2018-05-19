@@ -416,7 +416,7 @@ export const COLOR_PALETTES = {
   }
 }
 
-export function lookupColorPalette (alias) {
+export function lookupColorPalette(alias) {
   if (ALIASES[alias]) {
     return COLOR_PALETTES[ALIASES[alias]]
   } else {

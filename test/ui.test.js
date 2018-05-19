@@ -1,20 +1,20 @@
 /* eslint-env jasmine */
-const {default: Parser} = require('../src/parser')
-const {default: UI} = require('../src/ui')
+const { default: Parser } = require('../src/parser')
+const { default: UI } = require('../src/ui')
 
-const C_WHITE = {r: 255, g: 255, b: 255}
-const C_BLACK = {r: 0, g: 0, b: 0}
+const C_WHITE = { r: 255, g: 255, b: 255 }
+const C_BLACK = { r: 0, g: 0, b: 0 }
 
-function parseAndReturnFirstSpritePixels (code) {
-  const {data} = Parser.parse(code)
+function parseAndReturnFirstSpritePixels(code) {
+  const { data } = Parser.parse(code)
   const cell = data.levels[0].getRows()[0][0]
   // console.log(cell.getSprites())
-  return {pixels: UI.getPixelsForCell(data, cell), data}
+  return { pixels: UI.getPixelsForCell(data, cell), data }
 }
 
 describe('UI', () => {
   it('Renders a single sprite', () => {
-    const {pixels} = parseAndReturnFirstSpritePixels(`
+    const { pixels } = parseAndReturnFirstSpritePixels(`
 title foo
 
 ===
@@ -48,7 +48,7 @@ w
   })
 
   it('Overlays sprites based on the collision layer', () => {
-    const {pixels} = parseAndReturnFirstSpritePixels(`
+    const { pixels } = parseAndReturnFirstSpritePixels(`
 title foo
 
 ===
@@ -101,7 +101,7 @@ W
   })
 
   it('Verifies the transparent pixels pass through to sprites lower in the list of sprites (mirror isles)', () => {
-    const {pixels, data} = parseAndReturnFirstSpritePixels(`
+    const { pixels, data } = parseAndReturnFirstSpritePixels(`
 title Mirror Isles player transparent
 
 ========

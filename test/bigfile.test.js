@@ -1,8 +1,8 @@
 /* eslint-env jasmine */
-const {readFileSync} = require('fs')
-const {default: Parser} = require('../src/parser')
+const { readFileSync } = require('fs')
+const { default: Parser } = require('../src/parser')
 
-function checkGrammar (code) {
+function checkGrammar(code) {
   const grammar = Parser.getGrammar()
   const match = grammar.match(code)
   expect(match.succeeded()).toBe(true)
@@ -16,8 +16,8 @@ function checkGrammar (code) {
     _default: function (children) {
       if (this.ctorName === 'word') {
         return this.sourceString
-      // } if (this.ctorName[0] === this.ctorName[0].toLowerCase()) {
-      //   return this.ctorName
+        // } if (this.ctorName[0] === this.ctorName[0].toLowerCase()) {
+        //   return this.ctorName
       } else {
         const obj = {
           __name: this.ctorName

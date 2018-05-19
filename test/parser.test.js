@@ -1,10 +1,10 @@
 /* eslint-env jasmine */
-const {default: Parser} = require('../src/parser')
-const {COLOR_PALETTES} = require('../src/colors')
+const { default: Parser } = require('../src/parser')
+const { COLOR_PALETTES } = require('../src/colors')
 
-function checkGrammar (code) {
+function checkGrammar(code) {
   const grammar = Parser.getGrammar()
-  const {match} = Parser.parseGrammar(code)
+  const { match } = Parser.parseGrammar(code)
   if (!match.succeeded()) {
     const trace = grammar.trace(code)
     console.log(trace.toString())
@@ -20,8 +20,8 @@ function checkGrammar (code) {
     _default: function (children) {
       if (this.ctorName === 'word') {
         return this.sourceString
-      // } if (this.ctorName[0] === this.ctorName[0].toLowerCase()) {
-      //   return this.ctorName
+        // } if (this.ctorName[0] === this.ctorName[0].toLowerCase()) {
+        //   return this.ctorName
       } else {
         const obj = {
           __name: this.ctorName
@@ -41,14 +41,14 @@ function checkGrammar (code) {
   return tree
 }
 
-function checkParse (code) {
-  const {data, error, validationMessages} = Parser.parse(code)
+function checkParse(code) {
+  const { data, error, validationMessages } = Parser.parse(code)
   expect(error && error.message).toBeFalsy() // Use && so the error messages are shorter
   expect(data).toMatchSnapshot()
-  return {data, validationMessages}
+  return { data, validationMessages }
 }
 
-function checkParseRule (code, varNames) {
+function checkParseRule(code, varNames) {
   // Now check if the semantics parsed
   const legendItems = varNames.map(varName => {
     return `${varName} = testObject`
@@ -77,7 +77,7 @@ ${code}
 `)
 }
 
-function parseRule (code, varNames) {
+function parseRule(code, varNames) {
   // Add a header
   checkGrammar(`
 title checkGrammar
@@ -218,7 +218,7 @@ RULES
     })
 
     it('Looks up color palettes using a string or an index', () => {
-      const {data: data1} = checkParse(`
+      const { data: data1 } = checkParse(`
 title foo
 color_palette gameboycolour
 
@@ -230,7 +230,7 @@ yellow
 `)
       expect(data1.objects[0]._color._colorName.toLowerCase()).toBe(COLOR_PALETTES['gameboycolour']['yellow'].toLowerCase())
 
-      const {data: data2} = checkParse(`
+      const { data: data2 } = checkParse(`
 title foo
 color_palette 2
 
@@ -337,7 +337,7 @@ yellow
   })
 
   it('Converts an invalid color to a Transparent one', () => {
-    const {data, validationMessages} = checkParse(`
+    const { data, validationMessages } = checkParse(`
     title foo
 
     ===
@@ -357,14 +357,14 @@ yellow
 
     expect(data.objects[0].getPixels()[0][0].isTransparent()).toBe(true)
     expect(validationMessages.length).toBe(1)
-    const {message, gameNode} = validationMessages[0]
+    const { message, gameNode } = validationMessages[0]
     expect(message).toBe('Invalid color name. "someinvalidcolorname" is not a valid color. Using "transparent" instead')
     expect(gameNode.__getSourceLineAndColumn()).toBeTruthy()
 
   })
 
   it('Sets the collision layer for nested sprites', () => {
-    const {data, validationMessages} = checkParse(`
+    const { data, validationMessages } = checkParse(`
     title foo
 
     ===
