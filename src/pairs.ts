@@ -13,11 +13,11 @@ export interface IMutator {
   mutate: () => Cell[]
 }
 interface IMatcher {
-  getMatchedMutatorsOrNull: (cell: Cell) => IMutator?[]
+  getMatchedMutatorsOrNull: (cell: Cell) => IMutator[] | null
 }
 
 export function getMatchedMutatorsHelper(pairs: IMatcher[], cell: Cell) {
-  let ret = []
+  let ret : IMutator[] = []
   for (const pair of pairs) {
     const retChild = pair.getMatchedMutatorsOrNull(cell)
     if (!retChild) return null
@@ -41,7 +41,7 @@ export class RuleConditionActionPair implements IMatcher {
   _bracketPairs: RuleBracketPair[]
 
   // boilerplate constructor
-  constructor (modifiers: RULE_MODIFIER[], condition: RuleBracket, action: RuleBracket) {
+  constructor (modifiers: Set<RULE_MODIFIER>, condition: RuleBracket, action: RuleBracket) {
     this._bracketPairs = _.zip(condition._neighbors, action._neighbors).map(([conditionBracket, actionBracket]) => {
       return new RuleBracketPair(modifiers, conditionBracket, actionBracket)
     })
@@ -56,11 +56,11 @@ export class RuleConditionActionPair implements IMatcher {
 }
 
 class RuleBracketPair implements IMatcher {
-  _modifiers: RULE_MODIFIER[]
+  _modifiers: Set<RULE_MODIFIER>
   _neighborPairs: NeighborPair[]
 
   // boilerplate constructor
-  constructor(modifiers: RULE_MODIFIER[], condition: RuleBracket, action: RuleBracket) {
+  constructor(modifiers: Set<RULE_MODIFIER>, condition: RuleBracket, action: RuleBracket) {
     this._modifiers = modifiers
     this._neighborPairs = _.zip(condition._neighbors, action._neighbors).map(([conditionTileWithModifier, actionTileWithModifier]) => {
       return new NeighborPair(conditionTileWithModifier, actionTileWithModifier)
