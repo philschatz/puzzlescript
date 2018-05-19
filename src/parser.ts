@@ -190,7 +190,28 @@ Puzzlescript {
     | RuleBracketNoEllipsisNeighbor
 
   RuleBracketEllipsisNeighbor = t_ELLIPSIS
-  RuleBracketNoEllipsisNeighbor = t_NO? ruleVariableName*
+  RuleBracketNoEllipsisNeighbor = TileWithModifier*
+
+  TileWithModifier = tileModifier* lookupRuleVariableName
+
+  tileModifier = space* tileModifierInner space+ // Force-check that there is whitespace after the cellLayerModifier so things like "STATIONARYZ" or "NOZ" are not parsed as a modifier (they are a variable that happens to begin with the same text as a modifier)
+
+  tileModifierInner
+    = t_NO
+    | t_LEFT
+    | t_RIGHT
+    | t_UP
+    | t_DOWN
+    | t_RANDOMDIR
+    | t_RANDOM
+    | t_STATIONARY
+    | t_MOVING
+    | t_ACTION
+    | t_VERTICAL
+    | t_HORIZONTAL
+    | t_PERPENDICULAR
+    | t_ORTHOGONAL
+    | t_ARROW_ANY // This can be a "v" so it needs to go at the end (behind t_VERTICAL)
 
   RuleModifier
     = t_RANDOM
@@ -386,6 +407,7 @@ Puzzlescript {
   ruleVariableChar = (~space ~newline ~"=" ~"[" ~"]" ~"|" ~"," ~t_ELLIPSIS any)
 
   ruleVariableName = ruleVariableChar+
+  lookupRuleVariableName = ruleVariableName
 }
 `// readFileSync('./grammar.ohm', 'utf-8')
 
@@ -906,28 +928,28 @@ export class GameSoundSimpleEnum extends GameSound {
 }
 // TODO: Link this up to the Object, rather than just storing the spriteName
 export class GameSoundNormal extends GameSound {
-  _sprite: string
+  _sprite: IGameTile
   _conditionEnum: string
 
-  constructor (source: IGameCode, sprite: string, conditionEnum: string, soundCode: number) {
+  constructor (source: IGameCode, sprite: IGameTile, conditionEnum: string, soundCode: number) {
     super(source, soundCode)
     this._sprite = sprite
     this._conditionEnum = conditionEnum
   }
 }
 export class GameSoundMoveSimple extends GameSound {
-  _sprite: string
+  _sprite: IGameTile
 
-  constructor (source: IGameCode, sprite: string, soundCode: number) {
+  constructor (source: IGameCode, sprite: IGameTile, soundCode: number) {
     super(source, soundCode)
     this._sprite = sprite
   }
 }
 export class GameSoundMoveDirection extends GameSound {
-  _sprite: string
+  _sprite: IGameTile
   _directionEnum: string
 
-  constructor (source: IGameCode, sprite: string, directionEnum: string, soundCode: number) {
+  constructor (source: IGameCode, sprite: IGameTile, directionEnum: string, soundCode: number) {
     super(source, soundCode)
     this._sprite = sprite
     this._directionEnum = directionEnum
@@ -995,6 +1017,8 @@ class GameRule extends BaseForLines {
   _conditions: RuleCondition[]
   _actions: RuleAction[]
   _commands: string[]
+  // _conditionActionPair: RuleConditionActionPair[]
+  _isValid: boolean
 
   constructor (source: IGameCode, modifiers: string[], conditions: RuleCondition[], actions: RuleAction[], commands: string[]) {
     super(source)
@@ -1002,20 +1026,57 @@ class GameRule extends BaseForLines {
     this._conditions = conditions
     this._actions = actions
     this._commands = commands
+    // this._conditionActionPair = []
+
+    // if (!this.isValidRule()) {
+    //   for (let i = 0; i < conditions.length; i++) {
+    //     const condition = conditions[i]
+    //     const action = actions[i]
+    //     const conditionActionPair = new RuleConditionActionPair(condition, action)
+    //     this._conditionActionPair.push(conditionActionPair)
+    //   }
+    // }
   }
 
   isValidRule() {
+    if (this._isValid !== undefined) return this._isValid
+
     if (this._conditions.length !== this._actions.length && this._actions.length !== 0) {
+      this._isValid = false
       throw new Error(`Left side has "${this._conditions.length}" conditions and right side has "${this._actions.length}" actions!`)
     }
 
-    return true
+    return this._isValid = true
   }
 
   getMatchedMutatorsOrNull (cell: Cell) {
-    // TODO: rewrite this
+    if (this.isValidRule() || this._actions.length === 0) {
+      return null
+    }
+    else {
+      const matched = []
+      for (let i = 0; i < this._conditions.length; i++) {
+        const condition = this._conditions[i]
+        const match = condition.getMatchedMutatorsOrNull(cell)
+
+        if (match) {
+          const action = this._actions[i]
+          matched.push(action)
+        }
+      }
+    }
   }
 }
+
+// class RuleConditionActionPair {
+//   _condition: RuleCondition
+//   _action: RuleAction
+
+//   constructor (condition: RuleCondition, action: RuleAction) {
+//     this._condition = condition
+//     this._action = action
+//   }
+// }
 
 class RuleCondition extends BaseForLines {
   _brackets: RuleBracket[]
@@ -1023,6 +1084,13 @@ class RuleCondition extends BaseForLines {
   constructor (source: IGameCode, brackets: RuleBracket[]) {
     super(source)
     this._brackets = brackets
+  }
+
+  getMatchedMutatorsOrNull (cell: Cell) {
+    for (let i = 0; i < this._brackets.length; i++) {
+      const bracket = this._brackets[i]
+      return bracket.getMatchedMutatorsOrNull(cell)
+    }
   }
 }
 
@@ -1043,23 +1111,51 @@ class RuleBracket extends BaseForLines {
     this._neighbors = neighbors
   }
 
+  getMatchedMutatorsOrNull (cell: Cell) {
+    for (let i = 0; i < this._neighbors.length; i++) {
+      const neighhbor = this._neighbors[i]
+      const match = neighhbor.getMatchedMutatorsOrNull(cell)
+      if (!match) return false
+    }
 
+    return true
+  }
 }
 
 class RuleBracketNeighbor extends BaseForLines {
-  _modifier: string
-  _values: any
+  _tilesWithModifier: TileWithModifier[]
   _isEllipsis: boolean
 
-  constructor (source: IGameCode, modifier: string, values: any, isEllipsis: boolean) {
+  constructor (source: IGameCode, tilesWithModifier: TileWithModifier[], isEllipsis: boolean) {
     super(source)
-    this._modifier = modifier
-    this._values = values
+    this._tilesWithModifier = tilesWithModifier
     this._isEllipsis = isEllipsis
   }
 
   iSEllipsis() {
     return this._isEllipsis
+  }
+
+  getMatchedMutatorsOrNull (cell: Cell) {
+    for (let i = 0; i < this._tilesWithModifier.length; i++) {
+      const tileWithModifier = this._tilesWithModifier[i]
+      return tileWithModifier.getMatchedMutatorsOrNull(cell)
+    }
+  }
+}
+
+class TileWithModifier extends BaseForLines {
+  _modifier?: string
+  _tile: IGameTile
+
+  constructor (source: IGameCode, modifier: string, tile: IGameTile) {
+    super(source)
+    this._modifier = modifier
+    this._tile = tile
+  }
+
+  getMatchedMutatorsOrNull (cell: Cell) {
+    return cell.getSpritesAsSet().has(this._tile)
   }
 }
 
@@ -1086,10 +1182,10 @@ function setDifference(setA, setB) {
 }
 
 class LookupHelper {
-  _allSoundEffects: any
-  _allObjects: any
-  _allLegendTiles: any
-  _allLevelChars: any
+  _allSoundEffects: Map<string, GameSound>
+  _allObjects: Map<string, GameSprite>
+  _allLegendTiles: Map<string, IGameTile>
+  _allLevelChars: Map<string, IGameTile>
 
   constructor () {
     this._allSoundEffects = new Map()
@@ -1357,10 +1453,16 @@ class Parser {
           return _1.parse()
         },
         RuleBracketEllipsisNeighbor: function (modifier) {
-          return new RuleBracketNeighbor(this.source, modifier.parse(), [], true)
+          return new RuleBracketNeighbor(this.source, modifier.parse(), true)
         },
-        RuleBracketNoEllipsisNeighbor: function (modifier, values) {
-          return new RuleBracketNeighbor(this.source, modifier.parse(), values.parse(), false)
+        RuleBracketNoEllipsisNeighbor: function (tileWithModifier) {
+          return new RuleBracketNeighbor(this.source, tileWithModifier.parse(), false)
+        },
+        TileWithModifier: function (optionalModifier, tile) {
+          return new TileWithModifier(this.source, optionalModifier.parse()[0], tile.parse())
+        },
+        tileModifier: function (_whitespace1, tileModifiers, _whitespace2) {
+          return tileModifiers.parse()
         },
         MessageCommand: function (_message, message) {
           return new GameMessage(this.source, message.parse())
@@ -1438,6 +1540,9 @@ class Parser {
         },
         decimalWithLeadingPeriod: function (_1, _2) {
           return parseFloat(this.sourceString)
+        },
+        lookupRuleVariableName: function (_1) {
+          return lookup.lookupObjectOrLegendTile(this.source, _1.parse())
         },
         ruleVariableName: function (_1) {
           return this.sourceString
