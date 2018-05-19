@@ -184,9 +184,11 @@ Puzzlescript {
 
   Rule = (RuleModifierLeft* RuleBracket)+ "->" (RuleModifier? RuleBracket)* RuleCommand* MessageCommand? lineTerminator+
 
-  RuleBracket = "[" NonemptyListOf<RuleBracketNeighbor, "|"> "]"
+  RuleBracket = "[" NonemptyListOf<RuleBracketNeighbor, "|"> t_AGAIN? "]" // t_AGAIN is a HACK. It should be in the list of commands but it's not.
   RuleBracketNeighbor
-    = RuleBracketEllipsisNeighbor
+    = HackTileNameIsSFX1 // to parse '... -> [ SFX1 ]' (they should be commands)
+    | HackTileNameIsSFX2 // to parse '... -> [ tilename SFX1 ]'
+    | RuleBracketEllipsisNeighbor
     | RuleBracketNoEllipsisNeighbor
 
   RuleBracketEllipsisNeighbor = t_ELLIPSIS
@@ -238,6 +240,8 @@ Puzzlescript {
     Rule
     (t_GROUP_RULE_PLUS Rule)+
 
+  HackTileNameIsSFX1 = t_SFX
+  HackTileNameIsSFX2 = lookupRuleVariableName t_SFX
 
   t_ARROW_ANY
     = t_ARROW_UP
@@ -407,7 +411,7 @@ Puzzlescript {
   ruleVariableChar = (~space ~newline ~"=" ~"[" ~"]" ~"|" ~"," ~t_ELLIPSIS any)
 
   ruleVariableName = ruleVariableChar+
-  lookupRuleVariableName = ruleVariableName
+  lookupRuleVariableName = ~t_AGAIN ruleVariableName // added t_AGAIN to parse '... -> [ tilename AGAIN ]' (it should be a command)
 }
 `// readFileSync('./grammar.ohm', 'utf-8')
 
@@ -1159,6 +1163,15 @@ class TileWithModifier extends BaseForLines {
   }
 }
 
+class HackNode extends BaseForLines {
+  fields: object
+  // These should be addressed as we write the interpreter
+  constructor (source: IGameCode, fields: object) {
+    super(source)
+    this.fields = fields
+  }
+}
+
 const M_STATIONARY = 'STATIONARY'
 const M_NO = 'NO'
 const SUPPORTED_CELL_MODIFIERS = new Set([M_STATIONARY, M_NO])
@@ -1446,8 +1459,8 @@ class Parser {
         Rule: function (modifiers, conditions, _arrow, _unusuedModifer, actions, commands, optionalMessageCommand, _whitespace) {
           return new GameRule(this.source, _.flatten(modifiers.parse()), conditions.parse(), actions.parse(), commands.parse().concat(optionalMessageCommand.parse()))
         },
-        RuleBracket: function (_openBracket, neighbors, _closeBracket) {
-          return new RuleBracket(this.source, neighbors.parse())
+        RuleBracket: function (_openBracket, neighbors, hackAgain, _closeBracket) {
+          return new RuleBracket(this.source, neighbors.parse(), hackAgain.parse())
         },
         RuleBracketNeighbor: function (_1) {
           return _1.parse()
@@ -1490,6 +1503,12 @@ class Parser {
         },
         levelMapRow: function (row, _2) {
           return row.parse()
+        },
+        HackTileNameIsSFX1: function (sfx) {
+          return new HackNode(this.source, sfx.parse())
+        },
+        HackTileNameIsSFX2: function (tile, sfx) {
+          return new HackNode(this.source, {tile: tile.parse(), sfx: sfx.parse()})
         },
         widthAndHeight: function (_1, _2, _3) {
           return {
