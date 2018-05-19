@@ -150,6 +150,7 @@ describe('rules', () => {
       parseRule('[z]->[SFX0]', ['z'])
       parseRule('[z]->[z SFX1]', ['z'])
       parseRule('[z]->[z winter]', ['z', 'winter'])
+      parseRule('[z|] -> [|z AGAIN]', ['z'])
     })
   })
 
