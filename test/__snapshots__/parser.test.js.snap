@@ -365,12 +365,51 @@ GameData {
   "rules": Array [
     GameRule {
       "__astId": 253,
-      "_conditionActionPairs": Array [
-        RuleConditionActionPair {
-          "_bracketPairs": Array [
-            RuleBracketPair {
-              "_modifiers": Set {},
-              "_neighborPairs": Array [],
+      "_bracketPairs": Array [
+        RuleBracketPair {
+          "_modifiers": Set {},
+          "_neighborPairs": Array [
+            NeighborPair {
+              "_tileWithModifierPairs": Array [
+                TileWithModifierPair {
+                  "_action": TileWithModifier {
+                    "__astId": 250,
+                    "_modifier": undefined,
+                    "_tile": GameLegendTileSimple {
+                      "__astId": 246,
+                      "_spriteNameOrLevelChar": "stationaryz",
+                      "_tiles": Array [
+                        GameSpriteSingleColor {
+                          "__astId": 245,
+                          "_color": TransparentColor {
+                            "__astId": 244,
+                          },
+                          "_name": "testObject",
+                          "_optionalLegendChar": undefined,
+                        },
+                      ],
+                    },
+                  },
+                  "_condition": TileWithModifier {
+                    "__astId": 247,
+                    "_modifier": undefined,
+                    "_tile": GameLegendTileSimple {
+                      "__astId": 246,
+                      "_spriteNameOrLevelChar": "stationaryz",
+                      "_tiles": Array [
+                        GameSpriteSingleColor {
+                          "__astId": 245,
+                          "_color": TransparentColor {
+                            "__astId": 244,
+                          },
+                          "_name": "testObject",
+                          "_optionalLegendChar": undefined,
+                        },
+                      ],
+                    },
+                  },
+                },
+              ],
             },
           ],
         },
@@ -614,12 +653,34 @@ GameData {
   "rules": Array [
     GameRule {
       "__astId": 99,
-      "_conditionActionPairs": Array [
-        RuleConditionActionPair {
-          "_bracketPairs": Array [
-            RuleBracketPair {
-              "_modifiers": Set {},
-              "_neighborPairs": Array [],
+      "_bracketPairs": Array [
+        RuleBracketPair {
+          "_modifiers": Set {},
+          "_neighborPairs": Array [
+            NeighborPair {
+              "_tileWithModifierPairs": Array [
+                TileWithModifierPair {
+                  "_action": undefined,
+                  "_condition": TileWithModifier {
+                    "__astId": 94,
+                    "_modifier": "ACTION",
+                    "_tile": GameLegendTileSimple {
+                      "__astId": 93,
+                      "_spriteNameOrLevelChar": "z",
+                      "_tiles": Array [
+                        GameSpriteSingleColor {
+                          "__astId": 92,
+                          "_color": TransparentColor {
+                            "__astId": 91,
+                          },
+                          "_name": "testObject",
+                          "_optionalLegendChar": undefined,
+                        },
+                      ],
+                    },
+                  },
+                },
+              ],
             },
           ],
         },
@@ -863,12 +924,34 @@ GameData {
   "rules": Array [
     GameRule {
       "__astId": 108,
-      "_conditionActionPairs": Array [
-        RuleConditionActionPair {
-          "_bracketPairs": Array [
-            RuleBracketPair {
-              "_modifiers": Set {},
-              "_neighborPairs": Array [],
+      "_bracketPairs": Array [
+        RuleBracketPair {
+          "_modifiers": Set {},
+          "_neighborPairs": Array [
+            NeighborPair {
+              "_tileWithModifierPairs": Array [
+                TileWithModifierPair {
+                  "_action": undefined,
+                  "_condition": TileWithModifier {
+                    "__astId": 103,
+                    "_modifier": "^",
+                    "_tile": GameLegendTileSimple {
+                      "__astId": 102,
+                      "_spriteNameOrLevelChar": "z",
+                      "_tiles": Array [
+                        GameSpriteSingleColor {
+                          "__astId": 101,
+                          "_color": TransparentColor {
+                            "__astId": 100,
+                          },
+                          "_name": "testObject",
+                          "_optionalLegendChar": undefined,
+                        },
+                      ],
+                    },
+                  },
+                },
+              ],
             },
           ],
         },
@@ -1115,12 +1198,34 @@ GameData {
   "rules": Array [
     GameRule {
       "__astId": 117,
-      "_conditionActionPairs": Array [
-        RuleConditionActionPair {
-          "_bracketPairs": Array [
-            RuleBracketPair {
-              "_modifiers": Set {},
-              "_neighborPairs": Array [],
+      "_bracketPairs": Array [
+        RuleBracketPair {
+          "_modifiers": Set {},
+          "_neighborPairs": Array [
+            NeighborPair {
+              "_tileWithModifierPairs": Array [
+                TileWithModifierPair {
+                  "_action": undefined,
+                  "_condition": TileWithModifier {
+                    "__astId": 112,
+                    "_modifier": "V",
+                    "_tile": GameLegendTileSimple {
+                      "__astId": 111,
+                      "_spriteNameOrLevelChar": "z",
+                      "_tiles": Array [
+                        GameSpriteSingleColor {
+                          "__astId": 110,
+                          "_color": TransparentColor {
+                            "__astId": 109,
+                          },
+                          "_name": "testObject",
+                          "_optionalLegendChar": undefined,
+                        },
+                      ],
+                    },
+                  },
+                },
+              ],
             },
           ],
         },
@@ -1364,12 +1469,34 @@ GameData {
   "rules": Array [
     GameRule {
       "__astId": 126,
-      "_conditionActionPairs": Array [
-        RuleConditionActionPair {
-          "_bracketPairs": Array [
-            RuleBracketPair {
-              "_modifiers": Set {},
-              "_neighborPairs": Array [],
+      "_bracketPairs": Array [
+        RuleBracketPair {
+          "_modifiers": Set {},
+          "_neighborPairs": Array [
+            NeighborPair {
+              "_tileWithModifierPairs": Array [
+                TileWithModifierPair {
+                  "_action": undefined,
+                  "_condition": TileWithModifier {
+                    "__astId": 121,
+                    "_modifier": ">",
+                    "_tile": GameLegendTileSimple {
+                      "__astId": 120,
+                      "_spriteNameOrLevelChar": "z",
+                      "_tiles": Array [
+                        GameSpriteSingleColor {
+                          "__astId": 119,
+                          "_color": TransparentColor {
+                            "__astId": 118,
+                          },
+                          "_name": "testObject",
+                          "_optionalLegendChar": undefined,
+                        },
+                      ],
+                    },
+                  },
+                },
+              ],
             },
           ],
         },
@@ -1613,12 +1740,34 @@ GameData {
   "rules": Array [
     GameRule {
       "__astId": 135,
-      "_conditionActionPairs": Array [
-        RuleConditionActionPair {
-          "_bracketPairs": Array [
-            RuleBracketPair {
-              "_modifiers": Set {},
-              "_neighborPairs": Array [],
+      "_bracketPairs": Array [
+        RuleBracketPair {
+          "_modifiers": Set {},
+          "_neighborPairs": Array [
+            NeighborPair {
+              "_tileWithModifierPairs": Array [
+                TileWithModifierPair {
+                  "_action": undefined,
+                  "_condition": TileWithModifier {
+                    "__astId": 130,
+                    "_modifier": "<",
+                    "_tile": GameLegendTileSimple {
+                      "__astId": 129,
+                      "_spriteNameOrLevelChar": "z",
+                      "_tiles": Array [
+                        GameSpriteSingleColor {
+                          "__astId": 128,
+                          "_color": TransparentColor {
+                            "__astId": 127,
+                          },
+                          "_name": "testObject",
+                          "_optionalLegendChar": undefined,
+                        },
+                      ],
+                    },
+                  },
+                },
+              ],
             },
           ],
         },
@@ -1862,12 +2011,34 @@ GameData {
   "rules": Array [
     GameRule {
       "__astId": 144,
-      "_conditionActionPairs": Array [
-        RuleConditionActionPair {
-          "_bracketPairs": Array [
-            RuleBracketPair {
-              "_modifiers": Set {},
-              "_neighborPairs": Array [],
+      "_bracketPairs": Array [
+        RuleBracketPair {
+          "_modifiers": Set {},
+          "_neighborPairs": Array [
+            NeighborPair {
+              "_tileWithModifierPairs": Array [
+                TileWithModifierPair {
+                  "_action": undefined,
+                  "_condition": TileWithModifier {
+                    "__astId": 139,
+                    "_modifier": "LEFT",
+                    "_tile": GameLegendTileSimple {
+                      "__astId": 138,
+                      "_spriteNameOrLevelChar": "z",
+                      "_tiles": Array [
+                        GameSpriteSingleColor {
+                          "__astId": 137,
+                          "_color": TransparentColor {
+                            "__astId": 136,
+                          },
+                          "_name": "testObject",
+                          "_optionalLegendChar": undefined,
+                        },
+                      ],
+                    },
+                  },
+                },
+              ],
             },
           ],
         },
@@ -2111,12 +2282,34 @@ GameData {
   "rules": Array [
     GameRule {
       "__astId": 153,
-      "_conditionActionPairs": Array [
-        RuleConditionActionPair {
-          "_bracketPairs": Array [
-            RuleBracketPair {
-              "_modifiers": Set {},
-              "_neighborPairs": Array [],
+      "_bracketPairs": Array [
+        RuleBracketPair {
+          "_modifiers": Set {},
+          "_neighborPairs": Array [
+            NeighborPair {
+              "_tileWithModifierPairs": Array [
+                TileWithModifierPair {
+                  "_action": undefined,
+                  "_condition": TileWithModifier {
+                    "__astId": 148,
+                    "_modifier": "RIGHT",
+                    "_tile": GameLegendTileSimple {
+                      "__astId": 147,
+                      "_spriteNameOrLevelChar": "z",
+                      "_tiles": Array [
+                        GameSpriteSingleColor {
+                          "__astId": 146,
+                          "_color": TransparentColor {
+                            "__astId": 145,
+                          },
+                          "_name": "testObject",
+                          "_optionalLegendChar": undefined,
+                        },
+                      ],
+                    },
+                  },
+                },
+              ],
             },
           ],
         },
@@ -2360,12 +2553,34 @@ GameData {
   "rules": Array [
     GameRule {
       "__astId": 162,
-      "_conditionActionPairs": Array [
-        RuleConditionActionPair {
-          "_bracketPairs": Array [
-            RuleBracketPair {
-              "_modifiers": Set {},
-              "_neighborPairs": Array [],
+      "_bracketPairs": Array [
+        RuleBracketPair {
+          "_modifiers": Set {},
+          "_neighborPairs": Array [
+            NeighborPair {
+              "_tileWithModifierPairs": Array [
+                TileWithModifierPair {
+                  "_action": undefined,
+                  "_condition": TileWithModifier {
+                    "__astId": 157,
+                    "_modifier": "UP",
+                    "_tile": GameLegendTileSimple {
+                      "__astId": 156,
+                      "_spriteNameOrLevelChar": "z",
+                      "_tiles": Array [
+                        GameSpriteSingleColor {
+                          "__astId": 155,
+                          "_color": TransparentColor {
+                            "__astId": 154,
+                          },
+                          "_name": "testObject",
+                          "_optionalLegendChar": undefined,
+                        },
+                      ],
+                    },
+                  },
+                },
+              ],
             },
           ],
         },
@@ -2609,12 +2824,34 @@ GameData {
   "rules": Array [
     GameRule {
       "__astId": 171,
-      "_conditionActionPairs": Array [
-        RuleConditionActionPair {
-          "_bracketPairs": Array [
-            RuleBracketPair {
-              "_modifiers": Set {},
-              "_neighborPairs": Array [],
+      "_bracketPairs": Array [
+        RuleBracketPair {
+          "_modifiers": Set {},
+          "_neighborPairs": Array [
+            NeighborPair {
+              "_tileWithModifierPairs": Array [
+                TileWithModifierPair {
+                  "_action": undefined,
+                  "_condition": TileWithModifier {
+                    "__astId": 166,
+                    "_modifier": "DOWN",
+                    "_tile": GameLegendTileSimple {
+                      "__astId": 165,
+                      "_spriteNameOrLevelChar": "z",
+                      "_tiles": Array [
+                        GameSpriteSingleColor {
+                          "__astId": 164,
+                          "_color": TransparentColor {
+                            "__astId": 163,
+                          },
+                          "_name": "testObject",
+                          "_optionalLegendChar": undefined,
+                        },
+                      ],
+                    },
+                  },
+                },
+              ],
             },
           ],
         },
@@ -2858,12 +3095,34 @@ GameData {
   "rules": Array [
     GameRule {
       "__astId": 180,
-      "_conditionActionPairs": Array [
-        RuleConditionActionPair {
-          "_bracketPairs": Array [
-            RuleBracketPair {
-              "_modifiers": Set {},
-              "_neighborPairs": Array [],
+      "_bracketPairs": Array [
+        RuleBracketPair {
+          "_modifiers": Set {},
+          "_neighborPairs": Array [
+            NeighborPair {
+              "_tileWithModifierPairs": Array [
+                TileWithModifierPair {
+                  "_action": undefined,
+                  "_condition": TileWithModifier {
+                    "__astId": 175,
+                    "_modifier": "STATIONARY",
+                    "_tile": GameLegendTileSimple {
+                      "__astId": 174,
+                      "_spriteNameOrLevelChar": "z",
+                      "_tiles": Array [
+                        GameSpriteSingleColor {
+                          "__astId": 173,
+                          "_color": TransparentColor {
+                            "__astId": 172,
+                          },
+                          "_name": "testObject",
+                          "_optionalLegendChar": undefined,
+                        },
+                      ],
+                    },
+                  },
+                },
+              ],
             },
           ],
         },
@@ -3107,12 +3366,34 @@ GameData {
   "rules": Array [
     GameRule {
       "__astId": 189,
-      "_conditionActionPairs": Array [
-        RuleConditionActionPair {
-          "_bracketPairs": Array [
-            RuleBracketPair {
-              "_modifiers": Set {},
-              "_neighborPairs": Array [],
+      "_bracketPairs": Array [
+        RuleBracketPair {
+          "_modifiers": Set {},
+          "_neighborPairs": Array [
+            NeighborPair {
+              "_tileWithModifierPairs": Array [
+                TileWithModifierPair {
+                  "_action": undefined,
+                  "_condition": TileWithModifier {
+                    "__astId": 184,
+                    "_modifier": "MOVING",
+                    "_tile": GameLegendTileSimple {
+                      "__astId": 183,
+                      "_spriteNameOrLevelChar": "z",
+                      "_tiles": Array [
+                        GameSpriteSingleColor {
+                          "__astId": 182,
+                          "_color": TransparentColor {
+                            "__astId": 181,
+                          },
+                          "_name": "testObject",
+                          "_optionalLegendChar": undefined,
+                        },
+                      ],
+                    },
+                  },
+                },
+              ],
             },
           ],
         },
@@ -3356,12 +3637,34 @@ GameData {
   "rules": Array [
     GameRule {
       "__astId": 198,
-      "_conditionActionPairs": Array [
-        RuleConditionActionPair {
-          "_bracketPairs": Array [
-            RuleBracketPair {
-              "_modifiers": Set {},
-              "_neighborPairs": Array [],
+      "_bracketPairs": Array [
+        RuleBracketPair {
+          "_modifiers": Set {},
+          "_neighborPairs": Array [
+            NeighborPair {
+              "_tileWithModifierPairs": Array [
+                TileWithModifierPair {
+                  "_action": undefined,
+                  "_condition": TileWithModifier {
+                    "__astId": 193,
+                    "_modifier": "VERTICAL",
+                    "_tile": GameLegendTileSimple {
+                      "__astId": 192,
+                      "_spriteNameOrLevelChar": "z",
+                      "_tiles": Array [
+                        GameSpriteSingleColor {
+                          "__astId": 191,
+                          "_color": TransparentColor {
+                            "__astId": 190,
+                          },
+                          "_name": "testObject",
+                          "_optionalLegendChar": undefined,
+                        },
+                      ],
+                    },
+                  },
+                },
+              ],
             },
           ],
         },
@@ -3605,12 +3908,34 @@ GameData {
   "rules": Array [
     GameRule {
       "__astId": 207,
-      "_conditionActionPairs": Array [
-        RuleConditionActionPair {
-          "_bracketPairs": Array [
-            RuleBracketPair {
-              "_modifiers": Set {},
-              "_neighborPairs": Array [],
+      "_bracketPairs": Array [
+        RuleBracketPair {
+          "_modifiers": Set {},
+          "_neighborPairs": Array [
+            NeighborPair {
+              "_tileWithModifierPairs": Array [
+                TileWithModifierPair {
+                  "_action": undefined,
+                  "_condition": TileWithModifier {
+                    "__astId": 202,
+                    "_modifier": "HORIZONTAL",
+                    "_tile": GameLegendTileSimple {
+                      "__astId": 201,
+                      "_spriteNameOrLevelChar": "z",
+                      "_tiles": Array [
+                        GameSpriteSingleColor {
+                          "__astId": 200,
+                          "_color": TransparentColor {
+                            "__astId": 199,
+                          },
+                          "_name": "testObject",
+                          "_optionalLegendChar": undefined,
+                        },
+                      ],
+                    },
+                  },
+                },
+              ],
             },
           ],
         },
@@ -3854,12 +4179,34 @@ GameData {
   "rules": Array [
     GameRule {
       "__astId": 216,
-      "_conditionActionPairs": Array [
-        RuleConditionActionPair {
-          "_bracketPairs": Array [
-            RuleBracketPair {
-              "_modifiers": Set {},
-              "_neighborPairs": Array [],
+      "_bracketPairs": Array [
+        RuleBracketPair {
+          "_modifiers": Set {},
+          "_neighborPairs": Array [
+            NeighborPair {
+              "_tileWithModifierPairs": Array [
+                TileWithModifierPair {
+                  "_action": undefined,
+                  "_condition": TileWithModifier {
+                    "__astId": 211,
+                    "_modifier": "PERPENDICULAR",
+                    "_tile": GameLegendTileSimple {
+                      "__astId": 210,
+                      "_spriteNameOrLevelChar": "z",
+                      "_tiles": Array [
+                        GameSpriteSingleColor {
+                          "__astId": 209,
+                          "_color": TransparentColor {
+                            "__astId": 208,
+                          },
+                          "_name": "testObject",
+                          "_optionalLegendChar": undefined,
+                        },
+                      ],
+                    },
+                  },
+                },
+              ],
             },
           ],
         },
@@ -4103,12 +4450,34 @@ GameData {
   "rules": Array [
     GameRule {
       "__astId": 225,
-      "_conditionActionPairs": Array [
-        RuleConditionActionPair {
-          "_bracketPairs": Array [
-            RuleBracketPair {
-              "_modifiers": Set {},
-              "_neighborPairs": Array [],
+      "_bracketPairs": Array [
+        RuleBracketPair {
+          "_modifiers": Set {},
+          "_neighborPairs": Array [
+            NeighborPair {
+              "_tileWithModifierPairs": Array [
+                TileWithModifierPair {
+                  "_action": undefined,
+                  "_condition": TileWithModifier {
+                    "__astId": 220,
+                    "_modifier": "ORTHOGONAL",
+                    "_tile": GameLegendTileSimple {
+                      "__astId": 219,
+                      "_spriteNameOrLevelChar": "z",
+                      "_tiles": Array [
+                        GameSpriteSingleColor {
+                          "__astId": 218,
+                          "_color": TransparentColor {
+                            "__astId": 217,
+                          },
+                          "_name": "testObject",
+                          "_optionalLegendChar": undefined,
+                        },
+                      ],
+                    },
+                  },
+                },
+              ],
             },
           ],
         },
@@ -4352,12 +4721,34 @@ GameData {
   "rules": Array [
     GameRule {
       "__astId": 234,
-      "_conditionActionPairs": Array [
-        RuleConditionActionPair {
-          "_bracketPairs": Array [
-            RuleBracketPair {
-              "_modifiers": Set {},
-              "_neighborPairs": Array [],
+      "_bracketPairs": Array [
+        RuleBracketPair {
+          "_modifiers": Set {},
+          "_neighborPairs": Array [
+            NeighborPair {
+              "_tileWithModifierPairs": Array [
+                TileWithModifierPair {
+                  "_action": undefined,
+                  "_condition": TileWithModifier {
+                    "__astId": 229,
+                    "_modifier": "RANDOMDIR",
+                    "_tile": GameLegendTileSimple {
+                      "__astId": 228,
+                      "_spriteNameOrLevelChar": "z",
+                      "_tiles": Array [
+                        GameSpriteSingleColor {
+                          "__astId": 227,
+                          "_color": TransparentColor {
+                            "__astId": 226,
+                          },
+                          "_name": "testObject",
+                          "_optionalLegendChar": undefined,
+                        },
+                      ],
+                    },
+                  },
+                },
+              ],
             },
           ],
         },
@@ -4601,12 +4992,34 @@ GameData {
   "rules": Array [
     GameRule {
       "__astId": 243,
-      "_conditionActionPairs": Array [
-        RuleConditionActionPair {
-          "_bracketPairs": Array [
-            RuleBracketPair {
-              "_modifiers": Set {},
-              "_neighborPairs": Array [],
+      "_bracketPairs": Array [
+        RuleBracketPair {
+          "_modifiers": Set {},
+          "_neighborPairs": Array [
+            NeighborPair {
+              "_tileWithModifierPairs": Array [
+                TileWithModifierPair {
+                  "_action": undefined,
+                  "_condition": TileWithModifier {
+                    "__astId": 238,
+                    "_modifier": "NO",
+                    "_tile": GameLegendTileSimple {
+                      "__astId": 237,
+                      "_spriteNameOrLevelChar": "z",
+                      "_tiles": Array [
+                        GameSpriteSingleColor {
+                          "__astId": 236,
+                          "_color": TransparentColor {
+                            "__astId": 235,
+                          },
+                          "_name": "testObject",
+                          "_optionalLegendChar": undefined,
+                        },
+                      ],
+                    },
+                  },
+                },
+              ],
             },
           ],
         },
@@ -4870,12 +5283,51 @@ GameData {
   "rules": Array [
     GameRule {
       "__astId": 263,
-      "_conditionActionPairs": Array [
-        RuleConditionActionPair {
-          "_bracketPairs": Array [
-            RuleBracketPair {
-              "_modifiers": Set {},
-              "_neighborPairs": Array [],
+      "_bracketPairs": Array [
+        RuleBracketPair {
+          "_modifiers": Set {},
+          "_neighborPairs": Array [
+            NeighborPair {
+              "_tileWithModifierPairs": Array [
+                TileWithModifierPair {
+                  "_action": TileWithModifier {
+                    "__astId": 260,
+                    "_modifier": undefined,
+                    "_tile": GameLegendTileSimple {
+                      "__astId": 256,
+                      "_spriteNameOrLevelChar": "z",
+                      "_tiles": Array [
+                        GameSpriteSingleColor {
+                          "__astId": 255,
+                          "_color": TransparentColor {
+                            "__astId": 254,
+                          },
+                          "_name": "testObject",
+                          "_optionalLegendChar": undefined,
+                        },
+                      ],
+                    },
+                  },
+                  "_condition": TileWithModifier {
+                    "__astId": 257,
+                    "_modifier": "STATIONARY",
+                    "_tile": GameLegendTileSimple {
+                      "__astId": 256,
+                      "_spriteNameOrLevelChar": "z",
+                      "_tiles": Array [
+                        GameSpriteSingleColor {
+                          "__astId": 255,
+                          "_color": TransparentColor {
+                            "__astId": 254,
+                          },
+                          "_name": "testObject",
+                          "_optionalLegendChar": undefined,
+                        },
+                      ],
+                    },
+                  },
+                },
+              ],
             },
           ],
         },
@@ -5105,12 +5557,34 @@ GameData {
   "rules": Array [
     GameRule {
       "__astId": 272,
-      "_conditionActionPairs": Array [
-        RuleConditionActionPair {
-          "_bracketPairs": Array [
-            RuleBracketPair {
-              "_modifiers": Set {},
-              "_neighborPairs": Array [],
+      "_bracketPairs": Array [
+        RuleBracketPair {
+          "_modifiers": Set {},
+          "_neighborPairs": Array [
+            NeighborPair {
+              "_tileWithModifierPairs": Array [
+                TileWithModifierPair {
+                  "_action": undefined,
+                  "_condition": TileWithModifier {
+                    "__astId": 267,
+                    "_modifier": undefined,
+                    "_tile": GameLegendTileSimple {
+                      "__astId": 266,
+                      "_spriteNameOrLevelChar": "z",
+                      "_tiles": Array [
+                        GameSpriteSingleColor {
+                          "__astId": 265,
+                          "_color": TransparentColor {
+                            "__astId": 264,
+                          },
+                          "_name": "testObject",
+                          "_optionalLegendChar": undefined,
+                        },
+                      ],
+                    },
+                  },
+                },
+              ],
             },
           ],
         },
@@ -5355,12 +5829,34 @@ GameData {
   "rules": Array [
     GameRule {
       "__astId": 281,
-      "_conditionActionPairs": Array [
-        RuleConditionActionPair {
-          "_bracketPairs": Array [
-            RuleBracketPair {
-              "_modifiers": Set {},
-              "_neighborPairs": Array [],
+      "_bracketPairs": Array [
+        RuleBracketPair {
+          "_modifiers": Set {},
+          "_neighborPairs": Array [
+            NeighborPair {
+              "_tileWithModifierPairs": Array [
+                TileWithModifierPair {
+                  "_action": undefined,
+                  "_condition": TileWithModifier {
+                    "__astId": 276,
+                    "_modifier": undefined,
+                    "_tile": GameLegendTileSimple {
+                      "__astId": 275,
+                      "_spriteNameOrLevelChar": "z",
+                      "_tiles": Array [
+                        GameSpriteSingleColor {
+                          "__astId": 274,
+                          "_color": TransparentColor {
+                            "__astId": 273,
+                          },
+                          "_name": "testObject",
+                          "_optionalLegendChar": undefined,
+                        },
+                      ],
+                    },
+                  },
+                },
+              ],
             },
           ],
         },
@@ -5667,12 +6163,72 @@ GameData {
   "rules": Array [
     GameRule {
       "__astId": 293,
-      "_conditionActionPairs": Array [
-        RuleConditionActionPair {
-          "_bracketPairs": Array [
-            RuleBracketPair {
-              "_modifiers": Set {},
-              "_neighborPairs": Array [],
+      "_bracketPairs": Array [
+        RuleBracketPair {
+          "_modifiers": Set {},
+          "_neighborPairs": Array [
+            NeighborPair {
+              "_tileWithModifierPairs": Array [
+                TileWithModifierPair {
+                  "_action": TileWithModifier {
+                    "__astId": 289,
+                    "_modifier": undefined,
+                    "_tile": GameLegendTileSimple {
+                      "__astId": 284,
+                      "_spriteNameOrLevelChar": "z",
+                      "_tiles": Array [
+                        GameSpriteSingleColor {
+                          "__astId": 283,
+                          "_color": TransparentColor {
+                            "__astId": 282,
+                          },
+                          "_name": "testObject",
+                          "_optionalLegendChar": undefined,
+                        },
+                      ],
+                    },
+                  },
+                  "_condition": TileWithModifier {
+                    "__astId": 286,
+                    "_modifier": undefined,
+                    "_tile": GameLegendTileSimple {
+                      "__astId": 284,
+                      "_spriteNameOrLevelChar": "z",
+                      "_tiles": Array [
+                        GameSpriteSingleColor {
+                          "__astId": 283,
+                          "_color": TransparentColor {
+                            "__astId": 282,
+                          },
+                          "_name": "testObject",
+                          "_optionalLegendChar": undefined,
+                        },
+                      ],
+                    },
+                  },
+                },
+                TileWithModifierPair {
+                  "_action": TileWithModifier {
+                    "__astId": 290,
+                    "_modifier": undefined,
+                    "_tile": GameLegendTileSimple {
+                      "__astId": 285,
+                      "_spriteNameOrLevelChar": "winter",
+                      "_tiles": Array [
+                        GameSpriteSingleColor {
+                          "__astId": 283,
+                          "_color": TransparentColor {
+                            "__astId": 282,
+                          },
+                          "_name": "testObject",
+                          "_optionalLegendChar": undefined,
+                        },
+                      ],
+                    },
+                  },
+                  "_condition": undefined,
+                },
+              ],
             },
           ],
         },
@@ -5943,16 +6499,59 @@ GameData {
   "rules": Array [
     GameRule {
       "__astId": 305,
-      "_conditionActionPairs": Array [
-        RuleConditionActionPair {
-          "_bracketPairs": Array [
-            RuleBracketPair {
-              "_modifiers": Set {},
-              "_neighborPairs": Array [],
+      "_bracketPairs": Array [
+        RuleBracketPair {
+          "_modifiers": Set {},
+          "_neighborPairs": Array [
+            NeighborPair {
+              "_tileWithModifierPairs": Array [
+                TileWithModifierPair {
+                  "_action": undefined,
+                  "_condition": TileWithModifier {
+                    "__astId": 297,
+                    "_modifier": undefined,
+                    "_tile": GameLegendTileSimple {
+                      "__astId": 296,
+                      "_spriteNameOrLevelChar": "z",
+                      "_tiles": Array [
+                        GameSpriteSingleColor {
+                          "__astId": 295,
+                          "_color": TransparentColor {
+                            "__astId": 294,
+                          },
+                          "_name": "testObject",
+                          "_optionalLegendChar": undefined,
+                        },
+                      ],
+                    },
+                  },
+                },
+              ],
             },
-            RuleBracketPair {
-              "_modifiers": Set {},
-              "_neighborPairs": Array [],
+            NeighborPair {
+              "_tileWithModifierPairs": Array [
+                TileWithModifierPair {
+                  "_action": TileWithModifier {
+                    "__astId": 302,
+                    "_modifier": undefined,
+                    "_tile": GameLegendTileSimple {
+                      "__astId": 296,
+                      "_spriteNameOrLevelChar": "z",
+                      "_tiles": Array [
+                        GameSpriteSingleColor {
+                          "__astId": 295,
+                          "_color": TransparentColor {
+                            "__astId": 294,
+                          },
+                          "_name": "testObject",
+                          "_optionalLegendChar": undefined,
+                        },
+                      ],
+                    },
+                  },
+                  "_condition": undefined,
+                },
+              ],
             },
           ],
         },
@@ -6886,12 +7485,69 @@ GameData {
   "rules": Array [
     GameRule {
       "__astId": 327,
-      "_conditionActionPairs": Array [
-        RuleConditionActionPair {
-          "_bracketPairs": Array [
-            RuleBracketPair {
-              "_modifiers": Set {},
-              "_neighborPairs": Array [],
+      "_bracketPairs": Array [
+        RuleBracketPair {
+          "_modifiers": Set {},
+          "_neighborPairs": Array [
+            NeighborPair {
+              "_tileWithModifierPairs": Array [
+                TileWithModifierPair {
+                  "_action": TileWithModifier {
+                    "__astId": 324,
+                    "_modifier": undefined,
+                    "_tile": GameSpriteSingleColor {
+                      "__astId": 311,
+                      "_collisionLayer": CollisionLayer {
+                        "__astId": 320,
+                        "_sprites": Array [
+                          [Circular],
+                          GameSpriteSingleColor {
+                            "__astId": 313,
+                            "_collisionLayer": [Circular],
+                            "_color": TransparentColor {
+                              "__astId": 312,
+                            },
+                            "_name": "hello2",
+                            "_optionalLegendChar": "]",
+                          },
+                        ],
+                      },
+                      "_color": TransparentColor {
+                        "__astId": 310,
+                      },
+                      "_name": "hello",
+                      "_optionalLegendChar": ".",
+                    },
+                  },
+                  "_condition": TileWithModifier {
+                    "__astId": 321,
+                    "_modifier": undefined,
+                    "_tile": GameSpriteSingleColor {
+                      "__astId": 311,
+                      "_collisionLayer": CollisionLayer {
+                        "__astId": 320,
+                        "_sprites": Array [
+                          [Circular],
+                          GameSpriteSingleColor {
+                            "__astId": 313,
+                            "_collisionLayer": [Circular],
+                            "_color": TransparentColor {
+                              "__astId": 312,
+                            },
+                            "_name": "hello2",
+                            "_optionalLegendChar": "]",
+                          },
+                        ],
+                      },
+                      "_color": TransparentColor {
+                        "__astId": 310,
+                      },
+                      "_name": "hello",
+                      "_optionalLegendChar": ".",
+                    },
+                  },
+                },
+              ],
             },
           ],
         },
@@ -6900,12 +7556,39 @@ GameData {
     },
     GameRule {
       "__astId": 334,
-      "_conditionActionPairs": Array [
-        RuleConditionActionPair {
-          "_bracketPairs": Array [
-            RuleBracketPair {
-              "_modifiers": Set {},
-              "_neighborPairs": Array [],
+      "_bracketPairs": Array [
+        RuleBracketPair {
+          "_modifiers": Set {},
+          "_neighborPairs": Array [
+            NeighborPair {
+              "_tileWithModifierPairs": Array [
+                TileWithModifierPair {
+                  "_action": TileWithModifier {
+                    "__astId": 331,
+                    "_modifier": undefined,
+                    "_tile": GameSpriteSingleColor {
+                      "__astId": 315,
+                      "_color": TransparentColor {
+                        "__astId": 314,
+                      },
+                      "_name": "hello3",
+                      "_optionalLegendChar": "♡",
+                    },
+                  },
+                  "_condition": TileWithModifier {
+                    "__astId": 328,
+                    "_modifier": undefined,
+                    "_tile": GameSpriteSingleColor {
+                      "__astId": 315,
+                      "_color": TransparentColor {
+                        "__astId": 314,
+                      },
+                      "_name": "hello3",
+                      "_optionalLegendChar": "♡",
+                    },
+                  },
+                },
+              ],
             },
           ],
         },
@@ -7802,12 +8485,34 @@ GameData {
   "rules": Array [
     GameRule {
       "__astId": 90,
-      "_conditionActionPairs": Array [
-        RuleConditionActionPair {
-          "_bracketPairs": Array [
-            RuleBracketPair {
-              "_modifiers": Set {},
-              "_neighborPairs": Array [],
+      "_bracketPairs": Array [
+        RuleBracketPair {
+          "_modifiers": Set {},
+          "_neighborPairs": Array [
+            NeighborPair {
+              "_tileWithModifierPairs": Array [
+                TileWithModifierPair {
+                  "_action": undefined,
+                  "_condition": TileWithModifier {
+                    "__astId": 85,
+                    "_modifier": undefined,
+                    "_tile": GameLegendTileSimple {
+                      "__astId": 84,
+                      "_spriteNameOrLevelChar": "z_x",
+                      "_tiles": Array [
+                        GameSpriteSingleColor {
+                          "__astId": 83,
+                          "_color": TransparentColor {
+                            "__astId": 82,
+                          },
+                          "_name": "testObject",
+                          "_optionalLegendChar": undefined,
+                        },
+                      ],
+                    },
+                  },
+                },
+              ],
             },
           ],
         },
@@ -8027,12 +8732,34 @@ GameData {
   "rules": Array [
     GameRule {
       "__astId": 81,
-      "_conditionActionPairs": Array [
-        RuleConditionActionPair {
-          "_bracketPairs": Array [
-            RuleBracketPair {
-              "_modifiers": Set {},
-              "_neighborPairs": Array [],
+      "_bracketPairs": Array [
+        RuleBracketPair {
+          "_modifiers": Set {},
+          "_neighborPairs": Array [
+            NeighborPair {
+              "_tileWithModifierPairs": Array [
+                TileWithModifierPair {
+                  "_action": undefined,
+                  "_condition": TileWithModifier {
+                    "__astId": 76,
+                    "_modifier": undefined,
+                    "_tile": GameLegendTileSimple {
+                      "__astId": 75,
+                      "_spriteNameOrLevelChar": ".",
+                      "_tiles": Array [
+                        GameSpriteSingleColor {
+                          "__astId": 74,
+                          "_color": TransparentColor {
+                            "__astId": 73,
+                          },
+                          "_name": "testObject",
+                          "_optionalLegendChar": undefined,
+                        },
+                      ],
+                    },
+                  },
+                },
+              ],
             },
           ],
         },
@@ -8428,24 +9155,121 @@ GameData {
   "rules": Array [
     GameRule {
       "__astId": 72,
-      "_conditionActionPairs": Array [
-        RuleConditionActionPair {
-          "_bracketPairs": Array [
-            RuleBracketPair {
-              "_modifiers": Set {},
-              "_neighborPairs": Array [],
+      "_bracketPairs": Array [
+        RuleBracketPair {
+          "_modifiers": Set {},
+          "_neighborPairs": Array [
+            NeighborPair {
+              "_tileWithModifierPairs": Array [
+                TileWithModifierPair {
+                  "_action": TileWithModifier {
+                    "__astId": 65,
+                    "_modifier": "RANDOM",
+                    "_tile": GameLegendTileSimple {
+                      "__astId": 55,
+                      "_spriteNameOrLevelChar": "z",
+                      "_tiles": Array [
+                        GameSpriteSingleColor {
+                          "__astId": 54,
+                          "_color": TransparentColor {
+                            "__astId": 53,
+                          },
+                          "_name": "testObject",
+                          "_optionalLegendChar": undefined,
+                        },
+                      ],
+                    },
+                  },
+                  "_condition": TileWithModifier {
+                    "__astId": 57,
+                    "_modifier": undefined,
+                    "_tile": GameLegendTileSimple {
+                      "__astId": 55,
+                      "_spriteNameOrLevelChar": "z",
+                      "_tiles": Array [
+                        GameSpriteSingleColor {
+                          "__astId": 54,
+                          "_color": TransparentColor {
+                            "__astId": 53,
+                          },
+                          "_name": "testObject",
+                          "_optionalLegendChar": undefined,
+                        },
+                      ],
+                    },
+                  },
+                },
+              ],
             },
-            RuleBracketPair {
-              "_modifiers": Set {},
-              "_neighborPairs": Array [],
+            NeighborPair {
+              "_tileWithModifierPairs": Array [],
             },
-            RuleBracketPair {
-              "_modifiers": Set {},
-              "_neighborPairs": Array [],
+            NeighborPair {
+              "_tileWithModifierPairs": Array [
+                TileWithModifierPair {
+                  "_action": TileWithModifier {
+                    "__astId": 68,
+                    "_modifier": undefined,
+                    "_tile": GameLegendTileSimple {
+                      "__astId": 56,
+                      "_spriteNameOrLevelChar": "x",
+                      "_tiles": Array [
+                        GameSpriteSingleColor {
+                          "__astId": 54,
+                          "_color": TransparentColor {
+                            "__astId": 53,
+                          },
+                          "_name": "testObject",
+                          "_optionalLegendChar": undefined,
+                        },
+                      ],
+                    },
+                  },
+                  "_condition": TileWithModifier {
+                    "__astId": 60,
+                    "_modifier": undefined,
+                    "_tile": GameLegendTileSimple {
+                      "__astId": 56,
+                      "_spriteNameOrLevelChar": "x",
+                      "_tiles": Array [
+                        GameSpriteSingleColor {
+                          "__astId": 54,
+                          "_color": TransparentColor {
+                            "__astId": 53,
+                          },
+                          "_name": "testObject",
+                          "_optionalLegendChar": undefined,
+                        },
+                      ],
+                    },
+                  },
+                },
+              ],
             },
-            RuleBracketPair {
-              "_modifiers": Set {},
-              "_neighborPairs": Array [],
+            NeighborPair {
+              "_tileWithModifierPairs": Array [
+                TileWithModifierPair {
+                  "_action": undefined,
+                  "_condition": TileWithModifier {
+                    "__astId": 62,
+                    "_modifier": undefined,
+                    "_tile": GameLegendTileSimple {
+                      "__astId": 55,
+                      "_spriteNameOrLevelChar": "z",
+                      "_tiles": Array [
+                        GameSpriteSingleColor {
+                          "__astId": 54,
+                          "_color": TransparentColor {
+                            "__astId": 53,
+                          },
+                          "_name": "testObject",
+                          "_optionalLegendChar": undefined,
+                        },
+                      ],
+                    },
+                  },
+                },
+              ],
             },
           ],
         },
@@ -8721,16 +9545,59 @@ GameData {
   "rules": Array [
     GameRule {
       "__astId": 41,
-      "_conditionActionPairs": Array [
-        RuleConditionActionPair {
-          "_bracketPairs": Array [
-            RuleBracketPair {
-              "_modifiers": Set {},
-              "_neighborPairs": Array [],
+      "_bracketPairs": Array [
+        RuleBracketPair {
+          "_modifiers": Set {},
+          "_neighborPairs": Array [
+            NeighborPair {
+              "_tileWithModifierPairs": Array [
+                TileWithModifierPair {
+                  "_action": undefined,
+                  "_condition": TileWithModifier {
+                    "__astId": 33,
+                    "_modifier": undefined,
+                    "_tile": GameLegendTileSimple {
+                      "__astId": 31,
+                      "_spriteNameOrLevelChar": "z",
+                      "_tiles": Array [
+                        GameSpriteSingleColor {
+                          "__astId": 30,
+                          "_color": TransparentColor {
+                            "__astId": 29,
+                          },
+                          "_name": "testObject",
+                          "_optionalLegendChar": undefined,
+                        },
+                      ],
+                    },
+                  },
+                },
+              ],
             },
-            RuleBracketPair {
-              "_modifiers": Set {},
-              "_neighborPairs": Array [],
+            NeighborPair {
+              "_tileWithModifierPairs": Array [
+                TileWithModifierPair {
+                  "_action": undefined,
+                  "_condition": TileWithModifier {
+                    "__astId": 35,
+                    "_modifier": undefined,
+                    "_tile": GameLegendTileSimple {
+                      "__astId": 32,
+                      "_spriteNameOrLevelChar": "x",
+                      "_tiles": Array [
+                        GameSpriteSingleColor {
+                          "__astId": 30,
+                          "_color": TransparentColor {
+                            "__astId": 29,
+                          },
+                          "_name": "testObject",
+                          "_optionalLegendChar": undefined,
+                        },
+                      ],
+                    },
+                  },
+                },
+              ],
             },
           ],
         },
@@ -8982,12 +9849,55 @@ GameData {
   "rules": Array [
     GameRule {
       "__astId": 52,
-      "_conditionActionPairs": Array [
-        RuleConditionActionPair {
-          "_bracketPairs": Array [
-            RuleBracketPair {
-              "_modifiers": Set {},
-              "_neighborPairs": Array [],
+      "_bracketPairs": Array [
+        RuleBracketPair {
+          "_modifiers": Set {},
+          "_neighborPairs": Array [
+            NeighborPair {
+              "_tileWithModifierPairs": Array [
+                TileWithModifierPair {
+                  "_action": undefined,
+                  "_condition": TileWithModifier {
+                    "__astId": 46,
+                    "_modifier": undefined,
+                    "_tile": GameLegendTileSimple {
+                      "__astId": 44,
+                      "_spriteNameOrLevelChar": "z",
+                      "_tiles": Array [
+                        GameSpriteSingleColor {
+                          "__astId": 43,
+                          "_color": TransparentColor {
+                            "__astId": 42,
+                          },
+                          "_name": "testObject",
+                          "_optionalLegendChar": undefined,
+                        },
+                      ],
+                    },
+                  },
+                },
+                TileWithModifierPair {
+                  "_action": undefined,
+                  "_condition": TileWithModifier {
+                    "__astId": 47,
+                    "_modifier": undefined,
+                    "_tile": GameLegendTileSimple {
+                      "__astId": 45,
+                      "_spriteNameOrLevelChar": "x",
+                      "_tiles": Array [
+                        GameSpriteSingleColor {
+                          "__astId": 43,
+                          "_color": TransparentColor {
+                            "__astId": 42,
+                          },
+                          "_name": "testObject",
+                          "_optionalLegendChar": undefined,
+                        },
+                      ],
+                    },
+                  },
+                },
+              ],
             },
           ],
         },
@@ -9207,12 +10117,34 @@ GameData {
   "rules": Array [
     GameRule {
       "__astId": 8,
-      "_conditionActionPairs": Array [
-        RuleConditionActionPair {
-          "_bracketPairs": Array [
-            RuleBracketPair {
-              "_modifiers": Set {},
-              "_neighborPairs": Array [],
+      "_bracketPairs": Array [
+        RuleBracketPair {
+          "_modifiers": Set {},
+          "_neighborPairs": Array [
+            NeighborPair {
+              "_tileWithModifierPairs": Array [
+                TileWithModifierPair {
+                  "_action": undefined,
+                  "_condition": TileWithModifier {
+                    "__astId": 3,
+                    "_modifier": undefined,
+                    "_tile": GameLegendTileSimple {
+                      "__astId": 2,
+                      "_spriteNameOrLevelChar": "z",
+                      "_tiles": Array [
+                        GameSpriteSingleColor {
+                          "__astId": 1,
+                          "_color": TransparentColor {
+                            "__astId": 0,
+                          },
+                          "_name": "testObject",
+                          "_optionalLegendChar": undefined,
+                        },
+                      ],
+                    },
+                  },
+                },
+              ],
             },
           ],
         },
@@ -9452,12 +10384,51 @@ GameData {
   "rules": Array [
     GameRule {
       "__astId": 18,
-      "_conditionActionPairs": Array [
-        RuleConditionActionPair {
-          "_bracketPairs": Array [
-            RuleBracketPair {
-              "_modifiers": Set {},
-              "_neighborPairs": Array [],
+      "_bracketPairs": Array [
+        RuleBracketPair {
+          "_modifiers": Set {},
+          "_neighborPairs": Array [
+            NeighborPair {
+              "_tileWithModifierPairs": Array [
+                TileWithModifierPair {
+                  "_action": TileWithModifier {
+                    "__astId": 15,
+                    "_modifier": undefined,
+                    "_tile": GameLegendTileSimple {
+                      "__astId": 11,
+                      "_spriteNameOrLevelChar": "z",
+                      "_tiles": Array [
+                        GameSpriteSingleColor {
+                          "__astId": 10,
+                          "_color": TransparentColor {
+                            "__astId": 9,
+                          },
+                          "_name": "testObject",
+                          "_optionalLegendChar": undefined,
+                        },
+                      ],
+                    },
+                  },
+                  "_condition": TileWithModifier {
+                    "__astId": 12,
+                    "_modifier": undefined,
+                    "_tile": GameLegendTileSimple {
+                      "__astId": 11,
+                      "_spriteNameOrLevelChar": "z",
+                      "_tiles": Array [
+                        GameSpriteSingleColor {
+                          "__astId": 10,
+                          "_color": TransparentColor {
+                            "__astId": 9,
+                          },
+                          "_name": "testObject",
+                          "_optionalLegendChar": undefined,
+                        },
+                      ],
+                    },
+                  },
+                },
+              ],
             },
           ],
         },
@@ -9697,12 +10668,51 @@ GameData {
   "rules": Array [
     GameRule {
       "__astId": 28,
-      "_conditionActionPairs": Array [
-        RuleConditionActionPair {
-          "_bracketPairs": Array [
-            RuleBracketPair {
-              "_modifiers": Set {},
-              "_neighborPairs": Array [],
+      "_bracketPairs": Array [
+        RuleBracketPair {
+          "_modifiers": Set {},
+          "_neighborPairs": Array [
+            NeighborPair {
+              "_tileWithModifierPairs": Array [
+                TileWithModifierPair {
+                  "_action": TileWithModifier {
+                    "__astId": 25,
+                    "_modifier": undefined,
+                    "_tile": GameLegendTileSimple {
+                      "__astId": 21,
+                      "_spriteNameOrLevelChar": "z",
+                      "_tiles": Array [
+                        GameSpriteSingleColor {
+                          "__astId": 20,
+                          "_color": TransparentColor {
+                            "__astId": 19,
+                          },
+                          "_name": "testObject",
+                          "_optionalLegendChar": undefined,
+                        },
+                      ],
+                    },
+                  },
+                  "_condition": TileWithModifier {
+                    "__astId": 22,
+                    "_modifier": undefined,
+                    "_tile": GameLegendTileSimple {
+                      "__astId": 21,
+                      "_spriteNameOrLevelChar": "z",
+                      "_tiles": Array [
+                        GameSpriteSingleColor {
+                          "__astId": 20,
+                          "_color": TransparentColor {
+                            "__astId": 19,
+                          },
+                          "_name": "testObject",
+                          "_optionalLegendChar": undefined,
+                        },
+                      ],
+                    },
+                  },
+                },
+              ],
             },
           ],
         },

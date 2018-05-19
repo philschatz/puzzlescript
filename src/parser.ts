@@ -1,7 +1,7 @@
 import * as _ from 'lodash'
 import * as ohm from 'ohm-js'
 import { lookupColorPalette } from './colors'
-import { IMutator, RuleConditionActionPair, getMatchedMutatorsHelper } from './pairs'
+import { IMutator, RuleBracketPair, getMatchedMutatorsHelper } from './pairs'
 import { Cell } from './engine';
 import { RULE_MODIFIER, setIntersection, setDifference } from './util'
 
@@ -1022,7 +1022,7 @@ const SUPPORTED_RULE_MODIFIERS = new Set([
 export class GameRule extends BaseForLines implements IRule {
   _modifiers: Set<RULE_MODIFIER>
   _commands: string[]
-  _conditionActionPairs: RuleConditionActionPair[]
+  _bracketPairs: RuleBracketPair[]
   // _conditionCommandPair: RuleConditionCommandPair[]
 
   constructor (source: IGameCode, modifiers: Set<RULE_MODIFIER>, conditions: RuleBracket[], actions: RuleBracket[], commands: string[]) {
@@ -1035,15 +1035,15 @@ export class GameRule extends BaseForLines implements IRule {
     }
 
     if (conditions.length === actions.length) {
-      this._conditionActionPairs = _.zip(conditions, actions).map(([condition, action]) => {
-        return new RuleConditionActionPair(this._modifiers, condition, action)
+      this._bracketPairs = _.zip(conditions, actions).map(([condition, action]) => {
+        return new RuleBracketPair(this._modifiers, condition, action)
       })
     } else if (actions.length !== 0) {
       throw new Error(`Invalid Rule. The number of brackets on the right must match the structure of the left hand side or be 0`)
     }
     // TODO: build the _conditionCommandPair
     if (commands.length > 0) {
-      this._conditionActionPairs = []
+      this._bracketPairs = []
     }
   }
 
@@ -1052,7 +1052,7 @@ export class GameRule extends BaseForLines implements IRule {
     if (setDifference(this._modifiers, SUPPORTED_RULE_MODIFIERS).size > 0) {
       return null
     }
-    return getMatchedMutatorsHelper(this._conditionActionPairs, cell)
+    return getMatchedMutatorsHelper(this._bracketPairs, cell)
   }
 }
 
@@ -1087,7 +1087,7 @@ export class RuleBracketNeighbor extends BaseForLines {
   }
 }
 
-class TileWithModifier extends BaseForLines {
+export class TileWithModifier extends BaseForLines {
   _modifier?: string
   _tile: IGameTile
 
