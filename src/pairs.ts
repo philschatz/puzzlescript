@@ -3,11 +3,9 @@
 import * as _ from 'lodash'
 import {
   GameRule,
-  RuleCondition,
-  RuleAction,
   RuleBracket,
-  RuleBracketNeighbor,
-  TileWithModifier } from './parser'
+  RuleBracketNeighbor
+} from './parser'
 import { Cell } from './engine'
 import { RULE_MODIFIER, setIntersection, setDifference } from './util'
 
@@ -40,33 +38,35 @@ const SIMPLE_DIRECTIONS = new Set([
 
 
 export class RuleConditionActionPair implements IMatcher {
-  _bracketPairs: BracketPair[]
+  _bracketPairs: RuleBracketPair[]
+
   // boilerplate constructor
-  constructor (modifiers: RULE_MODIFIER[], condition: RuleCondition, action: RuleAction) {
+  constructor (modifiers: RULE_MODIFIER[], condition: RuleBracket, action: RuleBracket) {
     this._bracketPairs = _.zip(condition._neighbors, action._neighbors).map(([conditionBracket, actionBracket]) => {
       return new RuleBracketPair(modifiers, conditionBracket, actionBracket)
     })
   }
+
   getMatchedMutatorsOrNull (cell) {
     if (this._bracketPairs.length !== 1) {
       return null // not supported yet
     }
     return getMatchedMutatorsHelper(this._bracketPairs, cell)
   }
-
 }
 
 class RuleBracketPair implements IMatcher {
   _modifiers: RULE_MODIFIER[]
-  _tileWithModifierPairs: TileWithModifierPair[]
+  _neighborPairs: NeighborPair[]
+
   // boilerplate constructor
   constructor(modifiers: RULE_MODIFIER[], condition: RuleBracket, action: RuleBracket) {
     this._modifiers = modifiers
-    this._conditionTilesWithModifiers = condition._tilesWithModifier
-    this._neighborPairs = _.zip(condition._tilesWithModifier, action._tilesWithModifier).map(([conditionTileWithModifier, conditionTileWithModifier]) => {
-      return new TileWithModifierPair(conditionTileWithModifier, conditionTileWithModifier)
+    this._neighborPairs = _.zip(condition._neighbors, action._neighbors).map(([conditionTileWithModifier, actionTileWithModifier]) => {
+      return new NeighborPair(conditionTileWithModifier, actionTileWithModifier)
     })
   }
+
   getMatchedMutatorsOrNull (cell) {
     if (this._modifiers.has(RULE_MODIFIER.RANDOM) || this._modifiers.has(RULE_MODIFIER.LATE) || this._modifiers.has(RULE_MODIFIER.RIGID)) {
       // These are not implemented yet so ignore them
@@ -97,10 +97,10 @@ class RuleBracketPair implements IMatcher {
     let curCell = cell
     for (const direction of directionsToCheck) {
       let neighborRet = []
-      for (const neighbor of this._tileWithModifierPairs) {
+      for (const neighbor of this._neighborPairs) {
         if (!curCell) break // If we hit the end of the level then this does not match
         // Check if the individual tiles match
-        const mutators = neighbor.getMatchedMutatorsOrNull(curCell)
+        const mutators = neighbor.matchesCell(curCell)
         if (!mutators) break
         neighborRet.push(mutators)
 
@@ -119,30 +119,19 @@ class RuleBracketPair implements IMatcher {
     } else {
       return null
     }
-
   }
 }
 
-class TileWithModifierPair {
-  _condition: TileWithModifier
-  _action: TileWithModifier
-  constructor(condition: TileWithModifierPair, action: TileWithModifier) {
+class NeighborPair {
+  _condition: RuleBracketNeighbor
+  _action: RuleBracketNeighbor
+
+  constructor(condition: RuleBracketNeighbor, action: RuleBracketNeighbor) {
     this._condition = condition
     this._action = action
   }
+
   matchesCell (cell: Cell) {
     return this._condition._tile.matchesCell(cell)
-  }
-}
-
-class TileMutator implements IMutator {
-  _condition: TileWithModifier[]
-  _action: TileWithModifier[]
-  constructor(condition, action) {
-    this._condition = condition
-    this._action = action
-  }
-  getMatchedMutatorsOrNull (cell) {
-    return
   }
 }

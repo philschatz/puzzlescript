@@ -482,7 +482,7 @@ function getLineAndColumn (str, offset) {
 }
 
 interface IGameNode {
-  __getSourceLineAndColumn: () => {lineNum: string, colNum: string}
+  __getSourceLineAndColumn: () => {lineNum: number, colNum: number}
   toString: () => string
 }
 
@@ -1019,13 +1019,13 @@ const SUPPORTED_RULE_MODIFIERS = new Set([
 // Rule into multiple Rules when HORIZONTAL, VERTICAL, ORTHOGONAL, or nothing
 // are passed in as directions.
 // Because of https://www.puzzlescript.net/Documentation/executionorder.html
-class GameRule implements IRule extends BaseForLines {
+export class GameRule implements IRule extends BaseForLines {
   _modifiers: Set<RULE_MODIFIER>
   _commands: string[]
   _conditionActionPairs: RuleConditionActionPair[]
   // _conditionCommandPair: RuleConditionCommandPair[]
 
-  constructor (source: IGameCode, modifiers: string[], conditions: RuleBracket[], actions: RuleBracket[], commands: string[]) {
+  constructor (source: IGameCode, modifiers: Set<RULE_MODIFIER>, conditions: RuleBracket[], actions: RuleBracket[], commands: string[]) {
     super(source)
     this._modifiers = modifiers
 
@@ -1056,7 +1056,7 @@ class GameRule implements IRule extends BaseForLines {
   }
 }
 
-class RuleBracket extends BaseForLines {
+export class RuleBracket extends BaseForLines {
   _neighbors: RuleBracketNeighbor[]
 
   constructor (source: IGameCode, neighbors: RuleBracketNeighbor[], hack: string) {
@@ -1065,7 +1065,7 @@ class RuleBracket extends BaseForLines {
   }
 }
 
-class RuleBracketNeighbor extends BaseForLines {
+export class RuleBracketNeighbor extends BaseForLines {
   _modifier?: string
   _tile: IGameTile
   _isEllipsis: boolean
