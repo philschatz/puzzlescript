@@ -177,85 +177,64 @@ Puzzlescript {
   CollisionLayerItem = NonemptyListOf<ruleVariableName, ","?> ","? /*support a trailing comma*/ lineTerminator+
 
 
-RuleItem
-  = RuleLoop
-  | RuleGroup // Do this before Rule because we need to look for a "+" on the following Rule
-  | Rule
+  RuleItem
+    = RuleLoop
+    | RuleGroup // Do this before Rule because we need to look for a "+" on the following Rule
+    | Rule
 
-Rule = (RuleModifierLeft* RuleBracket)+ "->" (RuleModifier? RuleBracket)* RuleCommand* MessageCommand? lineTerminator+
+  Rule = (RuleModifierLeft* RuleBracket)+ "->" (RuleModifier? RuleBracket)* RuleCommand* MessageCommand? lineTerminator+
 
-RuleBracket = "[" NonemptyListOf<RuleBracketNeighbor, "|"> "]"
-RuleBracketNeighbor
-  = RuleBracketEllipsisNeighbor
-  | RuleBracketNoEllipsisNeighbor
+  RuleBracket = "[" NonemptyListOf<RuleBracketNeighbor, "|"> "]"
+  RuleBracketNeighbor
+    = RuleBracketEllipsisNeighbor
+    | RuleBracketNoEllipsisNeighbor
 
-RuleBracketEllipsisNeighbor = space* t_ELLIPSIS space*
-RuleBracketNoEllipsisNeighbor = cellLayerModifier? ruleVariableName*
+  RuleBracketEllipsisNeighbor = t_ELLIPSIS
+  RuleBracketNoEllipsisNeighbor = t_NO? ruleVariableName*
 
-cellName = ruleVariableName
+  RuleModifier
+    = t_RANDOM
+    | t_UP
+    | t_DOWN
+    | t_LEFT
+    | t_RIGHT
+    | t_VERTICAL
+    | t_HORIZONTAL
+    | t_ORTHOGONAL
 
-cellLayerModifier = space* cellLayerModifierInner (space|nonVarChar)+ // Force-check that there is whitespace or nonVarChar after the cellLayerModifier so things like "STATIONARYZ" or "NOZ" are not parsed as a modifier (they are a variable that happens to begin with the same text as a modifier)
-
-cellLayerModifierInner
-  = t_NO
-  | t_LEFT
-  | t_RIGHT
-  | t_UP
-  | t_DOWN
-  | t_RANDOMDIR
-  | t_RANDOM
-  | t_STATIONARY
-  | t_MOVING
-  | t_ACTION
-  | t_VERTICAL
-  | t_HORIZONTAL
-  | t_PERPENDICULAR
-  | t_ORTHOGONAL
-  | t_ARROW_ANY // This can be a "v" so it needs to go at the end (behind t_VERTICAL)
-
-RuleModifier
-  = t_RANDOM
-  | t_UP
-  | t_DOWN
-  | t_LEFT
-  | t_RIGHT
-  | t_VERTICAL
-  | t_HORIZONTAL
-  | t_ORTHOGONAL
-
-RuleModifierLeft
-  = RuleModifier // Sometimes people write "RIGHT LATE [..." instead of "LATE RIGHT [..."
-  | t_LATE
-  | t_RIGID
+  RuleModifierLeft
+    = RuleModifier // Sometimes people write "RIGHT LATE [..." instead of "LATE RIGHT [..."
+    | t_LATE
+    | t_RIGID
 
 
-RuleLoop =
-  t_STARTLOOP lineTerminator+
-  RuleItem+
-  t_ENDLOOP lineTerminator+
+  RuleLoop =
+    t_STARTLOOP lineTerminator+
+    RuleItem+
+    t_ENDLOOP lineTerminator+
 
-RuleGroup =
-  Rule
-  (t_GROUP_RULE_PLUS Rule)+
-
-
-t_ARROW_ANY
-  = t_ARROW_UP
-  | t_ARROW_DOWN // Because of this, "v" can never be an Object or Legend variable. TODO: Ensure "v" is never an Object or Legend variable
-  | t_ARROW_LEFT
-  | t_ARROW_RIGHT
+  RuleGroup =
+    Rule
+    (t_GROUP_RULE_PLUS Rule)+
 
 
-RuleCommand =
-    t_AGAIN
-  | t_CANCEL
-  | t_CHECKPOINT
-  | t_RESTART
-  | t_WIN
-  | t_SFX
+  t_ARROW_ANY
+    = t_ARROW_UP
+    | t_ARROW_DOWN // Because of this, "v" can never be an Object or Legend variable. TODO: Ensure "v" is never an Object or Legend variable
+    | t_ARROW_LEFT
+    | t_ARROW_RIGHT
 
 
-MessageCommand = t_MESSAGE words*
+  RuleCommand
+    = t_AGAIN
+    | t_CANCEL
+    | t_CHECKPOINT
+    | t_RESTART
+    | t_WIN
+    | t_SFX
+
+
+  MessageCommand = t_MESSAGE words*
 
 
 
@@ -367,13 +346,12 @@ MessageCommand = t_MESSAGE words*
   // SECTION_NAME
   // ================
   Section<Name, ItemExpr> =
-    "="+ headingBar lineTerminator
+    "="+ lineTerminator
     Name lineTerminator
-    "="+ headingBar lineTerminator+
+    "="+ lineTerminator+
     (space* ItemExpr)*
     lineTerminator*
 
-  headingBar = "="*
   lineTerminator = space* newline (space newline)*
   sourceCharacter = any
 
@@ -1053,15 +1031,17 @@ class RuleBracket extends BaseForLines {
 class RuleBracketNeighbor extends BaseForLines {
   _modifier: string
   _values: any
+  _isEllipsis: boolean
 
-  constructor (source: IGameCode, modifier: string, values: any) {
+  constructor (source: IGameCode, modifier: string, values: any, isEllipsis: boolean) {
     super(source)
     this._modifier = modifier
     this._values = values
+    this._isEllipsis = isEllipsis
   }
 
   iSEllipsis() {
-    return this._modifier = "..."
+    return this._isEllipsis
   }
 }
 
@@ -1248,7 +1228,7 @@ class Parser {
         },
         RequirePlayerMovement: getConfigField,
 
-        Section: function (_threeDashes1, _headingBar1, _lineTerminator1, _sectionName, _lineTerminator2, _threeDashes2, _headingBar2, _8, _9, _10, _11) {
+        Section: function (_threeDashes1, _lineTerminator1, _sectionName, _lineTerminator2, _threeDashes2, _8, _9, _10, _11) {
           return _10.parse()
         },
         Sprite: function (_1) {
@@ -1358,17 +1338,11 @@ class Parser {
         RuleBracketNeighbor: function (_1) {
           return _1.parse()
         },
-        RuleBracketEllipsisNeighbor: function (_1, modifier, _3) {
-          return new RuleBracketNeighbor(this.source, modifier.parse(), [])
+        RuleBracketEllipsisNeighbor: function (modifier) {
+          return new RuleBracketNeighbor(this.source, modifier.parse(), [], true)
         },
         RuleBracketNoEllipsisNeighbor: function (modifier, values) {
-          return new RuleBracketNeighbor(this.source, modifier.parse(), values.parse())
-        },
-        cellName: function (_1) {
-          return _1.parse()
-        },
-        cellLayerModifier: function (_whitespace1, cellLayerModifier, _whitespace2) {
-          return cellLayerModifier.parse()
+          return new RuleBracketNeighbor(this.source, modifier.parse(), values.parse(), false)
         },
         MessageCommand: function (_message, message) {
           return new GameMessage(this.source, message.parse())
