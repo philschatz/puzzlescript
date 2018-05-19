@@ -5,7 +5,7 @@ const { default: UI } = require('../src/ui')
 const C_WHITE = { r: 255, g: 255, b: 255 }
 const C_BLACK = { r: 0, g: 0, b: 0 }
 
-function parseAndReturnFirstSpritePixels(code) {
+function parseAndReturnFirstSpritePixels (code) {
   const { data } = Parser.parse(code)
   const cell = data.levels[0].getRows()[0][0]
   // console.log(cell.getSprites())

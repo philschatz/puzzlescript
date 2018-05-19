@@ -2,7 +2,7 @@
 const { default: Parser } = require('../src/parser')
 const { COLOR_PALETTES } = require('../src/colors')
 
-function checkGrammar(code) {
+function checkGrammar (code) {
   const grammar = Parser.getGrammar()
   const { match } = Parser.parseGrammar(code)
   if (!match.succeeded()) {
@@ -41,14 +41,14 @@ function checkGrammar(code) {
   return tree
 }
 
-function checkParse(code) {
+function checkParse (code) {
   const { data, error, validationMessages } = Parser.parse(code)
   expect(error && error.message).toBeFalsy() // Use && so the error messages are shorter
   expect(data).toMatchSnapshot()
   return { data, validationMessages }
 }
 
-function checkParseRule(code, varNames) {
+function checkParseRule (code, varNames) {
   // Now check if the semantics parsed
   const legendItems = varNames.map(varName => {
     return `${varName} = testObject`
@@ -77,7 +77,7 @@ ${code}
 `)
 }
 
-function parseRule(code, varNames) {
+function parseRule (code, varNames) {
   // Add a header
   checkGrammar(`
 title checkGrammar
@@ -360,7 +360,6 @@ yellow
     const { message, gameNode } = validationMessages[0]
     expect(message).toBe('Invalid color name. "someinvalidcolorname" is not a valid color. Using "transparent" instead')
     expect(gameNode.__getSourceLineAndColumn()).toBeTruthy()
-
   })
 
   it('Sets the collision layer for nested sprites', () => {

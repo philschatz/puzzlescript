@@ -1,6 +1,6 @@
 import * as _ from 'lodash'
 import { EventEmitter2 } from 'eventemitter2'
-import { LevelMap, GameData, GameLegendTileSimple, IGameTile } from './parser';
+import { LevelMap, GameData, GameLegendTileSimple, IGameTile, GameRule } from './parser';
 import { RULE_MODIFIER } from './util'
 
 function setEquals<T>(set1: Set<T>, set2: Set<T>) {
@@ -81,7 +81,7 @@ export default class Engine extends EventEmitter2 {
   }
 
   tick() {
-    let rulesAndChanges = new Map()
+    let rulesAndChanges: Map<GameRule, Cell[]> = new Map()
     // Loop over all the cells, see if a Rule matches, apply the transition, and notify that cells changed
     this.currentLevel.forEach(row => {
       row.forEach(cell => {

@@ -51,7 +51,7 @@ async function run() {
         UI.renderScreen(data, engine.currentLevel)
 
         // record the changes in a coverage.json file
-        const codeCoverageTemp = {} // key = Line number, value = count of times the rule executed
+        const codeCoverageTemp = new Map() // key = Line number, value = count of times the rule executed
 
         // First add all the Tiles, Legend Items, collisionLayers, Rules, and Levels.
         // Then, after running, add all the matched rules.
@@ -86,14 +86,14 @@ async function run() {
           // record the tick coverage
           for (const [rule, cellsCovered] of changes.entries()) {
             const line = coverageKey(rule)
-            if (!codeCoverageTemp[line]) {
-              codeCoverageTemp[line] = 0
+            if (!codeCoverageTemp.has(line)) {
+              codeCoverageTemp.set(line, 0)
             }
             codeCoverageTemp[line] = codeCoverageTemp[line] + 1
           }
         }
 
-        const codeCoverage2 = Object.entries(codeCoverageTemp).map(([key, value]) => {
+        const codeCoverage2 = [...codeCoverageTemp.entries()].map(([key, value]) => {
           return { loc: JSON.parse(key), count: value }
         })
         // Generate the coverage.json file from which Rules were applied
