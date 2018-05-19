@@ -1,6 +1,6 @@
 import * as _ from 'lodash'
 import { EventEmitter2 } from 'eventemitter2'
-import { LevelMap, GameData, GameLegendTileSimple, IGameTile } from './parser';
+import { LevelMap, GameData, GameLegendTileSimple, IGameTile, GameSprite } from './parser';
 import { RULE_MODIFIER } from './util'
 
 function setEquals<T>(set1: Set<T>, set2: Set<T>) {
@@ -14,11 +14,11 @@ function setEquals<T>(set1: Set<T>, set2: Set<T>) {
 // This Object exists so the UI has something to bind to
 export class Cell {
   _engine: Engine
-  _sprites: Set<IGameTile>
+  _sprites: Set<GameSprite>
   rowIndex: number
   colIndex: number
 
-  constructor(engine: Engine, sprites: Set<IGameTile>, rowIndex: number, colIndex: number) {
+  constructor(engine: Engine, sprites: Set<GameSprite>, rowIndex: number, colIndex: number) {
     this._engine = engine
     this._sprites = sprites
     this.rowIndex = rowIndex
@@ -33,11 +33,11 @@ export class Cell {
   getSpritesAsSet() {
     return this._sprites
   }
-  updateSprites(newSetOfSprites: Set<IGameTile>) {
+  updateSprites(newSetOfSprites: Set<GameSprite>) {
     this._sprites = newSetOfSprites
     this._engine.emit('cell:updated', this)
   }
-  equalsSprites(newSetOfSprites: Set<IGameTile>) {
+  equalsSprites(newSetOfSprites: Set<GameSprite>) {
     return setEquals(this._sprites, newSetOfSprites)
   }
   _getRelativeNeighbor(y: number, x: number) {

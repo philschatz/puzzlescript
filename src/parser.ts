@@ -598,7 +598,7 @@ export class GameData {
 }
 
 export declare interface IGameTile extends IGameNode {
-  _getDescendantTiles: () => IGameTile[]
+  _getDescendantTiles: () => GameLegendTile[]
   getSprites: () => GameSprite[]
   isInvalid: () => string
   hasCollisionLayer: () => boolean
@@ -819,34 +819,28 @@ export class GameSpritePixels extends GameSprite {
   }
 }
 
-// TODO: Link up the tiles to objects rather than just storing strings
-// TODO: Also, maybe distinguish between legend items that may be in the LevelMap (1 character) from those that point to ObjectItems
-export class GameLegendTileSimple extends BaseForLines implements IGameTile {
-  _sprites: GameSprite[]
+export class GameLegendTile extends BaseForLines implements IGameTile {
+  _spritesCache: GameSprite[]
+  _collisionLayer: CollisionLayer
   _spriteNameOrLevelChar: string
   _tiles: IGameTile[]
-  _collisionLayer: CollisionLayer
 
   constructor(source: IGameCode, spriteNameOrLevelChar: string, tiles: IGameTile[]) {
     super(source)
     this._spriteNameOrLevelChar = spriteNameOrLevelChar
     this._tiles = tiles
   }
-  isInvalid(): string {
+  isInvalid() {
+    if (!this.hasCollisionLayer()) {
+      return 'Missing collision layer'
+    }
     return null
   }
-  isAnd() {
-    return true
-  }
   matchesCell(cell: Cell) {
-    // Check that the cell contains all of the tiles (ANDED)
-    // Since this is a Simple Tile it should only contain 1 tile so anding is the right way to go.
-    for (const tile of this._tiles) {
-      if (!cell.getSpritesAsSet().has(tile)) {
-        return false
-      }
+    if (!!true) {
+      throw new Error('BUG: This is an abstract method')
     }
-    return true
+    return false
   }
   _getDescendantTiles() {
     // recursively pull all the tiles out
@@ -854,10 +848,10 @@ export class GameLegendTileSimple extends BaseForLines implements IGameTile {
   }
   getSprites() {
     // Use a cache because all the collision layers have not been loaded in time
-    if (!this._sprites) {
+    if (!this._spritesCache) {
       // 2 levels of indirection should be safe
       // Sort by collisionLayer so that the most-important sprite is first
-      this._sprites = _.flatten(
+      this._spritesCache = _.flatten(
         this._tiles.map(tile => {
           return tile.getSprites()
         })
@@ -865,7 +859,7 @@ export class GameLegendTileSimple extends BaseForLines implements IGameTile {
         return a.getCollisionLayerNum() - b.getCollisionLayerNum()
       }).reverse()
     }
-    return this._sprites
+    return this._spritesCache
   }
   hasCollisionLayer() {
     return !!this._collisionLayer
@@ -876,22 +870,42 @@ export class GameLegendTileSimple extends BaseForLines implements IGameTile {
   getCollisionLayerNum() {
     return this._collisionLayer.__astId
   }
+
 }
 
-export class GameLegendTileAnd extends GameLegendTileSimple {
-  isAnd() {
+export class GameLegendTileSimple extends GameLegendTile {
+  constructor(source: IGameCode, spriteNameOrLevelChar: string, tile: GameSprite) {
+    super(source, spriteNameOrLevelChar, [tile])
+  }
+  matchesCell(cell: Cell) {
+    // Check that the cell contains all of the tiles (ANDED)
+    // Since this is a Simple Tile it should only contain 1 tile so anding is the right way to go.
+    for (const tile of this.getSprites()) {
+      if (!cell.getSpritesAsSet().has(tile)) {
+        return false
+      }
+    }
     return true
   }
 }
 
-export class GameLegendTileOr extends GameLegendTileSimple {
-  isAnd() {
-    return false
-  }
-  matchesCell(cell: Cell) {
+export class GameLegendTileAnd extends GameLegendTile {
+  matchesCell(cell) {
     // Check that the cell contains any of the tiles (OR)
     for (const tile of this._tiles) {
-      if (cell.getSpritesAsSet().has(tile)) {
+      if (!tile.matchesCell(cell)) {
+        return false
+      }
+    }
+    return true
+  }
+}
+
+export class GameLegendTileOr extends GameLegendTile {
+  matchesCell(cell) {
+    // Check that the cell contains any of the tiles (OR)
+    for (const tile of this._tiles) {
+      if (tile.matchesCell(cell)) {
         return true
       }
     }
@@ -1083,13 +1097,6 @@ export class RuleBracketNeighbor extends BaseForLines {
   isEllipsis() {
     return this._isEllipsis
   }
-
-  getMatchedMutatorsOrNull(cell: Cell) {
-    for (let i = 0; i < this._tilesWithModifier.length; i++) {
-      const tileWithModifier = this._tilesWithModifier[i]
-      return tileWithModifier.getMatchedMutatorsOrNull(cell)
-    }
-  }
 }
 
 export class TileWithModifier extends BaseForLines {
@@ -1104,10 +1111,6 @@ export class TileWithModifier extends BaseForLines {
 
   isNo() {
     return M_NO === this._modifier
-  }
-
-  getMatchedMutatorsOrNull(cell: Cell) {
-    return cell.getSpritesAsSet().has(this._tile)
   }
 
   matchesCell(cell: Cell) {
@@ -1340,7 +1343,7 @@ class Parser {
         },
         LegendTileSimple: function (spriteNameOrLevelChar, _equals, tile, _whitespace) {
           // TODO: Do the lookup and adding to sets here rather than rewiring in LegendTile
-          return new GameLegendTileSimple(this.source, spriteNameOrLevelChar.parse(), [tile.parse()])
+          return new GameLegendTileSimple(this.source, spriteNameOrLevelChar.parse(), tile.parse())
         },
         LegendTileAnd: function (spriteNameOrLevelChar, _equals, tiles, _whitespace) {
           return new GameLegendTileAnd(this.source, spriteNameOrLevelChar.parse(), tiles.parse())
