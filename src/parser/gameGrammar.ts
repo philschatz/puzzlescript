@@ -241,9 +241,8 @@ export const METADATA_GRAMMAR = `
     widthAndHeight = integer "x" integer
 `
 
-let currentColorPalette = 'arnecolors' // default
-
 export function getGameSemantics(lookup: LookupHelper, addValidationMessage) {
+    let currentColorPalette = lookup.lookupDefaultColorPalette()
     return {
         GameData: function (_whitespace1, title, _whitespace2, settingsFields, _whitespace3, objects, legends, sounds, collisionLayers, rules, winConditions, levels) {
             const metadata = new GameMetadata()

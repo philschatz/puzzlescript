@@ -2,6 +2,7 @@
 const { default: Parser } = require('../src/parser/parser')
 const { default: UI } = require('../src/ui')
 const { default: Engine } = require('../src/engine')
+const { lookupColorPalette } = require('../src/colors')
 
 const C_WHITE = { r: 255, g: 255, b: 255 }
 const C_BLACK = { r: 0, g: 0, b: 0 }
@@ -144,6 +145,91 @@ P
     expect(data.getMagicBackgroundSprite().getPixels()[0][0].toRgb()).toEqual(C_WHITE)
     expect(pixels[0][0].toRgb()).toEqual(C_WHITE)
     expect(pixels[0][2].toRgb()).toEqual(C_BLACK)
+  })
+
+  it('uses default color palette when none specified', () => {
+    const game1 = parseAndReturnFirstSpritePixels(`
+      title Game 1 with color palette
+      color_palette pastel
+
+      ========
+      OBJECTS
+      ========
+
+      BackGround
+      Lightblue
+
+      Player
+      #000000 #493c2b #000000
+      ..0..
+      .111.
+      01110
+      02220
+      .2.2.
+
+      =======
+      LEGEND
+      =======
+
+      P = Player
+
+      ================
+      COLLISIONLAYERS
+      ================
+
+      Background
+      Player
+
+      =======
+      LEVELS
+      =======
+
+      P
+
+      `)
+
+    expect(game1.pixels[0][0]._colorName.toLowerCase()).toEqual(lookupColorPalette('pastel', 'lightblue').toLowerCase())
+
+    const game2 = parseAndReturnFirstSpritePixels(`
+      title Game 2 with no color palette
+
+      ========
+      OBJECTS
+      ========
+
+      BackGround
+      Lightblue
+
+      Player
+      #000000 #493c2b #000000
+      ..0..
+      .111.
+      01110
+      02220
+      .2.2.
+
+      =======
+      LEGEND
+      =======
+
+      P = Player
+
+      ================
+      COLLISIONLAYERS
+      ================
+
+      Background
+      Player
+
+      =======
+      LEVELS
+      =======
+
+      P
+
+      `)
+
+    expect(game2.pixels[0][0]._colorName.toLowerCase()).toEqual(lookupColorPalette('arnecolors', 'lightblue').toLowerCase())
   })
 
   function parseEngine (code) {
