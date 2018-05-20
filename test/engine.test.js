@@ -1,6 +1,6 @@
 /* eslint-env jasmine */
 const { default: Engine } = require('../src/engine')
-const { default: Parser } = require('../src/parser')
+const { default: Parser } = require('../src/parser/parser')
 
 const SIMPLE_GAME = `
 title foo

@@ -1,5 +1,5 @@
 import * as axel from 'axel'
-import { GameData, IColor, GameSprite } from "./parser"
+import { GameData, IColor, GameSprite } from "./parser/parser"
 import { Cell } from './engine'
 
 // First Sprite one is on top.

@@ -1,6 +1,6 @@
 import * as _ from 'lodash'
 import { EventEmitter2 } from 'eventemitter2'
-import { LevelMap, GameData, GameLegendTileSimple, IGameTile, GameSprite, GameRule } from './parser';
+import { LevelMap, GameData, GameLegendTileSimple, IGameTile, GameSprite, GameRule } from './parser/parser';
 import { RULE_MODIFIER } from './util'
 
 function setEquals<T>(set1: Set<T>, set2: Set<T>) {

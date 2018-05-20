@@ -6,7 +6,7 @@ import {
   RuleBracket,
   RuleBracketNeighbor,
   TileWithModifier
-} from './parser'
+} from './parser/parser'
 import { Cell } from './engine'
 import { RULE_MODIFIER, setIntersection, setDifference } from './util'
 

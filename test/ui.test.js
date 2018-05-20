@@ -1,5 +1,5 @@
 /* eslint-env jasmine */
-const { default: Parser } = require('../src/parser')
+const { default: Parser } = require('../src/parser/parser')
 const { default: UI } = require('../src/ui')
 
 const C_WHITE = { r: 255, g: 255, b: 255 }
