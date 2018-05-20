@@ -76,7 +76,7 @@ class UI {
           return
         }
 
-        this.drawCellAt(data, col, rowIndex, colIndex, false)
+        this.drawCell(data, col, false)
       })
     })
     // Clear back to sane colors
@@ -88,9 +88,13 @@ class UI {
     this.writeDebug(`"${data.title}"`)
   }
 
-  drawCellAt(data: GameData, cell: Cell, rowIndex: number, colIndex: number, dontRestoreCursor: boolean) {
-    const pixels: IColor[][] = this.getPixelsForCell(data, cell)
+  drawCell(data: GameData, cell: Cell, dontRestoreCursor: boolean) {
     const spritesForDebugging = cell.getSprites()
+    if (spritesForDebugging.filter((sprite) => { return sprite._name === 'RemoveLandRU'})[0]) {
+      debugger
+    }
+    const {rowIndex, colIndex} = cell
+    const pixels: IColor[][] = this.getPixelsForCell(data, cell)
 
     pixels.forEach((spriteRow, spriteRowIndex) => {
       spriteRow.forEach((spriteColor: IColor, spriteColIndex) => {
@@ -106,6 +110,12 @@ class UI {
         }
 
         let color: IColor
+
+        // Always draw a transparent character so we can see if something is not rendering
+        // axel.fg(255, 255, 255)
+        // axel.bg(0, 0, 0)
+        // axel.point(x, y, '░')
+        // axel.point(x + 1, y, '░') // double-width because the console is narrow
 
         if (spriteColor) {
           if (!spriteColor.isTransparent()) {
@@ -135,11 +145,14 @@ class UI {
             axel.fg(0, 0, 0)
           }
           if (spritesForDebugging[spriteRowIndex]) {
-            const spriteName = spritesForDebugging[spriteRowIndex]._name
+            let spriteName = spritesForDebugging[spriteRowIndex]._name
+            if (spriteName.length > 10) {
+              spriteName = `${spriteName.substring(0, 5)}.${spriteName.substring(spriteName.length - 4)}`
+            }
             axel.text(x, y, `${spriteName.substring(spriteColIndex * 2, spriteColIndex * 2 + 2)}`)
           }
           if (spriteRowIndex === 4 && spriteColIndex === 4) {
-            axel.text(x, y, `${spritesForDebugging.length}`)
+            axel.text(x + 1, y, `${spritesForDebugging.length}`)
           }
         }
       })

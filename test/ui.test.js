@@ -1,6 +1,7 @@
 /* eslint-env jasmine */
 const { default: Parser } = require('../src/parser/parser')
 const { default: UI } = require('../src/ui')
+const { default: Engine } = require('../src/engine')
 
 const C_WHITE = { r: 255, g: 255, b: 255 }
 const C_BLACK = { r: 0, g: 0, b: 0 }
@@ -143,5 +144,21 @@ P
     expect(data.getMagicBackgroundSprite().getPixels()[0][0].toRgb()).toEqual(C_WHITE)
     expect(pixels[0][0].toRgb()).toEqual(C_WHITE)
     expect(pixels[0][2].toRgb()).toEqual(C_BLACK)
+  })
+
+
+  function parseEngine (code) {
+    const { data, error } = Parser.parse(code)
+    expect(error && error.message).toBeFalsy() // Use && so the error messages are shorter
+
+    const engine = new Engine(data)
+    engine.setLevel(0)
+    return { engine, data }
+  }
+
+  it.skip('Does not replace the pixels in a sprite (grr, we should just use immutable objects', () => {
+    // not sure how to test
+    // This was caused by collapseSpritesToPixels using the 1st sprite (instead of copying it)
+    // and then layering other sprites on top
   })
 })

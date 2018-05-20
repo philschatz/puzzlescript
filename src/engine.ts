@@ -6,6 +6,8 @@ import { GameSprite } from './models/sprite'
 import { GameRule } from './models/rule'
 import { RULE_MODIFIER } from './util'
 
+const MAX_REPEATS = 10
+
 function setEquals<T>(set1: Set<T>, set2: Set<T>) {
   if (set1.size !== set2.size) return false
   for (var elem of set1) {
@@ -82,6 +84,15 @@ export default class Engine extends EventEmitter2 {
     // Return the cells so the UI can listen to when they change
     return _.flattenDeep(this.currentLevel)
   }
+  toSnapshot() {
+    return this.currentLevel.map(row => {
+      return row.map(cell => {
+        return cell.getSprites().map((sprite) => {
+          return sprite._name
+        })
+      })
+    })
+  }
 
   tick() {
     let rulesAndChanges: Map<GameRule, Cell[]> = new Map()
@@ -89,19 +100,28 @@ export default class Engine extends EventEmitter2 {
     this.currentLevel.forEach(row => {
       row.forEach(cell => {
         this.gameData.rules.forEach(rule => {
-          // Check if the left-hand-side of the rule matches the current cell
-          const mutators = rule.getMatchedMutatorsOrNull(cell)
-          if (mutators && mutators.length > 0) {
-            if (!rulesAndChanges.has(rule)) {
-              rulesAndChanges.set(rule, [])
+          let repeatsLeft = MAX_REPEATS
+          // while (repeatsLeft > 0) {
+            // Check if the left-hand-side of the rule matches the current cell
+            const mutators = rule.getMatchedMutatorsOrNull(cell)
+            if (mutators && mutators.length > 0) {
+              if (!rulesAndChanges.has(rule)) {
+                rulesAndChanges.set(rule, [])
+              }
+              mutators.forEach(mutator => {
+                // Change the Grid based on the rules that matched
+                const changes = mutator.mutate()
+                // Add it to the set of changes
+                rulesAndChanges.set(rule, rulesAndChanges.get(rule).concat(changes.filter(change => !!change))) // Some rules only have actions and return null. Remove those from the set
+              })
+            // } else {
+            //   break
             }
-            mutators.forEach(mutator => {
-              // Change the Grid based on the rules that matched
-              const changes = mutator.mutate()
-              // Add it to the set of changes
-              rulesAndChanges.set(rule, rulesAndChanges.get(rule).concat(changes.filter(change => !!change))) // Some rules only have actions and return null. Remove those from the set
-            })
-          }
+            repeatsLeft -= 1
+          // }
+          // if (repeatsLeft === 0) {
+          //   throw new Error('MAX_REPEATS were exhausted. Maybe this is an infinite loop?')
+          // }
         })
       })
     })

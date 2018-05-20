@@ -7,6 +7,7 @@ import Parser from './parser/parser'
 import { IGameNode } from './models/game'
 import UI from './ui'
 import Engine from './engine'
+import { setAddAll } from './util';
 
 let totalRenderTime = 0
 
@@ -73,9 +74,9 @@ async function run() {
       if (level) {
         const engine = new Engine(data)
         engine.setLevel(data.levels.indexOf(level))
-        engine.on('cell:updated', cell => {
-          UI.drawCellAt(data, cell, cell.rowIndex, cell.colIndex, false)
-        })
+        // engine.on('cell:updated', cell => {
+        //   UI.drawCellAt(data, cell, cell.rowIndex, cell.colIndex, false)
+        // })
 
         UI.renderScreen(data, engine.currentLevel)
 
@@ -110,6 +111,16 @@ async function run() {
           const changes = engine.tick()
           if (changes.size === 0) {
             break
+          }
+
+          // UI.renderScreen(data, engine.currentLevel)
+          let changedCells = new Set()
+          for (const [rule, cellsCovered] of changes.entries()) {
+            changedCells = setAddAll(changedCells, cellsCovered)
+          }
+
+          for (const cell of changedCells) {
+            UI.drawCell(data, cell, false)
           }
 
           // record the tick coverage

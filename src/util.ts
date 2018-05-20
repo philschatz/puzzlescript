@@ -1,3 +1,11 @@
+export function setAddAll<T>(setA: Set<T>, iterable: Iterable<T>) {
+  const newSet = new Set(setA)
+  for (const elem of iterable) {
+    newSet.add(elem)
+  }
+  return newSet
+}
+
 export function setIntersection<T>(setA: Set<T>, setB: Set<T>) {
   const intersection = new Set()
   for (const elem of setB) {
