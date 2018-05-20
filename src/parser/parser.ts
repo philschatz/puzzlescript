@@ -40,65 +40,9 @@ import {
   RuleBracketNeighbor,
   TileWithModifier
 } from '../models/rule'
-
-export class LevelMap extends BaseForLines {
-  _rows: IGameTile[][]
-
-  constructor(source: IGameCode, rows: any[][]) {
-    super(source)
-    this._rows = rows
-  }
-  isInvalid(): string {
-    const firstRowLength = this._rows[0].length
-    let isInvalid = null
-    this._rows.forEach((row, index) => {
-      if (firstRowLength !== row.length) {
-        isInvalid = `Row ${index + 1} does not have the same column count as the first row. Expected ${firstRowLength} columns but found ${row.length}.`
-      }
-    })
-    return isInvalid
-  }
-  isMap() {
-    return true
-  }
-  getRows() {
-    return this._rows
-  }
-}
-
-
-// TODO: Use the Objects rather than just the names
-export class CollisionLayer extends BaseForLines {
-  _sprites: GameSprite[]
-
-  constructor(source: IGameCode, sprites: GameSprite[]) {
-    super(source)
-    this._sprites = sprites
-  }
-  isInvalid(): string {
-    return null
-  }
-}
-
-
-export class WinConditionSimple extends BaseForLines {
-  _qualifierEnum: string
-  _spriteName: string
-
-  constructor(source: IGameCode, qualifierEnum: string, spriteName: string) {
-    super(source)
-    this._qualifierEnum = qualifierEnum
-    this._spriteName = spriteName
-  }
-}
-export class WinConditionOn extends WinConditionSimple {
-  _onSprite: string
-
-  constructor(source: IGameCode, qualifierEnum: string, spriteName: string, onSprite: string) {
-    super(source, qualifierEnum, spriteName)
-    this._onSprite = onSprite
-  }
-}
+import { LevelMap } from '../models/level'
+import { CollisionLayer } from '../models/collisionLayer'
+import { WinConditionSimple, WinConditionOn } from '../models/winCondition'
 
 class LookupHelper {
   _allSoundEffects: Map<string, GameSound>

@@ -1,12 +1,10 @@
+import { GameMetadata } from './metadata'
 import { GameSprite, GameLegendTileSimple } from './tile'
 import { GameRule } from './rule'
-import { GameMetadata } from './metadata'
 import { GameSound } from './sound'
-import {
-    CollisionLayer,
-    WinConditionSimple,
-    LevelMap
-} from '../parser/parser'
+import { LevelMap } from './level'
+import { CollisionLayer } from './collisionLayer'
+import { WinConditionSimple } from './winCondition'
 import { Cell } from '../engine'
 
 export interface IGameNode {

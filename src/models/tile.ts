@@ -1,7 +1,7 @@
 import * as _ from 'lodash'
 import { BaseForLines, IGameCode, IGameTile } from './game'
 import { IColor, HexColor, TransparentColor } from './colors'
-import { CollisionLayer } from '../parser/parser'
+import { CollisionLayer } from './collisionLayer'
 import { Cell } from '../engine'
 
 export class GameSprite extends BaseForLines implements IGameTile {
@@ -184,8 +184,8 @@ export class GameLegendTileSimple extends GameLegendTile {
     matchesCell(cell: Cell) {
         // Check that the cell contains all of the tiles (ANDED)
         // Since this is a Simple Tile it should only contain 1 tile so anding is the right way to go.
-        for (const tile of this.getSprites()) {
-            if (!cell.getSpritesAsSet().has(tile)) {
+        for (const tile of this._tiles) {
+            if (!tile.matchesCell(cell)) {
                 return false
             }
         }
@@ -195,7 +195,7 @@ export class GameLegendTileSimple extends GameLegendTile {
 
 export class GameLegendTileAnd extends GameLegendTile {
     matchesCell(cell: Cell) {
-        // Check that the cell contains any of the tiles (OR)
+        // Check that the cell contains any of the tiles (AND)
         for (const tile of this._tiles) {
             if (!tile.matchesCell(cell)) {
                 return false
