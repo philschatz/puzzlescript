@@ -1,10 +1,10 @@
 import { GameRule } from './rule'
 import { GameMetadata } from './metadata'
+import { GameSound } from './sound'
 import {
     GameSprite,
     CollisionLayer,
     GameLegendTileSimple,
-    GameSound,
     WinConditionSimple,
     LevelMap
 } from '../parser/parser'
