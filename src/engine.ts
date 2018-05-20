@@ -1,8 +1,9 @@
 import * as _ from 'lodash'
 import { EventEmitter2 } from 'eventemitter2'
-import { LevelMap, GameData, GameLegendTileSimple, IGameTile, RuleModifier} from './parser';
+import { LevelMap, GameData, GameLegendTileSimple, IGameTile, GameSprite, GameRule } from './parser';
+import { RULE_MODIFIER } from './util'
 
-function setEquals<T> (set1: Set<T>, set2: Set<T>) {
+function setEquals<T>(set1: Set<T>, set2: Set<T>) {
   if (set1.size !== set2.size) return false
   for (var elem of set1) {
     if (!set2.has(elem)) return false
@@ -13,46 +14,46 @@ function setEquals<T> (set1: Set<T>, set2: Set<T>) {
 // This Object exists so the UI has something to bind to
 export class Cell {
   _engine: Engine
-  _sprites: Set<IGameTile>
+  _sprites: Set<GameSprite>
   rowIndex: number
   colIndex: number
 
-  constructor (engine: Engine, sprites: Set<IGameTile>, rowIndex: number, colIndex: number) {
+  constructor(engine: Engine, sprites: Set<GameSprite>, rowIndex: number, colIndex: number) {
     this._engine = engine
     this._sprites = sprites
     this.rowIndex = rowIndex
     this.colIndex = colIndex
   }
 
-  getSprites () {
+  getSprites() {
     return [...this._sprites].sort((a, b) => {
       return a.getCollisionLayerNum() - b.getCollisionLayerNum()
     }).reverse()
   }
-  getSpritesAsSet () {
+  getSpritesAsSet() {
     return this._sprites
   }
-  updateSprites (newSetOfSprites: Set<IGameTile>) {
+  updateSprites(newSetOfSprites: Set<GameSprite>) {
     this._sprites = newSetOfSprites
     this._engine.emit('cell:updated', this)
   }
-  equalsSprites (newSetOfSprites: Set<IGameTile>) {
+  equalsSprites(newSetOfSprites: Set<GameSprite>) {
     return setEquals(this._sprites, newSetOfSprites)
   }
-  _getRelativeNeighbor (y: number, x: number) {
+  _getRelativeNeighbor(y: number, x: number) {
     const row = this._engine.currentLevel[this.rowIndex + y]
     if (!row) return null
     return row[this.colIndex + x]
   }
-  getNeighbor (direction: string) {
+  getNeighbor(direction: string) {
     switch (direction) {
-      case RuleModifier.UP:
+      case RULE_MODIFIER.UP:
         return this._getRelativeNeighbor(-1, 0)
-      case RuleModifier.DOWN:
+      case RULE_MODIFIER.DOWN:
         return this._getRelativeNeighbor(1, 0)
-      case RuleModifier.LEFT:
+      case RULE_MODIFIER.LEFT:
         return this._getRelativeNeighbor(0, -1)
-      case RuleModifier.RIGHT:
+      case RULE_MODIFIER.RIGHT:
         return this._getRelativeNeighbor(0, 1)
       default:
         throw new Error(`BUG: Unsupported direction "${direction}"`)
@@ -64,12 +65,12 @@ export default class Engine extends EventEmitter2 {
   gameData: GameData
   currentLevel: Cell[][]
 
-  constructor (gameData: GameData) {
+  constructor(gameData: GameData) {
     super()
     this.gameData = gameData
   }
 
-  setLevel (levelNum: number) {
+  setLevel(levelNum: number) {
     const level = this.gameData.levels[levelNum]
     // Clone the board because we will be modifying it
     this.currentLevel = level.getRows().map((row, rowIndex) => {
@@ -79,15 +80,15 @@ export default class Engine extends EventEmitter2 {
     return _.flattenDeep(this.currentLevel)
   }
 
-  tick () {
-    let rulesAndChanges = new Map()
+  tick() {
+    let rulesAndChanges: Map<GameRule, Cell[]> = new Map()
     // Loop over all the cells, see if a Rule matches, apply the transition, and notify that cells changed
     this.currentLevel.forEach(row => {
       row.forEach(cell => {
         this.gameData.rules.forEach(rule => {
           // Check if the left-hand-side of the rule matches the current cell
-          const mutators = _.flattenDeep(rule.getMatchedMutatorsOrNull(cell) || [])
-          if (mutators.length > 0) {
+          const mutators = rule.getMatchedMutatorsOrNull(cell)
+          if (mutators && mutators.length > 0) {
             if (!rulesAndChanges.has(rule)) {
               rulesAndChanges.set(rule, [])
             }
@@ -104,11 +105,11 @@ export default class Engine extends EventEmitter2 {
     return rulesAndChanges
   }
 
-  pressUp () { }
-  pressDown () { }
-  pressLeft () { }
-  pressRight () { }
-  pressAction () { }
-  pressUndo () { }
-  pressRestart () { }
+  pressUp() { }
+  pressDown() { }
+  pressLeft() { }
+  pressRight() { }
+  pressAction() { }
+  pressUndo() { }
+  pressRestart() { }
 }

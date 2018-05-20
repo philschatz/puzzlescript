@@ -1,6 +1,6 @@
 /* eslint-env jasmine */
-const {default: Engine} = require('../src/engine')
-const {default: Parser} = require('../src/parser')
+const { default: Engine } = require('../src/engine')
+const { default: Parser } = require('../src/parser')
 
 const SIMPLE_GAME = `
 title foo
@@ -226,12 +226,12 @@ LEVELS
 ` // end game
 
 function parseEngine (code) {
-  const {data, error} = Parser.parse(code)
+  const { data, error } = Parser.parse(code)
   expect(error && error.message).toBeFalsy() // Use && so the error messages are shorter
 
   const engine = new Engine(data)
   engine.setLevel(0)
-  return {engine, data}
+  return { engine, data }
 }
 
 function getSpriteByName (data, name) {
@@ -240,12 +240,12 @@ function getSpriteByName (data, name) {
 
 describe('engine', () => {
   it('evaluates a simple game', () => {
-    const {engine} = parseEngine(SIMPLE_GAME)
+    const { engine } = parseEngine(SIMPLE_GAME)
     engine.tick()
   })
 
   it('draws corner sprites correctly (according to mirror isles)', () => {
-    const {engine, data} = parseEngine(MIRROR_ISLES_CORNERS)
+    const { engine, data } = parseEngine(MIRROR_ISLES_CORNERS)
     engine.tick()
     const expectedSprite = getSpriteByName(data, 'RemoveLandRUD')
     const interestingCell = engine.currentLevel[0][0]
@@ -254,7 +254,7 @@ describe('engine', () => {
   })
 
   it('draws corner sprites correctly (according to skipping stones)', () => {
-    const {engine, data} = parseEngine(SKIPPING_STONES_CORNERS)
+    const { engine, data } = parseEngine(SKIPPING_STONES_CORNERS)
     engine.tick()
     const expectedSprite = getSpriteByName(data, 'RemoveLandRUD')
     const interestingCell = engine.currentLevel[0][0]

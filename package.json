@@ -2,14 +2,15 @@
   "scripts": {
     "lint": "standard --fix preprocessor.js ./test/**/*.js",
     "tsc": "tsc --watch",
-    "prestart": "rm -rf ./lib/; rm ./coverage/coverage-gist*.json; rm -rf ./coverage/lcov-report/; tsc; echo 'Done preparing'",
+    "prestart": "rm -rf ./lib/; rm ./coverage/coverage-gist*.json; rm -rf ./coverage/lcov-report/; tsc",
     "start": "node -r source-map-support/register ./lib/runGame.js",
     "poststart": "npm run-script coverage && echo 'Generated coverage. Type open ./coverage/lcov-html/index.html to see it'",
     "coverage": "istanbul report --root ./coverage/ lcov",
     "test": "jest --coverage --updateSnapshot",
     "test-debug": "node --inspect-brk -r source-map-support/register $(npm bin)/jest -i --updateSnapshot $@",
     "posttest": "npm run-script lint",
-    "watch": "jest --updateSnapshot --watch"
+    "watch": "jest --updateSnapshot --watch",
+    "debug": "tsc; node --inspect-brk lib/runGame.js"
   },
   "dependencies": {
     "@types/axel": "0.0.0",

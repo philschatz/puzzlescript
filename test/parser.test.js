@@ -1,10 +1,10 @@
 /* eslint-env jasmine */
-const {default: Parser} = require('../src/parser')
-const {COLOR_PALETTES} = require('../src/colors')
+const { default: Parser } = require('../src/parser')
+const { lookupColorPalette } = require('../src/colors')
 
 function checkGrammar (code) {
   const grammar = Parser.getGrammar()
-  const {match} = Parser.parseGrammar(code)
+  const { match } = Parser.parseGrammar(code)
   if (!match.succeeded()) {
     const trace = grammar.trace(code)
     console.log(trace.toString())
@@ -20,8 +20,8 @@ function checkGrammar (code) {
     _default: function (children) {
       if (this.ctorName === 'word') {
         return this.sourceString
-      // } if (this.ctorName[0] === this.ctorName[0].toLowerCase()) {
-      //   return this.ctorName
+        // } if (this.ctorName[0] === this.ctorName[0].toLowerCase()) {
+        //   return this.ctorName
       } else {
         const obj = {
           __name: this.ctorName
@@ -42,10 +42,10 @@ function checkGrammar (code) {
 }
 
 function checkParse (code) {
-  const {data, error, validationMessages} = Parser.parse(code)
+  const { data, error, validationMessages } = Parser.parse(code)
   expect(error && error.message).toBeFalsy() // Use && so the error messages are shorter
   expect(data).toMatchSnapshot()
-  return {data, validationMessages}
+  return { data, validationMessages }
 }
 
 function checkParseRule (code, varNames) {
@@ -150,6 +150,7 @@ describe('rules', () => {
       parseRule('[z]->[SFX0]', ['z'])
       parseRule('[z]->[z SFX1]', ['z'])
       parseRule('[z]->[z winter]', ['z', 'winter'])
+      parseRule('[z|] -> [|z AGAIN]', ['z'])
     })
   })
 
@@ -217,7 +218,7 @@ RULES
     })
 
     it('Looks up color palettes using a string or an index', () => {
-      const {data: data1} = checkParse(`
+      const { data: data1 } = checkParse(`
 title foo
 color_palette gameboycolour
 
@@ -227,9 +228,9 @@ OBJECTS
 player
 yellow
 `)
-      expect(data1.objects[0]._color._colorName.toLowerCase()).toBe(COLOR_PALETTES['gameboycolour']['yellow'].toLowerCase())
+      expect(data1.objects[0]._color._colorName.toLowerCase()).toBe(lookupColorPalette('gameboycolour', 'yellow').toLowerCase())
 
-      const {data: data2} = checkParse(`
+      const { data: data2 } = checkParse(`
 title foo
 color_palette 2
 
@@ -239,7 +240,7 @@ OBJECTS
 player
 yellow
 `)
-      expect(data2.objects[0]._color._colorName.toLowerCase()).toBe(COLOR_PALETTES['gameboycolour']['yellow'].toLowerCase())
+      expect(data2.objects[0]._color._colorName.toLowerCase()).toBe(lookupColorPalette('gameboycolour', 'yellow').toLowerCase())
     })
 
     it('Supports characters that would be invalid in one scope but are valid in another scope', () => {
@@ -336,7 +337,7 @@ yellow
   })
 
   it('Converts an invalid color to a Transparent one', () => {
-    const {data, validationMessages} = checkParse(`
+    const { data, validationMessages } = checkParse(`
     title foo
 
     ===
@@ -356,14 +357,13 @@ yellow
 
     expect(data.objects[0].getPixels()[0][0].isTransparent()).toBe(true)
     expect(validationMessages.length).toBe(1)
-    const {message, gameNode} = validationMessages[0]
+    const { message, gameNode } = validationMessages[0]
     expect(message).toBe('Invalid color name. "someinvalidcolorname" is not a valid color. Using "transparent" instead')
     expect(gameNode.__getSourceLineAndColumn()).toBeTruthy()
-
   })
 
   it('Sets the collision layer for nested sprites', () => {
-    const {data, validationMessages} = checkParse(`
+    const { data, validationMessages } = checkParse(`
     title foo
 
     ===

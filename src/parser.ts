@@ -1,7 +1,9 @@
 import * as _ from 'lodash'
 import * as ohm from 'ohm-js'
 import { lookupColorPalette } from './colors'
+import { IMutator, RuleBracketPair, getMatchedMutatorsHelper } from './pairs'
 import { Cell } from './engine';
+import { RULE_MODIFIER, setIntersection, setDifference } from './util'
 
 const GRAMMAR_STR = `
 Puzzlescript {
@@ -177,112 +179,89 @@ Puzzlescript {
   CollisionLayerItem = NonemptyListOf<ruleVariableName, ","?> ","? /*support a trailing comma*/ lineTerminator+
 
 
-RuleItem
-  = Rule
-  | RuleLoop
+  RuleItem
+    = RuleLoop
+    | RuleGroup // Do this before Rule because we need to look for a "+" on the following Rule
+    | Rule
 
-Rule = t_GROUP_RULE_PLUS? RuleModifierLeft* RuleInner lineTerminator+
+  Rule = (RuleModifierLeft* RuleBracket)+ "->" (RuleModifier? RuleBracket)* RuleCommand* MessageCommand? lineTerminator+
 
-RuleInner
-  = RuleBracketsToZip
-  | RuleCommands1
-  | RuleCommands2
+  RuleBracket = "[" NonemptyListOf<RuleBracketNeighbor, "|"> t_AGAIN? "]" // t_AGAIN is a HACK. It should be in the list of commands but it's not.
+  RuleBracketNeighbor
+    = HackTileNameIsSFX1 // to parse '... -> [ SFX1 ]' (they should be commands)
+    | HackTileNameIsSFX2 // to parse '... -> [ tilename SFX1 ]'
+    | RuleBracketEllipsisNeighbor
+    | RuleBracketNoEllipsisNeighbor
 
-RuleBracketsToZip = RuleConditions /* -> */ CellSequenceBracket+ RuleCommand* MessageCommand? // Verify the left-hand structure matches the right-hand
-RuleCommands1 = RuleConditions /* -> */ RuleCommand+ MessageCommand?
-RuleCommands2 = RuleConditions /* -> */ RuleCommand* MessageCommand
+  RuleBracketEllipsisNeighbor = t_ELLIPSIS
+  RuleBracketNoEllipsisNeighbor = TileWithModifier*
 
-RuleConditions = CellSequenceBracket+ "->"
+  TileWithModifier = tileModifier* lookupRuleVariableName
 
+  tileModifier = space* tileModifierInner space+ // Force-check that there is whitespace after the cellLayerModifier so things like "STATIONARYZ" or "NOZ" are not parsed as a modifier (they are a variable that happens to begin with the same text as a modifier)
 
+  tileModifierInner
+    = t_NO
+    | t_LEFT
+    | t_RIGHT
+    | t_UP
+    | t_DOWN
+    | t_RANDOMDIR
+    | t_RANDOM
+    | t_STATIONARY
+    | t_MOVING
+    | t_ACTION
+    | t_VERTICAL
+    | t_HORIZONTAL
+    | t_PERPENDICULAR
+    | t_ORTHOGONAL
+    | t_ARROW_ANY // This can be a "v" so it needs to go at the end (behind t_VERTICAL)
 
-CellSequenceBracket = RuleModifier* CellSequenceBracketOnly
+  RuleModifier
+    = t_RANDOM
+    | t_UP
+    | t_DOWN
+    | t_LEFT
+    | t_RIGHT
+    | t_VERTICAL
+    | t_HORIZONTAL
+    | t_ORTHOGONAL
 
-CellSequenceBracketOnly
-  = EllipsisBracket
-  | SimpleBracket
-
-
-EllipsisBracket = "[" space* NeighboringCells t_ELLIPSIS "|" NeighboringCells "]"
-SimpleBracket = "[" space* NeighboringCells "]"
-
-NeighboringCells = NonemptyListOf<Cell, "|">
-
-Cell = CellLayer*
-
-CellLayer
-  = HackCellLayer1
-  | HackCellLayer2
-  | SimpleCellLayer
-
-SimpleCellLayer = (cellLayerModifier)* cellName
-HackCellLayer1 = HackRuleCommand
-HackCellLayer2 = cellName HackRuleCommand
-
-HackRuleCommand = RuleCommand ~letter // HACK: These should be moved up to the Rule Action, not nested way down here
-
-
-cellName = ruleVariableName
-
-cellLayerModifier = space* cellLayerModifierInner space+ // Force-check that there is whitespace after the cellLayerModifier so things like "STATIONARYZ" or "NOZ" are not parsed as a modifier (they are a variable that happens to begin with the same text as a modifier)
-
-cellLayerModifierInner
-  = t_NO
-  // The following are probably not actually cellLayerModifier's ... Check that they only exist at the beginning of a "["
-  | t_LEFT
-  | t_RIGHT
-  | t_UP
-  | t_DOWN
-  | t_RANDOMDIR
-  | t_RANDOM
-  | t_STATIONARY
-  | t_MOVING
-  | t_ACTION
-  | t_VERTICAL
-  | t_HORIZONTAL
-  | t_PERPENDICULAR
-  | t_ORTHOGONAL
-  | t_ARROW_ANY // This can be a "v" so it needs to go at the end (behind t_VERTICAL)
-
-RuleModifier
-  = t_RANDOM
-  | t_UP
-  | t_DOWN
-  | t_LEFT
-  | t_RIGHT
-  | t_VERTICAL
-  | t_HORIZONTAL
-  | t_ORTHOGONAL
-
-RuleModifierLeft
-  = RuleModifier // Sometimes people write "RIGHT LATE [..." instead of "LATE RIGHT [..."
-  | t_LATE
-  | t_RIGID
+  RuleModifierLeft
+    = RuleModifier // Sometimes people write "RIGHT LATE [..." instead of "LATE RIGHT [..."
+    | t_LATE
+    | t_RIGID
 
 
-RuleLoop =
-  t_STARTLOOP lineTerminator+
-  Rule+
-  t_ENDLOOP lineTerminator+
+  RuleLoop =
+    t_STARTLOOP lineTerminator+
+    RuleItem+
+    t_ENDLOOP lineTerminator+
+
+  RuleGroup =
+    Rule
+    (t_GROUP_RULE_PLUS Rule)+
+
+  HackTileNameIsSFX1 = t_SFX
+  HackTileNameIsSFX2 = lookupRuleVariableName t_SFX
+
+  t_ARROW_ANY
+    = t_ARROW_UP
+    | t_ARROW_DOWN // Because of this, "v" can never be an Object or Legend variable. TODO: Ensure "v" is never an Object or Legend variable
+    | t_ARROW_LEFT
+    | t_ARROW_RIGHT
 
 
-t_ARROW_ANY
-  = t_ARROW_UP
-  | t_ARROW_DOWN // Because of this, "v" can never be an Object or Legend variable. TODO: Ensure "v" is never an Object or Legend variable
-  | t_ARROW_LEFT
-  | t_ARROW_RIGHT
+  RuleCommand
+    = t_AGAIN
+    | t_CANCEL
+    | t_CHECKPOINT
+    | t_RESTART
+    | t_WIN
+    | t_SFX
 
 
-RuleCommand =
-    t_AGAIN
-  | t_CANCEL
-  | t_CHECKPOINT
-  | t_RESTART
-  | t_WIN
-  | t_SFX
-
-
-MessageCommand = t_MESSAGE words*
+  MessageCommand = t_MESSAGE words*
 
 
 
@@ -394,13 +373,12 @@ MessageCommand = t_MESSAGE words*
   // SECTION_NAME
   // ================
   Section<Name, ItemExpr> =
-    "===" headingBar lineTerminator
+    "="+ lineTerminator
     Name lineTerminator
-    "===" headingBar lineTerminator+
+    "="+ lineTerminator+
     (space* ItemExpr)*
     lineTerminator*
 
-  headingBar = "="*
   lineTerminator = space* newline (space newline)*
   sourceCharacter = any
 
@@ -435,6 +413,7 @@ MessageCommand = t_MESSAGE words*
   ruleVariableChar = (~space ~newline ~"=" ~"[" ~"]" ~"|" ~"," ~t_ELLIPSIS any)
 
   ruleVariableName = ruleVariableChar+
+  lookupRuleVariableName = ~t_AGAIN ruleVariableName // added t_AGAIN to parse '... -> [ tilename AGAIN ]' (it should be a command)
 }
 `// readFileSync('./grammar.ohm', 'utf-8')
 
@@ -449,7 +428,7 @@ declare interface IGameCode {
 // Return an object with the line and column information for the given
 // offset in `str`.
 // From https://github.com/harc/ohm/blob/b88336faf69e7bd89e309931b60445c3dfd495ab/src/util.js#L56
-function getLineAndColumn (str, offset) {
+function getLineAndColumn(str: string, offset: number) {
   let lineNum = 1
   let colNum = 1
 
@@ -479,7 +458,7 @@ function getLineAndColumn (str, offset) {
     // Get the next line.
     let nextLineEndOffset = str.indexOf('\n', lineEndOffset + 1)
     nextLine = nextLineEndOffset === -1 ? str.slice(lineEndOffset)
-                                        : str.slice(lineEndOffset, nextLineEndOffset)
+      : str.slice(lineEndOffset, nextLineEndOffset)
     // Strip leading and trailing EOL char(s).
     nextLine = nextLine.replace(/^\r?\n/, '').replace(/\r$/, '')
   }
@@ -487,7 +466,7 @@ function getLineAndColumn (str, offset) {
   // Get the previous line.
   if (prevLineStartOffset >= 0) {
     prevLine = str.slice(prevLineStartOffset, lineStartOffset)
-                  .replace(/\r?\n$/, '')  // Strip trailing EOL char(s).
+      .replace(/\r?\n$/, '')  // Strip trailing EOL char(s).
   }
 
   // Get the target line, stripping a trailing carriage return if necessary.
@@ -502,12 +481,18 @@ function getLineAndColumn (str, offset) {
   }
 }
 
+export interface IGameNode {
+  __getSourceLineAndColumn: () => { lineNum: number, colNum: number }
+  __getLineAndColumnRange: () => { start: {line: number, col: number}, end: {line: number, col: number}}
+  toString: () => string
+}
+
 let astId: number = 0
 export class BaseForLines {
   __astId: number
   __source: IGameCode
 
-  constructor (source: IGameCode) {
+  constructor(source: IGameCode) {
     if (!source || !source.getLineAndColumnMessage) {
       throw new Error(`BUG: failed to provide the source when constructing this object`)
     }
@@ -516,17 +501,17 @@ export class BaseForLines {
     })
     this.__astId = astId++
   }
-  __getSourceLineAndColumn () {
+  __getSourceLineAndColumn() {
     return getLineAndColumn(this.__source.sourceString, this.__source.startIdx)
   }
-  toString () {
+  toString() {
     return `astId=${this.__astId}\n${this.__source.getLineAndColumnMessage()}`
   }
 
   // This is mostly used for creating code coverage for the games. So we know which Rules (or objects) are not being matched
   __getLineAndColumnRange() {
     const start = getLineAndColumn(this.__source.sourceString, this.__source.startIdx)
-    const end   = getLineAndColumn(this.__source.sourceString, this.__source.endIdx - 1) // subtract one to hopefully get the previous line
+    const end = getLineAndColumn(this.__source.sourceString, this.__source.endIdx - 1) // subtract one to hopefully get the previous line
     return {
       start: { line: start.lineNum, col: start.colNum },
       end: { line: end.lineNum, col: end.colNum },
@@ -565,7 +550,7 @@ class GameSettings {
   require_player_movement: false
   verbose_logging: false
 
-  constructor() {}
+  constructor() { }
 
   _setValue(key: any, value: any) {
     this[key] = value
@@ -600,12 +585,12 @@ export class GameData {
     this.legends = legends
     this.sounds = sounds
     this.collisionLayers = collisionLayers
-    this.rules= rules
+    this.rules = rules
     this.winConditions = winConditions
     this.levels = levels
   }
 
-  _getSpriteByName (name) {
+  _getSpriteByName(name: string) {
     return this.objects.filter(sprite => sprite._getName().toLowerCase() === name.toLowerCase())[0]
   }
   getMagicBackgroundSprite() {
@@ -613,7 +598,7 @@ export class GameData {
   }
 }
 
-export declare interface IGameTile extends BaseForLines{
+export declare interface IGameTile extends IGameNode {
   _getDescendantTiles: () => IGameTile[]
   getSprites: () => GameSprite[]
   isInvalid: () => string
@@ -626,11 +611,11 @@ export declare interface IGameTile extends BaseForLines{
 export class LevelMap extends BaseForLines {
   _rows: IGameTile[][]
 
-  constructor (source: IGameCode, rows: any[][]) {
+  constructor(source: IGameCode, rows: any[][]) {
     super(source)
     this._rows = rows
   }
-  isInvalid (): string {
+  isInvalid(): string {
     const firstRowLength = this._rows[0].length
     let isInvalid = null
     this._rows.forEach((row, index) => {
@@ -640,10 +625,10 @@ export class LevelMap extends BaseForLines {
     })
     return isInvalid
   }
-  isMap () {
+  isMap() {
     return true
   }
-  getRows () {
+  getRows() {
     return this._rows
   }
 }
@@ -651,19 +636,19 @@ export class LevelMap extends BaseForLines {
 export class GameMessage extends BaseForLines {
   _message: string
 
-  constructor (source: IGameCode, message: string) {
+  constructor(source: IGameCode, message: string) {
     super(source)
     this._message = message
   }
-  isInvalid (): string {
+  isInvalid(): string {
     return null
   }
-  isMap () {
+  isMap() {
     return false
   }
 }
 
-function hexToRgb (hex: string) {
+function hexToRgb(hex: string) {
   // https://stackoverflow.com/a/5624139
   // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
   const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i
@@ -688,14 +673,14 @@ class RGB {
   g: number
   b: number
 
-  constructor(r:number, g:number, b:number) {
+  constructor(r: number, g: number, b: number) {
     this.r = r
     this.g = g
     this.b = b
   }
 }
 
-export declare interface IColor {
+export declare interface IColor extends IGameNode {
   isTransparent: () => boolean
   toRgb: () => RGB
 }
@@ -704,21 +689,21 @@ export class HexColor extends BaseForLines implements IColor {
   _color: RGB
   _colorName: string // only for unit tests & debugging
 
-  constructor (source: IGameCode, color: string) {
+  constructor(source: IGameCode, color: string) {
     super(source)
     this._color = hexToRgb(color)
     this._colorName = color
   }
 
-  isTransparent () { return false }
-  toRgb () {
+  isTransparent() { return false }
+  toRgb() {
     return this._color
   }
 }
 
 class TransparentColor extends BaseForLines implements IColor {
-  isTransparent () { return true }
-  toRgb (): RGB {
+  isTransparent() { return true }
+  toRgb(): RGB {
     throw new Error('BUG: Transparent colors do not have RGB data')
   }
 }
@@ -728,52 +713,56 @@ export class GameSprite extends BaseForLines implements IGameTile {
   _optionalLegendChar?: string
   _collisionLayer: CollisionLayer
 
-  constructor (source: IGameCode, name: string, optionalLegendChar?: string) {
+  constructor(source: IGameCode, name: string, optionalLegendChar?: string) {
     super(source)
     this._name = name
     this._optionalLegendChar = optionalLegendChar
   }
-  _getName () {
+  getPixels(): IColor[][] {
+    throw new Error('BUG: Subclasses should implement this')
+  }
+  _getName() {
     return this._name
   }
-  _getDescendantTiles () {
+  _getDescendantTiles(): GameLegendTile[] {
     return []
   }
-  getSprites () {
+  getSprites() {
     // to match the signature of LegendTile
     return [this]
   }
-  hasCollisionLayer () {
+  hasCollisionLayer() {
     return !!this._collisionLayer
   }
-  setCollisionLayer (collisionLayer: CollisionLayer) {
+  setCollisionLayer(collisionLayer: CollisionLayer) {
     this._collisionLayer = collisionLayer
   }
-  getCollisionLayerNum () {
+  getCollisionLayerNum() {
     if (!this._collisionLayer) {
       console.error(this.__source.getLineAndColumnMessage())
       console.error('ERROR: This sprite was not in a Collision Layer')
     }
     return this._collisionLayer.__astId
   }
-  isInvalid () {
+  isInvalid() {
     if (!this._collisionLayer) {
       return 'This object does not have an entry in the COLLISIONLAYERS section.'
     }
     return null
   }
-  matchesCell (cell: Cell): any {
+  matchesCell(cell: Cell): any {
     return cell.getSpritesAsSet().has(this)
   }
 }
+
 class GameSpriteSingleColor extends GameSprite {
   _color: HexColor
 
-  constructor (source: IGameCode, name: string, optionalLegendChar: string, colors: HexColor[]) {
+  constructor(source: IGameCode, name: string, optionalLegendChar: string, colors: HexColor[]) {
     super(source, name, optionalLegendChar)
     this._color = colors[0] // Ignore if the user added multiple colors (like `transparent yellow`)
   }
-  getPixels () {
+  getPixels() {
     // When there are no pixels then it means "color the whole thing in the same color"
     const rows: HexColor[][] = []
     for (let row = 0; row < 5; row++) {
@@ -790,7 +779,7 @@ export class GameSpritePixels extends GameSprite {
   _colors: IColor[]
   _pixels: IColor[][]
 
-  constructor (source: IGameCode, name: string, optionalLegendChar: string, colors: HexColor[], pixels: ('.' | number)[][]) {
+  constructor(source: IGameCode, name: string, optionalLegendChar: string, colors: HexColor[], pixels: ('.' | number)[][]) {
     super(source, name, optionalLegendChar)
     this._colors = colors
     this._pixels = pixels.map(row => {
@@ -803,7 +792,7 @@ export class GameSpritePixels extends GameSprite {
       })
     }) // Pixel colors are 0-indexed.
   }
-  isInvalid () {
+  isInvalid() {
     if (super.isInvalid()) {
       return super.isInvalid()
     }
@@ -825,54 +814,48 @@ export class GameSpritePixels extends GameSprite {
     })
     return isInvalid
   }
-  getSprites () {
+  getSprites() {
     // to match the signature of LegendTile
     return [this]
   }
-  getPixels () {
+  getPixels() {
     return this._pixels
   }
 }
 
-// TODO: Link up the tiles to objects rather than just storing strings
-// TODO: Also, maybe distinguish between legend items that may be in the LevelMap (1 character) from those that point to ObjectItems
-export class GameLegendTileSimple extends BaseForLines implements IGameTile {
-  _sprites: GameSprite[]
+export class GameLegendTile extends BaseForLines implements IGameTile {
+  _spritesCache: GameSprite[]
+  _collisionLayer: CollisionLayer
   _spriteNameOrLevelChar: string
   _tiles: IGameTile[]
-  _collisionLayer: CollisionLayer
 
-  constructor (source: IGameCode, spriteNameOrLevelChar: string, tiles: IGameTile[]) {
+  constructor(source: IGameCode, spriteNameOrLevelChar: string, tiles: IGameTile[]) {
     super(source)
     this._spriteNameOrLevelChar = spriteNameOrLevelChar
     this._tiles = tiles
   }
-  isInvalid (): string {
+  isInvalid() {
+    if (!this.hasCollisionLayer()) {
+      return 'Missing collision layer'
+    }
     return null
   }
-  isAnd () {
-    return true
-  }
-  matchesCell (cell: Cell) {
-    // Check that the cell contains all of the tiles (ANDED)
-    // Since this is a Simple Tile it should only contain 1 tile so anding is the right way to go.
-    for (const tile of this._tiles) {
-      if (!cell.getSpritesAsSet().has(tile)) {
-        return false
-      }
+  matchesCell(cell: Cell) {
+    if (!!true) {
+      throw new Error('BUG: This is an abstract method')
     }
-    return true
+    return false
   }
-  _getDescendantTiles () {
+  _getDescendantTiles(): IGameTile[] {
     // recursively pull all the tiles out
-    return this._tiles.concat(_.flatten(this._tiles.map(tile => tile._getDescendantTiles()))
+    return this._tiles.concat(_.flatten(this._tiles.map(tile => tile._getDescendantTiles())))
   }
-  getSprites () {
+  getSprites() {
     // Use a cache because all the collision layers have not been loaded in time
-    if (!this._sprites) {
+    if (!this._spritesCache) {
       // 2 levels of indirection should be safe
       // Sort by collisionLayer so that the most-important sprite is first
-      this._sprites = _.flatten(
+      this._spritesCache = _.flatten(
         this._tiles.map(tile => {
           return tile.getSprites()
         })
@@ -880,33 +863,53 @@ export class GameLegendTileSimple extends BaseForLines implements IGameTile {
         return a.getCollisionLayerNum() - b.getCollisionLayerNum()
       }).reverse()
     }
-    return this._sprites
+    return this._spritesCache
   }
-  hasCollisionLayer () {
+  hasCollisionLayer() {
     return !!this._collisionLayer
   }
-  setCollisionLayer (collisionLayer: CollisionLayer) {
+  setCollisionLayer(collisionLayer: CollisionLayer) {
     this._collisionLayer = collisionLayer
   }
-  getCollisionLayerNum () {
+  getCollisionLayerNum() {
     return this._collisionLayer.__astId
   }
+
 }
 
-export class GameLegendTileAnd extends GameLegendTileSimple {
-  isAnd () {
+export class GameLegendTileSimple extends GameLegendTile {
+  constructor(source: IGameCode, spriteNameOrLevelChar: string, tile: GameSprite) {
+    super(source, spriteNameOrLevelChar, [tile])
+  }
+  matchesCell(cell: Cell) {
+    // Check that the cell contains all of the tiles (ANDED)
+    // Since this is a Simple Tile it should only contain 1 tile so anding is the right way to go.
+    for (const tile of this.getSprites()) {
+      if (!cell.getSpritesAsSet().has(tile)) {
+        return false
+      }
+    }
     return true
   }
 }
 
-export class GameLegendTileOr extends GameLegendTileSimple {
-  isAnd () {
-    return false
-  }
-  matchesCell (cell: Cell) {
+export class GameLegendTileAnd extends GameLegendTile {
+  matchesCell(cell: Cell) {
     // Check that the cell contains any of the tiles (OR)
     for (const tile of this._tiles) {
-      if (cell.getSpritesAsSet().has(tile)) {
+      if (!tile.matchesCell(cell)) {
+        return false
+      }
+    }
+    return true
+  }
+}
+
+export class GameLegendTileOr extends GameLegendTile {
+  matchesCell(cell: Cell) {
+    // Check that the cell contains any of the tiles (OR)
+    for (const tile of this._tiles) {
+      if (tile.matchesCell(cell)) {
         return true
       }
     }
@@ -918,11 +921,11 @@ export class GameLegendTileOr extends GameLegendTileSimple {
 export class CollisionLayer extends BaseForLines {
   _sprites: GameSprite[]
 
-  constructor (source: IGameCode, sprites: GameSprite[]) {
+  constructor(source: IGameCode, sprites: GameSprite[]) {
     super(source)
     this._sprites = sprites
   }
-  isInvalid (): string {
+  isInvalid(): string {
     return null
   }
 }
@@ -931,7 +934,7 @@ export class CollisionLayer extends BaseForLines {
 export class GameSound extends BaseForLines {
   _soundCode: number
 
-  constructor (source: IGameCode, soundCode: number) {
+  constructor(source: IGameCode, soundCode: number) {
     super(source)
     this._soundCode = soundCode
   }
@@ -939,7 +942,7 @@ export class GameSound extends BaseForLines {
 export class GameSoundSfx extends GameSound {
   _sfxName: string
 
-  constructor (source: IGameCode, sfxName: string, soundCode: number) {
+  constructor(source: IGameCode, sfxName: string, soundCode: number) {
     super(source, soundCode)
     this._sfxName = sfxName
   }
@@ -947,35 +950,35 @@ export class GameSoundSfx extends GameSound {
 export class GameSoundSimpleEnum extends GameSound {
   _simpleEventName: number
 
-  constructor (source: IGameCode, simpleEventName: number, soundCode: number) {
+  constructor(source: IGameCode, simpleEventName: number, soundCode: number) {
     super(source, soundCode)
     this._simpleEventName = simpleEventName
   }
 }
 // TODO: Link this up to the Object, rather than just storing the spriteName
 export class GameSoundNormal extends GameSound {
-  _sprite: string
+  _sprite: IGameTile
   _conditionEnum: string
 
-  constructor (source: IGameCode, sprite: string, conditionEnum: string, soundCode: number) {
+  constructor(source: IGameCode, sprite: IGameTile, conditionEnum: string, soundCode: number) {
     super(source, soundCode)
     this._sprite = sprite
     this._conditionEnum = conditionEnum
   }
 }
 export class GameSoundMoveSimple extends GameSound {
-  _sprite: string
+  _sprite: IGameTile
 
-  constructor (source: IGameCode, sprite: string, soundCode: number) {
+  constructor(source: IGameCode, sprite: IGameTile, soundCode: number) {
     super(source, soundCode)
     this._sprite = sprite
   }
 }
 export class GameSoundMoveDirection extends GameSound {
-  _sprite: string
+  _sprite: IGameTile
   _directionEnum: string
 
-  constructor (source: IGameCode, sprite: string, directionEnum: string, soundCode: number) {
+  constructor(source: IGameCode, sprite: IGameTile, directionEnum: string, soundCode: number) {
     super(source, soundCode)
     this._sprite = sprite
     this._directionEnum = directionEnum
@@ -986,7 +989,7 @@ export class WinConditionSimple extends BaseForLines {
   _qualifierEnum: string
   _spriteName: string
 
-  constructor (source: IGameCode, qualifierEnum: string, spriteName: string) {
+  constructor(source: IGameCode, qualifierEnum: string, spriteName: string) {
     super(source)
     this._qualifierEnum = qualifierEnum
     this._spriteName = spriteName
@@ -995,383 +998,176 @@ export class WinConditionSimple extends BaseForLines {
 export class WinConditionOn extends WinConditionSimple {
   _onSprite: string
 
-  constructor (source: IGameCode, qualifierEnum: string, spriteName: string, onSprite: string) {
+  constructor(source: IGameCode, qualifierEnum: string, spriteName: string, onSprite: string) {
     super(source, qualifierEnum, spriteName)
     this._onSprite = onSprite
   }
 }
 
-export class GameRuleLoop extends BaseForLines {
+export declare interface IRule extends IGameNode {
+  getMatchedMutatorsOrNull: (cell: Cell) => IMutator[] | null
+}
+
+
+class GameRuleLoop extends BaseForLines implements IRule {
   _rules: GameRule[]
 
-  constructor (source: IGameCode, rules: GameRule[]) {
+  constructor(source: IGameCode, rules: GameRule[]) {
     super(source)
     this._rules = rules
   }
-  getMatchedMutatorsOrNull (cell: Cell) {
-    return null // TODO Loops are not supported yet
+
+  getMatchedMutatorsOrNull(cell: Cell): IMutator[] {
+    return null // Not implemented yet
+    // return getMatchedMutatorsHelper(this._rules, cell)
   }
+
+}
+class GameRuleGroup extends GameRuleLoop {
+  // do we really need this class?
 }
 
-export enum RuleModifier {
-  RANDOM = 'RANDOM',
-  UP = 'UP',
-  DOWN = 'DOWN',
-  LEFT = 'LEFT',
-  RIGHT = 'RIGHT',
-  VERTICAL = 'VERTICAL',
-  HORIZONTAL = 'HORIZONTAL',
-  ORTHOGONAL = 'ORTHOGONAL',
-  LATE = 'LATE',
-  RIGID = 'RIGID'
-}
-
-const SIMPLE_DIRECTIONS = new Set([
-  RuleModifier.UP,
-  RuleModifier.DOWN,
-  RuleModifier.LEFT,
-  RuleModifier.RIGHT
+const SUPPORTED_RULE_MODIFIERS = new Set([
+  RULE_MODIFIER.UP,
+  RULE_MODIFIER.DOWN,
+  RULE_MODIFIER.LEFT,
+  RULE_MODIFIER.RIGHT,
+  RULE_MODIFIER.HORIZONTAL,
+  RULE_MODIFIER.VERTICAL,
+  RULE_MODIFIER.ORTHOGONAL
 ])
 
-class GameRule extends BaseForLines {
-  _rulePlus: any
-  _ruleModifiers: Set<RuleModifier>
-  _innerRule: any
 
-  constructor (source: IGameCode, rulePlus, ruleModifiers, innerRule) {
+// TODO: We may not be able to be so smart about this; We may need to expand the
+// Rule into multiple Rules when HORIZONTAL, VERTICAL, ORTHOGONAL, or nothing
+// are passed in as directions.
+// Because of https://www.puzzlescript.net/Documentation/executionorder.html
+export class GameRule extends BaseForLines implements IRule {
+  _modifiers: Set<RULE_MODIFIER>
+  _commands: string[]
+  _bracketPairs: RuleBracketPair[]
+  _hasEllipsis: boolean
+  // _conditionCommandPair: RuleConditionCommandPair[]
+
+  constructor(source: IGameCode, modifiers: Set<RULE_MODIFIER>, conditions: RuleBracket[], actions: RuleBracket[], commands: string[]) {
     super(source)
-    this._rulePlus = rulePlus
-    this._ruleModifiers = new Set(ruleModifiers)
-    this._innerRule = innerRule
+    this._modifiers = modifiers
+    this._hasEllipsis = false
+
+    // Set _hasEllipsis value
+    for (let i = 0; i < conditions.length; i++) {
+      const condition = conditions[i]
+      if (condition.hasEllipsis()) {
+        this._hasEllipsis = true
+        break
+      }
+    }
+
+    // Check if valid
+    if (conditions.length !== actions.length && actions.length !== 0) {
+      throw new Error(`Left side has "${conditions.length}" conditions and right side has "${actions.length}" actions!`)
+    }
+
+    if (conditions.length === actions.length) {
+      this._bracketPairs = _.zip(conditions, actions).map(([condition, action]) => {
+        return new RuleBracketPair(this._modifiers, condition, action)
+      })
+    } else if (actions.length !== 0) {
+      throw new Error(`Invalid Rule. The number of brackets on the right must match the structure of the left hand side or be 0`)
+    }
+    // TODO: build the _conditionCommandPair
+    if (commands.length > 0) {
+      this._bracketPairs = []
+    }
   }
 
-  getMatchedMutatorsOrNull (cell: Cell) {
-    if (this._ruleModifiers.has(RuleModifier.RANDOM) || this._ruleModifiers.has(RuleModifier.LATE) || this._ruleModifiers.has(RuleModifier.RIGID) || this._ruleModifiers.has(RuleModifier.ORTHOGONAL)) {
-      // These are not implemented yet so ignore them
+  getMatchedMutatorsOrNull(cell: Cell) {
+    // If the rule has any modifiers that we do not understand, return null
+    if (setDifference(this._modifiers, SUPPORTED_RULE_MODIFIERS).size > 0) {
       return null
     }
-
-    let directionsToCheck = new Set(setIntersection(this._ruleModifiers, SIMPLE_DIRECTIONS))
-    if (this._ruleModifiers.has(RuleModifier.HORIZONTAL)) {
-      directionsToCheck.add(RuleModifier.LEFT)
-      directionsToCheck.add(RuleModifier.RIGHT)
-    }
-    if (this._ruleModifiers.has(RuleModifier.VERTICAL)) {
-      directionsToCheck.add(RuleModifier.UP)
-      directionsToCheck.add(RuleModifier.DOWN)
-    }
-    // If no direction was specified then check UP, DOWN, LEFT, RIGHT
-    if (directionsToCheck.size === 0) {
-      directionsToCheck = new Set(SIMPLE_DIRECTIONS)
-    }
-
-    return this._innerRule.getMatchedMutatorsOrNull(cell, directionsToCheck)
+    return getMatchedMutatorsHelper(this._bracketPairs, cell)
   }
 }
 
-function checkLength (conditions, actions) {
-  if (conditions.length !== actions.length) {
-    return `counts mismatch. Left is ${conditions.length} while Right is ${actions.length}`
-  }
-}
-function checkLengthAndRecurse (conditions, actions) {
-  // console.log('--------- START');
-  // console.log(conditions);
-  // console.log(actions);
-  // console.log('--------- END');
+export class RuleBracket extends BaseForLines {
+  _neighbors: RuleBracketNeighbor[]
+  _hasEllipsis: boolean
 
-  let ret = checkLength(conditions, actions)
-  if (ret) return ret
-  for (let i = 0; i < conditions.length; i++) {
-    const condition = conditions[i]
-    const action = actions[i]
-    ret = action.doesntMatchConditionStructure(condition)
-    if (ret) break
-  }
-  return ret
-}
-
-// The idea is to convert something like `[A|B] [C|D|E] -> [N|O] [P|Q|R]`
-// into something like { ( (A,N), (B,O) ), ( (C,P), (D,Q), (E,R) ) }
-// That way it's easy to call `.mutate()` to change the cell.
-class BracketPair {
-  neighbors: any
-
-  constructor (neighbors) {
-    this.neighbors = neighbors
-  }
-  mutate (cell: Cell) {
-    return this.neighbors.map((neighbor) => neighbor.mutate(cell))
-  }
-}
-
-class EllipsisPair {
-  constructor () {
-    // TODO: Implement me
-  }
-}
-
-class CellPair extends BaseForLines {
-  conditionLayers: any
-  actionLayers: any
-
-  constructor (source: IGameCode, condition, action) {
-    super(source)
-    this.conditionLayers = condition
-    this.actionLayers = action
-  }
-  getMatchedMutatorsOrNull (cell: Cell) {
-    for (const cellLayer of this.conditionLayers) {
-      if (!cellLayer.matchesCell(cell)) return null
-    }
-    return new CellPairMutator(this.__source, cell, this)
-  }
-}
-
-class CellPairMutator extends BaseForLines {
-  cell: any
-  cellPair: CellPair
-
-  constructor (source: IGameCode, cell: Cell, cellPair: CellPair) {
-    super(source)
-    this.cell = cell
-    this.cellPair = cellPair
-  }
-  mutate () {
-    // Just remove all tiles for now and then add all of them back
-    // TODO: only remove tiles that are matching the collisionLayer but wait, they already need to be exclusive
-    const newSetOfSprites = new Set(this.cell.getSpritesAsSet())
-
-    // remove sprites that are listed on the condition side
-    this.cellPair.conditionLayers.forEach(layer => {
-      layer.getSprites().forEach(sprite => {
-        newSetOfSprites.delete(sprite)
-      })
-    })
-    this.cellPair.actionLayers.forEach(layer => {
-      if (!layer.getSprites) {
-        console.log('BUUUUUGGGG')
-        console.log(layer)
-        console.log(layer.toString())
-      }
-      layer.getSprites().forEach(sprite => {
-        if (layer.isNo()) {
-          newSetOfSprites.delete(sprite)
-        } else {
-          newSetOfSprites.add(sprite)
-        }
-      })
-    })
-
-    if (!this.cell.equalsSprites(newSetOfSprites)) {
-      this.cell.updateSprites(newSetOfSprites)
-      return [this.cell]
-    } else {
-      return []
-    }
-  }
-}
-
-class RuleBracketsToZip extends BaseForLines {
-  _conditions: any
-  _actions: any
-  _commands: any
-  _bracketPairs: any[]
-
-  constructor (source: IGameCode, conditions, actions, commands) {
-    super(source)
-    this._conditions = conditions
-    this._actions = actions
-    this._commands = commands
-
-    // Zip the Conditions and Actions into Pairs so we can mutate them better
-    if (conditions.length !== actions.length) {
-      throw new Error(`ERROR: Rule conditions (left side) and actions (right side) must match up structurally (must have the same number of brackets and each bracket must have the same number of pipe characters)`)
-    }
-
-    this._bracketPairs = []
-    for (let x = 0; x < conditions.length; x++) {
-      const conditionBracket = conditions[x]
-      const actionBracket = actions[x]
-
-      // TODO: Convert this to a conditionBracket._bracket.zipWith(actionBracket._bracket)
-      if (conditionBracket._bracket instanceof RuleEllipsisBracket) {
-        this._bracketPairs.push(new EllipsisPair())
-      } else {
-        if (!conditionBracket._bracket._neighbors) {
-          console.log(conditionBracket._bracket)
-          console.log(conditionBracket._bracket.toString())
-        }
-        if (conditionBracket._bracket._neighbors.length !== actionBracket._bracket._neighbors.length) {
-          throw new Error(`ERROR: Rule conditions (left side) and actions (right side) must match up structurally (must have the same number of brackets and each bracket must have the same number of pipe characters). Number of Pipe characters do not match`)
-        }
-
-        const resultNeighbors = []
-        for (let y = 0; y < conditionBracket._bracket._neighbors.length; y++) {
-          const conditionNeighbor = conditionBracket._bracket._neighbors[y]
-          const actionNeighbor = actionBracket._bracket._neighbors[y]
-
-          resultNeighbors.push(new CellPair(this.__source, conditionNeighbor, actionNeighbor))
-        }
-
-        this._bracketPairs.push(new BracketPair(resultNeighbors))
-      }
-    }
-  }
-
-  getMatchedMutatorsOrNull (cell: Cell, directionsToCheck) {
-    let ret = []
-    if (this._bracketPairs.length > 1) {
-      return null // `BUG: multiple bracket rules are not supported yet`
-    }
-
-    for (const bracketPair of this._bracketPairs) {
-      // HACK Since we don't support EllipsisPair yet
-      if (bracketPair instanceof EllipsisPair) {
-        return null
-      }
-
-      let curCell = cell
-      for (const direction of directionsToCheck) {
-        let neighborRet = []
-        for (const neighbor of bracketPair.neighbors) {
-          if (!curCell) break // If we hit the end of the level then this does not match
-
-          const mutators = neighbor.getMatchedMutatorsOrNull(curCell)
-          if (!mutators) break
-          neighborRet.push(mutators)
-
-          // Move to the next neighboring cell
-          curCell = curCell.getNeighbor(direction)
-        }
-
-        // If all the neighbors were matched then return the mutators
-        if (neighborRet.length === bracketPair.neighbors.length) {
-          ret.push(neighborRet)
-        }
-      }
-    }
-    return ret
-  }
-  mutate (cell: Cell) {
-    return this._bracketPairs.map((bracketPair) => bracketPair.mutate(cell))
-  }
-
-  doesntMatchConditionStructure (conditionBrackets) {
-    const actionBrackets = this._actions
-    return checkLengthAndRecurse(conditionBrackets, actionBrackets)
-  }
-}
-
-class GameRuleSequenceBracket extends BaseForLines {
-  _ruleModifiers: any
-  _bracket: any
-
-  constructor (source: IGameCode, ruleModifiers, bracket) {
-    super(source)
-    this._ruleModifiers = ruleModifiers
-    this._bracket = bracket
-  }
-
-  getMatchedMutatorsOrNull (cell: Cell) {
-    if (this._ruleModifiers.length > 0) {
-      return null // `BUG: evaluating rules with modifiers is not implemented yet`
-    }
-    return this._bracket.getMatchedMutatorsOrNull(cell)
-  }
-
-  doesntMatchConditionStructure (condition) {
-    return this._bracket.doesntMatchConditionStructure(condition._bracket)
-  }
-}
-
-class RuleEllipsisBracket extends BaseForLines {
-  _leftNeighboringCells: any
-  _rightNeighboringCells: any
-
-  constructor (source: IGameCode, leftNeighboringCells, rightNeighboringCells) {
-    super(source)
-    this._leftNeighboringCells = leftNeighboringCells
-    this._rightNeighboringCells = rightNeighboringCells
-  }
-  getMatchedMutatorsOrNull (cell: Cell) {
-    return null // 'BUG: Checking neighbors (& ellipses) not implemented yet'
-  }
-
-  doesntMatchConditionStructure (condition) {
-    // Only check the length because the number of cellLayers inside can be different (some are added and some are removed as part of the rule)
-    let ret = checkLength(condition._leftNeighboringCells, this._leftNeighboringCells)
-    if (ret) return ret
-    return checkLength(condition._rightNeighboringCells, this._rightNeighboringCells)
-  }
-}
-
-class GameRuleSimpleBracket extends BaseForLines {
-  _neighbors: any
-
-  constructor (source: IGameCode, neighbors) {
+  constructor(source: IGameCode, neighbors: RuleBracketNeighbor[], hack: string) {
     super(source)
     this._neighbors = neighbors
-  }
+    this._hasEllipsis = false
 
-  getMatchedMutatorsOrNull (cell: Cell) {
-    const ret = []
-    for (const neighbor of this._neighbors) {
-      // Check if all the cellLayers are on the current cell
-      const retNeighbor = []
-      for (const child of neighbor) {
-        const retChild = child.matchesCell(cell)
-        if (!retChild) break
-        retNeighbor.push(retChild)
-      }
-      if (retNeighbor.length === neighbor.length) {
-        ret.push(retNeighbor)
+    for (let i = 0; i < neighbors.length; i++) {
+      const neighbor = neighbors[i]
+      if (neighbor.isEllipsis()) {
+        this._hasEllipsis = true
+        break
       }
     }
-    if (ret.length === this._neighbors.length) {
-      return ret
-    }
-    return null
   }
 
-  doesntMatchConditionStructure (conditionBracket) {
-    // No need to check the number of cells inside a neighbor block because they can be added or removed so they do not have to match up
-    return checkLength(conditionBracket._neighbors, this._neighbors)
+  hasEllipsis() {
+    return this._hasEllipsis
   }
 }
 
-class RuleCommands extends BaseForLines {
-  _conditions: any
-  _commands: any
+export class RuleBracketNeighbor extends BaseForLines {
+  _tilesWithModifier: TileWithModifier[]
+  _isEllipsis: boolean
 
-  constructor (source: IGameCode, conditions, commands) {
+  constructor(source: IGameCode, tilesWithModifier: TileWithModifier[], isEllipsis: boolean) {
     super(source)
-    this._conditions = conditions
-    this._commands = commands
+    this._tilesWithModifier = tilesWithModifier
+    this._isEllipsis = isEllipsis
   }
-  getMatchedMutatorsOrNull (cell: Cell) {
-    for (const child of this._conditions) {
-      const retChild = child.getMatchedMutatorsOrNull(cell)
-      if (!retChild) return null
-    }
-    return new RuleCommandMutator(this._commands, cell)
-  }
-  doesntMatchConditionStructure () {
-    // The left-hand-side structure does not matter since we are executing commands
-    return false
+
+  isEllipsis() {
+    return this._isEllipsis
   }
 }
 
-class RuleCommandMutator {
-  commands: any
-  cell: Cell
+export class TileWithModifier extends BaseForLines {
+  _modifier?: string
+  _tile: IGameTile
 
-  constructor (commands, cell: Cell) {
-    this.commands = commands
-    this.cell = cell
+  constructor(source: IGameCode, modifier: string, tile: IGameTile) {
+    super(source)
+    this._modifier = modifier
+    this._tile = tile
   }
-  mutate () {
-    // console.log(`TODO: Execute these commands (which matched):`, this.commands)
+
+  isNo() {
+    return M_NO === this._modifier
+  }
+
+  matchesCell(cell: Cell) {
+    if (this._modifier && !SUPPORTED_CELL_MODIFIERS.has(this._modifier)) {
+      return false // Modifier not supported yet
+    }
+    const hasTile = this._tile && this._tile.matchesCell(cell)
+    if (this.isNo()) {
+      return !hasTile
+    } else {
+      return hasTile
+    }
+  }
+
+}
+
+// Extend RuleBracketNeighbor so that NeighborPair doesn't break
+class HackNode extends RuleBracketNeighbor {
+  fields: object
+
+  // These should be addressed as we write the interpreter
+  constructor(source: IGameCode, fields: object) {
+    super(source, [], false)
+    this.fields = fields
+  }
+
+  isEllipsis() {
+    return false
   }
 }
 
@@ -1379,127 +1175,43 @@ const M_STATIONARY = 'STATIONARY'
 const M_NO = 'NO'
 const SUPPORTED_CELL_MODIFIERS = new Set([M_STATIONARY, M_NO])
 
-function setIntersection(setA, setB) {
-  const intersection = new Set()
-  for (const elem of setB) {
-    if (setA.has(elem)) {
-      intersection.add(elem)
-    }
-  }
-  return intersection
-}
-
-function setDifference(setA, setB) {
-    const difference = new Set(setA)
-    for (const elem of setB) {
-        difference.delete(elem)
-    }
-    return difference
-}
-
-class GameRuleCellLayer extends BaseForLines {
-  _cellModifiers: any
-  _tile: IGameTile
-
-  constructor (source: IGameCode, cellModifiers, tile: IGameTile) {
-    super(source)
-    this._cellModifiers = new Set(cellModifiers)
-    this._tile = tile
-  }
-  isNo () {
-    return this._cellModifiers.has(M_NO)
-  }
-  getSprites () {
-    return this._tile.getSprites()
-  }
-  matchesCell (cell: Cell) {
-    /* Modifiers
-      = t_NO
-      // The following are probably not actually cellLayerModifier's ... Check that they only exist at the beginning of a "["
-      | t_LEFT
-      | t_RIGHT
-      | t_UP
-      | t_DOWN
-      | t_RANDOMDIR
-      | t_RANDOM
-      | t_STATIONARY
-      | t_MOVING
-      | t_ACTION
-      | t_VERTICAL
-      | t_HORIZONTAL
-      | t_PERPENDICULAR
-      | t_ORTHOGONAL
-      | t_ARROW_ANY // This can be a "v" so it needs to go at the end (behind t_VERTICAL)
-    */
-    const mods = setDifference(this._cellModifiers, SUPPORTED_CELL_MODIFIERS)
-    if (mods.size > 0) {
-      // Not supported yet
-      return false
-    }
-
-    const negate = this.isNo()
-    // console.log(`Checking if ${cell.getSprites().map(s => s._name)} ${[...mods]} has ${this.getSprites().map(s => s._name)}`);
-    if (negate) {
-      return !this._tile.matchesCell(cell)
-    } else {
-      return this._tile.matchesCell(cell)
-    }
-  }
-}
-
-class GameRuleCellLayerHack extends BaseForLines {
-  _spriteNameMaybeNull: string | null
-  _hackRuleCommand: any
-
-  constructor (source: IGameCode, spriteName: string, hackRuleCommand) {
-    super(source)
-    this._spriteNameMaybeNull = spriteName
-    this._hackRuleCommand = hackRuleCommand
-  }
-  getSprites () {
-    if (!this._spriteNameMaybeNull) {
-      throw new Error('BUG: Need to fix this hack in the Rule tree so it is not executed')
-    }
-    return [this._spriteNameMaybeNull]
-  }
-}
 
 class LookupHelper {
-  _allSoundEffects: any
-  _allObjects: any
-  _allLegendTiles: any
-  _allLevelChars: any
+  _allSoundEffects: Map<string, GameSound>
+  _allObjects: Map<string, GameSprite>
+  _allLegendTiles: Map<string, IGameTile>
+  _allLevelChars: Map<string, IGameTile>
 
-  constructor () {
+  constructor() {
     this._allSoundEffects = new Map()
     this._allObjects = new Map()
     this._allLegendTiles = new Map()
     this._allLevelChars = new Map()
   }
 
-  _addToHelper (map, key: string, value: any) {
+  _addToHelper<A>(map : Map<string, A>, key: string, value: A) {
     if (map.has(key)) {
       throw new Error(`ERROR: Duplicate object is defined named "${key}". They are case-sensitive!`)
     }
     map.set(key, value)
   }
-  addSoundEffect (key: string, soundEffect: GameSoundSfx) {
+  addSoundEffect(key: string, soundEffect: GameSoundSfx) {
     this._addToHelper(this._allSoundEffects, key.toLowerCase(), soundEffect)
   }
-  addToAllObjects (gameObject: GameSprite) {
+  addToAllObjects(gameObject: GameSprite) {
     this._addToHelper(this._allObjects, gameObject._name.toLowerCase(), gameObject)
   }
-  addToAllLegendTiles (legendTile: GameLegendTileSimple) {
+  addToAllLegendTiles(legendTile: GameLegendTileSimple) {
     this._addToHelper(this._allLegendTiles, legendTile._spriteNameOrLevelChar.toLowerCase(), legendTile)
   }
-  addObjectToAllLevelChars (levelChar: string, gameObject: GameSprite) {
+  addObjectToAllLevelChars(levelChar: string, gameObject: GameSprite) {
     this._addToHelper(this._allLegendTiles, levelChar.toLowerCase(), gameObject)
     this._addToHelper(this._allLevelChars, levelChar.toLowerCase(), gameObject)
   }
-  addLegendToAllLevelChars (legendTile: GameLegendTileSimple) {
+  addLegendToAllLevelChars(legendTile: GameLegendTileSimple) {
     this._addToHelper(this._allLevelChars, legendTile._spriteNameOrLevelChar.toLowerCase(), legendTile)
   }
-  lookupObjectOrLegendTile (source: IGameCode, key: string) {
+  lookupObjectOrLegendTile(source: IGameCode, key: string) {
     key = key.toLowerCase()
     const value = this._allObjects.get(key) || this._allLegendTiles.get(key)
     if (!value) {
@@ -1508,7 +1220,7 @@ class LookupHelper {
     }
     return value
   }
-  lookupObjectOrLegendTileOrSoundEffect (source: IGameCode, key: string) {
+  lookupObjectOrLegendTileOrSoundEffect(source: IGameCode, key: string) {
     key = key.toLowerCase()
     const value = this._allObjects.get(key) || this._allLegendTiles.get(key) || this._allSoundEffects.get(key)
     if (!value) {
@@ -1517,7 +1229,7 @@ class LookupHelper {
     }
     return value
   }
-  lookupByLevelChar (key: string) {
+  lookupByLevelChar(key: string) {
     const value = this._allLevelChars.get(key.toLowerCase())
     if (!value) {
       throw new Error(`ERROR: Could not look up "${key}" in the levelChars map. Has it been defined in the Objects section or the Legend section?`)
@@ -1527,7 +1239,7 @@ class LookupHelper {
 }
 
 // Helper for setting a config field
-function getConfigField (key: ohm.Node, value: ohm.Node) {
+function getConfigField(key: ohm.Node, value: ohm.Node) {
   return [key.parse(), value.parse()]
 }
 
@@ -1540,11 +1252,11 @@ enum ValidationLevel {
 }
 
 class ValidationMessage {
-  gameNode: BaseForLines
+  gameNode: IGameNode
   level: ValidationLevel
   message: string
 
-  constructor(gameNode, level, message) {
+  constructor(gameNode: IGameNode, level: ValidationLevel, message: string) {
     this.gameNode = gameNode
     this.level = level
     this.message = message
@@ -1552,27 +1264,27 @@ class ValidationMessage {
 }
 
 class Parser {
-  getGrammar () {
+  getGrammar() {
     _GRAMMAR = _GRAMMAR || ohm.grammar(GRAMMAR_STR)
     return _GRAMMAR
   }
 
-  parseGrammar (code: string) {
+  parseGrammar(code: string) {
     // 8645c163ff321d2fd1bad3fcaf48c107 has a typo so we .replace()
     // 0c2625672bf47fcf728fe787a2630df6 has a typo se we .replace()
     // another couple of games do not have a trailing newline at the end of the file so we add that
     code = code.replace('][ ->', '] ->').replace('[[spring]', '[spring][') + '\n' // Not all games have a trailing newline. this makes it easier on the parser
 
     const g = this.getGrammar()
-    return {match: g.match(code)}
+    return { match: g.match(code) }
   }
 
-  parse (code: string) {
+  parse(code: string) {
     const g = this.getGrammar()
-    const {match: m} = this.parseGrammar(code)
-    const validationMessages = []
+    const { match: m } = this.parseGrammar(code)
+    const validationMessages: ValidationMessage[] = []
 
-    function addValidationMessage(source, level, message) {
+    function addValidationMessage(source: IGameNode, level: ValidationLevel, message: string) {
       validationMessages.push(new ValidationMessage(source, level, message))
     }
 
@@ -1625,11 +1337,11 @@ class Parser {
         },
         RequirePlayerMovement: getConfigField,
 
-        Section: function (_threeDashes1, _headingBar1, _lineTerminator1, _sectionName, _lineTerminator2, _threeDashes2, _headingBar2, _8, _9, _10, _11) {
+        Section: function (_threeDashes1, _lineTerminator1, _sectionName, _lineTerminator2, _threeDashes2, _8, _9, _10, _11) {
           return _10.parse()
         },
         Sprite: function (_1) {
-          const gameObject:GameSprite = _1.parse()
+          const gameObject: GameSprite = _1.parse()
           lookup.addToAllObjects(gameObject)
           if (gameObject._optionalLegendChar) {
             // addObjectToAllLegendTiles(gameObject)
@@ -1669,7 +1381,7 @@ class Parser {
         },
         LegendTileSimple: function (spriteNameOrLevelChar, _equals, tile, _whitespace) {
           // TODO: Do the lookup and adding to sets here rather than rewiring in LegendTile
-          return new GameLegendTileSimple(this.source, spriteNameOrLevelChar.parse(), [tile.parse()])
+          return new GameLegendTileSimple(this.source, spriteNameOrLevelChar.parse(), tile.parse())
         },
         LegendTileAnd: function (spriteNameOrLevelChar, _equals, tiles, _whitespace) {
           return new GameLegendTileAnd(this.source, spriteNameOrLevelChar.parse(), tiles.parse())
@@ -1699,7 +1411,7 @@ class Parser {
           return new GameSoundNormal(this.source, lookup.lookupObjectOrLegendTile(this.source, spriteName.parse()), eventEnum.parse(), soundCode.parse())
         },
         CollisionLayerItem: function (tileNames, _2, _3) {
-          const tiles = tileNames.parse().map((spriteName) => lookup.lookupObjectOrLegendTile(this.source, spriteName))
+          const tiles = tileNames.parse().map((spriteName: string) => lookup.lookupObjectOrLegendTile(this.source, spriteName))
           const collisionLayer = new CollisionLayer(this.source, tiles)
           // Map all the Objects to the layer
           tiles.forEach((tile: IGameTile) => {
@@ -1717,62 +1429,40 @@ class Parser {
           })
           return collisionLayer
         },
-
         RuleItem: function (_1) {
           return _1.parse()
-        },
-
-        Rule: function (rulePlus, productionModifiers, innerRule, _whitespace) {
-          return new GameRule(this.source, rulePlus.parse()[0], productionModifiers.parse(), innerRule.parse())
         },
         RuleLoop: function (_startloop, _whitespace1, rules, _endloop, _whitespace2) {
           return new GameRuleLoop(this.source, rules.parse())
         },
-        CellSequenceBracket: function (ruleModifiers, bracket) {
-          return new GameRuleSequenceBracket(this.source, ruleModifiers.parse(), bracket.parse())
+        RuleGroup: function (firstRule, _plusses, followingRules) {
+          return new GameRuleGroup(this.source, [firstRule.parse()].concat(followingRules.parse()))
         },
-        EllipsisBracket: function (_leftBracket, _whitespace, leftNeighboringCells, _ellipsis, _pipe, rightNeighboringCells, _rightBracket) {
-          return new RuleEllipsisBracket(this.source, leftNeighboringCells.parse(), rightNeighboringCells.parse())
+        Rule: function (modifiers, conditions, _arrow, _unusuedModifer, actions, commands, optionalMessageCommand, _whitespace) {
+          return new GameRule(this.source, new Set(_.flatten(modifiers.parse())), conditions.parse(), actions.parse(), commands.parse().concat(optionalMessageCommand.parse()))
         },
-        SimpleBracket: function (_leftBracket, _whitespace, cellLayers, _rightBracket) {
-          return new GameRuleSimpleBracket(this.source, cellLayers.parse())
+        RuleBracket: function (_openBracket, neighbors, hackAgain, _closeBracket) {
+          return new RuleBracket(this.source, neighbors.parse(), hackAgain.parse())
         },
-        CellLayer: function (_1) {
+        RuleBracketNeighbor: function (_1) {
           return _1.parse()
         },
-        SimpleCellLayer: function (cellModifiers, cellName) {
-          return new GameRuleCellLayer(this.source, cellModifiers.parse(), lookup.lookupObjectOrLegendTile(this.source, cellName.parse()))
+        RuleBracketEllipsisNeighbor: function (_1) {
+          const tileWithModifier = new TileWithModifier(this.source, "...", null)
+          return new RuleBracketNeighbor(this.source, [tileWithModifier], true)
         },
-        HackCellLayer1: function (hackRuleCommand) {
-          return new GameRuleCellLayerHack(this.source, null, hackRuleCommand.parse())
+        RuleBracketNoEllipsisNeighbor: function (tileWithModifier) {
+          return new RuleBracketNeighbor(this.source, tileWithModifier.parse(), false)
         },
-        HackCellLayer2: function (cellName, hackRuleCommand) {
-          return new GameRuleCellLayerHack(this.source, lookup.lookupObjectOrLegendTile(this.source, cellName.parse()), hackRuleCommand.parse())
+        TileWithModifier: function (optionalModifier, tile) {
+          return new TileWithModifier(this.source, optionalModifier.parse()[0], tile.parse())
         },
-        cellName: function (_1) {
-          return _1.parse()
+        tileModifier: function (_whitespace1, tileModifiers, _whitespace2) {
+          return tileModifiers.parse()
         },
-        cellLayerModifier: function (_whitespace1, cellLayerModifier, _whitespace2) {
-          return cellLayerModifier.parse()
-        },
-
-        RuleBracketsToZip: function (conditions, actions, commands, optionalMessageCommand) {
-          return new RuleBracketsToZip(this.source, conditions.parse(), actions.parse(), commands.parse().concat(optionalMessageCommand.parse()))
-        },
-        RuleCommands1: function (conditions, commands, message) {
-          return new RuleCommands(this.source, conditions.parse(), commands.parse().concat(message.parse()))
-        },
-        RuleCommands2: function (conditions, commands, message) {
-          return new RuleCommands(this.source, conditions.parse(), commands.parse().concat(message.parse()))
-        },
-        RuleConditions: function (brackets, _rightArrow) {
-          return brackets.parse()
-        },
-
         MessageCommand: function (_message, message) {
           return new GameMessage(this.source, message.parse())
         },
-
         WinConditionItemSimple: function (qualifierEnum, spriteName, _whitespace) {
           return new WinConditionSimple(this.source, qualifierEnum.parse(), spriteName.parse())
         },
@@ -1797,6 +1487,12 @@ class Parser {
         levelMapRow: function (row, _2) {
           return row.parse()
         },
+        HackTileNameIsSFX1: function (sfx) {
+          return new HackNode(this.source, sfx.parse())
+        },
+        HackTileNameIsSFX2: function (tile, sfx) {
+          return new HackNode(this.source, { tile: tile.parse(), sfx: sfx.parse() })
+        },
         widthAndHeight: function (_1, _2, _3) {
           return {
             __type: 'widthAndHeight',
@@ -1815,7 +1511,7 @@ class Parser {
         },
         colorName: function (_1) {
           const colorName = this.sourceString.toLowerCase()
-          const hex = lookupColorPalette(currentColorPalette)[colorName]
+          const hex = lookupColorPalette(currentColorPalette, colorName)
           if (hex) {
             return new HexColor(this.source, hex)
           } else {
@@ -1847,6 +1543,9 @@ class Parser {
         decimalWithLeadingPeriod: function (_1, _2) {
           return parseFloat(this.sourceString)
         },
+        lookupRuleVariableName: function (_1) {
+          return lookup.lookupObjectOrLegendTile(this.source, _1.parse())
+        },
         ruleVariableName: function (_1) {
           return this.sourceString
         },
@@ -1854,7 +1553,7 @@ class Parser {
           return this.sourceString
         },
         _terminal: function () { return this.primitiveValue },
-        lineTerminator: (_1, _2, _3, _4) => {},
+        lineTerminator: (_1, _2, _3, _4) => { },
         digit: (x) => {
           return x.primitiveValue.charCodeAt(0) - '0'.charCodeAt(0)
         }
@@ -1884,10 +1583,10 @@ class Parser {
         }
       })
 
-      return {data: game, validationMessages }
+      return { data: game, validationMessages }
     } else {
       const trace = g.trace(code)
-      return {error: m, trace: trace}
+      return { error: m, trace: trace }
     }
   }
 }

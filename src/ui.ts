@@ -1,10 +1,10 @@
 import * as axel from 'axel'
-import { GameSpritePixels, GameData, IColor } from "./parser"
+import { GameData, IColor, GameSprite } from "./parser"
 import { Cell } from './engine'
 
 // First Sprite one is on top.
 // This caused a 2x speedup while rendering.
-function collapseSpritesToPixels (spritesToDraw: GameSpritePixels[], backgroundColor: IColor) {
+function collapseSpritesToPixels(spritesToDraw: GameSprite[], backgroundColor: IColor) {
   if (spritesToDraw.length === 1) {
     return spritesToDraw[0].getPixels()
   }
@@ -47,7 +47,7 @@ class UI {
   constructor() {
     this._resizeHandler = null
   }
-  renderScreen (data: GameData, levelRows: Cell[][]) {
+  renderScreen(data: GameData, levelRows: Cell[][]) {
     // axel.cursor.off()
 
     // Handle resize events by redrawing the game. Ooh, we do not have Cells at this point.
@@ -86,7 +86,7 @@ class UI {
     this.writeDebug(`"${data.title}"`)
   }
 
-  drawCellAt (data: GameData, cell: Cell, rowIndex: number, colIndex: number, dontRestoreCursor: boolean) {
+  drawCellAt(data: GameData, cell: Cell, rowIndex: number, colIndex: number, dontRestoreCursor: boolean) {
     const pixels: IColor[][] = this.getPixelsForCell(data, cell)
     const spritesForDebugging = cell.getSprites()
 
@@ -148,7 +148,7 @@ class UI {
     }
   }
 
-  getPixelsForCell (data: GameData, cell: Cell) {
+  getPixelsForCell(data: GameData, cell: Cell) {
     const spritesToDraw = cell.getSprites() // Not sure why, but entanglement renders properly when reversed
 
     // If there is a magic background object then rely on it last
@@ -161,24 +161,24 @@ class UI {
     return pixels
   }
 
-  clearScreen () {
+  clearScreen() {
     axel.fg(255, 255, 255)
     axel.bg(0, 0, 0)
     axel.clear()
   }
 
-  writeDebug (text: string) {
+  writeDebug(text: string) {
     axel.fg(255, 255, 255)
     axel.bg(0, 0, 0)
     writeText(0, 0, `[${text}]`)
   }
 }
 
-function restoreCursor () {
+function restoreCursor() {
   axel.cursor.restore()
 }
 
-function writeText (x: number, y: number, text: string) {
+function writeText(x: number, y: number, text: string) {
   axel.text(x, y, text)
 }
 
