@@ -1,10 +1,9 @@
-import { GameSprite } from './sprite'
+import { GameSprite, GameLegendTileSimple } from './tile'
 import { GameRule } from './rule'
 import { GameMetadata } from './metadata'
 import { GameSound } from './sound'
 import {
     CollisionLayer,
-    GameLegendTileSimple,
     WinConditionSimple,
     LevelMap
 } from '../parser/parser'

@@ -146,7 +146,6 @@ P
     expect(pixels[0][2].toRgb()).toEqual(C_BLACK)
   })
 
-
   function parseEngine (code) {
     const { data, error } = Parser.parse(code)
     expect(error && error.message).toBeFalsy() // Use && so the error messages are shorter

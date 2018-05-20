@@ -1,8 +1,8 @@
 import * as _ from 'lodash'
 import { EventEmitter2 } from 'eventemitter2'
-import { LevelMap, GameLegendTileSimple } from './parser/parser';
+import { LevelMap } from './parser/parser';
 import { GameData, IGameTile } from './models/game'
-import { GameSprite } from './models/sprite'
+import { GameSprite, GameLegendTileSimple } from './models/tile'
 import { GameRule } from './models/rule'
 import { RULE_MODIFIER } from './util'
 
