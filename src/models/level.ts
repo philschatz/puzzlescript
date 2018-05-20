@@ -1,4 +1,5 @@
-import { BaseForLines, IGameCode, IGameTile } from './game'
+import { BaseForLines, IGameCode } from './game'
+import { IGameTile } from './tile'
 
 export class LevelMap extends BaseForLines {
     _rows: IGameTile[][]

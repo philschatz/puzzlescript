@@ -1,8 +1,18 @@
 import * as _ from 'lodash'
-import { BaseForLines, IGameCode, IGameTile } from './game'
+import { BaseForLines, IGameCode, IGameNode } from './game'
 import { IColor, HexColor, TransparentColor } from './colors'
 import { CollisionLayer } from './collisionLayer'
 import { Cell } from '../engine'
+
+export interface IGameTile extends IGameNode {
+    _getDescendantTiles: () => IGameTile[]
+    getSprites: () => GameSprite[]
+    isInvalid: () => string
+    hasCollisionLayer: () => boolean
+    setCollisionLayer: (collisionLayer: CollisionLayer) => void
+    getCollisionLayerNum: () => number
+    matchesCell: (cell: Cell) => boolean
+}
 
 export class GameSprite extends BaseForLines implements IGameTile {
     _name: string

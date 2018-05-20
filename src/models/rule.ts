@@ -2,9 +2,9 @@ import * as _ from 'lodash'
 import {
     BaseForLines,
     IGameCode,
-    IGameNode,
-    IGameTile
+    IGameNode
 } from '../models/game'
+import { IGameTile } from './tile'
 import {
     IMutator,
     RuleBracketPair,

@@ -20,16 +20,6 @@ export interface IGameCode {
     getLineAndColumnMessage: () => string
 }
 
-export interface IGameTile extends IGameNode {
-    _getDescendantTiles: () => IGameTile[]
-    getSprites: () => GameSprite[]
-    isInvalid: () => string
-    hasCollisionLayer: () => boolean
-    setCollisionLayer: (collisionLayer: CollisionLayer) => void
-    getCollisionLayerNum: () => number
-    matchesCell: (cell: Cell) => boolean
-}
-
 let astId: number = 0
 export class BaseForLines {
     __astId: number

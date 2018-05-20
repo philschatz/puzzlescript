@@ -10,7 +10,6 @@ import {
   BaseForLines,
   IGameCode,
   IGameNode,
-  IGameTile,
   GameData,
   GameMessage
 } from '../models/game'
@@ -21,7 +20,8 @@ import {
   GameSpriteSingleColor,
   GameLegendTileSimple,
   GameLegendTileOr,
-  GameLegendTileAnd
+  GameLegendTileAnd,
+  IGameTile
 } from '../models/tile'
 import {
   GameSound,

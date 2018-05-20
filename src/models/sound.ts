@@ -1,4 +1,5 @@
-import { BaseForLines, IGameCode, IGameTile } from './game'
+import { BaseForLines, IGameCode } from './game'
+import { IGameTile } from './tile'
 
 // Abstract class
 export class GameSound extends BaseForLines {
