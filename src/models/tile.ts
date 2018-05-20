@@ -1,7 +1,18 @@
-import { BaseForLines, IGameCode, IGameTile } from './game'
+import * as _ from 'lodash'
+import { BaseForLines, IGameCode, IGameNode } from './game'
 import { IColor, HexColor, TransparentColor } from './colors'
-import { CollisionLayer, GameLegendTile } from '../parser/parser'
+import { CollisionLayer } from './collisionLayer'
 import { Cell } from '../engine'
+
+export interface IGameTile extends IGameNode {
+    _getDescendantTiles: () => IGameTile[]
+    getSprites: () => GameSprite[]
+    isInvalid: () => string
+    hasCollisionLayer: () => boolean
+    setCollisionLayer: (collisionLayer: CollisionLayer) => void
+    getCollisionLayerNum: () => number
+    matchesCell: (cell: Cell) => boolean
+}
 
 export class GameSprite extends BaseForLines implements IGameTile {
     _name: string
@@ -118,5 +129,100 @@ export class GameSpritePixels extends GameSprite {
         return this._pixels.map(row => {
             return row.map(col => col)
         })
+    }
+
+}
+
+export class GameLegendTile extends BaseForLines implements IGameTile {
+    _spritesCache: GameSprite[]
+    _collisionLayer: CollisionLayer
+    _spriteNameOrLevelChar: string
+    _tiles: IGameTile[]
+
+    constructor(source: IGameCode, spriteNameOrLevelChar: string, tiles: IGameTile[]) {
+        super(source)
+        this._spriteNameOrLevelChar = spriteNameOrLevelChar
+        this._tiles = tiles
+    }
+    isInvalid() {
+        if (!this.hasCollisionLayer()) {
+            return 'Missing collision layer'
+        }
+        return null
+    }
+    matchesCell(cell: Cell) {
+        if (!!true) {
+            throw new Error('BUG: This is an abstract method')
+        }
+        return false
+    }
+    _getDescendantTiles(): IGameTile[] {
+        // recursively pull all the tiles out
+        return this._tiles.concat(_.flatten(this._tiles.map(tile => tile._getDescendantTiles())))
+    }
+    getSprites() {
+        // Use a cache because all the collision layers have not been loaded in time
+        if (!this._spritesCache) {
+            // 2 levels of indirection should be safe
+            // Sort by collisionLayer so that the most-important sprite is first
+            this._spritesCache = _.flatten(
+                this._tiles.map(tile => {
+                    return tile.getSprites()
+                })
+            ).sort((a, b) => {
+                return a.getCollisionLayerNum() - b.getCollisionLayerNum()
+            }).reverse()
+        }
+        return this._spritesCache
+    }
+    hasCollisionLayer() {
+        return !!this._collisionLayer
+    }
+    setCollisionLayer(collisionLayer: CollisionLayer) {
+        this._collisionLayer = collisionLayer
+    }
+    getCollisionLayerNum() {
+        return this._collisionLayer.__astId
+    }
+
+}
+
+export class GameLegendTileSimple extends GameLegendTile {
+    constructor(source: IGameCode, spriteNameOrLevelChar: string, tile: GameSprite) {
+        super(source, spriteNameOrLevelChar, [tile])
+    }
+    matchesCell(cell: Cell) {
+        // Check that the cell contains all of the tiles (ANDED)
+        // Since this is a Simple Tile it should only contain 1 tile so anding is the right way to go.
+        for (const tile of this._tiles) {
+            if (!tile.matchesCell(cell)) {
+                return false
+            }
+        }
+        return true
+    }
+}
+
+export class GameLegendTileAnd extends GameLegendTile {
+    matchesCell(cell: Cell) {
+        // Check that the cell contains any of the tiles (AND)
+        for (const tile of this._tiles) {
+            if (!tile.matchesCell(cell)) {
+                return false
+            }
+        }
+        return true
+    }
+}
+
+export class GameLegendTileOr extends GameLegendTile {
+    matchesCell(cell: Cell) {
+        // Check that the cell contains any of the tiles (OR)
+        for (const tile of this._tiles) {
+            if (tile.matchesCell(cell)) {
+                return true
+            }
+        }
+        return false
     }
 }

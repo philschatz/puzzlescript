@@ -1,13 +1,10 @@
-import { GameSprite } from './sprite'
-import { GameRule } from './rule'
 import { GameMetadata } from './metadata'
+import { GameSprite, GameLegendTileSimple } from './tile'
+import { GameRule } from './rule'
 import { GameSound } from './sound'
-import {
-    CollisionLayer,
-    GameLegendTileSimple,
-    WinConditionSimple,
-    LevelMap
-} from '../parser/parser'
+import { LevelMap } from './level'
+import { CollisionLayer } from './collisionLayer'
+import { WinConditionSimple } from './winCondition'
 import { Cell } from '../engine'
 
 export interface IGameNode {
@@ -21,16 +18,6 @@ export interface IGameCode {
     startIdx: number
     endIdx: number
     getLineAndColumnMessage: () => string
-}
-
-export interface IGameTile extends IGameNode {
-    _getDescendantTiles: () => IGameTile[]
-    getSprites: () => GameSprite[]
-    isInvalid: () => string
-    hasCollisionLayer: () => boolean
-    setCollisionLayer: (collisionLayer: CollisionLayer) => void
-    getCollisionLayerNum: () => number
-    matchesCell: (cell: Cell) => boolean
 }
 
 let astId: number = 0

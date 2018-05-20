@@ -22,6 +22,10 @@ export class HexColor extends BaseForLines implements IColor {
 }
 
 export class TransparentColor extends BaseForLines implements IColor {
+    constructor(source: IGameCode) {
+        super(source)
+    }
+
     isTransparent() { return true }
     toRgb(): RGB {
         throw new Error('BUG: Transparent colors do not have RGB data')

@@ -1,5 +1,5 @@
 import * as axel from 'axel'
-import { GameSprite } from './models/sprite'
+import { GameSprite } from './models/tile'
 import { GameData } from './models/game'
 import { IColor } from './models/colors'
 import { Cell } from './engine'
