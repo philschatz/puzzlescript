@@ -1,8 +1,8 @@
-import { GameRule } from './gameRule'
+import { GameRule } from './rule'
+import { GameMetadata } from './metadata'
 import {
     GameSprite,
     CollisionLayer,
-    GameSettings,
     GameLegendTileSimple,
     GameSound,
     WinConditionSimple,
@@ -123,7 +123,7 @@ function getLineAndColumn(str: string, offset: number) {
 
 export class GameData {
     title: string
-    settings: GameSettings
+    metadata: GameMetadata
     objects: GameSprite[]
     legends: GameLegendTileSimple[]
     sounds: GameSound[]
@@ -134,7 +134,7 @@ export class GameData {
 
     constructor(
         title: string,
-        settings: GameSettings,
+        metadata: GameMetadata,
         objects: GameSprite[],
         legends: GameLegendTileSimple[],
         sounds: GameSound[],
@@ -144,7 +144,7 @@ export class GameData {
         levels: LevelMap[]
     ) {
         this.title = title
-        this.settings = settings
+        this.metadata = metadata
         this.objects = objects
         this.legends = legends
         this.sounds = sounds

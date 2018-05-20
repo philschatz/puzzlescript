@@ -66,12 +66,12 @@ class UI {
 
     levelRows.forEach((row, rowIndex) => {
       // Don't draw too much for this demo
-      if (data.settings.flickscreen && rowIndex > data.settings.flickscreen.height) {
+      if (data.metadata.flickscreen && rowIndex > data.metadata.flickscreen.height) {
         return
       }
       row.forEach((col, colIndex) => {
         // Don't draw too much for this demo
-        if (data.settings.flickscreen && colIndex > data.settings.flickscreen.width) {
+        if (data.metadata.flickscreen && colIndex > data.metadata.flickscreen.width) {
           return
         }
 
@@ -110,8 +110,8 @@ class UI {
           if (!spriteColor.isTransparent()) {
             color = spriteColor
           }
-          else if (data.settings.background_color) {
-            color = data.settings.background_color
+          else if (data.metadata.background_color) {
+            color = data.metadata.background_color
           }
         }
 
@@ -158,7 +158,7 @@ class UI {
       spritesToDraw.push(magicBackgroundSprite)
     }
 
-    const pixels = collapseSpritesToPixels(spritesToDraw, data.settings.background_color)
+    const pixels = collapseSpritesToPixels(spritesToDraw, data.metadata.background_color)
     return pixels
   }
 

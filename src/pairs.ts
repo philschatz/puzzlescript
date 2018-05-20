@@ -6,7 +6,7 @@ import {
   RuleBracket,
   RuleBracketNeighbor,
   TileWithModifier
-} from './models/gameRule'
+} from './models/rule'
 import { Cell } from './engine'
 import { RULE_MODIFIER, setIntersection, setDifference } from './util'
 

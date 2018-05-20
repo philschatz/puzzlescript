@@ -6,45 +6,16 @@ import { Cell } from '../engine';
 import { RULE_MODIFIER, setIntersection, setDifference } from '../util'
 import { PUZZLESCRIPT_GRAMMAR } from './grammar'
 import { BaseForLines, IGameCode, IGameNode, IGameTile, GameData } from '../models/game'
-import { GameRuleLoop, GameRuleGroup, GameRule, HackNode, RuleBracket, RuleBracketNeighbor, TileWithModifier } from '../models/gameRule'
-
-class Dimension {
-  width: number
-  height: number
-
-  constructor(width: number, height: number) {
-    this.width = width
-    this.height = height
-  }
-}
-
-export class GameSettings {
-  author?: string
-  homepage?: string
-  youtube?: string
-  zoomscreen?: Dimension
-  flickscreen?: Dimension
-  color_palette?: string
-  background_color?: IColor
-  text_color?: IColor
-  realtime_interval?: string
-  key_repeat_interval?: string
-  again_interval?: string
-  noaction: false
-  noundo: false
-  run_rules_on_level_start?: string
-  norepeat_action: false
-  throttle_movement: false
-  norestart: false
-  require_player_movement: false
-  verbose_logging: false
-
-  constructor() { }
-
-  _setValue(key: any, value: any) {
-    this[key] = value
-  }
-}
+import { GameMetadata } from '../models/metadata'
+import {
+  GameRuleLoop,
+  GameRuleGroup,
+  GameRule,
+  HackNode,
+  RuleBracket,
+  RuleBracketNeighbor,
+  TileWithModifier
+} from '../models/rule'
 
 export class LevelMap extends BaseForLines {
   _rows: IGameTile[][]
@@ -118,7 +89,7 @@ class RGB {
   }
 }
 
-export declare interface IColor extends IGameNode {
+export interface IColor extends IGameNode {
   isTransparent: () => boolean
   toRgb: () => RGB
 }
@@ -562,17 +533,17 @@ class Parser {
 
       s.addOperation('parse', {
         GameData: function (_whitespace1, title, _whitespace2, settingsFields, _whitespace3, objects, legends, sounds, collisionLayers, rules, winConditions, levels) {
-          const settings = new GameSettings()
+          const metadata = new GameMetadata()
           settingsFields.parse().forEach((setting) => {
             if (Array.isArray(setting)) {
-              settings._setValue(setting[0], setting[1])
+              metadata._setValue(setting[0], setting[1])
             } else {
-              settings._setValue(setting, true)
+              metadata._setValue(setting, true)
             }
           })
           return new GameData(
             title.parse(),
-            settings,
+            metadata,
             objects.parse()[0] || [],
             legends.parse()[0] || [],
             sounds.parse()[0] || [],
