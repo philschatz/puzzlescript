@@ -1,10 +1,10 @@
 import * as axel from 'axel'
-import { GameSpritePixels, GameData, IColor } from "./parser"
+import { GameData, IColor, GameSprite } from "./parser"
 import { Cell } from './engine'
 
 // First Sprite one is on top.
 // This caused a 2x speedup while rendering.
-function collapseSpritesToPixels(spritesToDraw: GameSpritePixels[], backgroundColor: IColor) {
+function collapseSpritesToPixels(spritesToDraw: GameSprite[], backgroundColor: IColor) {
   if (spritesToDraw.length === 1) {
     return spritesToDraw[0].getPixels()
   }

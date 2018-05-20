@@ -2,7 +2,7 @@
   "scripts": {
     "lint": "standard --fix preprocessor.js ./test/**/*.js",
     "tsc": "tsc --watch",
-    "prestart": "rm -rf ./lib/; rm ./coverage/coverage-gist*.json; rm -rf ./coverage/lcov-report/; tsc; echo 'Done preparing'",
+    "prestart": "rm -rf ./lib/; rm ./coverage/coverage-gist*.json; rm -rf ./coverage/lcov-report/; tsc",
     "start": "node -r source-map-support/register ./lib/runGame.js",
     "poststart": "npm run-script coverage && echo 'Generated coverage. Type open ./coverage/lcov-html/index.html to see it'",
     "coverage": "istanbul report --root ./coverage/ lcov",

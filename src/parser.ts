@@ -717,6 +717,9 @@ export class GameSprite extends BaseForLines implements IGameTile {
     this._name = name
     this._optionalLegendChar = optionalLegendChar
   }
+  getPixels(): IColor[][] {
+    throw new Error('BUG: Subclasses should implement this')
+  }
   _getName() {
     return this._name
   }
