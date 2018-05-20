@@ -3,7 +3,7 @@ import * as path from 'path'
 import * as glob from 'glob'
 import * as pify from 'pify'
 
-import Parser from './parser'
+import Parser, { IGameNode } from './parser'
 import UI from './ui'
 import Engine from './engine'
 
@@ -11,6 +11,34 @@ let totalRenderTime = 0
 
 async function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms))
+}
+
+// These types are just so that the Code Coverage JSON objects are strongly-typed
+type CoverageLocation = {
+  line: number
+  col: number
+}
+type CoverageLocationRange = {
+  start: CoverageLocation
+  end: CoverageLocation
+}
+type CoverageFunction = {
+  name: string,
+  decl: CoverageLocationRange,
+  loc: CoverageLocationRange,
+  line: number
+}
+type CoverageCount = { [id: string]: number }
+type CoverageStatements = {[id: string]: CoverageLocationRange}
+type CoverageFunctions = {[id: string]: CoverageFunction}
+type CoverageEntry = {
+  path: string
+  s: CoverageCount
+  f: CoverageCount
+  statementMap: CoverageStatements
+  fnMap: CoverageFunctions
+  branchMap: object
+  b: object
 }
 
 async function run() {
@@ -55,7 +83,7 @@ async function run() {
 
         // First add all the Tiles, Legend Items, collisionLayers, Rules, and Levels.
         // Then, after running, add all the matched rules.
-        function coverageKey(node) {
+        function coverageKey(node: IGameNode) {
           // the HTML reporter does not like multiline fields. Rather than report multiple times, we just report the 1st line
           // This is a problem with `startloop`
           const { start, end } = node.__getLineAndColumnRange()
@@ -64,7 +92,7 @@ async function run() {
           }
           return JSON.stringify({ start, end })
         }
-        function addNodeToCoverage(node) {
+        function addNodeToCoverage(node: IGameNode) {
           codeCoverageTemp.set(coverageKey(node), 0)
         }
         // data.objects.forEach(addNodeToCoverage)
@@ -97,13 +125,14 @@ async function run() {
           return { loc: JSON.parse(key), count: value }
         })
         // Generate the coverage.json file from which Rules were applied
-        const statementMap = {}
-        const fnMap = {}
-        const f = {}
-        const s = {}
+        const statementMap: CoverageStatements = {}
+        const fnMap: CoverageFunctions = {}
+        const f: CoverageCount = {}
+        const s: CoverageCount = {}
 
         // Add all the matched rules
-        codeCoverage2.forEach(({ loc, count }, index) => {
+        codeCoverage2.forEach((entry: {loc: CoverageLocationRange, count: number}, index) => {
+          const { loc, count } = entry
 
           s[index] = count
           statementMap[index] = loc
@@ -119,7 +148,7 @@ async function run() {
 
         const absPath = path.resolve(filename)
         const gistName = path.basename(path.dirname(filename))
-        const codeCoverageEntry = {
+        const codeCoverageEntry: CoverageEntry = {
           path: absPath,
           s: s,
           statementMap: statementMap,
@@ -128,7 +157,7 @@ async function run() {
           branchMap: {},
           b: {}
         }
-        const codeCoverageObj = {}
+        const codeCoverageObj: {[path: string]: CoverageEntry} = {}
         codeCoverageObj[absPath] = codeCoverageEntry
         writeFileSync(`coverage/coverage-gists-${gistName}.json`, JSON.stringify(codeCoverageObj, null, 2)) // indent by 2 chars
       }

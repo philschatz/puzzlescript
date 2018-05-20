@@ -481,8 +481,9 @@ function getLineAndColumn(str: string, offset: number) {
   }
 }
 
-interface IGameNode {
+export interface IGameNode {
   __getSourceLineAndColumn: () => { lineNum: number, colNum: number }
+  __getLineAndColumnRange: () => { start: {line: number, col: number}, end: {line: number, col: number}}
   toString: () => string
 }
 
