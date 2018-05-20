@@ -1,6 +1,7 @@
 import * as axel from 'axel'
-import { IColor, GameSprite } from './parser/parser'
+import { GameSprite } from './models/sprite'
 import { GameData } from './models/game'
+import { IColor } from './models/colors'
 import { Cell } from './engine'
 
 // First Sprite one is on top.

@@ -5,8 +5,21 @@ import { IMutator, RuleBracketPair, getMatchedMutatorsHelper } from '../pairs'
 import { Cell } from '../engine';
 import { RULE_MODIFIER, setIntersection, setDifference } from '../util'
 import { PUZZLESCRIPT_GRAMMAR } from './grammar'
-import { BaseForLines, IGameCode, IGameNode, IGameTile, GameData } from '../models/game'
+import { HexColor, TransparentColor} from '../models/colors'
+import {
+  BaseForLines,
+  IGameCode,
+  IGameNode,
+  IGameTile,
+  GameData,
+  GameMessage
+} from '../models/game'
 import { GameMetadata } from '../models/metadata'
+import {
+  GameSprite,
+  GameSpritePixels,
+  GameSpriteSingleColor
+} from '../models/sprite'
 import {
   GameSound,
   GameSoundSfx,
@@ -47,196 +60,6 @@ export class LevelMap extends BaseForLines {
   }
   getRows() {
     return this._rows
-  }
-}
-
-export class GameMessage extends BaseForLines {
-  _message: string
-
-  constructor(source: IGameCode, message: string) {
-    super(source)
-    this._message = message
-  }
-  isInvalid(): string {
-    return null
-  }
-  isMap() {
-    return false
-  }
-}
-
-function hexToRgb(hex: string) {
-  // https://stackoverflow.com/a/5624139
-  // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
-  const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i
-  hex = hex.replace(shorthandRegex, function (m, r, g, b) {
-    return r + r + g + g + b + b
-  })
-
-  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
-  if (result) {
-    return new RGB(
-      parseInt(result[1], 16),
-      parseInt(result[2], 16),
-      parseInt(result[3], 16),
-    )
-  } else {
-    throw new Error('BUG: hex color was invalid')
-  }
-}
-
-class RGB {
-  r: number
-  g: number
-  b: number
-
-  constructor(r: number, g: number, b: number) {
-    this.r = r
-    this.g = g
-    this.b = b
-  }
-}
-
-export interface IColor extends IGameNode {
-  isTransparent: () => boolean
-  toRgb: () => RGB
-}
-
-export class HexColor extends BaseForLines implements IColor {
-  _color: RGB
-  _colorName: string // only for unit tests & debugging
-
-  constructor(source: IGameCode, color: string) {
-    super(source)
-    this._color = hexToRgb(color)
-    this._colorName = color
-  }
-
-  isTransparent() { return false }
-  toRgb() {
-    return this._color
-  }
-}
-
-class TransparentColor extends BaseForLines implements IColor {
-  isTransparent() { return true }
-  toRgb(): RGB {
-    throw new Error('BUG: Transparent colors do not have RGB data')
-  }
-}
-
-export class GameSprite extends BaseForLines implements IGameTile {
-  _name: string
-  _optionalLegendChar?: string
-  _collisionLayer: CollisionLayer
-
-  constructor(source: IGameCode, name: string, optionalLegendChar?: string) {
-    super(source)
-    this._name = name
-    this._optionalLegendChar = optionalLegendChar
-  }
-  getPixels(): IColor[][] {
-    throw new Error('BUG: Subclasses should implement this')
-  }
-  _getName() {
-    return this._name
-  }
-  _getDescendantTiles(): GameLegendTile[] {
-    return []
-  }
-  getSprites() {
-    // to match the signature of LegendTile
-    return [this]
-  }
-  hasCollisionLayer() {
-    return !!this._collisionLayer
-  }
-  setCollisionLayer(collisionLayer: CollisionLayer) {
-    this._collisionLayer = collisionLayer
-  }
-  getCollisionLayerNum() {
-    if (!this._collisionLayer) {
-      console.error(this.__source.getLineAndColumnMessage())
-      console.error('ERROR: This sprite was not in a Collision Layer')
-    }
-    return this._collisionLayer.__astId
-  }
-  isInvalid() {
-    if (!this._collisionLayer) {
-      return 'This object does not have an entry in the COLLISIONLAYERS section.'
-    }
-    return null
-  }
-  matchesCell(cell: Cell): any {
-    return cell.getSpritesAsSet().has(this)
-  }
-}
-
-class GameSpriteSingleColor extends GameSprite {
-  _color: HexColor
-
-  constructor(source: IGameCode, name: string, optionalLegendChar: string, colors: HexColor[]) {
-    super(source, name, optionalLegendChar)
-    this._color = colors[0] // Ignore if the user added multiple colors (like `transparent yellow`)
-  }
-  getPixels() {
-    // When there are no pixels then it means "color the whole thing in the same color"
-    const rows: HexColor[][] = []
-    for (let row = 0; row < 5; row++) {
-      rows.push([])
-      for (let col = 0; col < 5; col++) {
-        rows[row].push(this._color)
-      }
-    }
-    return rows
-  }
-}
-
-export class GameSpritePixels extends GameSprite {
-  _colors: IColor[]
-  _pixels: IColor[][]
-
-  constructor(source: IGameCode, name: string, optionalLegendChar: string, colors: HexColor[], pixels: ('.' | number)[][]) {
-    super(source, name, optionalLegendChar)
-    this._colors = colors
-    this._pixels = pixels.map(row => {
-      return row.map(col => {
-        if (col === '.') {
-          return new TransparentColor(this.__source)
-        } else {
-          return this._colors[col]
-        }
-      })
-    }) // Pixel colors are 0-indexed.
-  }
-  isInvalid() {
-    if (super.isInvalid()) {
-      return super.isInvalid()
-    }
-    let isInvalid = null
-    const colorLen = this._colors.length
-    const rowLen = this._pixels[0].length
-    this._pixels.forEach((row: any[]) => {
-      if (row.length !== rowLen) {
-        isInvalid = `Row lengths do not match. Expected ${rowLen} but got ${row.length}. Row: ${row}`
-      }
-      // Check that only '.' or a digit that is less than the number of colors is present
-      row.forEach((pixel) => {
-        if (pixel !== '.') {
-          if (pixel >= colorLen) {
-            isInvalid = `Pixel number is too high (${pixel}). There are only ${colorLen} colors defined`
-          }
-        }
-      })
-    })
-    return isInvalid
-  }
-  getSprites() {
-    // to match the signature of LegendTile
-    return [this]
-  }
-  getPixels() {
-    return this._pixels
   }
 }
 

@@ -1,8 +1,8 @@
+import { GameSprite } from './sprite'
 import { GameRule } from './rule'
 import { GameMetadata } from './metadata'
 import { GameSound } from './sound'
 import {
-    GameSprite,
     CollisionLayer,
     GameLegendTileSimple,
     WinConditionSimple,
@@ -160,5 +160,20 @@ export class GameData {
 
     getMagicBackgroundSprite() {
         return this._getSpriteByName('background')
+    }
+}
+
+export class GameMessage extends BaseForLines {
+    _message: string
+
+    constructor(source: IGameCode, message: string) {
+        super(source)
+        this._message = message
+    }
+    isInvalid(): string {
+        return null
+    }
+    isMap() {
+        return false
     }
 }

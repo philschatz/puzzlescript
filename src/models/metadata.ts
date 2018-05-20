@@ -1,4 +1,4 @@
-import { IColor } from '../parser/parser'
+import { IColor } from './colors'
 
 class Dimension {
     width: number
