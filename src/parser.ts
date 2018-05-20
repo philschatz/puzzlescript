@@ -1510,7 +1510,7 @@ class Parser {
         },
         colorName: function (_1) {
           const colorName = this.sourceString.toLowerCase()
-          const hex = lookupColorPalette(currentColorPalette)[colorName]
+          const hex = lookupColorPalette(currentColorPalette, colorName)
           if (hex) {
             return new HexColor(this.source, hex)
           } else {
