@@ -49,7 +49,7 @@ export class RuleBracketPair implements IMatcher {
     })
   }
 
-  getMatchedMutatorsOrNull(cell) {
+  getMatchedMutatorsOrNull(cell: Cell) {
     if (this._modifiers.has(RULE_MODIFIER.RANDOM) || this._modifiers.has(RULE_MODIFIER.LATE) || this._modifiers.has(RULE_MODIFIER.RIGID)) {
       // These are not implemented yet so ignore them
       return null
@@ -75,10 +75,10 @@ export class RuleBracketPair implements IMatcher {
 
     // Walk through each neighbor, checking if the adjacent cell matches.
     // If any do not match, return null (the pattern did not match)
-    let ret = []
+    let ret: IMutator[] = []
     let curCell = cell
     for (const direction of directionsToCheck) {
-      let neighborRet = []
+      let neighborRet: IMutator[] = []
       for (const neighbor of this._neighborPairs) {
         if (!curCell) break // If we hit the end of the level then this does not match
         // Check if the individual tiles match
@@ -128,7 +128,7 @@ class CellMutator implements IMutator {
   _condition: TileWithModifier[]
   _action: TileWithModifier[]
   _cell: Cell
-  constructor(condition: TileWithModifier[], action: TileWithModifier[], cell) {
+  constructor(condition: TileWithModifier[], action: TileWithModifier[], cell: Cell) {
     this._condition = condition
     this._action = action
     this._cell = cell
