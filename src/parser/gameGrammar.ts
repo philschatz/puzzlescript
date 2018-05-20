@@ -81,6 +81,8 @@ export const COMMON_GRAMMAR = `
 
     ruleVariableName = ruleVariableChar+
     lookupRuleVariableName = ~t_AGAIN ruleVariableName // added t_AGAIN to parse '... -> [ tilename AGAIN ]' (it should be a command)
+
+    GameMessage = t_MESSAGE words*
 `
 
 export const STRINGTOKEN_GRAMMAR = `

@@ -2,8 +2,6 @@ import { LevelMap } from '../models/level'
 import { LookupHelper } from './lookup'
 
 export const LEVEL_GRAMMAR = `
-    GameMessage = t_MESSAGE words*
-
     LevelItem = (GameMessage | LevelMap) lineTerminator*
     LevelMap = levelMapRow+
 
