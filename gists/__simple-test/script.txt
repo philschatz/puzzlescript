@@ -28,6 +28,12 @@ COLLISIONLAYERS
 Background
 Player
 
+===
+RULES
+===
+
+[> Player | Background ] -> [Player | ]
+
 =======
 LEVELS
 =======

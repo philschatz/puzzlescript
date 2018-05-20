@@ -65,7 +65,7 @@ async function run() {
           return JSON.stringify({ start, end })
         }
         function addNodeToCoverage(node) {
-          codeCoverageTemp[coverageKey(node)] = 0
+          codeCoverageTemp.set(coverageKey(node), 0)
         }
         // data.objects.forEach(addNodeToCoverage)
         // data.legends.forEach(addNodeToCoverage)
@@ -89,7 +89,7 @@ async function run() {
             if (!codeCoverageTemp.has(line)) {
               codeCoverageTemp.set(line, 0)
             }
-            codeCoverageTemp[line] = codeCoverageTemp[line] + 1
+            codeCoverageTemp.set(line, codeCoverageTemp.get(line) + 1)
           }
         }
 

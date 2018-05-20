@@ -88,7 +88,7 @@ export default class Engine extends EventEmitter2 {
         this.gameData.rules.forEach(rule => {
           // Check if the left-hand-side of the rule matches the current cell
           const mutators = rule.getMatchedMutatorsOrNull(cell)
-          if (mutators) {
+          if (mutators && mutators.length > 0) {
             if (!rulesAndChanges.has(rule)) {
               rulesAndChanges.set(rule, [])
             }

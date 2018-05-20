@@ -5547,7 +5547,7 @@ GameData {
           "_modifiers": Set {},
           "_neighborPairs": Array [
             NeighborPair {
-              "_action": undefined,
+              "_action": Array [],
               "_condition": Array [
                 TileWithModifier {
                   "__astId": 269,
@@ -5818,7 +5818,7 @@ GameData {
           "_modifiers": Set {},
           "_neighborPairs": Array [
             NeighborPair {
-              "_action": undefined,
+              "_action": Array [],
               "_condition": Array [
                 TileWithModifier {
                   "__astId": 278,

@@ -1139,6 +1139,9 @@ export class TileWithModifier extends BaseForLines {
   }
 
   matchesCell(cell: Cell) {
+    if (this._modifier && !SUPPORTED_CELL_MODIFIERS.has(this._modifier)) {
+      return false // Modifier not supported yet
+    }
     const hasTile = this._tile && this._tile.matchesCell(cell)
     if (this.isNo()) {
       return !hasTile
@@ -1149,11 +1152,13 @@ export class TileWithModifier extends BaseForLines {
 
 }
 
-class HackNode extends BaseForLines {
+// Extend RuleBracketNeighbor so that NeighborPair doesn't break
+class HackNode extends RuleBracketNeighbor {
   fields: object
+
   // These should be addressed as we write the interpreter
   constructor(source: IGameCode, fields: object) {
-    super(source)
+    super(source, [], false)
     this.fields = fields
   }
 
