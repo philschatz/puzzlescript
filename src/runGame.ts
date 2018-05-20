@@ -3,7 +3,8 @@ import * as path from 'path'
 import * as glob from 'glob'
 import * as pify from 'pify'
 
-import Parser, { IGameNode } from './parser'
+import Parser from './parser/parser'
+import { IGameNode } from './models/game'
 import UI from './ui'
 import Engine from './engine'
 

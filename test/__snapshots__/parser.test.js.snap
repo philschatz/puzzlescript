@@ -352,6 +352,7 @@ GameData {
     },
   ],
   "levels": Array [],
+  "metadata": GameMetadata {},
   "objects": Array [
     GameSpriteSingleColor {
       "__astId": 247,
@@ -418,7 +419,6 @@ GameData {
       "_modifiers": Set {},
     },
   ],
-  "settings": GameSettings {},
   "sounds": Array [],
   "title": "checkParseRule",
   "winConditions": Array [],
@@ -641,6 +641,7 @@ GameData {
     },
   ],
   "levels": Array [],
+  "metadata": GameMetadata {},
   "objects": Array [
     GameSpriteSingleColor {
       "__astId": 94,
@@ -688,7 +689,6 @@ GameData {
       "_modifiers": Set {},
     },
   ],
-  "settings": GameSettings {},
   "sounds": Array [],
   "title": "checkParseRule",
   "winConditions": Array [],
@@ -911,6 +911,7 @@ GameData {
     },
   ],
   "levels": Array [],
+  "metadata": GameMetadata {},
   "objects": Array [
     GameSpriteSingleColor {
       "__astId": 103,
@@ -958,7 +959,6 @@ GameData {
       "_modifiers": Set {},
     },
   ],
-  "settings": GameSettings {},
   "sounds": Array [],
   "title": "checkParseRule",
   "winConditions": Array [],
@@ -1184,6 +1184,7 @@ GameData {
     },
   ],
   "levels": Array [],
+  "metadata": GameMetadata {},
   "objects": Array [
     GameSpriteSingleColor {
       "__astId": 112,
@@ -1231,7 +1232,6 @@ GameData {
       "_modifiers": Set {},
     },
   ],
-  "settings": GameSettings {},
   "sounds": Array [],
   "title": "checkParseRule",
   "winConditions": Array [],
@@ -1454,6 +1454,7 @@ GameData {
     },
   ],
   "levels": Array [],
+  "metadata": GameMetadata {},
   "objects": Array [
     GameSpriteSingleColor {
       "__astId": 121,
@@ -1501,7 +1502,6 @@ GameData {
       "_modifiers": Set {},
     },
   ],
-  "settings": GameSettings {},
   "sounds": Array [],
   "title": "checkParseRule",
   "winConditions": Array [],
@@ -1724,6 +1724,7 @@ GameData {
     },
   ],
   "levels": Array [],
+  "metadata": GameMetadata {},
   "objects": Array [
     GameSpriteSingleColor {
       "__astId": 130,
@@ -1771,7 +1772,6 @@ GameData {
       "_modifiers": Set {},
     },
   ],
-  "settings": GameSettings {},
   "sounds": Array [],
   "title": "checkParseRule",
   "winConditions": Array [],
@@ -1994,6 +1994,7 @@ GameData {
     },
   ],
   "levels": Array [],
+  "metadata": GameMetadata {},
   "objects": Array [
     GameSpriteSingleColor {
       "__astId": 139,
@@ -2041,7 +2042,6 @@ GameData {
       "_modifiers": Set {},
     },
   ],
-  "settings": GameSettings {},
   "sounds": Array [],
   "title": "checkParseRule",
   "winConditions": Array [],
@@ -2264,6 +2264,7 @@ GameData {
     },
   ],
   "levels": Array [],
+  "metadata": GameMetadata {},
   "objects": Array [
     GameSpriteSingleColor {
       "__astId": 148,
@@ -2311,7 +2312,6 @@ GameData {
       "_modifiers": Set {},
     },
   ],
-  "settings": GameSettings {},
   "sounds": Array [],
   "title": "checkParseRule",
   "winConditions": Array [],
@@ -2534,6 +2534,7 @@ GameData {
     },
   ],
   "levels": Array [],
+  "metadata": GameMetadata {},
   "objects": Array [
     GameSpriteSingleColor {
       "__astId": 157,
@@ -2581,7 +2582,6 @@ GameData {
       "_modifiers": Set {},
     },
   ],
-  "settings": GameSettings {},
   "sounds": Array [],
   "title": "checkParseRule",
   "winConditions": Array [],
@@ -2804,6 +2804,7 @@ GameData {
     },
   ],
   "levels": Array [],
+  "metadata": GameMetadata {},
   "objects": Array [
     GameSpriteSingleColor {
       "__astId": 166,
@@ -2851,7 +2852,6 @@ GameData {
       "_modifiers": Set {},
     },
   ],
-  "settings": GameSettings {},
   "sounds": Array [],
   "title": "checkParseRule",
   "winConditions": Array [],
@@ -3074,6 +3074,7 @@ GameData {
     },
   ],
   "levels": Array [],
+  "metadata": GameMetadata {},
   "objects": Array [
     GameSpriteSingleColor {
       "__astId": 175,
@@ -3121,7 +3122,6 @@ GameData {
       "_modifiers": Set {},
     },
   ],
-  "settings": GameSettings {},
   "sounds": Array [],
   "title": "checkParseRule",
   "winConditions": Array [],
@@ -3344,6 +3344,7 @@ GameData {
     },
   ],
   "levels": Array [],
+  "metadata": GameMetadata {},
   "objects": Array [
     GameSpriteSingleColor {
       "__astId": 184,
@@ -3391,7 +3392,6 @@ GameData {
       "_modifiers": Set {},
     },
   ],
-  "settings": GameSettings {},
   "sounds": Array [],
   "title": "checkParseRule",
   "winConditions": Array [],
@@ -3614,6 +3614,7 @@ GameData {
     },
   ],
   "levels": Array [],
+  "metadata": GameMetadata {},
   "objects": Array [
     GameSpriteSingleColor {
       "__astId": 193,
@@ -3661,7 +3662,6 @@ GameData {
       "_modifiers": Set {},
     },
   ],
-  "settings": GameSettings {},
   "sounds": Array [],
   "title": "checkParseRule",
   "winConditions": Array [],
@@ -3884,6 +3884,7 @@ GameData {
     },
   ],
   "levels": Array [],
+  "metadata": GameMetadata {},
   "objects": Array [
     GameSpriteSingleColor {
       "__astId": 202,
@@ -3931,7 +3932,6 @@ GameData {
       "_modifiers": Set {},
     },
   ],
-  "settings": GameSettings {},
   "sounds": Array [],
   "title": "checkParseRule",
   "winConditions": Array [],
@@ -4154,6 +4154,7 @@ GameData {
     },
   ],
   "levels": Array [],
+  "metadata": GameMetadata {},
   "objects": Array [
     GameSpriteSingleColor {
       "__astId": 211,
@@ -4201,7 +4202,6 @@ GameData {
       "_modifiers": Set {},
     },
   ],
-  "settings": GameSettings {},
   "sounds": Array [],
   "title": "checkParseRule",
   "winConditions": Array [],
@@ -4424,6 +4424,7 @@ GameData {
     },
   ],
   "levels": Array [],
+  "metadata": GameMetadata {},
   "objects": Array [
     GameSpriteSingleColor {
       "__astId": 220,
@@ -4471,7 +4472,6 @@ GameData {
       "_modifiers": Set {},
     },
   ],
-  "settings": GameSettings {},
   "sounds": Array [],
   "title": "checkParseRule",
   "winConditions": Array [],
@@ -4694,6 +4694,7 @@ GameData {
     },
   ],
   "levels": Array [],
+  "metadata": GameMetadata {},
   "objects": Array [
     GameSpriteSingleColor {
       "__astId": 229,
@@ -4741,7 +4742,6 @@ GameData {
       "_modifiers": Set {},
     },
   ],
-  "settings": GameSettings {},
   "sounds": Array [],
   "title": "checkParseRule",
   "winConditions": Array [],
@@ -4964,6 +4964,7 @@ GameData {
     },
   ],
   "levels": Array [],
+  "metadata": GameMetadata {},
   "objects": Array [
     GameSpriteSingleColor {
       "__astId": 238,
@@ -5011,7 +5012,6 @@ GameData {
       "_modifiers": Set {},
     },
   ],
-  "settings": GameSettings {},
   "sounds": Array [],
   "title": "checkParseRule",
   "winConditions": Array [],
@@ -5254,6 +5254,7 @@ GameData {
     },
   ],
   "levels": Array [],
+  "metadata": GameMetadata {},
   "objects": Array [
     GameSpriteSingleColor {
       "__astId": 257,
@@ -5320,7 +5321,6 @@ GameData {
       "_modifiers": Set {},
     },
   ],
-  "settings": GameSettings {},
   "sounds": Array [],
   "title": "checkParseRule",
   "winConditions": Array [],
@@ -5529,6 +5529,7 @@ GameData {
     },
   ],
   "levels": Array [],
+  "metadata": GameMetadata {},
   "objects": Array [
     GameSpriteSingleColor {
       "__astId": 267,
@@ -5576,7 +5577,6 @@ GameData {
       "_modifiers": Set {},
     },
   ],
-  "settings": GameSettings {},
   "sounds": Array [],
   "title": "checkParseRule",
   "winConditions": Array [],
@@ -5800,6 +5800,7 @@ GameData {
     },
   ],
   "levels": Array [],
+  "metadata": GameMetadata {},
   "objects": Array [
     GameSpriteSingleColor {
       "__astId": 276,
@@ -5847,7 +5848,6 @@ GameData {
       "_modifiers": Set {},
     },
   ],
-  "settings": GameSettings {},
   "sounds": Array [],
   "title": "checkParseRule",
   "winConditions": Array [],
@@ -6133,6 +6133,7 @@ GameData {
     },
   ],
   "levels": Array [],
+  "metadata": GameMetadata {},
   "objects": Array [
     GameSpriteSingleColor {
       "__astId": 285,
@@ -6217,7 +6218,6 @@ GameData {
       "_modifiers": Set {},
     },
   ],
-  "settings": GameSettings {},
   "sounds": Array [],
   "title": "checkParseRule",
   "winConditions": Array [],
@@ -6467,6 +6467,7 @@ GameData {
     },
   ],
   "levels": Array [],
+  "metadata": GameMetadata {},
   "objects": Array [
     GameSpriteSingleColor {
       "__astId": 297,
@@ -6537,7 +6538,6 @@ GameData {
       "_modifiers": Set {},
     },
   ],
-  "settings": GameSettings {},
   "sounds": Array [],
   "title": "checkParseRule",
   "winConditions": Array [],
@@ -6564,6 +6564,7 @@ GameData {
   ],
   "legends": Array [],
   "levels": Array [],
+  "metadata": GameMetadata {},
   "objects": Array [
     GameSpriteSingleColor {
       "__astId": 365,
@@ -6581,7 +6582,6 @@ GameData {
     },
   ],
   "rules": Array [],
-  "settings": GameSettings {},
   "sounds": Array [],
   "title": "foo",
   "winConditions": Array [],
@@ -7231,6 +7231,9 @@ GameData {
   "collisionLayers": Array [],
   "legends": Array [],
   "levels": Array [],
+  "metadata": GameMetadata {
+    "color_palette": "gameboycolour",
+  },
   "objects": Array [
     GameSpriteSingleColor {
       "__astId": 309,
@@ -7248,9 +7251,6 @@ GameData {
     },
   ],
   "rules": Array [],
-  "settings": GameSettings {
-    "color_palette": "gameboycolour",
-  },
   "sounds": Array [],
   "title": "foo",
   "winConditions": Array [],
@@ -7262,6 +7262,9 @@ GameData {
   "collisionLayers": Array [],
   "legends": Array [],
   "levels": Array [],
+  "metadata": GameMetadata {
+    "color_palette": "2",
+  },
   "objects": Array [
     GameSpriteSingleColor {
       "__astId": 311,
@@ -7279,9 +7282,6 @@ GameData {
     },
   ],
   "rules": Array [],
-  "settings": GameSettings {
-    "color_palette": "2",
-  },
   "sounds": Array [],
   "title": "foo",
   "winConditions": Array [],
@@ -7404,6 +7404,7 @@ GameData {
     },
   ],
   "levels": Array [],
+  "metadata": GameMetadata {},
   "objects": Array [
     GameSpriteSingleColor {
       "__astId": 313,
@@ -7576,7 +7577,6 @@ GameData {
       "_modifiers": Set {},
     },
   ],
-  "settings": GameSettings {},
   "sounds": Array [],
   "title": "foo",
   "winConditions": Array [],
@@ -7588,6 +7588,7 @@ GameData {
   "collisionLayers": Array [],
   "legends": Array [],
   "levels": Array [],
+  "metadata": GameMetadata {},
   "objects": Array [
     GameSpritePixels {
       "__astId": 340,
@@ -7792,7 +7793,6 @@ GameData {
     },
   ],
   "rules": Array [],
-  "settings": GameSettings {},
   "sounds": Array [],
   "title": "foo",
   "winConditions": Array [],
@@ -7804,6 +7804,7 @@ GameData {
   "collisionLayers": Array [],
   "legends": Array [],
   "levels": Array [],
+  "metadata": GameMetadata {},
   "objects": Array [
     GameSpritePixels {
       "__astId": 359,
@@ -8088,7 +8089,6 @@ GameData {
     },
   ],
   "rules": Array [],
-  "settings": GameSettings {},
   "sounds": Array [],
   "title": "foo",
   "winConditions": Array [],
@@ -8208,6 +8208,7 @@ GameData {
     },
   ],
   "levels": Array [],
+  "metadata": GameMetadata {},
   "objects": Array [
     GameSpriteSingleColor {
       "__astId": 368,
@@ -8239,7 +8240,6 @@ GameData {
     },
   ],
   "rules": Array [],
-  "settings": GameSettings {},
   "sounds": Array [],
   "title": "foo",
   "winConditions": Array [],
@@ -8452,6 +8452,7 @@ GameData {
     },
   ],
   "levels": Array [],
+  "metadata": GameMetadata {},
   "objects": Array [
     GameSpriteSingleColor {
       "__astId": 85,
@@ -8499,7 +8500,6 @@ GameData {
       "_modifiers": Set {},
     },
   ],
-  "settings": GameSettings {},
   "sounds": Array [],
   "title": "checkParseRule",
   "winConditions": Array [],
@@ -8698,6 +8698,7 @@ GameData {
     },
   ],
   "levels": Array [],
+  "metadata": GameMetadata {},
   "objects": Array [
     GameSpriteSingleColor {
       "__astId": 76,
@@ -8745,7 +8746,6 @@ GameData {
       "_modifiers": Set {},
     },
   ],
-  "settings": GameSettings {},
   "sounds": Array [],
   "title": "checkParseRule",
   "winConditions": Array [],
@@ -9120,6 +9120,7 @@ GameData {
     },
   ],
   "levels": Array [],
+  "metadata": GameMetadata {},
   "objects": Array [
     GameSpriteSingleColor {
       "__astId": 54,
@@ -9267,7 +9268,6 @@ GameData {
       "_modifiers": Set {},
     },
   ],
-  "settings": GameSettings {},
   "sounds": Array [],
   "title": "checkParseRule",
   "winConditions": Array [],
@@ -9522,6 +9522,7 @@ GameData {
     },
   ],
   "levels": Array [],
+  "metadata": GameMetadata {},
   "objects": Array [
     GameSpriteSingleColor {
       "__astId": 30,
@@ -9592,7 +9593,6 @@ GameData {
       "_modifiers": Set {},
     },
   ],
-  "settings": GameSettings {},
   "sounds": Array [],
   "title": "checkParseRule",
   "winConditions": Array [],
@@ -9823,6 +9823,7 @@ GameData {
     },
   ],
   "levels": Array [],
+  "metadata": GameMetadata {},
   "objects": Array [
     GameSpriteSingleColor {
       "__astId": 43,
@@ -9888,7 +9889,6 @@ GameData {
       "_modifiers": Set {},
     },
   ],
-  "settings": GameSettings {},
   "sounds": Array [],
   "title": "checkParseRule",
   "winConditions": Array [],
@@ -10087,6 +10087,7 @@ GameData {
     },
   ],
   "levels": Array [],
+  "metadata": GameMetadata {},
   "objects": Array [
     GameSpriteSingleColor {
       "__astId": 1,
@@ -10134,7 +10135,6 @@ GameData {
       "_modifiers": Set {},
     },
   ],
-  "settings": GameSettings {},
   "sounds": Array [],
   "title": "checkParseRule",
   "winConditions": Array [],
@@ -10353,6 +10353,7 @@ GameData {
     },
   ],
   "levels": Array [],
+  "metadata": GameMetadata {},
   "objects": Array [
     GameSpriteSingleColor {
       "__astId": 10,
@@ -10419,7 +10420,6 @@ GameData {
       "_modifiers": Set {},
     },
   ],
-  "settings": GameSettings {},
   "sounds": Array [],
   "title": "checkParseRule",
   "winConditions": Array [],
@@ -10638,6 +10638,7 @@ GameData {
     },
   ],
   "levels": Array [],
+  "metadata": GameMetadata {},
   "objects": Array [
     GameSpriteSingleColor {
       "__astId": 20,
@@ -10704,7 +10705,6 @@ GameData {
       "_modifiers": Set {},
     },
   ],
-  "settings": GameSettings {},
   "sounds": Array [],
   "title": "checkParseRule",
   "winConditions": Array [],

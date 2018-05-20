@@ -6,13 +6,14 @@ import {
   RuleBracket,
   RuleBracketNeighbor,
   TileWithModifier
-} from './parser'
+} from './models/rule'
 import { Cell } from './engine'
 import { RULE_MODIFIER, setIntersection, setDifference } from './util'
 
 export interface IMutator {
   mutate: () => Cell[]
 }
+
 interface IMatcher {
   getMatchedMutatorsOrNull: (cell: Cell) => IMutator[] | null
 }
@@ -27,15 +28,12 @@ export function getMatchedMutatorsHelper(pairs: IMatcher[], cell: Cell) {
   return ret
 }
 
-
-
 const SIMPLE_DIRECTIONS = new Set([
   RULE_MODIFIER.UP,
   RULE_MODIFIER.DOWN,
   RULE_MODIFIER.LEFT,
   RULE_MODIFIER.RIGHT
 ])
-
 
 export class RuleBracketPair implements IMatcher {
   _modifiers: Set<RULE_MODIFIER>
