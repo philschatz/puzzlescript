@@ -428,7 +428,7 @@ declare interface IGameCode {
 // Return an object with the line and column information for the given
 // offset in `str`.
 // From https://github.com/harc/ohm/blob/b88336faf69e7bd89e309931b60445c3dfd495ab/src/util.js#L56
-function getLineAndColumn(str, offset) {
+function getLineAndColumn(str: string, offset: number) {
   let lineNum = 1
   let colNum = 1
 
@@ -589,7 +589,7 @@ export class GameData {
     this.levels = levels
   }
 
-  _getSpriteByName(name) {
+  _getSpriteByName(name: string) {
     return this.objects.filter(sprite => sprite._getName().toLowerCase() === name.toLowerCase())[0]
   }
   getMagicBackgroundSprite() {
@@ -598,7 +598,7 @@ export class GameData {
 }
 
 export declare interface IGameTile extends IGameNode {
-  _getDescendantTiles: () => GameLegendTile[]
+  _getDescendantTiles: () => IGameTile[]
   getSprites: () => GameSprite[]
   isInvalid: () => string
   hasCollisionLayer: () => boolean
@@ -723,7 +723,7 @@ export class GameSprite extends BaseForLines implements IGameTile {
   _getName() {
     return this._name
   }
-  _getDescendantTiles() {
+  _getDescendantTiles(): GameLegendTile[] {
     return []
   }
   getSprites() {
@@ -845,7 +845,7 @@ export class GameLegendTile extends BaseForLines implements IGameTile {
     }
     return false
   }
-  _getDescendantTiles() {
+  _getDescendantTiles(): IGameTile[] {
     // recursively pull all the tiles out
     return this._tiles.concat(_.flatten(this._tiles.map(tile => tile._getDescendantTiles())))
   }
@@ -893,7 +893,7 @@ export class GameLegendTileSimple extends GameLegendTile {
 }
 
 export class GameLegendTileAnd extends GameLegendTile {
-  matchesCell(cell) {
+  matchesCell(cell: Cell) {
     // Check that the cell contains any of the tiles (OR)
     for (const tile of this._tiles) {
       if (!tile.matchesCell(cell)) {
@@ -905,7 +905,7 @@ export class GameLegendTileAnd extends GameLegendTile {
 }
 
 export class GameLegendTileOr extends GameLegendTile {
-  matchesCell(cell) {
+  matchesCell(cell: Cell) {
     // Check that the cell contains any of the tiles (OR)
     for (const tile of this._tiles) {
       if (tile.matchesCell(cell)) {
@@ -1016,7 +1016,7 @@ class GameRuleLoop extends BaseForLines implements IRule {
     this._rules = rules
   }
 
-  getMatchedMutatorsOrNull(cell) {
+  getMatchedMutatorsOrNull(cell: Cell): IMutator[] {
     return null // Not implemented yet
     // return getMatchedMutatorsHelper(this._rules, cell)
   }
@@ -1188,7 +1188,7 @@ class LookupHelper {
     this._allLevelChars = new Map()
   }
 
-  _addToHelper(map, key: string, value: any) {
+  _addToHelper<A>(map : Map<string, A>, key: string, value: A) {
     if (map.has(key)) {
       throw new Error(`ERROR: Duplicate object is defined named "${key}". They are case-sensitive!`)
     }
@@ -1251,11 +1251,11 @@ enum ValidationLevel {
 }
 
 class ValidationMessage {
-  gameNode: BaseForLines
+  gameNode: IGameNode
   level: ValidationLevel
   message: string
 
-  constructor(gameNode, level, message) {
+  constructor(gameNode: IGameNode, level: ValidationLevel, message: string) {
     this.gameNode = gameNode
     this.level = level
     this.message = message
@@ -1281,9 +1281,9 @@ class Parser {
   parse(code: string) {
     const g = this.getGrammar()
     const { match: m } = this.parseGrammar(code)
-    const validationMessages = []
+    const validationMessages: ValidationMessage[] = []
 
-    function addValidationMessage(source, level, message) {
+    function addValidationMessage(source: IGameNode, level: ValidationLevel, message: string) {
       validationMessages.push(new ValidationMessage(source, level, message))
     }
 
@@ -1410,7 +1410,7 @@ class Parser {
           return new GameSoundNormal(this.source, lookup.lookupObjectOrLegendTile(this.source, spriteName.parse()), eventEnum.parse(), soundCode.parse())
         },
         CollisionLayerItem: function (tileNames, _2, _3) {
-          const tiles = tileNames.parse().map((spriteName) => lookup.lookupObjectOrLegendTile(this.source, spriteName))
+          const tiles = tileNames.parse().map((spriteName: string) => lookup.lookupObjectOrLegendTile(this.source, spriteName))
           const collisionLayer = new CollisionLayer(this.source, tiles)
           // Map all the Objects to the layer
           tiles.forEach((tile: IGameTile) => {
