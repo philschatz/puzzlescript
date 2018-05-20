@@ -819,7 +819,10 @@ export class GameSpritePixels extends GameSprite {
     return [this]
   }
   getPixels() {
-    return this._pixels
+    // Make a copy because others may edit it
+    return this._pixels.map(row => {
+      return row.map(col => col)
+    })
   }
 }
 

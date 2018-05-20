@@ -4,6 +4,7 @@
     "tsc": "tsc --watch",
     "prestart": "rm -rf ./lib/; rm ./coverage/coverage-gist*.json; rm -rf ./coverage/lcov-report/; tsc",
     "start": "node -r source-map-support/register ./lib/runGame.js",
+    "start-debug": "tsc && node --inspect-brk lib/runGame.js",
     "poststart": "npm run-script coverage && echo 'Generated coverage. Type open ./coverage/lcov-html/index.html to see it'",
     "coverage": "istanbul report --root ./coverage/ lcov",
     "test": "jest --coverage --updateSnapshot",
