@@ -1,3 +1,4 @@
+import * as ohm from 'ohm-js'
 import {
     GameSprite,
     GameSpritePixels,
@@ -48,7 +49,7 @@ export const LEGEND_GRAMMAR = `
 
 export function getTileSemantics(lookup: LookupHelper) {
     return {
-        Sprite: function (_1) {
+        Sprite: function (_1: ohm.Node) {
             const gameObject: GameSprite = _1.parse()
             lookup.addToAllObjects(gameObject)
             if (gameObject._optionalLegendChar) {
@@ -59,13 +60,13 @@ export function getTileSemantics(lookup: LookupHelper) {
             }
             return gameObject
         },
-        SpritePixels: function (name, optionalLegendChar, _3, colors, _5, pixels, _7) {
+        SpritePixels: function (name: ohm.Node, optionalLegendChar: ohm.Node, _3: ohm.Node, colors: ohm.Node, _5: ohm.Node, pixels: ohm.Node, _7: ohm.Node) {
             return new GameSpritePixels(this.source, name.parse(), optionalLegendChar.parse()[0], colors.parse(), pixels.parse())
         },
-        SpriteNoPixels: function (name, optionalLegendChar, _3, colors, _5) {
+        SpriteNoPixels: function (name: ohm.Node, optionalLegendChar: ohm.Node, _3: ohm.Node, colors: ohm.Node, _5: ohm.Node) {
             return new GameSpriteSingleColor(this.source, name.parse(), optionalLegendChar.parse()[0], colors.parse())
         },
-        PixelRows: function (row1, row2, row3, row4, row5) {
+        PixelRows: function (row1: ohm.Node, row2: ohm.Node, row3: ohm.Node, row4: ohm.Node, row5: ohm.Node) {
             // Exactly 5 rows. We do this because some games contain vertical whitespace after, but not all
             return [
                 row1.parse(),
@@ -75,11 +76,11 @@ export function getTileSemantics(lookup: LookupHelper) {
                 row5.parse()
             ]
         },
-        LookupLegendVarName: function (tile) {
+        LookupLegendVarName: function (tile: ohm.Node) {
             // Replace all the Sprite Names with the actual objects
             return lookup.lookupObjectOrLegendTile(this.source, tile.parse())
         },
-        LegendTile: function (_1) {
+        LegendTile: function (_1: ohm.Node) {
             const legendTile: GameLegendTileSimple = _1.parse()
             lookup.addToAllLegendTiles(legendTile)
             if (legendTile._spriteNameOrLevelChar.length === 1) {
@@ -87,14 +88,14 @@ export function getTileSemantics(lookup: LookupHelper) {
             }
             return legendTile
         },
-        LegendTileSimple: function (spriteNameOrLevelChar, _equals, tile, _whitespace) {
+        LegendTileSimple: function (spriteNameOrLevelChar: ohm.Node, _equals: ohm.Node, tile: ohm.Node, _whitespace: ohm.Node) {
             // TODO: Do the lookup and adding to sets here rather than rewiring in LegendTile
             return new GameLegendTileSimple(this.source, spriteNameOrLevelChar.parse(), tile.parse())
         },
-        LegendTileAnd: function (spriteNameOrLevelChar, _equals, tiles, _whitespace) {
+        LegendTileAnd: function (spriteNameOrLevelChar: ohm.Node, _equals:string, tiles: ohm.Node, _whitespace: ohm.Node) {
             return new GameLegendTileAnd(this.source, spriteNameOrLevelChar.parse(), tiles.parse())
         },
-        LegendTileOr: function (spriteNameOrLevelChar, _equals, tiles, _whitespace) {
+        LegendTileOr: function (spriteNameOrLevelChar: ohm.Node, _equals: ohm.Node, tiles: ohm.Node, _whitespace: ohm.Node) {
             return new GameLegendTileOr(this.source, spriteNameOrLevelChar.parse(), tiles.parse())
         }
     }

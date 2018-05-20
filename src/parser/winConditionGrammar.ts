@@ -1,3 +1,4 @@
+import * as ohm from 'ohm-js'
 import { WinConditionSimple, WinConditionOn } from '../models/winCondition'
 
 export const WINCONDITIONS_GRAMMAR = `
@@ -17,10 +18,10 @@ export const WINCONDITIONS_GRAMMAR = `
 
 export function getWinConditionSemantics() {
     return {
-        WinConditionItemSimple: function (qualifierEnum, spriteName, _whitespace) {
+        WinConditionItemSimple: function (qualifierEnum: ohm.Node, spriteName: ohm.Node, _whitespace: ohm.Node) {
             return new WinConditionSimple(this.source, qualifierEnum.parse(), spriteName.parse())
         },
-        WinConditionItemOn: function (qualifierEnum, spriteName, _on, targetObjectName, _whitespace) {
+        WinConditionItemOn: function (qualifierEnum: ohm.Node, spriteName: ohm.Node, _on: ohm.Node, targetObjectName: ohm.Node, _whitespace: ohm.Node) {
             return new WinConditionOn(this.source, qualifierEnum.parse(), spriteName.parse(), targetObjectName.parse())
         }
     }
