@@ -13,10 +13,31 @@ import {
 import { RULE_MODIFIER, setDifference } from '../util'
 import { Cell } from '../engine'
 
-// TODO: We may not be able to be so smart about this; We may need to expand the
-// Rule into multiple Rules when HORIZONTAL, VERTICAL, ORTHOGONAL, or nothing
-// are passed in as directions.
-// Because of https://www.puzzlescript.net/Documentation/executionorder.html
+enum RULE_COMMAND {
+    AGAIN = 'AGAIN'
+}
+
+// Note: Directions inside a Bracket are relative to other dorections inside a bracket
+// Example:
+//
+// Interpret `[ > player > cat | < dog ] -> [ < player | cat < dog ]` to:
+// Interpret `[ ^ player v cat | v dog ] -> [ v player | cat v dog ]` to:
+// UP    [ UP    player UP    cat | DOWN  dog ] -> [ DOWN  player | cat DOWN  dog ]
+// DOWN  [ DOWN  player DOWN  cat | UP    dog ] -> [ UP    player | cat UP    dog ]
+// LEFT  [ LEFT  player LEFT  cat | RIGHT dog ] -> [ RIGHT player | cat RIGHT dog ]
+// RIGHT [ RIGHT player RIGHT cat | LEFT  dog ] -> [ LEFT  player | cat LEFT  dog ]
+//
+// Interpret `HORIZONTAL [ > player ] -> [ < crate ] to:
+// LEFT  [ LEFT  player ] -> [ RIGHT crate ]
+// RIGHT [ RIGHT player ] -> [ LEFT  crate ]
+//
+// Interpret `VERTICAL [ ^ player PARALLEL cat | PERPENDICULAR dog ] -> [ < crate |  dog ] to:
+// UP    [ LEFT   player HORIZONTAL cat ] -> [ DOWN  crate | VERTICAL   dog ]
+// DOWN  [ RIGHT  player HORIZONTAL cat ] -> [ UP    crate | VERTICAL   dog ]
+// LEFT  [ DOWN   player VERTICAL   cat ] -> [ RIGHT crate | HORIZONTAL dog ]
+// DOWN  [ RIGHT  player HORIZONTAL cat ] -> [ UP    crate | HORIZONTAL dog ]
+//
+// See https://www.puzzlescript.net/Documentation/executionorder.html
 export class GameRule extends BaseForLines implements IRule {
     _modifiers: Set<RULE_MODIFIER>
     _commands: string[]
@@ -27,6 +48,7 @@ export class GameRule extends BaseForLines implements IRule {
     constructor(source: IGameCode, modifiers: Set<RULE_MODIFIER>, conditions: RuleBracket[], actions: RuleBracket[], commands: string[]) {
         super(source)
         this._modifiers = modifiers
+        this._commands = commands
         this._hasEllipsis = false
 
         // Set _hasEllipsis value
@@ -63,6 +85,20 @@ export class GameRule extends BaseForLines implements IRule {
         }
         return getMatchedMutatorsHelper(this._bracketPairs, cell)
     }
+
+    isLate() {
+        return this._modifiers.has(RULE_MODIFIER.LATE)
+    }
+    isRigid() {
+        return this._modifiers.has(RULE_MODIFIER.RIGID)
+    }
+    isAgain() {
+        return this._commands.indexOf(RULE_COMMAND.AGAIN) >= 0
+    }
+    isVanilla() {
+        return !(this.isLate() || this.isRigid() || this.isAgain())
+    }
+
 }
 
 export class RuleBracket extends BaseForLines {
