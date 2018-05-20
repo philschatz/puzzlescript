@@ -11,15 +11,6 @@ const COMMON_GRAMMAR = `
         Section<t_WINCONDITIONS, WinConditionItem>?
         Section<t_LEVELS, LevelItem>?
 
-        // Section titles
-        t_OBJECTS = caseInsensitive<"OBJECTS">
-        t_LEGEND = caseInsensitive<"LEGEND">
-        t_SOUNDS = caseInsensitive<"SOUNDS">
-        t_COLLISIONLAYERS = caseInsensitive<"COLLISIONLAYERS">
-        t_RULES = caseInsensitive<"RULES">
-        t_WINCONDITIONS = caseInsensitive<"WINCONDITIONS">
-        t_LEVELS = caseInsensitive<"LEVELS">
-
     lineTerminator = space* newline (space newline)*
     sourceCharacter = any
 
@@ -50,48 +41,6 @@ const COMMON_GRAMMAR = `
     colorNameOrHex = colorTransparent | colorHex6 | colorHex3 | colorName
     colorName = letter+
 
-    t_RIGID = caseInsensitive<"RIGID">
-    t_LATE = caseInsensitive<"LATE">
-    t_RANDOM = caseInsensitive<"RANDOM">
-    t_RANDOMDIR = caseInsensitive<"RANDOMDIR">
-    t_ACTION = caseInsensitive<"ACTION">
-    t_STARTLOOP = caseInsensitive<"STARTLOOP">
-    t_ENDLOOP = caseInsensitive<"ENDLOOP">
-
-    t_UP = caseInsensitive<"UP">
-    t_DOWN = caseInsensitive<"DOWN">
-    t_LEFT = caseInsensitive<"LEFT">
-    t_RIGHT = caseInsensitive<"RIGHT">
-    t_ARROW_UP = "^"
-    t_ARROW_DOWN = caseInsensitive<"V">
-    t_ARROW_LEFT = "<"
-    t_ARROW_RIGHT = ">"
-    t_MOVING = caseInsensitive<"MOVING">
-    t_ORTHOGONAL = caseInsensitive<"ORTHOGONAL">
-    t_PERPENDICULAR = caseInsensitive<"PERPENDICULAR">
-    t_STATIONARY = caseInsensitive<"STATIONARY">
-    t_HORIZONTAL = caseInsensitive<"HORIZONTAL">
-    t_VERTICAL = caseInsensitive<"VERTICAL">
-
-    t_ARROW_ANY
-        = t_ARROW_UP
-        | t_ARROW_DOWN // Because of this, "v" can never be an Object or Legend variable. TODO: Ensure "v" is never an Object or Legend variable
-        | t_ARROW_LEFT
-        | t_ARROW_RIGHT
-
-    t_AGAIN = caseInsensitive<"AGAIN">
-    t_CANCEL = caseInsensitive<"CANCEL">
-    t_CHECKPOINT = caseInsensitive<"CHECKPOINT">
-    t_RESTART = caseInsensitive<"RESTART">
-    t_UNDO = caseInsensitive<"UNDO">
-    t_WIN = caseInsensitive<"WIN">
-    t_MESSAGE = caseInsensitive<"MESSAGE">
-
-    t_ELLIPSIS = "..."
-
-    t_AND = caseInsensitive<"AND">
-    t_OR = caseInsensitive<"OR">
-
     // ================
     // SECTION_NAME
     // ================
@@ -119,9 +68,65 @@ const COMMON_GRAMMAR = `
 
     ruleVariableName = ruleVariableChar+
     lookupRuleVariableName = ~t_AGAIN ruleVariableName // added t_AGAIN to parse '... -> [ tilename AGAIN ]' (it should be a command)
+`
 
+const STRINGTOKEN_GRAMMAR = `
+    // Section titles
+    t_OBJECTS = caseInsensitive<"OBJECTS">
+    t_LEGEND = caseInsensitive<"LEGEND">
+    t_SOUNDS = caseInsensitive<"SOUNDS">
+    t_COLLISIONLAYERS = caseInsensitive<"COLLISIONLAYERS">
+    t_RULES = caseInsensitive<"RULES">
+    t_WINCONDITIONS = caseInsensitive<"WINCONDITIONS">
+    t_LEVELS = caseInsensitive<"LEVELS">
 
-    // TODO: Update RULE_CGAMMER to not need the SFX definition and move this to SOUND_GRAMMAR
+    // Modifier tokens
+    t_RIGID = caseInsensitive<"RIGID">
+    t_LATE = caseInsensitive<"LATE">
+    t_RANDOM = caseInsensitive<"RANDOM">
+    t_RANDOMDIR = caseInsensitive<"RANDOMDIR">
+    t_ACTION = caseInsensitive<"ACTION">
+    t_STARTLOOP = caseInsensitive<"STARTLOOP">
+    t_ENDLOOP = caseInsensitive<"ENDLOOP">
+
+    // Movement tokens
+    t_UP = caseInsensitive<"UP">
+    t_DOWN = caseInsensitive<"DOWN">
+    t_LEFT = caseInsensitive<"LEFT">
+    t_RIGHT = caseInsensitive<"RIGHT">
+    t_ARROW_UP = "^"
+    t_ARROW_DOWN = caseInsensitive<"V">
+    t_ARROW_LEFT = "<"
+    t_ARROW_RIGHT = ">"
+    t_MOVING = caseInsensitive<"MOVING">
+    t_ORTHOGONAL = caseInsensitive<"ORTHOGONAL">
+    t_PERPENDICULAR = caseInsensitive<"PERPENDICULAR">
+    t_STATIONARY = caseInsensitive<"STATIONARY">
+    t_HORIZONTAL = caseInsensitive<"HORIZONTAL">
+    t_VERTICAL = caseInsensitive<"VERTICAL">
+
+    t_ARROW_ANY
+        = t_ARROW_UP
+        | t_ARROW_DOWN // Because of this, "v" can never be an Object or Legend variable. TODO: Ensure "v" is never an Object or Legend variable
+        | t_ARROW_LEFT
+        | t_ARROW_RIGHT
+
+    // Command tokens
+    t_AGAIN = caseInsensitive<"AGAIN">
+    t_CANCEL = caseInsensitive<"CANCEL">
+    t_CHECKPOINT = caseInsensitive<"CHECKPOINT">
+    t_RESTART = caseInsensitive<"RESTART">
+    t_UNDO = caseInsensitive<"UNDO">
+    t_WIN = caseInsensitive<"WIN">
+    t_MESSAGE = caseInsensitive<"MESSAGE">
+
+    t_ELLIPSIS = "..."
+
+    // LEGEND tokens
+    t_AND = caseInsensitive<"AND">
+    t_OR = caseInsensitive<"OR">
+
+    // SOUND tokens
     t_SFX0 = caseInsensitive<"SFX0">
     t_SFX1 = caseInsensitive<"SFX1">
     t_SFX2 = caseInsensitive<"SFX2">
@@ -145,6 +150,40 @@ const COMMON_GRAMMAR = `
         | t_SFX7
         | t_SFX8
         | t_SFX9
+
+    // METADATA Tokens
+    t_NOACTION = caseInsensitive<"NOACTION">
+    t_NOUNDO = caseInsensitive<"NOUNDO">
+    t_RUN_RULES_ON_LEVEL_START = caseInsensitive<"RUN_RULES_ON_LEVEL_START">
+    t_NOREPEAT_ACTION = caseInsensitive<"NOREPEAT_ACTION">
+    t_THROTTLE_MOVEMENT = caseInsensitive<"THROTTLE_MOVEMENT">
+    t_NORESTART = caseInsensitive<"NORESTART">
+    t_REQUIRE_PLAYER_MOVEMENT = caseInsensitive<"REQUIRE_PLAYER_MOVEMENT">
+    t_VERBOSE_LOGGING = caseInsensitive<"VERBOSE_LOGGING">
+
+    t_TRANSPARENT = caseInsensitive<"TRANSPARENT">
+
+    t_MOVE = caseInsensitive<"MOVE">
+    t_DESTROY = caseInsensitive<"DESTROY">
+    t_CREATE = caseInsensitive<"CREATE">
+    t_CANTMOVE = caseInsensitive<"CANTMOVE">
+
+    t_TITLESCREEN = caseInsensitive<"TITLESCREEN">
+    t_STARTGAME = caseInsensitive<"STARTGAME">
+    t_STARTLEVEL = caseInsensitive<"STARTLEVEL">
+    t_ENDLEVEL = caseInsensitive<"ENDLEVEL">
+    t_ENDGAME = caseInsensitive<"ENDGAME">
+    t_SHOWMESSAGE = caseInsensitive<"SHOWMESSAGE">
+    t_CLOSEMESSAGE = caseInsensitive<"CLOSEMESSAGE">
+
+    t_GROUP_RULE_PLUS = "+"
+
+    // WINCONDITIONS tokens
+    t_ON = caseInsensitive<"ON">
+    t_NO = caseInsensitive<"NO">
+    t_ALL = caseInsensitive<"ALL">
+    t_ANY = caseInsensitive<"ANY">
+    t_SOME = caseInsensitive<"SOME">
 `
 
 const METADATA_GRAMMAR = `
@@ -183,14 +222,6 @@ const METADATA_GRAMMAR = `
     RealtimeInterval = "realtime_interval" decimal
     KeyRepeatInterval = "key_repeat_interval" decimal
     AgainInterval = "again_interval" decimal
-    t_NOACTION = caseInsensitive<"NOACTION">
-    t_NOUNDO = caseInsensitive<"NOUNDO">
-    t_RUN_RULES_ON_LEVEL_START = caseInsensitive<"RUN_RULES_ON_LEVEL_START">
-    t_NOREPEAT_ACTION = caseInsensitive<"NOREPEAT_ACTION">
-    t_THROTTLE_MOVEMENT = caseInsensitive<"THROTTLE_MOVEMENT">
-    t_NORESTART = caseInsensitive<"NORESTART">
-    t_REQUIRE_PLAYER_MOVEMENT = caseInsensitive<"REQUIRE_PLAYER_MOVEMENT">
-    t_VERBOSE_LOGGING = caseInsensitive<"VERBOSE_LOGGING">
 
     widthAndHeight = integer "x" integer
 `
@@ -209,8 +240,6 @@ const SPRITE_GRAMMAR = `
         colorNameOrHex+ lineTerminator+
         PixelRows
         lineTerminator*
-
-    t_TRANSPARENT = caseInsensitive<"TRANSPARENT">
 
     spriteName = ruleVariableName
     pixelRow = pixelDigit+ lineTerminator
@@ -275,19 +304,6 @@ const SOUND_GRAMMAR = `
         | t_RIGHT
         | t_HORIZONTAL
         | t_VERTICAL
-
-    t_MOVE = caseInsensitive<"MOVE">
-    t_DESTROY = caseInsensitive<"DESTROY">
-    t_CREATE = caseInsensitive<"CREATE">
-    t_CANTMOVE = caseInsensitive<"CANTMOVE">
-
-    t_TITLESCREEN = caseInsensitive<"TITLESCREEN">
-    t_STARTGAME = caseInsensitive<"STARTGAME">
-    t_STARTLEVEL = caseInsensitive<"STARTLEVEL">
-    t_ENDLEVEL = caseInsensitive<"ENDLEVEL">
-    t_ENDGAME = caseInsensitive<"ENDGAME">
-    t_SHOWMESSAGE = caseInsensitive<"SHOWMESSAGE">
-    t_CLOSEMESSAGE = caseInsensitive<"CLOSEMESSAGE">
 `
 
 const COLLISIONLAYERS_GRAMMAR = `
@@ -369,8 +385,6 @@ const RULE_GRAMMAR = `
 
     HackTileNameIsSFX1 = t_SFX
     HackTileNameIsSFX2 = lookupRuleVariableName t_SFX
-
-    t_GROUP_RULE_PLUS = "+"
 `
 
 const WINCONDITIONS_GRAMMAR = `
@@ -386,13 +400,6 @@ const WINCONDITIONS_GRAMMAR = `
         | t_ALL
         | t_ANY
         | t_SOME
-
-    // WINCONDITIONS tokens
-    t_ON = caseInsensitive<"ON">
-    t_NO = caseInsensitive<"NO">
-    t_ALL = caseInsensitive<"ALL">
-    t_ANY = caseInsensitive<"ANY">
-    t_SOME = caseInsensitive<"SOME">
 `
 
 const LEVEL_GRAMMAR = `
@@ -406,6 +413,7 @@ const LEVEL_GRAMMAR = `
 
 export const PUZZLESCRIPT_GRAMMAR = `Puzzlescript {
     ${COMMON_GRAMMAR}
+    ${STRINGTOKEN_GRAMMAR}
     ${METADATA_GRAMMAR}
     ${SPRITE_GRAMMAR}
     ${LEGEND_GRAMMAR}
