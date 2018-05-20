@@ -392,6 +392,50 @@ yellow
     expect(data._getSpriteByName('player').getCollisionLayerNum()).toBeGreaterThan(2)
   })
 
+  it('Denotes if a rule is late, rigid, or again', () => {
+    const { data, validationMessages } = checkParse(`
+    title foo
+
+    ===
+    OBJECTS
+    ===
+
+    player
+    someInvalidColorName
+
+    ===
+    COLLISIONLAYERS
+    ===
+
+    player
+
+    ===
+    RULES
+    ===
+
+    [ Player ] -> []
+    LATE [ Player ] -> []
+    RIGID [ Player ] -> []
+    [ Player ] -> [] AGAIN
+    LATE RIGID [ Player ] -> [] AGAIN
+
+    [ Player ] -> [ Player again] (from "Rose")
+    `)
+
+    function expector(rule, vanilla, late, rigid, again) {
+      expect(rule.isLate()).toBe(late)
+      expect(rule.isRigid()).toBe(rigid)
+      expect(rule.isAgain()).toBe(again)
+      expect(rule.isVanilla()).toBe(vanilla)
+    }
+    expector(data.rules[0], true, false, false, false)
+    expector(data.rules[1], false, true, false, false)
+    expector(data.rules[2], false, false, true, false)
+    expector(data.rules[3], false, false, false, true)
+    expector(data.rules[4], false, true, true, true)
+    expector(data.rules[5], false, false, false, true)
+  })
+
   describe('Expected Failures', () => {
     // Something using collisionLayers. Like A and B are in the same layer and we try to run either: `[ A B ] -> []` or `[A] -> [A B]`
     // Check that the magic objects `Background` and `Player` are set to something

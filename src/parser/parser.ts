@@ -284,10 +284,14 @@ class Parser {
   }
 
   parseGrammar(code: string) {
+    // HACKs
     // 8645c163ff321d2fd1bad3fcaf48c107 has a typo so we .replace()
     // 0c2625672bf47fcf728fe787a2630df6 has a typo se we .replace()
     // another couple of games do not have a trailing newline at the end of the file so we add that
-    code = code.replace('][ ->', '] ->').replace('[[spring]', '[spring][') + '\n' // Not all games have a trailing newline. this makes it easier on the parser
+    code = code
+    .replace('again]', '] AGAIN') // From "Rose"
+    .replace('][ ->', '] ->')
+    .replace('[[spring]', '[spring][') + '\n' // Not all games have a trailing newline. this makes it easier on the parser
 
     const g = this.getGrammar()
     return { match: g.match(code) }
