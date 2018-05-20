@@ -79,6 +79,15 @@ export default class Engine extends EventEmitter2 {
     // Return the cells so the UI can listen to when they change
     return _.flattenDeep(this.currentLevel)
   }
+  toSnapshot() {
+    return this.currentLevel.map(row => {
+      return row.map(cell => {
+        return cell.getSprites().map((sprite) => {
+          return sprite._name
+        })
+      })
+    })
+  }
 
   tick() {
     let rulesAndChanges: Map<GameRule, Cell[]> = new Map()
