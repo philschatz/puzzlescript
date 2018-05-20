@@ -1,4 +1,4 @@
-export function setIntersection(setA, setB) {
+export function setIntersection<T>(setA: Set<T>, setB: Set<T>) {
   const intersection = new Set()
   for (const elem of setB) {
     if (setA.has(elem)) {
@@ -8,7 +8,7 @@ export function setIntersection(setA, setB) {
   return intersection
 }
 
-export function setDifference(setA, setB) {
+export function setDifference<T>(setA: Set<T>, setB: Set<T>) {
   const difference = new Set(setA)
   for (const elem of setB) {
     difference.delete(elem)
