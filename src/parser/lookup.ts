@@ -3,14 +3,12 @@ import { GameSound, GameSoundSfx } from '../models/sound'
 import { GameSprite, GameLegendTileSimple, IGameTile } from '../models/tile'
 
 export class LookupHelper {
-    _currentColorPalette : string
     _allSoundEffects: Map<string, GameSound>
     _allObjects: Map<string, GameSprite>
     _allLegendTiles: Map<string, IGameTile>
     _allLevelChars: Map<string, IGameTile>
 
     constructor() {
-      this._currentColorPalette = 'arnecolors' // default
       this._allSoundEffects = new Map()
       this._allObjects = new Map()
       this._allLegendTiles = new Map()
@@ -63,8 +61,5 @@ export class LookupHelper {
         throw new Error(`ERROR: Could not look up "${key}" in the levelChars map. Has it been defined in the Objects section or the Legend section?`)
       }
       return value
-    }
-    lookupDefaultColorPalette() {
-      return this._currentColorPalette
     }
   }
