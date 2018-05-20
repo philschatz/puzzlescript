@@ -415,6 +415,7 @@ GameData {
           ],
         },
       ],
+      "_commands": Array [],
       "_hasEllipsis": false,
       "_modifiers": Set {},
     },
@@ -685,6 +686,7 @@ GameData {
           ],
         },
       ],
+      "_commands": Array [],
       "_hasEllipsis": false,
       "_modifiers": Set {},
     },
@@ -955,6 +957,7 @@ GameData {
           ],
         },
       ],
+      "_commands": Array [],
       "_hasEllipsis": false,
       "_modifiers": Set {},
     },
@@ -1228,6 +1231,7 @@ GameData {
           ],
         },
       ],
+      "_commands": Array [],
       "_hasEllipsis": false,
       "_modifiers": Set {},
     },
@@ -1498,6 +1502,7 @@ GameData {
           ],
         },
       ],
+      "_commands": Array [],
       "_hasEllipsis": false,
       "_modifiers": Set {},
     },
@@ -1768,6 +1773,7 @@ GameData {
           ],
         },
       ],
+      "_commands": Array [],
       "_hasEllipsis": false,
       "_modifiers": Set {},
     },
@@ -2038,6 +2044,7 @@ GameData {
           ],
         },
       ],
+      "_commands": Array [],
       "_hasEllipsis": false,
       "_modifiers": Set {},
     },
@@ -2308,6 +2315,7 @@ GameData {
           ],
         },
       ],
+      "_commands": Array [],
       "_hasEllipsis": false,
       "_modifiers": Set {},
     },
@@ -2578,6 +2586,7 @@ GameData {
           ],
         },
       ],
+      "_commands": Array [],
       "_hasEllipsis": false,
       "_modifiers": Set {},
     },
@@ -2848,6 +2857,7 @@ GameData {
           ],
         },
       ],
+      "_commands": Array [],
       "_hasEllipsis": false,
       "_modifiers": Set {},
     },
@@ -3118,6 +3128,7 @@ GameData {
           ],
         },
       ],
+      "_commands": Array [],
       "_hasEllipsis": false,
       "_modifiers": Set {},
     },
@@ -3388,6 +3399,7 @@ GameData {
           ],
         },
       ],
+      "_commands": Array [],
       "_hasEllipsis": false,
       "_modifiers": Set {},
     },
@@ -3658,6 +3670,7 @@ GameData {
           ],
         },
       ],
+      "_commands": Array [],
       "_hasEllipsis": false,
       "_modifiers": Set {},
     },
@@ -3928,6 +3941,7 @@ GameData {
           ],
         },
       ],
+      "_commands": Array [],
       "_hasEllipsis": false,
       "_modifiers": Set {},
     },
@@ -4198,6 +4212,7 @@ GameData {
           ],
         },
       ],
+      "_commands": Array [],
       "_hasEllipsis": false,
       "_modifiers": Set {},
     },
@@ -4468,6 +4483,7 @@ GameData {
           ],
         },
       ],
+      "_commands": Array [],
       "_hasEllipsis": false,
       "_modifiers": Set {},
     },
@@ -4738,6 +4754,7 @@ GameData {
           ],
         },
       ],
+      "_commands": Array [],
       "_hasEllipsis": false,
       "_modifiers": Set {},
     },
@@ -5008,6 +5025,7 @@ GameData {
           ],
         },
       ],
+      "_commands": Array [],
       "_hasEllipsis": false,
       "_modifiers": Set {},
     },
@@ -5317,6 +5335,7 @@ GameData {
           ],
         },
       ],
+      "_commands": Array [],
       "_hasEllipsis": false,
       "_modifiers": Set {},
     },
@@ -5573,6 +5592,7 @@ GameData {
           ],
         },
       ],
+      "_commands": Array [],
       "_hasEllipsis": false,
       "_modifiers": Set {},
     },
@@ -5844,6 +5864,7 @@ GameData {
           ],
         },
       ],
+      "_commands": Array [],
       "_hasEllipsis": false,
       "_modifiers": Set {},
     },
@@ -6214,6 +6235,7 @@ GameData {
           ],
         },
       ],
+      "_commands": Array [],
       "_hasEllipsis": false,
       "_modifiers": Set {},
     },
@@ -6534,6 +6556,7 @@ GameData {
           ],
         },
       ],
+      "_commands": Array [],
       "_hasEllipsis": false,
       "_modifiers": Set {},
     },
@@ -6582,6 +6605,197 @@ GameData {
     },
   ],
   "rules": Array [],
+  "sounds": Array [],
+  "title": "foo",
+  "winConditions": Array [],
+}
+`;
+
+exports[`rules Denotes if a rule is late, rigid, or again 1`] = `
+GameData {
+  "collisionLayers": Array [
+    CollisionLayer {
+      "__astId": 374,
+      "_sprites": Array [
+        GameSpriteSingleColor {
+          "__astId": 373,
+          "_collisionLayer": [Circular],
+          "_color": TransparentColor {
+            "__astId": 372,
+          },
+          "_name": "player",
+          "_optionalLegendChar": undefined,
+        },
+      ],
+    },
+  ],
+  "legends": Array [],
+  "levels": Array [],
+  "metadata": GameMetadata {},
+  "objects": Array [
+    GameSpriteSingleColor {
+      "__astId": 373,
+      "_collisionLayer": CollisionLayer {
+        "__astId": 374,
+        "_sprites": Array [
+          [Circular],
+        ],
+      },
+      "_color": TransparentColor {
+        "__astId": 372,
+      },
+      "_name": "player",
+      "_optionalLegendChar": undefined,
+    },
+  ],
+  "rules": Array [
+    GameRule {
+      "__astId": 380,
+      "_bracketPairs": Array [
+        RuleBracketPair {
+          "_modifiers": Set {},
+          "_neighborPairs": Array [
+            NeighborPair {
+              "_action": Array [],
+              "_condition": Array [
+                TileWithModifier {
+                  "__astId": 375,
+                  "_modifier": undefined,
+                  "_tile": GameSpriteSingleColor {
+                    "__astId": 373,
+                    "_collisionLayer": CollisionLayer {
+                      "__astId": 374,
+                      "_sprites": Array [
+                        [Circular],
+                      ],
+                    },
+                    "_color": TransparentColor {
+                      "__astId": 372,
+                    },
+                    "_name": "player",
+                    "_optionalLegendChar": undefined,
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      ],
+      "_commands": Array [],
+      "_hasEllipsis": false,
+      "_modifiers": Set {},
+    },
+    GameRule {
+      "__astId": 386,
+      "_bracketPairs": Array [
+        RuleBracketPair {
+          "_modifiers": Set {
+            "LATE",
+          },
+          "_neighborPairs": Array [
+            NeighborPair {
+              "_action": Array [],
+              "_condition": Array [
+                TileWithModifier {
+                  "__astId": 381,
+                  "_modifier": undefined,
+                  "_tile": GameSpriteSingleColor {
+                    "__astId": 373,
+                    "_collisionLayer": CollisionLayer {
+                      "__astId": 374,
+                      "_sprites": Array [
+                        [Circular],
+                      ],
+                    },
+                    "_color": TransparentColor {
+                      "__astId": 372,
+                    },
+                    "_name": "player",
+                    "_optionalLegendChar": undefined,
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      ],
+      "_commands": Array [],
+      "_hasEllipsis": false,
+      "_modifiers": Set {
+        "LATE",
+      },
+    },
+    GameRule {
+      "__astId": 392,
+      "_bracketPairs": Array [
+        RuleBracketPair {
+          "_modifiers": Set {
+            "RIGID",
+          },
+          "_neighborPairs": Array [
+            NeighborPair {
+              "_action": Array [],
+              "_condition": Array [
+                TileWithModifier {
+                  "__astId": 387,
+                  "_modifier": undefined,
+                  "_tile": GameSpriteSingleColor {
+                    "__astId": 373,
+                    "_collisionLayer": CollisionLayer {
+                      "__astId": 374,
+                      "_sprites": Array [
+                        [Circular],
+                      ],
+                    },
+                    "_color": TransparentColor {
+                      "__astId": 372,
+                    },
+                    "_name": "player",
+                    "_optionalLegendChar": undefined,
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      ],
+      "_commands": Array [],
+      "_hasEllipsis": false,
+      "_modifiers": Set {
+        "RIGID",
+      },
+    },
+    GameRule {
+      "__astId": 398,
+      "_bracketPairs": Array [],
+      "_commands": Array [
+        "AGAIN",
+      ],
+      "_hasEllipsis": false,
+      "_modifiers": Set {},
+    },
+    GameRule {
+      "__astId": 404,
+      "_bracketPairs": Array [],
+      "_commands": Array [
+        "AGAIN",
+      ],
+      "_hasEllipsis": false,
+      "_modifiers": Set {
+        "LATE",
+        "RIGID",
+      },
+    },
+    GameRule {
+      "__astId": 411,
+      "_bracketPairs": Array [],
+      "_commands": Array [
+        "AGAIN",
+      ],
+      "_hasEllipsis": false,
+      "_modifiers": Set {},
+    },
+  ],
   "sounds": Array [],
   "title": "foo",
   "winConditions": Array [],
@@ -7531,6 +7745,7 @@ GameData {
           ],
         },
       ],
+      "_commands": Array [],
       "_hasEllipsis": false,
       "_modifiers": Set {},
     },
@@ -7573,6 +7788,7 @@ GameData {
           ],
         },
       ],
+      "_commands": Array [],
       "_hasEllipsis": false,
       "_modifiers": Set {},
     },
@@ -8496,6 +8712,7 @@ GameData {
           ],
         },
       ],
+      "_commands": Array [],
       "_hasEllipsis": false,
       "_modifiers": Set {},
     },
@@ -8742,6 +8959,7 @@ GameData {
           ],
         },
       ],
+      "_commands": Array [],
       "_hasEllipsis": false,
       "_modifiers": Set {},
     },
@@ -9264,6 +9482,7 @@ GameData {
           ],
         },
       ],
+      "_commands": Array [],
       "_hasEllipsis": true,
       "_modifiers": Set {},
     },
@@ -9589,6 +9808,7 @@ GameData {
           ],
         },
       ],
+      "_commands": Array [],
       "_hasEllipsis": false,
       "_modifiers": Set {},
     },
@@ -9885,6 +10105,7 @@ GameData {
           ],
         },
       ],
+      "_commands": Array [],
       "_hasEllipsis": false,
       "_modifiers": Set {},
     },
@@ -10131,6 +10352,7 @@ GameData {
           ],
         },
       ],
+      "_commands": Array [],
       "_hasEllipsis": false,
       "_modifiers": Set {},
     },
@@ -10416,6 +10638,7 @@ GameData {
           ],
         },
       ],
+      "_commands": Array [],
       "_hasEllipsis": false,
       "_modifiers": Set {},
     },
@@ -10701,6 +10924,7 @@ GameData {
           ],
         },
       ],
+      "_commands": Array [],
       "_hasEllipsis": false,
       "_modifiers": Set {},
     },
