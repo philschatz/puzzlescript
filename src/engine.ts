@@ -5,6 +5,7 @@ import { LevelMap } from './models/level';
 import { GameSprite, GameLegendTileSimple, IGameTile } from './models/tile'
 import { GameRule } from './models/rule'
 import { RULE_MODIFIER } from './util'
+import { Pair } from './pairs';
 
 const MAX_REPEATS = 10
 
@@ -16,34 +17,49 @@ function setEquals<T>(set1: Set<T>, set2: Set<T>) {
   return true
 }
 
+enum RULE_DIRECTION {
+  UP = 'UP',
+  DOWN = 'DOWN',
+  LEFT = 'LEFT',
+  RIGHT = 'RIGHT'
+}
+
 // This Object exists so the UI has something to bind to
 export class Cell {
   _engine: Engine
-  _sprites: Set<GameSprite>
+  _spriteAndWantsToMoves: Set<Pair<GameSprite, string>>
   rowIndex: number
   colIndex: number
 
   constructor(engine: Engine, sprites: Set<GameSprite>, rowIndex: number, colIndex: number) {
     this._engine = engine
-    this._sprites = sprites
+    this._spriteAndWantsToMoves = new Set([...sprites].map(sprite => new Pair(sprite, null)))
     this.rowIndex = rowIndex
     this.colIndex = colIndex
   }
 
   getSprites() {
-    return [...this._sprites].sort((a, b) => {
+    // Just pull out the sprite, not the wantsToMoveDir
+    const sprites = [...this._spriteAndWantsToMoves].map(({a, b}) => a)
+    return sprites.sort((a, b) => {
       return a.getCollisionLayerNum() - b.getCollisionLayerNum()
     }).reverse()
   }
   getSpritesAsSet() {
-    return this._sprites
+    // Just pull out the sprite, not the wantsToMoveDir
+    const sprites = [...this._spriteAndWantsToMoves].map(({a, b}) => a)
+    return new Set(sprites)
   }
-  updateSprites(newSetOfSprites: Set<GameSprite>) {
-    this._sprites = newSetOfSprites
+  getSpriteAndWantsToMoves() {
+    // Just pull out the sprite, not the wantsToMoveDir
+    return this._spriteAndWantsToMoves
+  }
+  // Maybe add updateSprite(sprite, direction)
+  // Maybe add removeSprite(sprite)
+  updateSprites(newSetOfSprites: Set<Pair<GameSprite, string>>) {
+    this._spriteAndWantsToMoves = newSetOfSprites
     this._engine.emit('cell:updated', this)
-  }
-  equalsSprites(newSetOfSprites: Set<GameSprite>) {
-    return setEquals(this._sprites, newSetOfSprites)
+    return true // maybe check if the sprites were the same before so there is less to update visually
   }
   _getRelativeNeighbor(y: number, x: number) {
     const row = this._engine.currentLevel[this.rowIndex + y]

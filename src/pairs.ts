@@ -10,6 +10,15 @@ import {
 import { Cell } from './engine'
 import { RULE_MODIFIER, setIntersection, setDifference } from './util'
 
+export class Pair<A, B> {
+  a: A
+  b: B
+  constructor(a: A, b: B) {
+    this.a = a
+    this.b = b
+  }
+}
+
 export interface IMutator {
   mutate: () => Cell[]
 }
@@ -134,26 +143,32 @@ class CellMutator implements IMutator {
   mutate() {
     // Just remove all tiles for now and then add all of them back
     // TODO: only remove tiles that are matching the collisionLayer but wait, they already need to be exclusive
-    const newSetOfSprites = new Set(this._cell.getSpritesAsSet())
+    const newSprites = [...this._cell.getSpriteAndWantsToMoves()]
+
+    function removeSprite(sprite) {
+      const sRemove = newSprites.filter(({a}) => a === sprite)[0]
+      if (sRemove) {
+        newSprites.splice(newSprites.indexOf(sRemove), 1)
+      }
+    }
 
     // remove sprites that are listed on the condition side
     this._condition.forEach(tileWithModifier => {
       tileWithModifier._tile.getSprites().forEach(sprite => {
-        newSetOfSprites.delete(sprite)
+        removeSprite(sprite)
       })
     })
     this._action.forEach(tileWithModifier => {
       tileWithModifier._tile.getSprites().forEach(sprite => {
+        removeSprite(sprite)
         if (tileWithModifier.isNo()) {
-          newSetOfSprites.delete(sprite)
         } else {
-          newSetOfSprites.add(sprite)
+          newSprites.push(new Pair(sprite, null))
         }
       })
     })
 
-    if (!this._cell.equalsSprites(newSetOfSprites)) {
-      this._cell.updateSprites(newSetOfSprites)
+    if (this._cell.updateSprites(new Set(newSprites))) {
       return [this._cell]
     } else {
       return []
