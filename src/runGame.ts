@@ -109,24 +109,16 @@ async function run() {
 
         for (var i = 0; i < 10; i++) {
           await sleep(500)
-          const {appliedRules, movedCells} = engine.tick()
+          const {appliedRules, changedCells} = engine.tick()
 
-
-          // Draw any cells that moved
-          movedCells.forEach(cell => {
-            UI.drawCell(data, cell, true)
-          })
 
           if (appliedRules.size === 0) {
             break
           }
 
           // UI.renderScreen(data, engine.currentLevel)
-          let changedCells = new Set()
-          for (const [rule, cellsCovered] of appliedRules.entries()) {
-            changedCells = setAddAll(changedCells, cellsCovered)
-          }
 
+          // Draw any cells that moved
           startTime = Date.now()
           for (const cell of changedCells) {
             UI.drawCell(data, cell, false)

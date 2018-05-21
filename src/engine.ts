@@ -4,7 +4,7 @@ import { GameData } from './models/game'
 import { LevelMap } from './models/level';
 import { GameSprite, GameLegendTileSimple, IGameTile } from './models/tile'
 import { GameRule } from './models/rule'
-import { RULE_MODIFIER, nextRandom } from './util'
+import { RULE_MODIFIER, nextRandom, setAddAll } from './util'
 import { Pair } from './pairs';
 
 const MAX_REPEATS = 10
@@ -151,7 +151,8 @@ export default class Engine extends EventEmitter2 {
   }
 
   tickUpdateCells() {
-    let rulesAndChanges: Map<GameRule, Cell[]> = new Map()
+    let appliedRules: Map<GameRule, Cell[]> = new Map()
+    const changedCells = new Set()
     // Loop over all the cells, see if a Rule matches, apply the transition, and notify that cells changed
     this.currentLevel.forEach(row => {
       row.forEach(cell => {
@@ -161,14 +162,18 @@ export default class Engine extends EventEmitter2 {
             // Check if the left-hand-side of the rule matches the current cell
             const mutators = rule.getMatchedMutatorsOrNull(cell)
             if (mutators && mutators.length > 0) {
-              if (!rulesAndChanges.has(rule)) {
-                rulesAndChanges.set(rule, [])
+              if (!appliedRules.has(rule)) {
+                appliedRules.set(rule, [])
               }
               mutators.forEach(mutator => {
                 // Change the Grid based on the rules that matched
                 const changes = mutator.mutate()
                 // Add it to the set of changes
-                rulesAndChanges.set(rule, rulesAndChanges.get(rule).concat(changes.filter(change => !!change))) // Some rules only have actions and return null. Remove those from the set
+                appliedRules.set(rule, appliedRules.get(rule).concat(changes.filter(change => !!change))) // Some rules only have actions and return null. Remove those from the set
+                // Keep track of which cells changed so we know which ones to look at to see if they wantsToMove
+                changes.forEach(cell => {
+                  changedCells.add(cell)
+                })
               })
             // } else {
             //   break
@@ -181,67 +186,64 @@ export default class Engine extends EventEmitter2 {
         })
       })
     })
-    return rulesAndChanges
+    return {changedCells, appliedRules}
   }
 
-  tickMoveSprites() {
+  tickMoveSprites(changedCells: Set<Cell>) {
     let movedCells: Set<Cell> = new Set()
     // Loop over all the cells, see if a Rule matches, apply the transition, and notify that cells changed
-    this.currentLevel.forEach(row => {
-      row.forEach(cell => {
+    changedCells.forEach(cell => {
+      cell.getSpriteAndWantsToMoves().forEach(spriteAndWantsToMove => {
+        const {a: sprite} = spriteAndWantsToMove
+        let wantsToMove = spriteAndWantsToMove.b // So we can change it when it is "RANDOM"
 
-        cell.getSpriteAndWantsToMoves().forEach(spriteAndWantsToMove => {
-          const {a: sprite} = spriteAndWantsToMove
-          let wantsToMove = spriteAndWantsToMove.b // So we can change it when it is "RANDOM"
-
-          if (wantsToMove) {
-            if (wantsToMove === RULE_DIRECTION.ACTION) {
-              // just clear the wantsToMove flag
-              spriteAndWantsToMove.b = null
-              movedCells.add(cell)
-            } else {
-              if (wantsToMove === RULE_DIRECTION.RANDOM || wantsToMove === RULE_DIRECTION.RANDOMDIR) {
-                const rand = nextRandom(4)
-                switch (rand) {
-                  case 0:
-                    wantsToMove = RULE_DIRECTION.UP
-                    break
-                  case 1:
-                    wantsToMove = RULE_DIRECTION.DOWN
-                    break
-                  case 2:
-                    wantsToMove = RULE_DIRECTION.LEFT
-                    break
-                  case 3:
-                    wantsToMove = RULE_DIRECTION.RIGHT
-                    break
-                  default:
-                    throw new Error(`BUG: Random number generator yielded something other than 0-3. "${rand}"`)
-                }
+        if (wantsToMove) {
+          if (wantsToMove === RULE_DIRECTION.ACTION) {
+            // just clear the wantsToMove flag
+            spriteAndWantsToMove.b = null
+            movedCells.add(cell)
+          } else {
+            if (wantsToMove === RULE_DIRECTION.RANDOM || wantsToMove === RULE_DIRECTION.RANDOMDIR) {
+              const rand = nextRandom(4)
+              switch (rand) {
+                case 0:
+                  wantsToMove = RULE_DIRECTION.UP
+                  break
+                case 1:
+                  wantsToMove = RULE_DIRECTION.DOWN
+                  break
+                case 2:
+                  wantsToMove = RULE_DIRECTION.LEFT
+                  break
+                case 3:
+                  wantsToMove = RULE_DIRECTION.RIGHT
+                  break
+                default:
+                  throw new Error(`BUG: Random number generator yielded something other than 0-3. "${rand}"`)
               }
-              const neighbor = cell.getNeighbor(wantsToMove)
-              // Make sure
-              if (neighbor && !neighbor.hasCollisionWithSprite(sprite)) {
-                cell._spriteAndWantsToMoves.delete(spriteAndWantsToMove)
-                neighbor._spriteAndWantsToMoves.add(new Pair(sprite, null))
-                movedCells.add(neighbor)
-              } else {
-                // Clear the wantsToMove flag if we hit a wall (a sprite in the same collisionLayer) or are at the end of the map
-                spriteAndWantsToMove.b = null
-              }
-              movedCells.add(cell)
             }
+            const neighbor = cell.getNeighbor(wantsToMove)
+            // Make sure
+            if (neighbor && !neighbor.hasCollisionWithSprite(sprite)) {
+              cell._spriteAndWantsToMoves.delete(spriteAndWantsToMove)
+              neighbor._spriteAndWantsToMoves.add(new Pair(sprite, null))
+              movedCells.add(neighbor)
+            } else {
+              // Clear the wantsToMove flag if we hit a wall (a sprite in the same collisionLayer) or are at the end of the map
+              spriteAndWantsToMove.b = null
+            }
+            movedCells.add(cell)
           }
-        })
+        }
       })
     })
     return movedCells
   }
 
   tick() {
-    const appliedRules = this.tickUpdateCells()
-    const movedCells = this.tickMoveSprites()
-    return {appliedRules, movedCells}
+    const {appliedRules, changedCells} = this.tickUpdateCells()
+    const movedCells = this.tickMoveSprites(changedCells)
+    return {appliedRules, changedCells: setAddAll(changedCells, movedCells)}
   }
 
   pressUp() { }
