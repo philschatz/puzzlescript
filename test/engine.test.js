@@ -240,14 +240,14 @@ function getSpriteByName (data, name) {
 
 describe('engine', () => {
   it('evaluates a simple game', () => {
-    const { engine } = parseEngine(SIMPLE_GAME)
-    engine.tick()
+    const { engine, data } = parseEngine(SIMPLE_GAME)
+    engine.tick(data.rules, new Map())
     expect(engine.toSnapshot()).toMatchSnapshot()
   })
 
   it('draws corner sprites correctly (according to mirror isles)', () => {
     const { engine, data } = parseEngine(MIRROR_ISLES_CORNERS)
-    engine.tick()
+    engine.tick(data.rules, new Map())
     expect(engine.toSnapshot()).toMatchSnapshot()
     const expectedSprite = getSpriteByName(data, 'RemoveLandRUD')
     const interestingCell = engine.currentLevel[0][0]
@@ -257,14 +257,14 @@ describe('engine', () => {
 
   it('draws corner sprites correctly (according to skipping stones)', () => {
     const { engine, data } = parseEngine(SKIPPING_STONES_CORNERS)
-    engine.tick()
+    engine.tick(data.rules, new Map())
     expect(engine.toSnapshot()).toMatchSnapshot()
     const expectedSprite = getSpriteByName(data, 'RemoveLandRUD')
     const interestingCell = engine.currentLevel[0][0]
     const sprites = interestingCell.getSpritesAsSet()
     expect(sprites.has(expectedSprite)).toBe(true)
 
-    engine.tick()
+    engine.tick(data.rules, new Map())
     expect(engine.toSnapshot()).toMatchSnapshot()
 
     expect(sprites.has(expectedSprite)).toBe(true)

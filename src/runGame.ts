@@ -4,9 +4,10 @@ import * as glob from 'glob'
 import * as pify from 'pify'
 
 import Parser from './parser/parser'
-import { IGameNode } from './models/game'
+import { IGameNode, GameData } from './models/game'
 import UI from './ui'
-import Engine from './engine'
+import Engine, { Cell } from './engine'
+import { GameRule } from './models/rule'
 import { setAddAll } from './util';
 
 let totalRenderTime = 0
@@ -31,8 +32,8 @@ type CoverageFunction = {
   line: number
 }
 type CoverageCount = { [id: string]: number }
-type CoverageStatements = {[id: string]: CoverageLocationRange}
-type CoverageFunctions = {[id: string]: CoverageFunction}
+type CoverageStatements = { [id: string]: CoverageLocationRange }
+type CoverageFunctions = { [id: string]: CoverageFunction }
 type CoverageEntry = {
   path: string
   s: CoverageCount
@@ -74,9 +75,9 @@ async function run() {
       if (level) {
         const engine = new Engine(data)
         engine.setLevel(data.levels.indexOf(level))
-        // engine.on('cell:updated', cell => {
-        //   UI.drawCellAt(data, cell, cell.rowIndex, cell.colIndex, false)
-        // })
+        engine.on('cell:updated', cell => {
+          UI.drawCell(data, cell, false)
+        })
 
         UI.renderScreen(data, engine.currentLevel)
 
@@ -97,20 +98,10 @@ async function run() {
         function addNodeToCoverage(node: IGameNode) {
           codeCoverageTemp.set(coverageKey(node), 0)
         }
-        // data.objects.forEach(addNodeToCoverage)
-        // data.legends.forEach(addNodeToCoverage)
-        // data.sounds.forEach(addNodeToCoverage)
-        // data.collisionLayers.forEach(addNodeToCoverage) // these entries are sometimes (always?) null
-        data.rules.forEach(addNodeToCoverage)
-        data.winConditions.forEach(addNodeToCoverage)
-        // data.levels.forEach(addNodeToCoverage)
 
-
-        for (var i = 0; i < 10; i++) {
-          await sleep(500)
-          const changes = engine.tick()
+        function render(changes: Map<GameRule, Cell[]> = new Map()) {
           if (changes.size === 0) {
-            break
+            return
           }
 
           // UI.renderScreen(data, engine.currentLevel)
@@ -133,6 +124,35 @@ async function run() {
           }
         }
 
+        // data.objects.forEach(addNodeToCoverage)
+        // data.legends.forEach(addNodeToCoverage)
+        // data.sounds.forEach(addNodeToCoverage)
+        // data.collisionLayers.forEach(addNodeToCoverage) // these entries are sometimes (always?) null
+        data.rules.forEach(addNodeToCoverage)
+        data.winConditions.forEach(addNodeToCoverage)
+        // data.levels.forEach(addNodeToCoverage)
+
+
+        for (var i = 0; i < 1; i++) {
+          let rulesAndChanges: Map<GameRule, Cell[]> = new Map()
+
+          // execute all of the rules with the late ones last
+          let iteration = engine.tick(data.rules, rulesAndChanges, false)
+
+          // Render changes from first pass through after real-time and late rules
+          render(iteration.rulesAndChanges)
+
+          await sleep(500)
+          // execture the again rules and render
+          if (iteration.againRules.length > 0) {
+            console.log("should do again rules")
+            iteration = engine.tick(iteration.againRules, rulesAndChanges, true)
+            render(iteration.rulesAndChanges)
+          }
+
+          await sleep(500)
+        }
+
         const codeCoverage2 = [...codeCoverageTemp.entries()].map(([key, value]) => {
           return { loc: JSON.parse(key), count: value }
         })
@@ -143,7 +163,7 @@ async function run() {
         const s: CoverageCount = {}
 
         // Add all the matched rules
-        codeCoverage2.forEach((entry: {loc: CoverageLocationRange, count: number}, index) => {
+        codeCoverage2.forEach((entry: { loc: CoverageLocationRange, count: number }, index) => {
           const { loc, count } = entry
 
           s[index] = count
@@ -169,7 +189,7 @@ async function run() {
           branchMap: {},
           b: {}
         }
-        const codeCoverageObj: {[path: string]: CoverageEntry} = {}
+        const codeCoverageObj: { [path: string]: CoverageEntry } = {}
         codeCoverageObj[absPath] = codeCoverageEntry
         writeFileSync(`coverage/coverage-gists-${gistName}.json`, JSON.stringify(codeCoverageObj, null, 2)) // indent by 2 chars
       }

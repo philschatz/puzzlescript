@@ -94,30 +94,62 @@ export default class Engine extends EventEmitter2 {
     })
   }
 
-  tick() {
-    let rulesAndChanges: Map<GameRule, Cell[]> = new Map()
-    // Loop over all the cells, see if a Rule matches, apply the transition, and notify that cells changed
-    this.currentLevel.forEach(row => {
-      row.forEach(cell => {
-        this.gameData.rules.forEach(rule => {
+  tick(rules: GameRule[], rulesAndChanges: Map<GameRule, Cell[]>, isAgain: boolean) {
+    const normalRules: GameRule[] = []
+    const lateRules: GameRule[] = []
+    const againRules: GameRule[] = []
+
+    // No need to filter any rules
+    if (isAgain) {
+      const againRun = this.doTick(rules, rulesAndChanges)
+      return { rulesAndChanges: againRun.rulesAndChanges, againRules: [] }
+    }
+
+    // filter the rules
+    rules.forEach(rule => {
+      // save the late rules to run after all real-time rules
+      if (rule.isAgain()) {
+        normalRules.push(rule)
+        againRules.push(rule)
+      }
+      // save the again rules to run again after the late rules
+      else if (rule.isLate()) {
+        lateRules.push(rule)
+      }
+      else {
+        normalRules.push(rule)
+      }
+    })
+
+    const normalRun = this.doTick(normalRules, rulesAndChanges)
+    const lateRun = this.doTick(lateRules, normalRun.rulesAndChanges)
+
+    return { rulesAndChanges: lateRun.rulesAndChanges, againRules: againRules }
+  }
+
+  doTick(rules: GameRule[], rulesAndChanges: Map<GameRule, Cell[]>) {
+    rules.forEach(rule => {
+      // Loop over all the cells, see if a Rule matches, apply the transition, and notify that cells changed
+      this.currentLevel.forEach(row => {
+        row.forEach(cell => {
           let repeatsLeft = MAX_REPEATS
           // while (repeatsLeft > 0) {
-            // Check if the left-hand-side of the rule matches the current cell
-            const mutators = rule.getMatchedMutatorsOrNull(cell)
-            if (mutators && mutators.length > 0) {
-              if (!rulesAndChanges.has(rule)) {
-                rulesAndChanges.set(rule, [])
-              }
-              mutators.forEach(mutator => {
-                // Change the Grid based on the rules that matched
-                const changes = mutator.mutate()
-                // Add it to the set of changes
-                rulesAndChanges.set(rule, rulesAndChanges.get(rule).concat(changes.filter(change => !!change))) // Some rules only have actions and return null. Remove those from the set
-              })
+          // Check if the left-hand-side of the rule matches the current cell
+          const mutators = rule.getMatchedMutatorsOrNull(cell)
+          if (mutators && mutators.length > 0) {
+            if (!rulesAndChanges.has(rule)) {
+              rulesAndChanges.set(rule, [])
+            }
+            mutators.forEach(mutator => {
+              // Change the Grid based on the rules that matched
+              const changes = mutator.mutate()
+              // Add it to the set of changes
+              rulesAndChanges.set(rule, rulesAndChanges.get(rule).concat(changes.filter(change => !!change))) // Some rules only have actions and return null. Remove those from the set
+            })
             // } else {
             //   break
-            }
-            repeatsLeft -= 1
+          }
+          repeatsLeft -= 1
           // }
           // if (repeatsLeft === 0) {
           //   throw new Error('MAX_REPEATS were exhausted. Maybe this is an infinite loop?')
@@ -125,7 +157,8 @@ export default class Engine extends EventEmitter2 {
         })
       })
     })
-    return rulesAndChanges
+
+    return { rulesAndChanges: rulesAndChanges }
   }
 
   pressUp() { }

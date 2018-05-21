@@ -184,6 +184,9 @@ export class HackNode extends RuleBracketNeighbor {
 
 export interface IRule extends IGameNode {
     getMatchedMutatorsOrNull: (cell: Cell) => IMutator[] | null
+    isAgain: () => boolean
+    isLate: () => boolean
+    isRigid: () => boolean
 }
 
 export class GameRuleLoop extends BaseForLines implements IRule {
@@ -199,6 +202,9 @@ export class GameRuleLoop extends BaseForLines implements IRule {
         // return getMatchedMutatorsHelper(this._rules, cell)
     }
 
+    isAgain() { return false }
+    isLate () { return false }
+    isRigid () { return false }
 }
 
 export class GameRuleGroup extends GameRuleLoop {
@@ -215,5 +221,6 @@ const SUPPORTED_RULE_MODIFIERS = new Set([
     RULE_MODIFIER.RIGHT,
     RULE_MODIFIER.HORIZONTAL,
     RULE_MODIFIER.VERTICAL,
-    RULE_MODIFIER.ORTHOGONAL
+    RULE_MODIFIER.ORTHOGONAL,
+    RULE_MODIFIER.LATE
 ])
