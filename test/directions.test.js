@@ -43,6 +43,7 @@ LEVELS
 P.
 
 `)
+        const player = data._getSpriteByName('player')
         const {changedCells} = engine.tickUpdateCells()
         expect(engine.toSnapshot()).toMatchSnapshot()
         // Once these sprites actually move, we neet to separate engine.tick() into multiple steps:
@@ -51,7 +52,7 @@ P.
         // 3. Late: Update all the cells with new sprites ...
         // 4. Late: Move all the sprites that want to move
         // next tick for all the AGAIN rules
-        expect([...engine.currentLevel[0][0]._spriteAndWantsToMoves][0].b).toBe('RIGHT')
+        expect(engine.currentLevel[0][0].getWantsToMove(player)).toBe('RIGHT')
 
         // Ensure only 1 cell was marked for update
         expect(changedCells.size).toBe(1)
@@ -163,7 +164,7 @@ PW
         expect(engine.currentLevel[0][0].getSpritesAsSet().has(player)).toBe(true)
 
         // Make sure the wantsToMove flag is cleared
-        expect(engine.currentLevel[0][0]._getSpriteAndWantsToMoveForSprite(player).b).toBeFalsy()
+        expect(engine.currentLevel[0][0].getWantsToMove(player)).toBeFalsy()
 
         // TODO: Ideally this would be 0 because nothing actually changed
         expect(changedCells.size).toBe(1)
@@ -219,7 +220,7 @@ P.
         expect(engine.currentLevel[0][0].getSpritesAsSet().has(player)).toBe(true)
 
         // Make sure the wantsToMove flag is cleared
-        expect(engine.currentLevel[0][0]._getSpriteAndWantsToMoveForSprite(player).b).toBeFalsy()
+        expect(engine.currentLevel[0][0].getWantsToMove(player)).toBeFalsy()
 
         // Ideally this would be 0 since the cell did not actually change
         expect(changedCells.size).toBe(1)

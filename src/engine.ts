@@ -5,7 +5,6 @@ import { LevelMap } from './models/level';
 import { GameSprite, GameLegendTileSimple, IGameTile } from './models/tile'
 import { GameRule } from './models/rule'
 import { RULE_MODIFIER, nextRandom, setAddAll } from './util'
-import { Pair } from './pairs';
 
 const MAX_REPEATS = 10
 
@@ -30,48 +29,50 @@ enum RULE_DIRECTION {
 // This Object exists so the UI has something to bind to
 export class Cell {
   _engine: Engine
-  _spriteAndWantsToMoves: Set<Pair<GameSprite, string>>
+  _spriteAndWantsToMoves: Map<GameSprite, string>
   rowIndex: number
   colIndex: number
 
   constructor(engine: Engine, sprites: Set<GameSprite>, rowIndex: number, colIndex: number) {
     this._engine = engine
-    this._spriteAndWantsToMoves = new Set([...sprites].map(sprite => new Pair(sprite, null)))
     this.rowIndex = rowIndex
     this.colIndex = colIndex
+    this._spriteAndWantsToMoves = new Map()
+    sprites.forEach(sprite => {
+      this._spriteAndWantsToMoves.set(sprite, null)
+    })
   }
 
   getSprites() {
     // Just pull out the sprite, not the wantsToMoveDir
-    const sprites = [...this._spriteAndWantsToMoves].map(({a, b}) => a)
+    const sprites = [...this._spriteAndWantsToMoves.keys()]
     return sprites.sort((a, b) => {
       return a.getCollisionLayerNum() - b.getCollisionLayerNum()
     }).reverse()
   }
   getSpritesAsSet() {
     // Just pull out the sprite, not the wantsToMoveDir
-    const sprites = [...this._spriteAndWantsToMoves].map(({a, b}) => a)
-    return new Set(sprites)
+    return new Set(this._spriteAndWantsToMoves.keys())
   }
   getSpriteAndWantsToMoves() {
     // Just pull out the sprite, not the wantsToMoveDir
     // Retur na new set so we can mutate it later
-    return new Set(this._spriteAndWantsToMoves)
+    return new Map(this._spriteAndWantsToMoves)
   }
   getSpriteAndWantsToMovesInOrder() {
     // Just pull out the sprite, not the wantsToMoveDir
     return [...this._spriteAndWantsToMoves]
-    .sort(({a: a}, {a: b}) => {
+    .sort(([a], [b]) => {
       return a.getCollisionLayerNum() - b.getCollisionLayerNum()
     }).reverse()
   }
   _getSpriteAndWantsToMoveForSprite(otherSprite: GameSprite) {
-    return [...this._spriteAndWantsToMoves].filter(({a: sprite}) => sprite === otherSprite)[0]
+    return [...this._spriteAndWantsToMoves].filter(([sprite]) => sprite === otherSprite)[0]
   }
   // Maybe add updateSprite(sprite, direction)
   // Maybe add removeSprite(sprite)
-  updateSprites(newSetOfSprites: Set<Pair<GameSprite, string>>) {
-    this._spriteAndWantsToMoves = newSetOfSprites
+  updateSprites(newSprites: Map<GameSprite, string>) {
+    this._spriteAndWantsToMoves = newSprites
     this._engine.emit('cell:updated', this)
     return true // maybe check if the sprites were the same before so there is less to update visually
   }
@@ -104,21 +105,37 @@ export class Cell {
     })
     return wantsToMove
   }
+  getWantsToMove(sprite: GameSprite) {
+    return this._spriteAndWantsToMoves.get(sprite)
+  }
   directionForSprite(sprite: GameSprite) {
-    const entry = [...this._spriteAndWantsToMoves].filter(({a}) => a.getCollisionLayerNum() === sprite.getCollisionLayerNum())[0]
+    const entry = [...this._spriteAndWantsToMoves].filter(([a]) => a.getCollisionLayerNum() === sprite.getCollisionLayerNum())[0]
     if (entry) {
-      return entry.b
+      return entry[1]
     }
     return null
   }
   hasCollisionWithSprite(otherSprite: GameSprite) {
     let hasCollision = false
-    this._spriteAndWantsToMoves.forEach(({a: sprite}) => {
+    this._spriteAndWantsToMoves.forEach((wantsToMove, sprite) => {
       if (sprite.getCollisionLayerNum() === otherSprite.getCollisionLayerNum()) {
         hasCollision = true
       }
     })
     return hasCollision
+  }
+  clearWantsToMove(sprite: GameSprite) {
+    this._spriteAndWantsToMoves.set(sprite, null)
+  }
+  addSprite(sprite: GameSprite, wantsToMove?: string) {
+    const isUnchanged = this._spriteAndWantsToMoves.has(sprite)
+    this._spriteAndWantsToMoves.set(sprite, wantsToMove)
+    return !isUnchanged
+  }
+  removeSprite(sprite: GameSprite) {
+    const isChanged = this._spriteAndWantsToMoves.has(sprite)
+    this._spriteAndWantsToMoves.delete(sprite)
+    return isChanged
   }
 }
 
@@ -193,14 +210,12 @@ export default class Engine extends EventEmitter2 {
     let movedCells: Set<Cell> = new Set()
     // Loop over all the cells, see if a Rule matches, apply the transition, and notify that cells changed
     changedCells.forEach(cell => {
-      cell.getSpriteAndWantsToMoves().forEach(spriteAndWantsToMove => {
-        const {a: sprite} = spriteAndWantsToMove
-        let wantsToMove = spriteAndWantsToMove.b // So we can change it when it is "RANDOM"
+      cell.getSpriteAndWantsToMoves().forEach((wantsToMove, sprite) => {
 
         if (wantsToMove) {
           if (wantsToMove === RULE_DIRECTION.ACTION) {
             // just clear the wantsToMove flag
-            spriteAndWantsToMove.b = null
+            cell.clearWantsToMove(sprite)
             movedCells.add(cell)
           } else {
             if (wantsToMove === RULE_DIRECTION.RANDOM || wantsToMove === RULE_DIRECTION.RANDOMDIR) {
@@ -225,12 +240,12 @@ export default class Engine extends EventEmitter2 {
             const neighbor = cell.getNeighbor(wantsToMove)
             // Make sure
             if (neighbor && !neighbor.hasCollisionWithSprite(sprite)) {
-              cell._spriteAndWantsToMoves.delete(spriteAndWantsToMove)
-              neighbor._spriteAndWantsToMoves.add(new Pair(sprite, null))
+              cell.removeSprite(sprite)
+              neighbor.addSprite(sprite, null)
               movedCells.add(neighbor)
             } else {
               // Clear the wantsToMove flag if we hit a wall (a sprite in the same collisionLayer) or are at the end of the map
-              spriteAndWantsToMove.b = null
+              cell.clearWantsToMove(sprite)
             }
             movedCells.add(cell)
           }

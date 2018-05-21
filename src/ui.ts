@@ -90,7 +90,7 @@ class UI {
   }
 
   drawCell(data: GameData, cell: Cell, dontRestoreCursor: boolean) {
-    const spritesForDebugging = cell.getSpriteAndWantsToMovesInOrder()
+    const spritesForDebugging = cell.getSprites()
     const {rowIndex, colIndex} = cell
     const pixels: IColor[][] = this.getPixelsForCell(data, cell)
 
@@ -143,27 +143,7 @@ class UI {
             axel.fg(0, 0, 0)
           }
           if (spritesForDebugging[spriteRowIndex]) {
-            let spriteName = spritesForDebugging[spriteRowIndex].a._name
-            if (spritesForDebugging[spriteRowIndex].b && spritesForDebugging[spriteRowIndex].b !== 'NO') {
-              let spriteChar
-              switch (spritesForDebugging[spriteRowIndex].b) {
-                case RULE_DIRECTION.UP:
-                  spriteChar = '↑'
-                  break
-                case RULE_DIRECTION.DOWN:
-                  spriteChar = '↓'
-                  break
-                case RULE_DIRECTION.LEFT:
-                  spriteChar = '←'
-                  break
-                case RULE_DIRECTION.RIGHT:
-                  spriteChar = '→'
-                  break
-                default:
-                  spriteChar = '?'
-              }
-              spriteName = `${spriteChar}${spriteName}`
-            }
+            let spriteName = spritesForDebugging[spriteRowIndex]._name
             if (spriteName.length > 10) {
               spriteName = `${spriteName.substring(0, 5)}.${spriteName.substring(spriteName.length - 4)}`
             }

@@ -245,9 +245,12 @@ function getSpriteByName (data, name) {
 
 describe('engine', () => {
   it('evaluates a simple game', () => {
-    const { engine } = parseEngine(SIMPLE_GAME)
+    const { engine, data } = parseEngine(SIMPLE_GAME)
+    const one = data._getSpriteByName('one')
+    const zero = data._getSpriteByName('zero')
     engine.tick()
     expect(engine.toSnapshot()).toMatchSnapshot()
+    expect(engine.currentLevel[0][0].getSpritesAsSet()).toContain(one)
   })
 
   it('draws corner sprites correctly (according to mirror isles)', () => {

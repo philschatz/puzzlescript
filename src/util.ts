@@ -1,3 +1,5 @@
+import { GameSprite } from "./models/tile";
+
 export function setAddAll<T>(setA: Set<T>, iterable: Iterable<T>) {
   const newSet = new Set(setA)
   for (const elem of iterable) {
@@ -22,6 +24,13 @@ export function setDifference<T>(setA: Set<T>, setB: Set<T>) {
     difference.delete(elem)
   }
   return difference
+}
+
+export class SpriteSet {
+  _allSprites: GameSprite
+  constructor(sprites: GameSprite[]) {
+
+  }
 }
 
 // From https://stackoverflow.com/a/19303725
