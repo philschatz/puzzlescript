@@ -23,7 +23,8 @@ enum RULE_DIRECTION {
   LEFT = 'LEFT',
   RIGHT = 'RIGHT',
   ACTION = 'ACTION',
-  RANDOM = 'RANDOM'
+  RANDOM = 'RANDOM', // Not sure how this differs from RANDOMDIR yet
+  RANDOMDIR = 'RANDOMDIR'
 }
 
 // This Object exists so the UI has something to bind to
@@ -199,7 +200,7 @@ export default class Engine extends EventEmitter2 {
               spriteAndWantsToMove.b = null
               movedCells.add(cell)
             } else {
-              if (wantsToMove === RULE_DIRECTION.RANDOM) {
+              if (wantsToMove === RULE_DIRECTION.RANDOM || wantsToMove === RULE_DIRECTION.RANDOMDIR) {
                 const rand = nextRandom(4)
                 switch (rand) {
                   case 0:
