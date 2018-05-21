@@ -145,6 +145,10 @@ class CellMutator implements IMutator {
   mutate() {
     // Just remove all tiles for now and then add all of them back
     // TODO: only remove tiles that are matching the collisionLayer but wait, they already need to be exclusive
+
+    // Remember the set of sprites before (so we can detect if the cell changed)
+    // const spritesBefore = this._cell.getSpritesAsSet()
+
     const newSpritesAndWantsToMoves = [...this._cell.getSpriteAndWantsToMoves()]
 
     // remove sprites that are listed on the condition side
@@ -165,6 +169,7 @@ class CellMutator implements IMutator {
     })
 
     // TODO: Be better about recording when the cell actually updated
+    // const didSpritesChange = !setEquals(spritesBefore, this._cell.getSpritesAsSet())
     return [this._cell]
   }
 }
