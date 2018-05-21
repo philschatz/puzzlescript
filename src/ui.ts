@@ -1,4 +1,5 @@
 import * as axel from 'axel'
+import * as supportsColor from 'supports-color'
 import { GameSprite } from './models/tile'
 import { GameData } from './models/game'
 import { IColor } from './models/colors'
@@ -51,6 +52,10 @@ class UI {
     this._resizeHandler = null
   }
   renderScreen(data: GameData, levelRows: Cell[][]) {
+    if (!supportsColor.stdout) {
+      console.log('Playing a game in the console requires color support. Unfortunately, color is not supported so not rendering (for now). We could just do an ASCII dump or something, using  ░▒▓█ to denote shades of cells')
+      return
+    }
     // axel.cursor.off()
 
     // Handle resize events by redrawing the game. Ooh, we do not have Cells at this point.
@@ -90,6 +95,10 @@ class UI {
   }
 
   drawCell(data: GameData, cell: Cell, dontRestoreCursor: boolean) {
+    if (!supportsColor.stdout) {
+      console.log(`Updating cell [${cell.rowIndex}][${cell.colIndex}] to have sprites: [${cell.getSprites().map(sprite => sprite._name)}]`)
+      return
+    }
     const spritesForDebugging = cell.getSprites()
     const {rowIndex, colIndex} = cell
     const pixels: IColor[][] = this.getPixelsForCell(data, cell)
@@ -175,12 +184,21 @@ class UI {
   }
 
   clearScreen() {
+    if (!supportsColor.stdout) {
+      console.log(`Clearing screen`)
+      return
+    }
+
     axel.fg(255, 255, 255)
     axel.bg(0, 0, 0)
     axel.clear()
   }
 
   writeDebug(text: string) {
+    if (!supportsColor.stdout) {
+      console.log(`Writing Debug text "${text}"`)
+      return
+    }
     axel.fg(255, 255, 255)
     axel.bg(0, 0, 0)
     writeText(0, 0, `[${text}]`)
@@ -188,11 +206,18 @@ class UI {
 }
 
 function restoreCursor() {
+  if (!supportsColor.stdout) {
+    return
+  }
   axel.cursor.restore()
 }
 
 function writeText(x: number, y: number, text: string) {
-  axel.text(x, y, text)
+  if (!supportsColor.stdout) {
+    console.log(`Writing text at [${y}][${x}]: "${text}"`)
+    return
+  }
+axel.text(x, y, text)
 }
 
 export default new UI()
