@@ -81,7 +81,7 @@ async function run() {
         UI.renderScreen(data, engine.currentLevel)
         totalRenderTime += Date.now() - startTime
 
-        // record the changes in a coverage.json file
+        // record the appliedRules in a coverage.json file
         const codeCoverageTemp = new Map() // key = Line number, value = count of times the rule executed
 
         // First add all the Tiles, Legend Items, collisionLayers, Rules, and Levels.
@@ -109,14 +109,21 @@ async function run() {
 
         for (var i = 0; i < 10; i++) {
           await sleep(500)
-          const changes = engine.tick()
-          if (changes.size === 0) {
+          const {appliedRules, movedCells} = engine.tick()
+
+
+          // Draw any cells that moved
+          movedCells.forEach(cell => {
+            UI.drawCell(data, cell, true)
+          })
+
+          if (appliedRules.size === 0) {
             break
           }
 
           // UI.renderScreen(data, engine.currentLevel)
           let changedCells = new Set()
-          for (const [rule, cellsCovered] of changes.entries()) {
+          for (const [rule, cellsCovered] of appliedRules.entries()) {
             changedCells = setAddAll(changedCells, cellsCovered)
           }
 
@@ -127,7 +134,7 @@ async function run() {
           totalRenderTime += Date.now() - startTime
 
           // record the tick coverage
-          for (const [rule, cellsCovered] of changes.entries()) {
+          for (const [rule, cellsCovered] of appliedRules.entries()) {
             const line = coverageKey(rule)
             if (!codeCoverageTemp.has(line)) {
               codeCoverageTemp.set(line, 0)

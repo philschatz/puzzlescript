@@ -5,7 +5,7 @@ OBJECTS
 ========
 
 Background
-#ffffff
+green
 
 Player
 DarkRed #493c2b #000000
@@ -15,28 +15,42 @@ DarkRed #493c2b #000000
 02220
 .2.2.
 
+Star
+yellow
+0.0.0
+.000.
+..0..
+.000.
+0.0.0
+
 =======
 LEGEND
 =======
 
 . = Background
 P = Player
+* = Star
 
 ================
 COLLISIONLAYERS
 ================
 
 Background
-Player
+Player, Star
 
 ===
 RULES
 ===
 
 [ Player ] -> [ > Player ]
+[ Star ] -> [ RANDOM Star ]
 
 =======
 LEVELS
 =======
 
-P.
+.....
+.....
+P...*
+.....
+.....
