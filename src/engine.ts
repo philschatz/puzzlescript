@@ -54,6 +54,13 @@ export class Cell {
     // Just pull out the sprite, not the wantsToMoveDir
     return this._spriteAndWantsToMoves
   }
+  getSpriteAndWantsToMovesInOrder() {
+    // Just pull out the sprite, not the wantsToMoveDir
+    return [...this._spriteAndWantsToMoves]
+    .sort(({a: a}, {a: b}) => {
+      return a.getCollisionLayerNum() - b.getCollisionLayerNum()
+    }).reverse()
+  }
   // Maybe add updateSprite(sprite, direction)
   // Maybe add removeSprite(sprite)
   updateSprites(newSetOfSprites: Set<Pair<GameSprite, string>>) {
@@ -79,6 +86,23 @@ export class Cell {
       default:
         throw new Error(`BUG: Unsupported direction "${direction}"`)
     }
+  }
+  wantsToMoveTo(tile: IGameTile, absoluteDirection: RULE_DIRECTION) {
+    let wantsToMove = false
+    tile.getSprites().forEach(sprite => {
+      const directionForSprite = this.directionForSprite(sprite)
+      if (directionForSprite && directionForSprite === absoluteDirection) {
+        wantsToMove = true
+      }
+    })
+    return wantsToMove
+  }
+  directionForSprite(sprite: GameSprite) {
+    const entry = [...this._spriteAndWantsToMoves].filter(({a}) => a.getCollisionLayerNum() === sprite.getCollisionLayerNum())[0]
+    if (entry) {
+      return entry.b
+    }
+    return null
   }
 }
 

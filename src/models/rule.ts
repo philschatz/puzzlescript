@@ -8,7 +8,8 @@ import { IGameTile } from './tile'
 import {
     IMutator,
     RuleBracketPair,
-    getMatchedMutatorsHelper
+    getMatchedMutatorsHelper,
+    RULE_DIRECTION
 } from '../pairs'
 import { RULE_MODIFIER, setDifference } from '../util'
 import { Cell } from '../engine'
@@ -153,15 +154,19 @@ export class TileWithModifier extends BaseForLines {
         return M_NO === this._modifier
     }
 
-    matchesCell(cell: Cell) {
+    matchesCell(cell: Cell, direction: RULE_DIRECTION) {
         if (this._modifier && !SUPPORTED_CELL_MODIFIERS.has(this._modifier)) {
             return false // Modifier not supported yet
         }
         const hasTile = this._tile && this._tile.matchesCell(cell)
+        let matchesDirection = true
+        if (RULE_DIRECTION[this._modifier]) {
+            matchesDirection = cell.wantsToMoveTo(this._tile, relativeDirectionToAbsolute(direction, RULE_DIRECTION[this._modifier]))
+        }
         if (this.isNo()) {
-            return !hasTile
+            return !(hasTile && matchesDirection)
         } else {
-            return hasTile
+            return hasTile && matchesDirection
         }
     }
 
@@ -217,3 +222,50 @@ const SUPPORTED_RULE_MODIFIERS = new Set([
     RULE_MODIFIER.VERTICAL,
     RULE_MODIFIER.ORTHOGONAL
 ])
+
+function relativeDirectionToAbsolute(currentDirection: RULE_DIRECTION, tileModifier: string) {
+    let currentDir
+    switch (currentDirection) {
+      case RULE_DIRECTION.RIGHT:
+        currentDir = 0
+        break
+      case RULE_DIRECTION.UP:
+        currentDir = 1
+        break
+      case RULE_DIRECTION.LEFT:
+        currentDir = 2
+        break
+      case RULE_DIRECTION.DOWN:
+        currentDir = 3
+        break
+      default:
+        throw new Error(`BUG! Invalid rule direction "${currentDirection}`)
+    }
+
+    switch (tileModifier) {
+      case RULE_DIRECTION.RIGHT:
+        currentDir += 0
+        break
+      case RULE_DIRECTION.UP:
+        currentDir += 1
+        break
+      case RULE_DIRECTION.LEFT:
+        currentDir += 2
+        break
+      case RULE_DIRECTION.DOWN:
+        currentDir += 3
+        break
+    }
+    switch (currentDir % 4) {
+      case 0:
+        return RULE_DIRECTION.RIGHT
+      case 1:
+        return RULE_DIRECTION.UP
+      case 2:
+        return RULE_DIRECTION.LEFT
+      case 3:
+        return RULE_DIRECTION.DOWN
+      default:
+        throw new Error(`BUG! Incorrectly computed rule direction "${currentDirection}" "${tileModifier}"`)
+    }
+  }

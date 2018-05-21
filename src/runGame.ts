@@ -8,6 +8,7 @@ import { IGameNode } from './models/game'
 import UI from './ui'
 import Engine from './engine'
 import { setAddAll } from './util';
+import { start } from 'repl';
 
 let totalRenderTime = 0
 
@@ -67,8 +68,6 @@ async function run() {
         })
       }
 
-      const startTime = Date.now()
-
       // Draw the "last" level (after the messages)
       const level = data.levels.filter(level => level.isMap())[0]
       if (level) {
@@ -78,7 +77,9 @@ async function run() {
         //   UI.drawCellAt(data, cell, cell.rowIndex, cell.colIndex, false)
         // })
 
+        let startTime = Date.now()
         UI.renderScreen(data, engine.currentLevel)
+        totalRenderTime += Date.now() - startTime
 
         // record the changes in a coverage.json file
         const codeCoverageTemp = new Map() // key = Line number, value = count of times the rule executed
@@ -119,9 +120,11 @@ async function run() {
             changedCells = setAddAll(changedCells, cellsCovered)
           }
 
+          startTime = Date.now()
           for (const cell of changedCells) {
             UI.drawCell(data, cell, false)
           }
+          totalRenderTime += Date.now() - startTime
 
           // record the tick coverage
           for (const [rule, cellsCovered] of changes.entries()) {
@@ -175,7 +178,6 @@ async function run() {
       }
 
       UI.clearScreen()
-      totalRenderTime += Date.now() - startTime
     }
   }
 

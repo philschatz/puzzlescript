@@ -936,7 +936,7 @@ GameData {
               "_condition": Array [
                 TileWithModifier {
                   "__astId": 105,
-                  "_modifier": "^",
+                  "_modifier": "UP",
                   "_tile": GameLegendTileSimple {
                     "__astId": 104,
                     "_spriteNameOrLevelChar": "z",
@@ -1481,7 +1481,7 @@ GameData {
               "_condition": Array [
                 TileWithModifier {
                   "__astId": 123,
-                  "_modifier": ">",
+                  "_modifier": "RIGHT",
                   "_tile": GameLegendTileSimple {
                     "__astId": 122,
                     "_spriteNameOrLevelChar": "z",
@@ -1752,7 +1752,7 @@ GameData {
               "_condition": Array [
                 TileWithModifier {
                   "__astId": 132,
-                  "_modifier": "<",
+                  "_modifier": "LEFT",
                   "_tile": GameLegendTileSimple {
                     "__astId": 131,
                     "_spriteNameOrLevelChar": "z",

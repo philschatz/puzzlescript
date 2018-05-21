@@ -3,6 +3,7 @@ import { GameSprite } from './models/tile'
 import { GameData } from './models/game'
 import { IColor } from './models/colors'
 import { Cell } from './engine'
+import { RULE_DIRECTION } from './pairs';
 
 // First Sprite one is on top.
 // This caused a 2x speedup while rendering.
@@ -89,10 +90,7 @@ class UI {
   }
 
   drawCell(data: GameData, cell: Cell, dontRestoreCursor: boolean) {
-    const spritesForDebugging = cell.getSprites()
-    if (spritesForDebugging.filter((sprite) => { return sprite._name === 'RemoveLandRU'})[0]) {
-      debugger
-    }
+    const spritesForDebugging = cell.getSpriteAndWantsToMovesInOrder()
     const {rowIndex, colIndex} = cell
     const pixels: IColor[][] = this.getPixelsForCell(data, cell)
 
@@ -145,7 +143,27 @@ class UI {
             axel.fg(0, 0, 0)
           }
           if (spritesForDebugging[spriteRowIndex]) {
-            let spriteName = spritesForDebugging[spriteRowIndex]._name
+            let spriteName = spritesForDebugging[spriteRowIndex].a._name
+            if (spritesForDebugging[spriteRowIndex].b && spritesForDebugging[spriteRowIndex].b !== 'NO') {
+              let spriteChar
+              switch (spritesForDebugging[spriteRowIndex].b) {
+                case RULE_DIRECTION.UP:
+                  spriteChar = '↑'
+                  break
+                case RULE_DIRECTION.DOWN:
+                  spriteChar = '↓'
+                  break
+                case RULE_DIRECTION.LEFT:
+                  spriteChar = '←'
+                  break
+                case RULE_DIRECTION.RIGHT:
+                  spriteChar = '→'
+                  break
+                default:
+                  spriteChar = '?'
+              }
+              spriteName = `${spriteChar}${spriteName}`
+            }
             if (spriteName.length > 10) {
               spriteName = `${spriteName.substring(0, 5)}.${spriteName.substring(spriteName.length - 4)}`
             }

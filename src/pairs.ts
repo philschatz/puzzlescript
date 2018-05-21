@@ -19,18 +19,25 @@ export class Pair<A, B> {
   }
 }
 
+export enum RULE_DIRECTION {
+  UP = 'UP',
+  DOWN = 'DOWN',
+  LEFT = 'LEFT',
+  RIGHT = 'RIGHT'
+}
+
 export interface IMutator {
   mutate: () => Cell[]
 }
 
-interface IMatcher {
-  getMatchedMutatorsOrNull: (cell: Cell) => IMutator[] | null
+export interface IMatcher {
+  getMatchedMutatorsOrNull: (cell: Cell, direction?: RULE_DIRECTION) => IMutator[] | null
 }
 
-export function getMatchedMutatorsHelper(pairs: IMatcher[], cell: Cell) {
+export function getMatchedMutatorsHelper(pairs: IMatcher[], cell: Cell, direction?: RULE_DIRECTION) {
   let ret: IMutator[] = []
   for (const pair of pairs) {
-    const retChild = pair.getMatchedMutatorsOrNull(cell)
+    const retChild = pair.getMatchedMutatorsOrNull(cell, direction)
     if (!retChild) return null
     ret = ret.concat(retChild)
   }
@@ -67,16 +74,18 @@ export class RuleBracketPair implements IMatcher {
     let directionsToCheck = setIntersection(this._modifiers, SIMPLE_DIRECTIONS)
     // Include LEFT and RIGHT if HORIZONTAL
     if (this._modifiers.has(RULE_MODIFIER.HORIZONTAL)) {
-      directionsToCheck.add(RULE_MODIFIER.LEFT)
-      directionsToCheck.add(RULE_MODIFIER.RIGHT)
+      return null // not supported properly
+      // directionsToCheck.add(RULE_MODIFIER.LEFT)
+      // directionsToCheck.add(RULE_MODIFIER.RIGHT)
     }
     // Include UP and DOWN if VERTICAL
     if (this._modifiers.has(RULE_MODIFIER.VERTICAL)) {
-      directionsToCheck.add(RULE_MODIFIER.UP)
-      directionsToCheck.add(RULE_MODIFIER.DOWN)
+      return null // not supported properly
+      // directionsToCheck.add(RULE_MODIFIER.UP)
+      // directionsToCheck.add(RULE_MODIFIER.DOWN)
     }
     // If no direction was specified then check UP, DOWN, LEFT, RIGHT
-    if (directionsToCheck.size === 0 || this._modifiers.has(RULE_MODIFIER.ORTHOGONAL)) {
+    if (directionsToCheck.size === 0) {
       directionsToCheck = new Set(SIMPLE_DIRECTIONS)
     }
 
@@ -89,7 +98,7 @@ export class RuleBracketPair implements IMatcher {
       for (const neighbor of this._neighborPairs) {
         if (!curCell) break // If we hit the end of the level then this does not match
         // Check if the individual tiles match
-        const mutators = neighbor.getMatchedMutatorsOrNull(curCell)
+        const mutators = neighbor.getMatchedMutatorsOrNull(curCell, direction)
         if (!mutators) break
         neighborRet = neighborRet.concat(mutators)
 
@@ -120,13 +129,13 @@ class NeighborPair implements IMatcher {
     this._action = action._tilesWithModifier
   }
 
-  getMatchedMutatorsOrNull(cell: Cell) {
+  getMatchedMutatorsOrNull(cell: Cell, direction: RULE_DIRECTION) {
     for (const tileWithModifier of this._condition) {
-      if (!tileWithModifier.matchesCell(cell)) {
+      if (!tileWithModifier.matchesCell(cell, direction)) {
         return null
       }
     }
-    return [new CellMutator(this._condition, this._action, cell)]
+    return [new CellMutator(this._condition, this._action, cell, direction)]
   }
 }
 
@@ -135,10 +144,12 @@ class CellMutator implements IMutator {
   _condition: TileWithModifier[]
   _action: TileWithModifier[]
   _cell: Cell
-  constructor(condition: TileWithModifier[], action: TileWithModifier[], cell: Cell) {
+  _direction: RULE_DIRECTION
+  constructor(condition: TileWithModifier[], action: TileWithModifier[], cell: Cell, direction: RULE_DIRECTION) {
     this._condition = condition
     this._action = action
     this._cell = cell
+    this._direction = direction
   }
   mutate() {
     // Just remove all tiles for now and then add all of them back
@@ -163,7 +174,7 @@ class CellMutator implements IMutator {
         removeSprite(sprite)
         if (tileWithModifier.isNo()) {
         } else {
-          newSprites.push(new Pair(sprite, null))
+          newSprites.push(new Pair(sprite, tileWithModifier._modifier))
         }
       })
     })

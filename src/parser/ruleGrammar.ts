@@ -116,8 +116,26 @@ export function getRuleSemantics() {
         TileWithModifier: function (optionalModifier, tile) {
             return new TileWithModifier(this.source, optionalModifier.parse()[0], tile.parse())
         },
-        tileModifier: function (_whitespace1, tileModifiers, _whitespace2) {
-            return tileModifiers.parse()
+        tileModifier: function (_whitespace1, tileModifier, _whitespace2) {
+            let modifier = tileModifier.parse()
+            // Arrows are shorthand. https://www.puzzlescript.net/Documentation/directions.html
+            switch (modifier) {
+                case '>':
+                    modifier = 'RIGHT'
+                    break;
+                case '^':
+                    modifier = 'UP'
+                    break;
+                case '<':
+                    modifier = 'LEFT'
+                    break;
+                case 'v':
+                    modifier = 'DOWN'
+                    break;
+                default:
+                    break;
+            }
+            return modifier
         },
         HackTileNameIsSFX1: function (sfx) {
             return new HackNode(this.source, sfx.parse())

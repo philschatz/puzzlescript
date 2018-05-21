@@ -19,6 +19,7 @@ DarkRed #493c2b #000000
 LEGEND
 =======
 
+. = Background
 P = Player
 
 ================
@@ -32,10 +33,10 @@ Player
 RULES
 ===
 
-[> Player | Background ] -> [Player | ]
+[ Player ] -> [ > Player ]
 
 =======
 LEVELS
 =======
 
-P
+P.
