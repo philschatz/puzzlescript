@@ -44,7 +44,7 @@ P.
 
 `)
         const player = data._getSpriteByName('player')
-        const {changedCells} = engine.tickUpdateCells()
+        const {changedCellMutations} = engine.tickUpdateCells()
         expect(engine.toSnapshot()).toMatchSnapshot()
         // Once these sprites actually move, we neet to separate engine.tick() into multiple steps:
         // 1. Update all the cells with new sprites and the wantsToMove directions
@@ -55,8 +55,7 @@ P.
         expect(engine.currentLevel[0][0].getWantsToMove(player)).toBe('RIGHT')
 
         // Ensure only 1 cell was marked for update
-        expect(changedCells.size).toBe(1)
-        expect(changedCells).toContain(engine.currentLevel[0][0])
+        expect(changedCellMutations.size).toBe(1)
     })
 
     it('Moves the sprite', () => {
@@ -166,10 +165,8 @@ PW
         // Make sure the wantsToMove flag is cleared
         expect(engine.currentLevel[0][0].getWantsToMove(player)).toBeFalsy()
 
-        // TODO: Ideally this would be 0 because nothing actually changed
-        expect(changedCells.size).toBe(1)
-        expect(changedCells).toContain(engine.currentLevel[0][0])
-
+        // nothing actually changed visually
+        expect(changedCells.size).toBe(0)
     })
 
 
@@ -222,10 +219,8 @@ P.
         // Make sure the wantsToMove flag is cleared
         expect(engine.currentLevel[0][0].getWantsToMove(player)).toBeFalsy()
 
-        // Ideally this would be 0 since the cell did not actually change
-        expect(changedCells.size).toBe(1)
-        expect(changedCells).toContain(engine.currentLevel[0][0])
-
+        // nothing actually changed visually
+        expect(changedCells.size).toBe(0)
     })
 
     it('Moves the sprite in a "random" direction using "RANDOM" in a bracket', () => {

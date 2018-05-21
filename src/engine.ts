@@ -5,6 +5,7 @@ import { LevelMap } from './models/level';
 import { GameSprite, GameLegendTileSimple, IGameTile } from './models/tile'
 import { GameRule } from './models/rule'
 import { RULE_MODIFIER, nextRandom, setAddAll } from './util'
+import { CellMutation } from './pairs';
 
 const MAX_REPEATS = 10
 
@@ -162,7 +163,7 @@ export default class Engine extends EventEmitter2 {
 
   tickUpdateCells() {
     let appliedRules: Map<GameRule, Cell[]> = new Map()
-    const changedCells = new Set()
+    const changedCellMutations: Set<CellMutation> = new Set()
     // Loop over all the cells, see if a Rule matches, apply the transition, and notify that cells changed
     this.currentLevel.forEach(row => {
       row.forEach(cell => {
@@ -177,13 +178,11 @@ export default class Engine extends EventEmitter2 {
               }
               mutators.forEach(mutator => {
                 // Change the Grid based on the rules that matched
-                const changes = mutator.mutate()
+                const mutation = mutator.mutate()
                 // Add it to the set of changes
-                appliedRules.set(rule, appliedRules.get(rule).concat(changes)) // Some rules only have actions and return null. Remove those from the set
+                appliedRules.get(rule).push(mutation.cell)
                 // Keep track of which cells changed so we know which ones to look at to see if they wantsToMove
-                changes.forEach(cell => {
-                  changedCells.add(cell)
-                })
+                changedCellMutations.add(mutation)
               })
             // } else {
             //   break
@@ -196,20 +195,21 @@ export default class Engine extends EventEmitter2 {
         })
       })
     })
-    return {changedCells, appliedRules}
+    return {changedCellMutations, appliedRules}
   }
 
-  tickMoveSprites(changedCells: Set<Cell>) {
+  tickMoveSprites(changedCells: Set<CellMutation>) {
     let movedCells: Set<Cell> = new Set()
     // Loop over all the cells, see if a Rule matches, apply the transition, and notify that cells changed
-    changedCells.forEach(cell => {
+    changedCells.forEach(mutation => {
+      const {cell} = mutation
       cell.getSpriteAndWantsToMoves().forEach((wantsToMove, sprite) => {
 
         if (wantsToMove) {
           if (wantsToMove === RULE_DIRECTION.ACTION) {
             // just clear the wantsToMove flag
             cell.clearWantsToMove(sprite)
-            movedCells.add(cell)
+            // movedCells.add(cell)
           } else {
             if (wantsToMove === RULE_DIRECTION.RANDOM || wantsToMove === RULE_DIRECTION.RANDOMDIR) {
               const rand = nextRandom(4)
@@ -236,11 +236,12 @@ export default class Engine extends EventEmitter2 {
               cell.removeSprite(sprite)
               neighbor.addSprite(sprite, null)
               movedCells.add(neighbor)
+              movedCells.add(cell)
             } else {
               // Clear the wantsToMove flag if we hit a wall (a sprite in the same collisionLayer) or are at the end of the map
               cell.clearWantsToMove(sprite)
+              // movedCells.add(cell)
             }
-            movedCells.add(cell)
           }
         }
       })
@@ -249,8 +250,9 @@ export default class Engine extends EventEmitter2 {
   }
 
   tick() {
-    const {appliedRules, changedCells} = this.tickUpdateCells()
-    const movedCells = this.tickMoveSprites(changedCells)
+    const {appliedRules, changedCellMutations} = this.tickUpdateCells()
+    const movedCells = this.tickMoveSprites(changedCellMutations)
+    const changedCells = new Set([...changedCellMutations].filter(mutation => mutation.didSpritesChange).map(({cell}) => cell))
     return {appliedRules, changedCells: setAddAll(changedCells, movedCells)}
   }
 

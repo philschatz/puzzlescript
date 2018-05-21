@@ -39,6 +39,6 @@ function checkGrammar (code) {
 
 describe('BIG', () => {
   it('Reads in a big file', () => {
-    checkGrammar(readFileSync('./gists/_on-board_itch/script.txt', 'utf-8'))
+    checkGrammar(readFileSync('./gists/z_on-board_itch/script.txt', 'utf-8'))
   })
 })

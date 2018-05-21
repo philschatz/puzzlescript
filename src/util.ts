@@ -2,7 +2,7 @@ import { GameSprite } from "./models/tile";
 
 export function setEquals<T>(set1: Set<T>, set2: Set<T>) {
   if (set1.size !== set2.size) return false
-  for (var elem of set1) {
+  for (const elem of set1) {
     if (!set2.has(elem)) return false
   }
   return true

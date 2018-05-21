@@ -8,7 +8,7 @@ import {
   TileWithModifier
 } from './models/rule'
 import { Cell } from './engine'
-import { RULE_MODIFIER, setIntersection, setDifference } from './util'
+import { RULE_MODIFIER, setIntersection, setDifference, setEquals } from './util'
 
 export enum RULE_DIRECTION {
   UP = 'UP',
@@ -17,8 +17,17 @@ export enum RULE_DIRECTION {
   RIGHT = 'RIGHT'
 }
 
+export class CellMutation {
+  cell: Cell
+  didSpritesChange: boolean
+  constructor(cell, didSpritesChange) {
+    this.cell = cell
+    this.didSpritesChange = didSpritesChange
+  }
+}
+
 export interface IMutator {
-  mutate: () => Cell[]
+  mutate: () => CellMutation
 }
 
 export interface IMatcher {
@@ -147,7 +156,7 @@ class CellMutator implements IMutator {
     // TODO: only remove tiles that are matching the collisionLayer but wait, they already need to be exclusive
 
     // Remember the set of sprites before (so we can detect if the cell changed)
-    // const spritesBefore = this._cell.getSpritesAsSet()
+    const spritesBefore = this._cell.getSpritesAsSet()
 
     const newSpritesAndWantsToMoves = [...this._cell.getSpriteAndWantsToMoves()]
 
@@ -169,7 +178,7 @@ class CellMutator implements IMutator {
     })
 
     // TODO: Be better about recording when the cell actually updated
-    // const didSpritesChange = !setEquals(spritesBefore, this._cell.getSpritesAsSet())
-    return [this._cell]
+    const didSpritesChange = !setEquals(spritesBefore, this._cell.getSpritesAsSet())
+    return new CellMutation(this._cell, didSpritesChange)
   }
 }

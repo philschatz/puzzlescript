@@ -112,7 +112,7 @@ async function run() {
           const {appliedRules, changedCells} = engine.tick()
 
 
-          if (appliedRules.size === 0) {
+          if (changedCells.size === 0) {
             break
           }
 
