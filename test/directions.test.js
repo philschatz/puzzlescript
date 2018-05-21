@@ -1,4 +1,5 @@
 const { parseEngine } = require('./engine.test')
+const { resetRandomSeed } = require('../src/util')
 
 describe('Directions', () => {
     it('Marks a sprite when it wants to move', () => {
@@ -209,6 +210,7 @@ P.
     })
 
     it('Moves the sprite in a "random" direction using "RANDOM" in a bracket', () => {
+        resetRandomSeed()
         const {engine, data} = parseEngine(`
 title foo
 
@@ -276,6 +278,7 @@ LEVELS
 
 
     it('Moves the sprite in a "random" direction using "RANDOMDIR" in a bracket', () => {
+        resetRandomSeed()
         const {engine, data} = parseEngine(`
 title foo
 

@@ -25,10 +25,13 @@ export function setDifference<T>(setA: Set<T>, setB: Set<T>) {
 }
 
 // From https://stackoverflow.com/a/19303725
-var seed = 1
+let seed = 1
 export function nextRandom(maxNonInclusive) {
-    var x = Math.sin(seed++) * 10000
+    let x = Math.sin(seed++) * 10000
     return Math.round((x - Math.floor(x)) * (maxNonInclusive - 1))
+}
+export function resetRandomSeed() {
+  seed = 1
 }
 
 export enum RULE_MODIFIER {
