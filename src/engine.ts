@@ -68,6 +68,7 @@ export class Cell {
   // Maybe add removeSprite(sprite)
   updateSprites(newSprites: Map<GameSprite, string>) {
     this._spriteAndWantsToMoves = newSprites
+    this._engine.gameTree.updateCell(this)
     this._engine.emit('cell:updated', this)
     return true // maybe check if the sprites were the same before so there is less to update visually
   }
@@ -121,15 +122,18 @@ export class Cell {
   }
   clearWantsToMove(sprite: GameSprite) {
     this._spriteAndWantsToMoves.set(sprite, null)
+    this._engine.gameTree.updateCell(this)
   }
   addSprite(sprite: GameSprite, wantsToMove?: string) {
     const isUnchanged = this._spriteAndWantsToMoves.has(sprite)
     this._spriteAndWantsToMoves.set(sprite, wantsToMove)
+    this._engine.gameTree.updateCell(this)
     return !isUnchanged
   }
   removeSprite(sprite: GameSprite) {
     const isChanged = this._spriteAndWantsToMoves.has(sprite)
     this._spriteAndWantsToMoves.delete(sprite)
+    this._engine.gameTree.updateCell(this)
     return isChanged
   }
 }
@@ -173,6 +177,19 @@ export default class Engine extends EventEmitter2 {
   }
 
   tickUpdateCells() {
+    const changedCellMutations: Set<CellMutation> = new Set()
+    this.gameData.rules.map(rule => {
+      if (rule.evaluate) {
+        const cellMutations = rule.evaluate(this.gameTree)
+        cellMutations.forEach(mutation => {
+          changedCellMutations.add(mutation)
+        })
+      }
+    })
+    return changedCellMutations
+  }
+
+  tickUpdateCellsOld() {
     const changedCellMutations: Set<CellMutation> = new Set()
     // Loop over all the cells, see if a Rule matches, apply the transition, and notify that cells changed
     this.currentLevel.forEach(row => {

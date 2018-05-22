@@ -2,11 +2,6 @@
 const { default: Engine } = require('../src/engine')
 const { default: Parser } = require('../src/parser/parser')
 
-module.exports = {
-  parseEngine,
-  getSpriteByName
-}
-
 const SIMPLE_GAME = `
 title foo
 

@@ -44,7 +44,7 @@ export function getMatchedMutatorsHelper(pairs: IMatcher[], cell: Cell, directio
   return ret
 }
 
-const SIMPLE_DIRECTIONS = new Set([
+export const SIMPLE_DIRECTIONS = new Set([
   RULE_MODIFIER.UP,
   RULE_MODIFIER.DOWN,
   RULE_MODIFIER.LEFT,
@@ -60,6 +60,15 @@ export class RuleBracketPair implements IMatcher {
     this._modifiers = modifiers
     this._neighborPairs = _.zip(condition._neighbors, action._neighbors).map(([conditionTileWithModifier, actionTileWithModifier]) => {
       return new NeighborPair(conditionTileWithModifier, actionTileWithModifier)
+    })
+  }
+
+  evaluate(direction: RULE_DIRECTION, firstCell: Cell) {
+    let curCell = firstCell
+    return this._neighborPairs.map(neighborPair => {
+      const ret = neighborPair.evaluate(direction, curCell)
+      curCell = curCell.getNeighbor(direction)
+      return ret
     })
   }
 
@@ -127,6 +136,12 @@ class NeighborPair implements IMatcher {
   constructor(condition: RuleBracketNeighbor, action: RuleBracketNeighbor) {
     this._condition = condition._tilesWithModifier
     this._action = action._tilesWithModifier
+  }
+
+  evaluate(direction: RULE_DIRECTION, cell: Cell) {
+    // TODO: Remove the CellMutator and just mutate directly since we know everything matches
+    const mutator = new CellMutator(this._condition, this._action, cell, direction)
+    return mutator.mutate()
   }
 
   getMatchedMutatorsOrNull(cell: Cell, direction: RULE_DIRECTION) {

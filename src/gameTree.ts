@@ -66,6 +66,10 @@ export class GameTree {
     getFirstCellMatchesFor(bracketPair: RuleBracketPair, direction: RULE_DIRECTION) {
         return this.brackets.get(bracketPair)._firstCellsInEachDirection.get(direction)
     }
+    updateCell(cell: Cell) {
+        this.tryAddingCell(cell)
+        this.removeCellIfNoLongerMatches(cell)
+    }
 }
 export class GameBracket {
     _gameSetNeighbors: GameSet[]

@@ -9,9 +9,11 @@ import {
     IMutator,
     RuleBracketPair,
     getMatchedMutatorsHelper,
-    RULE_DIRECTION
+    RULE_DIRECTION,
+    SIMPLE_DIRECTIONS,
+    CellMutation
 } from '../pairs'
-import { RULE_MODIFIER, setDifference } from '../util'
+import { RULE_MODIFIER, setDifference, setIntersection } from '../util'
 import { Cell } from '../engine'
 import { GameTree } from '../gameTree';
 
@@ -81,7 +83,52 @@ export class GameRule extends BaseForLines implements IRule {
     }
 
     evaluate(gameTree: GameTree) {
-        // check that all the bracketPairs have at least one match
+        const allMutators: CellMutation[][] = []
+        // Determine which directions to loop over
+        // Include any simple UP, DOWN, LEFT, RIGHT ones
+        let directionsToCheck = setIntersection(this._modifiers, SIMPLE_DIRECTIONS)
+        // Include LEFT and RIGHT if HORIZONTAL
+        if (this._modifiers.has(RULE_MODIFIER.HORIZONTAL)) {
+            return [] // not supported properly
+            // directionsToCheck.add(RULE_MODIFIER.LEFT)
+            // directionsToCheck.add(RULE_MODIFIER.RIGHT)
+        }
+        // Include UP and DOWN if VERTICAL
+        if (this._modifiers.has(RULE_MODIFIER.VERTICAL)) {
+            return [] // not supported properly
+            // directionsToCheck.add(RULE_MODIFIER.UP)
+            // directionsToCheck.add(RULE_MODIFIER.DOWN)
+        }
+        // If no direction was specified then check UP, DOWN, LEFT, RIGHT
+        if (directionsToCheck.size === 0) {
+            directionsToCheck = new Set(SIMPLE_DIRECTIONS)
+        }
+
+        for (const direction of directionsToCheck) {
+
+            // check that all the bracketPairs have at least one match
+            let matchesAllBrackets = true
+            this._bracketPairs.forEach(bracketPair => {
+                const firstMatches = gameTree.getFirstCellMatchesFor(bracketPair, direction)
+                if (firstMatches.size === 0) {
+                    matchesAllBrackets = false
+                }
+            })
+
+            if (matchesAllBrackets) {
+                // Evaluate!
+                const mutators = this._bracketPairs.map(bracketPair => {
+                    const firstMatches = new Set(gameTree.getFirstCellMatchesFor(bracketPair, direction)) // Make it an Array just so we copy the elements out because Sets are mutable
+                    const ret: CellMutation[][] = []
+                    firstMatches.forEach(firstCell => {
+                        ret.push(bracketPair.evaluate(direction, firstCell))
+                    })
+                    return _.flatten(ret)
+                })
+                allMutators.push(_.flatten(mutators))
+            }
+        }
+        return _.flatten(allMutators)
     }
 
     getMatchedMutatorsOrNull(cell: Cell) {

@@ -1,6 +1,16 @@
 /* eslint-env jasmine */
-const { parseEngine } = require('./engine.test')
+const { default: Engine } = require('../src/engine')
+const { default: Parser } = require('../src/parser/parser')
 const { resetRandomSeed } = require('../src/util')
+
+function parseEngine (code) {
+  const { data, error } = Parser.parse(code)
+  expect(error && error.message).toBeFalsy() // Use && so the error messages are shorter
+
+  const engine = new Engine(data)
+  engine.setLevel(0)
+  return { engine, data }
+}
 
 describe('Directions', () => {
   it('Marks a sprite when it wants to move', () => {
