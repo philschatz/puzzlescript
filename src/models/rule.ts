@@ -80,6 +80,10 @@ export class GameRule extends BaseForLines implements IRule {
     }
 
     getMatchedMutatorsOrNull(cell: Cell) {
+        // We do not support multiple bracket pairs yet
+        if (this._bracketPairs.length > 1) {
+            return
+        }
         // If the rule has any modifiers that we do not understand, return null
         if (setDifference(this._modifiers, SUPPORTED_RULE_MODIFIERS).size > 0) {
             return null
