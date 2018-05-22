@@ -2,6 +2,7 @@ import * as _ from 'lodash'
 import * as ohm from 'ohm-js'
 import { PUZZLESCRIPT_GRAMMAR } from './grammar'
 import { LookupHelper } from './lookup'
+import { ValidationLevel, ValidationHelper } from './validation'
 import { getGameSemantics } from './gameGrammar'
 import { getTileSemantics } from './tileGrammar'
 import { getSoundSemantics } from './soundGrammar'
@@ -9,27 +10,9 @@ import { getRuleSemantics } from './ruleGrammar'
 import { getLevelSemantics } from './levelGrammar'
 import { getCollisionLayerSemantics } from './collisionLayerGrammar'
 import { getWinConditionSemantics } from './winConditionGrammar'
-import { GameData, IGameNode } from '../models/game'
+import { GameData } from '../models/game'
 
 let _GRAMMAR: ohm.Grammar = null
-
-export enum ValidationLevel {
-  ERROR,
-  WARNING,
-  INFO
-}
-
-class ValidationMessage {
-  gameNode: IGameNode
-  level: ValidationLevel
-  message: string
-
-  constructor(gameNode: IGameNode, level: ValidationLevel, message: string) {
-      this.gameNode = gameNode
-      this.level = level
-      this.message = message
-  }
-}
 
 class Parser {
   getGrammar() {
@@ -54,25 +37,21 @@ class Parser {
   parse(code: string) {
     const g = this.getGrammar()
     const { match: m } = this.parseGrammar(code)
-    const validationMessages: ValidationMessage[] = []
-
-    function addValidationMessage(source: IGameNode, level: ValidationLevel, message: string) {
-      validationMessages.push(new ValidationMessage(source, level, message))
-    }
 
     if (m.succeeded()) {
       const s = g.createSemantics()
       const lookup = new LookupHelper()
+      const validation = new ValidationHelper()
 
       let operations = {}
 
       _.extend(operations,
-        getGameSemantics(lookup, addValidationMessage),
+        getGameSemantics(lookup, validation),
         getTileSemantics(lookup),
         getSoundSemantics(lookup),
         getRuleSemantics(),
         getLevelSemantics(lookup),
-        getCollisionLayerSemantics(lookup, addValidationMessage),
+        getCollisionLayerSemantics(lookup, validation),
         getWinConditionSemantics()
       )
       s.addOperation('parse', operations)
@@ -81,21 +60,21 @@ class Parser {
       // Validate that the game objects are rectangular
       game.objects.forEach((sprite) => {
         // if (!sprite.hasCollisionLayer()) {
-        //   addValidationMessage(sprite, ValidationLevel.WARNING, `Game object is not in a Collision Layer. All objects must be in exactly one collision layer`)
+        //   validation.addValidationMessage(sprite, ValidationLevel.WARNING, `Game object is not in a Collision Layer. All objects must be in exactly one collision layer`)
         // }
         if (sprite.isInvalid()) {
-          addValidationMessage(sprite, ValidationLevel.WARNING, `Game Object is Invalid. Reason: ${sprite.isInvalid()}`)
+          validation.addValidationMessage(sprite, ValidationLevel.WARNING, `Game Object is Invalid. Reason: ${sprite.isInvalid()}`)
         }
       })
 
       // Validate that the level maps are rectangular
       game.levels.forEach((level) => {
         if (level.isInvalid()) {
-          addValidationMessage(level, ValidationLevel.WARNING, `Level is Invalid. Reason: ${level.isInvalid()}`)
+          validation.addValidationMessage(level, ValidationLevel.WARNING, `Level is Invalid. Reason: ${level.isInvalid()}`)
         }
       })
 
-      return { data: game, validationMessages }
+      return { data: game, validationMessages: validation.getValidationMessages() }
     } else {
       const trace = g.trace(code)
       return { error: m, trace: trace }

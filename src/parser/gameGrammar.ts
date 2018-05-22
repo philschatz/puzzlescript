@@ -1,3 +1,4 @@
+import * as ohm from 'ohm-js'
 import {
     BaseForLines,
     IGameCode,
@@ -5,11 +6,12 @@ import {
     GameData,
     GameMessage
 } from '../models/game'
-import { GameMetadata } from '../models/metadata'
+import { GameMetadata, Dimension } from '../models/metadata'
 import { HexColor, TransparentColor } from '../models/colors'
 import { lookupColorPalette } from '../colors'
 import { LookupHelper } from './lookup'
-import { ValidationLevel } from './parser'
+import { ValidationLevel, ValidationHelper } from './validation'
+import { SpawnSyncOptionsWithStringEncoding } from 'child_process';
 
 export const COMMON_GRAMMAR = `
     GameData =
@@ -241,16 +243,83 @@ export const METADATA_GRAMMAR = `
     widthAndHeight = integer "x" integer
 `
 
-export function getGameSemantics(lookup: LookupHelper, addValidationMessage) {
+export function getGameSemantics(lookup: LookupHelper, validation: ValidationHelper) {
     let currentColorPalette = 'arnecolors' // default
+    const metadata = new GameMetadata()
     return {
-        GameData: function (_whitespace1, title, _whitespace2, settingsFields, _whitespace3, objects, legends, sounds, collisionLayers, rules, winConditions, levels) {
-            const metadata = new GameMetadata()
-            settingsFields.parse().forEach((setting) => {
+        GameData: function (
+            _whitespace1: string,
+            title: ohm.Node,
+            _whitespace2: string,
+            settingsFields: ohm.Node,
+            _whitespace3: string,
+            objects: ohm.Node,
+            legends: ohm.Node,
+            sounds: ohm.Node,
+            collisionLayers: ohm.Node,
+            rules: ohm.Node,
+            winConditions: ohm.Node,
+            levels: ohm.Node
+        ) {
+            settingsFields.parse().forEach((setting: [string, string | number | Dimension | HexColor] | string) => {
                 if (Array.isArray(setting)) {
-                    metadata._setValue(setting[0], setting[1])
+                    const key: string = setting[0]
+                    const value = setting[1]
+                    switch (key) {
+                        case "author": metadata.author = value as string
+                            break
+                        case "homepage": metadata.homepage = value as string
+                            break
+                        case "youtube": metadata.youtube = value as string
+                            break
+                        case "color_palette": metadata.color_palette = value as string
+                            break
+                        case "run_rules_on_level_start": metadata.run_rules_on_level_start = value as string
+                            break
+                        case "realtime_interval": metadata.realtime_interval = value as number
+                            break
+                        case "key_repeat_interval": metadata.key_repeat_interval = value as number
+                            break
+                        case "again_interval": metadata.again_interval = value as number
+                            break
+                        case "zoomscreen": metadata.zoomscreen = value as Dimension
+                            break
+                        case "flickscreen": metadata.flickscreen = value as Dimension
+                            break
+                        case "background_color": metadata.background_color = value as HexColor
+                            break
+                        case "text_color": metadata.text_color = value as HexColor
+                            break
+                        case "noaction": metadata.noaction = true
+                            break
+                        case "noundo": metadata.noundo = true
+                            break
+                        case "norepeat_action": metadata.norepeat_action = true
+                            break
+                        case "throttle_movement": metadata.throttle_movement = true
+                            break
+                        case "norestart": metadata.norestart = true
+                            break
+                        case "require_player_movement": metadata.require_player_movement = true
+                            break
+                        case "verbose_logging": metadata.verbose_logging = true
+                    }
                 } else {
-                    metadata._setValue(setting, true)
+                    switch (setting) {
+                        case "noaction": metadata.noaction = true
+                            break
+                        case "noundo": metadata.noundo = true
+                            break
+                        case "norepeat_action": metadata.norepeat_action = true
+                            break
+                        case "throttle_movement": metadata.throttle_movement = true
+                            break
+                        case "norestart": metadata.norestart = true
+                            break
+                        case "require_player_movement": metadata.require_player_movement = true
+                            break
+                        case "verbose_logging": metadata.verbose_logging = true
+                    }
                 }
             })
             return new GameData(
@@ -265,7 +334,7 @@ export function getGameSemantics(lookup: LookupHelper, addValidationMessage) {
                 levels.parse()[0] || []
             )
         },
-        Title: function (_1, value) {
+        Title: function (_1: ohm.Node, value: ohm.Node) {
             return value.parse()
         },
         Author: getConfigField,
@@ -279,57 +348,53 @@ export function getGameSemantics(lookup: LookupHelper, addValidationMessage) {
         Youtube: getConfigField,
         Zoomscreen: getConfigField,
         Flickscreen: getConfigField,
-        ColorPalette: function (_1, colorPaletteName) {
+        ColorPalette: function (_1: ohm.Node, colorPaletteName: ohm.Node) {
             // Set the color palette so we only need to use hex color codes
             currentColorPalette = colorPaletteName.parse()
             return getConfigField(_1, colorPaletteName)
         },
         RequirePlayerMovement: getConfigField,
 
-        Section: function (_threeDashes1, _lineTerminator1, _sectionName, _lineTerminator2, _threeDashes2, _8, _9, _10, _11) {
+        Section: function (_threeDashes1: ohm.Node, _lineTerminator1: ohm.Node, _sectionName: ohm.Node, _lineTerminator2: ohm.Node, _threeDashes2: ohm.Node, _8: ohm.Node, _9: ohm.Node, _10: ohm.Node, _11: ohm.Node) {
             return _10.parse()
         },
-        MessageCommand: function (_message, message) {
+        MessageCommand: function (_message: ohm.Node, message: ohm.Node) {
             return new GameMessage(this.source, message.parse())
         },
-        GameMessage: function (_1, optionalMessage) {
+        GameMessage: function (_1: ohm.Node, optionalMessage: ohm.Node) {
             // TODO: Maybe discard empty messages?
             return new GameMessage(this.source, optionalMessage.parse()[0] /* Since the message is optional */)
         },
-        widthAndHeight: function (_1, _2, _3) {
-            return {
-                __type: 'widthAndHeight',
-                width: _1.parse(),
-                height: _3.parse()
-            }
+        widthAndHeight: function (_1: ohm.Node, _2: ohm.Node, _3: ohm.Node) {
+            return new Dimension(_1.parse(), _3.parse())
         },
-        pixelRow: function (_1, _2) {
+        pixelRow: function (_1: ohm.Node, _2: ohm.Node) {
             return _1.parse()
         },
-        colorHex3: function (_1, _2, _3, _4) {
+        colorHex3: function (_1: ohm.Node, _2: ohm.Node, _3: ohm.Node, _4: ohm.Node) {
             return new HexColor(this.source, this.sourceString)
         },
-        colorHex6: function (_1, _2, _3, _4, _5, _6, _7) {
+        colorHex6: function (_1: ohm.Node, _2: ohm.Node, _3: ohm.Node, _4: ohm.Node, _5: ohm.Node, _6: ohm.Node, _7: ohm.Node) {
             return new HexColor(this.source, this.sourceString)
         },
-        colorName: function (_1) {
+        colorName: function (_1: ohm.Node) {
             const colorName = this.sourceString.toLowerCase()
             const hex = lookupColorPalette(currentColorPalette, colorName)
             if (hex) {
                 return new HexColor(this.source, hex)
             } else {
                 const transparent = new TransparentColor(this.source)
-                addValidationMessage(transparent, ValidationLevel.WARNING, `Invalid color name. "${colorName}" is not a valid color. Using "transparent" instead`)
+                validation.addValidationMessage(transparent, ValidationLevel.WARNING, `Invalid color name. "${colorName}" is not a valid color. Using "transparent" instead`)
                 return transparent
             }
         },
-        colorTransparent: function (_1) {
+        colorTransparent: function (_1: ohm.Node) {
             return new TransparentColor(this.source)
         },
-        NonemptyListOf: function (_1, _2, _3) {
+        NonemptyListOf: function (_1: ohm.Node, _2: ohm.Node, _3: ohm.Node) {
             return [_1.parse()].concat(_3.parse())
         },
-        nonemptyListOf: function (_1, _2, _3) {
+        nonemptyListOf: function (_1: ohm.Node, _2: ohm.Node, _3: ohm.Node) {
             // Do this special because LegendTile contains things like `X = A or B or C` and we need to know if they are `and` or `or`
             return {
                 __type: 'nonemptyListOf',
@@ -337,27 +402,27 @@ export function getGameSemantics(lookup: LookupHelper, addValidationMessage) {
                 separators: [_2.parse()]
             }
         },
-        integer: function (_1) {
+        integer: function (_1: string) {
             return parseInt(this.sourceString)
         },
-        decimalWithLeadingNumber: function (_1, _2, _3) {
+        decimalWithLeadingNumber: function (_1: string, _2: string, _3: string) {
             return parseFloat(this.sourceString)
         },
-        decimalWithLeadingPeriod: function (_1, _2) {
+        decimalWithLeadingPeriod: function (_1: string, _2: string) {
             return parseFloat(this.sourceString)
         },
-        lookupRuleVariableName: function (_1) {
+        lookupRuleVariableName: function (_1: ohm.Node) {
             return lookup.lookupObjectOrLegendTile(this.source, _1.parse())
         },
-        ruleVariableName: function (_1) {
+        ruleVariableName: function (_1: string) {
             return this.sourceString
         },
-        words: function (_1) {
+        words: function (_1: string) {
             return this.sourceString
         },
         _terminal: function () { return this.primitiveValue },
-        lineTerminator: (_1, _2, _3, _4) => { },
-        digit: (x) => {
+        lineTerminator: (_1: string, _2: string, _3: string, _4: string) => { },
+        digit: (x: ohm.Node) => {
             return x.primitiveValue.charCodeAt(0) - '0'.charCodeAt(0)
         }
         // _default: function (exp1) {
@@ -368,6 +433,6 @@ export function getGameSemantics(lookup: LookupHelper, addValidationMessage) {
 }
 
 // Helper for setting a config field
-function getConfigField(key, value) {
+function getConfigField(key: ohm.Node, value: ohm.Node) {
     return [key.parse(), value.parse()]
 }

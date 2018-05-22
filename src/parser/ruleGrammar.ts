@@ -1,4 +1,5 @@
 import * as _ from 'lodash'
+import * as ohm from 'ohm-js'
 import {
     GameRuleLoop,
     GameRuleGroup,
@@ -88,35 +89,35 @@ export const RULE_GRAMMAR = `
 
 export function getRuleSemantics() {
     return {
-        RuleItem: function (_1) {
+        RuleItem: function (_1: ohm.Node) {
             return _1.parse()
         },
-        RuleLoop: function (_startloop, _whitespace1, rules, _endloop, _whitespace2) {
+        RuleLoop: function (_startloop: ohm.Node, _whitespace1: ohm.Node, rules: ohm.Node, _endloop: ohm.Node, _whitespace2: ohm.Node) {
             return new GameRuleLoop(this.source, rules.parse())
         },
-        RuleGroup: function (firstRule, _plusses, followingRules) {
+        RuleGroup: function (firstRule: ohm.Node, _plusses: ohm.Node, followingRules: ohm.Node) {
             return new GameRuleGroup(this.source, [firstRule.parse()].concat(followingRules.parse()))
         },
-        Rule: function (modifiers, conditions, _arrow, _unusuedModifer, actions, commands, optionalMessageCommand, _whitespace) {
+        Rule: function (modifiers: ohm.Node, conditions: ohm.Node, _arrow: ohm.Node, _unusuedModifer: ohm.Node, actions: ohm.Node, commands: ohm.Node, optionalMessageCommand: ohm.Node, _whitespace: string) {
             return new GameRule(this.source, new Set(_.flatten(modifiers.parse())), conditions.parse(), actions.parse(), commands.parse().concat(optionalMessageCommand.parse()))
         },
-        RuleBracket: function (_openBracket, neighbors, hackAgain, _closeBracket) {
+        RuleBracket: function (_openBracket: ohm.Node, neighbors: ohm.Node, hackAgain: ohm.Node, _closeBracket: ohm.Node) {
             return new RuleBracket(this.source, neighbors.parse(), hackAgain.parse())
         },
-        RuleBracketNeighbor: function (_1) {
+        RuleBracketNeighbor: function (_1: ohm.Node) {
             return _1.parse()
         },
-        RuleBracketEllipsisNeighbor: function (_1) {
+        RuleBracketEllipsisNeighbor: function (_1: ohm.Node) {
             const tileWithModifier = new TileWithModifier(this.source, "...", null)
             return new RuleBracketNeighbor(this.source, [tileWithModifier], true)
         },
-        RuleBracketNoEllipsisNeighbor: function (tileWithModifier) {
+        RuleBracketNoEllipsisNeighbor: function (tileWithModifier: ohm.Node) {
             return new RuleBracketNeighbor(this.source, tileWithModifier.parse(), false)
         },
-        TileWithModifier: function (optionalModifier, tile) {
+        TileWithModifier: function (optionalModifier: ohm.Node, tile: ohm.Node) {
             return new TileWithModifier(this.source, optionalModifier.parse()[0], tile.parse())
         },
-        tileModifier: function (_whitespace1, tileModifier, _whitespace2) {
+        tileModifier: function (_whitespace1: ohm.Node, tileModifier: ohm.Node, _whitespace2: ohm.Node) {
             let modifier = tileModifier.parse()
             // Arrows are shorthand. https://www.puzzlescript.net/Documentation/directions.html
             switch (modifier) {
@@ -137,10 +138,10 @@ export function getRuleSemantics() {
             }
             return modifier
         },
-        HackTileNameIsSFX1: function (sfx) {
+        HackTileNameIsSFX1: function (sfx: ohm.Node) {
             return new HackNode(this.source, sfx.parse())
         },
-        HackTileNameIsSFX2: function (tile, sfx) {
+        HackTileNameIsSFX2: function (tile: ohm.Node, sfx: ohm.Node) {
             return new HackNode(this.source, { tile: tile.parse(), sfx: sfx.parse() })
         },
     }
