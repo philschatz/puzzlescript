@@ -422,7 +422,7 @@ yellow
     [ Player ] -> [ Player again] (from "Rose")
     `)
 
-    function expector(rule, vanilla, late, rigid, again) {
+    function expector (rule, vanilla, late, rigid, again) {
       expect(rule.isLate()).toBe(late)
       expect(rule.isRigid()).toBe(rigid)
       expect(rule.isAgain()).toBe(again)
