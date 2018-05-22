@@ -111,6 +111,8 @@ async function run() {
           await sleep(500)
           const changedCells = engine.tick()
 
+          // Take a heap snapshot here because hopefully the GameTree has survived
+          debugger
 
           if (changedCells.size === 0) {
             break

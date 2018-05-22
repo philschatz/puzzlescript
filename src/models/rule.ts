@@ -13,6 +13,7 @@ import {
 } from '../pairs'
 import { RULE_MODIFIER, setDifference } from '../util'
 import { Cell } from '../engine'
+import { GameTree } from '../gameTree';
 
 enum RULE_COMMAND {
     AGAIN = 'AGAIN'
@@ -77,6 +78,10 @@ export class GameRule extends BaseForLines implements IRule {
         if (commands.length > 0) {
             this._bracketPairs = []
         }
+    }
+
+    evaluate(gameTree: GameTree) {
+        // check that all the bracketPairs have at least one match
     }
 
     getMatchedMutatorsOrNull(cell: Cell) {

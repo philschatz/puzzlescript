@@ -6,6 +6,7 @@ import { GameSprite, GameLegendTileSimple, IGameTile } from './models/tile'
 import { GameRule } from './models/rule'
 import { RULE_MODIFIER, nextRandom, setAddAll } from './util'
 import { CellMutation } from './pairs';
+import { GameTree, buildAndPopulateTree } from './gameTree';
 
 const MAX_REPEATS = 10
 
@@ -136,6 +137,7 @@ export class Cell {
 export default class Engine extends EventEmitter2 {
   gameData: GameData
   currentLevel: Cell[][]
+  gameTree: GameTree
 
   constructor(gameData: GameData) {
     super()
@@ -151,8 +153,14 @@ export default class Engine extends EventEmitter2 {
     this.currentLevel = level.getRows().map((row, rowIndex) => {
       return row.map((col, colIndex) => new Cell(this, new Set(col.getSprites()), rowIndex, colIndex))
     })
+
+    this.gameTree = buildAndPopulateTree(this.gameData, this)
+
     // Return the cells so the UI can listen to when they change
-    return _.flattenDeep(this.currentLevel)
+    return this.getCells()
+  }
+  getCells() {
+    return _.flatten(this.currentLevel)
   }
   toSnapshot() {
     return this.currentLevel.map(row => {
