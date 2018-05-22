@@ -106,7 +106,7 @@ async function run() {
         data.winConditions.forEach(addNodeToCoverage)
         // data.levels.forEach(addNodeToCoverage)
 
-
+        startTime = Date.now()
         for (var i = 0; i < 10; i++) {
           await sleep(500)
           const changedCells = engine.tick()
@@ -121,13 +121,12 @@ async function run() {
           // UI.renderScreen(data, engine.currentLevel)
 
           // Draw any cells that moved
-          startTime = Date.now()
           for (const cell of changedCells) {
             UI.drawCell(data, cell, false)
           }
-          totalRenderTime += Date.now() - startTime
 
         }
+        console.log(`Game took # seconds: `, (Date.now() - startTime)/1000)
 
         // record the tick coverage
         for (const node of [].concat(data.objects).concat(data.rules).concat(data.legends)/*.concat(data.levels)*/) {

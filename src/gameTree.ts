@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import { IGameTile } from "./models/tile";
+import { IGameTile, GameSprite } from "./models/tile";
 import Engine, { Cell } from "./engine";
 import { RULE_DIRECTION, RuleBracketPair } from "./pairs";
 import { GameData } from "./models/game";
@@ -42,33 +42,46 @@ function opposite(dir: RULE_DIRECTION) {
 
 export class GameTree {
     brackets: Map<RuleBracketPair, GameBracket>
-    sets: Set<GameSet>
+    sets: Map<GameSprite, Set<GameSet>>
     constructor() {
         this.brackets = new Map()
-        this.sets = new Set()
+        this.sets = new Map()
     }
     addBracket(bracketPair: RuleBracketPair, gameBracket: GameBracket) {
         this.brackets.set(bracketPair, gameBracket)
     }
-    addGameSet(gameSet: GameSet) {
-        this.sets.add(gameSet)
+    addGameSet(gameSet: GameSet, sprites: Iterable<GameSprite>) {
+        for (const sprite of sprites) {
+            if (!this.sets.has(sprite)) {
+                this.sets.set(sprite, new Set())
+            }
+            this.sets.get(sprite).add(gameSet)
+        }
     }
-    tryAddingCell(cell: Cell) {
-        this.sets.forEach(set => {
-            set.tryAddingCell(cell)
-        })
+    tryAddingCell(cell: Cell, addedSprite: GameSprite) {
+        const setsForSprite = this.sets.get(addedSprite)
+        if (setsForSprite) {
+            setsForSprite.forEach(set => {
+                set.tryAddingCell(cell)
+            })
+        }
     }
-    removeCellIfNoLongerMatches(cell: Cell) {
-        this.sets.forEach(set => {
-            set.removeCellIfNoLongerMatches(cell)
-        })
+    removeCellIfNoLongerMatches(cell: Cell, removedSprite: GameSprite) {
+        const setsForSprite = this.sets.get(removedSprite)
+        if (setsForSprite) {
+            setsForSprite.forEach(set => {
+                set.removeCellIfNoLongerMatches(cell)
+            })
+        }
     }
     getFirstCellMatchesFor(bracketPair: RuleBracketPair, direction: RULE_DIRECTION) {
         return this.brackets.get(bracketPair)._firstCellsInEachDirection.get(direction)
     }
-    updateCell(cell: Cell) {
-        this.tryAddingCell(cell)
-        this.removeCellIfNoLongerMatches(cell)
+    updateCell(cell: Cell, sprites: Iterable<GameSprite>) {
+        [...sprites].forEach(sprite => {
+            this.tryAddingCell(cell, sprite)
+            this.removeCellIfNoLongerMatches(cell, sprite)
+        })
     }
 }
 export class GameBracket {
@@ -239,12 +252,25 @@ export class GameSet {
 export function buildTree(data: GameData) {
     const gameTree = new GameTree()
 
+    const uniqueSets: Map<string, GameSet> = new Map()
+
     _.flatten(data.rules.map(rule => rule._bracketPairs)).map(bracketPair => {
         let neighborPairs = bracketPair ? bracketPair._neighborPairs : []
         const neighbors = neighborPairs.map(neighborPair => {
             const conditions = neighborPair._condition
-            const set = new GameSet(conditions) // TODO: Deduplicate these sets
-            gameTree.addGameSet(set)
+            const setKey = conditions.map(condition => condition.toKey()).join(' ')
+            if (!uniqueSets.has(setKey)) {
+                const set = new GameSet(conditions)
+                uniqueSets.set(setKey, set)
+            }
+            const set = uniqueSets.get(setKey)
+            gameTree.addGameSet(set, _.flatten(conditions.map(condition => {
+                if (condition._tile) { // HACK ... checking the "if" .... not sure when condition._tile would be null
+                    return condition._tile.getSprites()
+                } else {
+                    return []
+                }
+            })))
             return set
         })
         const bracket = new GameBracket(neighbors)
@@ -258,7 +284,9 @@ export function buildTree(data: GameData) {
 export function buildAndPopulateTree(data: GameData, engine: Engine) {
     const gameTree = buildTree(data)
     engine.getCells().forEach(cell => {
-        gameTree.tryAddingCell(cell)
+        cell.getSpritesAsSet().forEach(sprite => {
+            gameTree.tryAddingCell(cell, sprite)
+        })
     })
 
     // global['gameTree'] = gameTree

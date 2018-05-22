@@ -68,7 +68,7 @@ export class Cell {
   // Maybe add removeSprite(sprite)
   updateSprites(newSprites: Map<GameSprite, string>) {
     this._spriteAndWantsToMoves = newSprites
-    this._engine.gameTree.updateCell(this)
+    this._engine.gameTree.updateCell(this, newSprites.keys())
     this._engine.emit('cell:updated', this)
     return true // maybe check if the sprites were the same before so there is less to update visually
   }
@@ -88,7 +88,9 @@ export class Cell {
       case RULE_MODIFIER.RIGHT:
         return this._getRelativeNeighbor(0, 1)
       default:
-        throw new Error(`BUG: Unsupported direction "${direction}"`)
+        console.error(`BUG: Unsupported direction "${direction}"`)
+        return this
+        // throw new Error(`BUG: Unsupported direction "${direction}"`)
     }
   }
   wantsToMoveTo(tile: IGameTile, absoluteDirection: RULE_DIRECTION) {
@@ -122,18 +124,18 @@ export class Cell {
   }
   clearWantsToMove(sprite: GameSprite) {
     this._spriteAndWantsToMoves.set(sprite, null)
-    this._engine.gameTree.updateCell(this)
+    this._engine.gameTree.updateCell(this, [sprite])
   }
   addSprite(sprite: GameSprite, wantsToMove?: string) {
     const isUnchanged = this._spriteAndWantsToMoves.has(sprite)
     this._spriteAndWantsToMoves.set(sprite, wantsToMove)
-    this._engine.gameTree.updateCell(this)
+    this._engine.gameTree.updateCell(this, [sprite])
     return !isUnchanged
   }
   removeSprite(sprite: GameSprite) {
     const isChanged = this._spriteAndWantsToMoves.has(sprite)
     this._spriteAndWantsToMoves.delete(sprite)
-    this._engine.gameTree.updateCell(this)
+    this._engine.gameTree.updateCell(this, [sprite])
     return isChanged
   }
 }

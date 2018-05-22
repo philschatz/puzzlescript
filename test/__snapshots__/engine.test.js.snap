@@ -4,12 +4,10 @@ exports[`engine draws corner sprites correctly (according to mirror isles) 1`] =
 Array [
   Array [
     Array [
-      "RemoveLandRUD",
       "Background",
     ],
     Array [
       "Hole",
-      "CrateInHole",
     ],
   ],
 ]
@@ -19,7 +17,6 @@ exports[`engine draws corner sprites correctly (according to skipping stones) 1`
 Array [
   Array [
     Array [
-      "RemoveLandRUD",
       "Sand",
     ],
     Array [

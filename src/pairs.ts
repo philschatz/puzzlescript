@@ -171,29 +171,55 @@ class CellMutator implements IMutator {
     // TODO: only remove tiles that are matching the collisionLayer but wait, they already need to be exclusive
 
     // Remember the set of sprites before (so we can detect if the cell changed)
-    const spritesBefore = this._cell.getSpritesAsSet()
+    const spritesBefore = new Set(this._cell.getSpritesAsSet())
 
     const newSpritesAndWantsToMoves = [...this._cell.getSpriteAndWantsToMoves()]
 
+
+    const conditionSprites = new Set()
+    const actionSprites = new Set()
     // remove sprites that are listed on the condition side
     this._condition.forEach(tileWithModifier => {
       tileWithModifier._tile.getSprites().forEach(sprite => {
-        this._cell.removeSprite(sprite)
+        conditionSprites.add(sprite)
+        // this._cell.removeSprite(sprite)
       })
     })
     // add sprites that are listed on the action side
     this._action.forEach(tileWithModifier => {
       tileWithModifier._tile.getSprites().forEach(sprite => {
-        this._cell.removeSprite(sprite)
+        // this._cell.removeSprite(sprite)
+        conditionSprites.add(sprite)
         if (tileWithModifier.isNo()) {
         } else {
-          this._cell.addSprite(sprite, tileWithModifier._modifier)
+          actionSprites.add(sprite)
+          // this._cell.addSprite(sprite, tileWithModifier._modifier)
         }
       })
     })
 
+    const spritesToRemove = setDifference(conditionSprites, actionSprites)
+    const spritesToAdd = setDifference(actionSprites, conditionSprites)
+
+    for (const sprite of spritesToRemove) {
+      this._cell.removeSprite(sprite)
+    }
+
+    // add sprites that are listed on the action side
+    this._action.forEach(tileWithModifier => {
+      tileWithModifier._tile.getSprites().forEach(sprite => {
+        // if (spritesToAdd.has(sprite)) {
+        if (tileWithModifier.isNo()) {
+        } else {
+          this._cell.addSprite(sprite, tileWithModifier._modifier)
+        }
+        // }
+      })
+    })
+
     // TODO: Be better about recording when the cell actually updated
-    const didSpritesChange = !setEquals(spritesBefore, this._cell.getSpritesAsSet())
+    const spritesNow = this._cell.getSpritesAsSet()
+    const didSpritesChange = !setEquals(spritesBefore, spritesNow)
     return new CellMutation(this._cell, didSpritesChange)
   }
 }

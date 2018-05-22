@@ -206,6 +206,10 @@ export class TileWithModifier extends BaseForLines {
         this._tile = tile
     }
 
+    toKey() {
+        return `${this._modifier || ''} ${this._tile ? this._tile.getSprites().map(sprite => sprite._getName()) : '|||(notile)|||'}`
+    }
+
     isNo() {
         return M_NO === this._modifier
     }
