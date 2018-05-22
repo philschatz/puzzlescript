@@ -20,7 +20,7 @@ export enum RULE_DIRECTION {
 export class CellMutation {
   cell: Cell
   didSpritesChange: boolean
-  constructor(cell, didSpritesChange) {
+  constructor(cell: Cell, didSpritesChange: boolean) {
     this.cell = cell
     this.didSpritesChange = didSpritesChange
   }

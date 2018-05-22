@@ -164,8 +164,28 @@ export class TileWithModifier extends BaseForLines {
         }
         const hasTile = this._tile && this._tile.matchesCell(cell)
         let matchesDirection = true
-        if (RULE_DIRECTION[this._modifier]) {
-            matchesDirection = cell.wantsToMoveTo(this._tile, relativeDirectionToAbsolute(direction, RULE_DIRECTION[this._modifier]))
+        let directionTyped
+        // HACK: this._modifier is of type string but RULE_DIRECTION is a different type.
+        // To get around the noImplicitAny, this switch was added.
+        switch (this._modifier) {
+            case 'UP':
+                directionTyped = RULE_DIRECTION.UP
+                break
+            case 'DOWN':
+                directionTyped = RULE_DIRECTION.DOWN
+                break
+            case 'LEFT':
+                directionTyped = RULE_DIRECTION.LEFT
+                break
+            case 'RIGHT':
+                directionTyped = RULE_DIRECTION.RIGHT
+                break
+            default:
+                directionTyped = null
+                break
+        }
+        if (directionTyped) {
+            matchesDirection = cell.wantsToMoveTo(this._tile, relativeDirectionToAbsolute(direction, directionTyped))
         }
         if (this.isNo()) {
             return !(hasTile && matchesDirection)

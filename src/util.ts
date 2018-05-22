@@ -43,7 +43,7 @@ export class SpriteSet {
 
 // From https://stackoverflow.com/a/19303725
 let seed = 1
-export function nextRandom(maxNonInclusive) {
+export function nextRandom(maxNonInclusive: number) {
     let x = Math.sin(seed++) * 10000
     return Math.round((x - Math.floor(x)) * (maxNonInclusive - 1))
 }
