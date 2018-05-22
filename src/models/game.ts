@@ -10,6 +10,7 @@ import { Cell } from '../engine'
 export interface IGameNode {
     __getSourceLineAndColumn: () => { lineNum: number, colNum: number }
     __getLineAndColumnRange: () => { start: { line: number, col: number }, end: { line: number, col: number } }
+    __coverageCount: number
     toString: () => string
 }
 
@@ -20,10 +21,9 @@ export interface IGameCode {
     getLineAndColumnMessage: () => string
 }
 
-let astId: number = 0
 export class BaseForLines {
-    __astId: number
     __source: IGameCode
+    __coverageCount: number
 
     constructor(source: IGameCode) {
         if (!source || !source.getLineAndColumnMessage) {
@@ -32,13 +32,16 @@ export class BaseForLines {
         Object.defineProperty(this, '__source', {
             get: function () { return source }
         })
-        this.__astId = astId++
+        // This is only used for code coverage
+        if (process.env['NODE_ENV'] !== 'production') {
+            this.__coverageCount = 0
+        }
     }
     __getSourceLineAndColumn() {
         return getLineAndColumn(this.__source.sourceString, this.__source.startIdx)
     }
     toString() {
-        return `astId=${this.__astId}\n${this.__source.getLineAndColumnMessage()}`
+        return this.__source.getLineAndColumnMessage()
     }
 
     // This is mostly used for creating code coverage for the games. So we know which Rules (or objects) are not being matched

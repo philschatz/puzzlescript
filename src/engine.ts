@@ -144,6 +144,9 @@ export default class Engine extends EventEmitter2 {
 
   setLevel(levelNum: number) {
     const level = this.gameData.levels[levelNum]
+    if (process.env['NODE_ENV'] !== 'production') {
+      level.__coverageCount++
+    }
     // Clone the board because we will be modifying it
     this.currentLevel = level.getRows().map((row, rowIndex) => {
       return row.map((col, colIndex) => new Cell(this, new Set(col.getSprites()), rowIndex, colIndex))
@@ -162,7 +165,6 @@ export default class Engine extends EventEmitter2 {
   }
 
   tickUpdateCells() {
-    let appliedRules: Map<GameRule, Cell[]> = new Map()
     const changedCellMutations: Set<CellMutation> = new Set()
     // Loop over all the cells, see if a Rule matches, apply the transition, and notify that cells changed
     this.currentLevel.forEach(row => {
@@ -173,14 +175,13 @@ export default class Engine extends EventEmitter2 {
             // Check if the left-hand-side of the rule matches the current cell
             const mutators = rule.getMatchedMutatorsOrNull(cell)
             if (mutators && mutators.length > 0) {
-              if (!appliedRules.has(rule)) {
-                appliedRules.set(rule, [])
-              }
               mutators.forEach(mutator => {
+                // Record coverage on the Rule
+                if (process.env['NODE_ENV'] !== 'production') {
+                  rule.__coverageCount++
+                }
                 // Change the Grid based on the rules that matched
                 const mutation = mutator.mutate()
-                // Add it to the set of changes
-                appliedRules.get(rule).push(mutation.cell)
                 // Keep track of which cells changed so we know which ones to look at to see if they wantsToMove
                 changedCellMutations.add(mutation)
               })
@@ -195,7 +196,7 @@ export default class Engine extends EventEmitter2 {
         })
       })
     })
-    return {changedCellMutations, appliedRules}
+    return changedCellMutations
   }
 
   tickMoveSprites(changedCells: Set<CellMutation>) {
@@ -250,10 +251,10 @@ export default class Engine extends EventEmitter2 {
   }
 
   tick() {
-    const {appliedRules, changedCellMutations} = this.tickUpdateCells()
+    const changedCellMutations = this.tickUpdateCells()
     const movedCells = this.tickMoveSprites(changedCellMutations)
     const changedCells = new Set([...changedCellMutations].filter(mutation => mutation.didSpritesChange).map(({cell}) => cell))
-    return {appliedRules, changedCells: setAddAll(changedCells, movedCells)}
+    return setAddAll(changedCells, movedCells)
   }
 
   pressUp() { }

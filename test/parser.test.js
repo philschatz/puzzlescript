@@ -363,7 +363,7 @@ yellow
   })
 
   it('Sets the collision layer for nested sprites', () => {
-    const { data, validationMessages } = checkParse(`
+    const { data } = checkParse(`
     title foo
 
     ===
@@ -389,11 +389,11 @@ yellow
     `)
 
     // just make sure it doesn't throw an exception
-    expect(data._getSpriteByName('player').getCollisionLayerNum()).toBeGreaterThan(2)
+    expect(data._getSpriteByName('player').getCollisionLayerNum()).toBeGreaterThan(0)
   })
 
   it('Denotes if a rule is late, rigid, or again', () => {
-    const { data, validationMessages } = checkParse(`
+    const { data } = checkParse(`
     title foo
 
     ===
@@ -422,7 +422,7 @@ yellow
     [ Player ] -> [ Player again] (from "Rose")
     `)
 
-    function expector(rule, vanilla, late, rigid, again) {
+    function expector (rule, vanilla, late, rigid, again) {
       expect(rule.isLate()).toBe(late)
       expect(rule.isRigid()).toBe(rigid)
       expect(rule.isAgain()).toBe(again)

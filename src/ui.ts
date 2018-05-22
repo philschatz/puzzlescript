@@ -9,9 +9,6 @@ import { RULE_DIRECTION } from './pairs';
 // First Sprite one is on top.
 // This caused a 2x speedup while rendering.
 function collapseSpritesToPixels(spritesToDraw: GameSprite[], backgroundColor: IColor) {
-  if (spritesToDraw.length === 1) {
-    return spritesToDraw[0].getPixels()
-  }
   if (spritesToDraw.length === 0) {
     // Just draw the background
     const sprite: IColor[][] = []
@@ -24,8 +21,18 @@ function collapseSpritesToPixels(spritesToDraw: GameSprite[], backgroundColor: I
     }
     return sprite
   }
+  // Record Code coverage
+  if (process.env['NODE_ENV'] !== 'production') {
+    spritesToDraw[0].__coverageCount++
+  }
+  if (spritesToDraw.length === 1) {
+    return spritesToDraw[0].getPixels()
+  }
   const sprite = spritesToDraw[0].getPixels()
   spritesToDraw.slice(1).forEach((objectToDraw, spriteIndex) => {
+    if (process.env['NODE_ENV'] !== 'production') {
+      objectToDraw.__coverageCount++
+    }
     const pixels = objectToDraw.getPixels()
     for (let y = 0; y < 5; y++) {
       sprite[y] = sprite[y] || []

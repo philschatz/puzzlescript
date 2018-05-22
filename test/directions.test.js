@@ -1,9 +1,10 @@
+/* eslint-env jasmine */
 const { parseEngine } = require('./engine.test')
 const { resetRandomSeed } = require('../src/util')
 
 describe('Directions', () => {
-    it('Marks a sprite when it wants to move', () => {
-        const {engine, data} = parseEngine(`
+  it('Marks a sprite when it wants to move', () => {
+    const {engine, data} = parseEngine(`
 title foo
 
 ========
@@ -43,23 +44,23 @@ LEVELS
 P.
 
 `)
-        const player = data._getSpriteByName('player')
-        const {changedCellMutations} = engine.tickUpdateCells()
-        expect(engine.toSnapshot()).toMatchSnapshot()
-        // Once these sprites actually move, we neet to separate engine.tick() into multiple steps:
-        // 1. Update all the cells with new sprites and the wantsToMove directions
-        // 2. Move all the sprites that want to move
-        // 3. Late: Update all the cells with new sprites ...
-        // 4. Late: Move all the sprites that want to move
-        // next tick for all the AGAIN rules
-        expect(engine.currentLevel[0][0].getWantsToMove(player)).toBe('RIGHT')
+    const player = data._getSpriteByName('player')
+    const changedCellMutations = engine.tickUpdateCells()
+    expect(engine.toSnapshot()).toMatchSnapshot()
+    // Once these sprites actually move, we neet to separate engine.tick() into multiple steps:
+    // 1. Update all the cells with new sprites and the wantsToMove directions
+    // 2. Move all the sprites that want to move
+    // 3. Late: Update all the cells with new sprites ...
+    // 4. Late: Move all the sprites that want to move
+    // next tick for all the AGAIN rules
+    expect(engine.currentLevel[0][0].getWantsToMove(player)).toBe('RIGHT')
 
-        // Ensure only 1 cell was marked for update
-        expect(changedCellMutations.size).toBe(1)
-    })
+    // Ensure only 1 cell was marked for update
+    expect(changedCellMutations.size).toBe(1)
+  })
 
-    it('Moves the sprite', () => {
-        const {engine, data} = parseEngine(`
+  it('Moves the sprite', () => {
+    const {engine, data} = parseEngine(`
 title foo
 
 ========
@@ -99,20 +100,19 @@ LEVELS
 P.
 
 `)
-        const {changedCells} = engine.tick()
-        // expect(engine.toSnapshot()).toMatchSnapshot()
-        const player = data._getSpriteByName('player')
-        expect(engine.currentLevel[0][1].getSpritesAsSet().has(player)).toBe(true)
+    const changedCells = engine.tick()
+    // expect(engine.toSnapshot()).toMatchSnapshot()
+    const player = data._getSpriteByName('player')
+    expect(engine.currentLevel[0][1].getSpritesAsSet().has(player)).toBe(true)
 
-        // Ensure both cells were marked for re-rendering
-        expect(changedCells.size).toBe(2)
-        expect(changedCells).toContain(engine.currentLevel[0][0])
-        expect(changedCells).toContain(engine.currentLevel[0][1])
+    // Ensure both cells were marked for re-rendering
+    expect(changedCells.size).toBe(2)
+    expect(changedCells).toContain(engine.currentLevel[0][0])
+    expect(changedCells).toContain(engine.currentLevel[0][1])
+  })
 
-    })
-
-    it('Does not move the sprite if it collides with a sprite in another cell (same collisionlayer)', () => {
-        const {engine, data} = parseEngine(`
+  it('Does not move the sprite if it collides with a sprite in another cell (same collisionlayer)', () => {
+    const {engine, data} = parseEngine(`
 title foo
 
 ========
@@ -156,22 +156,21 @@ LEVELS
 PW
 
 `)
-        const {changedCells} = engine.tick()
-        // expect(engine.toSnapshot()).toMatchSnapshot()
-        const player = data._getSpriteByName('player')
-        expect(engine.currentLevel[0][1].getSpritesAsSet().has(player)).toBe(false)
-        expect(engine.currentLevel[0][0].getSpritesAsSet().has(player)).toBe(true)
+    const changedCells = engine.tick()
+    // expect(engine.toSnapshot()).toMatchSnapshot()
+    const player = data._getSpriteByName('player')
+    expect(engine.currentLevel[0][1].getSpritesAsSet().has(player)).toBe(false)
+    expect(engine.currentLevel[0][0].getSpritesAsSet().has(player)).toBe(true)
 
-        // Make sure the wantsToMove flag is cleared
-        expect(engine.currentLevel[0][0].getWantsToMove(player)).toBeFalsy()
+    // Make sure the wantsToMove flag is cleared
+    expect(engine.currentLevel[0][0].getWantsToMove(player)).toBeFalsy()
 
-        // nothing actually changed visually
-        expect(changedCells.size).toBe(0)
-    })
+    // nothing actually changed visually
+    expect(changedCells.size).toBe(0)
+  })
 
-
-    it('Does not move the sprite when ACTION is added to it', () => {
-        const {engine, data} = parseEngine(`
+  it('Does not move the sprite when ACTION is added to it', () => {
+    const {engine, data} = parseEngine(`
 title foo
 
 ========
@@ -211,21 +210,21 @@ LEVELS
 P.
 
 `)
-        const {changedCells} = engine.tick()
-        // expect(engine.toSnapshot()).toMatchSnapshot()
-        const player = data._getSpriteByName('player')
-        expect(engine.currentLevel[0][0].getSpritesAsSet().has(player)).toBe(true)
+    const changedCells = engine.tick()
+    // expect(engine.toSnapshot()).toMatchSnapshot()
+    const player = data._getSpriteByName('player')
+    expect(engine.currentLevel[0][0].getSpritesAsSet().has(player)).toBe(true)
 
-        // Make sure the wantsToMove flag is cleared
-        expect(engine.currentLevel[0][0].getWantsToMove(player)).toBeFalsy()
+    // Make sure the wantsToMove flag is cleared
+    expect(engine.currentLevel[0][0].getWantsToMove(player)).toBeFalsy()
 
-        // nothing actually changed visually
-        expect(changedCells.size).toBe(0)
-    })
+    // nothing actually changed visually
+    expect(changedCells.size).toBe(0)
+  })
 
-    it('Moves the sprite in a "random" direction using "RANDOM" in a bracket', () => {
-        resetRandomSeed()
-        const {engine, data} = parseEngine(`
+  it('Moves the sprite in a "random" direction using "RANDOM" in a bracket', () => {
+    resetRandomSeed()
+    const {engine, data} = parseEngine(`
 title foo
 
 ========
@@ -269,37 +268,34 @@ LEVELS
 .....
 
 `)
-        const {changedCells} = engine.tick()
-        // expect(engine.toSnapshot()).toMatchSnapshot()
-        const player = data._getSpriteByName('player')
-        expect(engine.currentLevel[2][2].getSpritesAsSet().has(player)).toBe(false)
-        // Check that the player is around thir previous location
-        expect(engine.currentLevel[2][1].getSpritesAsSet().has(player)).toBe(true)
-        expect(engine.currentLevel[2][3].getSpritesAsSet().has(player)).toBe(false)
-        expect(engine.currentLevel[1][2].getSpritesAsSet().has(player)).toBe(false)
-        expect(engine.currentLevel[3][2].getSpritesAsSet().has(player)).toBe(false)
+    const changedCells = engine.tick()
+    // expect(engine.toSnapshot()).toMatchSnapshot()
+    const player = data._getSpriteByName('player')
+    expect(engine.currentLevel[2][2].getSpritesAsSet().has(player)).toBe(false)
+    // Check that the player is around thir previous location
+    expect(engine.currentLevel[2][1].getSpritesAsSet().has(player)).toBe(true)
+    expect(engine.currentLevel[2][3].getSpritesAsSet().has(player)).toBe(false)
+    expect(engine.currentLevel[1][2].getSpritesAsSet().has(player)).toBe(false)
+    expect(engine.currentLevel[3][2].getSpritesAsSet().has(player)).toBe(false)
 
-        // Ensure 2 cells were marked for re-rendering
-        expect(changedCells.size).toBe(2)
-        expect(changedCells).toContain(engine.currentLevel[2][2])
-        expect(changedCells).toContain(engine.currentLevel[2][1])
+    // Ensure 2 cells were marked for re-rendering
+    expect(changedCells.size).toBe(2)
+    expect(changedCells).toContain(engine.currentLevel[2][2])
+    expect(changedCells).toContain(engine.currentLevel[2][1])
 
+    engine.tick()
+    // Check that the player is no longer in the spot they were
+    expect(engine.currentLevel[2][1].getSpritesAsSet().has(player)).toBe(false)
+    // Check that the player is around thir previous location
+    expect(engine.currentLevel[2][0].getSpritesAsSet().has(player)).toBe(false)
+    expect(engine.currentLevel[2][2].getSpritesAsSet().has(player)).toBe(true)
+    expect(engine.currentLevel[1][1].getSpritesAsSet().has(player)).toBe(false)
+    expect(engine.currentLevel[3][1].getSpritesAsSet().has(player)).toBe(false)
+  })
 
-        engine.tick()
-        // Check that the player is no longer in the spot they were
-        expect(engine.currentLevel[2][1].getSpritesAsSet().has(player)).toBe(false)
-        // Check that the player is around thir previous location
-        expect(engine.currentLevel[2][0].getSpritesAsSet().has(player)).toBe(false)
-        expect(engine.currentLevel[2][2].getSpritesAsSet().has(player)).toBe(true)
-        expect(engine.currentLevel[1][1].getSpritesAsSet().has(player)).toBe(false)
-        expect(engine.currentLevel[3][1].getSpritesAsSet().has(player)).toBe(false)
-
-    })
-
-
-    it('Moves the sprite in a "random" direction using "RANDOMDIR" in a bracket', () => {
-        resetRandomSeed()
-        const {engine, data} = parseEngine(`
+  it('Moves the sprite in a "random" direction using "RANDOMDIR" in a bracket', () => {
+    resetRandomSeed()
+    const {engine, data} = parseEngine(`
 title foo
 
 ========
@@ -343,31 +339,28 @@ LEVELS
 .....
 
 `)
-        const {changedCells} = engine.tick()
-        // expect(engine.toSnapshot()).toMatchSnapshot()
-        const player = data._getSpriteByName('player')
-        expect(engine.currentLevel[2][2].getSpritesAsSet().has(player)).toBe(false)
-        // Check that the player is around thir previous location
-        expect(engine.currentLevel[2][1].getSpritesAsSet().has(player)).toBe(true)
-        expect(engine.currentLevel[2][3].getSpritesAsSet().has(player)).toBe(false)
-        expect(engine.currentLevel[1][2].getSpritesAsSet().has(player)).toBe(false)
-        expect(engine.currentLevel[3][2].getSpritesAsSet().has(player)).toBe(false)
+    const changedCells = engine.tick()
+    // expect(engine.toSnapshot()).toMatchSnapshot()
+    const player = data._getSpriteByName('player')
+    expect(engine.currentLevel[2][2].getSpritesAsSet().has(player)).toBe(false)
+    // Check that the player is around thir previous location
+    expect(engine.currentLevel[2][1].getSpritesAsSet().has(player)).toBe(true)
+    expect(engine.currentLevel[2][3].getSpritesAsSet().has(player)).toBe(false)
+    expect(engine.currentLevel[1][2].getSpritesAsSet().has(player)).toBe(false)
+    expect(engine.currentLevel[3][2].getSpritesAsSet().has(player)).toBe(false)
 
-        // Ensure 2 cells were marked for re-rendering
-        expect(changedCells.size).toBe(2)
-        expect(changedCells).toContain(engine.currentLevel[2][2])
-        expect(changedCells).toContain(engine.currentLevel[2][1])
+    // Ensure 2 cells were marked for re-rendering
+    expect(changedCells.size).toBe(2)
+    expect(changedCells).toContain(engine.currentLevel[2][2])
+    expect(changedCells).toContain(engine.currentLevel[2][1])
 
-
-        engine.tick()
-        // Check that the player is no longer in the spot they were
-        expect(engine.currentLevel[2][1].getSpritesAsSet().has(player)).toBe(false)
-        // Check that the player is around thir previous location
-        expect(engine.currentLevel[2][0].getSpritesAsSet().has(player)).toBe(false)
-        expect(engine.currentLevel[2][2].getSpritesAsSet().has(player)).toBe(true)
-        expect(engine.currentLevel[1][1].getSpritesAsSet().has(player)).toBe(false)
-        expect(engine.currentLevel[3][1].getSpritesAsSet().has(player)).toBe(false)
-
-    })
-
+    engine.tick()
+    // Check that the player is no longer in the spot they were
+    expect(engine.currentLevel[2][1].getSpritesAsSet().has(player)).toBe(false)
+    // Check that the player is around thir previous location
+    expect(engine.currentLevel[2][0].getSpritesAsSet().has(player)).toBe(false)
+    expect(engine.currentLevel[2][2].getSpritesAsSet().has(player)).toBe(true)
+    expect(engine.currentLevel[1][1].getSpritesAsSet().has(player)).toBe(false)
+    expect(engine.currentLevel[3][1].getSpritesAsSet().has(player)).toBe(false)
+  })
 })

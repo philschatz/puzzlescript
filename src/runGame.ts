@@ -109,7 +109,7 @@ async function run() {
 
         for (var i = 0; i < 10; i++) {
           await sleep(500)
-          const {appliedRules, changedCells} = engine.tick()
+          const changedCells = engine.tick()
 
 
           if (changedCells.size === 0) {
@@ -125,14 +125,12 @@ async function run() {
           }
           totalRenderTime += Date.now() - startTime
 
-          // record the tick coverage
-          for (const [rule, cellsCovered] of appliedRules.entries()) {
-            const line = coverageKey(rule)
-            if (!codeCoverageTemp.has(line)) {
-              codeCoverageTemp.set(line, 0)
-            }
-            codeCoverageTemp.set(line, codeCoverageTemp.get(line) + 1)
-          }
+        }
+
+        // record the tick coverage
+        for (const node of [].concat(data.objects).concat(data.rules).concat(data.legends)/*.concat(data.levels)*/) {
+          const line = coverageKey(node)
+          codeCoverageTemp.set(line, node.__coverageCount)
         }
 
         const codeCoverage2 = [...codeCoverageTemp.entries()].map(([key, value]) => {

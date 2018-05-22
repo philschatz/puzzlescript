@@ -48,7 +48,7 @@ export class GameSprite extends BaseForLines implements IGameTile {
             console.error(this.__source.getLineAndColumnMessage())
             console.error('ERROR: This sprite was not in a Collision Layer')
         }
-        return this._collisionLayer.__astId
+        return this._collisionLayer.id
     }
     isInvalid() {
         if (!this._collisionLayer) {
@@ -182,7 +182,7 @@ export class GameLegendTile extends BaseForLines implements IGameTile {
         this._collisionLayer = collisionLayer
     }
     getCollisionLayerNum() {
-        return this._collisionLayer.__astId
+        return this._collisionLayer.id
     }
 
 }
@@ -192,6 +192,11 @@ export class GameLegendTileSimple extends GameLegendTile {
         super(source, spriteNameOrLevelChar, [tile])
     }
     matchesCell(cell: Cell) {
+        // Update code coverage (Maybe only count the number of times it was true?)
+        if (process.env['NODE_ENV'] !== 'production') {
+            this.__coverageCount++
+        }
+
         // Check that the cell contains all of the tiles (ANDED)
         // Since this is a Simple Tile it should only contain 1 tile so anding is the right way to go.
         for (const tile of this._tiles) {
@@ -205,6 +210,11 @@ export class GameLegendTileSimple extends GameLegendTile {
 
 export class GameLegendTileAnd extends GameLegendTile {
     matchesCell(cell: Cell) {
+        // Update code coverage (Maybe only count the number of times it was true?)
+        if (process.env['NODE_ENV'] !== 'production') {
+            this.__coverageCount++
+        }
+
         // Check that the cell contains any of the tiles (AND)
         for (const tile of this._tiles) {
             if (!tile.matchesCell(cell)) {
@@ -217,6 +227,11 @@ export class GameLegendTileAnd extends GameLegendTile {
 
 export class GameLegendTileOr extends GameLegendTile {
     matchesCell(cell: Cell) {
+        // Update code coverage (Maybe only count the number of times it was true?)
+        if (process.env['NODE_ENV'] !== 'production') {
+            this.__coverageCount++
+        }
+
         // Check that the cell contains any of the tiles (OR)
         for (const tile of this._tiles) {
             if (tile.matchesCell(cell)) {

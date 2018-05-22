@@ -1,7 +1,6 @@
 /* eslint-env jasmine */
 const { default: Parser } = require('../src/parser/parser')
 const { default: UI } = require('../src/ui')
-const { default: Engine } = require('../src/engine')
 const { lookupColorPalette } = require('../src/colors')
 
 const C_WHITE = { r: 255, g: 255, b: 255 }
@@ -231,15 +230,6 @@ P
 
     expect(game2.pixels[0][0]._colorName.toLowerCase()).toEqual(lookupColorPalette('arnecolors', 'lightblue').toLowerCase())
   })
-
-  function parseEngine (code) {
-    const { data, error } = Parser.parse(code)
-    expect(error && error.message).toBeFalsy() // Use && so the error messages are shorter
-
-    const engine = new Engine(data)
-    engine.setLevel(0)
-    return { engine, data }
-  }
 
   it.skip('Does not replace the pixels in a sprite (grr, we should just use immutable objects', () => {
     // not sure how to test
