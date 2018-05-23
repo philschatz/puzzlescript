@@ -88,6 +88,8 @@ export const RULE_GRAMMAR = `
 
 export function getRuleSemantics() {
     const cacheTilesWithModifiers: Map<string, TileWithModifier> = new Map()
+    const cacheNeighbors: Map<string, RuleBracketNeighbor> = new Map()
+    const cacheBrackets: Map<string, RuleBracket> = new Map()
     return {
         RuleItem: function (_1) {
             return _1.parse()
@@ -102,8 +104,15 @@ export function getRuleSemantics() {
             return new GameRule(this.source, new Set(_.flatten(modifiers.parse())), conditions.parse(), actions.parse(), commands.parse().concat(optionalMessageCommand.parse()))
         },
         RuleBracket: function (_openBracket, neighbors, hackAgain, _closeBracket) {
-            return new RuleBracket(this.source, neighbors.parse(), hackAgain.parse())
-        },
+            const b = new RuleBracket(this.source, neighbors.parse(), hackAgain.parse())
+            const key = b.toKey()
+            if (!cacheBrackets.has(key)) {
+                cacheBrackets.set(key, b)
+            } else {
+                // console.log('Prevented creating a duplicate neighbor')
+            }
+            return cacheBrackets.get(key)
+       },
         RuleBracketNeighbor: function (_1) {
             return _1.parse()
         },
@@ -112,7 +121,14 @@ export function getRuleSemantics() {
             return new RuleBracketNeighbor(this.source, [tileWithModifier], true)
         },
         RuleBracketNoEllipsisNeighbor: function (tileWithModifier) {
-            return new RuleBracketNeighbor(this.source, tileWithModifier.parse(), false)
+            const n = new RuleBracketNeighbor(this.source, tileWithModifier.parse(), false)
+            const key = n.toKey()
+            if (!cacheNeighbors.has(key)) {
+                cacheNeighbors.set(key, n)
+            } else {
+                // console.log('Prevented creating a duplicate neighbor')
+            }
+            return cacheNeighbors.get(key)
         },
         TileWithModifier: function (optionalModifier, tile) {
             const t = new TileWithModifier(this.source, optionalModifier.parse()[0], tile.parse())

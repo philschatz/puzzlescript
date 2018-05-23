@@ -117,7 +117,11 @@ export class GameRule extends BaseForLines implements IRule {
         }
     }
 
-    evaluate(gameTree: GameTree) {
+    evaluate() {
+        if (this._bracketPairs.length === 0 || this.isLate()) {
+            // TODO: Just commands are not supported yet
+            return []
+        }
         const allMutators: CellMutation[][] = []
         // Determine which directions to loop over
         // Include any simple UP, DOWN, LEFT, RIGHT ones
@@ -143,21 +147,24 @@ export class GameRule extends BaseForLines implements IRule {
 
             // check that all the bracketPairs have at least one match
             let matchesAllBrackets = true
-            this._bracketPairs.forEach(bracketPair => {
-                const firstMatches = gameTree.getFirstCellMatchesFor(bracketPair, direction)
+            for (const bracket of this._brackets) {
+                const firstMatches = bracket.getFirstCellsInDir(direction)
                 if (firstMatches.size === 0) {
                     matchesAllBrackets = false
                 }
-            })
+            }
 
             if (matchesAllBrackets) {
                 // Evaluate!
-                const mutators = this._bracketPairs.map((bracketPair, index) => {
-                    const firstMatches = new Set(this._brackets[index].getFirstCellsInDir(direction)) // Make it an Array just so we copy the elements out because Sets are mutable
+                const mutators = this._brackets.map((bracket, index) => {
+                    const firstMatches = new Set(bracket.getFirstCellsInDir(direction)) // Make it an Array just so we copy the elements out because Sets are mutable
                     const ret: CellMutation[][] = []
                     firstMatches.forEach(firstCell => {
-                        ret.push(bracketPair.evaluate(direction, firstCell))
+                        ret.push(this._bracketPairs[index].evaluate(direction, firstCell))
                     })
+                    if (process.env['NODE_ENV'] !== 'production') {
+                        this.__coverageCount++
+                    }
                     return _.flatten(ret)
                 })
                 allMutators.push(_.flatten(mutators))
@@ -221,6 +228,10 @@ export class RuleBracket extends BaseForLines {
 
     hasEllipsis() {
         return this._hasEllipsis
+    }
+
+    toKey() {
+        return this._neighbors.map(n => n.toKey()).join('|')
     }
 
     subscribeToNeighborChanges() {
@@ -322,7 +333,10 @@ export class RuleBracketNeighbor extends BaseForLines {
 
         this._localCellCache = new Set()
         this._brackets = []
+    }
 
+    toKey() {
+        return this._tilesWithModifier.map(t => t.toKey()).sort().join(' ')
     }
 
     subscribeToTileChanges() {
@@ -341,30 +355,25 @@ export class RuleBracketNeighbor extends BaseForLines {
 
     updateCell(cell: Cell, sprite: GameSprite, tileWithModifier: TileWithModifier, wantsToMove: RULE_DIRECTION, flagAdded) {
         let shouldPropagate = []
-        const directions = wantsToMove ? [wantsToMove] : SIMPLE_DIRECTION_DIRECTIONS
         if (flagAdded) {
-            for (const direction of directions) {
-                let shouldMatch = true
-                for (const t of this._tilesWithModifier) {
-                    if (!t.matchesCell(cell, direction)) {
-                        shouldMatch = false
-                        break
-                    }
-                }
-                if (shouldMatch) {
-                    // console.log(`Cell [${cell.rowIndex}][${cell.colIndex}] impacted ${this._brackets.length} brackets`);
-                    this._brackets.forEach(bracket => {
-                        bracket.updateCell(cell, sprite, tileWithModifier, this, direction, flagAdded)
-                    })
+            let shouldMatch = true
+            for (const t of this._tilesWithModifier) {
+                if (!t.matchesCell(cell)) {
+                    shouldMatch = false
+                    break
                 }
             }
-            this._localCellCache.add(cell)
+            if (shouldMatch) {
+                // console.log(`Cell [${cell.rowIndex}][${cell.colIndex}] impacted ${this._brackets.length} brackets`);
+                for (const bracket of this._brackets) {
+                    bracket.updateCell(cell, sprite, tileWithModifier, this, wantsToMove, flagAdded)
+                }
+                this._localCellCache.add(cell)
+            }
         } else {
             // remove it from upstream
-            for (const direction of directions) {
-                this._brackets.forEach(bracket => {
-                    bracket.updateCell(cell, sprite, tileWithModifier, this, direction, flagAdded)
-                })
+            for (const bracket of this._brackets) {
+                bracket.updateCell(cell, sprite, tileWithModifier, this, wantsToMove, flagAdded)
             }
             this._localCellCache.delete(cell)
         }
@@ -409,7 +418,18 @@ export class TileWithModifier extends BaseForLines {
         return M_NO === this._modifier
     }
 
-    matchesCell(cell: Cell, direction: RULE_DIRECTION) {
+    matchesCell(cell: Cell) {
+        if (this._modifier && !SUPPORTED_CELL_MODIFIERS.has(this._modifier)) {
+            return false // Modifier not supported yet
+        }
+        const hasTile = this._tile && this._tile.matchesCell(cell)
+        if (this.isNo()) {
+            return !hasTile
+        } else {
+            return hasTile
+        }
+    }
+    matchesCell2(cell: Cell, direction: RULE_DIRECTION) {
         if (this._modifier && !SUPPORTED_CELL_MODIFIERS.has(this._modifier)) {
             return false // Modifier not supported yet
         }
@@ -430,26 +450,30 @@ export class TileWithModifier extends BaseForLines {
     }
     updateCell(cell: Cell, wantsToMove: RULE_DIRECTION, sprite: GameSprite, wasAdded: boolean) {
         // TODO: check if the cell still matches
-        let flagAdded = false
-        if (wasAdded) {
-            if (this.isNo()) {
-                flagAdded = false
-            } else {
-                flagAdded = true
-            }
-        } else {
-            if (this.isNo()) {
-                flagAdded = true
-            } else {
-                flagAdded = false
-            }
+        let flagAdded = this._tile.matchesCell(cell)
+        if (this.isNo()) {
+            flagAdded = !flagAdded
         }
+        // if (wasAdded) {
+        //     if (this.isNo()) {
+        //         flagAdded = false
+        //     } else {
+        //         flagAdded = true
+        //     }
+        // } else {
+        //     if (this.isNo()) {
+        //         flagAdded = true
+        //     } else {
+        //         flagAdded = false
+        //     }
+        // }
+
         // console.log(`Cell [${cell.rowIndex}][${cell.colIndex}] impacted ${this._neighbors.length} neighbors`);
         // Only pass up the food chain if the modifier (roughly) matches the wantsToMove (ignoring orientation)
         if (!wantsToMove || wantsToMove && [RULE_DIRECTION.UP, RULE_DIRECTION.DOWN, RULE_DIRECTION.LEFT, RULE_DIRECTION.RIGHT, RULE_DIRECTION.ACTION].indexOf(this._modifier as RULE_DIRECTION) >= 0) {
-            this._neighbors.forEach(neighbor => {
+            for (const neighbor of this._neighbors) {
                 neighbor.updateCell(cell, sprite, this, wantsToMove, flagAdded)
-            })
+            }
         }
 }
 }

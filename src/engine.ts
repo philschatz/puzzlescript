@@ -6,7 +6,6 @@ import { GameSprite, GameLegendTileSimple, IGameTile } from './models/tile'
 import { GameRule } from './models/rule'
 import { RULE_MODIFIER, nextRandom, setAddAll } from './util'
 import { CellMutation } from './pairs';
-import { GameTree, buildAndPopulateTree } from './gameTree';
 import { RULE_DIRECTION } from './enums';
 
 const MAX_REPEATS = 10
@@ -61,7 +60,6 @@ export class Cell {
   // Maybe add removeSprite(sprite)
   updateSprites(newSprites: Map<GameSprite, string>) {
     this._spriteAndWantsToMoves = newSprites
-    this._engine.gameTree.updateCell(this, newSprites.keys())
     this._engine.emit('cell:updated', this)
     return true // maybe check if the sprites were the same before so there is less to update visually
   }
@@ -143,7 +141,6 @@ export class Cell {
 export default class Engine extends EventEmitter2 {
   gameData: GameData
   currentLevel: Cell[][]
-  gameTree: GameTree
 
   constructor(gameData: GameData) {
     super()
@@ -151,8 +148,6 @@ export default class Engine extends EventEmitter2 {
   }
 
   setLevel(levelNum: number) {
-    debugger
-
     const level = this.gameData.levels[levelNum]
     if (process.env['NODE_ENV'] !== 'production') {
       level.__coverageCount++
@@ -162,15 +157,16 @@ export default class Engine extends EventEmitter2 {
       return row.map((col, colIndex) => new Cell(this, new Set(col.getSprites()), rowIndex, colIndex))
     })
 
-    // link up all the cells
+    // link up all the cells. Loop over all the sprites
+    // in case they are NO tiles (so the cell is included)
     this.getCells().forEach(cell => {
-      cell.getSpritesAsSet().forEach(sprite => {
-        sprite.updateCellSet(cell, null, true)
-      })
+      const cellSprites = cell.getSpritesAsSet()
+      for (const sprite of this.gameData.objects) {
+        if (cellSprites.has(sprite) || sprite.hasNegationTile()) {
+          sprite.updateCellSet(cell, null, cellSprites.has(sprite))
+        }
+      }
     })
-
-
-    this.gameTree = buildAndPopulateTree(this.gameData, this)
 
     // Return the cells so the UI can listen to when they change
     return this.getCells()
@@ -190,15 +186,23 @@ export default class Engine extends EventEmitter2 {
 
   tickUpdateCells() {
     const changedCellMutations: Set<CellMutation> = new Set()
-    this.gameData.rules.map(rule => {
+    for (const rule of this.gameData.rules) {
       if (rule.evaluate) {
-        const cellMutations = rule.evaluate(this.gameTree)
-        cellMutations.forEach(mutation => {
+        const cellMutations = rule.evaluate()
+        for (const mutation of cellMutations) {
           changedCellMutations.add(mutation)
-        })
+        }
       }
-    })
-    return changedCellMutations
+    }
+
+    // We may have mutated the same cell 4 times (e.g. [Player]->[>Player]) so consolidate
+    const ret: Map<Cell, boolean> = new Map()
+    for (const mutation of changedCellMutations) {
+      if (!ret.get(mutation.cell)) {
+        ret.set(mutation.cell, mutation.didSpritesChange)
+      }
+    }
+    return ret
   }
 
   tickUpdateCellsOld() {
@@ -233,12 +237,11 @@ export default class Engine extends EventEmitter2 {
         })
       })
     })
-    return changedCellMutations
   }
 
-  tickMoveSprites(changedCellMutations: Set<CellMutation>) {
+  tickMoveSprites(changedCellMutations: Map<Cell, boolean>) {
     let movedCells: Set<Cell> = new Set()
-    const changedCells = new Set([...changedCellMutations.values()].map(({cell}) => cell))
+    const changedCells = new Set([...changedCellMutations.keys()])
     // Loop over all the cells, see if a Rule matches, apply the transition, and notify that cells changed
     changedCells.forEach(cell => {
       cell.getSpriteAndWantsToMoves().forEach((wantsToMove, sprite) => {
@@ -288,10 +291,9 @@ export default class Engine extends EventEmitter2 {
   }
 
   tick() {
-    debugger
     const changedCellMutations = this.tickUpdateCells()
     const movedCells = this.tickMoveSprites(changedCellMutations)
-    const changedCells = new Set([...changedCellMutations].filter(mutation => mutation.didSpritesChange).map(({cell}) => cell))
+    const changedCells = new Set([...changedCellMutations.entries()].filter(([_cell, didSpritesChange]) => didSpritesChange).map(([cell]) => cell))
     return setAddAll(changedCells, movedCells)
   }
 

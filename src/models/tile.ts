@@ -9,6 +9,7 @@ import { RULE_DIRECTION } from '../enums';
 export interface IGameTile extends IGameNode {
     _getDescendantTiles: () => IGameTile[]
     getSprites: () => GameSprite[]
+    getSpritesForRuleAction: () => GameSprite[]
     isInvalid: () => string
     hasCollisionLayer: () => boolean
     setCollisionLayer: (collisionLayer: CollisionLayer) => void
@@ -42,6 +43,9 @@ export class GameSprite extends BaseForLines implements IGameTile {
     getSprites() {
         // to match the signature of LegendTile
         return [this]
+    }
+    getSpritesForRuleAction() {
+        return this.getSprites()
     }
     hasCollisionLayer() {
         return !!this._collisionLayer
@@ -97,6 +101,16 @@ export class GameSprite extends BaseForLines implements IGameTile {
     }
     has(cell: Cell) {
         return this._cellSet.has(cell)
+    }
+    hasNegationTile() {
+        let hasNegationTile = false
+        for (const t of this._tileWithModifierSet) {
+            if (t.isNo()) {
+                hasNegationTile = true
+                break
+            }
+        }
+        return hasNegationTile
     }
 }
 
@@ -195,6 +209,9 @@ export class GameLegendTile extends BaseForLines implements IGameTile {
         }
         return false
     }
+    getSpritesForRuleAction() {
+        return this.getSprites()
+    }
     _getDescendantTiles(): IGameTile[] {
         // recursively pull all the tiles out
         return this._tiles.concat(_.flatten(this._tiles.map(tile => tile._getDescendantTiles())))
@@ -279,4 +296,9 @@ export class GameLegendTileOr extends GameLegendTile {
         }
         return false
     }
+    getSpritesForRuleAction() {
+        // When assigning an OR, just use the 1st tile, not all of them
+        return [this.getSprites()[0]]
+    }
+
 }

@@ -17,7 +17,7 @@ function getSpriteByName(data, name) {
 
 
 describe('GameTree', () => {
-    it('percolates up a simple rule', () => {
+    it.skip('percolates up a simple rule', () => {
         const {engine, data} = parseEngine(`
         title foo
 

@@ -13,7 +13,7 @@ function parseEngine (code) {
 }
 
 describe('Directions', () => {
-  it.only('Marks a sprite when it wants to move', () => {
+  it('Marks a sprite when it wants to move', () => {
     const {engine, data} = parseEngine(`
 title foo
 
@@ -284,24 +284,24 @@ LEVELS
     const player = data._getSpriteByName('player')
     expect(engine.currentLevel[2][2].getSpritesAsSet().has(player)).toBe(false)
     // Check that the player is around thir previous location
-    expect(engine.currentLevel[2][1].getSpritesAsSet().has(player)).toBe(true)
-    expect(engine.currentLevel[2][3].getSpritesAsSet().has(player)).toBe(false)
-    expect(engine.currentLevel[1][2].getSpritesAsSet().has(player)).toBe(false)
-    expect(engine.currentLevel[3][2].getSpritesAsSet().has(player)).toBe(false)
+    let playerCells = [...player._cellSet]
+    let playerCell = playerCells[0]
+    expect(playerCells.length).toBe(1)
+    expect(engine.currentLevel[playerCell.rowIndex][playerCell.colIndex].getSpritesAsSet().has(player)).toBe(true)
 
     // Ensure 2 cells were marked for re-rendering
     expect(changedCells.size).toBe(2)
     expect(changedCells).toContain(engine.currentLevel[2][2])
-    expect(changedCells).toContain(engine.currentLevel[2][1])
+    expect(changedCells).toContain(engine.currentLevel[playerCell.rowIndex][playerCell.colIndex])
 
     engine.tick()
     // Check that the player is no longer in the spot they were
-    expect(engine.currentLevel[2][1].getSpritesAsSet().has(player)).toBe(false)
+    expect(engine.currentLevel[playerCell.rowIndex][playerCell.colIndex].getSpritesAsSet().has(player)).toBe(false)
     // Check that the player is around thir previous location
-    expect(engine.currentLevel[2][0].getSpritesAsSet().has(player)).toBe(false)
-    expect(engine.currentLevel[2][2].getSpritesAsSet().has(player)).toBe(true)
-    expect(engine.currentLevel[1][1].getSpritesAsSet().has(player)).toBe(false)
-    expect(engine.currentLevel[3][1].getSpritesAsSet().has(player)).toBe(false)
+    playerCells = [...player._cellSet]
+    playerCell = playerCells[0]
+    expect(playerCells.length).toBe(1)
+    expect(engine.currentLevel[playerCell.rowIndex][playerCell.colIndex].getSpritesAsSet().has(player)).toBe(true)
   })
 
   it('Moves the sprite in a "random" direction using "RANDOMDIR" in a bracket', () => {
@@ -355,23 +355,23 @@ LEVELS
     const player = data._getSpriteByName('player')
     expect(engine.currentLevel[2][2].getSpritesAsSet().has(player)).toBe(false)
     // Check that the player is around thir previous location
-    expect(engine.currentLevel[2][1].getSpritesAsSet().has(player)).toBe(true)
-    expect(engine.currentLevel[2][3].getSpritesAsSet().has(player)).toBe(false)
-    expect(engine.currentLevel[1][2].getSpritesAsSet().has(player)).toBe(false)
-    expect(engine.currentLevel[3][2].getSpritesAsSet().has(player)).toBe(false)
+    let playerCells = [...player._cellSet]
+    let playerCell = playerCells[0]
+    expect(playerCells.length).toBe(1)
+    expect(engine.currentLevel[playerCell.rowIndex][playerCell.colIndex].getSpritesAsSet().has(player)).toBe(true)
 
     // Ensure 2 cells were marked for re-rendering
     expect(changedCells.size).toBe(2)
     expect(changedCells).toContain(engine.currentLevel[2][2])
-    expect(changedCells).toContain(engine.currentLevel[2][1])
+    expect(changedCells).toContain(engine.currentLevel[playerCell.rowIndex][playerCell.colIndex])
 
     engine.tick()
     // Check that the player is no longer in the spot they were
-    expect(engine.currentLevel[2][1].getSpritesAsSet().has(player)).toBe(false)
+    expect(engine.currentLevel[playerCell.rowIndex][playerCell.colIndex].getSpritesAsSet().has(player)).toBe(false)
     // Check that the player is around thir previous location
-    expect(engine.currentLevel[2][0].getSpritesAsSet().has(player)).toBe(false)
-    expect(engine.currentLevel[2][2].getSpritesAsSet().has(player)).toBe(true)
-    expect(engine.currentLevel[1][1].getSpritesAsSet().has(player)).toBe(false)
-    expect(engine.currentLevel[3][1].getSpritesAsSet().has(player)).toBe(false)
+    playerCells = [...player._cellSet]
+    playerCell = playerCells[0]
+    expect(playerCells.length).toBe(1)
+    expect(engine.currentLevel[playerCell.rowIndex][playerCell.colIndex].getSpritesAsSet().has(player)).toBe(true)
   })
 })

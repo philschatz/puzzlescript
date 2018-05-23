@@ -140,7 +140,7 @@ class NeighborPair implements IMatcher {
 
   getMatchedMutatorsOrNull(cell: Cell, direction: RULE_DIRECTION) {
     for (const tileWithModifier of this._condition) {
-      if (!tileWithModifier.matchesCell(cell, direction)) {
+      if (!tileWithModifier.matchesCell(cell)) {
         return null
       }
     }
@@ -175,17 +175,18 @@ class CellMutator implements IMutator {
     // remove sprites that are listed on the condition side
     this._condition.forEach(tileWithModifier => {
       tileWithModifier._tile.getSprites().forEach(sprite => {
-        conditionSprites.add(sprite)
-        // this._cell.removeSprite(sprite)
+        if (!tileWithModifier.isNo()) {
+          // this._cell.removeSprite(sprite)
+          conditionSprites.add(sprite)
+        }
       })
     })
     // add sprites that are listed on the action side
     this._action.forEach(tileWithModifier => {
       tileWithModifier._tile.getSprites().forEach(sprite => {
         // this._cell.removeSprite(sprite)
-        conditionSprites.add(sprite)
-        if (tileWithModifier.isNo()) {
-        } else {
+        // conditionSprites.add(sprite)
+        if (!tileWithModifier.isNo()) {
           actionSprites.add(sprite)
           // this._cell.addSprite(sprite, tileWithModifier._modifier)
         }
@@ -201,7 +202,11 @@ class CellMutator implements IMutator {
 
     // add sprites that are listed on the action side
     this._action.forEach(tileWithModifier => {
-      tileWithModifier._tile.getSprites().forEach(sprite => {
+      // TODO: Only get the 1st sprite if tileWithModifier._tile is an OR tile (like in the 1st engine.test.js)
+      if (!tileWithModifier._tile.getSpritesForRuleAction) {
+        debugger
+      }
+      tileWithModifier._tile.getSpritesForRuleAction().forEach(sprite => {
         // if (spritesToAdd.has(sprite)) {
         if (tileWithModifier.isNo()) {
         } else {
