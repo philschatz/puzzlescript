@@ -1,9 +1,10 @@
 import * as _ from 'lodash';
 import { IGameTile, GameSprite } from "./models/tile";
 import Engine, { Cell } from "./engine";
-import { RULE_DIRECTION, RuleBracketPair } from "./pairs";
+import { RuleBracketPair } from "./pairs";
 import { GameData } from "./models/game";
 import { TileWithModifier } from './models/rule';
+import { RULE_DIRECTION } from './enums';
 
 // [ player | dog happy | NO cat | ] [ kangaroo ]
 

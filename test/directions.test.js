@@ -13,7 +13,7 @@ function parseEngine (code) {
 }
 
 describe('Directions', () => {
-  it('Marks a sprite when it wants to move', () => {
+  it.only('Marks a sprite when it wants to move', () => {
     const {engine, data} = parseEngine(`
 title foo
 
@@ -55,6 +55,7 @@ P.
 
 `)
     const player = data._getSpriteByName('player')
+    debugger
     const changedCellMutations = engine.tickUpdateCells()
     expect(engine.toSnapshot()).toMatchSnapshot()
     // Once these sprites actually move, we neet to separate engine.tick() into multiple steps:

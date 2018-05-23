@@ -4,7 +4,6 @@ import { GameSprite } from './models/tile'
 import { GameData } from './models/game'
 import { IColor } from './models/colors'
 import { Cell } from './engine'
-import { RULE_DIRECTION } from './pairs';
 
 // First Sprite one is on top.
 // This caused a 2x speedup while rendering.

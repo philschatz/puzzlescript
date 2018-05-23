@@ -7,19 +7,10 @@ import { GameRule } from './models/rule'
 import { RULE_MODIFIER, nextRandom, setAddAll } from './util'
 import { CellMutation } from './pairs';
 import { GameTree, buildAndPopulateTree } from './gameTree';
+import { RULE_DIRECTION } from './enums';
 
 const MAX_REPEATS = 10
 
-
-enum RULE_DIRECTION {
-  UP = 'UP',
-  DOWN = 'DOWN',
-  LEFT = 'LEFT',
-  RIGHT = 'RIGHT',
-  ACTION = 'ACTION',
-  RANDOM = 'RANDOM', // Not sure how this differs from RANDOMDIR yet
-  RANDOMDIR = 'RANDOMDIR'
-}
 
 // This Object exists so the UI has something to bind to
 export class Cell {
@@ -33,9 +24,11 @@ export class Cell {
     this.rowIndex = rowIndex
     this.colIndex = colIndex
     this._spriteAndWantsToMoves = new Map()
-    sprites.forEach(sprite => {
+
+    for (const sprite of sprites) {
       this._spriteAndWantsToMoves.set(sprite, null)
-    })
+    }
+
   }
 
   getSprites() {
@@ -124,18 +117,25 @@ export class Cell {
   }
   clearWantsToMove(sprite: GameSprite) {
     this._spriteAndWantsToMoves.set(sprite, null)
-    this._engine.gameTree.updateCell(this, [sprite])
+    sprite.updateCellSet(this, null, true)
+    // this._engine.gameTree.updateCell(this, [sprite])
   }
-  addSprite(sprite: GameSprite, wantsToMove?: string) {
+  addSprite(sprite: GameSprite, wantsToMove: RULE_DIRECTION) {
     const isUnchanged = this._spriteAndWantsToMoves.has(sprite)
     this._spriteAndWantsToMoves.set(sprite, wantsToMove)
-    this._engine.gameTree.updateCell(this, [sprite])
+    // if (!isUnchanged) {
+      sprite.updateCellSet(this, wantsToMove, true)
+    // }
+    // this._engine.gameTree.updateCell(this, [sprite])
     return !isUnchanged
   }
   removeSprite(sprite: GameSprite) {
     const isChanged = this._spriteAndWantsToMoves.has(sprite)
     this._spriteAndWantsToMoves.delete(sprite)
-    this._engine.gameTree.updateCell(this, [sprite])
+    // if (isChanged) {
+      sprite.updateCellSet(this, null, false)
+    // }
+    // this._engine.gameTree.updateCell(this, [sprite])
     return isChanged
   }
 }
@@ -151,6 +151,8 @@ export default class Engine extends EventEmitter2 {
   }
 
   setLevel(levelNum: number) {
+    debugger
+
     const level = this.gameData.levels[levelNum]
     if (process.env['NODE_ENV'] !== 'production') {
       level.__coverageCount++
@@ -159,6 +161,14 @@ export default class Engine extends EventEmitter2 {
     this.currentLevel = level.getRows().map((row, rowIndex) => {
       return row.map((col, colIndex) => new Cell(this, new Set(col.getSprites()), rowIndex, colIndex))
     })
+
+    // link up all the cells
+    this.getCells().forEach(cell => {
+      cell.getSpritesAsSet().forEach(sprite => {
+        sprite.updateCellSet(cell, null, true)
+      })
+    })
+
 
     this.gameTree = buildAndPopulateTree(this.gameData, this)
 
@@ -226,11 +236,11 @@ export default class Engine extends EventEmitter2 {
     return changedCellMutations
   }
 
-  tickMoveSprites(changedCells: Set<CellMutation>) {
+  tickMoveSprites(changedCellMutations: Set<CellMutation>) {
     let movedCells: Set<Cell> = new Set()
+    const changedCells = new Set([...changedCellMutations.values()].map(({cell}) => cell))
     // Loop over all the cells, see if a Rule matches, apply the transition, and notify that cells changed
-    changedCells.forEach(mutation => {
-      const {cell} = mutation
+    changedCells.forEach(cell => {
       cell.getSpriteAndWantsToMoves().forEach((wantsToMove, sprite) => {
 
         if (wantsToMove) {
@@ -278,6 +288,7 @@ export default class Engine extends EventEmitter2 {
   }
 
   tick() {
+    debugger
     const changedCellMutations = this.tickUpdateCells()
     const movedCells = this.tickMoveSprites(changedCellMutations)
     const changedCells = new Set([...changedCellMutations].filter(mutation => mutation.didSpritesChange).map(({cell}) => cell))

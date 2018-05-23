@@ -4,21 +4,43 @@ import {
     IGameCode,
     IGameNode
 } from '../models/game'
-import { IGameTile } from './tile'
+import { IGameTile, GameSprite } from './tile'
 import {
     IMutator,
     RuleBracketPair,
     getMatchedMutatorsHelper,
-    RULE_DIRECTION,
     SIMPLE_DIRECTIONS,
     CellMutation
 } from '../pairs'
 import { RULE_MODIFIER, setDifference, setIntersection } from '../util'
 import { Cell } from '../engine'
 import { GameTree } from '../gameTree';
+import { RULE_DIRECTION } from '../enums';
 
 enum RULE_COMMAND {
     AGAIN = 'AGAIN'
+}
+
+export const SIMPLE_DIRECTION_DIRECTIONS = new Set([
+    RULE_DIRECTION.UP,
+    RULE_DIRECTION.DOWN,
+    RULE_DIRECTION.LEFT,
+    RULE_DIRECTION.RIGHT
+  ])
+
+function opposite(dir: RULE_DIRECTION) {
+    switch (dir) {
+        case RULE_DIRECTION.UP:
+            return RULE_DIRECTION.DOWN
+        case RULE_DIRECTION.DOWN:
+            return RULE_DIRECTION.UP
+        case RULE_DIRECTION.LEFT:
+            return RULE_DIRECTION.RIGHT
+        case RULE_DIRECTION.RIGHT:
+            return RULE_DIRECTION.LEFT
+        default:
+            throw new Error(`BUG: Invalid direction: "${dir}"`)
+    }
 }
 
 // Note: Directions inside a Bracket are relative to other dorections inside a bracket
@@ -47,6 +69,7 @@ export class GameRule extends BaseForLines implements IRule {
     _commands: string[]
     _bracketPairs: RuleBracketPair[]
     _hasEllipsis: boolean
+    _brackets: RuleBracket[]
     // _conditionCommandPair: RuleConditionCommandPair[]
 
     constructor(source: IGameCode, modifiers: Set<RULE_MODIFIER>, conditions: RuleBracket[], actions: RuleBracket[], commands: string[]) {
@@ -54,6 +77,7 @@ export class GameRule extends BaseForLines implements IRule {
         this._modifiers = modifiers
         this._commands = commands
         this._hasEllipsis = false
+        this._brackets = conditions
 
         // Set _hasEllipsis value
         for (let i = 0; i < conditions.length; i++) {
@@ -68,6 +92,17 @@ export class GameRule extends BaseForLines implements IRule {
         if (conditions.length !== actions.length && actions.length !== 0) {
             throw new Error(`Left side has "${conditions.length}" conditions and right side has "${actions.length}" actions!`)
         }
+
+        // Subscribe the bracket and neighbors to cell Changes (only the condition side)
+        conditions.forEach(bracket => {
+            bracket.subscribeToNeighborChanges()
+            bracket._neighbors.forEach(neighbor => {
+                neighbor.subscribeToTileChanges()
+                neighbor._tilesWithModifier.forEach(t => {
+                    t.subscribeToCellChanges()
+                })
+            })
+        })
 
         if (conditions.length === actions.length) {
             this._bracketPairs = _.zip(conditions, actions).map(([condition, action]) => {
@@ -117,8 +152,8 @@ export class GameRule extends BaseForLines implements IRule {
 
             if (matchesAllBrackets) {
                 // Evaluate!
-                const mutators = this._bracketPairs.map(bracketPair => {
-                    const firstMatches = new Set(gameTree.getFirstCellMatchesFor(bracketPair, direction)) // Make it an Array just so we copy the elements out because Sets are mutable
+                const mutators = this._bracketPairs.map((bracketPair, index) => {
+                    const firstMatches = new Set(this._brackets[index].getFirstCellsInDir(direction)) // Make it an Array just so we copy the elements out because Sets are mutable
                     const ret: CellMutation[][] = []
                     firstMatches.forEach(firstCell => {
                         ret.push(bracketPair.evaluate(direction, firstCell))
@@ -161,11 +196,19 @@ export class GameRule extends BaseForLines implements IRule {
 export class RuleBracket extends BaseForLines {
     _neighbors: RuleBracketNeighbor[]
     _hasEllipsis: boolean
+    _firstCellsInEachDirection: Map<RULE_DIRECTION, Set<Cell>>
 
     constructor(source: IGameCode, neighbors: RuleBracketNeighbor[], hack: string) {
         super(source)
         this._neighbors = neighbors
         this._hasEllipsis = false
+
+        // populate the cache
+        this._firstCellsInEachDirection = new Map()
+        for (const direction of SIMPLE_DIRECTION_DIRECTIONS) {
+            this._firstCellsInEachDirection.set(direction, new Set())
+        }
+        this._firstCellsInEachDirection.set(RULE_DIRECTION.ACTION, new Set())
 
         for (let i = 0; i < neighbors.length; i++) {
             const neighbor = neighbors[i]
@@ -179,24 +222,160 @@ export class RuleBracket extends BaseForLines {
     hasEllipsis() {
         return this._hasEllipsis
     }
+
+    subscribeToNeighborChanges() {
+        this._neighbors.forEach(neighbor => {
+            neighbor.addBracket(this)
+        })
+    }
+
+    getFirstCellsInDir(direction: RULE_DIRECTION) {
+        return this._firstCellsInEachDirection.get(direction)
+    }
+
+    updateCell(cell: Cell, sprite: GameSprite, tileWithModifier: TileWithModifier, neighbor: RuleBracketNeighbor, wantsToMove: RULE_DIRECTION, flagAdded: boolean) {
+        const index = this._neighbors.indexOf(neighbor)
+        if (flagAdded) {
+            for (const direction of SIMPLE_DIRECTION_DIRECTIONS) {
+                // cell was added
+                // Check all the neighbors and add the firstNeighbor to the set of matches for this direction
+                let matched = true
+                let curCell = cell
+                // Loop Downstream
+                // check the neighbors downstream of curCell
+                for (let x = index + 1; x < this._neighbors.length; x++) {
+                    curCell = curCell.getNeighbor(direction)
+                    if (curCell && this._neighbors[x].hasCell(curCell)) {
+                        // keep going
+                    } else {
+                        matched = false
+                        break
+                    }
+                }
+                if (!matched) {
+                    continue
+                }
+                // Loop Upstream
+                // check the neighbors upstream of curCell
+                matched = true
+                curCell = cell
+                // check the neighbors upstream of curCell
+                for (let x = index - 1; x >= 0; x--) {
+                    curCell = curCell.getNeighbor(opposite(direction))
+                    if (curCell && this._neighbors[x].hasCell(curCell)) {
+                        // keep going
+                    } else {
+                        matched = false
+                        break
+                    }
+                }
+                if (!matched) {
+                    continue
+                }
+
+                // Add to the set of firstNeighbors
+                // We have a match. Add to the firstCells set.
+                // console.log(`Cell [${cell.rowIndex}][${cell.colIndex}] caused an additional match for a rule bracket`);
+                this._firstCellsInEachDirection.get(direction).add(curCell)
+                global['rules_updated_count'] += 1
+            }
+        } else {
+            // cell was removed
+            for (const direction of SIMPLE_DIRECTION_DIRECTIONS) {
+                // Loop Upstream
+                // Remove from the set of firstNeighbors
+                // Loop Upstream
+                // check the neighbors upstream of curCell
+                let matched = true
+                let curCell = cell
+                // check the neighbors upstream of curCell
+                for (let x = index - 1; x >= 0; x--) {
+                    curCell = curCell.getNeighbor(opposite(direction))
+                    if (curCell) {
+                        // keep going
+                    } else {
+                        matched = false
+                        break
+                    }
+                }
+                if (!matched) {
+                    continue
+                }
+                // console.log(`Cell [${cell.rowIndex}][${cell.colIndex}] caused a removal of rule bracket`);
+                this._firstCellsInEachDirection.get(direction).delete(curCell)
+                global['rules_updated_count'] += 1
+            }
+        }
+    }
 }
 
 export class RuleBracketNeighbor extends BaseForLines {
+    _brackets: RuleBracket[]
     _tilesWithModifier: TileWithModifier[]
     _isEllipsis: boolean
+    _localCellCache: Set<Cell>
 
     constructor(source: IGameCode, tilesWithModifier: TileWithModifier[], isEllipsis: boolean) {
         super(source)
         this._tilesWithModifier = tilesWithModifier
         this._isEllipsis = isEllipsis
+
+        this._localCellCache = new Set()
+        this._brackets = []
+
+    }
+
+    subscribeToTileChanges() {
+        this._tilesWithModifier.forEach(t => {
+            t.addRuleBracketNeighbor(this)
+        })
     }
 
     isEllipsis() {
         return this._isEllipsis
     }
+
+    addBracket(bracket: RuleBracket) {
+        this._brackets.push(bracket)
+    }
+
+    updateCell(cell: Cell, sprite: GameSprite, tileWithModifier: TileWithModifier, wantsToMove: RULE_DIRECTION, flagAdded) {
+        let shouldPropagate = []
+        const directions = wantsToMove ? [wantsToMove] : SIMPLE_DIRECTION_DIRECTIONS
+        if (flagAdded) {
+            for (const direction of directions) {
+                let shouldMatch = true
+                for (const t of this._tilesWithModifier) {
+                    if (!t.matchesCell(cell, direction)) {
+                        shouldMatch = false
+                        break
+                    }
+                }
+                if (shouldMatch) {
+                    // console.log(`Cell [${cell.rowIndex}][${cell.colIndex}] impacted ${this._brackets.length} brackets`);
+                    this._brackets.forEach(bracket => {
+                        bracket.updateCell(cell, sprite, tileWithModifier, this, direction, flagAdded)
+                    })
+                }
+            }
+            this._localCellCache.add(cell)
+        } else {
+            // remove it from upstream
+            for (const direction of directions) {
+                this._brackets.forEach(bracket => {
+                    bracket.updateCell(cell, sprite, tileWithModifier, this, direction, flagAdded)
+                })
+            }
+            this._localCellCache.delete(cell)
+        }
+    }
+    hasCell(cell: Cell) {
+        return this._localCellCache.has(cell)
+    }
 }
 
 export class TileWithModifier extends BaseForLines {
+    _neighbors: RuleBracketNeighbor[]
     _modifier?: string
     _tile: IGameTile
 
@@ -204,6 +383,22 @@ export class TileWithModifier extends BaseForLines {
         super(source)
         this._modifier = modifier
         this._tile = tile
+        this._neighbors = []
+
+        if (!this._tile) {
+            console.log('TODO: Do something about ellipses')
+        }
+
+    }
+
+    // This should only be called on Condition Brackets
+    subscribeToCellChanges() {
+        // subscribe this to be notified of all Sprite changes of Cells
+        if (this._tile) { // grr, ellipsis hack....
+            this._tile.getSprites().forEach(sprite => {
+                sprite.addTileWithModifier(this)
+            })
+        }
     }
 
     toKey() {
@@ -230,6 +425,33 @@ export class TileWithModifier extends BaseForLines {
         }
     }
 
+    addRuleBracketNeighbor(neighbor: RuleBracketNeighbor) {
+        this._neighbors.push(neighbor)
+    }
+    updateCell(cell: Cell, wantsToMove: RULE_DIRECTION, sprite: GameSprite, wasAdded: boolean) {
+        // TODO: check if the cell still matches
+        let flagAdded = false
+        if (wasAdded) {
+            if (this.isNo()) {
+                flagAdded = false
+            } else {
+                flagAdded = true
+            }
+        } else {
+            if (this.isNo()) {
+                flagAdded = true
+            } else {
+                flagAdded = false
+            }
+        }
+        // console.log(`Cell [${cell.rowIndex}][${cell.colIndex}] impacted ${this._neighbors.length} neighbors`);
+        // Only pass up the food chain if the modifier (roughly) matches the wantsToMove (ignoring orientation)
+        if (!wantsToMove || wantsToMove && [RULE_DIRECTION.UP, RULE_DIRECTION.DOWN, RULE_DIRECTION.LEFT, RULE_DIRECTION.RIGHT, RULE_DIRECTION.ACTION].indexOf(this._modifier as RULE_DIRECTION) >= 0) {
+            this._neighbors.forEach(neighbor => {
+                neighbor.updateCell(cell, sprite, this, wantsToMove, flagAdded)
+            })
+        }
+}
 }
 
 // Extend RuleBracketNeighbor so that NeighborPair doesn't break

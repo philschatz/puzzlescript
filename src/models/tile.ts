@@ -3,6 +3,8 @@ import { BaseForLines, IGameCode, IGameNode } from './game'
 import { IColor, HexColor, TransparentColor } from './colors'
 import { CollisionLayer } from './collisionLayer'
 import { Cell } from '../engine'
+import { TileWithModifier } from './rule';
+import { RULE_DIRECTION } from '../enums';
 
 export interface IGameTile extends IGameNode {
     _getDescendantTiles: () => IGameTile[]
@@ -18,11 +20,15 @@ export class GameSprite extends BaseForLines implements IGameTile {
     _name: string
     _optionalLegendChar?: string
     _collisionLayer: CollisionLayer
+    _cellSet: Set<Cell>
+    _tileWithModifierSet: Set<TileWithModifier>
 
     constructor(source: IGameCode, name: string, optionalLegendChar?: string) {
         super(source)
         this._name = name
         this._optionalLegendChar = optionalLegendChar
+        this._cellSet = new Set()
+        this._tileWithModifierSet = new Set()
     }
     getPixels(): IColor[][] {
         throw new Error('BUG: Subclasses should implement this')
@@ -58,6 +64,39 @@ export class GameSprite extends BaseForLines implements IGameTile {
     }
     matchesCell(cell: Cell): any {
         return cell.getSpritesAsSet().has(this)
+    }
+
+    addTileWithModifier(t: TileWithModifier) {
+        this._tileWithModifierSet.add(t)
+    }
+    updateCellSet(cell: Cell, wantsToMove: RULE_DIRECTION, isAdding: boolean) {
+        // if (this._tileWithModifierSet.size > 10) {
+        //     console.log(`Cell [${cell.rowIndex}][${cell.colIndex}] is impacting ${this._tileWithModifierSet.size} tiles`);
+        // }
+
+        const start = Date.now()
+        if (cell.getSpritesAsSet().has(this)) {
+            this._cellSet.add(cell)
+            // propagate up
+            for (const t of this._tileWithModifierSet) {
+                t.updateCell(cell, wantsToMove, this, true)
+            }
+        } else {
+            this._cellSet.delete(cell)
+            // propagate up
+            for (const t of this._tileWithModifierSet) {
+                t.updateCell(cell, wantsToMove, this, false)
+            }
+        }
+        global['cells_updated_count'] += 1
+        const spent = Date.now() - start
+        if (spent > global['max_time_spent_updating']) {
+            global['max_time_spent_updating'] = spent
+            global['max_time_spent_updating_cell'] = {cell, sprites: cell.getSpritesAsSet()}
+        }
+    }
+    has(cell: Cell) {
+        return this._cellSet.has(cell)
     }
 }
 

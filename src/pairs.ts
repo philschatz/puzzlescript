@@ -8,14 +8,8 @@ import {
   TileWithModifier
 } from './models/rule'
 import { Cell } from './engine'
-import { RULE_MODIFIER, setIntersection, setDifference, setEquals } from './util'
-
-export enum RULE_DIRECTION {
-  UP = 'UP',
-  DOWN = 'DOWN',
-  LEFT = 'LEFT',
-  RIGHT = 'RIGHT'
-}
+import { RULE_MODIFIER, setIntersection, setDifference, setEquals, nextRandom } from './util'
+import { RULE_DIRECTION } from './enums';
 
 export class CellMutation {
   cell: Cell
@@ -211,7 +205,50 @@ class CellMutator implements IMutator {
         // if (spritesToAdd.has(sprite)) {
         if (tileWithModifier.isNo()) {
         } else {
-          this._cell.addSprite(sprite, tileWithModifier._modifier)
+          let direction
+          switch (tileWithModifier._modifier) {
+            case RULE_DIRECTION.RANDOM:
+            case RULE_DIRECTION.RANDOMDIR:
+              switch (nextRandom(4)) {
+                case 0:
+                  direction = RULE_DIRECTION.UP
+                  break
+                  case 1:
+                  direction = RULE_DIRECTION.DOWN
+                  break
+                  case 2:
+                  direction = RULE_DIRECTION.LEFT
+                  break
+                  case 3:
+                  direction = RULE_DIRECTION.RIGHT
+                  break
+                  default:
+                  throw new Error(`BUG: invalid random number chosen`)
+              }
+            case RULE_DIRECTION.UP:
+              direction = RULE_DIRECTION.UP
+              break
+            case RULE_DIRECTION.DOWN:
+              direction = RULE_DIRECTION.DOWN
+              break
+            case RULE_DIRECTION.LEFT:
+              direction = RULE_DIRECTION.LEFT
+              break
+            case RULE_DIRECTION.RIGHT:
+              direction = RULE_DIRECTION.RIGHT
+              break
+            case RULE_DIRECTION.ACTION:
+              direction = RULE_DIRECTION.ACTION
+              break
+            case 'STATIONARY':
+              console.log('Not supporting STATIONARY yet')
+            case undefined:
+              direction = undefined
+              break
+            default:
+              throw new Error(`BUG: unsupported rule direction modifier "${tileWithModifier._modifier}"`)
+          }
+          this._cell.addSprite(sprite, direction)
         }
         // }
       })

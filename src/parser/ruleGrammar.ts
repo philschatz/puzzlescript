@@ -87,6 +87,7 @@ export const RULE_GRAMMAR = `
 `
 
 export function getRuleSemantics() {
+    const cacheTilesWithModifiers: Map<string, TileWithModifier> = new Map()
     return {
         RuleItem: function (_1) {
             return _1.parse()
@@ -114,7 +115,14 @@ export function getRuleSemantics() {
             return new RuleBracketNeighbor(this.source, tileWithModifier.parse(), false)
         },
         TileWithModifier: function (optionalModifier, tile) {
-            return new TileWithModifier(this.source, optionalModifier.parse()[0], tile.parse())
+            const t = new TileWithModifier(this.source, optionalModifier.parse()[0], tile.parse())
+            const key = t.toKey()
+            if (!cacheTilesWithModifiers.has(key)) {
+                cacheTilesWithModifiers.set(key, t)
+            } else {
+                // console.log('Prevented creating a duplicate tile')
+            }
+            return cacheTilesWithModifiers.get(key)
         },
         tileModifier: function (_whitespace1, tileModifier, _whitespace2) {
             let modifier = tileModifier.parse()
