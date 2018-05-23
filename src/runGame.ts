@@ -8,7 +8,6 @@ import { IGameNode } from './models/game'
 import UI from './ui'
 import Engine from './engine'
 import { setAddAll } from './util';
-import { start } from 'repl';
 
 let totalRenderTime = 0
 
