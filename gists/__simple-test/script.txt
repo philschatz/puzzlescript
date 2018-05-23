@@ -1,471 +1,1350 @@
-title Drop Swap
-author Aaron Steed
-homepage www.robotacid.com
+title Hack the Net
+author Alan Hazelden
+homepage www.draknek.org
 
-key_repeat_interval 0.23
-again_interval 0.05
-noaction
-noundo
-background_color Black
-text_color Grey
 run_rules_on_level_start
+
+(verbose_logging)
+
+again_interval 0.06
+
+key_repeat_interval 0.5
+
+(realtime_interval 0.5)
+
+(noaction)
 
 ========
 OBJECTS
 ========
 
 Background
-Black
+black
 
-Player
-#ffffff #000000 #626263 #3c3b3c
-.222.
-21112
-23132
-20102
-.222.
-
-DeadPlayer
-#ffffff #000000 #626263 #3c3b3c
-.222.
-21112
-21112
-23132
-.222.
-
-BaseWall
-#222222 #333333 #444444 #ffffff
-11110
-12220
-12200
-12000
-00000
-
-APill
-#ff0000 #ff7374 #ff0000 #ff0000
-.111.
-11110
-11010
-11100
-.000.
-
-BPill
-#00de00 #cffa92 #ff0000 #ff0000
-.111.
-10010
-10110
-11100
-.000.
-
-CPill
-#7a35fc #b56bfd #ff0000 #ff0000
-.111.
-10110
-11010
-11100
-.000.
-
-DPill
-#0094fc #79b5fd #ff0000 #ff0000
-.111.
-10100
-11010
-10100
-.000.
-
-EPill
-#d1c200 #fff919 #ffffff #ff0000
-.111.
-10010
-10010
-11110
-.000.
-
-FPill
-#ff33b1 #ff76d2 #ff0000 #ff0000
-.111.
-10100
-11110
-10110
-.000.
-
-AllPill
-#eeee66 #ffffff #ffffcc #ffffff
-.112.
-11112
-11012
-21120
-.220.
-
-NoPill
-#ffffff #000000 #ffde85 #ff0000
-.000.
-00000
-21012
-.000.
-..2..
-
-Bomb
-#6e6e6e #000000 #ff0000 #fcf26b
-.020.
-02320
-01210
-01110
-.000.
-
-GemPill
-#ffffff #000000 #626263 #3c3b3c
-..0..
-.002.
-00022
-.223.
-..2..
-
-Count
-#ffffff #000000 #5a595a #ff0000
-.....
-.000.
-.000.
-.000.
-.....
-
-Marked
-#ffffff #000000
-.....
-..1..
-.101.
-..1..
-.....
-
-CountTray
-#333333
-
-GemTray
-#333333
-
-StartGem
+failure
 red
 
-Collect
-White
+Node
+white
+.000.
+00000
+00000
+00000
+.000.
 
-Debris1
-#ffffff #0739f5 #1f0f42 #ffffff
-.0.0.
-00.00
-..0..
-00.00
-.0.0.
-
-Debris2
-#ffffff #0739f5 #1f0f42 #ffffff
+Line
+green
 .....
-.0.0.
+.....
 ..0..
-.0.0.
+.....
 .....
 
-Empty
-Black
+LineL
+green
+.....
+.....
+00...
+.....
+.....
 
-OldPos
-Black
+LineR
+green
+.....
+.....
+...00
+.....
+.....
 
-StartCount
-Black
+LineU
+green
+..0..
+..0..
+.....
+.....
+.....
 
-DropWall1
-#222222 #333333 #444444 #ffffff
-11110
-12220
-12200
-12200
-12200
+LineD
+green
+.....
+.....
+.....
+..0..
+..0..
 
-DropWall2
-#222222 #333333 #444444 #ffffff
-11110
-12220
-12200
-12200
-12200
+OneWayL
+green transparent
+...0.
+..00.
+10000
+..00.
+...0.
 
-DropWall3
-#222222 #333333 #444444 #ffffff
-11110
-12220
-12200
-12200
-12200
+OneWayR
+green transparent
+.0...
+.00..
+00001
+.00..
+.0...
 
-DropWall4
-#222222 #333333 #444444 #ffffff
-11110
-12220
-12200
-12200
-12200
+OneWayU
+green transparent
+..1..
+..0..
+.000.
+00000
+..0..
 
-DropMarker
+OneWayD
+green transparent
+..0..
+00000
+.000.
+..0..
+..1..
+
+InboundL
+green
+.....
+.....
+.0...
+.....
+.....
+
+InboundR
+green
+.....
+.....
+...0.
+.....
+.....
+
+InboundU
+green
+.....
+..0..
+.....
+.....
+.....
+
+InboundD
+green
+.....
+.....
+.....
+..0..
+.....
+
+Player1
 Blue
+.....
+.000.
+.000.
+.000.
+.....
 
-Init
-Purple
+Player2
+Blue
+.....
+.....
+..0..
+.....
+.....
+
+Collision1
+Blue
+.....
+.....
+..0..
+.....
+.....
+
+
+Collision2
+Blue
+.....
+.000.
+.000.
+.000.
+.....
+
+
+Collision3
+Blue
+.000.
+00000
+00000
+00000
+.000.
+
+Collision4
+Blue
+.....
+.000.
+.000.
+.000.
+.....
+
+Collision5
+Blue
+.....
+.....
+..0..
+.....
+.....
+
+
+
+Target
+lightgreen
+00000
+0...0
+0...0
+0...0
+00000
+
+Firewall
+red
+..0..
+..0..
+00000
+..0..
+..0..
+
+OpenFirewall
+darkred
+..0..
+..0..
+00000
+..0..
+..0..
+
+FailureFirewall
+darkred
+..0..
+..0..
+00000
+..0..
+..0..
+
+InvertedFirewall
+transparent
+
+
+Key
+darkred
+.....
+.....
+..0..
+.....
+.....
+
+SleepingAntiVirus
+red
+.000.
+0...0
+0...0
+0...0
+.000.
+
+AntiVirusNode
+orange
+.000.
+00000
+00000
+00000
+.000.
+
+AntiVirusTarget
+orange
+
+AntiVirusMoving
+transparent
+
+
+AntiVirusL
+darkred
+.....
+.....
+000..
+.....
+.....
+
+AntiVirusR
+darkred
+.....
+.....
+..000
+.....
+.....
+
+AntiVirusU
+darkred
+..0..
+..0..
+..0..
+.....
+.....
+
+AntiVirusD
+darkred
+.....
+.....
+..0..
+..0..
+..0..
+
+AntiVirusOneWayL
+darkred transparent
+...0.
+..00.
+10000
+..00.
+...0.
+
+AntiVirusOneWayR
+darkred transparent
+.0...
+.00..
+00001
+.00..
+.0...
+
+AntiVirusOneWayU
+darkred transparent
+..1..
+..0..
+.000.
+00000
+..0..
+
+AntiVirusOneWayD
+darkred transparent
+..0..
+00000
+.000.
+..0..
+..1..
+
+SleepingKiller
+orange
+.....
+.000.
+.000.
+.000.
+.....
+
+Killer
+red
+.....
+.000.
+.000.
+.000.
+.....
+
+
+PlayerL
+Blue
+.....
+.000.
+0000.
+.000.
+.....
+
+PlayerR
+Blue
+.....
+.000.
+.0000
+.000.
+.....
+
+PlayerU
+Blue
+..0..
+.000.
+.000.
+.000.
+.....
+
+PlayerD
+Blue
+.....
+.000.
+.000.
+.000.
+..0..
+
+
+PlayerTrailL
+blue
+.....
+.....
+000..
+.....
+.....
+
+PlayerTrailR
+blue
+.....
+.....
+..000
+.....
+.....
+
+PlayerTrailU
+blue
+..0..
+..0..
+..0..
+.....
+.....
+
+PlayerTrailD
+blue
+.....
+.....
+..0..
+..0..
+..0..
+
+
 
 =======
 LEGEND
 =======
 
 . = Background
-@ = Player
-p = DeadPlayer
-# = BaseWall
-a = APill
-b = BPill
-c = CPill
-d = DPill
-e = EPill
-f = FPill
-n = NoPill
-x = AllPill
-u = Count and CountTray
-w = Count and CountTray and StartCount
-g = GemPill
-q = GemTray
-o = GemTray and StartGem
-i = Init
-j = DropWall1
-k = DropWall2
-l = DropWall3
-m = DropWall4
+@ = Player1 and Node
+* = Node
+- = Line
+L = OneWayL and Line
+R = OneWayR and Line
+U = OneWayU and Line
+D = OneWayD and Line
+! = Firewall and Line
+~ = OpenFirewall and InvertedFirewall and Line
+$ = Target and Node
+% = Target and Player1 and Node
+? = Key and Node
+& = Key and Target and Node
+# = SleepingAntiVirus and Node
+S = SleepingKiller and Node
+K = Killer and Node
 
+Player = Player1 or Player2 or Killer or PlayerL or PlayerR or PlayerU or PlayerD
+PlayerMoving = PlayerL or PlayerR or PlayerU or PlayerD
 
-MatchPill = APill or BPill or CPill or DPill or EPill or FPill or AllPill
-Pill = MatchPill or NoPill or GemPill or Bomb
-Debris = Debris1 or Debris2
-AMatch = APill or AllPill
-BMatch = BPill or AllPill
-CMatch = CPill or AllPill
-DMatch = DPill or AllPill
-EMatch = EPill or AllPill
-FMatch = FPill or AllPill
-Wall = BaseWall or DropWall1 or DropWall2 or DropWall3 or DropWall4
-Item = Pill or Debris or Wall or Player
-Heavy = Pill or Player
-Dropping = Marked or DropMarker
-DropMix1 = APill or BPill or CPill or DPill or EPill
-DropMix2 = APill or BPill or CPill or DPill or EPill or GemPill
-DropMix3 = APill or BPill or CPill or DPill or EPill or NoPill
-DropMix4 = APill or BPill or CPill or DPill or EPill or FPill or GemPill
-DropMix5 = APill or BPill or CPill or DPill or EPill or FPill
-DropWallMarked = DropWall1 or DropWall3
+LineDir = LineL or LineR or LineU or LineD
+Inbound = InboundL or InboundR or InboundU or InboundD
+
+Collision = Collision1 or Collision2 or Collision3 or Collision4 or Collision5
+
+ConnectableTo = Line or Node
+
+ConnectsL = LineL or OneWayL or PlayerTrailL
+ConnectsR = LineR or OneWayR or PlayerTrailR
+ConnectsU = LineU or OneWayU or PlayerTrailU
+ConnectsD = LineD or OneWayD or PlayerTrailD
+
+AntiVirusConnectsL = AntiVirusL or AntiVirusOneWayL
+AntiVirusConnectsR = AntiVirusR or AntiVirusOneWayR
+AntiVirusConnectsU = AntiVirusU or AntiVirusOneWayU
+AntiVirusConnectsD = AntiVirusD or AntiVirusOneWayD
+
+AntiVirus = AntiVirusNode or AntiVirusTarget or AntiVirusMoving
+
+OneWay = OneWayL or OneWayR or OneWayU or OneWayD
+
+AntiVirusOneWay = AntiVirusOneWayL or AntiVirusOneWayR or AntiVirusOneWayU or AntiVirusOneWayD
+
+PlayerTrail = PlayerTrailL or PlayerTrailR or PlayerTrailU or PlayerTrailD
 
 =======
 SOUNDS
 =======
 
-sfx0 54236904 (illegal)
-sfx1 5160507 (swap)
-sfx2 19008103 (allpill)
-sfx3 50665503 (crush 3)
-sfx4 80820507 (land)
-sfx5 2030908 (blast)
-sfx6 3032303 (bomb)
-sfx7 83704102 (dead)
-sfx8 7194508 (gem collect)
-EndLevel 16709508 (win)
+EndLevel 42257908
+
+Collision2 Create 83110908
+sfx1 84184909 (player move)
+sfx2 61306309 (player split)
+sfx3 40267308 (fail)
+
+restart 87593308
+undo 56438707
 
 ================
 COLLISIONLAYERS
 ================
 
-
-Collect, StartCount, StartGem
 Background
-OldPos, CountTray, GemTray
-Player, Wall, Pill, Empty, Count, DeadPlayer, Bomb, Init
-Debris, Marked, DropMarker
+Failure
+OpenFirewall
+Node, Line
+Firewall, FailureFirewall, Target
+LineL, InboundL, AntiVirusL, PlayerTrailL
+LineR, InboundR, AntiVirusR, PlayerTrailR
+LineU, InboundU, AntiVirusU, PlayerTrailU
+LineD, InboundD, AntiVirusD, PlayerTrailD
+Oneway, InvertedFirewall, AntiVirusOneWay
+Collision
+Player
+Key, AntiVirusMoving, AntiVirusNode, AntiVirusTarget, SleepingAntiVirus, SleepingKiller
 
 ======
 RULES
 ======
 
-(init)
-[ DropWall1 ] [ Init ] -> [ DropWall1 ] [ random DropMix1 Marked ]
-[ DropWall2 ] [ Init ] -> [ DropWall2 ] [ random DropMix1 ]
-[ DropWall3 ] [ Init ] -> [ DropWall3 ] [ random DropMix1 Marked ]
-[ DropWall4 ] [ Init ] -> [ DropWall4 ] [ random DropMix5 ]
+(...)
 
-(debris clean up)
-[ Debris2 ] -> [ Empty ] again
-[ Debris1 ] -> [ Debris2 ] again
+[ background ] -> [ background failure ]
 
-(player - pill swapping)
-[ > Player | Pill ] -> [ Pill OldPos | Player ] sfx1
-[ Player Marked | OldPos ] -> [ Player | OldPos Marked ]
+[ Player no Killer ] [ failure ] -> [ Player ] []
 
-(blocked move)
-[ > Player | No Pill ] -> [ Player | ] sfx0
+(...)
 
-(pill combos)
-[ AMatch | AMatch | AMatch ] -> [ AMatch Collect | AMatch Collect | AMatch Collect ]
-[ BMatch | BMatch | BMatch ] -> [ BMatch Collect | BMatch Collect | BMatch Collect ]
-[ CMatch | CMatch | CMatch ] -> [ CMatch Collect | CMatch Collect | CMatch Collect ]
-[ DMatch | DMatch | DMatch ] -> [ DMatch Collect | DMatch Collect | DMatch Collect ]
-[ EMatch | EMatch | EMatch ] -> [ EMatch Collect | EMatch Collect | EMatch Collect ]
-[ FMatch | FMatch | FMatch ] -> [ FMatch Collect | FMatch Collect | FMatch Collect ]
-[ NoPill | NoPill | NoPill ] -> [ NoPill Collect | NoPill Collect | NoPill Collect ]
+[ Node Player no Killer ] -> [ Node Player1 ]
 
-(bomb activate)
-[ OldPos Bomb ] -> sfx5
-up [ OldPos Bomb | Pill ] -> [ OldPos Bomb | Pill > Collect ]
-right [ OldPos Bomb | Pill ] -> [ OldPos Bomb | Pill > Collect ]
-down [ OldPos Bomb | Pill ] -> [ OldPos Bomb | Pill > Collect ]
-left [ OldPos Bomb | Pill ] -> [ OldPos Bomb | Pill > Collect ]
-[ OldPos Bomb ] -> [ OldPos Empty ]
+(...)
 
-(blast)
-up [ Pill > Collect | Pill ] -> [ Pill Collect | Pill > Collect ]
-right [ Pill > Collect | Pill ] -> [ Pill Collect | Pill > Collect ]
-down [ Pill > Collect | Pill ] -> [ Pill Collect | Pill > Collect ]
-left [ Pill > Collect | Pill ] -> [ Pill Collect | Pill > Collect ]
-[ > Collect ] -> [ Collect ]
-[ GemPill Collect ] -> [ GemPill ]
+[ Line no LineDir no PlayerTrail ] -> [ action Line ]
 
-(reward matches)
-(junction)
-Right [ Collect | Collect ] -> [ > Collect | > Collect ]
-Down [ Collect | Collect ] -> [ > Collect | > Collect ]
-[ Down Collect | Right Collect ] [ Collect OldPos ] -> [ Collect | Collect ] [ Bomb OldPos ] sfx6
-(4: create AllPill)
-[ MatchPill Collect | MatchPill Collect | MatchPill Collect | MatchPill Collect ] [ Collect OldPos ] -> [ MatchPill Collect | MatchPill Collect | MatchPill Collect | MatchPill Collect ] [ AllPill OldPos ] sfx2
+(...)
 
-(count moves)
-(subtract on move)
-random right [ OldPos ] [ Count | No Count ] -> [ OldPos ] [ | ]
-(fill on Debris)
-[ Collect ] [ CountTray ] -> [ Collect ] [ CountTray Count ]
+left [ Line no Player no OneWayL no LineL | ConnectableTo no OneWayR ] -> [ Line PlayerTrailL | ConnectableTo ]
+right [ Line no Player no OneWayR no LineR | ConnectableTo no OneWayL ] -> [ Line PlayerTrailR | ConnectableTo ]
+up [ Line no Player no OneWayU no LineU | ConnectableTo no OneWayD ] -> [ Line PlayerTrailU | ConnectableTo ]
+down [ Line no Player no OneWayD no LineD | ConnectableTo no OneWayU ] -> [ Line PlayerTrailD | ConnectableTo ]
 
-(dead?)
-[ DeadPlayer ] -> cancel
-[ No Count StartCount CountTray ] [ Player ] -> [ No Count StartCount CountTray ] [ DeadPlayer ] sfx7
-[ Player | NoPill Collect ] -> [ DeadPlayer | NoPill ]
-[ DeadPlayer ] [ CountTray Count ] -> [ DeadPlayer ] [ CountTray ] sfx7
-
-(destroy matched)
-[ APill Collect ] -> [ Debris1 ] sfx3 again
-[ BPill Collect ] -> [ Debris1 ] sfx3 again
-[ CPill Collect ] -> [ Debris1 ] sfx3 again
-[ DPill Collect ] -> [ Debris1 ] sfx3 again
-[ EPill Collect ] -> [ Debris1 ] sfx3 again
-[ FPill Collect ] -> [ Debris1 ] sfx3 again
-[ AllPill Collect ] -> [ Debris1 ] sfx3 again
-[ Player ] [ NoPill Collect ] -> [ Player ] [ Debris1 ] sfx3 again
-
-(destroy NoPills)
-down [ NoPill | Wall ] -> [ Debris1 | Wall ] again
-
-(collect gems)
-down [ GemPill | Wall ] -> [ GemPill Collect | Wall ]
-[ GemPill Collect ] [ StartGem No GemPill ] -> [ Debris1 ] [ StartGem GemPill ] again sfx8
-right [ GemPill Collect ] [ GemPill GemTray | No GemPill GemTray ] -> [ Debris1 ] [ GemPill GemTray | GemPill GemTray ] again sfx8
-
-(drop)
-[ Heavy No Dropping ] -> [ Heavy DropMarker ]
-down [ Heavy Dropping | Empty ] -> [ Empty | Heavy Dropping ]
-[ DropMarker ] -> [ ]
-down [ DropWall1 | Empty ] -> [ DropWall1 | random DropMix1 ] again
-down [ DropWall2 | Empty ] -> [ DropWall2 | random DropMix2 ] again
-down [ DropWall3 | Empty ] -> [ DropWall3 | random DropMix3 ] again
-down [ DropWall4 | Empty ] -> [ DropWall4 | random DropMix4 ] again
-
-(gem drop win)
-right [ GemPill GemTray | Wall ] -> win
-
-[ OldPos ] -> [ ]
+(...)
 
 ==============
 WINCONDITIONS
 ==============
 
-No Marked
-Some DropWallMarked
+all target on player1
+all player1 on target
+some target
+no Collision
+no PlayerTrail
+no PlayerMoving
 
 =======
 LEVELS
 =======
 
-message collect orbs by matching 3
-message match 3 to restore move-energy
-message level 1: collect all marked orbs
 
-wuuuuu#
-#jjjjj#
-#iiiii#
-#iiiii#
-#iiiii#
-#iiiii#
-#ii@ii#
-#######
 
-message level 2: collect all marked orbs
+..........
+...-*----.
+...-..-.-.
+.@--..*.*.
+......-.-.
+......---.
+....$..-..
+....---*..
+..........
 
-wuuuuuu#
-#jjjjjj#
-#iiiiii#
-#iiiiii#
-#iiiiii#
-#iiiiii#
-#iiiiii#
-#iiiiii#
-#iii@ii#
-########
 
-message collect gray gems by getting them to the bottom
-message level 3: collect 8 gems
 
-oqqqqqqq#
-wuuuuuuu#
-#kkkkkkk#
-#iiiiiii#
-#iiiiiii#
-#iiiiiii#
-#iiiiiii#
-#iiiiiii#
-#iiiiiii#
-#iiiiiii#
-#iii@iii#
-#########
 
-message if you are next to 3 matching skulls you die
-message skulls can be destroyed by getting them to the bottom
-message level 4: collect all marked orbs
 
-wuuuuuu#
-#llllll#
-#iiiiii#
-#iiiiii#
-#iiiiii#
-#iiiiii#
-#iiiiii#
-#iiiiii#
-#iii@ii#
-########
+.........
+....@....
+....-....
+..*---$..
+..-...-..
+..-...-..
+..*---*..
+.........
 
-message level 5: collect 7 gems
 
-oqqqqqqq#
-wuuuuuuu#
-#mmmmmmm#
-#iiiiiii#
-#iiiiiii#
-#iiiiiii#
-#iiiiiii#
-#iiiiiii#
-#iiiiiii#
-#iiiiiii#
-#iii@iii#
-#########
 
-message thanks for playing
 
+
+
+...........
+.....@.....
+.....-.....
+...*---*...
+.---...---.
+.-.......-.
+.$--...--$.
+.-.--$--.-.
+.-.......-.
+.---------.
+...........
+
+
+
+
+
+.............
+......@......
+......-......
+.--*-----*--.
+.-.-.....-.-.
+.-.-.....-.-.
+.-.-.-$-.-.-.
+.--*--.--*--.
+.............
+
+
+
+
+...........
+...$...$...
+...-...-...
+.--*-@-*--.
+.-.-.-.-.-.
+.$.-----.$.
+...........
+
+
+
+
+
+...........
+.---------.
+.-...-...-.
+.*-*-%-*-*.
+.-.-...-.-.
+.$.-----.$.
+...........
+
+
+
+
+
+
+
+...........
+.....@.....
+.....-.....
+...$---$...
+...-.-.-...
+.*-*-*-*-*.
+...-...-...
+...-----...
+...........
+
+
+
+
+
+.........
+.-----...
+.-.-.-...
+.%-*-*-$.
+...-.-.-.
+...-----.
+.........
+
+
+
+
+.............
+...-------...
+...-.-.-.-...
+...@-*.*-*...
+...-.-.-.-...
+.--*-$-$-*--.
+.-.-.-.-.-.-.
+.-----------.
+.............
+
+
+
+.......
+.-----.
+.-.-.-.
+.*-@.*.
+.-.-...
+.$-*-$.
+.......
+
+
+
+
+(one way gates)
+
+
+
+...................
+...................
+............--*--..
+.*l-$l-$l-$l-.-.-%.
+............--*--..
+...................
+...................
+
+
+
+
+...........
+...--*--...
+...-.-.-...
+...-.d.-...
+.--$---$--.
+.-.-...-.-.
+.-.--@--.-.
+.-...-...-.
+.----$----.
+.....-.....
+.....$.....
+...........
+
+
+
+
+..............
+........*l---.
+..--$--.u...-.
+..-.-.-.-...-.
+.%--*---*-r$-.
+..-.-.-.-...-.
+..--$--.d...-.
+........*l---.
+..............
+
+
+
+
+
+...................
+...................
+.-$-*-.-*-$-...--*.
+.-...-$-...-l-@-.-.
+.-$-*-.-*-$-...--*.
+...................
+...................
+
+
+
+
+.........
+.--*.*--.
+.-.---.-.
+.-..-..-.
+.---@---.
+....-....
+.-$.-.$-.
+.-..d..-.
+.-*-$-*-.
+.........
+
+
+
+.............
+.--$--@--$--.
+.-....-....-.
+.-l-*-$-*-r-.
+.-.........-.
+.-----------.
+.............
+
+
+
+
+..........
+.-----....
+.-...-l-..
+.-*-$-.-..
+....-..-..
+....@-*-..
+....-.-...
+...-$-*-..
+...-...-..
+...-----..
+..........
+
+
+
+
+
+..........
+.--$---$-.
+.@.-....-.
+.---.*l--.
+..-..u.-..
+..-$---$..
+...-...-..
+...-----..
+..........
+
+
+
+
+...........
+.....--%...
+.....-.....
+...--$--...
+..--.-.-...
+..-..d.-...
+..*----*-..
+..-.....-..
+..---$---..
+.....-.....
+...$--.....
+...........
+
+
+
+
+
+.........
+..-*-*...
+..-..-...
+.---.--*.
+.-.d.-.-.
+.----@-*.
+.....-...
+.$-*-$...
+.........
+
+
+
+
+
+
+(void connections)
+
+
+
+
+...........
+.-@.-*--$..
+..-.-...-..
+..---......
+....-......
+....-*--*..
+...........
+
+
+
+
+.........
+....-....
+.-$.$.$-.
+..u.u.u..
+..-.-.-..
+..*-*-*..
+..-...-..
+..-----..
+....@....
+.........
+
+
+
+...........
+.....%.....
+.$-.---.-$.
+..--*.*--..
+.*-.-.-.-*.
+.-.......-.
+...........
+
+
+
+
+
+............
+........-...
+...@----*--.
+.---.-..-.-.
+.-...-r--.$.
+.-..*..-..-.
+.--.-.--....
+..-----.....
+............
+
+
+
+
+.............
+......$......
+.$.-------.$.
+.-.-..-..-.-.
+.---.-%-.---.
+...-..-..-...
+...-------...
+......-......
+...---$---...
+...$.....$...
+.............
+
+
+
+
+(firewalls)
+
+
+
+............
+.....---....
+.....-.?....
+...-.-.!....
+.$!*-*---@-.
+...-......-.
+...--------.
+............
+
+
+
+
+..........
+.....*....
+.....-....
+...@.--?-.
+...-...-..
+.--*-!-$-.
+.-.-...-..
+.-.*----..
+.-...-....
+.-----....
+..........
+
+
+
+.............
+.----........
+.-..-.&l-....
+.*.-*-..-....
+.-!-.---@-r&.
+...---..-....
+......&l-....
+.............
+
+
+...........
+..---@---..
+..-.....-..
+..-..$..-..
+..-..!..-..
+.-*-----*-.
+.....-.....
+...*-?-*...
+.....-.....
+...........
+
+
+
+............
+....-------.
+..--*.-...-.
+..-.-.!...-.
+.@--*-&!*.-.
+..-.-.....-.
+..--*.....-.
+....-------.
+............
+
+
+
+
+
+
+.........
+...---...
+...-.-...
+.%-&!$-*.
+...-.-.-.
+...-----.
+.........
+
+
+
+
+
+...........
+.....---...
+.-...d.-...
+.$.?---*--.
+.-.-...-.-.
+.!.-...-.-.
+.-.-...-.-.
+.--@---*--.
+...........
+
+
+
+
+.............
+.$...........
+.-.....--*--.
+.--!-%--...-.
+.....-.--*--.
+.....d...-...
+.....&.......
+.............
+
+
+
+
+
+.........
+.*----&-.
+.-...-.-.
+.$.-!-.-.
+...-...-.
+...@--$-.
+.........
+
+
+
+...........
+..*-----*..
+..-.....-..
+.---...---.
+.-.-.-.-.-.
+.*-?-@-?-*.
+...!...!...
+...-...-...
+...$...$...
+...........
+
+
+
+.........
+.....-!-.
+.-...-.-.
+.*-?--.$.
+.-.-...-.
+.-.@----.
+.-.-...-.
+.*-*---*.
+.........
+
+
+
+.............
+....*---*....
+....-.-.-....
+....--@--....
+......-......
+....--*--....
+....-.!.-....
+....-.$.-....
+....-...-....
+..--*---*--..
+..-.-...-.-..
+.-?--...--?-.
+.............
+
+
+
+
+
+(harder levels)
+
+
+
+........
+..-----.
+.*-...-.
+..-$-*-.
+...-.-..
+.--$-@..
+.-.-.-..
+.--$-*..
+.-.-....
+.---....
+........
+
+
+
+
+.............
+...*...-----.
+...-...-.d.d.
+.*-*-*!?-@-*.
+...-...-.-.-.
+...*...$-$-$.
+.............
+
+
+
+
+...............
+.......*.......
+.......u.......
+...---------...
+.$.-.-.@.-.-.$.
+.-.*-*---*-*.-.
+.-.-.-...-.-.-.
+.*----...----*.
+...............
+
+
+................
+.........------.
+.........-....-.
+.......--?--..-.
+.......-.-.-..-.
+.*-$-$!*-*--%.-.
+.......-.-.-..-.
+.......--?--..-.
+.........-....-.
+.........------.
+................
+
+
+...........
+...--$--...
+.$--...--$.
+...-----...
+.....-.....
+.----%----.
+.-.......-.
+.-.-----.-.
+.-.*.-.*.-.
+.-.-.-.-.-.
+.--*-$-*--.
+...........
+
+
+
+.........
+.-----...
+.-.?.-.$.
+.-.!.-.-.
+.-----.$.
+.-...-.-.
+.*---*.@.
+...-...-.
+...----?.
+.........
+
+
+
+...........
+...---*---.
+...-.....-.
+...-$---$-.
+......u....
+..--*---*..
+..-.-...-..
+..@.-----..
+..-........
+.---.......
+.-.-.......
+.*-*.......
+...........
+
+
+
+.............
+.--$.*-?-*--.
+.!...-...-.-.
+.----*.@-*--.
+.....-...-.-.
+.....*-?-*--.
+.............
+
+
+
+message Thanks for playing :)
+
+
+
+
+(...........
+.*-------*.
+.-...-...-.
+.--..@..--.
+..-.....-..
+..*-----*..
+...........
+)
+
+
+
+(........
+....---.
+..--$.-.
+.%-.-.$-
+..--$-..
+...-.-..
+...---..
+........
+
+
+
+...........
+.-$.....$-.
+..--*-*--..
+....-.-....
+....-@-....
+....-.-....
+..--*-*--..
+..$.....$..
+..-.....-..
+...........
+
+
+...........
+.....-.....
+....-@.....
+....--.....
+.....d.....
+...-----...
+...-...-...
+..-*---*-..
+..-.....-..
+..*-----?..
+.....-.....
+.....!.....
+.....-.....
+....$-$....
+...........
+
+
+
+...............
+.....--%--.....
+.$...-...-...$.
+.--$--...--$--.
+.....-----.....
+.......-.......
+.....--$--.....
+.*...-...-...*.
+.--*-$...$-*--.
+...............
+
+
+
+...................
+.----.........----.
+.-..-....%....-..-.
+.-.-*--.---.--*-.-.
+.-..-.--*.*--.-..-.
+.-..$--.-.-.--$..-.
+.-..-.........-..-.
+.----.........----.
+...................
+
+
+
+
+...........
+.....-.....
+.....@.....
+..$.---.$..
+..-.-.-.-..
+.-*-*-*-*-.
+.-.......-.
+.$.......$.
+...........
+
+
+
+
+..........
+....--*-..
+....-.-...
+..@--.$-..
+....-.....
+....*-$...
+....-.....
+..........
+
+
+
+
+.........
+.-$---$-.
+.-..-..-.
+.-..@..-.
+.-.....-.
+.-$...$-.
+..-----..
+.........
+
+
+
+...........
+.--*---*...
+.-.-.-.-...
+.$.--*.--@.
+...-...-...
+...----*...
+...........
+
+
+
+.......
+.$-$-$.
+.-.-.-.
+.-.@.-.
+.-----.
+.......
+
+
+
+........
+..--!--.
+..-...-.
+..-$-$-.
+...-.-..
+.--@-?..
+.-.-.-..
+.--*-*..
+.-.-....
+.---....
+........
+
+
+...........
+.---!---...
+.-.....---.
+.-$-*-*-.-.
+..-...-..-.
+.-$-?-*--@.
+..-.-.-....
+..-----....
+...........
+
+
+
+..........
+..*---*-..
+..-....-..
+..@---?-..
+....-.....
+....-.-.-.
+....*!*-$.
+..........
+
+
+
+
+...................
+.......-----------.
+.*----.-.........-.
+.....-.-...*----.-.
+.--*.--*--.....-.-.
+.-.-...-.-.----*--.
+.-.-----.-.-.......
+.--......-.-.*---..
+..----*..*.---..-..
+......-.........-..
+......---$.@-----..
+...................
+
+
+
+...........
+.....@.....
+...-----...
+...-...-...
+.*-*-*-*-*.
+.-.-.-.-.-.
+.-.*.-.*.-.
+.$...$...$.
+...........
+
+
+
+)

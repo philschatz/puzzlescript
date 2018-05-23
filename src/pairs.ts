@@ -10,6 +10,7 @@ import {
 import { Cell } from './engine'
 import { RULE_MODIFIER, setIntersection, setDifference, setEquals, nextRandom } from './util'
 import { RULE_DIRECTION } from './enums';
+import { IGameTile } from './models/tile';
 
 export class CellMutation {
   cell: Cell
@@ -170,28 +171,42 @@ class CellMutator implements IMutator {
     const newSpritesAndWantsToMoves = [...this._cell.getSpriteAndWantsToMoves()]
 
 
-    const conditionSprites = new Set()
-    const actionSprites = new Set()
-    // remove sprites that are listed on the condition side
+    const conditionTiles = new Map<IGameTile, TileWithModifier>()
+    const actionTiles = new Map<IGameTile, TileWithModifier>()
+
+    // remove sprites in tiles that are listed on the condition side
     this._condition.forEach(tileWithModifier => {
-      tileWithModifier._tile.getSprites().forEach(sprite => {
+      if (!tileWithModifier._tile.isOr()) {
         if (!tileWithModifier.isNo()) {
-          // this._cell.removeSprite(sprite)
-          conditionSprites.add(sprite)
+          conditionTiles.set(tileWithModifier._tile, tileWithModifier)
         }
-      })
+      }
     })
     // add sprites that are listed on the action side
     this._action.forEach(tileWithModifier => {
-      tileWithModifier._tile.getSpritesForRuleAction().forEach(sprite => {
-        // this._cell.removeSprite(sprite)
-        // conditionSprites.add(sprite)
+      if (!tileWithModifier._tile.isOr()) {
         if (!tileWithModifier.isNo()) {
-          actionSprites.add(sprite)
-          // this._cell.addSprite(sprite, tileWithModifier._modifier)
+          actionTiles.set(tileWithModifier._tile, tileWithModifier)
         }
-      })
+      }
     })
+
+    const conditionSprites = new Set()
+    const actionSprites = new Set()
+    for (const t of conditionTiles.values()) {
+      if (!t.isNo()) {
+        for (const sprite of t._tile.getSprites()) {
+          conditionSprites.add(sprite)
+        }
+      }
+    }
+    for (const t of actionTiles.values()) {
+      if (!t.isNo()) {
+        for (const sprite of t._tile.getSprites()) {
+          actionSprites.add(sprite)
+        }
+      }
+    }
 
     const spritesToRemove = setDifference(conditionSprites, actionSprites)
     const spritesToAdd = setDifference(actionSprites, conditionSprites)
@@ -201,7 +216,7 @@ class CellMutator implements IMutator {
     }
 
     // add sprites that are listed on the action side
-    this._action.forEach(tileWithModifier => {
+    for (const tileWithModifier of actionTiles.values()) {
       // TODO: Only get the 1st sprite if tileWithModifier._tile is an OR tile (like in the 1st engine.test.js)
       if (!tileWithModifier._tile.getSpritesForRuleAction) {
         debugger
@@ -267,7 +282,7 @@ class CellMutator implements IMutator {
         }
         // }
       })
-    })
+    }
 
     // TODO: Be better about recording when the cell actually updated
     const spritesNow = this._cell.getSpritesAsSet()

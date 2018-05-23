@@ -51,7 +51,9 @@ async function run() {
   for (let filename of files) {
     console.log(`Parsing and rendering ${filename}`)
     const code = readFileSync(filename, 'utf-8')
+    const startTime = Date.now()
     const { data, error, trace, validationMessages } = Parser.parse(code)
+    console.log(`Parsing took ${Date.now() - startTime}ms`)
 
     if (error) {
       console.log(trace.toString())
@@ -71,15 +73,16 @@ async function run() {
       // Draw the "last" level (after the messages)
       const level = data.levels.filter(level => level.isMap())[0]
       if (level) {
+        let startTime = Date.now()
         const engine = new Engine(data)
         engine.setLevel(data.levels.indexOf(level))
+        console.log(`Loading Cells into the level took ${Date.now() - startTime}ms`)
+
         // engine.on('cell:updated', cell => {
         //   UI.drawCellAt(data, cell, cell.rowIndex, cell.colIndex, false)
         // })
 
-        let startTime = Date.now()
         UI.renderScreen(data, engine.currentLevel)
-        totalRenderTime += Date.now() - startTime
 
         // record the appliedRules in a coverage.json file
         const codeCoverageTemp = new Map() // key = Line number, value = count of times the rule executed

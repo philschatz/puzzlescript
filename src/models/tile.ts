@@ -15,6 +15,7 @@ export interface IGameTile extends IGameNode {
     setCollisionLayer: (collisionLayer: CollisionLayer) => void
     getCollisionLayerNum: () => number
     matchesCell: (cell: Cell) => boolean
+    isOr: () => boolean
 }
 
 export class GameSprite extends BaseForLines implements IGameTile {
@@ -30,6 +31,9 @@ export class GameSprite extends BaseForLines implements IGameTile {
         this._optionalLegendChar = optionalLegendChar
         this._cellSet = new Set()
         this._tileWithModifierSet = new Set()
+    }
+    isOr() {
+        return false
     }
     getPixels(): IColor[][] {
         throw new Error('BUG: Subclasses should implement this')
@@ -200,6 +204,9 @@ export class GameLegendTile extends BaseForLines implements IGameTile {
         this._spriteNameOrLevelChar = spriteNameOrLevelChar
         this._tiles = tiles
     }
+    isOr() {
+        return false
+    }
     isInvalid() {
         if (!this.hasCollisionLayer()) {
             return 'Missing collision layer'
@@ -285,6 +292,9 @@ export class GameLegendTileAnd extends GameLegendTile {
 }
 
 export class GameLegendTileOr extends GameLegendTile {
+    isOr() {
+        return true
+    }
     matchesCell(cell: Cell) {
         // Update code coverage (Maybe only count the number of times it was true?)
         if (process.env['NODE_ENV'] !== 'production') {

@@ -225,6 +225,60 @@ LEVELS
 
 ` // end game
 
+const HACK_THE_NET_NODES = `title Hack the net nodes disappearing
+
+========
+OBJECTS
+========
+
+Background
+blue
+
+Player
+green
+
+Sand
+yellow
+
+Water
+Blue
+
+=======
+LEGEND
+=======
+
+. = Background
+s = Sand
+P = Player
+w = Water
+thing = sand OR water
+
+================
+COLLISIONLAYERS
+================
+
+Background
+Player
+Sand
+Water
+
+======
+RULES
+======
+
+(no-op)
+
+[ thing ] -> [ thing Player ]
+
+=======
+LEVELS
+=======
+
+sw
+
+
+` // end game
+
 function parseEngine (code) {
   const { data, error } = Parser.parse(code)
   expect(error && error.message).toBeFalsy() // Use && so the error messages are shorter
@@ -278,5 +332,17 @@ describe('engine', () => {
     const neighborCell = engine.currentLevel[0][1]
     const neighborSprites = neighborCell.getSpritesAsSet()
     expect(neighborSprites.has(expectedSprite)).toBe(false)
+  })
+
+  it('Respects when an OR LegendItem is on the right side of a Rule to preserve the sprite that was there', () => {
+    const { engine, data } = parseEngine(HACK_THE_NET_NODES)
+    const player = data._getSpriteByName('player')
+    const sand = data._getSpriteByName('sand')
+    const water = data._getSpriteByName('water')
+    engine.tick()
+
+    expect(sand.getCellsThatMatch().size).toBe(1)
+    expect(water.getCellsThatMatch().size).toBe(1)
+    expect(player.getCellsThatMatch().size).toBe(2)
   })
 })

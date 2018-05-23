@@ -197,6 +197,11 @@ class UI {
 
     axel.fg(255, 255, 255)
     axel.bg(0, 0, 0)
+    // Output \n for each row that we have. That way any output from before is preserved
+    const rows = process.stdout.rows || 0
+    for (let i = 0; i < rows; i++) {
+      console.log('\n')
+    }
     axel.clear()
   }
 
