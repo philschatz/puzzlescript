@@ -1,7 +1,7 @@
 /* eslint-env jasmine */
 const { default: Engine } = require('../src/engine')
 const { default: Parser } = require('../src/parser/parser')
-const { resetRandomSeed } = require('../src/util')
+const { nextRandom, resetRandomSeed, setRandomValuesForTesting, clearRandomValuesForTesting, getRandomSeed } = require('../src/util')
 
 function parseEngine (code) {
   const { data, error } = Parser.parse(code)
@@ -13,6 +13,50 @@ function parseEngine (code) {
 }
 
 describe('Directions', () => {
+  beforeEach(() => {
+    clearRandomValuesForTesting()
+  })
+
+  it('"randomly" generates integers', () => {
+    expect(nextRandom(4)).toBe(2)
+    expect(nextRandom(4)).toBe(3)
+    expect(nextRandom(4)).toBe(1)
+    expect(nextRandom(4)).toBe(3)
+    expect(nextRandom(4)).toBe(2)
+    expect(nextRandom(4)).toBe(3)
+    expect(nextRandom(4)).toBe(3)
+    expect(nextRandom(4)).toBe(2)
+    expect(nextRandom(4)).toBe(1)
+    expect(nextRandom(4)).toBe(2)
+    expect(nextRandom(4)).toBe(0)
+    expect(nextRandom(4)).toBe(1)
+    expect(nextRandom(4)).toBe(2)
+    expect(nextRandom(4)).toBe(0)
+    expect(nextRandom(4)).toBe(3)
+    expect(nextRandom(4)).toBe(3)
+    expect(nextRandom(4)).toBe(0)
+    expect(nextRandom(4)).toBe(0)
+    expect(nextRandom(4)).toBe(2)
+    expect(nextRandom(4)).toBe(1)
+    expect(nextRandom(4)).toBe(2)
+    expect(nextRandom(4)).toBe(1)
+    expect(nextRandom(4)).toBe(2)
+    expect(nextRandom(4)).toBe(1)
+    expect(nextRandom(4)).toBe(1)
+    expect(nextRandom(4)).toBe(2)
+    expect(nextRandom(4)).toBe(2)
+    expect(nextRandom(4)).toBe(0)
+    expect(nextRandom(4)).toBe(2)
+    expect(nextRandom(4)).toBe(2)
+    expect(nextRandom(4)).toBe(2)
+    expect(nextRandom(4)).toBe(1)
+    expect(nextRandom(4)).toBe(0)
+    expect(nextRandom(4)).toBe(2)
+    expect(nextRandom(4)).toBe(1)
+    expect(nextRandom(4)).toBe(1)
+
+  })
+
   it('Marks a sprite when it wants to move', () => {
     const {engine, data} = parseEngine(`
 title foo
@@ -55,7 +99,6 @@ P.
 
 `)
     const player = data._getSpriteByName('player')
-    debugger
     const changedCellMutations = engine.tickUpdateCells()
     expect(engine.toSnapshot()).toMatchSnapshot()
     // Once these sprites actually move, we neet to separate engine.tick() into multiple steps:
@@ -233,8 +276,7 @@ P.
     expect(changedCells.size).toBe(0)
   })
 
-  it('Moves the sprite in a "random" direction using "RANDOM" in a bracket', () => {
-    resetRandomSeed()
+  it('Randomly decides whether to add the sprite using "RANDOM" in a bracket', () => {
     const {engine, data} = parseEngine(`
 title foo
 
@@ -247,6 +289,9 @@ green
 
 Player
 blue
+
+Star
+yellow
 
 =======
 LEGEND
@@ -266,46 +311,47 @@ Player
 RULES
 ===
 
-[ Player ] -> [ RANDOM Player ]
+[ Background ] -> [ Background RANDOM Star ]
 
 =======
 LEVELS
 =======
 
-.....
-.....
-..P..
-.....
-.....
+P.
 
 `)
+    setRandomValuesForTesting([0, 0, 0, 0, 1, 1, 1, 1])
     const changedCells = engine.tick()
+    console.log('Random seed index is now at', getRandomSeed())
     // expect(engine.toSnapshot()).toMatchSnapshot()
-    const player = data._getSpriteByName('player')
-    expect(engine.currentLevel[2][2].getSpritesAsSet().has(player)).toBe(false)
-    // Check that the player is around thir previous location
-    let playerCells = [...player.getCellsThatMatch()]
-    let playerCell = playerCells[0]
-    expect(playerCells.length).toBe(1)
-    expect(engine.currentLevel[playerCell.rowIndex][playerCell.colIndex].getSpritesAsSet().has(player)).toBe(true)
+    const star = data._getSpriteByName('star')
 
-    // Ensure 2 cells were marked for re-rendering
-    expect(changedCells.size).toBe(2)
-    expect(changedCells).toContain(engine.currentLevel[2][2])
-    expect(changedCells).toContain(engine.currentLevel[playerCell.rowIndex][playerCell.colIndex])
+    // Check if the star DID NOT "randomly" pop up (because we set the "random" values above)
+    let starCells = [...star.getCellsThatMatch()]
+    let starCell = starCells[0]
+    expect(starCells.length).toBe(0)
+    expect(engine.currentLevel[0][1].getSpritesAsSet().has(star)).toBe(false)
+
+    // Ensure 0 cells were marked for re-rendering
+    // expect(changedCells.size).toBe(0)
+    // Grr, since the RANDOM code was executed (and other sprites could have changed)
+    // we err on the side of caution and report the Cell as having been changed even though it
+    // might not have.
 
     engine.tick()
-    // Check that the player is no longer in the spot they were
-    expect(engine.currentLevel[playerCell.rowIndex][playerCell.colIndex].getSpritesAsSet().has(player)).toBe(false)
-    // Check that the player is around thir previous location
-    playerCells = [...player.getCellsThatMatch()]
-    playerCell = playerCells[0]
-    expect(playerCells.length).toBe(1)
-    expect(engine.currentLevel[playerCell.rowIndex][playerCell.colIndex].getSpritesAsSet().has(player)).toBe(true)
+    // Check if the star "randomly" popped up
+    starCells = [...star.getCellsThatMatch()]
+    starCell = starCells[0]
+    expect(starCells.length).toBe(1)
+    expect(engine.currentLevel[0][1].getSpritesAsSet().has(star)).toBe(true)
+
+    // // Ensure 1 cells were marked for re-rendering
+    // expect(changedCells.size).toBe(1)
+    // expect(changedCells).toContain(engine.currentLevel[0][1])
+    // expect(changedCells).toContain(engine.currentLevel[0][1])
   })
 
   it('Moves the sprite in a "random" direction using "RANDOMDIR" in a bracket', () => {
-    resetRandomSeed()
     const {engine, data} = parseEngine(`
 title foo
 
@@ -350,6 +396,7 @@ LEVELS
 .....
 
 `)
+    // setRandomValuesForTesting([0])
     const changedCells = engine.tick()
     // expect(engine.toSnapshot()).toMatchSnapshot()
     const player = data._getSpriteByName('player')

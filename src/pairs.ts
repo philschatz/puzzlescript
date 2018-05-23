@@ -213,6 +213,16 @@ class CellMutator implements IMutator {
           let direction
           switch (tileWithModifier._modifier) {
             case RULE_DIRECTION.RANDOM:
+              // Decide whether or not to add the sprite since the tile has RANDOM on it
+              if (nextRandom(2)) {
+                // debugger
+                // console.log('Randomly decided TO add the sprite');
+                direction = undefined
+              } else {
+                // console.log('Randomly decided NOT to add the sprite');
+                return
+              }
+              break
             case RULE_DIRECTION.RANDOMDIR:
               switch (nextRandom(4)) {
                 case 0:

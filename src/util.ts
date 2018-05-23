@@ -43,13 +43,36 @@ export class SpriteSet {
 
 // From https://stackoverflow.com/a/19303725
 let seed = 1
+let randomValuesForTesting = null
 export function nextRandom(maxNonInclusive) {
+    if (randomValuesForTesting) {
+      if (randomValuesForTesting.length <= seed - 1) {
+        throw new Error(`BUG: the list of random values for testing was too short. See calls to setRandomValuesForTesting([...]). The list was [${randomValuesForTesting}]. Index being requested is ${seed - 1}`)
+      }
+      const ret = randomValuesForTesting[seed - 1]
+      seed++
+      console.log(`Sending "random" value of "${ret}"`);
+
+      return ret
+    }
     let x = Math.sin(seed++) * 10000
     return Math.round((x - Math.floor(x)) * (maxNonInclusive - 1))
 }
 export function resetRandomSeed() {
   seed = 1
 }
+export function setRandomValuesForTesting(values: number[]) {
+  randomValuesForTesting = values
+  resetRandomSeed()
+}
+export function clearRandomValuesForTesting() {
+  randomValuesForTesting = null
+  resetRandomSeed()
+}
+export function getRandomSeed() {
+  return seed
+}
+
 
 export enum RULE_MODIFIER {
   RANDOM = 'RANDOM',

@@ -252,7 +252,7 @@ export default class Engine extends EventEmitter2 {
             cell.clearWantsToMove(sprite)
             // movedCells.add(cell)
           } else {
-            if (wantsToMove === RULE_DIRECTION.RANDOM || wantsToMove === RULE_DIRECTION.RANDOMDIR) {
+            if (wantsToMove === RULE_DIRECTION.RANDOMDIR) {
               const rand = nextRandom(4)
               switch (rand) {
                 case 0:
@@ -270,6 +270,9 @@ export default class Engine extends EventEmitter2 {
                 default:
                   throw new Error(`BUG: Random number generator yielded something other than 0-3. "${rand}"`)
               }
+            }
+            if (wantsToMove === RULE_DIRECTION.RANDOM) {
+              throw new Error('BUG: should have converted RANDOM to something else earlier')
             }
             const neighbor = cell.getNeighbor(wantsToMove)
             // Make sure

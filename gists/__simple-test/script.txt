@@ -1,1037 +1,471 @@
-title Mirror Isles
-author Alan Hazelden
-homepage www.draknek.org
+title Drop Swap
+author Aaron Steed
+homepage www.robotacid.com
 
-norepeat_action
+key_repeat_interval 0.23
+again_interval 0.05
+noaction
+noundo
+background_color Black
+text_color Grey
 run_rules_on_level_start
-
-youtube tI8IarSxiLk
-
-(realtime_interval 0.5)
-
-(verbose_logging)
 
 ========
 OBJECTS
 ========
 
 Background
-#dfcc4f yellow
-11111
-01111
-11101
-11111
-10111
-
-
-Target
-DarkBlue Yellow Yellow
-.111.
-10201
-12021
-10201
-.111.
-
-Wall
-Grey DarkGrey LightGrey
-.....
-..00.
-.0001
-.0111
-...1.
-
-(..1..
-.0..1
-...1.
-..00.
-....1)
-
-Hole
-blue
-
-WaterAnim1
-lightblue transparent
-11111
-11101
-11111
-10111
-11111
-
-WaterAnim2
-lightblue transparent
-11111
-10111
-11111
-11101
-11111
+Black
 
 Player
-DarkRed #493c2b #000000
-..0..
+#ffffff #000000 #626263 #3c3b3c
+.222.
+21112
+23132
+20102
+.222.
+
+DeadPlayer
+#ffffff #000000 #626263 #3c3b3c
+.222.
+21112
+21112
+23132
+.222.
+
+BaseWall
+#222222 #333333 #444444 #ffffff
+11110
+12220
+12200
+12000
+00000
+
+APill
+#ff0000 #ff7374 #ff0000 #ff0000
 .111.
-01110
-02220
-.2.2.
+11110
+11010
+11100
+.000.
 
-Reflection
-LightGrey Grey DarkGrey
-..0..
+BPill
+#00de00 #cffa92 #ff0000 #ff0000
 .111.
-01110
-02220
-.2.2.
-
-CrateReflection
-Grey DarkGrey LightGrey
+10010
+10110
+11100
 .000.
-01110
-01110
-01110
-.000.
-(.....
-.1122
-0112.
-.1122
-.....)
 
-FloatingBody
-DarkBrown #282828 #101010 Blue
-33333
-33333
-31122
-01123
-31122
-
-CantMove
-LightRed Red DarkRed
-..0..
+CPill
+#7a35fc #b56bfd #ff0000 #ff0000
 .111.
-01110
-02220
-.2.2.
-
-NormalCrate
-Orange Brown White
-.000.
-01110
-01110
-01110
+10110
+11010
+11100
 .000.
 
-ReflectableCrate
-Orange Brown Brown
+DPill
+#0094fc #79b5fd #ff0000 #ff0000
+.111.
+10100
+11010
+10100
 .000.
+
+EPill
+#d1c200 #fff919 #ffffff #ff0000
+.111.
+10010
+10010
+11110
+.000.
+
+FPill
+#ff33b1 #ff76d2 #ff0000 #ff0000
+.111.
+10100
+11110
+10110
+.000.
+
+AllPill
+#eeee66 #ffffff #ffffcc #ffffff
+.112.
+11112
+11012
+21120
+.220.
+
+NoPill
+#ffffff #000000 #ffde85 #ff0000
+.000.
+00000
+21012
+.000.
+..2..
+
+Bomb
+#6e6e6e #000000 #ff0000 #fcf26b
+.020.
+02320
 01210
-02220
-01210
-.000.
-(brown green darkgreen Red
-.....
-.1122
-0112.
-.1122
-.....)
-
-CrateInHole
-Brown DarkBrown Blue
-20002
 01110
-01110
-01110
-20002
+.000.
 
-MirrorUL
-#909090 #4e5159 #4e5159
-....0
-...01
-..011
-.0111
-01112
-
-MirrorUR
-#909090 #4e5159 #4e5159
-0....
-10...
-110..
-1110.
-21110
-
-MirrorDL
-#909090 #4e5159 #4e5159
-01112
-.0111
-..011
-...01
-....0
-
-MirrorDR
-#909090 #4e5159 #4e5159
-21110
-1110.
-110..
-10...
-0....
-
-LOS
-Orange
-.....
-.....
+GemPill
+#ffffff #000000 #626263 #3c3b3c
 ..0..
+.002.
+00022
+.223.
+..2..
+
+Count
+#ffffff #000000 #5a595a #ff0000
 .....
+.000.
+.000.
+.000.
 .....
 
-00
-transparent
+Marked
+#ffffff #000000
+.....
+..1..
+.101.
+..1..
+.....
 
-01
-transparent
+CountTray
+#333333
 
-02
-transparent
+GemTray
+#333333
 
-03
-transparent
+StartGem
+red
 
-04
-transparent
-
-05
-transparent
-
-06
-transparent
-
-07
-transparent
-
-08
-transparent
-
-09
-transparent
-
-HasReflection
-transparent
-
-West
-transparent
-
-East
-transparent
-
-North
-transparent
-
-South
-transparent
-
-
-Zero
+Collect
 White
-.000.
-.0.0.
-.0.0.
-.0.0.
-.000.
 
-One
-White
+Debris1
+#ffffff #0739f5 #1f0f42 #ffffff
+.0.0.
+00.00
 ..0..
-.00..
+00.00
+.0.0.
+
+Debris2
+#ffffff #0739f5 #1f0f42 #ffffff
+.....
+.0.0.
 ..0..
-..0..
-.000.
-
-Two
-White
-.000.
-...0.
-.000.
-.0...
-.000.
-
-Three
-White
-.000.
-...0.
-.000.
-...0.
-.000.
-
-Four
-White
 .0.0.
-.0.0.
-.000.
-...0.
-...0.
-
-Five
-White
-.000.
-.0...
-.000.
-...0.
-.000.
-
-Six
-White
-.000.
-.0...
-.000.
-.0.0.
-.000.
-
-Seven
-White
-.000.
-...0.
-...0.
-...0.
-...0.
-
-Eight
-White
-.000.
-.0.0.
-.000.
-.0.0.
-.000.
-
-Nine
-White
-.000.
-.0.0.
-.000.
-...0.
-.000.
-
-AddLandLUD
-Yellow
-0....
-.....
-.....
-.....
-0....
-
-AddLandLU
-Yellow
-0....
-.....
-.....
-.....
 .....
 
-AddLandLD
-Yellow
-.....
-.....
-.....
-.....
-0....
+Empty
+Black
 
-AddLandRUD
-Yellow
-....0
-.....
-.....
-.....
-....0
+OldPos
+Black
 
-AddLandRU
-Yellow
-....0
-.....
-.....
-.....
-.....
+StartCount
+Black
 
-AddLandRD
-Yellow
-.....
-.....
-.....
-.....
-....0
+DropWall1
+#222222 #333333 #444444 #ffffff
+11110
+12220
+12200
+12200
+12200
 
-RemoveLandLUD
+DropWall2
+#222222 #333333 #444444 #ffffff
+11110
+12220
+12200
+12200
+12200
+
+DropWall3
+#222222 #333333 #444444 #ffffff
+11110
+12220
+12200
+12200
+12200
+
+DropWall4
+#222222 #333333 #444444 #ffffff
+11110
+12220
+12200
+12200
+12200
+
+DropMarker
 Blue
-0....
-.....
-.....
-.....
-0....
 
-RemoveLandLU
-Blue
-0....
-.....
-.....
-.....
-.....
-
-RemoveLandLD
-Blue
-.....
-.....
-.....
-.....
-0....
-
-RemoveLandRUD
-Blue
-....0
-.....
-.....
-.....
-....0
-
-RemoveLandRU
-Blue
-....0
-.....
-.....
-.....
-.....
-
-RemoveLandRD
-Blue
-.....
-.....
-.....
-.....
-....0
-
-Hint
-transparent
-
-
-
-
+Init
+Purple
 
 =======
 LEGEND
 =======
 
-WaterAnim = WaterAnim1 or WaterAnim2
-
 . = Background
-# = Wall
-P = Player
-~ = NormalCrate
-* = ReflectableCrate
-O = Target
-_ = Hole and WaterAnim1
-Mirror = MirrorUL or MirrorUR or MirrorDL or MirrorDR
-Counter = 00 or 01 or 02 or 03 or 04 or 05 or 06 or 07 or 08 or 09
-DirectionCounter = North or South or East or West
-LevelNumber = Zero or One or Two or Three or Four or Five or Six or Seven or Eight or Nine
-
-Crate = NormalCrate or ReflectableCrate
-
-Pushable = Mirror or Crate
-
-Solid = Player or Wall or Crate or Mirror
-
-Reflectable = Player or ReflectableCrate
-
-/ = MirrorUL
-\ = MirrorUR
-` = MirrorDL
-' = MirrorDR
+@ = Player
+p = DeadPlayer
+# = BaseWall
+a = APill
+b = BPill
+c = CPill
+d = DPill
+e = EPill
+f = FPill
+n = NoPill
+x = AllPill
+u = Count and CountTray
+w = Count and CountTray and StartCount
+g = GemPill
+q = GemTray
+o = GemTray and StartGem
+i = Init
+j = DropWall1
+k = DropWall2
+l = DropWall3
+m = DropWall4
 
 
-0 = Zero and Hole
-1 = One and Hole
-2 = Two and Hole
-3 = Three and Hole
-4 = Four and Hole
-5 = Five and Hole and Hint
-6 = Six and Hole
-7 = Seven and Hole
-8 = Eight and Hole
-9 = Nine and Hole
-
-AddLandL = AddLandLUD or AddLandLU or AddLandLD
-AddLandR = AddLandRUD or AddLandRU or AddLandRD
-
-RemoveLandL = RemoveLandLUD or RemoveLandLU or RemoveLandLD
-RemoveLandR = RemoveLandRUD or RemoveLandRU or RemoveLandRD
-
-WaterHere = Hole or CrateInHole or FloatingBody
+MatchPill = APill or BPill or CPill or DPill or EPill or FPill or AllPill
+Pill = MatchPill or NoPill or GemPill or Bomb
+Debris = Debris1 or Debris2
+AMatch = APill or AllPill
+BMatch = BPill or AllPill
+CMatch = CPill or AllPill
+DMatch = DPill or AllPill
+EMatch = EPill or AllPill
+FMatch = FPill or AllPill
+Wall = BaseWall or DropWall1 or DropWall2 or DropWall3 or DropWall4
+Item = Pill or Debris or Wall or Player
+Heavy = Pill or Player
+Dropping = Marked or DropMarker
+DropMix1 = APill or BPill or CPill or DPill or EPill
+DropMix2 = APill or BPill or CPill or DPill or EPill or GemPill
+DropMix3 = APill or BPill or CPill or DPill or EPill or NoPill
+DropMix4 = APill or BPill or CPill or DPill or EPill or FPill or GemPill
+DropMix5 = APill or BPill or CPill or DPill or EPill or FPill
+DropWallMarked = DropWall1 or DropWall3
 
 =======
 SOUNDS
 =======
 
-sfx0 72252907 (player move)
-sfx1 22154307 (push)
-sfx2 99784702 (swap)
-sfx3 55205302 (crate in water)
-sfx4 71749307 (can't go into water)
-
-CantMove Create 24357902
-EndLevel 31191508
-
-Undo 1263307
-Restart 65079302
+sfx0 54236904 (illegal)
+sfx1 5160507 (swap)
+sfx2 19008103 (allpill)
+sfx3 50665503 (crush 3)
+sfx4 80820507 (land)
+sfx5 2030908 (blast)
+sfx6 3032303 (bomb)
+sfx7 83704102 (dead)
+sfx8 7194508 (gem collect)
+EndLevel 16709508 (win)
 
 ================
 COLLISIONLAYERS
 ================
 
+
+Collect, StartCount, StartGem
 Background
-Target, Hole, CrateInHole, FloatingBody
-HasReflection, Hint
-AddLandL, RemoveLandL
-AddLandR, RemoveLandR
-Solid, LOS
-Counter
-DirectionCounter, LevelNumber, WaterAnim
-Reflection, CantMove, CrateReflection
+OldPos, CountTray, GemTray
+Player, Wall, Pill, Empty, Count, DeadPlayer, Bomb, Init
+Debris, Marked, DropMarker
 
 ======
 RULES
 ======
 
-[ > Player ] [ Hint ] -> [ > Player ] [ action Hint ]
+(init)
+[ DropWall1 ] [ Init ] -> [ DropWall1 ] [ random DropMix1 Marked ]
+[ DropWall2 ] [ Init ] -> [ DropWall2 ] [ random DropMix1 ]
+[ DropWall3 ] [ Init ] -> [ DropWall3 ] [ random DropMix1 Marked ]
+[ DropWall4 ] [ Init ] -> [ DropWall4 ] [ random DropMix5 ]
 
-[ CantMove ] -> []
+(debris clean up)
+[ Debris2 ] -> [ Empty ] again
+[ Debris1 ] -> [ Debris2 ] again
 
-late [ Hole no WaterAnim no LevelNumber ] -> [ Hole WaterAnim1 ]
+(player - pill swapping)
+[ > Player | Pill ] -> [ Pill OldPos | Player ] sfx1
+[ Player Marked | OldPos ] -> [ Player | OldPos Marked ]
 
-late [ WaterAnim no Hole ] -> []
+(blocked move)
+[ > Player | No Pill ] -> [ Player | ] sfx0
 
-(Water anim)
+(pill combos)
+[ AMatch | AMatch | AMatch ] -> [ AMatch Collect | AMatch Collect | AMatch Collect ]
+[ BMatch | BMatch | BMatch ] -> [ BMatch Collect | BMatch Collect | BMatch Collect ]
+[ CMatch | CMatch | CMatch ] -> [ CMatch Collect | CMatch Collect | CMatch Collect ]
+[ DMatch | DMatch | DMatch ] -> [ DMatch Collect | DMatch Collect | DMatch Collect ]
+[ EMatch | EMatch | EMatch ] -> [ EMatch Collect | EMatch Collect | EMatch Collect ]
+[ FMatch | FMatch | FMatch ] -> [ FMatch Collect | FMatch Collect | FMatch Collect ]
+[ NoPill | NoPill | NoPill ] -> [ NoPill Collect | NoPill Collect | NoPill Collect ]
 
-([ stationary Player ] [ stationary WaterAnim1 ] -> [ Player] [ action WaterAnim2 ]
-[ stationary Player ] [ stationary WaterAnim2 ] -> [ Player] [ action WaterAnim1 ])
+(bomb activate)
+[ OldPos Bomb ] -> sfx5
+up [ OldPos Bomb | Pill ] -> [ OldPos Bomb | Pill > Collect ]
+right [ OldPos Bomb | Pill ] -> [ OldPos Bomb | Pill > Collect ]
+down [ OldPos Bomb | Pill ] -> [ OldPos Bomb | Pill > Collect ]
+left [ OldPos Bomb | Pill ] -> [ OldPos Bomb | Pill > Collect ]
+[ OldPos Bomb ] -> [ OldPos Empty ]
 
-(Island border)
+(blast)
+up [ Pill > Collect | Pill ] -> [ Pill Collect | Pill > Collect ]
+right [ Pill > Collect | Pill ] -> [ Pill Collect | Pill > Collect ]
+down [ Pill > Collect | Pill ] -> [ Pill Collect | Pill > Collect ]
+left [ Pill > Collect | Pill ] -> [ Pill Collect | Pill > Collect ]
+[ > Collect ] -> [ Collect ]
+[ GemPill Collect ] -> [ GemPill ]
 
-left [ WaterHere no AddLandL | no WaterHere ] -> [ WaterHere AddLandLUD | ]
-right [ WaterHere no AddLandR | no WaterHere ] -> [ WaterHere AddLandRUD | ]
+(reward matches)
+(junction)
+Right [ Collect | Collect ] -> [ > Collect | > Collect ]
+Down [ Collect | Collect ] -> [ > Collect | > Collect ]
+[ Down Collect | Right Collect ] [ Collect OldPos ] -> [ Collect | Collect ] [ Bomb OldPos ] sfx6
+(4: create AllPill)
+[ MatchPill Collect | MatchPill Collect | MatchPill Collect | MatchPill Collect ] [ Collect OldPos ] -> [ MatchPill Collect | MatchPill Collect | MatchPill Collect | MatchPill Collect ] [ AllPill OldPos ] sfx2
 
-up [ AddLandLUD | WaterHere ] -> [ AddLandLD | WaterHere ]
-up [ AddLandRUD | WaterHere ] -> [ AddLandRD | WaterHere ]
+(count moves)
+(subtract on move)
+random right [ OldPos ] [ Count | No Count ] -> [ OldPos ] [ | ]
+(fill on Debris)
+[ Collect ] [ CountTray ] -> [ Collect ] [ CountTray Count ]
 
-down [ AddLandLUD | WaterHere ] -> [ AddLandLU | WaterHere ]
-down [ AddLandRUD | WaterHere ] -> [ AddLandRU | WaterHere ]
+(dead?)
+[ DeadPlayer ] -> cancel
+[ No Count StartCount CountTray ] [ Player ] -> [ No Count StartCount CountTray ] [ DeadPlayer ] sfx7
+[ Player | NoPill Collect ] -> [ DeadPlayer | NoPill ]
+[ DeadPlayer ] [ CountTray Count ] -> [ DeadPlayer ] [ CountTray ] sfx7
 
-down [ AddLandLD | WaterHere ] -> [ | WaterHere ]
-down [ AddLandRD | WaterHere ] -> [ | WaterHere ]
+(destroy matched)
+[ APill Collect ] -> [ Debris1 ] sfx3 again
+[ BPill Collect ] -> [ Debris1 ] sfx3 again
+[ CPill Collect ] -> [ Debris1 ] sfx3 again
+[ DPill Collect ] -> [ Debris1 ] sfx3 again
+[ EPill Collect ] -> [ Debris1 ] sfx3 again
+[ FPill Collect ] -> [ Debris1 ] sfx3 again
+[ AllPill Collect ] -> [ Debris1 ] sfx3 again
+[ Player ] [ NoPill Collect ] -> [ Player ] [ Debris1 ] sfx3 again
 
-left [ no WaterHere no RemoveLandL | WaterHere ] -> [ RemoveLandLUD | WaterHere ]
-right [ no WaterHere no RemoveLandR | WaterHere ] -> [ RemoveLandRUD | WaterHere ]
+(destroy NoPills)
+down [ NoPill | Wall ] -> [ Debris1 | Wall ] again
 
-up [ RemoveLandLUD | no WaterHere ] -> [ RemoveLandLD | ]
-up [ RemoveLandRUD | no WaterHere ] -> [ RemoveLandRD | ]
+(collect gems)
+down [ GemPill | Wall ] -> [ GemPill Collect | Wall ]
+[ GemPill Collect ] [ StartGem No GemPill ] -> [ Debris1 ] [ StartGem GemPill ] again sfx8
+right [ GemPill Collect ] [ GemPill GemTray | No GemPill GemTray ] -> [ Debris1 ] [ GemPill GemTray | GemPill GemTray ] again sfx8
 
-down [ RemoveLandLUD | no WaterHere ] -> [ RemoveLandLU | ]
-down [ RemoveLandRUD | no WaterHere ] -> [ RemoveLandRU | ]
+(drop)
+[ Heavy No Dropping ] -> [ Heavy DropMarker ]
+down [ Heavy Dropping | Empty ] -> [ Empty | Heavy Dropping ]
+[ DropMarker ] -> [ ]
+down [ DropWall1 | Empty ] -> [ DropWall1 | random DropMix1 ] again
+down [ DropWall2 | Empty ] -> [ DropWall2 | random DropMix2 ] again
+down [ DropWall3 | Empty ] -> [ DropWall3 | random DropMix3 ] again
+down [ DropWall4 | Empty ] -> [ DropWall4 | random DropMix4 ] again
 
-down [ RemoveLandLD | no WaterHere ] -> [ | ]
-down [ RemoveLandRD | no WaterHere ] -> [ | ]
+(gem drop win)
+right [ GemPill GemTray | Wall ] -> win
 
-(Prevent teleport)
-
-[ action Player ] [ Reflection Hole ] -> [ action Player ] [ CantMove Hole ]
-
-[ CantMove ] [ action Player ] -> [ CantMove ] [ Player ] again
-
-(Swap places)
-[ action Player HasReflection ] [ Reflection ] -> [ action Player HasReflection ] [ Reflection Player ]
-
-[ Reflection Player ] -> [ Player ] sfx2
-
-[ action Player ] [ CrateReflection ] -> [ action Player ] [ ReflectableCrate ] sfx2
-
-[ action Player ] [ ReflectableCrate HasReflection ] -> [ action Player ] []
-
-[ action Player HasReflection ] -> [ Reflection ]
-
-(Clear state)
-
-[ LOS ] -> []
-[ HasReflection ] -> []
-[ Reflection ] -> []
-[ CrateReflection ] -> []
-
-[ action Player ] -> [ Player ]
-
-[ moving Player ] -> [ moving Player HasReflection ] (testing killing)
-
-(Push things)
-
-[ > Player | Hole ] -> [ Player | Hole ] sfx4
-
-[ >  Player | Crate | no Solid ] -> [  >  Player | > Crate | ] sfx1
-[ >  Player | Mirror | no Hole no Solid ] -> [  >  Player | > Mirror | ] sfx1
-
-[ > Player | stationary Mirror | Hole ] -> [ Player | Mirror | Hole ] sfx4
-
-[ >  Player | Crate | > Player ] -> [  >  Player | > Crate | > Player ] sfx1
-[ >  Player | Mirror | > Player ] -> [  >  Player | > Mirror | > Player ] sfx1
-
-[ > Mirror | Hole ] -> [ Mirror | Hole ] sfx4
-
-[ > Pushable | no Solid ] -> [ | Pushable ]
-+ [ > Player | no Solid ] -> [ | Player ] sfx0
-
-[ > Player ] -> [ Player ] sfx4
-
-[ Player Hole ] -> [ Hole ]
-[ Mirror Hole ] -> cancel
-[ NormalCrate Hole ] -> [ CrateInHole ] sfx3
-[ ReflectableCrate Hole ] -> [ CrateInHole ] sfx3
-
-[ Player ] [ HasReflection ] -> [ Player ] []
-
-[ HasReflection ] -> cancel (all players dead)
-
-(Make reflections)
-
-startloop
-random [ Reflectable no DirectionCounter ] -> [ action Reflectable North left 00 ]
-+ [ Reflectable North ] -> [ action Reflectable East right 00 ]
-+ [ Reflectable East ] -> [ action Reflectable South up 00 ]
-+ [ Reflectable South ] -> [ action Reflectable West down 00 ]
-
-[ > 00 | no Solid ] -> [ | > 01 LOS ]
-[ > 01 | no Solid ] -> [ | > 02 LOS ]
-[ > 02 | no Solid ] -> [ | > 03 LOS ]
-[ > 03 | no Solid ] -> [ | > 04 LOS ]
-[ > 04 | no Solid ] -> [ | > 05 LOS ]
-[ > 05 | no Solid ] -> [ | > 06 LOS ]
-[ > 06 | no Solid ] -> [ | > 07 LOS ]
-[ > 07 | no Solid ] -> [ | > 08 LOS ]
-[ > 08 | no Solid ] -> [ | > 09 LOS ]
-
-[ > Counter | Solid no Mirror ] -> [ | Solid ]
-
-left [ > Counter | MirrorUR ] -> [ | MirrorUR up Counter ]
-+ left [ > Counter | MirrorDR ] -> [ | MirrorDR down Counter ]
-+ right [ > Counter | MirrorUL ] -> [ | MirrorUL up Counter ]
-+ right [ > Counter | MirrorDL ] -> [ | MirrorDL down Counter ]
-+ up [ > Counter | MirrorDL ] -> [ | MirrorDL left Counter ]
-+ up [ > Counter | MirrorDR ] -> [ | MirrorDR right Counter ]
-+ down [ > Counter | MirrorUL ] -> [ | MirrorUL left Counter ]
-+ down [ > Counter | MirrorUR ] -> [ | MirrorUR right Counter ]
-
-+ [ > 09 | no Solid ] -> [ | > 08 LOS ]
-+ [ > 08 | no Solid ] -> [ | > 07 LOS ]
-+ [ > 07 | no Solid ] -> [ | > 06 LOS ]
-+ [ > 06 | no Solid ] -> [ | > 05 LOS ]
-+ [ > 05 | no Solid ] -> [ | > 04 LOS ]
-+ [ > 04 | no Solid ] -> [ | > 03 LOS ]
-+ [ > 03 | no Solid ] -> [ | > 02 LOS ]
-+ [ > 02 | no Solid ] -> [ | > 01 LOS ]
-+ [ > 01 | no Solid ] -> [ | > 00 LOS ]
-
-[ > 00 | no Solid no CantMove ] [ action Player ] -> [ | Reflection ] [ Player HasReflection ]
-[ > 00 | no Solid no CantMove ] [ action ReflectableCrate ] -> [ | CrateReflection ] [ ReflectableCrate HasReflection ]
-
-[ Counter ] -> []
-
-[ action Reflectable ] [ stationary LOS ] -> [ action Reflectable ] []
-
-[ LOS ] -> [ action LOS ]
-
-[ action Reflectable ] -> [ Reflectable ]
-endloop
-
-[ DirectionCounter ] -> []
-
-[ stationary Hint ] [ ReflectableCrate HasReflection ] -> [] [ ReflectableCrate HasReflection ] message Oh the crates can reflect now. That is cool and totally not arbitrary
+[ OldPos ] -> [ ]
 
 ==============
 WINCONDITIONS
 ==============
 
-All Target on Player
-All Player on Target
+No Marked
+Some DropWallMarked
 
 =======
 LEVELS
 =======
 
+message collect orbs by matching 3
+message match 3 to restore move-energy
+message level 1: collect all marked orbs
 
-_____________
-___.....___1_
-__........___
-___........__
-______...o.._
-___..___...._
-__.....__..__
-__...p.._____
-____...._____
-__.______..__
-_....__....._
-_..\.._....._
-_.....__...._
-__...____..__
-_____________
+wuuuuu#
+#jjjjj#
+#iiiii#
+#iiiii#
+#iiiii#
+#iiiii#
+#ii@ii#
+#######
 
+message level 2: collect all marked orbs
 
+wuuuuuu#
+#jjjjjj#
+#iiiiii#
+#iiiiii#
+#iiiiii#
+#iiiiii#
+#iiiiii#
+#iiiiii#
+#iii@ii#
+########
 
-_____________
-_2___....____
-____.p.'..___
-___.......___
-______.._____
-___._____..__
-__...___...._
-__....__..o._
-__....._...._
-_......_...__
-_..'...__.___
-_......______
-__...._______
-___..________
-_____________
+message collect gray gems by getting them to the bottom
+message level 3: collect 8 gems
 
+oqqqqqqq#
+wuuuuuuu#
+#kkkkkkk#
+#iiiiiii#
+#iiiiiii#
+#iiiiiii#
+#iiiiiii#
+#iiiiiii#
+#iiiiiii#
+#iiiiiii#
+#iii@iii#
+#########
 
+message if you are next to 3 matching skulls you die
+message skulls can be destroyed by getting them to the bottom
+message level 4: collect all marked orbs
 
-_________________
-________....___3_
-_______...~..____
-__..__.......____
-_....__..~...____
-_....___...______
-_....____________
-__..___..____..._
-__..__....__..o._
-_.'._.....__...._
-_..._..._____..__
-_..._..__..______
-__..____...._____
-_______.~.p..____
-_______....._____
-_________________
+wuuuuuu#
+#llllll#
+#iiiiii#
+#iiiiii#
+#iiiiii#
+#iiiiii#
+#iiiiii#
+#iiiiii#
+#iii@ii#
+########
 
+message level 5: collect 7 gems
 
-_______________
-__...____...___
-_..._____....__
-_.o.____...~.__
-_...______...._
-_.._______...__
-__.__..__...___
-__._../....____
-____..._.._____
-____.p.________
-_____..______4_
-_______________
+oqqqqqqq#
+wuuuuuuu#
+#mmmmmmm#
+#iiiiiii#
+#iiiiiii#
+#iiiiiii#
+#iiiiiii#
+#iiiiiii#
+#iiiiiii#
+#iiiiiii#
+#iii@iii#
+#########
 
+message thanks for playing
 
-________________
-_..__.____.___5_
-_......__..p____
-_......_..'.____
-__....._.~..____
-____..___..__.__
-_______._____.._
-__.___..____..._
-_........___.o._
-__.....~.___..._
-____.~...____.._
-_____...________
-________________
-
-
-_______________
-______.._____6_
-__....~..______
-_.......~._____
-__..__...p.____
-________...____
-_________._____
-_______________
-__..___._______
-__..\....______
-__...~..____.__
-___.~..____..._
-___..._____.o._
-____________.._
-_______________
-
-
-___________
-_7___...___
-______.o.__
-______...._
-__..___..__
-_....______
-_.~..__.p__
-_....._..._
-__.\.._.~._
-__...__.___
-___________
-
-
-________________
-_8_______...____
-________.....___
-__..____..~..___
-_....____...____
-_.....___.._____
-_..o..______..._
-__....____...~._
-__...___...__.._
-___..__.p.______
-_______....__.._
-_________../..._
-__________....__
-________________
-
-
-____________
-_9______..__
-__...___.~__
-_...o._...__
-___...______
-________..._
-__..___..~._
-_....__./.__
-__.p..__..__
-__..._______
-____________
-
-
-
-_________________
-_______..._______
-______..'._______
-_______....______
-________..___..__
-____________...._
-_____...____..o._
-__....p..____..._
-_.../...______.__
-_......__________
-_..~...__________
-___...________10_
-_________________
-
-
-______________
-___..__..._11_
-__......'...__
-__.........p._
-__...___..`.__
-_________...__
-___.______.___
-_....__.._____
-_..o.__....___
-__...__..o..__
-________...___
-______________
-
-
-____________
-_12_..__..__
-___...._..._
-___.'.._..._
-___...__.o._
-___..__...._
-__...__..o._
-__.p.__...._
-__...__..o._
-__...___..._
-_.\..___..__
-_...._______
-__..________
-____________
-
-
-_______________
-___...__.._____
-____..__....___
-_.._.__......__
-_..~.._....\.__
-__....__./...._
-____._____.p.__
-___________..__
-_......._______
-_..o..o..._____
-__........_____
-_____....___13_
-_______________
-
-
-_________________
-___._____..._____
-__...____.`..____
-__.p..__.......__
-_....___........_
-_..p.__........._
-_....__....o...._
-__..____........_
-________...\...__
-_________......__
-_14_______...____
-_________________
-
-
-
-message Something... has changed
-
-(___________________
-________..___...___
-__..__....._.....__
-_..._......_...o.._
-_.*.__.#.`.___.._._
-_...___..._________
-_..________________
-__...______._______
-__.p.___......_____
-___..__....*...____
-___.____......_____
-________..______15_
-___________________)
-
-
-_________________
-_15_____...._____
-_______......____
-__..__..*....____
-_....__......____
-_....___...______
-_....____________
-__..___..____..._
-__..__....__..o._
-_.'._.....__...._
-_..._....____..__
-_..._......______
-__..____.p.._____
-_________._______
-_________________
-
-
-_____________
-_16_____...__
-______...o.._
-__.._......._
-__..___..____
-_..._________
-_.p..________
-_..\.________
-__...._..____
-____.*...____
-_____..._____
-_____________
-
-
-_________________
-__.....__________
-_.........___#.__
-_.*.'.#..._....._
-_........___#.o._
-___..._______..._
-__...._________._
-__.p.____________
-___.._________17_
-_________________
-
-
-_____________
-_18___...____
-_____..'.____
-_____.*._____
-_____p.._____
-______.._____
-____._____.__
-___..____..._
-__....___.o._
-_...*.___..._
-_.*...____.._
-_....________
-__...________
-___..._______
-_____________
-
-
-_____________
-_________.___
-__...___..___
-_...o.__...__
-___...___.#._
-________...._
-__..___..*.__
-_....__./.___
-__.p..__..___
-__..._____19_
-_____________
-
-
-(_________________
-___________..____
-___...____....___
-__......__..`..__
-_......._...__.__
-_......._..______
-__.._________.___
-_________.._...__
-_________..*..*._
-_____.____...p.._
-____...._____..__
-____..o..._______
-_20___...________
-_________________)
-
-
-______________
-_______...____
-______.....___
-________.o..__
-____..__...___
-___.*.._______
-__....._______
-_..\.._____.__
-_.p..____...._
-__._____....._
-_________.*.._
-_20_______..__
-______________
-
-
-_________________
-____._________21_
-___..____________
-_...*____________
-_.*\..________.#_
-_p....______#..._
-_...*.______..o._
-__*...______#..._
-__.._________#.__
-_________________
-
-
-_______________
-__.___._____.__
-_..._..____..._
-_.o._..__..`.._
-_..___....#..__
-______.##._____
-____.*.*.______
-___...p..______
-___....._______
-_22__._________
-_______________
-
-
-
-(______________
-______________
-______________
-______________
-______________
-______________
-______________
-______________
-______________
-______________
-______________)
-
-
-message Thanks for playing :)
