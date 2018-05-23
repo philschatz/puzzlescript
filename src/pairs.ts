@@ -183,7 +183,7 @@ class CellMutator implements IMutator {
     })
     // add sprites that are listed on the action side
     this._action.forEach(tileWithModifier => {
-      tileWithModifier._tile.getSprites().forEach(sprite => {
+      tileWithModifier._tile.getSpritesForRuleAction().forEach(sprite => {
         // this._cell.removeSprite(sprite)
         // conditionSprites.add(sprite)
         if (!tileWithModifier.isNo()) {

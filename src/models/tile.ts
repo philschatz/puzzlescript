@@ -112,6 +112,9 @@ export class GameSprite extends BaseForLines implements IGameTile {
         }
         return hasNegationTile
     }
+    getCellsThatMatch() {
+        return this._cellSet
+    }
 }
 
 export class GameSpriteSingleColor extends GameSprite {
@@ -298,7 +301,8 @@ export class GameLegendTileOr extends GameLegendTile {
     }
     getSpritesForRuleAction() {
         // When assigning an OR, just use the 1st tile, not all of them
-        return [this.getSprites()[0]]
+        return [this._tiles[0].getSprites()[0]]
+        // return [this.getSprites()[0]] <-- this one is sorted by collisionLayer
     }
 
 }

@@ -256,6 +256,10 @@ describe('engine', () => {
     const interestingCell = engine.currentLevel[0][0]
     const sprites = interestingCell.getSpritesAsSet()
     expect(sprites.has(expectedSprite)).toBe(true)
+
+    // Ensure that the CrateInHole does not exist anywhere
+    const crateInHole = data._getSpriteByName('CrateInHole')
+    expect(crateInHole.getCellsThatMatch().size).toBe(0)
   })
 
   it('draws corner sprites correctly (according to skipping stones)', () => {

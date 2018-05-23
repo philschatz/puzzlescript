@@ -284,7 +284,7 @@ LEVELS
     const player = data._getSpriteByName('player')
     expect(engine.currentLevel[2][2].getSpritesAsSet().has(player)).toBe(false)
     // Check that the player is around thir previous location
-    let playerCells = [...player._cellSet]
+    let playerCells = [...player.getCellsThatMatch()]
     let playerCell = playerCells[0]
     expect(playerCells.length).toBe(1)
     expect(engine.currentLevel[playerCell.rowIndex][playerCell.colIndex].getSpritesAsSet().has(player)).toBe(true)
@@ -298,7 +298,7 @@ LEVELS
     // Check that the player is no longer in the spot they were
     expect(engine.currentLevel[playerCell.rowIndex][playerCell.colIndex].getSpritesAsSet().has(player)).toBe(false)
     // Check that the player is around thir previous location
-    playerCells = [...player._cellSet]
+    playerCells = [...player.getCellsThatMatch()]
     playerCell = playerCells[0]
     expect(playerCells.length).toBe(1)
     expect(engine.currentLevel[playerCell.rowIndex][playerCell.colIndex].getSpritesAsSet().has(player)).toBe(true)
@@ -355,7 +355,7 @@ LEVELS
     const player = data._getSpriteByName('player')
     expect(engine.currentLevel[2][2].getSpritesAsSet().has(player)).toBe(false)
     // Check that the player is around thir previous location
-    let playerCells = [...player._cellSet]
+    let playerCells = [...player.getCellsThatMatch()]
     let playerCell = playerCells[0]
     expect(playerCells.length).toBe(1)
     expect(engine.currentLevel[playerCell.rowIndex][playerCell.colIndex].getSpritesAsSet().has(player)).toBe(true)
@@ -369,7 +369,7 @@ LEVELS
     // Check that the player is no longer in the spot they were
     expect(engine.currentLevel[playerCell.rowIndex][playerCell.colIndex].getSpritesAsSet().has(player)).toBe(false)
     // Check that the player is around thir previous location
-    playerCells = [...player._cellSet]
+    playerCells = [...player.getCellsThatMatch()]
     playerCell = playerCells[0]
     expect(playerCells.length).toBe(1)
     expect(engine.currentLevel[playerCell.rowIndex][playerCell.colIndex].getSpritesAsSet().has(player)).toBe(true)
