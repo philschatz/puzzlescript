@@ -8,7 +8,6 @@ import { IGameTile, GameSprite } from './tile'
 import {
     IMutator,
     RuleBracketPair,
-    getMatchedMutatorsHelper,
     SIMPLE_DIRECTIONS,
     CellMutation
 } from '../pairs'
@@ -172,18 +171,6 @@ export class GameRule extends BaseForLines implements IRule {
             }
         }
         return _.flatten(allMutators)
-    }
-
-    getMatchedMutatorsOrNull(cell: Cell) {
-        // We do not support multiple bracket pairs yet
-        if (this._bracketPairs.length > 1) {
-            return
-        }
-        // If the rule has any modifiers that we do not understand, return null
-        if (setDifference(this._modifiers, SUPPORTED_RULE_MODIFIERS).size > 0) {
-            return null
-        }
-        return getMatchedMutatorsHelper(this._bracketPairs, cell)
     }
 
     isLate() {
@@ -496,7 +483,7 @@ export class HackNode extends RuleBracketNeighbor {
 }
 
 export interface IRule extends IGameNode {
-    getMatchedMutatorsOrNull: (cell: Cell) => IMutator[] | null
+    evaluate: () => CellMutation[]
 }
 
 export class GameRuleLoop extends BaseForLines implements IRule {
@@ -507,8 +494,8 @@ export class GameRuleLoop extends BaseForLines implements IRule {
         this._rules = rules
     }
 
-    getMatchedMutatorsOrNull(cell: Cell): IMutator[] {
-        return null // Not implemented yet
+    evaluate() {
+        return [] // Not implemented yet
         // return getMatchedMutatorsHelper(this._rules, cell)
     }
 

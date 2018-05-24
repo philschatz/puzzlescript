@@ -41,11 +41,6 @@ function collapseSpritesToPixels(spritesToDraw: GameSprite[], backgroundColor: I
         if ((!sprite[y][x] || sprite[y][x].isTransparent()) && pixel && !pixel.isTransparent()) {
           sprite[y][x] = pixel
         }
-
-        // If this is the last sprite and nothing was found then use the game background color
-        if (!sprite[y][x] && spriteIndex === spritesToDraw.length - 1) {
-          sprite[y][x] = backgroundColor
-        }
       }
     }
   })
@@ -230,7 +225,8 @@ function writeText(x: number, y: number, text: string) {
     console.log(`Writing text at [${y}][${x}]: "${text}"`)
     return
   }
-axel.text(x, y, text)
+  axel.text(x, y, text)
+  restoreCursor()
 }
 
 export default new UI()

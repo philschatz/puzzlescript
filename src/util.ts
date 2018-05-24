@@ -34,13 +34,6 @@ export function setDifference<T>(setA: Set<T>, setB: Set<T>) {
   return difference
 }
 
-export class SpriteSet {
-  _allSprites: GameSprite
-  constructor(sprites: GameSprite[]) {
-
-  }
-}
-
 // From https://stackoverflow.com/a/19303725
 let seed = 1
 let randomValuesForTesting = null

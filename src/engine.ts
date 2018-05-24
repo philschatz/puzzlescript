@@ -46,23 +46,7 @@ export class Cell {
     // Retur na new set so we can mutate it later
     return new Map(this._spriteAndWantsToMoves)
   }
-  getSpriteAndWantsToMovesInOrder() {
-    // Just pull out the sprite, not the wantsToMoveDir
-    return [...this._spriteAndWantsToMoves]
-    .sort(([a], [b]) => {
-      return a.getCollisionLayerNum() - b.getCollisionLayerNum()
-    }).reverse()
-  }
-  _getSpriteAndWantsToMoveForSprite(otherSprite: GameSprite) {
-    return [...this._spriteAndWantsToMoves].filter(([sprite]) => sprite === otherSprite)[0]
-  }
-  // Maybe add updateSprite(sprite, direction)
-  // Maybe add removeSprite(sprite)
-  updateSprites(newSprites: Map<GameSprite, string>) {
-    this._spriteAndWantsToMoves = newSprites
-    this._engine.emit('cell:updated', this)
-    return true // maybe check if the sprites were the same before so there is less to update visually
-  }
+
   _getRelativeNeighbor(y: number, x: number) {
     const row = this._engine.currentLevel[this.rowIndex + y]
     if (!row) return null
@@ -180,7 +164,7 @@ export default class Engine extends EventEmitter2 {
     let i = 0
     for (const [key, cells] of batchCells) {
       if ((batchCells.size > 100 && i % 10 === 0) || cells.length > 100) {
-        console.log(`Loading cells ${i}/${allCells.length}. SpriteKey="${key}" len=${cells.length}`)
+        console.log(`Loading cells ${i}-${i + cells.length} of ${allCells.length}. SpriteKey="${key}"`)
       }
       // All Cells contain the same set of sprites so just pull out the 1st one
       for (const sprite of this.gameData.objects) {
@@ -199,6 +183,7 @@ export default class Engine extends EventEmitter2 {
   getCells() {
     return _.flatten(this.currentLevel)
   }
+
   toSnapshot() {
     return this.currentLevel.map(row => {
       return row.map(cell => {
@@ -230,40 +215,6 @@ export default class Engine extends EventEmitter2 {
     return ret
   }
 
-  tickUpdateCellsOld() {
-    const changedCellMutations: Set<CellMutation> = new Set()
-    // Loop over all the cells, see if a Rule matches, apply the transition, and notify that cells changed
-    this.currentLevel.forEach(row => {
-      row.forEach(cell => {
-        this.gameData.rules.forEach(rule => {
-          let repeatsLeft = MAX_REPEATS
-          // while (repeatsLeft > 0) {
-            // Check if the left-hand-side of the rule matches the current cell
-            const mutators = rule.getMatchedMutatorsOrNull(cell)
-            if (mutators && mutators.length > 0) {
-              mutators.forEach(mutator => {
-                // Record coverage on the Rule
-                if (process.env['NODE_ENV'] !== 'production') {
-                  rule.__coverageCount++
-                }
-                // Change the Grid based on the rules that matched
-                const mutation = mutator.mutate()
-                // Keep track of which cells changed so we know which ones to look at to see if they wantsToMove
-                changedCellMutations.add(mutation)
-              })
-            // } else {
-            //   break
-            }
-            repeatsLeft -= 1
-          // }
-          // if (repeatsLeft === 0) {
-          //   throw new Error('MAX_REPEATS were exhausted. Maybe this is an infinite loop?')
-          // }
-        })
-      })
-    })
-  }
-
   tickMoveSprites(changedCellMutations: Map<Cell, boolean>) {
     let movedCells: Set<Cell> = new Set()
     const changedCells = new Set([...changedCellMutations.keys()])
@@ -278,6 +229,7 @@ export default class Engine extends EventEmitter2 {
             // movedCells.add(cell)
           } else {
             if (wantsToMove === RULE_DIRECTION.RANDOMDIR) {
+              console.log("This dooes not seem to be executed.. maybe that's why Fairy sprites always move up?");
               const rand = nextRandom(4)
               switch (rand) {
                 case 0:
