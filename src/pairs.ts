@@ -221,13 +221,12 @@ class CellMutator implements IMutator {
       if (!tileWithModifier._tile.getSpritesForRuleAction) {
         debugger
       }
-      tileWithModifier._tile.getSpritesForRuleAction().forEach(sprite => {
+      for (const sprite of tileWithModifier._tile.getSpritesForRuleAction()) {
         // if (spritesToAdd.has(sprite)) {
         if (tileWithModifier.isNo()) {
         } else {
           let direction
-          switch (tileWithModifier._modifier) {
-            case RULE_DIRECTION.RANDOM:
+          if (tileWithModifier._modifier === RULE_DIRECTION.RANDOM) {
               // Decide whether or not to add the sprite since the tile has RANDOM on it
               if (nextRandom(2)) {
                 // debugger
@@ -235,53 +234,57 @@ class CellMutator implements IMutator {
                 direction = undefined
               } else {
                 // console.log('Randomly decided NOT to add the sprite');
-                return
+                break
               }
-              break
-            case RULE_DIRECTION.RANDOMDIR:
-              switch (nextRandom(4)) {
-                case 0:
-                  direction = RULE_DIRECTION.UP
-                  break
-                  case 1:
-                  direction = RULE_DIRECTION.DOWN
-                  break
-                  case 2:
-                  direction = RULE_DIRECTION.LEFT
-                  break
-                  case 3:
-                  direction = RULE_DIRECTION.RIGHT
-                  break
-                  default:
-                  throw new Error(`BUG: invalid random number chosen`)
-              }
-            case RULE_DIRECTION.UP:
-              direction = RULE_DIRECTION.UP
-              break
-            case RULE_DIRECTION.DOWN:
-              direction = RULE_DIRECTION.DOWN
-              break
-            case RULE_DIRECTION.LEFT:
-              direction = RULE_DIRECTION.LEFT
-              break
-            case RULE_DIRECTION.RIGHT:
-              direction = RULE_DIRECTION.RIGHT
-              break
-            case RULE_DIRECTION.ACTION:
-              direction = RULE_DIRECTION.ACTION
-              break
-            case 'STATIONARY':
-              console.log('Not supporting STATIONARY yet')
-            case undefined:
-              direction = undefined
-              break
-            default:
-              throw new Error(`BUG: unsupported rule direction modifier "${tileWithModifier._modifier}"`)
+          } else {
+            switch (tileWithModifier._modifier) {
+              case RULE_DIRECTION.RANDOMDIR:
+                switch (nextRandom(4)) {
+                  case 0:
+                    direction = RULE_DIRECTION.UP
+                    break
+                    case 1:
+                    direction = RULE_DIRECTION.DOWN
+                    break
+                    case 2:
+                    direction = RULE_DIRECTION.LEFT
+                    break
+                    case 3:
+                    direction = RULE_DIRECTION.RIGHT
+                    break
+                    default:
+                    throw new Error(`BUG: invalid random number chosen`)
+                }
+              case RULE_DIRECTION.UP:
+                direction = RULE_DIRECTION.UP
+                break
+              case RULE_DIRECTION.DOWN:
+                direction = RULE_DIRECTION.DOWN
+                break
+              case RULE_DIRECTION.LEFT:
+                direction = RULE_DIRECTION.LEFT
+                break
+              case RULE_DIRECTION.RIGHT:
+                direction = RULE_DIRECTION.RIGHT
+                break
+              case RULE_DIRECTION.ACTION:
+                direction = RULE_DIRECTION.ACTION
+                break
+              case RULE_DIRECTION.STATIONARY:
+                direction = undefined
+                console.log('Not supporting STATIONARY yet')
+              case undefined:
+                direction = undefined
+                break
+              default:
+                throw new Error(`BUG: unsupported rule direction modifier "${tileWithModifier._modifier}"`)
+            }
           }
+          console.log('Convert direction to absolute using direction and this._direction')
           this._cell.addSprite(sprite, direction)
-        }
+      }
         // }
-      })
+      }
     }
 
     // TODO: Be better about recording when the cell actually updated

@@ -168,6 +168,7 @@ export class GameRule extends BaseForLines implements IRule {
                     return _.flatten(ret)
                 })
                 allMutators.push(_.flatten(mutators))
+                break // only evaluate the first direction that matches successfully
             }
         }
         return _.flatten(allMutators)
@@ -359,7 +360,7 @@ export class RuleBracketNeighbor extends BaseForLines {
             if (flagAdded) {
                 let shouldMatch = true
                 for (const t of this._tilesWithModifier) {
-                    if (!t.matchesCell(cell)) {
+                    if (!t.matchesCell2(cell, wantsToMove)) {
                         shouldMatch = false
                         break
                     }
@@ -370,6 +371,11 @@ export class RuleBracketNeighbor extends BaseForLines {
                         bracket.updateCell(cell, sprite, tileWithModifier, this, wantsToMove, flagAdded)
                     }
                     this._localCellCache.add(cell)
+                } else {
+                    for (const bracket of this._brackets) {
+                        bracket.updateCell(cell, sprite, tileWithModifier, this, wantsToMove, false)
+                    }
+                    this._localCellCache.delete(cell)
                 }
             } else {
                 // remove it from upstream
@@ -431,14 +437,18 @@ export class TileWithModifier extends BaseForLines {
             return hasTile
         }
     }
-    matchesCell2(cell: Cell, direction: RULE_DIRECTION) {
+    matchesCell2(cell: Cell, wantsToMove: RULE_DIRECTION) {
+        if (this._modifier === 'STATIONARY' && wantsToMove) {
+            return false
+        }
         if (this._modifier && !SUPPORTED_CELL_MODIFIERS.has(this._modifier)) {
             return false // Modifier not supported yet
         }
         const hasTile = this._tile && this._tile.matchesCell(cell)
         let matchesDirection = true
-        if (RULE_DIRECTION[this._modifier]) {
-            matchesDirection = cell.wantsToMoveTo(this._tile, relativeDirectionToAbsolute(direction, RULE_DIRECTION[this._modifier]))
+        if (RULE_DIRECTION.STATIONARY === RULE_DIRECTION[this._modifier]) {
+            // matchesDirection = cell.wantsToMoveTo(this._tile, relativeDirectionToAbsolute(direction, RULE_DIRECTION[this._modifier]))
+            matchesDirection = !wantsToMove
         }
         if (this.isNo()) {
             return !(hasTile && matchesDirection)
@@ -461,11 +471,11 @@ export class TileWithModifier extends BaseForLines {
 
         // console.log(`Cell [${cell.rowIndex}][${cell.colIndex}] impacted ${this._neighbors.length} neighbors`);
         // Only pass up the food chain if the modifier (roughly) matches the wantsToMove (ignoring orientation)
-        if (!wantsToMove || wantsToMove && [RULE_DIRECTION.UP, RULE_DIRECTION.DOWN, RULE_DIRECTION.LEFT, RULE_DIRECTION.RIGHT, RULE_DIRECTION.ACTION].indexOf(this._modifier as RULE_DIRECTION) >= 0) {
+        // if (!wantsToMove || wantsToMove && [RULE_DIRECTION.UP, RULE_DIRECTION.DOWN, RULE_DIRECTION.LEFT, RULE_DIRECTION.RIGHT, RULE_DIRECTION.ACTION].indexOf(this._modifier as RULE_DIRECTION) >= 0) {
             for (const neighbor of this._neighbors) {
                 neighbor.updateCell(cells, sprite, this, wantsToMove, flagAdded)
             }
-        }
+        // }
 }
 }
 

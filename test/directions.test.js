@@ -54,7 +54,6 @@ describe('Directions', () => {
     expect(nextRandom(4)).toBe(2)
     expect(nextRandom(4)).toBe(1)
     expect(nextRandom(4)).toBe(1)
-
   })
 
   it('Marks a sprite when it wants to move', () => {
@@ -276,7 +275,7 @@ P.
     expect(changedCells.size).toBe(0)
   })
 
-  it('Randomly decides whether to add the sprite using "RANDOM" in a bracket', () => {
+  it.only('Randomly decides whether to add the sprite using "RANDOM" in a bracket', () => {
     const {engine, data} = parseEngine(`
 title foo
 
@@ -320,7 +319,7 @@ LEVELS
 P.
 
 `)
-    setRandomValuesForTesting([0, 0, 0, 0, 1, 1, 1, 1])
+    setRandomValuesForTesting([0, 1])
     const changedCells = engine.tick()
     console.log('Random seed index is now at', getRandomSeed())
     // expect(engine.toSnapshot()).toMatchSnapshot()
@@ -420,5 +419,134 @@ LEVELS
     playerCell = playerCells[0]
     expect(playerCells.length).toBe(1)
     expect(engine.currentLevel[playerCell.rowIndex][playerCell.colIndex].getSpritesAsSet().has(player)).toBe(true)
+  })
+
+  it('supports STATIONARY modifier (simple)', () => {
+    const {engine, data} = parseEngine(`
+    title foo
+
+    ========
+    OBJECTS
+    ========
+
+    background
+    green
+
+    player
+    blue
+
+    incorrect
+    red
+
+    =======
+    LEGEND
+    =======
+
+    . = Background
+    P = player
+
+    ================
+    COLLISIONLAYERS
+    ================
+
+    Background
+    player
+
+    ===
+    RULES
+    ===
+
+    [ player ] -> [ > player ]
+    [ STATIONARY player ] -> [ incorrect ]
+
+    =======
+    LEVELS
+    =======
+
+    P.
+
+    `)
+
+    const player = data._getSpriteByName('player')
+    const incorrect = data._getSpriteByName('incorrect')
+    engine.tick()
+
+    let playerCells = [...player.getCellsThatMatch()]
+    let playerCell = playerCells[0]
+    let incorrectCells = [...incorrect.getCellsThatMatch()]
+
+    expect(incorrectCells.length).toBe(0)
+
+    expect(playerCells.length).toBe(1)
+    expect(playerCell.rowIndex).toBe(0)
+    expect(playerCell.colIndex).toBe(1)
+  })
+
+  it('supports STATIONARY modifier with other sprites that are added', () => {
+    const {engine, data} = parseEngine(`
+    title foo
+
+    ========
+    OBJECTS
+    ========
+
+    Background
+    green
+
+    player
+    blue
+
+    cooldown
+    transparent
+
+    =======
+    LEGEND
+    =======
+
+    . = Background
+    P = player
+
+    ================
+    COLLISIONLAYERS
+    ================
+
+    Background
+    player
+
+    ===
+    RULES
+    ===
+
+    [ > player NO cooldown ] -> [ STATIONARY player cooldown ]
+    DOWN [ STATIONARY player NO cooldown ] -> [ > player cooldown ]
+
+    [ cooldown ] -> [ ]
+
+    =======
+    LEVELS
+    =======
+
+    ...
+    .P.
+    ...
+
+    `)
+
+    const player = data._getSpriteByName('player')
+    const cooldown = data._getSpriteByName('cooldown')
+    engine.tick()
+
+    let playerCells = [...player.getCellsThatMatch()]
+    let playerCell = playerCells[0]
+
+    expect(player.getCellsThatMatch().size).toBe(1)
+    expect(playerCell.rowIndex).toBe(1)
+    expect(playerCell.colIndex).toBe(2)
+    // Check that there REALLY is only 1 Player sprite
+    expect(engine.currentLevel[0][1].getSpritesAsSet().has(player)).toBe(false)
+    expect(engine.currentLevel[1][0].getSpritesAsSet().has(player)).toBe(false)
+    expect(engine.currentLevel[2][1].getSpritesAsSet().has(player)).toBe(false)
+    // Check that the cooldown sprite was also added
+    expect(engine.currentLevel[1][2].getSpritesAsSet().has(cooldown)).toBe(true)
   })
 })

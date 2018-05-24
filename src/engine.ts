@@ -266,7 +266,7 @@ export default class Engine extends EventEmitter2 {
     let movedCells: Set<Cell> = new Set()
     const changedCells = new Set([...changedCellMutations.keys()])
     // Loop over all the cells, see if a Rule matches, apply the transition, and notify that cells changed
-    changedCells.forEach(cell => {
+    for (const cell of changedCells) {
       cell.getSpriteAndWantsToMoves().forEach((wantsToMove, sprite) => {
 
         if (wantsToMove) {
@@ -312,7 +312,7 @@ export default class Engine extends EventEmitter2 {
           }
         }
       })
-    })
+    }
     return movedCells
   }
 
