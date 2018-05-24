@@ -109,7 +109,7 @@ export function getRuleSemantics() {
             if (!cacheBrackets.has(key)) {
                 cacheBrackets.set(key, b)
             } else {
-                // console.log('Prevented creating a duplicate neighbor')
+                // console.log(`Prevented creating a duplicate bracket: ${key}`)
             }
             return cacheBrackets.get(key)
        },

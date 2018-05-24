@@ -10,8 +10,6 @@ import Engine from './engine'
 import { setAddAll } from './util';
 import { start } from 'repl';
 
-let totalRenderTime = 0
-
 async function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
@@ -114,13 +112,10 @@ async function run() {
         global['cells_updated_count'] = 0
         global['rules_updated_count'] = 0
 
+        let maxTickAndRenderTime = -1
         for (var i = 0; i < 10; i++) {
+          startTime = Date.now()
           const changedCells = engine.tick()
-          await sleep(500)
-
-          if (changedCells.size === 0) {
-            break
-          }
 
           // UI.renderScreen(data, engine.currentLevel)
 
@@ -128,16 +123,26 @@ async function run() {
           for (const cell of changedCells) {
             UI.drawCell(data, cell, false)
           }
+          if (i > 1) { // Skip the 1st couple because they might be cleaning up the level
+            maxTickAndRenderTime = Math.max(maxTickAndRenderTime, Date.now() - startTime)
+          }
+
+          await sleep(500)
+
+          if (changedCells.size === 0) {
+            break
+          }
 
         }
-        console.log(`Game took # seconds: `, (Date.now() - startTime)/1000)
         console.log('Max time spent updating:', global['max_time_spent_updating']);
         console.log('Number of cell update calls:', global['cells_updated_count']);
         console.log('Number of rules updated:', global['rules_updated_count']);
+        console.log('Max tickAndRender Time (ms):', maxTickAndRenderTime);
+
 
 
         // record the tick coverage
-        for (const node of [].concat(data.objects).concat(data.rules).concat(data.legends)/*.concat(data.levels)*/) {
+        for (const node of [].concat(data.rules)/*.concat(data.objects).concat(data.legends)*//*.concat(data.levels)*/) {
           const line = coverageKey(node)
           codeCoverageTemp.set(line, node.__coverageCount)
         }
@@ -183,13 +188,9 @@ async function run() {
         writeFileSync(`coverage/coverage-gists-${gistName}.json`, JSON.stringify(codeCoverageObj, null, 2)) // indent by 2 chars
       }
 
-      UI.clearScreen()
+      // UI.clearScreen()
     }
   }
-
-  console.log('-----------------------')
-  console.log('Renderings took:', totalRenderTime)
-  console.log('-----------------------')
 }
 
 run()

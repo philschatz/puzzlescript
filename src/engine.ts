@@ -167,19 +167,21 @@ export default class Engine extends EventEmitter2 {
       }
       return key.join(' ')
     }
-    for (const cell of this.getCells()) {
+    const allCells = this.getCells()
+    for (const cell of allCells) {
       const key = spriteSetToKey(cell.getSpritesAsSet())
       if (!batchCells.has(key)) {
         batchCells.set(key, [])
       }
       batchCells.get(key).push(cell)
     }
-    if (batchCells.size > 100) {
-      console.log(`Cell Batch size: ${batchCells.size}`);
-      console.log([...batchCells.keys()]);
-    }
 
-    for (const cells of batchCells.values()) {
+    // Print progress while loading up the Cells
+    let i = 0
+    for (const [key, cells] of batchCells) {
+      if ((batchCells.size > 100 && i % 10 === 0) || cells.length > 100) {
+        console.log(`Loading cells ${i}/${allCells.length}. SpriteKey="${key}" len=${cells.length}`)
+      }
       // All Cells contain the same set of sprites so just pull out the 1st one
       for (const sprite of this.gameData.objects) {
         const cellSprites = cells[0].getSpritesAsSet()
@@ -188,6 +190,7 @@ export default class Engine extends EventEmitter2 {
           sprite.updateCellSet(cells, null, hasSprite)
         }
       }
+      i += cells.length
     }
 
     // Return the cells so the UI can listen to when they change
