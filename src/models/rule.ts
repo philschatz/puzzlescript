@@ -11,7 +11,7 @@ import {
     SIMPLE_DIRECTIONS,
     CellMutation
 } from '../pairs'
-import { RULE_MODIFIER, setDifference, setIntersection } from '../util'
+import { RULE_MODIFIER, setDifference, setIntersection, nextRandom } from '../util'
 import { Cell } from '../engine'
 import { GameTree } from '../gameTree';
 import { RULE_DIRECTION } from '../enums';
@@ -25,7 +25,7 @@ export const SIMPLE_DIRECTION_DIRECTIONS = new Set([
     RULE_DIRECTION.DOWN,
     RULE_DIRECTION.LEFT,
     RULE_DIRECTION.RIGHT
-  ])
+])
 
 function opposite(dir: RULE_DIRECTION) {
     switch (dir) {
@@ -342,7 +342,7 @@ export class RuleBracketNeighbor extends BaseForLines {
         this._brackets.push(bracket)
     }
 
-    updateCell(cells: Cell[], sprite: GameSprite, tileWithModifier: TileWithModifier, wantsToMove: RULE_DIRECTION, flagAdded) {
+    updateCells(cells: Iterable<Cell>, sprite: GameSprite, tileWithModifier: TileWithModifier, wantsToMove: RULE_DIRECTION, flagAdded) {
         for (const cell of cells) {
             let shouldPropagate = []
             if (flagAdded) {
@@ -411,7 +411,60 @@ export class TileWithModifier extends BaseForLines {
     }
 
     isNo() {
-        return M_NO === this._modifier
+        return this._modifier === M_NO
+    }
+    isRandom() {
+        return this._modifier === RULE_DIRECTION.RANDOM
+    }
+    isRandomDir() {
+        return this._modifier === RULE_DIRECTION.RANDOMDIR
+    }
+    getDirectionActionOrStationary(): RULE_DIRECTION {
+        let direction
+        switch (this._modifier) {
+            case RULE_DIRECTION.RANDOMDIR:
+                switch (nextRandom(4)) {
+                    case 0:
+                        direction = RULE_DIRECTION.UP
+                        break
+                    case 1:
+                        direction = RULE_DIRECTION.DOWN
+                        break
+                    case 2:
+                        direction = RULE_DIRECTION.LEFT
+                        break
+                    case 3:
+                        direction = RULE_DIRECTION.RIGHT
+                        break
+                    default:
+                        throw new Error(`BUG: invalid random number chosen`)
+                }
+            case RULE_DIRECTION.UP:
+                direction = RULE_DIRECTION.UP
+                break
+            case RULE_DIRECTION.DOWN:
+                direction = RULE_DIRECTION.DOWN
+                break
+            case RULE_DIRECTION.LEFT:
+                direction = RULE_DIRECTION.LEFT
+                break
+            case RULE_DIRECTION.RIGHT:
+                direction = RULE_DIRECTION.RIGHT
+                break
+            case RULE_DIRECTION.ACTION:
+                direction = RULE_DIRECTION.ACTION
+                break
+            case RULE_DIRECTION.STATIONARY:
+                // if the cell had a wantsToMove, then clear it
+                direction = RULE_DIRECTION.STATIONARY
+                break
+            case undefined:
+                direction = null
+                break
+            default:
+                throw new Error(`BUG: unsupported rule direction modifier "${this._modifier}"`)
+        }
+        return direction
     }
 
     matchesCell(cell: Cell) {
@@ -419,11 +472,10 @@ export class TileWithModifier extends BaseForLines {
             return false // Modifier not supported yet
         }
         const hasTile = this._tile && this._tile.matchesCell(cell)
-        if (this.isNo()) {
-            return !hasTile
-        } else {
-            return hasTile
-        }
+        return this.isNo() != hasTile
+    }
+    matchesFirstCell(cells: Iterable<Cell>) {
+        return this.matchesCell(cells[0])
     }
     matchesCell2(cell: Cell, wantsToMove: RULE_DIRECTION) {
         if (this._modifier === 'STATIONARY' && wantsToMove) {
@@ -448,23 +500,34 @@ export class TileWithModifier extends BaseForLines {
     addRuleBracketNeighbor(neighbor: RuleBracketNeighbor) {
         this._neighbors.push(neighbor)
     }
-    updateCell(cells: Cell[], wantsToMove: RULE_DIRECTION, sprite: GameSprite, wasAdded: boolean) {
-        // TODO: check if the cell still matches
-
+    addCells(sprite: GameSprite, cells: Iterable<Cell>, wantsToMove: RULE_DIRECTION) {
         // Cells all have the same sprites, so if the 1st matches, they all do
-        let flagAdded = this._tile.matchesCell(cells[0])
-        if (this.isNo()) {
-            flagAdded = !flagAdded
-        }
-
-        // console.log(`Cell [${cell.rowIndex}][${cell.colIndex}] impacted ${this._neighbors.length} neighbors`);
-        // Only pass up the food chain if the modifier (roughly) matches the wantsToMove (ignoring orientation)
-        // if (!wantsToMove || wantsToMove && [RULE_DIRECTION.UP, RULE_DIRECTION.DOWN, RULE_DIRECTION.LEFT, RULE_DIRECTION.RIGHT, RULE_DIRECTION.ACTION].indexOf(this._modifier as RULE_DIRECTION) >= 0) {
+        if (this.matchesFirstCell(cells)) {
             for (const neighbor of this._neighbors) {
-                neighbor.updateCell(cells, sprite, this, wantsToMove, flagAdded)
+                neighbor.updateCells(cells, sprite, this, wantsToMove, true)
             }
-        // }
-}
+        }
+    }
+    updateCells(sprite: GameSprite, cells: Iterable<Cell>, wantsToMove: RULE_DIRECTION) {
+        // Cells all have the same sprites, so if the 1st matches, they all do
+        if (this.matchesFirstCell(cells)) {
+            for (const neighbor of this._neighbors) {
+                neighbor.updateCells(cells, sprite, this, wantsToMove, true)
+            }
+        }
+    }
+    removeCells(sprite: GameSprite, cells: Iterable<Cell>) {
+        // Cells all have the same sprites, so if the 1st matches, they all do
+        if (this.matchesFirstCell(cells)) {
+            for (const neighbor of this._neighbors) {
+                neighbor.updateCells(cells, sprite, this, null, true)
+            }
+        } else {
+            for (const neighbor of this._neighbors) {
+                neighbor.updateCells(cells, sprite, this, null, false)
+            }
+        }
+    }
 }
 
 // Extend RuleBracketNeighbor so that NeighborPair doesn't break
@@ -521,46 +584,46 @@ const SUPPORTED_RULE_MODIFIERS = new Set([
 function relativeDirectionToAbsolute(currentDirection: RULE_DIRECTION, tileModifier: string) {
     let currentDir
     switch (currentDirection) {
-      case RULE_DIRECTION.RIGHT:
-        currentDir = 0
-        break
-      case RULE_DIRECTION.UP:
-        currentDir = 1
-        break
-      case RULE_DIRECTION.LEFT:
-        currentDir = 2
-        break
-      case RULE_DIRECTION.DOWN:
-        currentDir = 3
-        break
-      default:
-        throw new Error(`BUG! Invalid rule direction "${currentDirection}`)
+        case RULE_DIRECTION.RIGHT:
+            currentDir = 0
+            break
+        case RULE_DIRECTION.UP:
+            currentDir = 1
+            break
+        case RULE_DIRECTION.LEFT:
+            currentDir = 2
+            break
+        case RULE_DIRECTION.DOWN:
+            currentDir = 3
+            break
+        default:
+            throw new Error(`BUG! Invalid rule direction "${currentDirection}`)
     }
 
     switch (tileModifier) {
-      case RULE_DIRECTION.RIGHT:
-        currentDir += 0
-        break
-      case RULE_DIRECTION.UP:
-        currentDir += 1
-        break
-      case RULE_DIRECTION.LEFT:
-        currentDir += 2
-        break
-      case RULE_DIRECTION.DOWN:
-        currentDir += 3
-        break
+        case RULE_DIRECTION.RIGHT:
+            currentDir += 0
+            break
+        case RULE_DIRECTION.UP:
+            currentDir += 1
+            break
+        case RULE_DIRECTION.LEFT:
+            currentDir += 2
+            break
+        case RULE_DIRECTION.DOWN:
+            currentDir += 3
+            break
     }
     switch (currentDir % 4) {
-      case 0:
-        return RULE_DIRECTION.RIGHT
-      case 1:
-        return RULE_DIRECTION.UP
-      case 2:
-        return RULE_DIRECTION.LEFT
-      case 3:
-        return RULE_DIRECTION.DOWN
-      default:
-        throw new Error(`BUG! Incorrectly computed rule direction "${currentDirection}" "${tileModifier}"`)
+        case 0:
+            return RULE_DIRECTION.RIGHT
+        case 1:
+            return RULE_DIRECTION.UP
+        case 2:
+            return RULE_DIRECTION.LEFT
+        case 3:
+            return RULE_DIRECTION.DOWN
+        default:
+            throw new Error(`BUG! Incorrectly computed rule direction "${currentDirection}" "${tileModifier}"`)
     }
-  }
+}

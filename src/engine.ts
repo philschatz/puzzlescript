@@ -99,26 +99,20 @@ export class Cell {
   }
   clearWantsToMove(sprite: GameSprite) {
     this._spriteAndWantsToMoves.set(sprite, null)
-    sprite.updateCellSet([this], null, true)
-    // this._engine.gameTree.updateCell(this, [sprite])
+    sprite.updateCell(this, null)
   }
   addSprite(sprite: GameSprite, wantsToMove: RULE_DIRECTION) {
-    const isUnchanged = this._spriteAndWantsToMoves.has(sprite)
     this._spriteAndWantsToMoves.set(sprite, wantsToMove)
-    // if (!isUnchanged) {
-      sprite.updateCellSet([this], wantsToMove, true)
-    // }
-    // this._engine.gameTree.updateCell(this, [sprite])
-    return !isUnchanged
+    sprite.addCell(this, wantsToMove)
   }
   removeSprite(sprite: GameSprite) {
-    const isChanged = this._spriteAndWantsToMoves.has(sprite)
     this._spriteAndWantsToMoves.delete(sprite)
-    // if (isChanged) {
-      sprite.updateCellSet([this], null, false)
-    // }
-    // this._engine.gameTree.updateCell(this, [sprite])
-    return isChanged
+    sprite.removeCell(this)
+  }
+  removeSprites(sprites: Iterable<GameSprite>) {
+    for (const sprite of sprites) {
+      this.removeSprite(sprite)
+    }
   }
 }
 
@@ -171,7 +165,11 @@ export default class Engine extends EventEmitter2 {
         const cellSprites = cells[0].getSpritesAsSet()
         const hasSprite = cellSprites.has(sprite)
         if (hasSprite || sprite.hasNegationTile()) {
-          sprite.updateCellSet(cells, null, hasSprite)
+          if (hasSprite) {
+            sprite.addCells(cells, null/*STATIONARY*/)
+          } else {
+            sprite.removeCells(cells)
+          }
         }
       }
       i += cells.length

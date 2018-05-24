@@ -77,33 +77,41 @@ export class GameSprite extends BaseForLines implements IGameTile {
     addTileWithModifier(t: TileWithModifier) {
         this._tileWithModifierSet.add(t)
     }
-    updateCellSet(cells: Cell[], wantsToMove: RULE_DIRECTION, isAdding: boolean) {
-        // if (this._tileWithModifierSet.size > 10) {
-        //     console.log(`Cell [${cell.rowIndex}][${cell.colIndex}] is impacting ${this._tileWithModifierSet.size} tiles`);
-        // }
-
-        const start = Date.now()
-        if (isAdding) {
-            for (const cell of cells) {
-                this._cellSet.add(cell)
-            }
-            // propagate up
-            for (const t of this._tileWithModifierSet) {
-                t.updateCell(cells, wantsToMove, this, true)
-            }
-        } else {
-            for (const cell of cells) {
-                this._cellSet.delete(cell)
-            }
-            // propagate up
-            for (const t of this._tileWithModifierSet) {
-                t.updateCell(cells, wantsToMove, this, false)
+    addCell(cell: Cell, wantsToMove: RULE_DIRECTION) {
+        this.addCells([cell], wantsToMove)
+    }
+    removeCell(cell: Cell) {
+        this.removeCells([cell])
+    }
+    updateCell(cell: Cell, wantsToMove: RULE_DIRECTION) {
+        if (process.env['NODE_ENV'] !== 'production') {
+            // check that the cell is already in the sprite cell set
+            if (!this.has(cell)) {
+                throw new Error(`BUG: Expected cell to already be in the sprite set`)
             }
         }
-        global['cells_updated_count'] += 1
-        const spent = Date.now() - start
-        if (spent > global['max_time_spent_updating']) {
-            global['max_time_spent_updating'] = spent
+
+        // propagate up
+        for (const t of this._tileWithModifierSet) {
+            t.updateCells(this, [cell], wantsToMove)
+        }
+    }
+    addCells(cells: Iterable<Cell>, wantsToMove: RULE_DIRECTION) {
+        for (const cell of cells) {
+            this._cellSet.add(cell)
+        }
+        // propagate up
+        for (const t of this._tileWithModifierSet) {
+            t.addCells(this, cells, wantsToMove)
+        }
+    }
+    removeCells(cells: Iterable<Cell>) {
+        for (const cell of cells) {
+            this._cellSet.delete(cell)
+        }
+        // propagate up
+        for (const t of this._tileWithModifierSet) {
+            t.removeCells(this, cells)
         }
     }
     has(cell: Cell) {
