@@ -218,9 +218,6 @@ class CellMutator implements IMutator {
     // add sprites that are listed on the action side
     for (const tileWithModifier of actionTiles.values()) {
       // TODO: Only get the 1st sprite if tileWithModifier._tile is an OR tile (like in the 1st engine.test.js)
-      if (!tileWithModifier._tile.getSpritesForRuleAction) {
-        debugger
-      }
       for (const sprite of tileWithModifier._tile.getSpritesForRuleAction()) {
         // if (spritesToAdd.has(sprite)) {
         if (tileWithModifier.isNo()) {

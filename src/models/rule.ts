@@ -257,7 +257,8 @@ export class RuleBracket extends BaseForLines {
                 // check the neighbors downstream of curCell
                 for (let x = index + 1; x < this._neighbors.length; x++) {
                     curCell = curCell.getNeighbor(direction)
-                    if (curCell && this._neighbors[x].hasCell(curCell)) {
+                    // TODO: Convert the neighbor check into a method
+                    if (curCell && (this._neighbors[x]._tilesWithModifier.length === 0 || this._neighbors[x].hasCell(curCell))) {
                         // keep going
                     } else {
                         matched = false
@@ -274,7 +275,7 @@ export class RuleBracket extends BaseForLines {
                 // check the neighbors upstream of curCell
                 for (let x = index - 1; x >= 0; x--) {
                     curCell = curCell.getNeighbor(opposite(direction))
-                    if (curCell && this._neighbors[x].hasCell(curCell)) {
+                    if (curCell && (this._neighbors[x]._tilesWithModifier.length === 0 || this._neighbors[x].hasCell(curCell))) {
                         // keep going
                     } else {
                         matched = false

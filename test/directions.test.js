@@ -275,7 +275,7 @@ P.
     expect(changedCells.size).toBe(0)
   })
 
-  it.only('Randomly decides whether to add the sprite using "RANDOM" in a bracket', () => {
+  it('Randomly decides whether to add the sprite using "RANDOM" in a bracket', () => {
     const {engine, data} = parseEngine(`
 title foo
 
@@ -548,5 +548,65 @@ LEVELS
     expect(engine.currentLevel[2][1].getSpritesAsSet().has(player)).toBe(false)
     // Check that the cooldown sprite was also added
     expect(engine.currentLevel[1][2].getSpritesAsSet().has(cooldown)).toBe(true)
+  })
+
+  it('puts a top hat on the player (beam islands)', () => {
+    const {engine, data} = parseEngine(`
+    title foo
+
+    ========
+    OBJECTS
+    ========
+
+    Background
+    green
+
+    player
+    yellow
+
+    playertop
+    yellow
+
+    =======
+    LEGEND
+    =======
+
+    . = Background
+    P = player
+
+    ================
+    COLLISIONLAYERS
+    ================
+
+    Background
+    player
+    playertop
+
+    ===
+    RULES
+    ===
+
+    UP [ player | ] -> [ player | playertop ]
+
+    =======
+    LEVELS
+    =======
+
+    .
+    P
+
+    `)
+
+    const playerTop = data._getSpriteByName('playertop')
+    engine.tick()
+
+    let playerTopCells = [...playerTop.getCellsThatMatch()]
+    let playerTopCell = playerTopCells[0]
+
+    expect(playerTop.getCellsThatMatch().size).toBe(1)
+    expect(playerTopCell.rowIndex).toBe(0)
+    expect(playerTopCell.colIndex).toBe(0)
+    // Check that there REALLY is only 1 Player sprite
+    expect(engine.currentLevel[0][0].getSpritesAsSet().has(playerTop)).toBe(true)
   })
 })

@@ -1,1350 +1,679 @@
-title Hack the Net
-author Alan Hazelden
-homepage www.draknek.org
-
+title Beam Islands
+author mjau
+homepage http://twitter.com/kamjau
 run_rules_on_level_start
+realtime_interval 0.3
+text_color #f197e9
+(debug)
 
-(verbose_logging)
+( for ludum dare 29 )
 
-again_interval 0.06
+=========
+ OBJECTS
+=========
 
-key_repeat_interval 0.5
+(
+	#000000 Black
+	#df2619 Inactive border
+	#078ffd Active border
+	#a27d5b Bridge
+	#6719ac Dark water
+	#a13cb7 Light water
+	#f197e9 Beam water
+	#606060 Beam under
+	#f7e26b Player
+	#ffffff White
+)
 
-(realtime_interval 0.5)
+Animate
+Transparent
 
-(noaction)
-
-========
-OBJECTS
-========
-
-Background
-black
-
-failure
-red
-
-Node
-white
-.000.
+BgNW1 .
+#6719ac #a13cb7
 00000
 00000
 00000
-.000.
-
-Line
-green
-.....
-.....
-..0..
-.....
-.....
-
-LineL
-green
-.....
-.....
-00...
-.....
-.....
-
-LineR
-green
-.....
-.....
-...00
-.....
-.....
-
-LineU
-green
-..0..
-..0..
-.....
-.....
-.....
-
-LineD
-green
-.....
-.....
-.....
-..0..
-..0..
-
-OneWayL
-green transparent
-...0.
-..00.
-10000
-..00.
-...0.
-
-OneWayR
-green transparent
-.0...
-.00..
-00001
-.00..
-.0...
-
-OneWayU
-green transparent
-..1..
-..0..
-.000.
 00000
-..0..
-
-OneWayD
-green transparent
-..0..
 00000
-.000.
-..0..
-..1..
 
-InboundL
-green
-.....
-.....
-.0...
-.....
-.....
+BgNE1
+#6719ac #a13cb7
+00000
+00000
+00100
+00000
+00000
 
-InboundR
-green
-.....
-.....
-...0.
-.....
-.....
-
-InboundU
-green
-.....
-..0..
-.....
-.....
-.....
-
-InboundD
-green
-.....
-.....
-.....
-..0..
-.....
-
-Player1
-Blue
-.....
-.000.
-.000.
-.000.
-.....
-
-Player2
-Blue
-.....
-.....
-..0..
-.....
-.....
-
-Collision1
-Blue
-.....
-.....
-..0..
-.....
-.....
-
-
-Collision2
-Blue
-.....
-.000.
-.000.
-.000.
-.....
-
-
-Collision3
-Blue
-.000.
+BgSW1
+#6719ac #a13cb7
 00000
 00000
 00000
-.000.
-
-Collision4
-Blue
-.....
-.000.
-.000.
-.000.
-.....
-
-Collision5
-Blue
-.....
-.....
-..0..
-.....
-.....
-
-
-
-Target
-lightgreen
-00000
-0...0
-0...0
-0...0
+01000
 00000
 
-Firewall
-red
-..0..
-..0..
-00000
-..0..
-..0..
-
-OpenFirewall
-darkred
-..0..
-..0..
-00000
-..0..
-..0..
-
-FailureFirewall
-darkred
-..0..
-..0..
-00000
-..0..
-..0..
-
-InvertedFirewall
-transparent
-
-
-Key
-darkred
-.....
-.....
-..0..
-.....
-.....
-
-SleepingAntiVirus
-red
-.000.
-0...0
-0...0
-0...0
-.000.
-
-AntiVirusNode
-orange
-.000.
+BgSE1
+#6719ac #a13cb7
 00000
 00000
 00000
-.000.
-
-AntiVirusTarget
-orange
-
-AntiVirusMoving
-transparent
-
-
-AntiVirusL
-darkred
-.....
-.....
-000..
-.....
-.....
-
-AntiVirusR
-darkred
-.....
-.....
-..000
-.....
-.....
-
-AntiVirusU
-darkred
-..0..
-..0..
-..0..
-.....
-.....
-
-AntiVirusD
-darkred
-.....
-.....
-..0..
-..0..
-..0..
-
-AntiVirusOneWayL
-darkred transparent
-...0.
-..00.
-10000
-..00.
-...0.
-
-AntiVirusOneWayR
-darkred transparent
-.0...
-.00..
-00001
-.00..
-.0...
-
-AntiVirusOneWayU
-darkred transparent
-..1..
-..0..
-.000.
 00000
-..0..
-
-AntiVirusOneWayD
-darkred transparent
-..0..
 00000
+
+BgNW2
+#6719ac #a13cb7
+00000
+00000
+00000
+00000
+00000
+
+BgNE2
+#6719ac #a13cb7
+00000
+00000
+00000
+00000
+00000
+
+BgSW2
+#6719ac #a13cb7
+00000
+00000
+00000
+01100
+00000
+
+BgSE2
+#6719ac #a13cb7
+00000
+00000
+00000
+00000
+00000
+
+BgNW3
+#6719ac #a13cb7
+00000
+00000
+00000
+00000
+00000
+
+BgNE3
+#6719ac #a13cb7
+00000
+00000
+01000
+00000
+00000
+
+BgSW3
+#6719ac #a13cb7
+00000
+00000
+00000
+00100
+00000
+
+BgSE3
+#6719ac #a13cb7
+00000
+00000
+00000
+00000
+00000
+
+BgNW4
+#6719ac #a13cb7
+00000
+00000
+00000
+00000
+00000
+
+BgNE4
+#6719ac #a13cb7
+00000
+00000
+01100
+00000
+00000
+
+BgSW4
+#6719ac #a13cb7
+00000
+00000
+00000
+00000
+00000
+
+BgSE4
+#6719ac #a13cb7
+00000
+00000
+00000
+00000
+00000
+
+PlayerTop
+#f7e26b
+.....
+.....
+.....
+.0.0.
 .000.
-..0..
-..1..
 
-SleepingKiller
-orange
-.....
-.000.
-.000.
-.000.
-.....
-
-Killer
-red
-.....
-.000.
-.000.
-.000.
-.....
-
-
-PlayerL
-Blue
-.....
-.000.
-0000.
-.000.
-.....
-
-PlayerR
-Blue
-.....
-.000.
-.0000
-.000.
-.....
-
-PlayerU
-Blue
-..0..
-.000.
-.000.
-.000.
-.....
-
-PlayerD
-Blue
-.....
-.000.
-.000.
-.000.
-..0..
-
-
-PlayerTrailL
-blue
-.....
-.....
-000..
-.....
-.....
-
-PlayerTrailR
-blue
-.....
-.....
-..000
-.....
-.....
-
-PlayerTrailU
-blue
-..0..
-..0..
-..0..
-.....
-.....
-
-PlayerTrailD
-blue
-.....
-.....
-..0..
-..0..
-..0..
-
-
-
-=======
-LEGEND
-=======
-
-. = Background
-@ = Player1 and Node
-* = Node
-- = Line
-L = OneWayL and Line
-R = OneWayR and Line
-U = OneWayU and Line
-D = OneWayD and Line
-! = Firewall and Line
-~ = OpenFirewall and InvertedFirewall and Line
-$ = Target and Node
-% = Target and Player1 and Node
-? = Key and Node
-& = Key and Target and Node
-# = SleepingAntiVirus and Node
-S = SleepingKiller and Node
-K = Killer and Node
-
-Player = Player1 or Player2 or Killer or PlayerL or PlayerR or PlayerU or PlayerD
-PlayerMoving = PlayerL or PlayerR or PlayerU or PlayerD
-
-LineDir = LineL or LineR or LineU or LineD
-Inbound = InboundL or InboundR or InboundU or InboundD
-
-Collision = Collision1 or Collision2 or Collision3 or Collision4 or Collision5
-
-ConnectableTo = Line or Node
-
-ConnectsL = LineL or OneWayL or PlayerTrailL
-ConnectsR = LineR or OneWayR or PlayerTrailR
-ConnectsU = LineU or OneWayU or PlayerTrailU
-ConnectsD = LineD or OneWayD or PlayerTrailD
-
-AntiVirusConnectsL = AntiVirusL or AntiVirusOneWayL
-AntiVirusConnectsR = AntiVirusR or AntiVirusOneWayR
-AntiVirusConnectsU = AntiVirusU or AntiVirusOneWayU
-AntiVirusConnectsD = AntiVirusD or AntiVirusOneWayD
-
-AntiVirus = AntiVirusNode or AntiVirusTarget or AntiVirusMoving
-
-OneWay = OneWayL or OneWayR or OneWayU or OneWayD
-
-AntiVirusOneWay = AntiVirusOneWayL or AntiVirusOneWayR or AntiVirusOneWayU or AntiVirusOneWayD
-
-PlayerTrail = PlayerTrailL or PlayerTrailR or PlayerTrailU or PlayerTrailD
-
-=======
-SOUNDS
-=======
-
-EndLevel 42257908
-
-Collision2 Create 83110908
-sfx1 84184909 (player move)
-sfx2 61306309 (player split)
-sfx3 40267308 (fail)
-
-restart 87593308
-undo 56438707
-
-================
-COLLISIONLAYERS
-================
-
-Background
-Failure
-OpenFirewall
-Node, Line
-Firewall, FailureFirewall, Target
-LineL, InboundL, AntiVirusL, PlayerTrailL
-LineR, InboundR, AntiVirusR, PlayerTrailR
-LineU, InboundU, AntiVirusU, PlayerTrailU
-LineD, InboundD, AntiVirusD, PlayerTrailD
-Oneway, InvertedFirewall, AntiVirusOneWay
-Collision
 Player
-Key, AntiVirusMoving, AntiVirusNode, AntiVirusTarget, SleepingAntiVirus, SleepingKiller
+#f7e26b #000000
+01010
+.000.
+.0.0.
+.....
+.....
 
-======
-RULES
-======
+Island #
+#000000
 
-(...)
+FromBlockIsland
+Transparent
 
-[ background ] -> [ background failure ]
+IslandEdgeDetect
+Transparent
 
-[ Player no Killer ] [ failure ] -> [ Player ] []
+IslandInterior
+Transparent
 
-(...)
+IslandSide
+#000000
+00000
+.....
+.....
+.....
+.....
 
-[ Node Player no Killer ] -> [ Node Player1 ]
+BeamTop1
+#ffffff #f197e9 #a13cb7
+..2..
+..1..
+..0..
+..1..
+..0..
 
-(...)
+BeamTop2
+#ffffff #f197e9 #a13cb7
+.....
+..2..
+..1..
+..0..
+..0..
 
-[ Line no LineDir no PlayerTrail ] -> [ action Line ]
+Beam o
+#ffffff #f197e9 #a13cb7
+.101.
+.000.
+.000.
+.000.
+.212.
 
-(...)
+BeamReflect
+#a13cb7
+..0..
+.....
+.....
+.....
+.....
 
-left [ Line no Player no OneWayL no LineL | ConnectableTo no OneWayR ] -> [ Line PlayerTrailL | ConnectableTo ]
-right [ Line no Player no OneWayR no LineR | ConnectableTo no OneWayL ] -> [ Line PlayerTrailR | ConnectableTo ]
-up [ Line no Player no OneWayU no LineU | ConnectableTo no OneWayD ] -> [ Line PlayerTrailU | ConnectableTo ]
-down [ Line no Player no OneWayD no LineD | ConnectableTo no OneWayU ] -> [ Line PlayerTrailD | ConnectableTo ]
+Bridge -
+#000000 #a27d5b
+.....
+.111.
+.101.
+.111.
+.000.
 
-(...)
+BeamUnder
+#606060
+.....
+..0..
+.000.
+.000.
+.....
 
-==============
-WINCONDITIONS
-==============
+PlayerIsland
+Transparent #078ffd
+.....
+.....
+..0..
+.....
+.....
 
-all target on player1
-all player1 on target
-some target
-no Collision
-no PlayerTrail
-no PlayerMoving
+BlockIsland
+Transparent #df2619
+.....
+.....
+..0..
+.....
+.....
+
+IslandEdgeN
+Transparent #df2619
+11111
+.....
+.....
+.....
+.....
+
+PlayerIslandEdgeN
+Transparent #078ffd
+11111
+.....
+.....
+.....
+.....
+
+IslandEdgeS
+Transparent #df2619
+.....
+.....
+.....
+.....
+11111
+
+PlayerIslandEdgeS
+Transparent #078ffd
+.....
+.....
+.....
+.....
+11111
+
+IslandEdgeE
+Transparent #df2619
+....1
+....1
+....1
+....1
+....1
+
+PlayerIslandEdgeE
+Transparent #078ffd
+....1
+....1
+....1
+....1
+....1
+
+IslandEdgeW
+Transparent #df2619
+1....
+1....
+1....
+1....
+1....
+
+PlayerIslandEdgeW
+Transparent #078ffd
+1....
+1....
+1....
+1....
+1....
+
+
+IslandInnerEdgeNW
+Transparent #df2619
+1....
+.....
+.....
+.....
+.....
+
+PlayerIslandInnerEdgeNW
+Transparent #078ffd
+1....
+.....
+.....
+.....
+.....
+
+IslandInnerEdgeNE
+Transparent #df2619
+....1
+.....
+.....
+.....
+.....
+
+PlayerIslandInnerEdgeNE
+Transparent #078ffd
+....1
+.....
+.....
+.....
+.....
+
+IslandInnerEdgeSW
+Transparent #df2619
+.....
+.....
+.....
+.....
+1....
+
+PlayerIslandInnerEdgeSW
+Transparent #078ffd
+.....
+.....
+.....
+.....
+1....
+
+IslandInnerEdgeSE
+Transparent #df2619
+.....
+.....
+.....
+.....
+....1
+
+PlayerIslandInnerEdgeSE
+Transparent #078ffd
+.....
+.....
+.....
+.....
+....1
+
+========
+ LEGEND
+========
+
+@ = Player and Island
+
+Background = BgNW1 or BgNE1 or BgSW1 or BgSE1 or BgNW2 or BgNE2 or BgSW2 or BgSE2 or BgNW3 or BgNE3 or BgSW3 or BgSE3 or BgNW4 or BgNE4 or BgSW4 or BgSE4
+
+IslandEdgeV = IslandEdgeN or IslandEdgeS
+IslandEdgeH = IslandEdgeE or IslandEdgeW
+IslandInnerEdge = IslandInnerEdgeNW or IslandInnerEdgeNE or IslandInnerEdgeSW or IslandInnerEdgeSE
+IslandEdge = IslandEdgeH or IslandEdgeV or IslandInnerEdge or IslandEdgeDetect or IslandInterior
+Movable = Player or Island or IslandEdge or PlayerIsland
+MoveBlock = Island or Bridge
+Walkable = Island or Bridge
+BeamTop = BeamTop1 or BeamTop2
+
+IslandEdgeDetectN = IslandEdgeN or IslandEdgeDetect
+IslandEdgeDetectS = IslandEdgeS or IslandEdgeDetect
+IslandEdgeDetectE = IslandEdgeE or IslandEdgeDetect
+IslandEdgeDetectW = IslandEdgeW or IslandEdgeDetect
+
+Cleanup = IslandInnerEdge or BeamTop or BeamUnder or IslandSide or PlayerTop or BeamReflect
+
+Frame2 = BgNW2 or BgNW4
+
+========
+ SOUNDS
+========
+
+SFX0 57465701 ( beam )
+SFX1 45881509 ( merge )
+SFX2 70148904 ( can't move )
+SFX3 3171908  ( move )
+EndLevel 94824903
+
+=================
+ COLLISIONLAYERS
+=================
+
+Background
+Animate
+IslandSide, BeamReflect
+Beam
+Island, Bridge
+IslandEdgeN, PlayerIslandEdgeN
+IslandEdgeS, PlayerIslandEdgeS
+IslandEdgeE, PlayerIslandEdgeE
+IslandEdgeW, PlayerIslandEdgeW
+IslandInnerEdgeNW, PlayerIslandInnerEdgeNW
+IslandInnerEdgeNE, PlayerIslandInnerEdgeNE
+IslandInnerEdgeSW, PlayerIslandInnerEdgeSW
+IslandInnerEdgeSE, PlayerIslandInnerEdgeSE
+IslandInterior, IslandEdgeDetect
+BeamUnder
+Player
+PlayerIsland, BlockIsland, FromBlockIsland
+BeamTop
+PlayerTop
 
 =======
-LEVELS
+ RULES
 =======
 
+[ no Background ] -> [ BgNW1 ]
+down  [ BgNW1 | BgNW1 ] -> [ BgNW1 | BgSW1 ]
+right [ BgNW1 | BgNW1 ] -> [ BgNW1 | BgNE1 ]
+right [ BgSW1 | BgSW1 ] -> [ BgSW1 | BgSE1 ]
 
+[ stationary Player ][ Background ] -> [ Player ][ Background Animate ]
+[ BgNW1 Animate ] -> [ BgNW2 ]
+[ BgNE1 Animate ] -> [ BgNE2 ]
+[ BgSW1 Animate ] -> [ BgSW2 ]
+[ BgSE1 Animate ] -> [ BgSE2 ]
+[ BgNW2 Animate ] -> [ BgNW3 ]
+[ BgNE2 Animate ] -> [ BgNE3 ]
+[ BgSW2 Animate ] -> [ BgSW3 ]
+[ BgSE2 Animate ] -> [ BgSE3 ]
+[ BgNW3 Animate ] -> [ BgNW4 ]
+[ BgNE3 Animate ] -> [ BgNE4 ]
+[ BgSW3 Animate ] -> [ BgSW4 ]
+[ BgSE3 Animate ] -> [ BgSE4 ]
+[ BgNW4 Animate ] -> [ BgNW1 ]
+[ BgNE4 Animate ] -> [ BgNE1 ]
+[ BgSW4 Animate ] -> [ BgSW1 ]
+[ BgSE4 Animate ] -> [ BgSE1 ]
 
-..........
-...-*----.
-...-..-.-.
-.@--..*.*.
-......-.-.
-......---.
-....$..-..
-....---*..
-..........
+[ Cleanup ] -> []
 
+( reset player island edges )
+[ PlayerIslandEdgeN ] -> [ IslandEdgeN ]
+[ PlayerIslandEdgeS ] -> [ IslandEdgeS ]
+[ PlayerIslandEdgeE ] -> [ IslandEdgeE ]
+[ PlayerIslandEdgeW ] -> [ IslandEdgeW ]
+[ PlayerIslandInnerEdgeNE ] -> [ IslandInnerEdgeNE ]
+[ PlayerIslandInnerEdgeNW ] -> [ IslandInnerEdgeNW ]
+[ PlayerIslandInnerEdgeSE ] -> [ IslandInnerEdgeSE ]
+[ PlayerIslandInnerEdgeSW ] -> [ IslandInnerEdgeSW ]
 
+( merge )
+[ action Player ][ IslandEdge ] -> [ action Player ][]
+[ action Player ] -> [ Player ] SFX1
 
+( simple movement )
+[ > Player | Walkable ] -> [ | Player Walkable ]
+[ > Player Bridge | no Walkable ] -> [ Player Bridge | ]
 
+( swap island types if player changed islands )
+[ Player Bridge ][ PlayerIsland ] -> [ Player Bridge ][ BlockIsland ]
+[ Player BlockIsland ] -> [ Player FromBlockIsland ]
+[ Player FromBlockIsland ][ BlockIsland ] -> [ Player FromBlockIsland ][ FromBlockIsland ]
+[ Player FromBlockIsland ][ PlayerIsland ] -> [ Player FromBlockIsland ][ BlockIsland ]
+[ FromBlockIsland ] -> []
 
-.........
-....@....
-....-....
-..*---$..
-..-...-..
-..-...-..
-..*---*..
-.........
+( beam holes in unoccupied islands )
+[ Beam Island BlockIsland IslandEdge ] -> [ Beam Island BlockIsland ]
+[ Beam Island BlockIsland ] -> [ up Beam ] SFX0
+up    [ up Beam | BlockIsland ] -> [ up Beam | BlockIsland IslandEdgeS ]
+down  [ up Beam | BlockIsland ] -> [ up Beam | BlockIsland IslandEdgeN ]
+right [ up Beam | BlockIsland ] -> [ up Beam | BlockIsland IslandEdgeW ]
+left  [ up Beam | BlockIsland ] -> [ up Beam | BlockIsland IslandEdgeE ]
+[ up Beam ] -> [ Beam ]
 
+( edge detection )
+[ Island no IslandEdge ] -> [ Island IslandEdgeN IslandEdgeS IslandEdgeE IslandEdgeW IslandEdgeDetect ]
+up    [ IslandEdgeDetect IslandEdgeN | IslandEdgeDetect ] -> [ IslandEdgeDetect | IslandEdgeDetect ]
+down  [ IslandEdgeDetect IslandEdgeS | IslandEdgeDetect ] -> [ IslandEdgeDetect | IslandEdgeDetect ]
+right [ IslandEdgeDetect IslandEdgeE | IslandEdgeDetect ] -> [ IslandEdgeDetect | IslandEdgeDetect ]
+left  [ IslandEdgeDetect IslandEdgeW | IslandEdgeDetect ] -> [ IslandEdgeDetect | IslandEdgeDetect ]
+[ IslandEdgeDetect ] -> [ IslandInterior ]
 
+right [ IslandEdgeN no IslandEdgeE | no IslandEdgeN ] -> [ IslandEdgeN | IslandInnerEdgeNW ]
+left  [ IslandEdgeN no IslandEdgeW | no IslandEdgeN ] -> [ IslandEdgeN | IslandInnerEdgeNE ]
+right [ IslandEdgeS no IslandEdgeE | no IslandEdgeS ] -> [ IslandEdgeS | IslandInnerEdgeSW ]
+left  [ IslandEdgeS no IslandEdgeW | no IslandEdgeS ] -> [ IslandEdgeS | IslandInnerEdgeSE ]
 
+( player island )
+[ Player Island ] -> [ Player Island PlayerIsland ]
+  up    [ PlayerIsland no IslandEdgeN | Island ] -> [ PlayerIsland | Island PlayerIsland ]
++ down  [ PlayerIsland no IslandEdgeS | Island ] -> [ PlayerIsland | Island PlayerIsland ]
++ right [ PlayerIsland no IslandEdgeE | Island ] -> [ PlayerIsland | Island PlayerIsland ]
++ left  [ PlayerIsland no IslandEdgeW | Island ] -> [ PlayerIsland | Island PlayerIsland ]
+[ Island no PlayerIsland ] -> [ Island BlockIsland ]
 
+( rigid movement )
+[ > Player ][ PlayerIsland ] -> [ > Player ][ > PlayerIsland ]
+[ > PlayerIsland Island | no MoveBlock ] -> [ > PlayerIsland > Island | ]
+[ < Island | Island no BlockIsland ] -> [ < Island | < Island ]
+[ stationary Island PlayerIsland ][ moving Player ] -> [ Island PlayerIsland ][ stationary Player ] SFX2
+[ stationary Island PlayerIsland ][ moving Movable ] -> [ Island stationary PlayerIsland ][ stationary Movable ]
 
+[ > PlayerIsland IslandEdge ] -> [ > PlayerIsland > IslandEdge ]
 
+( highlight player island edges )
+[ PlayerIsland IslandEdgeN ] -> [ PlayerIsland PlayerIslandEdgeN ]
+[ PlayerIsland IslandEdgeS ] -> [ PlayerIsland PlayerIslandEdgeS ]
+[ PlayerIsland IslandEdgeE ] -> [ PlayerIsland PlayerIslandEdgeE ]
+[ PlayerIsland IslandEdgeW ] -> [ PlayerIsland PlayerIslandEdgeW ]
+[ PlayerIsland IslandInnerEdgeNE ] -> [ PlayerIsland PlayerIslandInnerEdgeNE ]
+[ PlayerIsland IslandInnerEdgeNW ] -> [ PlayerIsland PlayerIslandInnerEdgeNW ]
+[ PlayerIsland IslandInnerEdgeSE ] -> [ PlayerIsland PlayerIslandInnerEdgeSE ]
+[ PlayerIsland IslandInnerEdgeSW ] -> [ PlayerIsland PlayerIslandInnerEdgeSW ]
+
+( fx )
+[ > Island | no Island ] -> [ | Island ] SFX3
+up [ Beam no Island | ] -> [ Beam | BeamTop1 ]
+down [ Beam | ] -> [ Beam | BeamReflect ]
+[ Beam Island ] -> [ Beam Island BeamUnder ]
+down [ Island | ] -> [ Island | IslandSide ]
+[ > Player | Walkable ] -> [ | Player Walkable ]
+up [ Player | ] -> [ Player | PlayerTop ]
+[ BeamTop1 ][ Frame2 ] -> [ BeamTop2 ][ Frame2 ]
+
+===============
+ WINCONDITIONS
+===============
+
+all Beam on BeamUnder
+
+========
+ LEVELS
+========
+
+message cover all beams
+
+(ok)
 ...........
-.....@.....
-.....-.....
-...*---*...
-.---...---.
-.-.......-.
-.$--...--$.
-.-.--$--.-.
-.-.......-.
-.---------.
 ...........
-
-
-
-
-
-.............
-......@......
-......-......
-.--*-----*--.
-.-.-.....-.-.
-.-.-.....-.-.
-.-.-.-$-.-.-.
-.--*--.--*--.
-.............
-
-
-
-
 ...........
-...$...$...
-...-...-...
-.--*-@-*--.
-.-.-.-.-.-.
-.$.-----.$.
+......o....
+...##..o...
+...@#......
 ...........
-
-
-
-
-
-...........
-.---------.
-.-...-...-.
-.*-*-%-*-*.
-.-.-...-.-.
-.$.-----.$.
-...........
-
-
-
-
-
-
-
-...........
-.....@.....
-.....-.....
-...$---$...
-...-.-.-...
-.*-*-*-*-*.
-...-...-...
-...-----...
-...........
-
-
-
-
-
-.........
-.-----...
-.-.-.-...
-.%-*-*-$.
-...-.-.-.
-...-----.
-.........
-
-
-
-
-.............
-...-------...
-...-.-.-.-...
-...@-*.*-*...
-...-.-.-.-...
-.--*-$-$-*--.
-.-.-.-.-.-.-.
-.-----------.
-.............
-
-
-
-.......
-.-----.
-.-.-.-.
-.*-@.*.
-.-.-...
-.$-*-$.
-.......
-
-
-
-
-(one way gates)
-
-
-
-...................
-...................
-............--*--..
-.*l-$l-$l-$l-.-.-%.
-............--*--..
-...................
-...................
-
-
-
-
-...........
-...--*--...
-...-.-.-...
-...-.d.-...
-.--$---$--.
-.-.-...-.-.
-.-.--@--.-.
-.-...-...-.
-.----$----.
-.....-.....
-.....$.....
 ...........
 
+message unattended beams are dangerous
 
-
-
+(ok)
 ..............
-........*l---.
-..--$--.u...-.
-..-.-.-.-...-.
-.%--*---*-r$-.
-..-.-.-.-...-.
-..--$--.d...-.
-........*l---.
+.......###....
+......#####...
+......#..##...
+.........##...
+...#####.##...
+..-#@#o#.##...
+...#####.##...
+.........##...
+.......###o...
+..............
+..............
+.........o....
 ..............
 
+message merge adjacent platforms with X
 
-
-
-
-...................
-...................
-.-$-*-.-*-$-...--*.
-.-...-$-...-l-@-.-.
-.-$-*-.-*-$-...--*.
-...................
-...................
-
-
-
-
-.........
-.--*.*--.
-.-.---.-.
-.-..-..-.
-.---@---.
-....-....
-.-$.-.$-.
-.-..d..-.
-.-*-$-*-.
-.........
-
-
-
+(ok)
 .............
-.--$--@--$--.
-.-....-....-.
-.-l-*-$-*-r-.
-.-.........-.
-.-----------.
+.............
+......o......
+...o...#.o...
+.......#.....
+...#..@#.....
+...##..#..#..
+.......-###..
+.............
 .............
 
+message good luck!
 
-
-
-..........
-.-----....
-.-...-l-..
-.-*-$-.-..
-....-..-..
-....@-*-..
-....-.-...
-...-$-*-..
-...-...-..
-...-----..
-..........
-
-
-
-
-
-..........
-.--$---$-.
-.@.-....-.
-.---.*l--.
-..-..u.-..
-..-$---$..
-...-...-..
-...-----..
-..........
-
-
-
-
+(ok)
 ...........
-.....--%...
+...........
 .....-.....
-...--$--...
-..--.-.-...
-..-..d.-...
-..*----*-..
-..-.....-..
-..---$---..
-.....-.....
-...$--.....
-...........
-
-
-
-
-
-.........
-..-*-*...
-..-..-...
-.---.--*.
-.-.d.-.-.
-.----@-*.
-.....-...
-.$-*-$...
-.........
-
-
-
-
-
-
-(void connections)
-
-
-
-
-...........
-.-@.-*--$..
-..-.-...-..
-..---......
-....-......
-....-*--*..
-...........
-
-
-
-
-.........
-....-....
-.-$.$.$-.
-..u.u.u..
-..-.-.-..
-..*-*-*..
-..-...-..
-..-----..
-....@....
-.........
-
-
-
-...........
-.....%.....
-.$-.---.-$.
-..--*.*--..
-.*-.-.-.-*.
-.-.......-.
-...........
-
-
-
-
-
-............
-........-...
-...@----*--.
-.---.-..-.-.
-.-...-r--.$.
-.-..*..-..-.
-.--.-.--....
-..-----.....
-............
-
-
-
-
-.............
-......$......
-.$.-------.$.
-.-.-..-..-.-.
-.---.-%-.---.
-...-..-..-...
-...-------...
-......-......
-...---$---...
-...$.....$...
-.............
-
-
-
-
-(firewalls)
-
-
-
-............
-.....---....
-.....-.?....
-...-.-.!....
-.$!*-*---@-.
-...-......-.
-...--------.
-............
-
-
-
-
-..........
-.....*....
-.....-....
-...@.--?-.
-...-...-..
-.--*-!-$-.
-.-.-...-..
-.-.*----..
-.-...-....
-.-----....
-..........
-
-
-
-.............
-.----........
-.-..-.&l-....
-.*.-*-..-....
-.-!-.---@-r&.
-...---..-....
-......&l-....
-.............
-
-
-...........
-..---@---..
-..-.....-..
-..-..$..-..
-..-..!..-..
-.-*-----*-.
-.....-.....
-...*-?-*...
+....###....
+...o.@.o...
+....###....
 .....-.....
 ...........
-
-
-
-............
-....-------.
-..--*.-...-.
-..-.-.!...-.
-.@--*-&!*.-.
-..-.-.....-.
-..--*.....-.
-....-------.
-............
-
-
-
-
-
-
-.........
-...---...
-...-.-...
-.%-&!$-*.
-...-.-.-.
-...-----.
-.........
-
-
-
-
-
-...........
-.....---...
-.-...d.-...
-.$.?---*--.
-.-.-...-.-.
-.!.-...-.-.
-.-.-...-.-.
-.--@---*--.
 ...........
 
-
-
-
-.............
-.$...........
-.-.....--*--.
-.--!-%--...-.
-.....-.--*--.
-.....d...-...
-.....&.......
-.............
-
-
-
-
-
-.........
-.*----&-.
-.-...-.-.
-.$.-!-.-.
-...-...-.
-...@--$-.
-.........
-
-
-
-...........
-..*-----*..
-..-.....-..
-.---...---.
-.-.-.-.-.-.
-.*-?-@-?-*.
-...!...!...
-...-...-...
-...$...$...
-...........
-
-
-
-.........
-.....-!-.
-.-...-.-.
-.*-?--.$.
-.-.-...-.
-.-.@----.
-.-.-...-.
-.*-*---*.
-.........
-
-
-
-.............
-....*---*....
-....-.-.-....
-....--@--....
-......-......
-....--*--....
-....-.!.-....
-....-.$.-....
-....-...-....
-..--*---*--..
-..-.-...-.-..
-.-?--...--?-.
-.............
-
-
-
-
-
-(harder levels)
-
-
-
-........
-..-----.
-.*-...-.
-..-$-*-.
-...-.-..
-.--$-@..
-.-.-.-..
-.--$-*..
-.-.-....
-.---....
-........
-
-
-
-
-.............
-...*...-----.
-...-...-.d.d.
-.*-*-*!?-@-*.
-...-...-.-.-.
-...*...$-$-$.
-.............
-
-
-
-
+(ok)
 ...............
-.......*.......
-.......u.......
-...---------...
-.$.-.-.@.-.-.$.
-.-.*-*---*-*.-.
-.-.-.-...-.-.-.
-.*----...----*.
 ...............
-
-
-................
-.........------.
-.........-....-.
-.......--?--..-.
-.......-.-.-..-.
-.*-$-$!*-*--%.-.
-.......-.-.-..-.
-.......--?--..-.
-.........-....-.
-.........------.
-................
-
-
-...........
-...--$--...
-.$--...--$.
-...-----...
-.....-.....
-.----%----.
-.-.......-.
-.-.-----.-.
-.-.*.-.*.-.
-.-.-.-.-.-.
-.--*-$-*--.
-...........
-
-
-
-.........
-.-----...
-.-.?.-.$.
-.-.!.-.-.
-.-----.$.
-.-...-.-.
-.*---*.@.
-...-...-.
-...----?.
-.........
-
-
-
-...........
-...---*---.
-...-.....-.
-...-$---$-.
-......u....
-..--*---*..
-..-.-...-..
-..@.-----..
-..-........
-.---.......
-.-.-.......
-.*-*.......
-...........
-
-
-
-.............
-.--$.*-?-*--.
-.!...-...-.-.
-.----*.@-*--.
-.....-...-.-.
-.....*-?-*--.
-.............
-
-
-
-message Thanks for playing :)
-
-
-
-
-(...........
-.*-------*.
-.-...-...-.
-.--..@..--.
-..-.....-..
-..*-----*..
-...........
-)
-
-
-
-(........
-....---.
-..--$.-.
-.%-.-.$-
-..--$-..
-...-.-..
-...---..
-........
-
-
-
-...........
-.-$.....$-.
-..--*-*--..
-....-.-....
-....-@-....
-....-.-....
-..--*-*--..
-..$.....$..
-..-.....-..
-...........
-
-
-...........
-.....-.....
-....-@.....
-....--.....
-.....d.....
-...-----...
-...-...-...
-..-*---*-..
-..-.....-..
-..*-----?..
-.....-.....
-.....!.....
-.....-.....
-....$-$....
-...........
-
-
-
-...............
-.....--%--.....
-.$...-...-...$.
-.--$--...--$--.
-.....-----.....
 .......-.......
-.....--$--.....
-.*...-...-...*.
-.--*-$...$-*--.
+..o............
+......###......
+....-.#o#.-....
+......##@......
+...........##..
+.......-.......
+...............
 ...............
 
+(ok)
+..................
+..............###.
+....o...........#.
+.-..........##..#.
+............##..#.
+........#@......#.
+......#######.....
+.....-..#....-....
+...o..............
+.....-............
+..................
 
+(ok)
+...-.....-...
+.....o.o.....
+....-.-.-....
+.............
+.............
+........###..
+..###.o..##..
+..#@#........
+..###........
+.............
 
-...................
-.----.........----.
-.-..-....%....-..-.
-.-.-*--.---.--*-.-.
-.-..-.--*.*--.-..-.
-.-..$--.-.-.--$..-.
-.-..-.........-..-.
-.----.........----.
-...................
+(ok)
+............
+.....#......
+...o###.o...
+...#-#.-.#..
+..###.#.###.
+...#.#@#.#..
+....-.#-....
+...o.#..o...
+....###.....
+.....#......
+............
 
-
-
-
-...........
-.....-.....
-.....@.....
-..$.---.$..
-..-.-.-.-..
-.-*-*-*-*-.
-.-.......-.
-.$.......$.
-...........
-
-
-
-
-..........
-....--*-..
-....-.-...
-..@--.$-..
-....-.....
-....*-$...
-....-.....
-..........
-
-
-
-
-.........
-.-$---$-.
-.-..-..-.
-.-..@..-.
-.-.....-.
-.-$...$-.
-..-----..
-.........
-
-
-
-...........
-.--*---*...
-.-.-.-.-...
-.$.--*.--@.
-...-...-...
-...----*...
-...........
-
-
-
-.......
-.$-$-$.
-.-.-.-.
-.-.@.-.
-.-----.
-.......
-
-
-
-........
-..--!--.
-..-...-.
-..-$-$-.
-...-.-..
-.--@-?..
-.-.-.-..
-.--*-*..
-.-.-....
-.---....
-........
-
-
-...........
-.---!---...
-.-.....---.
-.-$-*-*-.-.
-..-...-..-.
-.-$-?-*--@.
-..-.-.-....
-..-----....
-...........
-
-
-
-..........
-..*---*-..
-..-....-..
-..@---?-..
-....-.....
-....-.-.-.
-....*!*-$.
-..........
-
-
-
-
-...................
-.......-----------.
-.*----.-.........-.
-.....-.-...*----.-.
-.--*.--*--.....-.-.
-.-.-...-.-.----*--.
-.-.-----.-.-.......
-.--......-.-.*---..
-..----*..*.---..-..
-......-.........-..
-......---$.@-----..
-...................
-
-
-
-...........
-.....@.....
-...-----...
-...-...-...
-.*-*-*-*-*.
-.-.-.-.-.-.
-.-.*.-.*.-.
-.$...$...$.
-...........
-
-
-
-)
+message congratulations! you win!
