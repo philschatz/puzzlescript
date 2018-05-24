@@ -111,13 +111,12 @@ async function run() {
 
         startTime = Date.now()
         global['max_time_spent_updating'] = 0
-        global['max_time_spent_updating_cell'] = null
         global['cells_updated_count'] = 0
         global['rules_updated_count'] = 0
 
         for (var i = 0; i < 10; i++) {
-          await sleep(500)
           const changedCells = engine.tick()
+          await sleep(500)
 
           if (changedCells.size === 0) {
             break
@@ -132,7 +131,7 @@ async function run() {
 
         }
         console.log(`Game took # seconds: `, (Date.now() - startTime)/1000)
-        console.log('Max time spent updating:', global['max_time_spent_updating']/*, global['max_time_spent_updating_cell']*/);
+        console.log('Max time spent updating:', global['max_time_spent_updating']);
         console.log('Number of cell update calls:', global['cells_updated_count']);
         console.log('Number of rules updated:', global['rules_updated_count']);
 

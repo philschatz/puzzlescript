@@ -115,14 +115,14 @@ export class Cell {
   }
   clearWantsToMove(sprite: GameSprite) {
     this._spriteAndWantsToMoves.set(sprite, null)
-    sprite.updateCellSet(this, null, true)
+    sprite.updateCellSet([this], null, true)
     // this._engine.gameTree.updateCell(this, [sprite])
   }
   addSprite(sprite: GameSprite, wantsToMove: RULE_DIRECTION) {
     const isUnchanged = this._spriteAndWantsToMoves.has(sprite)
     this._spriteAndWantsToMoves.set(sprite, wantsToMove)
     // if (!isUnchanged) {
-      sprite.updateCellSet(this, wantsToMove, true)
+      sprite.updateCellSet([this], wantsToMove, true)
     // }
     // this._engine.gameTree.updateCell(this, [sprite])
     return !isUnchanged
@@ -131,7 +131,7 @@ export class Cell {
     const isChanged = this._spriteAndWantsToMoves.has(sprite)
     this._spriteAndWantsToMoves.delete(sprite)
     // if (isChanged) {
-      sprite.updateCellSet(this, null, false)
+      sprite.updateCellSet([this], null, false)
     // }
     // this._engine.gameTree.updateCell(this, [sprite])
     return isChanged
@@ -159,14 +159,37 @@ export default class Engine extends EventEmitter2 {
 
     // link up all the cells. Loop over all the sprites
     // in case they are NO tiles (so the cell is included)
-    this.getCells().forEach(cell => {
-      const cellSprites = cell.getSpritesAsSet()
+    const batchCells: Map<string, Cell[]> = new Map()
+    function spriteSetToKey(sprites: Set<GameSprite>) {
+      const key = []
+      for (const spriteName of [...sprites].map(sprite => sprite._name).sort()) {
+        key.push(spriteName)
+      }
+      return key.join(' ')
+    }
+    for (const cell of this.getCells()) {
+      const key = spriteSetToKey(cell.getSpritesAsSet())
+      if (!batchCells.has(key)) {
+        batchCells.set(key, [])
+      }
+      batchCells.get(key).push(cell)
+    }
+    console.log(`Cell Batch size: ${batchCells.size}`);
+    if (batchCells.size > 100) {
+      console.log([...batchCells.keys()]);
+
+    }
+
+    for (const cells of batchCells.values()) {
+      // All Cells contain the same set of sprites so just pull out the 1st one
       for (const sprite of this.gameData.objects) {
-        if (cellSprites.has(sprite) || sprite.hasNegationTile()) {
-          sprite.updateCellSet(cell, null, cellSprites.has(sprite))
+        const cellSprites = cells[0].getSpritesAsSet()
+        const hasSprite = cellSprites.has(sprite)
+        if (hasSprite || sprite.hasNegationTile()) {
+          sprite.updateCellSet(cells, null, hasSprite)
         }
       }
-    })
+    }
 
     // Return the cells so the UI can listen to when they change
     return this.getCells()

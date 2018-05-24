@@ -77,30 +77,33 @@ export class GameSprite extends BaseForLines implements IGameTile {
     addTileWithModifier(t: TileWithModifier) {
         this._tileWithModifierSet.add(t)
     }
-    updateCellSet(cell: Cell, wantsToMove: RULE_DIRECTION, isAdding: boolean) {
+    updateCellSet(cells: Cell[], wantsToMove: RULE_DIRECTION, isAdding: boolean) {
         // if (this._tileWithModifierSet.size > 10) {
         //     console.log(`Cell [${cell.rowIndex}][${cell.colIndex}] is impacting ${this._tileWithModifierSet.size} tiles`);
         // }
 
         const start = Date.now()
-        if (cell.getSpritesAsSet().has(this)) {
-            this._cellSet.add(cell)
+        if (isAdding) {
+            for (const cell of cells) {
+                this._cellSet.add(cell)
+            }
             // propagate up
             for (const t of this._tileWithModifierSet) {
-                t.updateCell(cell, wantsToMove, this, true)
+                t.updateCell(cells, wantsToMove, this, true)
             }
         } else {
-            this._cellSet.delete(cell)
+            for (const cell of cells) {
+                this._cellSet.delete(cell)
+            }
             // propagate up
             for (const t of this._tileWithModifierSet) {
-                t.updateCell(cell, wantsToMove, this, false)
+                t.updateCell(cells, wantsToMove, this, false)
             }
         }
         global['cells_updated_count'] += 1
         const spent = Date.now() - start
         if (spent > global['max_time_spent_updating']) {
             global['max_time_spent_updating'] = spent
-            global['max_time_spent_updating_cell'] = {cell, sprites: cell.getSpritesAsSet()}
         }
     }
     has(cell: Cell) {

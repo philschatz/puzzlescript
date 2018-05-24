@@ -353,29 +353,31 @@ export class RuleBracketNeighbor extends BaseForLines {
         this._brackets.push(bracket)
     }
 
-    updateCell(cell: Cell, sprite: GameSprite, tileWithModifier: TileWithModifier, wantsToMove: RULE_DIRECTION, flagAdded) {
-        let shouldPropagate = []
-        if (flagAdded) {
-            let shouldMatch = true
-            for (const t of this._tilesWithModifier) {
-                if (!t.matchesCell(cell)) {
-                    shouldMatch = false
-                    break
+    updateCell(cells: Cell[], sprite: GameSprite, tileWithModifier: TileWithModifier, wantsToMove: RULE_DIRECTION, flagAdded) {
+        for (const cell of cells) {
+            let shouldPropagate = []
+            if (flagAdded) {
+                let shouldMatch = true
+                for (const t of this._tilesWithModifier) {
+                    if (!t.matchesCell(cell)) {
+                        shouldMatch = false
+                        break
+                    }
                 }
-            }
-            if (shouldMatch) {
-                // console.log(`Cell [${cell.rowIndex}][${cell.colIndex}] impacted ${this._brackets.length} brackets`);
+                if (shouldMatch) {
+                    // console.log(`Cell [${cell.rowIndex}][${cell.colIndex}] impacted ${this._brackets.length} brackets`);
+                    for (const bracket of this._brackets) {
+                        bracket.updateCell(cell, sprite, tileWithModifier, this, wantsToMove, flagAdded)
+                    }
+                    this._localCellCache.add(cell)
+                }
+            } else {
+                // remove it from upstream
                 for (const bracket of this._brackets) {
                     bracket.updateCell(cell, sprite, tileWithModifier, this, wantsToMove, flagAdded)
                 }
-                this._localCellCache.add(cell)
+                this._localCellCache.delete(cell)
             }
-        } else {
-            // remove it from upstream
-            for (const bracket of this._brackets) {
-                bracket.updateCell(cell, sprite, tileWithModifier, this, wantsToMove, flagAdded)
-            }
-            this._localCellCache.delete(cell)
         }
     }
     hasCell(cell: Cell) {
@@ -448,31 +450,20 @@ export class TileWithModifier extends BaseForLines {
     addRuleBracketNeighbor(neighbor: RuleBracketNeighbor) {
         this._neighbors.push(neighbor)
     }
-    updateCell(cell: Cell, wantsToMove: RULE_DIRECTION, sprite: GameSprite, wasAdded: boolean) {
+    updateCell(cells: Cell[], wantsToMove: RULE_DIRECTION, sprite: GameSprite, wasAdded: boolean) {
         // TODO: check if the cell still matches
-        let flagAdded = this._tile.matchesCell(cell)
+
+        // Cells all have the same sprites, so if the 1st matches, they all do
+        let flagAdded = this._tile.matchesCell(cells[0])
         if (this.isNo()) {
             flagAdded = !flagAdded
         }
-        // if (wasAdded) {
-        //     if (this.isNo()) {
-        //         flagAdded = false
-        //     } else {
-        //         flagAdded = true
-        //     }
-        // } else {
-        //     if (this.isNo()) {
-        //         flagAdded = true
-        //     } else {
-        //         flagAdded = false
-        //     }
-        // }
 
         // console.log(`Cell [${cell.rowIndex}][${cell.colIndex}] impacted ${this._neighbors.length} neighbors`);
         // Only pass up the food chain if the modifier (roughly) matches the wantsToMove (ignoring orientation)
         if (!wantsToMove || wantsToMove && [RULE_DIRECTION.UP, RULE_DIRECTION.DOWN, RULE_DIRECTION.LEFT, RULE_DIRECTION.RIGHT, RULE_DIRECTION.ACTION].indexOf(this._modifier as RULE_DIRECTION) >= 0) {
             for (const neighbor of this._neighbors) {
-                neighbor.updateCell(cell, sprite, this, wantsToMove, flagAdded)
+                neighbor.updateCell(cells, sprite, this, wantsToMove, flagAdded)
             }
         }
 }
