@@ -51,7 +51,7 @@ export function nextRandom(maxNonInclusive) {
       }
       const ret = randomValuesForTesting[seed - 1]
       seed++
-      console.log(`Sending "random" value of "${ret}"`);
+      // console.log(`Sending "random" value of "${ret}"`);
 
       return ret
     }

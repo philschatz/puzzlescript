@@ -271,8 +271,9 @@ class CellMutator implements IMutator {
                 direction = RULE_DIRECTION.ACTION
                 break
               case RULE_DIRECTION.STATIONARY:
+                // if the cell had a wantsToMove, then clear it
                 direction = undefined
-                console.log('Not supporting STATIONARY yet')
+                break
               case undefined:
                 direction = undefined
                 break
@@ -280,7 +281,7 @@ class CellMutator implements IMutator {
                 throw new Error(`BUG: unsupported rule direction modifier "${tileWithModifier._modifier}"`)
             }
           }
-          console.log('Convert direction to absolute using direction and this._direction')
+          // console.log('Convert direction to absolute using direction and this._direction')
           this._cell.addSprite(sprite, direction)
       }
         // }
