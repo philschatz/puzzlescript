@@ -512,15 +512,15 @@ LEVELS
 
     Background
     player
+    cooldown
 
     ===
     RULES
     ===
 
-    [ > player NO cooldown ] -> [ STATIONARY player cooldown ]
-    DOWN [ STATIONARY player NO cooldown ] -> [ > player cooldown ]
-
-    [ cooldown ] -> [ ]
+    ([ cooldown ] -> [ ])
+    ([ > player NO cooldown ] -> [ STATIONARY player cooldown ])
+    [ STATIONARY player NO cooldown ] -> [ > player > cooldown ]
 
     =======
     LEVELS

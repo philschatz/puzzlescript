@@ -174,10 +174,9 @@ export default class Engine extends EventEmitter2 {
       }
       batchCells.get(key).push(cell)
     }
-    console.log(`Cell Batch size: ${batchCells.size}`);
     if (batchCells.size > 100) {
+      console.log(`Cell Batch size: ${batchCells.size}`);
       console.log([...batchCells.keys()]);
-
     }
 
     for (const cells of batchCells.values()) {
