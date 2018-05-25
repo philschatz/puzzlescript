@@ -218,13 +218,14 @@ export default class Engine extends EventEmitter2 {
     const changedCells = new Set([...changedCellMutations.keys()])
     // Loop over all the cells, see if a Rule matches, apply the transition, and notify that cells changed
     for (const cell of changedCells) {
-      cell.getSpriteAndWantsToMoves().forEach((wantsToMove, sprite) => {
+      for (let [sprite, wantsToMove] of cell.getSpriteAndWantsToMoves()) {
 
         if (wantsToMove) {
           if (wantsToMove === RULE_DIRECTION.ACTION) {
             // just clear the wantsToMove flag
             cell.clearWantsToMove(sprite)
-            // movedCells.add(cell)
+          } else if (wantsToMove === RULE_DIRECTION.STATIONARY) {
+            cell.clearWantsToMove(sprite)
           } else {
             if (wantsToMove === RULE_DIRECTION.RANDOMDIR) {
               console.log("This dooes not seem to be executed.. maybe that's why Fairy sprites always move up?");
@@ -263,7 +264,7 @@ export default class Engine extends EventEmitter2 {
             }
           }
         }
-      })
+      }
     }
     return movedCells
   }

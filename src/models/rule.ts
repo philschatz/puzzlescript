@@ -158,9 +158,9 @@ export class GameRule extends BaseForLines implements IRule {
                 const mutators = this._brackets.map((bracket, index) => {
                     const firstMatches = new Set(bracket.getFirstCellsInDir(direction)) // Make it an Array just so we copy the elements out because Sets are mutable
                     const ret: CellMutation[][] = []
-                    firstMatches.forEach(firstCell => {
+                    for (const firstCell of firstMatches) {
                         ret.push(this._bracketPairs[index].evaluate(direction, firstCell))
-                    })
+                    }
                     if (process.env['NODE_ENV'] !== 'production') {
                         this.__coverageCount++
                     }
@@ -358,7 +358,7 @@ export class RuleBracketNeighbor extends BaseForLines {
     matchesCell(cell: Cell, wantsToMove: RULE_DIRECTION) {
         let shouldMatch = true
         for (const t of this._tilesWithModifier) {
-            if (!t.matchesCell2(cell, wantsToMove)) {
+            if (!t.matchesCell(cell, wantsToMove)) {
                 shouldMatch = false
                 break
             }
@@ -497,40 +497,44 @@ export class TileWithModifier extends BaseForLines {
                 direction = null
                 break
             default:
-                throw new Error(`BUG: unsupported rule direction modifier "${this._modifier}"`)
+                // throw new Error(`BUG: unsupported rule direction modifier "${this._modifier}"`)
+                direction = null
         }
         return direction
     }
 
-    matchesCell(cell: Cell) {
-        // TODO: Check if cell is STATIONARY and Tile is STATIONARY (right now null means both STATIONARY and don't-care)
-        if (this._modifier && !SUPPORTED_CELL_MODIFIERS.has(this._modifier)) {
-            return false // Modifier not supported yet
-        }
+    matchesCell(cell: Cell, wantsToMove: RULE_DIRECTION) {
         const hasTile = this._tile && this._tile.matchesCell(cell)
-        return this.isNo() != hasTile
+
+        // Modifiers:
+        // wantsToMove === ACTION and modifier === ACTION
+        // wantsToMove === up/down/left/right and modifier === ><^v
+        // wantsToMove === STATIONARY and modifier === STATIONARY
+        // wantsToMove === null and modifier === STATIONARY
+        const modifierDir = this.getDirectionActionOrStationary()
+        let isOK = false
+        switch (modifierDir) {
+            case RULE_DIRECTION.ACTION:
+                isOK = wantsToMove === RULE_DIRECTION.ACTION
+                break
+            case RULE_DIRECTION.UP:
+            case RULE_DIRECTION.DOWN:
+            case RULE_DIRECTION.LEFT:
+            case RULE_DIRECTION.RIGHT:
+                isOK = SIMPLE_DIRECTION_DIRECTIONS.has(wantsToMove)
+                break
+            case RULE_DIRECTION.STATIONARY:
+            case null:
+                isOK = wantsToMove === RULE_DIRECTION.STATIONARY || !wantsToMove/*STATIONARY*/
+                break
+            default:
+                throw new Error(`BUG: Unsupported direction "${modifierDir}"`)
+        }
+        return this.isNo() != (hasTile && isOK)
     }
-    matchesFirstCell(cells: Iterable<Cell>) {
-        return this.matchesCell(cells[0])
-    }
-    matchesCell2(cell: Cell, wantsToMove: RULE_DIRECTION) {
-        if (this._modifier === 'STATIONARY' && wantsToMove) {
-            return false
-        }
-        if (this._modifier && !SUPPORTED_CELL_MODIFIERS.has(this._modifier)) {
-            return false // Modifier not supported yet
-        }
-        const hasTile = this._tile && this._tile.matchesCell(cell)
-        let matchesDirection = true
-        if (RULE_DIRECTION.STATIONARY === RULE_DIRECTION[this._modifier]) {
-            // matchesDirection = cell.wantsToMoveTo(this._tile, relativeDirectionToAbsolute(direction, RULE_DIRECTION[this._modifier]))
-            matchesDirection = !wantsToMove
-        }
-        if (this.isNo()) {
-            return !(hasTile && matchesDirection)
-        } else {
-            return hasTile && matchesDirection
-        }
+
+    matchesFirstCell(cells: Iterable<Cell>, wantsToMove: RULE_DIRECTION) {
+        return this.matchesCell(cells[0], wantsToMove)
     }
 
     addRuleBracketNeighbor(neighbor: RuleBracketNeighbor) {
@@ -538,11 +542,11 @@ export class TileWithModifier extends BaseForLines {
     }
     addCells(sprite: GameSprite, cells: Iterable<Cell>, wantsToMove: RULE_DIRECTION) {
         // Cells all have the same sprites, so if the 1st matches, they all do
-        if (this.matchesFirstCell(cells)) {
+        if (this.matchesFirstCell(cells, wantsToMove)) {
             for (const neighbor of this._neighbors) {
                 neighbor.addCells(this, sprite, cells, wantsToMove)
             }
-        } else if (this.isNo()) {
+        } else {
             for (const neighbor of this._neighbors) {
                 neighbor.removeCells(this, sprite, cells)
             }
@@ -550,7 +554,7 @@ export class TileWithModifier extends BaseForLines {
     }
     updateCells(sprite: GameSprite, cells: Iterable<Cell>, wantsToMove: RULE_DIRECTION) {
         // Cells all have the same sprites, so if the 1st matches, they all do
-        if (this.matchesFirstCell(cells)) {
+        if (this.matchesFirstCell(cells, wantsToMove)) {
             for (const neighbor of this._neighbors) {
                 neighbor.updateCells(this, sprite, cells, wantsToMove)
             }
@@ -558,7 +562,7 @@ export class TileWithModifier extends BaseForLines {
     }
     removeCells(sprite: GameSprite, cells: Iterable<Cell>) {
         // Cells all have the same sprites, so if the 1st matches, they all do
-        if (this.matchesFirstCell(cells)) {
+        if (this.matchesFirstCell(cells, null/*STATIONARY*/)) {
             for (const neighbor of this._neighbors) {
                 neighbor.addCells(this, sprite, cells, null/*STATIONARY*/)
             }

@@ -518,8 +518,6 @@ LEVELS
     RULES
     ===
 
-    ([ cooldown ] -> [ ])
-    ([ > player NO cooldown ] -> [ STATIONARY player cooldown ])
     [ STATIONARY player NO cooldown ] -> [ > player > cooldown ]
 
     =======
@@ -548,6 +546,63 @@ LEVELS
     expect(engine.currentLevel[2][1].getSpritesAsSet().has(player)).toBe(false)
     // Check that the cooldown sprite was also added
     expect(engine.currentLevel[1][2].getSpritesAsSet().has(cooldown)).toBe(true)
+  })
+
+  it('supports setting STATIONARY so sprites do not move', () => {
+    const {engine, data} = parseEngine(`
+    title foo
+
+    ========
+    OBJECTS
+    ========
+
+    Background
+    green
+
+    player
+    blue
+
+    =======
+    LEGEND
+    =======
+
+    . = Background
+    P = player
+
+    ================
+    COLLISIONLAYERS
+    ================
+
+    Background
+    player
+
+    ===
+    RULES
+    ===
+
+    RIGHT [ STATIONARY player ] -> [ > player ]
+    [ > player ] -> [ STATIONARY player ]
+
+    =======
+    LEVELS
+    =======
+
+    P.
+
+    `)
+
+    const player = data._getSpriteByName('player')
+    engine.tick()
+
+    let playerCells = [...player.getCellsThatMatch()]
+    let playerCell = playerCells[0]
+
+    expect(player.getCellsThatMatch().size).toBe(1)
+    expect(playerCell.rowIndex).toBe(0)
+    expect(playerCell.colIndex).toBe(0)
+    // Check that there REALLY is only 1 Player sprite
+    expect(engine.currentLevel[0][0].getSpritesAsSet().has(player)).toBe(true)
+    expect(engine.currentLevel[0][1].getSpritesAsSet().has(player)).toBe(false)
   })
 
   it('puts a top hat on the player (beam islands)', () => {
@@ -673,8 +728,7 @@ LEVELS
     expect(correct.getCellsThatMatch().size).toBe(1)
   })
 
-  it.only('Supports tile negation (slightly more complicated)', () => {
-    debugger
+  it('Supports tile negation (slightly more complicated)', () => {
     const {engine, data} = parseEngine(`
     title foo
 
