@@ -60,7 +60,7 @@ export class GameSprite extends BaseForLines implements IGameTile {
     getCollisionLayerNum() {
         if (!this._collisionLayer) {
             console.error(this.__source.getLineAndColumnMessage())
-            console.error('ERROR: This sprite was not in a Collision Layer')
+            throw new Error('ERROR: This sprite was not in a Collision Layer')
         }
         return this._collisionLayer.id
     }

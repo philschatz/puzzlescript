@@ -20,12 +20,12 @@ enum RULE_COMMAND {
     AGAIN = 'AGAIN'
 }
 
-export const SIMPLE_DIRECTION_DIRECTIONS = new Set([
-    RULE_DIRECTION.UP,
+export const SIMPLE_DIRECTION_DIRECTIONS = [
+    RULE_DIRECTION.RIGHT,
     RULE_DIRECTION.DOWN,
     RULE_DIRECTION.LEFT,
-    RULE_DIRECTION.RIGHT
-])
+    RULE_DIRECTION.UP
+]
 
 function opposite(dir: RULE_DIRECTION) {
     switch (dir) {
@@ -124,7 +124,20 @@ export class GameRule extends BaseForLines implements IRule {
         const allMutators: CellMutation[][] = []
         // Determine which directions to loop over
         // Include any simple UP, DOWN, LEFT, RIGHT ones
-        let directionsToCheck = setIntersection(this._modifiers, SIMPLE_DIRECTIONS)
+        let directionsToCheck = []
+        // Not sure what the order of checking should be. Used RIGHT first so the tests would be easier to write
+        if (this._modifiers.has(RULE_MODIFIER.RIGHT)) {
+            directionsToCheck.push(RULE_DIRECTION.RIGHT)
+        }
+        if (this._modifiers.has(RULE_MODIFIER.DOWN)) {
+            directionsToCheck.push(RULE_DIRECTION.DOWN)
+        }
+        if (this._modifiers.has(RULE_MODIFIER.LEFT)) {
+            directionsToCheck.push(RULE_DIRECTION.LEFT)
+        }
+        if (this._modifiers.has(RULE_MODIFIER.UP)) {
+            directionsToCheck.push(RULE_DIRECTION.UP)
+        }
         // Include LEFT and RIGHT if HORIZONTAL
         if (this._modifiers.has(RULE_MODIFIER.HORIZONTAL)) {
             return [] // not supported properly
@@ -138,8 +151,8 @@ export class GameRule extends BaseForLines implements IRule {
             // directionsToCheck.add(RULE_MODIFIER.DOWN)
         }
         // If no direction was specified then check UP, DOWN, LEFT, RIGHT
-        if (directionsToCheck.size === 0) {
-            directionsToCheck = new Set(SIMPLE_DIRECTIONS)
+        if (directionsToCheck.length === 0) {
+            directionsToCheck = SIMPLE_DIRECTION_DIRECTIONS
         }
 
         for (const direction of directionsToCheck) {
@@ -155,6 +168,7 @@ export class GameRule extends BaseForLines implements IRule {
 
             if (matchesAllBrackets) {
                 // Evaluate!
+                // let didExecute = false
                 const mutators = this._brackets.map((bracket, index) => {
                     const firstMatches = new Set(bracket.getFirstCellsInDir(direction)) // Make it an Array just so we copy the elements out because Sets are mutable
                     const ret: CellMutation[][] = []
@@ -164,6 +178,12 @@ export class GameRule extends BaseForLines implements IRule {
                     if (process.env['NODE_ENV'] !== 'production') {
                         this.__coverageCount++
                     }
+                    // // Sometimes rules cannot execute. For example, `[ player ] -> [ > player ]`
+                    // // should only work if there is a cell in that direction.
+                    // // If there is no such cell, then the rule should not execute
+                    // if (_.flatten(ret).length > 0) {
+                    //     didExecute = true
+                    // }
                     return _.flatten(ret)
                 })
                 allMutators.push(_.flatten(mutators))
@@ -474,6 +494,7 @@ export class TileWithModifier extends BaseForLines {
                     default:
                         throw new Error(`BUG: invalid random number chosen`)
                 }
+                break
             case RULE_DIRECTION.UP:
                 direction = RULE_DIRECTION.UP
                 break
@@ -521,7 +542,7 @@ export class TileWithModifier extends BaseForLines {
             case RULE_DIRECTION.DOWN:
             case RULE_DIRECTION.LEFT:
             case RULE_DIRECTION.RIGHT:
-                isOK = SIMPLE_DIRECTION_DIRECTIONS.has(wantsToMove)
+                isOK = new Set(SIMPLE_DIRECTION_DIRECTIONS).has(wantsToMove)
                 break
             case RULE_DIRECTION.STATIONARY:
             case null:
@@ -625,8 +646,12 @@ const SUPPORTED_RULE_MODIFIERS = new Set([
     RULE_MODIFIER.ORTHOGONAL
 ])
 
-function relativeDirectionToAbsolute(currentDirection: RULE_DIRECTION, tileModifier: string) {
+export function relativeDirectionToAbsolute(currentDirection: RULE_DIRECTION, tileModifier: RULE_DIRECTION) {
     let currentDir
+    // These do not rotate, so do not change them
+    if (!tileModifier || tileModifier === RULE_DIRECTION.ACTION || tileModifier === RULE_DIRECTION.STATIONARY) {
+        return tileModifier
+    }
     switch (currentDirection) {
         case RULE_DIRECTION.RIGHT:
             currentDir = 0

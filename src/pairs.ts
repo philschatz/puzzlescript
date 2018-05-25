@@ -5,7 +5,8 @@ import {
     GameRule,
     RuleBracket,
     RuleBracketNeighbor,
-    TileWithModifier
+    TileWithModifier,
+    relativeDirectionToAbsolute
 } from './models/rule'
 import { Cell } from './engine'
 import { RULE_MODIFIER, setIntersection, setDifference, setEquals, nextRandom } from './util'
@@ -25,12 +26,13 @@ export interface IMutator {
     mutate: () => CellMutation
 }
 
-export const SIMPLE_DIRECTIONS = new Set([
-    RULE_MODIFIER.UP,
+// Not sure of the order these should be evaluated. Chose RIGHT first so that the tests were more predictable
+export const SIMPLE_DIRECTIONS = [
+    RULE_MODIFIER.RIGHT,
     RULE_MODIFIER.DOWN,
     RULE_MODIFIER.LEFT,
-    RULE_MODIFIER.RIGHT
-])
+    RULE_MODIFIER.UP
+]
 
 export class RuleBracketPair {
     _modifiers: Set<RULE_MODIFIER>
@@ -102,19 +104,22 @@ class CellMutator implements IMutator {
             for (const sprite of tileWithModifier._tile.getSpritesForRuleAction()) {
                 if (tileWithModifier.isNo()) {
                 } else {
-                    let direction: RULE_DIRECTION = null
+                    let relDirection: RULE_DIRECTION = null
                     if (tileWithModifier.isRandom()) {
                         // Decide whether or not to add the sprite since the tile has RANDOM on it
                         if (nextRandom(2)) {
-                            direction = undefined
+                            relDirection = this._direction
                         } else {
                             break // out of the loop
                         }
                     } else {
-                        direction = tileWithModifier.getDirectionActionOrStationary()
+                        relDirection = tileWithModifier.getDirectionActionOrStationary()
                     }
-                    // console.log('Convert direction to absolute using direction and this._direction')
-                    this._cell.addSprite(sprite, direction)
+                    const absDirection = relativeDirectionToAbsolute(this._direction, relDirection)
+                    if (absDirection !== relDirection) {
+                        // console.log('Directions differ: rel: ', relDirection, ' abs:', absDirection)
+                    }
+                    this._cell.addSprite(sprite, absDirection)
                 }
             }
         }

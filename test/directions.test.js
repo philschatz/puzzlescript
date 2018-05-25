@@ -60,6 +60,8 @@ describe('Directions', () => {
     const {engine, data} = parseEngine(`
 title foo
 
+realtime_interval .01
+
 ========
 OBJECTS
 ========
@@ -305,6 +307,7 @@ COLLISIONLAYERS
 
 Background
 Player
+Star
 
 ===
 RULES
@@ -395,7 +398,7 @@ LEVELS
 .....
 
 `)
-    // setRandomValuesForTesting([0])
+    setRandomValuesForTesting([2,1])
     const changedCells = engine.tick()
     // expect(engine.toSnapshot()).toMatchSnapshot()
     const player = data._getSpriteByName('player')
@@ -813,4 +816,66 @@ LEVELS
 
     expect(wrong.getCellsThatMatch().size).toBe(0)
   })
+
+  it('Uses the absolute direction when moving a sprite, not the relative one in the rule (e.g. "[ < player ]" )', () => {
+    const {engine, data} = parseEngine(`
+title foo
+
+========
+OBJECTS
+========
+
+Background
+green
+
+Player
+blue
+
+=======
+LEGEND
+=======
+
+. = Background
+P = Player
+
+================
+COLLISIONLAYERS
+================
+
+Background
+Player
+
+===
+RULES
+===
+
+LEFT [ Player ] -> [ ^ Player ]
+
+=======
+LEVELS
+=======
+
+P
+.
+
+`)
+    const changedCells = engine.tickUpdateCells()
+    // expect(engine.toSnapshot()).toMatchSnapshot()
+    const player = data._getSpriteByName('player')
+    expect(engine.currentLevel[1][0].getSpritesAsSet().has(player)).toBe(false)
+    // Check that the player is around thir previous location
+    let playerCells = [...player.getCellsThatMatch()]
+    let playerCell = playerCells[0]
+    expect(playerCells.length).toBe(1)
+    expect(engine.currentLevel[0][0].getSpritesAsSet().has(player)).toBe(true)
+    expect(engine.currentLevel[0][0].getWantsToMove(player)).toBe('DOWN')
+
+    engine.tickMoveSprites(changedCells)
+    // Check that the player is no longer in the spot they were
+    playerCells = [...player.getCellsThatMatch()]
+    playerCell = playerCells[0]
+    expect(playerCells.length).toBe(1)
+    expect(engine.currentLevel[1][0].getSpritesAsSet().has(player)).toBe(true)
+  })
+
 })
