@@ -516,6 +516,8 @@ right [ IslandEdgeDetect IslandEdgeE | IslandEdgeDetect ] -> [ IslandEdgeDetect 
 left  [ IslandEdgeDetect IslandEdgeW | IslandEdgeDetect ] -> [ IslandEdgeDetect | IslandEdgeDetect ]
 [ IslandEdgeDetect ] -> [ IslandInterior ]
 
+(This rule is the culprit. Need to add a test)
+
 right [ IslandEdgeN no IslandEdgeE | no IslandEdgeN ] -> [ IslandEdgeN | IslandInnerEdgeNW ]
 left  [ IslandEdgeN no IslandEdgeW | no IslandEdgeN ] -> [ IslandEdgeN | IslandInnerEdgeNE ]
 right [ IslandEdgeS no IslandEdgeE | no IslandEdgeS ] -> [ IslandEdgeS | IslandInnerEdgeSW ]

@@ -232,80 +232,93 @@ export class RuleBracket extends BaseForLines {
         return this._firstCellsInEachDirection.get(direction)
     }
 
-    updateCell(cell: Cell, sprite: GameSprite, tileWithModifier: TileWithModifier, neighbor: RuleBracketNeighbor, wantsToMove: RULE_DIRECTION, flagAdded: boolean) {
+    addCell(neighbor: RuleBracketNeighbor, t: TileWithModifier, sprite: GameSprite, cell: Cell, wantsToMove: RULE_DIRECTION) {
         const index = this._neighbors.indexOf(neighbor)
-        if (flagAdded) {
-            for (const direction of SIMPLE_DIRECTION_DIRECTIONS) {
-                // cell was added
-                // Check all the neighbors and add the firstNeighbor to the set of matches for this direction
-                let matched = true
-                let curCell = cell
-                // Loop Downstream
-                // check the neighbors downstream of curCell
-                for (let x = index + 1; x < this._neighbors.length; x++) {
-                    curCell = curCell.getNeighbor(direction)
-                    // TODO: Convert the neighbor check into a method
-                    if (curCell && (this._neighbors[x]._tilesWithModifier.length === 0 || this._neighbors[x].hasCell(curCell))) {
-                        // keep going
-                    } else {
-                        matched = false
-                        break
-                    }
-                }
-                if (!matched) {
-                    continue
-                }
-                // Loop Upstream
-                // check the neighbors upstream of curCell
-                matched = true
-                curCell = cell
-                // check the neighbors upstream of curCell
-                for (let x = index - 1; x >= 0; x--) {
-                    curCell = curCell.getNeighbor(opposite(direction))
-                    if (curCell && (this._neighbors[x]._tilesWithModifier.length === 0 || this._neighbors[x].hasCell(curCell))) {
-                        // keep going
-                    } else {
-                        matched = false
-                        break
-                    }
-                }
-                if (!matched) {
-                    continue
-                }
-
-                // Add to the set of firstNeighbors
-                // We have a match. Add to the firstCells set.
-                // console.log(`Cell [${cell.rowIndex}][${cell.colIndex}] caused an additional match for a rule bracket`);
-                this._firstCellsInEachDirection.get(direction).add(curCell)
-                global['rules_updated_count'] += 1
+        for (const direction of SIMPLE_DIRECTION_DIRECTIONS) {
+            // check if downstream neighbors match
+            if (!this.matchesDownstream(cell, index, direction)) {
+                continue
             }
-        } else {
-            // cell was removed
-            for (const direction of SIMPLE_DIRECTION_DIRECTIONS) {
-                // Loop Upstream
-                // Remove from the set of firstNeighbors
-                // Loop Upstream
-                // check the neighbors upstream of curCell
-                let matched = true
-                let curCell = cell
-                // check the neighbors upstream of curCell
-                for (let x = index - 1; x >= 0; x--) {
-                    curCell = curCell.getNeighbor(opposite(direction))
-                    if (curCell) {
-                        // keep going
-                    } else {
-                        matched = false
-                        break
-                    }
-                }
-                if (!matched) {
-                    continue
-                }
-                // console.log(`Cell [${cell.rowIndex}][${cell.colIndex}] caused a removal of rule bracket`);
-                this._firstCellsInEachDirection.get(direction).delete(curCell)
-                global['rules_updated_count'] += 1
+            // Loop Upstream
+            // check the neighbors upstream of curCell
+            const firstCell  = this.matchesUpstream(cell, index, direction)
+            if (!firstCell) {
+                continue
+            }
+
+            // Add to the set of firstNeighbors
+            // We have a match. Add to the firstCells set.
+            this._firstCellsInEachDirection.get(direction).add(firstCell)
+        }
+    }
+    // updateCell(neighbor: RuleBracketNeighbor, t: TileWithModifier, sprite: GameSprite, cell: Cell, wantsToMove: RULE_DIRECTION) {
+    //     this.updateCellOld(cell, sprite, t, neighbor, wantsToMove, true)
+    // }
+    removeCell(neighbor: RuleBracketNeighbor, t: TileWithModifier, sprite: GameSprite, cell: Cell) {
+        const index = this._neighbors.indexOf(neighbor)
+        // cell was removed
+        for (const direction of SIMPLE_DIRECTION_DIRECTIONS) {
+            // Loop Upstream
+            const firstCell = this.getFirstCellToRemove(cell, index, direction)
+            // Bracket might not match for all directions (likely not), so we might not find a firstCell to remove
+            // But that's OK.
+            if (firstCell && this._firstCellsInEachDirection.get(direction).has(firstCell)) {
+                this._firstCellsInEachDirection.get(direction).delete(firstCell)
             }
         }
+    }
+
+    matchesDownstream(cell: Cell, index: number, direction: RULE_DIRECTION) {
+        // Check all the neighbors and add the firstNeighbor to the set of matches for this direction
+        let matched = true
+        let curCell = cell
+        // Loop Downstream
+        // check the neighbors downstream of curCell
+        for (let x = index + 1; x < this._neighbors.length; x++) {
+            curCell = curCell.getNeighbor(direction)
+            // TODO: Convert the neighbor check into a method
+            if (curCell && (this._neighbors[x]._tilesWithModifier.length === 0 || this._neighbors[x].hasCell(curCell))) {
+                // keep going
+            } else {
+                matched = false
+                break
+            }
+        }
+        return matched
+    }
+
+    matchesUpstream(cell: Cell, index: number, direction: RULE_DIRECTION) {
+        let matched = true
+        let curCell = cell
+        // check the neighbors upstream of curCell
+        for (let x = index - 1; x >= 0; x--) {
+            curCell = curCell.getNeighbor(opposite(direction))
+            if (curCell && (this._neighbors[x]._tilesWithModifier.length === 0 || this._neighbors[x].hasCell(curCell))) {
+                // keep going
+            } else {
+                matched = false
+                break
+            }
+        }
+        return matched ? curCell : null
+    }
+
+    getFirstCellToRemove(cell: Cell, index: number, direction: RULE_DIRECTION) {
+        // Loop Upstream
+        // check the neighbors upstream of curCell
+        let matched = true
+        let curCell = cell
+        // check the neighbors upstream of curCell
+        for (let x = index - 1; x >= 0; x--) {
+            curCell = curCell.getNeighbor(opposite(direction))
+            if (curCell) {
+                // keep going
+            } else {
+                matched = false
+                break
+            }
+        }
+        return matched ? curCell : null
     }
 }
 
@@ -342,38 +355,60 @@ export class RuleBracketNeighbor extends BaseForLines {
         this._brackets.push(bracket)
     }
 
-    updateCells(cells: Iterable<Cell>, sprite: GameSprite, tileWithModifier: TileWithModifier, wantsToMove: RULE_DIRECTION, flagAdded) {
+    matchesCell(cell: Cell, wantsToMove: RULE_DIRECTION) {
+        let shouldMatch = true
+        for (const t of this._tilesWithModifier) {
+            if (!t.matchesCell2(cell, wantsToMove)) {
+                shouldMatch = false
+                break
+            }
+        }
+        return shouldMatch
+    }
+
+    matchesFirstCell(cells: Iterable<Cell>, wantsToMove: RULE_DIRECTION) {
+        return this.matchesCell(cells[0], wantsToMove)
+    }
+
+    addCells(t: TileWithModifier, sprite: GameSprite, cells: Iterable<Cell>, wantsToMove: RULE_DIRECTION) {
         for (const cell of cells) {
-            let shouldPropagate = []
-            if (flagAdded) {
-                let shouldMatch = true
-                for (const t of this._tilesWithModifier) {
-                    if (!t.matchesCell2(cell, wantsToMove)) {
-                        shouldMatch = false
-                        break
-                    }
+            const matchesTiles = this.matchesCell(cell, wantsToMove)
+            if (matchesTiles) {
+                // Commented because updates could cause the cell to already be in the cache
+                //if (!this.hasCell(cell)) {
+                for (const bracket of this._brackets) {
+                    bracket.addCell(this, t, sprite, cell, wantsToMove)
                 }
-                if (shouldMatch) {
-                    // console.log(`Cell [${cell.rowIndex}][${cell.colIndex}] impacted ${this._brackets.length} brackets`);
+                this._localCellCache.add(cell)
+                //}
+            } else {
+                // adding the Cell causes the set of Tiles to no longer match.
+                // If it previously matched, notify the bracket that it no longer matches
+                // (and delete it from our cache)
+                if (this.hasCell(cell)) {
                     for (const bracket of this._brackets) {
-                        bracket.updateCell(cell, sprite, tileWithModifier, this, wantsToMove, flagAdded)
-                    }
-                    this._localCellCache.add(cell)
-                } else {
-                    for (const bracket of this._brackets) {
-                        bracket.updateCell(cell, sprite, tileWithModifier, this, wantsToMove, false)
+                        bracket.removeCell(this, t, sprite, cell)
                     }
                     this._localCellCache.delete(cell)
                 }
-            } else {
+            }
+        }
+    }
+    updateCells(t: TileWithModifier, sprite: GameSprite, cells: Iterable<Cell>, wantsToMove: RULE_DIRECTION) {
+        this.addCells(t, sprite, cells, wantsToMove)
+    }
+    removeCells(t: TileWithModifier, sprite: GameSprite, cells: Iterable<Cell>) {
+        for (const cell of cells) {
+            if (this.hasCell(cell)) {
                 // remove it from upstream
                 for (const bracket of this._brackets) {
-                    bracket.updateCell(cell, sprite, tileWithModifier, this, wantsToMove, flagAdded)
+                    bracket.removeCell(this, t, sprite, cell)
                 }
                 this._localCellCache.delete(cell)
             }
         }
     }
+
     hasCell(cell: Cell) {
         return this._localCellCache.has(cell)
     }
@@ -468,6 +503,7 @@ export class TileWithModifier extends BaseForLines {
     }
 
     matchesCell(cell: Cell) {
+        // TODO: Check if cell is STATIONARY and Tile is STATIONARY (right now null means both STATIONARY and don't-care)
         if (this._modifier && !SUPPORTED_CELL_MODIFIERS.has(this._modifier)) {
             return false // Modifier not supported yet
         }
@@ -504,7 +540,7 @@ export class TileWithModifier extends BaseForLines {
         // Cells all have the same sprites, so if the 1st matches, they all do
         if (this.matchesFirstCell(cells)) {
             for (const neighbor of this._neighbors) {
-                neighbor.updateCells(cells, sprite, this, wantsToMove, true)
+                neighbor.addCells(this, sprite, cells, wantsToMove)
             }
         }
     }
@@ -512,7 +548,7 @@ export class TileWithModifier extends BaseForLines {
         // Cells all have the same sprites, so if the 1st matches, they all do
         if (this.matchesFirstCell(cells)) {
             for (const neighbor of this._neighbors) {
-                neighbor.updateCells(cells, sprite, this, wantsToMove, true)
+                neighbor.updateCells(this, sprite, cells, wantsToMove)
             }
         }
     }
@@ -520,11 +556,11 @@ export class TileWithModifier extends BaseForLines {
         // Cells all have the same sprites, so if the 1st matches, they all do
         if (this.matchesFirstCell(cells)) {
             for (const neighbor of this._neighbors) {
-                neighbor.updateCells(cells, sprite, this, null, true)
+                neighbor.addCells(this, sprite, cells, null/*STATIONARY*/)
             }
         } else {
             for (const neighbor of this._neighbors) {
-                neighbor.updateCells(cells, sprite, this, null, false)
+                neighbor.removeCells(this, sprite, cells)
             }
         }
     }
