@@ -609,4 +609,154 @@ LEVELS
     // Check that there REALLY is only 1 Player sprite
     expect(engine.currentLevel[0][0].getSpritesAsSet().has(playerTop)).toBe(true)
   })
+
+  it('Supports trivial tile negation', () => {
+    const {engine, data} = parseEngine(`
+    title foo
+
+    ========
+    OBJECTS
+    ========
+
+    Background
+    green
+
+    player
+    yellow
+
+    culprit
+    transparent
+
+    wrong
+    transparent
+
+    correct
+    transparent
+
+    =======
+    LEGEND
+    =======
+
+    . = Background
+    Z = culprit
+
+    ================
+    COLLISIONLAYERS
+    ================
+
+    Background
+    player
+    culprit
+    wrong
+    correct
+
+    ===
+    RULES
+    ===
+
+    [ NO culprit ] -> [ wrong ]
+    [ NO player ] -> [ correct ]
+
+    =======
+    LEVELS
+    =======
+
+    Z
+
+    `)
+
+    const wrong = data._getSpriteByName('wrong')
+    const correct = data._getSpriteByName('correct')
+    engine.tick()
+
+    expect(wrong.getCellsThatMatch().size).toBe(0)
+    expect(correct.getCellsThatMatch().size).toBe(1)
+  })
+
+  it.only('Supports tile negation (slightly more complicated)', () => {
+    debugger
+    const {engine, data} = parseEngine(`
+    title foo
+
+    =========
+    OBJECTS
+   =========
+
+   Background
+   blue
+
+   Player
+   #f7e26b #000000
+   01010
+   .000.
+   .0.0.
+   .....
+   .....
+
+   temp E
+   Transparent yellow
+   ....1
+   ....1
+   ....1
+   ....1
+   ....1
+
+
+   wrong
+   Transparent red
+   1...1
+   .1.1.
+   ..1..
+   .1.1.
+   1...1
+
+
+   ========
+    LEGEND
+   ========
+
+   @ = Player
+   . = background
+
+
+   ========
+    SOUNDS
+   ========
+
+   =================
+    COLLISIONLAYERS
+   =================
+
+   Background
+   temp
+   wrong
+   Player
+
+   =======
+    RULES
+   =======
+
+   ( Preparation )
+   [ Player ] -> [ temp ]
+
+   (This rule is the culprit)
+   RIGHT [ NO temp ] -> [ wrong ]
+
+   ===============
+    WINCONDITIONS
+   ===============
+
+   ========
+    LEVELS
+   ========
+
+   @
+
+`)
+
+    const wrong = data._getSpriteByName('wrong')
+    engine.tick()
+
+    expect(wrong.getCellsThatMatch().size).toBe(0)
+  })
 })

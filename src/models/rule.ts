@@ -542,6 +542,10 @@ export class TileWithModifier extends BaseForLines {
             for (const neighbor of this._neighbors) {
                 neighbor.addCells(this, sprite, cells, wantsToMove)
             }
+        } else if (this.isNo()) {
+            for (const neighbor of this._neighbors) {
+                neighbor.removeCells(this, sprite, cells)
+            }
         }
     }
     updateCells(sprite: GameSprite, cells: Iterable<Cell>, wantsToMove: RULE_DIRECTION) {
