@@ -3,9 +3,8 @@ import { EventEmitter2 } from 'eventemitter2'
 import { GameData } from './models/game'
 import { LevelMap } from './models/level';
 import { GameSprite, GameLegendTileSimple, IGameTile } from './models/tile'
-import { GameRule } from './models/rule'
-import { RULE_MODIFIER, nextRandom, setAddAll } from './util'
-import { CellMutation } from './pairs';
+import { GameRule, CellMutation } from './models/rule'
+import { RULE_MODIFIER, nextRandom, setAddAll, RULE_DIRECTION_ABSOLUTE } from './util'
 import { RULE_DIRECTION } from './enums';
 
 const MAX_REPEATS = 10
@@ -101,7 +100,7 @@ export class Cell {
     this._spriteAndWantsToMoves.set(sprite, null)
     sprite.updateCell(this, null)
   }
-  addSprite(sprite: GameSprite, wantsToMove: RULE_DIRECTION) {
+  addSprite(sprite: GameSprite, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
     this._spriteAndWantsToMoves.set(sprite, wantsToMove)
     sprite.addCell(this, wantsToMove)
   }

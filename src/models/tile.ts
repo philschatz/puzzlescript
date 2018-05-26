@@ -3,8 +3,9 @@ import { BaseForLines, IGameCode, IGameNode } from './game'
 import { IColor, HexColor, TransparentColor } from './colors'
 import { CollisionLayer } from './collisionLayer'
 import { Cell } from '../engine'
-import { TileWithModifier } from './rule';
+import { TileWithModifier, SimpleTileWithModifier } from './rule';
 import { RULE_DIRECTION } from '../enums';
+import { RULE_DIRECTION_ABSOLUTE } from '../util';
 
 export interface IGameTile extends IGameNode {
     _getDescendantTiles: () => IGameTile[]
@@ -23,7 +24,7 @@ export class GameSprite extends BaseForLines implements IGameTile {
     _optionalLegendChar?: string
     _collisionLayer: CollisionLayer
     _cellSet: Set<Cell>
-    _tileWithModifierSet: Set<TileWithModifier>
+    _tileWithModifierSet: Set<SimpleTileWithModifier>
 
     constructor(source: IGameCode, name: string, optionalLegendChar?: string) {
         super(source)
@@ -74,16 +75,16 @@ export class GameSprite extends BaseForLines implements IGameTile {
         return cell.getSpritesAsSet().has(this)
     }
 
-    addTileWithModifier(t: TileWithModifier) {
+    addTileWithModifier(t: SimpleTileWithModifier) {
         this._tileWithModifierSet.add(t)
     }
-    addCell(cell: Cell, wantsToMove: RULE_DIRECTION) {
+    addCell(cell: Cell, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
         this.addCells([cell], wantsToMove)
     }
     removeCell(cell: Cell) {
         this.removeCells([cell])
     }
-    updateCell(cell: Cell, wantsToMove: RULE_DIRECTION) {
+    updateCell(cell: Cell, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
         if (process.env['NODE_ENV'] !== 'production') {
             // check that the cell is already in the sprite cell set
             if (!this.has(cell)) {
@@ -96,7 +97,7 @@ export class GameSprite extends BaseForLines implements IGameTile {
             t.updateCells(this, [cell], wantsToMove)
         }
     }
-    addCells(cells: Iterable<Cell>, wantsToMove: RULE_DIRECTION) {
+    addCells(cells: Iterable<Cell>, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
         for (const cell of cells) {
             this._cellSet.add(cell)
         }

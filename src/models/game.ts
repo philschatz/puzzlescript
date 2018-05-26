@@ -1,6 +1,7 @@
+import * as _ from 'lodash'
 import { GameMetadata } from './metadata'
 import { GameSprite, GameLegendTileSimple } from './tile'
-import { GameRule } from './rule'
+import { GameRule, SimpleRule, IRule } from './rule'
 import { GameSound } from './sound'
 import { LevelMap } from './level'
 import { CollisionLayer } from './collisionLayer'
@@ -118,7 +119,7 @@ export class GameData {
     legends: GameLegendTileSimple[]
     sounds: GameSound[]
     collisionLayers: CollisionLayer[]
-    rules: GameRule[]
+    rules: IRule[]
     winConditions: WinConditionSimple[]
     levels: LevelMap[]
 
@@ -139,9 +140,14 @@ export class GameData {
         this.legends = legends
         this.sounds = sounds
         this.collisionLayers = collisionLayers
-        this.rules = rules
         this.winConditions = winConditions
         this.levels = levels
+
+        const ruleCache = new Map()
+        const bracketCache = new Map()
+        const neighborCache = new Map()
+        const tileCache = new Map()
+        this.rules = _.flatten(rules.map(rule => rule.simplify(ruleCache, bracketCache, neighborCache, tileCache)))
     }
 
     _getSpriteByName(name: string) {
