@@ -66,6 +66,22 @@ export function getRandomSeed() {
   return seed
 }
 
+export enum RULE_DIRECTION_ABSOLUTE {
+  UP = 'UP',
+  DOWN = 'DOWN',
+  LEFT = 'LEFT',
+  RIGHT = 'RIGHT',
+}
+
+export const RULE_DIRECTION_ABSOLUTE_LIST = [
+  RULE_DIRECTION_ABSOLUTE.UP,
+  RULE_DIRECTION_ABSOLUTE.DOWN,
+  RULE_DIRECTION_ABSOLUTE.LEFT,
+  RULE_DIRECTION_ABSOLUTE.RIGHT
+]
+
+export const RULE_DIRECTION_ABSOLUTE_SET: Set<string> = new Set(RULE_DIRECTION_ABSOLUTE_LIST)
+
 
 export enum RULE_MODIFIER {
   RANDOM = 'RANDOM',

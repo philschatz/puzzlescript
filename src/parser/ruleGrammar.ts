@@ -101,7 +101,7 @@ export function getRuleSemantics() {
             return new GameRuleGroup(this.source, [firstRule.parse()].concat(followingRules.parse()))
         },
         Rule: function (modifiers, conditions, _arrow, _unusuedModifer, actions, commands, optionalMessageCommand, _whitespace) {
-            return new GameRule(this.source, new Set(_.flatten(modifiers.parse())), conditions.parse(), actions.parse(), commands.parse().concat(optionalMessageCommand.parse()))
+            return new GameRule(this.source, _.flatten(modifiers.parse()), conditions.parse(), actions.parse(), commands.parse().concat(optionalMessageCommand.parse()))
         },
         RuleBracket: function (_openBracket, neighbors, hackAgain, _closeBracket) {
             const b = new RuleBracket(this.source, neighbors.parse(), hackAgain.parse())
@@ -141,25 +141,7 @@ export function getRuleSemantics() {
             return cacheTilesWithModifiers.get(key)
         },
         tileModifier: function (_whitespace1, tileModifier, _whitespace2) {
-            let modifier = tileModifier.parse()
-            // Arrows are shorthand. https://www.puzzlescript.net/Documentation/directions.html
-            switch (modifier) {
-                case '>':
-                    modifier = 'RIGHT'
-                    break;
-                case '^':
-                    modifier = 'UP'
-                    break;
-                case '<':
-                    modifier = 'LEFT'
-                    break;
-                case 'v':
-                    modifier = 'DOWN'
-                    break;
-                default:
-                    break;
-            }
-            return modifier
+            return tileModifier.parse()
         },
         HackTileNameIsSFX1: function (sfx) {
             return new HackNode(this.source, sfx.parse())

@@ -35,11 +35,11 @@ export const SIMPLE_DIRECTIONS = [
 ]
 
 export class RuleBracketPair {
-    _modifiers: Set<RULE_MODIFIER>
+    _modifiers: RULE_MODIFIER[]
     _neighborPairs: NeighborPair[]
 
     // boilerplate constructor
-    constructor(modifiers: Set<RULE_MODIFIER>, condition: RuleBracket, action: RuleBracket) {
+    constructor(modifiers: RULE_MODIFIER[], condition: RuleBracket, action: RuleBracket) {
         this._modifiers = modifiers
         this._neighborPairs = _.zip(condition._neighbors, action._neighbors).map(([conditionTileWithModifier, actionTileWithModifier]) => {
             return new NeighborPair(conditionTileWithModifier, actionTileWithModifier)
@@ -115,11 +115,7 @@ class CellMutator implements IMutator {
                     } else {
                         relDirection = tileWithModifier.getDirectionActionOrStationary()
                     }
-                    const absDirection = relativeDirectionToAbsolute(this._direction, relDirection)
-                    if (absDirection !== relDirection) {
-                        // console.log('Directions differ: rel: ', relDirection, ' abs:', absDirection)
-                    }
-                    this._cell.addSprite(sprite, absDirection)
+                    this._cell.addSprite(sprite, relDirection)
                 }
             }
         }

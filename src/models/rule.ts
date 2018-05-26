@@ -11,10 +11,12 @@ import {
     SIMPLE_DIRECTIONS,
     CellMutation
 } from '../pairs'
-import { RULE_MODIFIER, setDifference, setIntersection, nextRandom } from '../util'
+import { RULE_MODIFIER, setDifference, setIntersection, nextRandom, RULE_DIRECTION_ABSOLUTE, RULE_DIRECTION_ABSOLUTE_SET, RULE_DIRECTION_ABSOLUTE_LIST } from '../util'
 import { Cell } from '../engine'
 import { GameTree } from '../gameTree';
 import { RULE_DIRECTION } from '../enums';
+
+const MAX_ITERATIONS_IN_LOOP = 10
 
 enum RULE_COMMAND {
     AGAIN = 'AGAIN'
@@ -42,6 +44,112 @@ function opposite(dir: RULE_DIRECTION) {
     }
 }
 
+export class SimpleRuleGroup extends BaseForLines {
+    _rules: SimpleRule[]
+    constructor(source: IGameCode, rules: SimpleRule[]) {
+        super(source)
+        this._rules = rules
+    }
+}
+
+// This is a rule that has been expanded from `DOWN [ > player < cat RIGHT dog ] -> [ ^ crate ]` to:
+// DOWN [ DOWN player UP cat RIGHT dog ] -> [ RIGHT crate ]
+//
+// And a more complicated example:
+// DOWN [ > player LEFT cat HORIZONTAL dog < crate VERTICAL wall ] -> [ ^ crate  HORIZONTAL dog ]
+//
+// DOWN [ DOWN player LEFT cat LEFT dog UP crate UP wall ] -> [ right crate LEFT dog ]
+// DOWN [ DOWN player LEFT cat LEFT dog UP crate DOWN wall ] -> [ right crate LEFT dog ]
+// DOWN [ DOWN player LEFT cat RIGHT dog UP crate UP wall ] -> [ RIGHT crate RIGHT dog ]
+// DOWN [ DOWN player LEFT cat RIGHT dog UP crate DOWN wall ] -> [ RIGHT crate RIGHT dog ]
+export class SimpleRule extends BaseForLines implements ICacheable {
+    _evaluationDirection: RULE_DIRECTION_ABSOLUTE
+    _conditionBrackets: SimpleBracket[]
+    _actionBrackets: SimpleBracket[]
+    _commands: string[]
+    _isLate: boolean
+    _isRigid: boolean
+    _isAgain: boolean
+    constructor(source: IGameCode, evaluationDirection: RULE_DIRECTION_ABSOLUTE, conditionBrackets: SimpleBracket[], actionBrackets: SimpleBracket[], commands: string[], isLate: boolean, isRigid: boolean, isAgain: boolean) {
+        super(source)
+        this._evaluationDirection = evaluationDirection
+        this._conditionBrackets = conditionBrackets
+        this._actionBrackets = actionBrackets
+        this._commands = commands
+        this._isLate = isLate
+        this._isRigid = isRigid
+        this._isAgain = isAgain
+    }
+    toKey() {
+        return `${this._conditionBrackets.map(x => x.toKey())} -> ${this._actionBrackets.map(x => x.toKey())} ${this._commands.join(' ')}`
+    }
+}
+class SimpleBracket extends BaseForLines implements ICacheable {
+    _neighbors: SimpleNeighbor[]
+    constructor(source: IGameCode, neighbors: SimpleNeighbor[]) {
+        super(source)
+        this._neighbors = neighbors
+    }
+    toKey() {
+        return `[${this._neighbors.map(n => n.toKey()).join('|')}]`
+    }
+}
+class SimpleNeighbor extends BaseForLines implements ICacheable {
+    _tiles: Set<SimpleTileWithModifier>
+    constructor(source: IGameCode, tiles: Set<SimpleTileWithModifier>) {
+        super(source)
+        this._tiles = tiles
+    }
+    toKey() {
+        return `{${[...this._tiles].map(t => t.toKey()).sort().join(' ')}`
+    }
+}
+class SimpleTileWithModifier extends BaseForLines implements ICacheable {
+    _isNegated: boolean
+    _direction: RULE_DIRECTION_ABSOLUTE
+    _tile: IGameTile
+    _parentNeighbors: SimpleNeighbor[]
+    constructor(source: IGameCode, isNegated: boolean, direction: RULE_DIRECTION_ABSOLUTE, tile: IGameTile) {
+        super(source)
+        this._isNegated = isNegated
+        this._direction = direction
+        this._tile = tile
+        this._parentNeighbors = []
+    }
+
+    toKey() {
+        return `{${this._isNegated}} ${this._direction} [${this._tile.getSprites().map(sprite => sprite._getName()).sort()}]`
+    }
+
+    addRuleBracketNeighbor(neighbor: SimpleNeighbor) {
+        this._parentNeighbors.push(neighbor)
+    }
+
+
+}
+
+class Pair<A> {
+    condition: A
+    action: A
+    constructor(condition: A, action: A) {
+        this.condition = condition
+        this.action = action
+    }
+}
+
+
+interface ICacheable {
+    toKey: () => string
+}
+
+function cacheSetAndGet<A extends ICacheable>(cache: Map<string, A>, obj: A) {
+    const key = obj.toKey()
+    if (!cache.has(key)) {
+        cache.set(key, obj)
+    }
+    return cache.get(key)
+}
+
 // Note: Directions inside a Bracket are relative to other dorections inside a bracket
 // Example:
 //
@@ -63,20 +171,122 @@ function opposite(dir: RULE_DIRECTION) {
 // DOWN  [ RIGHT  player HORIZONTAL cat ] -> [ UP    crate | HORIZONTAL dog ]
 //
 // See https://www.puzzlescript.net/Documentation/executionorder.html
-export class GameRule extends BaseForLines implements IRule {
-    _modifiers: Set<RULE_MODIFIER>
+export class GameRule extends BaseForLines implements IRule, ICacheable {
+    _modifiers: RULE_MODIFIER[]
     _commands: string[]
     _bracketPairs: RuleBracketPair[]
     _hasEllipsis: boolean
     _brackets: RuleBracket[]
+    _actionBrackets: RuleBracket[]
     // _conditionCommandPair: RuleConditionCommandPair[]
 
-    constructor(source: IGameCode, modifiers: Set<RULE_MODIFIER>, conditions: RuleBracket[], actions: RuleBracket[], commands: string[]) {
+    toKey() {
+        return `${this._brackets.map(x => x.toKey())} -> ${this._actionBrackets.map(x => x.toKey())} ${this._commands.join(' ')}`
+    }
+
+    simplify(ruleCache: Map<string, SimpleRule>,bracketCache: Map<string, SimpleBracket>, neighborCache: Map<string, SimpleNeighbor>, tileCache: Map<string, SimpleTileWithModifier>) {
+        return this.convertToMultiple().map(r => r.toSimple(ruleCache, bracketCache, neighborCache, tileCache))
+    }
+
+    toSimple(ruleCache: Map<string, SimpleRule>, bracketCache: Map<string, SimpleBracket>, neighborCache: Map<string, SimpleNeighbor>, tileCache: Map<string, SimpleTileWithModifier>) {
+        const directions = this.getDirectionModifiers()
+        if (directions.length !== 1) {
+            throw new Error(`BUG: should have exactly 1 direction by now but found the following: "${directions}"`)
+        }
+        return cacheSetAndGet(ruleCache, new SimpleRule(this.__source, directions[0], this._brackets.map(x => x.toSimple(ruleCache, bracketCache, neighborCache, tileCache)), this._actionBrackets.map(x => x.toSimple(ruleCache, bracketCache, neighborCache, tileCache)), this._commands, this.isLate(), this.isRigid(), this.isAgain()))
+    }
+
+    convertToMultiple() {
+        let rulesToConvert = [this]
+        let convertedRules = []
+
+        for (const direction of this.getDirectionModifiers()) {
+            const expandModifiers = new Map()
+            expandModifiers.set(RULE_MODIFIER.HORIZONTAL, [RULE_DIRECTION.LEFT, RULE_DIRECTION.RIGHT])
+            expandModifiers.set(RULE_MODIFIER.VERTICAL, [RULE_DIRECTION.UP, RULE_DIRECTION.DOWN])
+            // switch (direction) {
+            //     case RULE_DIRECTION_ABSOLUTE.UP:
+            //     case RULE_DIRECTION_ABSOLUTE.DOWN:
+            //         expandModifiers.set(RULE_MODIFIER.PARALLEL, [RULE_DIRECTION.UP, RULE_DIRECTION.DOWN])
+            //         expandModifiers.set(RULE_MODIFIER.PERPENDICULAR, [RULE_DIRECTION.LEFT, RULE_DIRECTION.RIGHT])
+            //         break
+            //     case RULE_DIRECTION_ABSOLUTE.LEFT:
+            //     case RULE_DIRECTION_ABSOLUTE.RIGHT:
+            //         expandModifiers.set(RULE_MODIFIER.PARALLEL, [RULE_DIRECTION.LEFT, RULE_DIRECTION.RIGHT])
+            //         expandModifiers.set(RULE_MODIFIER.PERPENDICULAR, [RULE_DIRECTION.UP, RULE_DIRECTION.DOWN])
+            //         break
+            //     default:
+            //         throw new Error(`BUG: Invalid direction`)
+            // }
+
+            for (const rule of rulesToConvert) {
+                for (const [nameToExpand, variations] of expandModifiers) {
+                    if (rule.hasModifier(nameToExpand)) {
+                        for (const variation of variations) {
+                            convertedRules.push(rule.clone(direction, nameToExpand, variation))
+                        }
+                    } else if (rule === this) {
+                        // don't add the current rule to the set
+                    } else {
+                        convertedRules.push(rule)
+                    }
+                }
+            }
+
+            rulesToConvert = convertedRules
+            convertedRules = []
+        }
+        return rulesToConvert
+    }
+
+    clone(direction: RULE_DIRECTION_ABSOLUTE, nameToExpand: RULE_MODIFIER, newName: RULE_DIRECTION) {
+        const conditionBrackets = this._brackets.map(bracket => bracket.clone(direction, nameToExpand, newName))
+        const actionBrackets = this._actionBrackets.map(bracket => bracket.clone(direction, nameToExpand, newName))
+        return new GameRule(this.__source, [RULE_MODIFIER[direction]], conditionBrackets, actionBrackets, this._commands)
+    }
+
+    hasModifier(modifier: RULE_MODIFIER) {
+        for (const bracket of this._brackets) {
+            for (const neighbor of bracket._neighbors) {
+                for (const t of neighbor._tilesWithModifier) {
+                    if (t._modifier === modifier) {
+                        return true
+                    }
+                }
+            }
+        }
+        return false
+    }
+
+    getDirectionModifiers() {
+        const directions = this._modifiers.filter(m => RULE_DIRECTION_ABSOLUTE_SET.has(m)).map(d => {
+            switch(d) {
+                case RULE_MODIFIER.UP:
+                    return RULE_DIRECTION_ABSOLUTE.UP
+                    case RULE_MODIFIER.DOWN:
+                    return RULE_DIRECTION_ABSOLUTE.DOWN
+                    case RULE_MODIFIER.LEFT:
+                    return RULE_DIRECTION_ABSOLUTE.LEFT
+                    case RULE_MODIFIER.RIGHT:
+                    return RULE_DIRECTION_ABSOLUTE.RIGHT
+                default:
+                    throw new Error(`BUG: Invalid rule direction "${d}"`)
+            }
+        })
+        if (directions.length === 0) {
+            return RULE_DIRECTION_ABSOLUTE_LIST
+        } else {
+            return directions
+        }
+    }
+
+    constructor(source: IGameCode, modifiers: RULE_MODIFIER[], conditions: RuleBracket[], actions: RuleBracket[], commands: string[]) {
         super(source)
         this._modifiers = modifiers
         this._commands = commands
         this._hasEllipsis = false
         this._brackets = conditions
+        this._actionBrackets = actions
 
         // Set _hasEllipsis value
         for (let i = 0; i < conditions.length; i++) {
@@ -114,6 +324,9 @@ export class GameRule extends BaseForLines implements IRule {
         if (commands.length > 0) {
             this._bracketPairs = []
         }
+
+        // just see how much slower it is
+        this.simplify(new Map(), new Map(), new Map(), new Map())
     }
 
     evaluate() {
@@ -126,26 +339,26 @@ export class GameRule extends BaseForLines implements IRule {
         // Include any simple UP, DOWN, LEFT, RIGHT ones
         let directionsToCheck = []
         // Not sure what the order of checking should be. Used RIGHT first so the tests would be easier to write
-        if (this._modifiers.has(RULE_MODIFIER.RIGHT)) {
+        if (this._modifiers.indexOf(RULE_MODIFIER.RIGHT) >= 0) {
             directionsToCheck.push(RULE_DIRECTION.RIGHT)
         }
-        if (this._modifiers.has(RULE_MODIFIER.DOWN)) {
+        if (this._modifiers.indexOf(RULE_MODIFIER.DOWN) >= 0) {
             directionsToCheck.push(RULE_DIRECTION.DOWN)
         }
-        if (this._modifiers.has(RULE_MODIFIER.LEFT)) {
+        if (this._modifiers.indexOf(RULE_MODIFIER.LEFT) >= 0) {
             directionsToCheck.push(RULE_DIRECTION.LEFT)
         }
-        if (this._modifiers.has(RULE_MODIFIER.UP)) {
+        if (this._modifiers.indexOf(RULE_MODIFIER.UP) >= 0) {
             directionsToCheck.push(RULE_DIRECTION.UP)
         }
         // Include LEFT and RIGHT if HORIZONTAL
-        if (this._modifiers.has(RULE_MODIFIER.HORIZONTAL)) {
+        if (this._modifiers.indexOf(RULE_MODIFIER.HORIZONTAL) >= 0) {
             return [] // not supported properly
             // directionsToCheck.add(RULE_MODIFIER.LEFT)
             // directionsToCheck.add(RULE_MODIFIER.RIGHT)
         }
         // Include UP and DOWN if VERTICAL
-        if (this._modifiers.has(RULE_MODIFIER.VERTICAL)) {
+        if (this._modifiers.indexOf(RULE_MODIFIER.VERTICAL) >= 0) {
             return [] // not supported properly
             // directionsToCheck.add(RULE_MODIFIER.UP)
             // directionsToCheck.add(RULE_MODIFIER.DOWN)
@@ -194,10 +407,10 @@ export class GameRule extends BaseForLines implements IRule {
     }
 
     isLate() {
-        return this._modifiers.has(RULE_MODIFIER.LATE)
+        return this._modifiers.indexOf(RULE_MODIFIER.LATE) >= 0
     }
     isRigid() {
-        return this._modifiers.has(RULE_MODIFIER.RIGID)
+        return this._modifiers.indexOf(RULE_MODIFIER.RIGID) >= 0
     }
     isAgain() {
         return this._commands.indexOf(RULE_COMMAND.AGAIN) >= 0
@@ -208,7 +421,7 @@ export class GameRule extends BaseForLines implements IRule {
 
 }
 
-export class RuleBracket extends BaseForLines {
+export class RuleBracket extends BaseForLines implements ICacheable {
     _neighbors: RuleBracketNeighbor[]
     _hasEllipsis: boolean
     _firstCellsInEachDirection: Map<RULE_DIRECTION, Set<Cell>>
@@ -234,12 +447,20 @@ export class RuleBracket extends BaseForLines {
         }
     }
 
-    hasEllipsis() {
-        return this._hasEllipsis
-    }
-
     toKey() {
         return this._neighbors.map(n => n.toKey()).join('|')
+    }
+
+    clone(direction: RULE_DIRECTION_ABSOLUTE, nameToExpand: RULE_MODIFIER, newName: RULE_DIRECTION) {
+        return new RuleBracket(this.__source, this._neighbors.map(n => n.clone(direction, nameToExpand, newName)), null)
+    }
+
+    toSimple(ruleCache: Map<string, SimpleRule>, bracketCache: Map<string, SimpleBracket>, neighborCache: Map<string, SimpleNeighbor>, tileCache: Map<string, SimpleTileWithModifier>) {
+        return cacheSetAndGet(bracketCache, new SimpleBracket(this.__source, this._neighbors.map(x => x.toSimple(ruleCache, bracketCache, neighborCache, tileCache))))
+    }
+
+    hasEllipsis() {
+        return this._hasEllipsis
     }
 
     subscribeToNeighborChanges() {
@@ -342,7 +563,7 @@ export class RuleBracket extends BaseForLines {
     }
 }
 
-export class RuleBracketNeighbor extends BaseForLines {
+export class RuleBracketNeighbor extends BaseForLines implements ICacheable {
     _brackets: RuleBracket[]
     _tilesWithModifier: TileWithModifier[]
     _isEllipsis: boolean
@@ -359,6 +580,14 @@ export class RuleBracketNeighbor extends BaseForLines {
 
     toKey() {
         return this._tilesWithModifier.map(t => t.toKey()).sort().join(' ')
+    }
+
+    clone(direction: RULE_DIRECTION_ABSOLUTE, nameToExpand: RULE_MODIFIER, newName: RULE_DIRECTION) {
+        return new RuleBracketNeighbor(this.__source, this._tilesWithModifier.map(t => t.clone(direction, nameToExpand, newName)), this._isEllipsis)
+    }
+
+    toSimple(ruleCache: Map<string, SimpleRule>, bracketCache: Map<string, SimpleBracket>, neighborCache: Map<string, SimpleNeighbor>, tileCache: Map<string, SimpleTileWithModifier>) {
+        return cacheSetAndGet(neighborCache, new SimpleNeighbor(this.__source, new Set(this._tilesWithModifier.map(x => x.toSimple(ruleCache, bracketCache, neighborCache, tileCache)))))
     }
 
     subscribeToTileChanges() {
@@ -434,7 +663,7 @@ export class RuleBracketNeighbor extends BaseForLines {
     }
 }
 
-export class TileWithModifier extends BaseForLines {
+export class TileWithModifier extends BaseForLines implements ICacheable {
     _neighbors: RuleBracketNeighbor[]
     _modifier?: string
     _tile: IGameTile
@@ -451,6 +680,40 @@ export class TileWithModifier extends BaseForLines {
 
     }
 
+    toKey() {
+        return `${this._modifier || ''} ${this._tile ? this._tile.getSprites().map(sprite => sprite._getName()) : '|||(notile)|||'}`
+    }
+
+    clone(direction: RULE_DIRECTION_ABSOLUTE, nameToExpand: RULE_MODIFIER, newName: RULE_DIRECTION) {
+        switch (this._modifier) {
+            case nameToExpand:
+                return new TileWithModifier(this.__source, newName, this._tile)
+            case '>':
+            case '<':
+            case '^':
+            case 'v':
+                let modifier = relativeDirectionToAbsolute(direction, this._modifier)
+                return new TileWithModifier(this.__source, modifier, this._tile)
+            default:
+                return this
+        }
+    }
+
+    toSimple(ruleCache: Map<string, SimpleRule>, bracketCache: Map<string, SimpleBracket>, neighborCache: Map<string, SimpleNeighbor>, tileCache: Map<string, SimpleTileWithModifier>) {
+        let direction
+        switch (this._modifier) {
+            case 'UP':
+            case 'DOWN':
+            case 'LEFT':
+            case 'RIGHT':
+                direction = RULE_DIRECTION_ABSOLUTE[this._modifier]
+                break
+            default:
+                direction = null
+        }
+        return cacheSetAndGet(tileCache, new SimpleTileWithModifier(this.__source, this.isNo(), direction, this._tile))
+    }
+
     // This should only be called on Condition Brackets
     subscribeToCellChanges() {
         // subscribe this to be notified of all Sprite changes of Cells
@@ -459,10 +722,6 @@ export class TileWithModifier extends BaseForLines {
                 sprite.addTileWithModifier(this)
             })
         }
-    }
-
-    toKey() {
-        return `${this._modifier || ''} ${this._tile ? this._tile.getSprites().map(sprite => sprite._getName()) : '|||(notile)|||'}`
     }
 
     isNo() {
@@ -623,8 +882,28 @@ export class GameRuleLoop extends BaseForLines implements IRule {
     }
 
     evaluate() {
-        return [] // Not implemented yet
-        // return getMatchedMutatorsHelper(this._rules, cell)
+        // Keep looping as long as once of the rules evaluated something
+        // const allMutations = []
+        // for (let iteration = 0; iteration < MAX_ITERATIONS_IN_LOOP; iteration++) {
+        //     if (iteration === MAX_ITERATIONS_IN_LOOP - 1) {
+        //         console.error(this.toString())
+        //         throw new Error(`BUG: Iterated too many times in startloop`)
+        //     }
+        //     let evaluatedSomething = false
+        //     for (const rule of this._rules) {
+        //         const ret = rule.evaluate()
+        //         if (ret.length > 0) {
+        //             evaluatedSomething = true
+        //             allMutations.push(ret)
+        //             break
+        //         }
+        //     }
+        //     if (!evaluatedSomething) {
+        //         break
+        //     }
+        // }
+        // return _.flatten(allMutations)
+        return []
     }
 
 }
@@ -646,53 +925,51 @@ const SUPPORTED_RULE_MODIFIERS = new Set([
     RULE_MODIFIER.ORTHOGONAL
 ])
 
-export function relativeDirectionToAbsolute(currentDirection: RULE_DIRECTION, tileModifier: RULE_DIRECTION) {
+export function relativeDirectionToAbsolute(currentDirection: RULE_DIRECTION_ABSOLUTE, relativeModifier: string) {
     let currentDir
-    // These do not rotate, so do not change them
-    if (!tileModifier || tileModifier === RULE_DIRECTION.ACTION || tileModifier === RULE_DIRECTION.STATIONARY) {
-        return tileModifier
-    }
     switch (currentDirection) {
-        case RULE_DIRECTION.RIGHT:
+        case RULE_DIRECTION_ABSOLUTE.RIGHT:
             currentDir = 0
             break
-        case RULE_DIRECTION.UP:
+        case RULE_DIRECTION_ABSOLUTE.UP:
             currentDir = 1
             break
-        case RULE_DIRECTION.LEFT:
+        case RULE_DIRECTION_ABSOLUTE.LEFT:
             currentDir = 2
             break
-        case RULE_DIRECTION.DOWN:
+        case RULE_DIRECTION_ABSOLUTE.DOWN:
             currentDir = 3
             break
         default:
             throw new Error(`BUG! Invalid rule direction "${currentDirection}`)
     }
 
-    switch (tileModifier) {
-        case RULE_DIRECTION.RIGHT:
+    switch (relativeModifier) {
+        case '>':
             currentDir += 0
             break
-        case RULE_DIRECTION.UP:
+        case '^':
             currentDir += 1
             break
-        case RULE_DIRECTION.LEFT:
+        case '<':
             currentDir += 2
             break
-        case RULE_DIRECTION.DOWN:
+        case 'v':
             currentDir += 3
             break
+        default:
+            throw new Error(`BUG! invalid relative direction "${relativeModifier}"`)
     }
     switch (currentDir % 4) {
         case 0:
-            return RULE_DIRECTION.RIGHT
+            return RULE_DIRECTION_ABSOLUTE.RIGHT
         case 1:
-            return RULE_DIRECTION.UP
+            return RULE_DIRECTION_ABSOLUTE.UP
         case 2:
-            return RULE_DIRECTION.LEFT
+            return RULE_DIRECTION_ABSOLUTE.LEFT
         case 3:
-            return RULE_DIRECTION.DOWN
+            return RULE_DIRECTION_ABSOLUTE.DOWN
         default:
-            throw new Error(`BUG! Incorrectly computed rule direction "${currentDirection}" "${tileModifier}"`)
+            throw new Error(`BUG! Incorrectly computed rule direction "${currentDirection}" "${relativeModifier}"`)
     }
 }
