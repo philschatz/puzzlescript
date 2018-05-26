@@ -227,7 +227,6 @@ export default class Engine extends EventEmitter2 {
             cell.clearWantsToMove(sprite)
           } else {
             if (wantsToMove === RULE_DIRECTION.RANDOMDIR) {
-              console.log("This dooes not seem to be executed.. maybe that's why Fairy sprites always move up?");
               const rand = nextRandom(4)
               switch (rand) {
                 case 0:

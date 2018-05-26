@@ -105,7 +105,7 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
     }
 
     evaluate() {
-        if (this._actionBrackets.length === 0 || this._isLate) {
+        if (this._actionBrackets.length === 0 || this._isLate || this._isAgain || this._isRigid) {
             // TODO: Just commands are not supported yet
             return []
         }
@@ -898,6 +898,9 @@ export class TileWithModifier extends BaseForLines implements ICacheable {
                 break
             case 'ACTION':
                 direction = RULE_DIRECTION_ABSOLUTE.ACTION
+                break
+            case 'RANDOMDIR':
+                direction = RULE_DIRECTION_ABSOLUTE.RANDOMDIR
                 break
             default:
                 direction = null
