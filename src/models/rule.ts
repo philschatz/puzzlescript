@@ -457,25 +457,25 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
     _isRandom: boolean
     _direction: RULE_DIRECTION_ABSOLUTE
     _tile: IGameTile
-    _neighbors: SimpleNeighbor[]
+    _neighbors: Set<SimpleNeighbor>
     constructor(source: IGameCode, isNegated: boolean, isRandom: boolean, direction: RULE_DIRECTION_ABSOLUTE, tile: IGameTile) {
         super(source)
         this._isNegated = isNegated
         this._isRandom = isRandom
         this._direction = direction
         this._tile = tile
-        this._neighbors = []
+        this._neighbors = new Set()
     }
 
     toKey() {
-        return `{${this._isNegated}} ${this._direction} [${this._tile.getSprites().map(sprite => sprite._getName()).sort()}]`
+        return `{-?${this._isNegated}} dir="${this._direction}" [${this._tile.getSprites().map(sprite => sprite._getName()).sort()}]`
     }
 
     isNo() { return this._isNegated }
     isRandom() { return this._isRandom }
 
     addRuleBracketNeighbor(neighbor: SimpleNeighbor) {
-        this._neighbors.push(neighbor)
+        this._neighbors.add(neighbor)
     }
 
     // This should only be called on Condition Brackets
@@ -490,7 +490,7 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
 
     matchesCell(cell: Cell, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
         const hasTile = this._tile && this._tile.matchesCell(cell)
-        return this._isNegated != (hasTile && this._direction === wantsToMove)
+        return this._isNegated != (hasTile && (this._direction === wantsToMove || this._direction === null))
     }
 
     matchesFirstCell(cells: Iterable<Cell>, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
@@ -521,7 +521,7 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
         // Cells all have the same sprites, so if the 1st matches, they all do
         if (this.matchesFirstCell(cells, null/*STATIONARY*/)) {
             for (const neighbor of this._neighbors) {
-                neighbor.addCells(this, sprite, cells, null/*STATIONARY*/)
+                neighbor.addCells(this, sprite, cells, RULE_DIRECTION_ABSOLUTE.STATIONARY)
             }
         } else {
             for (const neighbor of this._neighbors) {
@@ -640,14 +640,22 @@ export class GameRule extends BaseForLines implements ICacheable {
             // }
 
             for (const rule of rulesToConvert) {
+                let didExpand = false
                 for (const [nameToExpand, variations] of expandModifiers) {
                     if (rule.hasModifier(nameToExpand)) {
                         for (const variation of variations) {
                             convertedRules.push(rule.clone(direction, nameToExpand, variation))
+                            didExpand = true
                         }
-                    } else if (rule === this) {
+                    }
+                }
+                // If nothing was expanded and this is the current rule
+                // then just simplify it (converting all the relative directions to absolute)
+                if (!didExpand) {
+                    if (rule === this) {
                         // Simplify the current rule
                         // the special `null` nameToExpand means to just copy the tile
+                        convertedRules.push(this)
                         convertedRules.push(rule.clone(direction, null, null))
                     } else {
                         convertedRules.push(rule)
@@ -658,7 +666,8 @@ export class GameRule extends BaseForLines implements ICacheable {
             rulesToConvert = convertedRules
             convertedRules = []
         }
-        return rulesToConvert
+        // Remove the original, non-converted rule
+        return rulesToConvert.filter(rule => rule !== this)
     }
 
     clone(direction: RULE_DIRECTION_ABSOLUTE, nameToExpand: RULE_MODIFIER, newName: RULE_DIRECTION) {
@@ -883,6 +892,12 @@ export class TileWithModifier extends BaseForLines implements ICacheable {
             case 'LEFT':
             case 'RIGHT':
                 direction = RULE_DIRECTION_ABSOLUTE[this._modifier]
+                break
+            case 'STATIONARY':
+                direction = RULE_DIRECTION_ABSOLUTE.STATIONARY
+                break
+            case 'ACTION':
+                direction = RULE_DIRECTION_ABSOLUTE.ACTION
                 break
             default:
                 direction = null

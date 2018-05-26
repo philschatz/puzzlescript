@@ -165,7 +165,7 @@ export default class Engine extends EventEmitter2 {
         const hasSprite = cellSprites.has(sprite)
         if (hasSprite || sprite.hasNegationTile()) {
           if (hasSprite) {
-            sprite.addCells(cells, null/*STATIONARY*/)
+            sprite.addCells(cells, RULE_DIRECTION_ABSOLUTE.STATIONARY)
           } else {
             sprite.removeCells(cells)
           }

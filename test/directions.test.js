@@ -99,6 +99,7 @@ LEVELS
 P.
 
 `)
+
     const player = data._getSpriteByName('player')
     const changedCellMutations = engine.tickUpdateCells()
     expect(engine.toSnapshot()).toMatchSnapshot()
@@ -108,7 +109,7 @@ P.
     // 3. Late: Update all the cells with new sprites ...
     // 4. Late: Move all the sprites that want to move
     // next tick for all the AGAIN rules
-    expect(engine.currentLevel[0][0].getWantsToMove(player)).toBe('RIGHT')
+    expect(engine.currentLevel[0][0].getWantsToMove(player)).toBe('UP')
 
     // Ensure only 1 cell was marked for update
     expect(changedCellMutations.size).toBe(1)
@@ -146,7 +147,7 @@ Player
 RULES
 ===
 
-[ Player ] -> [ > Player ]
+RIGHT [ Player ] -> [ > Player ]
 
 =======
 LEVELS
@@ -459,7 +460,7 @@ LEVELS
     RULES
     ===
 
-    [ player ] -> [ > player ]
+    RIGHT [ player ] -> [ > player ]
     [ STATIONARY player ] -> [ incorrect ]
 
     =======

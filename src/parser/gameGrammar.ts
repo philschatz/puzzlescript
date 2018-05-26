@@ -361,7 +361,6 @@ export function getGameSemantics(lookup: LookupHelper, addValidationMessage) {
             return x.primitiveValue.charCodeAt(0) - '0'.charCodeAt(0)
         }
         // _default: function (exp1) {
-        //   debugger
         //   return this.sourceString
         // }
     }

@@ -63,8 +63,7 @@ describe.only('Rule simplifier', () => {
   it.only('expands horizontal rules', () => {
     const {engine, data} = parseEngine(HORIZONTAL_GAME)
     const foo = data.rules
-    debugger
-    console.log('Rules created:', foo.length)
-    expect(foo.length).toBe(2)
+    expect(foo.length).toBe(1)
+    expect(foo[0]._rules.length).toBe(2)
   })
 })
