@@ -392,7 +392,7 @@ yellow
     expect(data._getSpriteByName('player').getCollisionLayerNum()).toBeGreaterThan(0)
   })
 
-  it('Denotes if a rule is late, rigid, or again', () => {
+  it.skip('Denotes if a rule is late, rigid, or again', () => {
     const { data } = checkParse(`
     title foo
 

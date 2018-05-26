@@ -301,26 +301,29 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
         const spritesToRemove = setDifference(conditionSprites, actionSprites)
         const spritesToAdd = setDifference(actionSprites, conditionSprites)
 
+        // Remove any sprites that are in the same collisionLayer as sprites that are being added
+        const collisionLayerOfSpritesToRemove = new Map<number, GameSprite>()
+        for (const sprite of conditionSprites) {
+            collisionLayerOfSpritesToRemove.set(sprite.getCollisionLayerNum(), sprite)
+        }
+        for (const sprite of spritesToAdd) {
+            if (collisionLayerOfSpritesToRemove.has(sprite.getCollisionLayerNum())) {
+                spritesToRemove.add(collisionLayerOfSpritesToRemove.get(sprite.getCollisionLayerNum()))
+            }
+        }
+
         cell.removeSprites(spritesToRemove)
 
         // add sprites that are listed on the action side
-        for (const tileWithModifier of actionTiles.values()) {
-            for (const sprite of tileWithModifier._tile.getSpritesForRuleAction()) {
-                if (tileWithModifier.isNo()) {
-                } else {
-                    let direction: RULE_DIRECTION_ABSOLUTE = null
-                    if (tileWithModifier.isRandom()) {
-                        // Decide whether or not to add the sprite since the tile has RANDOM on it
-                        if (nextRandom(2)) {
-                            direction = RULE_DIRECTION_ABSOLUTE.STATIONARY
-                        } else {
-                            break // out of the loop
-                        }
-                    } else {
-                        direction = tileWithModifier._direction
-                    }
-                    cell.addSprite(sprite, direction)
-                }
+        for (const [sprites, tileWithModifier] of actionTiles.entries()) {
+            let direction: RULE_DIRECTION_ABSOLUTE = null
+            if (tileWithModifier.isRandom()) {
+                direction = RULE_DIRECTION_ABSOLUTE.STATIONARY
+            } else {
+                direction = tileWithModifier._direction
+            }
+            for (const sprite of sprites.getSprites()) {
+                cell.addSprite(sprite, direction)
             }
         }
 
@@ -333,40 +336,40 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
     _getConditionAndActionSprites(actionNeighbor: SimpleNeighbor) {
         const conditionTiles = new Map<IGameTile, SimpleTileWithModifier>()
         const actionTiles = new Map<IGameTile, SimpleTileWithModifier>()
+        const conditionSprites: Set<GameSprite> = new Set()
+        const actionSprites: Set<GameSprite> = new Set()
 
         // remove sprites in tiles that are listed on the condition side
         this._tilesWithModifier.forEach(tileWithModifier => {
             if (!tileWithModifier._tile.isOr()) {
                 if (!tileWithModifier.isNo()) {
                     conditionTiles.set(tileWithModifier._tile, tileWithModifier)
+                    for (const sprite of tileWithModifier._tile.getSprites()) {
+                        conditionSprites.add(sprite)
+                    }
                 }
             }
         })
         // add sprites that are listed on the action side
         actionNeighbor._tilesWithModifier.forEach(tileWithModifier => {
-            if (!tileWithModifier._tile.isOr()) {
+            // OR tiles on the right side are only useful if the tile is RANDOM (we choose one of the OR options)
+            if (tileWithModifier._tile.isOr()) {
+                if (tileWithModifier.isRandom()) {
+                    const sprites = tileWithModifier._tile.getSprites()
+                    const index = nextRandom(sprites.length)
+                    actionTiles.set(sprites[index], tileWithModifier)
+                    actionSprites.add(sprites[index])
+                }
+            } else {
                 if (!tileWithModifier.isNo()) {
                     actionTiles.set(tileWithModifier._tile, tileWithModifier)
+                    for (const sprite of tileWithModifier._tile.getSprites()) {
+                        actionSprites.add(sprite)
+                    }
                 }
             }
         })
 
-        const conditionSprites = new Set()
-        const actionSprites = new Set()
-        for (const t of conditionTiles.values()) {
-            if (!t.isNo()) {
-                for (const sprite of t._tile.getSprites()) {
-                    conditionSprites.add(sprite)
-                }
-            }
-        }
-        for (const t of actionTiles.values()) {
-            if (!t.isNo()) {
-                for (const sprite of t._tile.getSprites()) {
-                    actionSprites.add(sprite)
-                }
-            }
-        }
         return {conditionSprites, actionSprites, actionTiles}
     }
 

@@ -59,8 +59,8 @@ function parseEngine (code) {
   return { engine, data }
 }
 
-describe.only('Rule simplifier', () => {
-  it.only('expands horizontal rules', () => {
+describe('Rule simplifier', () => {
+  it('expands horizontal rules', () => {
     const {engine, data} = parseEngine(HORIZONTAL_GAME)
     const foo = data.rules
     expect(foo.length).toBe(1)

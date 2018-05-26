@@ -19980,7 +19980,7 @@ GameData {
           },
         },
       ],
-      "id": 3,
+      "id": 0,
     },
   ],
   "legends": Array [],
@@ -19995,7 +19995,7 @@ GameData {
         "_sprites": Array [
           [Circular],
         ],
-        "id": 3,
+        "id": 0,
       },
       "_color": TransparentColor {
         "__coverageCount": 0,
@@ -20083,7 +20083,7 @@ GameData {
                           "_sprites": Array [
                             [Circular],
                           ],
-                          "id": 3,
+                          "id": 0,
                         },
                         "_color": TransparentColor {
                           "__coverageCount": 0,
@@ -20153,7 +20153,7 @@ GameData {
                           "_sprites": Array [
                             [Circular],
                           ],
-                          "id": 3,
+                          "id": 0,
                         },
                         "_color": TransparentColor {
                           "__coverageCount": 0,
@@ -20223,7 +20223,7 @@ GameData {
                           "_sprites": Array [
                             [Circular],
                           ],
-                          "id": 3,
+                          "id": 0,
                         },
                         "_color": TransparentColor {
                           "__coverageCount": 0,
@@ -20293,292 +20293,7 @@ GameData {
                           "_sprites": Array [
                             [Circular],
                           ],
-                          "id": 3,
-                        },
-                        "_color": TransparentColor {
-                          "__coverageCount": 0,
-                        },
-                        "_name": "player",
-                        "_optionalLegendChar": undefined,
-                        "_tileWithModifierSet": Set {
-                          [Circular],
-                        },
-                      },
-                    },
-                  },
-                },
-              ],
-            },
-          ],
-          "_evaluationDirection": "RIGHT",
-          "_isAgain": false,
-          "_isLate": false,
-          "_isRigid": false,
-          "_isSubscribedToCellChanges": true,
-        },
-      ],
-    },
-    SimpleRuleGroup {
-      "__coverageCount": 0,
-      "_rules": Array [
-        SimpleRule {
-          "__coverageCount": 0,
-          "_actionBrackets": Array [
-            SimpleBracket {
-              "__coverageCount": 0,
-              "_direction": "RIGHT",
-              "_firstCells": Set {},
-              "_neighbors": Array [
-                SimpleNeighbor {
-                  "__coverageCount": 0,
-                  "_brackets": Array [],
-                  "_localCellCache": Set {},
-                  "_tilesWithModifier": Set {},
-                },
-              ],
-            },
-          ],
-          "_commands": Array [],
-          "_conditionBrackets": Array [
-            SimpleBracket {
-              "__coverageCount": 0,
-              "_direction": "RIGHT",
-              "_firstCells": Set {},
-              "_neighbors": Array [
-                SimpleNeighbor {
-                  "__coverageCount": 0,
-                  "_brackets": Array [
-                    [Circular],
-                  ],
-                  "_localCellCache": Set {},
-                  "_tilesWithModifier": Set {
-                    SimpleTileWithModifier {
-                      "__coverageCount": 0,
-                      "_direction": null,
-                      "_isNegated": false,
-                      "_isRandom": false,
-                      "_neighbors": Set {
-                        [Circular],
-                      },
-                      "_tile": GameSpriteSingleColor {
-                        "__coverageCount": 0,
-                        "_cellSet": Set {},
-                        "_collisionLayer": CollisionLayer {
-                          "__coverageCount": 0,
-                          "_sprites": Array [
-                            [Circular],
-                          ],
-                          "id": 3,
-                        },
-                        "_color": TransparentColor {
-                          "__coverageCount": 0,
-                        },
-                        "_name": "player",
-                        "_optionalLegendChar": undefined,
-                        "_tileWithModifierSet": Set {
-                          [Circular],
-                        },
-                      },
-                    },
-                  },
-                },
-              ],
-            },
-          ],
-          "_evaluationDirection": "RIGHT",
-          "_isAgain": false,
-          "_isLate": false,
-          "_isRigid": false,
-          "_isSubscribedToCellChanges": true,
-        },
-        SimpleRule {
-          "__coverageCount": 0,
-          "_actionBrackets": Array [
-            SimpleBracket {
-              "__coverageCount": 0,
-              "_direction": "RIGHT",
-              "_firstCells": Set {},
-              "_neighbors": Array [
-                SimpleNeighbor {
-                  "__coverageCount": 0,
-                  "_brackets": Array [],
-                  "_localCellCache": Set {},
-                  "_tilesWithModifier": Set {},
-                },
-              ],
-            },
-          ],
-          "_commands": Array [],
-          "_conditionBrackets": Array [
-            SimpleBracket {
-              "__coverageCount": 0,
-              "_direction": "RIGHT",
-              "_firstCells": Set {},
-              "_neighbors": Array [
-                SimpleNeighbor {
-                  "__coverageCount": 0,
-                  "_brackets": Array [
-                    [Circular],
-                  ],
-                  "_localCellCache": Set {},
-                  "_tilesWithModifier": Set {
-                    SimpleTileWithModifier {
-                      "__coverageCount": 0,
-                      "_direction": null,
-                      "_isNegated": false,
-                      "_isRandom": false,
-                      "_neighbors": Set {
-                        [Circular],
-                      },
-                      "_tile": GameSpriteSingleColor {
-                        "__coverageCount": 0,
-                        "_cellSet": Set {},
-                        "_collisionLayer": CollisionLayer {
-                          "__coverageCount": 0,
-                          "_sprites": Array [
-                            [Circular],
-                          ],
-                          "id": 3,
-                        },
-                        "_color": TransparentColor {
-                          "__coverageCount": 0,
-                        },
-                        "_name": "player",
-                        "_optionalLegendChar": undefined,
-                        "_tileWithModifierSet": Set {
-                          [Circular],
-                        },
-                      },
-                    },
-                  },
-                },
-              ],
-            },
-          ],
-          "_evaluationDirection": "RIGHT",
-          "_isAgain": false,
-          "_isLate": false,
-          "_isRigid": false,
-          "_isSubscribedToCellChanges": true,
-        },
-        SimpleRule {
-          "__coverageCount": 0,
-          "_actionBrackets": Array [
-            SimpleBracket {
-              "__coverageCount": 0,
-              "_direction": "RIGHT",
-              "_firstCells": Set {},
-              "_neighbors": Array [
-                SimpleNeighbor {
-                  "__coverageCount": 0,
-                  "_brackets": Array [],
-                  "_localCellCache": Set {},
-                  "_tilesWithModifier": Set {},
-                },
-              ],
-            },
-          ],
-          "_commands": Array [],
-          "_conditionBrackets": Array [
-            SimpleBracket {
-              "__coverageCount": 0,
-              "_direction": "RIGHT",
-              "_firstCells": Set {},
-              "_neighbors": Array [
-                SimpleNeighbor {
-                  "__coverageCount": 0,
-                  "_brackets": Array [
-                    [Circular],
-                  ],
-                  "_localCellCache": Set {},
-                  "_tilesWithModifier": Set {
-                    SimpleTileWithModifier {
-                      "__coverageCount": 0,
-                      "_direction": null,
-                      "_isNegated": false,
-                      "_isRandom": false,
-                      "_neighbors": Set {
-                        [Circular],
-                      },
-                      "_tile": GameSpriteSingleColor {
-                        "__coverageCount": 0,
-                        "_cellSet": Set {},
-                        "_collisionLayer": CollisionLayer {
-                          "__coverageCount": 0,
-                          "_sprites": Array [
-                            [Circular],
-                          ],
-                          "id": 3,
-                        },
-                        "_color": TransparentColor {
-                          "__coverageCount": 0,
-                        },
-                        "_name": "player",
-                        "_optionalLegendChar": undefined,
-                        "_tileWithModifierSet": Set {
-                          [Circular],
-                        },
-                      },
-                    },
-                  },
-                },
-              ],
-            },
-          ],
-          "_evaluationDirection": "RIGHT",
-          "_isAgain": false,
-          "_isLate": false,
-          "_isRigid": false,
-          "_isSubscribedToCellChanges": true,
-        },
-        SimpleRule {
-          "__coverageCount": 0,
-          "_actionBrackets": Array [
-            SimpleBracket {
-              "__coverageCount": 0,
-              "_direction": "RIGHT",
-              "_firstCells": Set {},
-              "_neighbors": Array [
-                SimpleNeighbor {
-                  "__coverageCount": 0,
-                  "_brackets": Array [],
-                  "_localCellCache": Set {},
-                  "_tilesWithModifier": Set {},
-                },
-              ],
-            },
-          ],
-          "_commands": Array [],
-          "_conditionBrackets": Array [
-            SimpleBracket {
-              "__coverageCount": 0,
-              "_direction": "RIGHT",
-              "_firstCells": Set {},
-              "_neighbors": Array [
-                SimpleNeighbor {
-                  "__coverageCount": 0,
-                  "_brackets": Array [
-                    [Circular],
-                  ],
-                  "_localCellCache": Set {},
-                  "_tilesWithModifier": Set {
-                    SimpleTileWithModifier {
-                      "__coverageCount": 0,
-                      "_direction": null,
-                      "_isNegated": false,
-                      "_isRandom": false,
-                      "_neighbors": Set {
-                        [Circular],
-                      },
-                      "_tile": GameSpriteSingleColor {
-                        "__coverageCount": 0,
-                        "_cellSet": Set {},
-                        "_collisionLayer": CollisionLayer {
-                          "__coverageCount": 0,
-                          "_sprites": Array [
-                            [Circular],
-                          ],
-                          "id": 3,
+                          "id": 0,
                         },
                         "_color": TransparentColor {
                           "__coverageCount": 0,
@@ -20653,7 +20368,7 @@ GameData {
                           "_sprites": Array [
                             [Circular],
                           ],
-                          "id": 3,
+                          "id": 0,
                         },
                         "_color": TransparentColor {
                           "__coverageCount": 0,
@@ -20723,7 +20438,7 @@ GameData {
                           "_sprites": Array [
                             [Circular],
                           ],
-                          "id": 3,
+                          "id": 0,
                         },
                         "_color": TransparentColor {
                           "__coverageCount": 0,
@@ -20793,7 +20508,7 @@ GameData {
                           "_sprites": Array [
                             [Circular],
                           ],
-                          "id": 3,
+                          "id": 0,
                         },
                         "_color": TransparentColor {
                           "__coverageCount": 0,
@@ -20863,7 +20578,292 @@ GameData {
                           "_sprites": Array [
                             [Circular],
                           ],
-                          "id": 3,
+                          "id": 0,
+                        },
+                        "_color": TransparentColor {
+                          "__coverageCount": 0,
+                        },
+                        "_name": "player",
+                        "_optionalLegendChar": undefined,
+                        "_tileWithModifierSet": Set {
+                          [Circular],
+                        },
+                      },
+                    },
+                  },
+                },
+              ],
+            },
+          ],
+          "_evaluationDirection": "RIGHT",
+          "_isAgain": false,
+          "_isLate": false,
+          "_isRigid": false,
+          "_isSubscribedToCellChanges": true,
+        },
+      ],
+    },
+    SimpleRuleGroup {
+      "__coverageCount": 0,
+      "_rules": Array [
+        SimpleRule {
+          "__coverageCount": 0,
+          "_actionBrackets": Array [
+            SimpleBracket {
+              "__coverageCount": 0,
+              "_direction": "RIGHT",
+              "_firstCells": Set {},
+              "_neighbors": Array [
+                SimpleNeighbor {
+                  "__coverageCount": 0,
+                  "_brackets": Array [],
+                  "_localCellCache": Set {},
+                  "_tilesWithModifier": Set {},
+                },
+              ],
+            },
+          ],
+          "_commands": Array [],
+          "_conditionBrackets": Array [
+            SimpleBracket {
+              "__coverageCount": 0,
+              "_direction": "RIGHT",
+              "_firstCells": Set {},
+              "_neighbors": Array [
+                SimpleNeighbor {
+                  "__coverageCount": 0,
+                  "_brackets": Array [
+                    [Circular],
+                  ],
+                  "_localCellCache": Set {},
+                  "_tilesWithModifier": Set {
+                    SimpleTileWithModifier {
+                      "__coverageCount": 0,
+                      "_direction": null,
+                      "_isNegated": false,
+                      "_isRandom": false,
+                      "_neighbors": Set {
+                        [Circular],
+                      },
+                      "_tile": GameSpriteSingleColor {
+                        "__coverageCount": 0,
+                        "_cellSet": Set {},
+                        "_collisionLayer": CollisionLayer {
+                          "__coverageCount": 0,
+                          "_sprites": Array [
+                            [Circular],
+                          ],
+                          "id": 0,
+                        },
+                        "_color": TransparentColor {
+                          "__coverageCount": 0,
+                        },
+                        "_name": "player",
+                        "_optionalLegendChar": undefined,
+                        "_tileWithModifierSet": Set {
+                          [Circular],
+                        },
+                      },
+                    },
+                  },
+                },
+              ],
+            },
+          ],
+          "_evaluationDirection": "RIGHT",
+          "_isAgain": false,
+          "_isLate": false,
+          "_isRigid": false,
+          "_isSubscribedToCellChanges": true,
+        },
+        SimpleRule {
+          "__coverageCount": 0,
+          "_actionBrackets": Array [
+            SimpleBracket {
+              "__coverageCount": 0,
+              "_direction": "RIGHT",
+              "_firstCells": Set {},
+              "_neighbors": Array [
+                SimpleNeighbor {
+                  "__coverageCount": 0,
+                  "_brackets": Array [],
+                  "_localCellCache": Set {},
+                  "_tilesWithModifier": Set {},
+                },
+              ],
+            },
+          ],
+          "_commands": Array [],
+          "_conditionBrackets": Array [
+            SimpleBracket {
+              "__coverageCount": 0,
+              "_direction": "RIGHT",
+              "_firstCells": Set {},
+              "_neighbors": Array [
+                SimpleNeighbor {
+                  "__coverageCount": 0,
+                  "_brackets": Array [
+                    [Circular],
+                  ],
+                  "_localCellCache": Set {},
+                  "_tilesWithModifier": Set {
+                    SimpleTileWithModifier {
+                      "__coverageCount": 0,
+                      "_direction": null,
+                      "_isNegated": false,
+                      "_isRandom": false,
+                      "_neighbors": Set {
+                        [Circular],
+                      },
+                      "_tile": GameSpriteSingleColor {
+                        "__coverageCount": 0,
+                        "_cellSet": Set {},
+                        "_collisionLayer": CollisionLayer {
+                          "__coverageCount": 0,
+                          "_sprites": Array [
+                            [Circular],
+                          ],
+                          "id": 0,
+                        },
+                        "_color": TransparentColor {
+                          "__coverageCount": 0,
+                        },
+                        "_name": "player",
+                        "_optionalLegendChar": undefined,
+                        "_tileWithModifierSet": Set {
+                          [Circular],
+                        },
+                      },
+                    },
+                  },
+                },
+              ],
+            },
+          ],
+          "_evaluationDirection": "RIGHT",
+          "_isAgain": false,
+          "_isLate": false,
+          "_isRigid": false,
+          "_isSubscribedToCellChanges": true,
+        },
+        SimpleRule {
+          "__coverageCount": 0,
+          "_actionBrackets": Array [
+            SimpleBracket {
+              "__coverageCount": 0,
+              "_direction": "RIGHT",
+              "_firstCells": Set {},
+              "_neighbors": Array [
+                SimpleNeighbor {
+                  "__coverageCount": 0,
+                  "_brackets": Array [],
+                  "_localCellCache": Set {},
+                  "_tilesWithModifier": Set {},
+                },
+              ],
+            },
+          ],
+          "_commands": Array [],
+          "_conditionBrackets": Array [
+            SimpleBracket {
+              "__coverageCount": 0,
+              "_direction": "RIGHT",
+              "_firstCells": Set {},
+              "_neighbors": Array [
+                SimpleNeighbor {
+                  "__coverageCount": 0,
+                  "_brackets": Array [
+                    [Circular],
+                  ],
+                  "_localCellCache": Set {},
+                  "_tilesWithModifier": Set {
+                    SimpleTileWithModifier {
+                      "__coverageCount": 0,
+                      "_direction": null,
+                      "_isNegated": false,
+                      "_isRandom": false,
+                      "_neighbors": Set {
+                        [Circular],
+                      },
+                      "_tile": GameSpriteSingleColor {
+                        "__coverageCount": 0,
+                        "_cellSet": Set {},
+                        "_collisionLayer": CollisionLayer {
+                          "__coverageCount": 0,
+                          "_sprites": Array [
+                            [Circular],
+                          ],
+                          "id": 0,
+                        },
+                        "_color": TransparentColor {
+                          "__coverageCount": 0,
+                        },
+                        "_name": "player",
+                        "_optionalLegendChar": undefined,
+                        "_tileWithModifierSet": Set {
+                          [Circular],
+                        },
+                      },
+                    },
+                  },
+                },
+              ],
+            },
+          ],
+          "_evaluationDirection": "RIGHT",
+          "_isAgain": false,
+          "_isLate": false,
+          "_isRigid": false,
+          "_isSubscribedToCellChanges": true,
+        },
+        SimpleRule {
+          "__coverageCount": 0,
+          "_actionBrackets": Array [
+            SimpleBracket {
+              "__coverageCount": 0,
+              "_direction": "RIGHT",
+              "_firstCells": Set {},
+              "_neighbors": Array [
+                SimpleNeighbor {
+                  "__coverageCount": 0,
+                  "_brackets": Array [],
+                  "_localCellCache": Set {},
+                  "_tilesWithModifier": Set {},
+                },
+              ],
+            },
+          ],
+          "_commands": Array [],
+          "_conditionBrackets": Array [
+            SimpleBracket {
+              "__coverageCount": 0,
+              "_direction": "RIGHT",
+              "_firstCells": Set {},
+              "_neighbors": Array [
+                SimpleNeighbor {
+                  "__coverageCount": 0,
+                  "_brackets": Array [
+                    [Circular],
+                  ],
+                  "_localCellCache": Set {},
+                  "_tilesWithModifier": Set {
+                    SimpleTileWithModifier {
+                      "__coverageCount": 0,
+                      "_direction": null,
+                      "_isNegated": false,
+                      "_isRandom": false,
+                      "_neighbors": Set {
+                        [Circular],
+                      },
+                      "_tile": GameSpriteSingleColor {
+                        "__coverageCount": 0,
+                        "_cellSet": Set {},
+                        "_collisionLayer": CollisionLayer {
+                          "__coverageCount": 0,
+                          "_sprites": Array [
+                            [Circular],
+                          ],
+                          "id": 0,
                         },
                         "_color": TransparentColor {
                           "__coverageCount": 0,

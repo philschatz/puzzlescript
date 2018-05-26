@@ -292,8 +292,29 @@ green
 Player
 blue
 
-Star
-yellow
+one
+white black
+00000
+00000
+00100
+00000
+00000
+
+two
+white black
+00000
+01000
+00000
+00010
+00000
+
+three
+white black
+00000
+01000
+00100
+00010
+00000
 
 =======
 LEGEND
@@ -301,6 +322,7 @@ LEGEND
 
 . = Background
 P = Player
+DieSide = one OR two OR three
 
 ================
 COLLISIONLAYERS
@@ -308,13 +330,14 @@ COLLISIONLAYERS
 
 Background
 Player
-Star
+DieSide
 
 ===
 RULES
 ===
 
-[ Background ] -> [ Background RANDOM Star ]
+(set direction so it is only evaluated once)
+LEFT [ Background ] -> [ Background RANDOM DieSide ]
 
 =======
 LEVELS
@@ -323,17 +346,21 @@ LEVELS
 P.
 
 `)
+
     setRandomValuesForTesting([0, 1])
     const changedCells = engine.tick()
     console.log('Random seed index is now at', getRandomSeed())
     // expect(engine.toSnapshot()).toMatchSnapshot()
-    const star = data._getSpriteByName('star')
+    const one = data._getSpriteByName('one')
+    const two = data._getSpriteByName('two')
+    const three = data._getSpriteByName('three')
 
-    // Check if the star DID NOT "randomly" pop up (because we set the "random" values above)
-    let starCells = [...star.getCellsThatMatch()]
-    let starCell = starCells[0]
-    expect(starCells.length).toBe(0)
-    expect(engine.currentLevel[0][1].getSpritesAsSet().has(star)).toBe(false)
+    // Check that one popped up (because we set the "random" values above)
+    // Because the OR is stuck into a set, rather than a list, the 1st item is "three", not "one"
+    let threeCells = [...three.getCellsThatMatch()]
+    let threeCell = threeCells[0]
+    expect(threeCells.length).toBe(1)
+    expect(engine.currentLevel[0][1].getSpritesAsSet().has(three)).toBe(true)
 
     // Ensure 0 cells were marked for re-rendering
     // expect(changedCells.size).toBe(0)
@@ -343,15 +370,15 @@ P.
 
     engine.tick()
     // Check if the star "randomly" popped up
-    starCells = [...star.getCellsThatMatch()]
-    starCell = starCells[0]
-    expect(starCells.length).toBe(1)
-    expect(engine.currentLevel[0][1].getSpritesAsSet().has(star)).toBe(true)
+    let twoCells = [...two.getCellsThatMatch()]
+    let twoCell = twoCells[0]
+    expect(twoCells.length).toBe(1)
+    expect(engine.currentLevel[0][1].getSpritesAsSet().has(two)).toBe(true)
 
-    // // Ensure 1 cells were marked for re-rendering
-    // expect(changedCells.size).toBe(1)
-    // expect(changedCells).toContain(engine.currentLevel[0][1])
-    // expect(changedCells).toContain(engine.currentLevel[0][1])
+    // Ensure that the three cell was removed (since they are in the same collisionLayer)
+    threeCells = [...three.getCellsThatMatch()]
+    threeCell = threeCells[0]
+    expect(threeCells.length).toBe(0)
   })
 
   it('Moves the sprite in a "random" direction using "RANDOMDIR" in a bracket', () => {
