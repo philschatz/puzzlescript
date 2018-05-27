@@ -165,8 +165,8 @@ class SimpleBracket extends BaseForLines implements ICacheable {
     }
 
     subscribeToNeighborChanges() {
-        this._neighbors.forEach(neighbor => {
-            neighbor.addBracket(this)
+        this._neighbors.forEach((neighbor, index) => {
+            neighbor.addBracket(this, index)
         })
     }
 
@@ -187,8 +187,7 @@ class SimpleBracket extends BaseForLines implements ICacheable {
         return ret
     }
 
-    addCell(neighbor: SimpleNeighbor, t: SimpleTileWithModifier, sprite: GameSprite, cell: Cell, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
-        const index = this._neighbors.indexOf(neighbor)
+    addCell(index: number, neighbor: SimpleNeighbor, t: SimpleTileWithModifier, sprite: GameSprite, cell: Cell, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
         // check if downstream neighbors match
         if (!this.matchesDownstream(cell, index)) {
             return
@@ -207,8 +206,7 @@ class SimpleBracket extends BaseForLines implements ICacheable {
     // updateCell(neighbor: SimpleNeighbor, t: SimpleTileWithModifier, sprite: GameSprite, cell: Cell, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
     //     this.updateCellOld(cell, sprite, t, neighbor, wantsToMove, true)
     // }
-    removeCell(neighbor: SimpleNeighbor, t: SimpleTileWithModifier, sprite: GameSprite, cell: Cell) {
-        const index = this._neighbors.indexOf(neighbor)
+    removeCell(index: number, neighbor: SimpleNeighbor, t: SimpleTileWithModifier, sprite: GameSprite, cell: Cell) {
         // cell was removed
         // Loop Upstream
         const firstCell = this.getFirstCellToRemove(cell, index)
@@ -275,13 +273,13 @@ class SimpleBracket extends BaseForLines implements ICacheable {
 
 class SimpleNeighbor extends BaseForLines implements ICacheable {
     _tilesWithModifier: Set<SimpleTileWithModifier>
-    _brackets: SimpleBracket[]
+    _brackets: Map<SimpleBracket, Set<number>>
     _localCellCache: Set<Cell>
 
     constructor(source: IGameCode, tilesWithModifier: Set<SimpleTileWithModifier>) {
         super(source)
         this._tilesWithModifier = tilesWithModifier
-        this._brackets = []
+        this._brackets = new Map()
         this._localCellCache = new Set()
     }
     toKey() {
@@ -373,8 +371,11 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
         return {conditionSprites, actionSprites, actionTiles}
     }
 
-    addBracket(bracket: SimpleBracket) {
-        this._brackets.push(bracket)
+    addBracket(bracket: SimpleBracket, index: number) {
+        if (!this._brackets.has(bracket)) {
+            this._brackets.set(bracket, new Set())
+        }
+        this._brackets.get(bracket).add(index)
     }
 
     subscribeToTileChanges() {
@@ -404,8 +405,10 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
             if (matchesTiles) {
                 // Commented because updates could cause the cell to already be in the cache
                 //if (!this.hasCell(cell)) {
-                for (const bracket of this._brackets) {
-                    bracket.addCell(this, t, sprite, cell, wantsToMove)
+                for (const [bracket, indexes] of this._brackets.entries()) {
+                    for (const index of indexes) {
+                        bracket.addCell(index, this, t, sprite, cell, wantsToMove)
+                    }
                 }
                 this._localCellCache.add(cell)
                 //}
@@ -414,8 +417,10 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
                 // If it previously matched, notify the bracket that it no longer matches
                 // (and delete it from our cache)
                 if (this.hasCell(cell)) {
-                    for (const bracket of this._brackets) {
-                        bracket.removeCell(this, t, sprite, cell)
+                    for (const [bracket, indexes] of this._brackets.entries()) {
+                        for (const index of indexes) {
+                            bracket.removeCell(index, this, t, sprite, cell)
+                        }
                     }
                     this._localCellCache.delete(cell)
                 }
@@ -429,8 +434,10 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
         for (const cell of cells) {
             if (this.hasCell(cell)) {
                 // remove it from upstream
-                for (const bracket of this._brackets) {
-                    bracket.removeCell(this, t, sprite, cell)
+                for (const [bracket, indexes] of this._brackets.entries()) {
+                    for (const index of indexes) {
+                        bracket.removeCell(index, this, t, sprite, cell)
+                    }
                 }
                 this._localCellCache.delete(cell)
             }

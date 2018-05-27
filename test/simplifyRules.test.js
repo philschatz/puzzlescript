@@ -66,4 +66,57 @@ describe('Rule simplifier', () => {
     expect(foo.length).toBe(1)
     expect(foo[0]._rules.length).toBe(2)
   })
+
+  it('treats adjacent neighbors that are the same as distinct (e.g. [ Wall | Wall ]', () => {
+    const {engine, data} = parseEngine(`title check that Horizontal Expands
+
+    ========
+    OBJECTS
+    ========
+
+    Background
+    blue
+
+    Player
+    green
+
+    Wall
+    yellow
+
+    RightExtension
+    Blue
+
+    =======
+    LEGEND
+    =======
+
+    W = Wall
+
+    ================
+    COLLISIONLAYERS
+    ================
+
+    Background
+    Player
+    Wall
+    RightExtension
+
+    ======
+    RULES
+    ======
+
+    RIGHT [ Wall | Wall ] -> [ RightExtension | RightExtension ]
+
+    =======
+    LEVELS
+    =======
+
+    WW
+
+    `) // end game
+    const rightExtension = data._getSpriteByName('RightExtension')
+    engine.tick()
+
+    expect(engine.currentLevel[0][0].getSpritesAsSet().has(rightExtension)).toBe(true)
+  })
 })

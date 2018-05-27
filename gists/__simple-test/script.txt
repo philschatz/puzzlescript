@@ -1,548 +1,1004 @@
-title Spider's Hollow
-author John Thyer
-again_interval 0.1
+title ParaLands
+author Lukas
+run_rules_on_level_start
+again_interval 0.05
+norepeat_action
 
 ========
 OBJECTS
 ========
 
-( Background objects )
 
 Background
-Brown #8b5d2e
-00100
-00001
-01000
-00100
-10000
+darkgray
 
-Entrance
-Brown  #ad7438
-00100
-00001
-01000
-00100
-10000
+Floor1
+darkgray
 
-
-BackgroundBlack
-Black
-00000
-00000
-00000
-00000
-00000
-
-BackgroundRed
-Red
-00000
-00000
-00000
-00000
-00000
-
-Sky1
-#8fc2fc
-00000
-00000
-00000
-00000
-00000
-
-Sky2
-#afd4ff
-00000
-00000
-00000
-00000
-00000
-
-Sky3
-#9ecbff
-00000
-00000
-00000
-00000
-00000
-
-Wood
-#52361b #3f2a14 #654321
-00000
-11111
-00000
-22222
-11111
-
-BackgroundWeb
-#a8a8a8 #bdbdbd
-00000
-00000
-00000
-00000
-00000
-
-Leaf1
-#3f7f18 #5db724
-..0..
-.010.
-.100.
-.110.
-..11.
-
-Leaf2
-#3f7f18 #5db724
-.11..
-.110.
-.100.
-.010.
-..0..
-
-( Collision-detecting objects )
-
-Player
-#28A9C9 #d180fc (#f49ade) (#7DA012) #C3C3C3 #ebcb99 #2873c9
-.111.
-21312
-20002
-.000.
-.4.4.
-
-Fairy
-#fc6f86 #7DA012 #C3C3C3 #ebcb99 #ff3f5f
-.111.
-21312
-20002
-.000.
-.4.4.
-
-TrappedFairy
-#828282 #7DA012 #C3C3C3 #ebcb99 #8e8e8e
-.111.
-41314
-44444
-00000
-.444.
-
+Floor2
+#444444
 
 Wall
-#52361b #3f2a14 #654321
-00000
-11111
-00000
-22222
-11111
-
-Hole
-Brown #8b5d2e Black DarkGrey
+gray #444444 #bbbbbb
 .222.
-22222
-22222
-22222
-.222.
+20001
+20001
+20001
+.111.
 
-Block
-#52361b #3f2a14 #654321
-.121.
-10001
-02102
-10021
+WallConnectorN
+gray #444444 #bbbbbb
+20001
+.....
+.....
+.....
+.....
+
+WallConnectorS
+gray #444444 #bbbbbb
+.....
+.....
+.....
+.....
+20001
+
+WallConnectorE
+gray #444444 #bbbbbb
+....2
+....0
+....0
+....0
+....1
+
+WallConnectorW
+gray #444444 #bbbbbb
+2....
+0....
+0....
+0....
+1....
+
+WallConnectorNE
+gray
+....0
+.....
+.....
+.....
+.....
+
+WallConnectorNW
+gray
+0....
+.....
+.....
+.....
+.....
+
+WallConnectorSE
+gray
+.....
+.....
+.....
+.....
+....0
+
+WallConnectorSW
+gray
+.....
+.....
+.....
+.....
+0....
+
+Pit
+black
+
+PlayerOrange
+orange blue
+.000.
 .101.
+00000
+.000.
+.0.0.
 
-Web1
-#a8a8a8 #bdbdbd
-.001.
-0..01
-.01.0
-1.010
-.1.0.
+PlayerBlue
+blue orange
+.000.
+.101.
+00000
+.000.
+.0.0.
 
-Web2
-#a8a8a8 #bdbdbd
-.001.
-0..01
-.01.0
-1.010
-.1.0.
-
-Web3
-#a8a8a8 #bdbdbd
-.001.
-0..01
-.01.0
-1.010
-.1.0.
-
-Spider
-Black DarkRed
+PlayerTrans1
+orange blue black
 .....
+.000.
+.101.
+22222
+.222.
+
+PlayerTrans2
+black
+.....
+.....
+.000.
+00000
+.000.
+
+PlayerTrans3
+blue orange black
+.....
+.000.
+.101.
+22222
+.222.
+
+CrateOrange
+orange #ffbb88 #bb6600
+11112
+10002
+10002
+10002
+22222
+
+CrateBlue
+blue #8888ff #0000bb
+11112
+10002
+10002
+10002
+22222
+
+CrateOmni
+orange #ffbb88 #bb6600 blue #8888ff #0000bb
+11145
+10035
+10035
+10335
+22555
+
+BallOrange
+orange #ffbb88 #bb6600
+.002.
+01002
+00002
+20002
+.222.
+
+BallBlue
+blue #8888ff #0000bb
+.002.
+01002
+00002
+20002
+.222.
+
+BallOmni
+orange #ffbb88 #bb6600 blue #0000bb
+.004.
+01034
+00034
+20334
+.244.
+
+DoorOrange
+orange #bb6600
+.000.
+00000
+10001
+11111
+.111.
+
+DoorOpenOrange
+orange
+.....
+.....
+.000.
+00000
+.000.
+
+DoorBlue
+blue #0000bb
+.000.
+00000
+10001
+11111
+.111.
+
+DoorOpenBlue
+blue
+.....
+.....
+.000.
+00000
+.000.
+
+DoorOmni
+orange #bb6600 blue #0000bb
+.002.
+00022
+10223
+11333
+.133.
+
+DoorOpenOmni
+orange blue
+.....
+.....
+.001.
+00011
+.011.
+
+SwitchOrange
+orange
+.....
+..0..
+.000.
+..0..
+.....
+
+SwitchBlue
+blue
+.....
+..0..
+.000.
+..0..
+.....
+
+SwitchOmni
+orange blue
+.....
+..0..
+.001.
+..1..
+.....
+
+TrapdoorOrange
+orange #ffbb88
 .000.
 01010
-.000.
-0...0
-
-SpiderRed
-Black Red
-.....
-.000.
+00000
 01010
 .000.
-0...0
 
-( Invisible control objects )
+TrapdoorBlue
+blue #8888ff
+.000.
+01010
+00000
+01010
+.000.
 
-SpiderSleep
-Black
+TrapdoorOmni
+orange #ffbb88 blue #8888ff
+.002.
+01032
+00022
+01232
+.022.
+
+EnemyOrangeIdle
+orange #ffbb88
 .....
-.....
-.....
-.....
-.....
+..0..
+.101.
+.0.0.
+.0.0.
 
-Path1
-#FFAAAA
-00000
-0...0
-0...0
-0...0
-00000
-
-Path2
-#55FF55
-00000
-0...0
-0...0
-0...0
-00000
-
-Path3
-#0000FF
-00000
-0...0
-0...0
-0...0
-00000
-
-RightPath
-Blue
+EnemyOrangeActive
+orange #ffbb88
 .....
 .....
 ..0..
+.101.
+.0.0.
+
+EnemyBlueIdle
+blue #8888ff
+.....
+..0..
+.101.
+.0.0.
+.0.0.
+
+EnemyBlueActive
+blue #8888ff
+.....
+.....
+..0..
+.101.
+.0.0.
+
+EnemyOmniIdle
+orange #ffbb88 blue #8888ff
+.....
+..0..
+.123.
+.0.2.
+.0.2.
+
+EnemyOmniActive
+orange #ffbb88 blue #8888ff
+.....
+.....
+..0..
+.123.
+.0.2.
+
+PlatformOrange
+#bb6600
+.....
+.000.
+.000.
+.000.
+.....
+
+PlatformBlue
+#0000bb
+.....
+.000.
+.000.
+.000.
+.....
+
+PlatformOmni
+#bb6600 #0000bb
+.....
+.001.
+.001.
+.011.
+.....
+
+GoalFr1
+gray lightgray
+.000.
+00111
+01001
+00011
+.111.
+
+GoalFr2
+gray lightgray
+.111.
+01011
+01001
+00101
+.000.
+
+GoalFr3
+gray lightgray
+.111.
+11000
+10010
+11100
+.000.
+
+GoalFr4
+gray lightgray
+.000.
+10100
+10010
+11010
+.111.
+
+Blood
+red
+
+InactiveCrate
+white
+0.0.0
+.....
+0...0
+.....
+0.0.0
+
+InactiveBall
+white
+.0.0.
+0...0
+.....
+0...0
+.0.0.
+
+InactivePlatform
+white
+.....
+.0.0.
+.....
+.0.0.
+.....
+
+InactiveDoor
+white
+.0.0.
+0...0
+.0.0.
 .....
 .....
 
-Timer
-Red
+InactiveDoorOpen
+white
 .....
 .....
-.....
-.....
-.....
+.0.0.
+0...0
+.0.0.
 
-TimerAlarm
-Green
-.....
-.....
-.....
-.....
-.....
+InactiveSwitch
+transparent
 
-Timer2
-Yellow
+InactiveTrapdoor
+white
+0...0
 .....
 .....
 .....
-.....
-.....
+0...0
 
-TimerSleep
-LightRed
+InactiveEnemy
+white
 .....
+..0..
+.0.0.
 .....
-.....
-.....
-.....
+.0.0.
+
+TempCrate
+transparent
+
+TempBall
+transparent
+
+TempPlatform
+transparent
+
+tempDoor
+transparent
+
+tempDoorOpen
+transparent
+
+tempSwitch
+transparent
+
+TempTrapdoor
+transparent
+
+TempEnemy
+transparent
+
+Init
+transparent
+
+EnemyTurn
+transparent
+
+Buffer
+transparent
+
+Animate
+transparent
+
+PlayerShadow
+transparent
+
+OrangeToBlue
+transparent
+
+BlueToOrange
+transparent
+
+JumpNow
+transparent
+
+PlayerCrosshair
+transparent
+
+TrapdoorTriggered
+transparent
+
+InactiveTrapdoorTriggered
+transparent
+
+TempTrapdoorTriggered
+transparent
 
 =======
 LEGEND
 =======
 
-( Legend icons are largely arbitrary, next project I'll work out a better system )
-
 . = Background
-, = BackgroundBlack
-; = Sky1
-: = Sky2
-" = Sky3
-' = Wood
 # = Wall
-P = Player and Entrance
-W = Spider
-B = Block
-S = Web1 and Background
-D = Web1 and BackgroundWeb
-H = Hole and Background
-E = Hole and Wood
-Q = Web1 and Block
-$ = Wood and Fairy
-[ = Player and Wood
-L = Leaf1 and Sky1
-U = Leaf2 and Sky3
-I = Leaf2 and Sky1
-Y = Leaf1 and Sky3
-T = TrappedFairy and Web1 and BackgroundWeb
-G = Player and Web1 and BackgroundWeb and SpiderSleep
-! = Timer and BackgroundBlack
-@ = TimerAlarm and BackgroundBlack
-% = Player and SpiderSleep and Entrance
-& = TimerAlarm and Wall
-2 = Timer2 and BackgroundBlack
-* = TimerSleep and BackgroundBlack
+@ = PlayerOrange and Init
+! = GoalFr1
+1 = CrateOrange and InactiveCrate
+a = CrateOmni
+2 = BallOrange and InactiveBall
+b = BallOmni
+3 = EnemyOrangeIdle and InactiveEnemy
+c = EnemyOmniIdle
+4 = DoorOrange and InactiveDoor
+d = DoorOmni
+5 = SwitchOrange and InactiveSwitch
+e = SwitchOmni
+6 = Pit and TrapdoorOrange and InactiveTrapdoor
+f = Pit and TrapdoorOmni
+* = Pit
 
-( Shortcut catch-all terms for defining rules and collisions )
+(main game objects)
+Floor = Floor1 or Floor2
+Player = PlayerOrange or PlayerBlue or PlayerTrans1 or PlayerTrans2 or PlayerTrans3
+Goal = GoalFr1 or GoalFr2 or GoalFr3 or GoalFr4
 
-Path = Path1 or Path2 or Path3
-Obstacle = Wall or Block
-Leaf = Leaf1 or Leaf2
-Sky = Sky1 or Sky2 or Sky3
-StickyWeb = Web1 or Web2
+(PU game objects)
+MonoCrate = CrateOrange or CrateBlue
+Crate = MonoCrate or CrateOmni
+MonoBall = BallOrange or BallBlue
+Ball = MonoBall or BallOmni
+MonoPlatform = PlatformOrange or PlatformBlue
+Platform = MonoPlatform or PlatformOmni
+MonoDoor = DoorOrange or DoorBlue
+Door = DoorOmni or MonoDoor
+MonoDoorOpen = DoorOpenOrange or DoorOpenBlue
+DoorOpen = DoorOpenOmni or MonoDoorOpen
+MonoSwitch = SwitchOrange or SwitchBlue
+Switch = SwitchOmni or MonoSwitch
+MonoTrapdoor = TrapdoorOrange or TrapdoorBlue
+Trapdoor = MonoTrapdoor or TrapdoorOmni
+
+Pushable = Ball or Crate
+InactivePushable = InactiveBall or InactiveCrate
+PushableOmni = BallOmni or CrateOmni
+
+EnemyOrange = EnemyOrangeIdle or EnemyOrangeActive
+EnemyBlue = EnemyBlueIdle or EnemyBlueActive
+EnemyOmni = EnemyOmniIdle or EnemyOmniActive
+MonoEnemy = EnemyOrange or EnemyBlue
+Enemy = MonoEnemy or EnemyOmni
+MonoEnemyActive = EnemyBlueActive or EnemyOrangeActive
+EnemyActive = MonoEnemyActive or EnemyOmniActive
+
+(general obstacles)
+Obstacle = Wall or Player or Crate or Ball or Enemy or Door
+
+(inactive obstacles)
+InactiveObstacle = InactiveCrate or InactiveBall or InactiveEnemy or InactiveDoor
+
+(obstacles for inactive objects)
+ObstacleForInactive = InactiveObstacle or Wall or CrateOmni or BallOmni or EnemyOmni
+
+(obstacles for active enemy)
+ObstacleForMonoEnemy = Wall or Enemy or Door
+
+(obstacles for omni enemy)
+ObstacleForOmniEnemy = ObstacleForMonoEnemy or InactiveEnemy or InactiveDoor
+
+(Have 4 different Pitfillers, so the correct platform is built)
+PitFillerOrange = CrateOrange or BallOrange
+PitFillerBlue = CrateBlue or BallBlue
+PitFillerOmni = CrateOmni or BallOmni
+PitFillerInactive = InactiveCrate or InactiveBall
+
+(Fillings)
+Filling = Platform or Trapdoor
+InactiveFilling = InactivePlatform or InactiveTrapdoor or PlatformOmni or TrapdoorOmni
+
+(Weights for doors)
+Weight = Player or Crate or Ball or Enemy
+InactiveWeight = InactiveCrate or InactiveBall or InactiveEnemy or CrateOmni or BallOmni or EnemyOmni
+
+(Trapdoor triggers)
+Trigger = Player or Enemy
+InactiveTrigger = InactiveEnemy or EnemyOmni
+OmniTrigger = Trigger or InactiveTrigger
+
+(Temporary objects, eg buffers, flags, ...)
+TempAnimTurn = Init or Buffer or EnemyTurn or Animate or PlayerCrosshair
+TempInputTurn = PlayerShadow
 
 =======
 SOUNDS
 =======
 
-Player MOVE 36772507
-Block MOVE 57485107
-Web2 Create 72977302
-Web3 Create 72977302
-Sfx0 83744503
-startgame 92244503
-SpiderRed Create 76932302
+sfx1 27102304
+sfx2 11336309
+Pushable move 69429507
+sfx3 47602107
+sfx4 91878702
+Trapdoor Destroy 77067304
 
 ================
 COLLISIONLAYERS
 ================
 
 Background
-BackgroundBlack, BackgroundWeb, BackgroundRed, Sky, Wood, Entrance
-Web1, Web2, Web3, Hole, Leaf
-Wall,Player,Block, Fairy, TrappedFairy, Spider
-SpiderRed, SpiderSleep
-Path1,Path2,Path3
-RightPath
-Timer, TimerAlarm, Timer2, TimerSleep
+Floor1, Floor2
+Goal, Pit, Switch, DoorOpen
+Platform, Trapdoor
+InactivePlatform, InactiveTrapdoor
+TempPlatform, TempTrapdoor
+InactiveTrapdoorTriggered
+TempTrapdoorTriggered
+TrapdoorTriggered
+Player, Wall, Crate, Ball, Enemy, Door
+InactiveSwitch, InactiveDoorOpen
+TempSwitch, TempDoorOpen
+InactiveCrate, InactiveBall, InactiveEnemy, InactiveDoor
+TempCrate, TempBall, TempEnemy, TempDoor
+
+(Some flags. Just to be sure, might as well use a seperate layer for each)
+Animate
+Buffer
+Init
+EnemyTurn
+PlayerShadow
+OrangeToBlue, BlueToOrange
+JumpNow
+PlayerCrosshair
+
+(wall connector sprites. Unfortunately, each one needs its own layer)
+WallConnectorN
+WallConnectorE
+WallConnectorS
+WallConnectorW
+WallConnectorNE
+WallConnectorNW
+WallConnectorSE
+WallConnectorSW
+
+(DEATH)
+Blood
 
 ======
 RULES
 ======
 
- ( Pushing blocks if you're stuck in a web )
+(INIT TURN)
+(Rules in this section are only run once on level start)
 
- [ > Player no StickyWeb | Block ] -> [ > Player | > Block ]
+(init floor)
+[Init][Player] -> [Init][Player Floor1]
+[Floor1|no Floor] -> [Floor1|Floor2]
++[Floor2|no Floor] -> [Floor2|Floor1]
 
- ( Defines web behavior )
-
- [ Player | Web2 ] -> [ Player | Web1 ]
- [ Player | Web3 ] -> [ Player | Web1 ]
- [ > Player Web1 ] -> [ Player Web2 ]
- [ > Player Web2 ] -> [ Player Web3 ]
-
- ( Keeps player and spider from swapping places )
-
- [ > Player | Spider ] -> [ Player | Spider ]
-
- ( Spider can be pushed )
-
- [ > Block | Spider ] -> [ > Block | > Spider]
-
- ( Define fairy behavior during intro cutscene)
-
- [ Stationary Fairy ] -> [randomDir Fairy]
-
- ( Win state )
-
- [ > Player | Hole no Block ] -> [ | Player Hole ] Sfx0 Win
-
-( Tweaked version of Maadball's pathfinding algorithm -- many thanks! )
-( Source: https://groups.google.com/forum/#!topic/puzzlescript/lHy9O4DuWhk )
-
- [ Player ][ Spider | no Obstacle ] -> [ Player ][ Spider | Path1 ]
-
-startloop
- [ Player Path1 ] -> [ Player Path1 ]
- [ Player ][ Path1 | no Obstacle no Spider no Path3 ] -> [  Player ][ Path1 | Path2 ]
- [ Player ][ Path2 | no Obstacle no Path1 ] -> [  Player ][ Path2 | Path3 ]
- [ Player Path3 ] -> [ Player Path3 ]
- [ Player ][ Path3 | no Obstacle no Path2 ] -> [ Player ][ Path3 | Path1 ]
-endloop
-
-[ Player Path ] -> [ Player Path RightPath ]
-
-startloop
- [ Path3 RightPath | Path2 ] -> [ RightPath | Path2 RightPath ]
- [ Path2 RightPath | Path1 ] -> [ RightPath | Path1 RightPath ]
- [ Path1 RightPath | Path3 ] -> [ RightPath | Path3 RightPath ]
-endloop
-
-[ Path ] -> [ ]
-[ Player ] -> [ Player ]
-[ Spider | RightPath no Block] -> [ > Spider | ]
-[ RightPath ] -> [ ]
-
-( Ends last room )
-
- late[ TrappedFairy ][ SpiderRed ] -> [ TrappedFairy ][ SpiderRed]  Win
-
-( Death animation)
-
- [ > Spider | Player ] -> [ | SpiderRed ]
- late [ SpiderRed ][ BackgroundBlack ] -> [ SpiderRed ][ BackgroundRed ]
-
-( Spider Spawning )
-
- [ Timer ] -> [ Right Timer ]
- [ Timer2 ] -> [ Right Timer2]
- [ Timer2 | TimerAlarm ][ TimerSleep ] -> [ | ][ Timer ]
-
- late [ Timer | TimerAlarm ][ SpiderSleep ] -> [ | ][Spider]
+(init walls)
+right [Init][Wall|Wall] -> [Init][Wall WallConnectorE|Wall WallConnectorW]
+down [Init][Wall|Wall] -> [Init][Wall WallConnectorS|Wall WallConnectorN]
+[Init][WallConnectorN WallConnectorE] -> [Init][WallConnectorN WallConnectorE WallConnectorNE]
+[Init][WallConnectorN WallConnectorW] -> [Init][WallConnectorN WallConnectorW WallConnectorNW]
+[Init][WallConnectorS WallConnectorE] -> [Init][WallConnectorS WallConnectorE WallConnectorSE]
+[Init][WallConnectorS WallConnectorW] -> [Init][WallConnectorS WallConnectorW WallConnectorSW]
 
 ==============
 WINCONDITIONS
 ==============
 
-( Defined in rules )
+some Player on Goal
 
 =======
 LEVELS
 =======
 
-message Once upon a time, five tiny adorable fairies happened upon a hollow in a great old tree.
 
-::'''''''::
-::''$''''::
-::'''''$'::
-U"'''E'''""
-''''''''$""
-"Y$''''''""
-;;'''''''I;
-;;'''['''''
-;;''''''';L
+message Have you ever wondered ...
+message ... if you weren't there ...
+message ... would the universe really care?
 
-message The smallest and most fearful of the fairies peered inside, but was too afraid to go in.
 
-message The other four, who were more curious and adventurous, entered the tree. This left the little fairy all alone.
+message I - Nothing New Under the Sun
 
-::'''''''::
-::'''''''::
-::'''''''::
-U"'''E'''""
-'''''''''""
-"Y'''''''""
-;;'''''''I;
-;;'''['''''
-;;''''''';L
+@##
+#.#
+###
 
-message She waited and waited, but her friends didn't return. Mustering her courage, she ventured in after them.
 
-,###,,,,,,,
-,#H#,,,,,,,
-,#.#,###,,,
-,#S###.#,,,
-,#SSS..#,,,
-######B##,,
-#P....B.#,,
-#####..##,,
-,,,,####,,,
+message II - Universe Hopper
 
-message This was unwise.
+########*
+#..1.1.##
+#..1.1.!#
+#..1.1.##
+#.#######
+#.#*****#
+#.#*1*1*#
+#.#**1**#
+#.#*1*1*#
+#.#*****#
+#.#######
+#*.@.1..#
+#########
 
-,#######,,,
-,#P....##,,
-,#......#,,
-,###BBB##,,
-,,,#...#,,,
-#####S##,,,
-#H.SSS#,,,,
-#######,,,,
-,,,,,,,,,,,
 
-message You see, the brave little fairy didn't know about -me-.
+message III - The Best of Both Worlds
 
-,###,,,,,,,
-,#.########
-,#.....SSS#
-,#.#####S.#
-,#B....##.#
-##.###.#..#
-#P.#SS.#H##
-##.#WS.###,
-,#######,,,
+****#########****
+#####.......#****
+#...#.#.#.#.#####
+#.1.........*.*!#
+#####.#.#.#.#####
+#.b............@#
+#...#.#.#.#.#####
+#####.......#****
+****#########****
 
-message Watch out for my web little fairy. It's easy to get stuck.
 
-!,,#######,
-####.....#@
-#HS#..##.#,
-##S#...#.#,
-,#S##..#.#,
-,#SS..B#.#,
-,###....%#,
-,,,##B.###,
-,,,,####,,,
+message IV - Two Times Two
 
-!,,,,,,,@,,
-########,,,
-#%ssb..##,,
-#...b...##,
-######b..##
-,,####.bss#
-,,#hs.b.ss#
-,,####.b.##
-,,,,,#####,
+*##########
+##...*#.*!#
+#.11....#*#
+##..#*#.#.#
+*#.##.*...#
+*########@#
+********###
 
-!,,,,,,,,,@
-,,#####,,,,
-###.b.###,,
-#s......#,,
-#.###ss.#,,
-#.h#ssb.#,,
-#bb%.b#.#,,
-###.....#,,
-,,#######,,
+message V - Dimensional Prelude
 
-!,,,,,#&##,
-,,,####SH#,
-,,,#..SS##,
-,,,#..BS.#,
-,###..B..#,
-,#%#SBBBS#,
-,#.......#,
-,#########,
-,,,,,,,,,,,
+*####****
+*#d!#****
+##*###***
+#*.*.#***
+#@.#*###*
+#....4.##
+#.1#5#a.#
+#.1.....#
+#..######
+####*****
 
-message Don't worry. Like all the best fairy tales, this one has a happy ending.
 
-,#########,
-##...bb.%#,
-#.s#s...##,
-#.########,
-#s.s##ssh#,
-#bb.##s#s#,
-###ssssss#,
-,,########,
-,,,,,,,,,,,
+message VI - Dimensional Gateways
 
-message The brave little fairy finds her friends.
+******#####******
+******#...#******
+#######.5.#######
+#...#...@...#...#
+#!.*d.1.e.a.4.1.#
+#...#.......#...#
+#######.5.#######
+******#...#******
+******#####******
 
-*,,,,,,,,,,
-,#########@
-,#DDTDDDD#,
-,#DDDDTDD#,
-,#DDDDDDG#,
-,#TDDDDDD#,
-,#DDDTDDD#,
-,#########@
-2,,,,,,,,,,
 
-message And she'll never be apart from them again.
+message VII - Two Times Four
 
-( End of code )
+****###******
+**###.#######
+###..1..#eee#
+#!d@1.1..ee##
+###..1..#eee#
+**###.#######
+****###******
+
+
+message VIII - Game of Marbles
+
+#########**
+#.......#**
+#.2...2.#**
+#.@.....###
+#...5...d!#
+#.b.....###
+#.2...2.#**
+#.......#**
+#########**
+
+
+message IX - Fixing a Hole
+
+#######*********
+#..**!#*********
+#..####*********
+##6##########***
+##..........###*
+*#.##d##d##d#.##
+*#.##.##.##....#
+*#@..6..6...2.##
+*#.##.##.##...#*
+*#d##d##d##...#*
+*#............#*
+*####.1.b.....##
+*#**5..........#
+*###############
+
+
+message X - Half Time
+
+*****###*******
+*#####*#*******
+*#!..#*###*****
+*#.#d#.a.#*****
+*#.d5...5#*****
+####.....#####*
+#**...5..6...#*
+###a.....#...#*
+**#.5...5#...#*
+**####6###...#*
+*****#....2.2##
+*****#.....2..#
+*****#....2.b.#
+*****######..@#
+**********#####
+
+
+message XI - Nemesis
+
+#########******
+#.......#******
+#.#####.#***###
+#.#c#@#.#***#c#
+#.#a#.#.#####d#
+#.#*....b..f.e#
+#.#######b###.#
+###*#..3#f#*#.#
+****#.###.###.#
+****#....*...*#
+****#########d#
+************#!#
+************###
+
+
+message XII - Every Breath You Take
+
+****######***
+****#....#***
+****#.##.#***
+****#....#***
+****##c######
+****#*@*****#
+****#*.....*#
+****#*.b...*#
+****#*.....*#
+****#*...b.*#
+****#*.....*#
+****#*****.*#
+##########.##
+#!*b*b*b....#
+########.##.#
+*******#....#
+*******######
+
+
+message XIII - Stalking Across Universes
+
+**#########***
+**#.......#***
+**#.#...#.#***
+###.......####
+#c@...1...b*!#
+###.......####
+**#.#...#.#***
+**#.......#***
+**#########***
+
+
+message XIV - A Little Help From My Friends
+
+********######
+#########....#
+#.........##3#
+#.#####.b.####
+#.#.####..#***
+#.#..*!#.##***
+#.##.###..#***
+#..#......#***
+##.#.######***
+*#@#.#********
+*#####********
+
+
+message XV - Hope Spot
+
+***#####*###
+***#...#*#!#
+***#.1.#*#*#
+####.#####.#
+#.c#.e.2d..#
+#.##.#.###.#
+#.#@...#*#.#
+#.##.#.###.#
+#....#.....#
+############
+
+
+message XVI - Hope for the Hopeless
+
+***######*****
+***#*##*#####*
+***#....#*#*##
+***#.**.....*#
+***#.**.*.*.##
+####....*...##
+#!*b.e1..4.@c#
+####....*...##
+***#.**.*.*.##
+***#.**.....*#
+***#....#*#*##
+***#*##*#####*
+***######*****
+
+
+message XVII - Blockade
+
+**###
+**#!#
+###*#
+#.#.#
+#.b.#
+#.b.#
+#3#@#
+#####
+
+
+
+message XVIII - Pas de Trois
+
+###########
+#.........#
+#.........#
+#....3....#
+#.........#
+#..e...e..#
+#.........#
+#.........#
+#####@#####
+****#d#****
+****#!#****
+****###****
+
+
+message XIX - Orange Blues
+
+********###**
+********#!###
+#########6.3#
+#...c...d.###
+#.......#f#**
+#..#.#..#.#**
+#..#5#..###**
+#..###..#****
+#.......#****
+#.1...1.#****
+#.##@##.#****
+#.......#****
+#########****
+
+
+message XX - The Last Waltz
+
+**********###****
+**#########3#****
+**#c.##...#d#****
+**##.##.#2#.#****
+**#..#......#****
+###.##.#..#.#****
+#...*.......#****
+#.#a##......#****
+#.#6##.#..1.#****
+#.#6#.......#****
+#...#e#b##b####**
+###f#f#d##d##.#**
+**#@#e.*..*.#.###
+**#########..bb.#
+**********#!#.#f#
+**********###..3#
+************#####
+
+
+message Congratulations! Thanks for playing, hope you enjoyed.
+
+message Encore
+message [Might be a bit too much trial-and-error for an "official" level]
+
+###*###**********
+#c#*#e#*########*
+#d###a#*#......#*
+#...#@###....#.#*
+#.#b#........d3#*
+###.#.###..a.####
+###.#.#*#....dbc#
+#!.*f*###....####
+###f#..##....#***
+**#.##f#######***
+**####.#*********
+***#cd.#*********
+***#####*********
