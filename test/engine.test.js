@@ -163,6 +163,97 @@ LEVELS
 
 ` // end game
 
+const MIRROR_ISLES_CORNERS2 = `title Mirror Isles corners2
+
+========
+OBJECTS
+========
+
+Background
+yellow
+
+Hole
+blue
+
+Player
+DarkRed #493c2b #000000
+..0..
+.111.
+01110
+02220
+.2.2.
+
+RemoveLandRUD
+Blue
+....0
+.....
+.....
+.....
+....0
+
+RemoveLandRU
+Blue
+....0
+.....
+.....
+.....
+.....
+
+RemoveLandRD
+Blue
+.....
+.....
+.....
+.....
+....0
+
+CrateInHole
+Brown DarkBrown Blue
+20002
+01110
+01110
+01110
+20002
+
+=======
+LEGEND
+=======
+
+. = Background
+P = Player
+_ = Hole
+
+RemoveLandR = RemoveLandRUD OR RemoveLandRU OR RemoveLandRD
+
+WaterHere = Hole or CrateInHole
+
+================
+COLLISIONLAYERS
+================
+
+Background
+Player
+Hole, CrateInHole
+RemoveLandR
+
+======
+RULES
+======
+
+RIGHT [ NO WaterHere NO RemoveLandR | WaterHere ] -> [ RemoveLandRUD | WaterHere ]
+UP [ RemoveLandRUD | NO WaterHere ] -> [ RemoveLandRD | ]
+DOWN [ RemoveLandRUD | NO WaterHere ] -> [ RemoveLandRU | ]
+
+=======
+LEVELS
+=======
+
+._
+._
+
+
+` // end game
+
 const SKIPPING_STONES_CORNERS = `title Skipping Stones corners
 
 ========
@@ -332,6 +423,22 @@ describe('engine', () => {
     const neighborCell = engine.currentLevel[0][1]
     const neighborSprites = neighborCell.getSpritesAsSet()
     expect(neighborSprites.has(expectedSprite)).toBe(false)
+  })
+
+  it('draws corner sprites correctly according to mirror isles (just the RightUp corner should be blue)', () => {
+    const { engine, data } = parseEngine(MIRROR_ISLES_CORNERS2)
+    debugger
+    engine.tick()
+    const expectedSprite = getSpriteByName(data, 'RemoveLandRU')
+    const expectedSprite2 = getSpriteByName(data, 'RemoveLandRD')
+    const interestingCell = engine.currentLevel[0][0]
+    let sprites = interestingCell.getSpritesAsSet()
+    expect(sprites.has(expectedSprite)).toBe(true)
+    expect(engine.currentLevel[1][0].getSpritesAsSet().has(expectedSprite2)).toBe(true)
+
+    // Ensure that the CrateInHole does not exist anywhere
+    const crateInHole = data._getSpriteByName('CrateInHole')
+    expect(crateInHole.getCellsThatMatch().size).toBe(0)
   })
 
   it('Respects when an OR LegendItem is on the right side of a Rule to preserve the sprite that was there', () => {

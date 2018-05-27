@@ -161,7 +161,7 @@ class SimpleBracket extends BaseForLines implements ICacheable {
         this._firstCells = new Set()
     }
     toKey() {
-        return `[${this._neighbors.map(n => n.toKey()).join('|')}]`
+        return `${this._direction}[${this._neighbors.map(n => n.toKey()).join('|')}]`
     }
 
     subscribeToNeighborChanges() {
@@ -320,7 +320,7 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
             if (tileWithModifier.isRandom()) {
                 direction = RULE_DIRECTION_ABSOLUTE.STATIONARY
             } else {
-                direction = tileWithModifier._direction
+                direction = tileWithModifier._direction || RULE_DIRECTION_ABSOLUTE.STATIONARY // try not to send nulls
             }
             for (const sprite of sprites.getSprites()) {
                 cell.addSprite(sprite, direction)
