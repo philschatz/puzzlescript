@@ -303,7 +303,7 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
 
         // Remove any sprites that are in the same collisionLayer as sprites that are being added
         const collisionLayerOfSpritesToRemove = new Map<number, GameSprite>()
-        for (const sprite of conditionSprites) {
+        for (const sprite of cell.getSpritesAsSet()) {
             collisionLayerOfSpritesToRemove.set(sprite.getCollisionLayerNum(), sprite)
         }
         for (const sprite of spritesToAdd) {

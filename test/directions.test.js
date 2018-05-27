@@ -367,7 +367,6 @@ P.
     // Grr, since the RANDOM code was executed (and other sprites could have changed)
     // we err on the side of caution and report the Cell as having been changed even though it
     // might not have.
-
     engine.tick()
     // Check if the star "randomly" popped up
     let twoCells = [...two.getCellsThatMatch()]

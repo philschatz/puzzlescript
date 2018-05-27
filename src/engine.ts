@@ -194,11 +194,9 @@ export default class Engine extends EventEmitter2 {
   tickUpdateCells() {
     const changedCellMutations: Set<CellMutation> = new Set()
     for (const rule of this.gameData.rules) {
-      if (rule.evaluate) {
-        const cellMutations = rule.evaluate()
-        for (const mutation of cellMutations) {
-          changedCellMutations.add(mutation)
-        }
+      const cellMutations = rule.evaluate()
+      for (const mutation of cellMutations) {
+        changedCellMutations.add(mutation)
       }
     }
 

@@ -427,7 +427,6 @@ describe('engine', () => {
 
   it('draws corner sprites correctly according to mirror isles (just the RightUp corner should be blue)', () => {
     const { engine, data } = parseEngine(MIRROR_ISLES_CORNERS2)
-    debugger
     engine.tick()
     const expectedSprite = getSpriteByName(data, 'RemoveLandRU')
     const expectedSprite2 = getSpriteByName(data, 'RemoveLandRD')
