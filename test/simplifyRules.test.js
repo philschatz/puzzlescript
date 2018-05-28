@@ -134,8 +134,8 @@ describe('Rule simplifier', () => {
     Player
     green
 
-    Wall
-    yellow
+    SimpleWall
+    Yellow
 
     PrettyHorizWall
     Blue
@@ -148,7 +148,8 @@ describe('Rule simplifier', () => {
     =======
 
     . = Background
-    W = Wall
+    W = SimpleWall
+    Wall = SimpleWall OR PrettyHorizWall OR PrettyVertWall
 
     ================
     COLLISIONLAYERS
@@ -156,15 +157,14 @@ describe('Rule simplifier', () => {
 
     Background
     Player
-    Wall
-    PrettyHorizWall, PrettyVertWall
+    Wall, PrettyHorizWall, PrettyVertWall
 
     ======
     RULES
     ======
 
-    HORIZONTAL [ Wall | Wall | Wall ] -> [ Wall | PrettyHorizWall | Wall ]
-    VERTICAL [ Wall | Wall | Wall ] -> [ Wall | PrettyVertWall | Wall ]
+    HORIZONTAL [ Wall | SimpleWall | Wall ] -> [ Wall | PrettyHorizWall | Wall ]
+    VERTICAL [ Wall | SimpleWall | Wall ] -> [ Wall | PrettyVertWall | Wall ]
 
     =======
     LEVELS
@@ -179,6 +179,7 @@ describe('Rule simplifier', () => {
     const horiz = data._getSpriteByName('PrettyHorizWall')
     const vert = data._getSpriteByName('PrettyVertWall')
     engine.tick()
+    expect(engine.toSnapshot()).toMatchSnapshot()
 
     expect(data.rules.length).toBe(2)
     expect(data.rules[0]._rules.length).toBe(2) // just LEFT RIGHT
@@ -196,6 +197,5 @@ describe('Rule simplifier', () => {
     expect(engine.currentLevel[2][0].getSpritesAsSet().has(vert)).toBe(true)
     expect(engine.currentLevel[2][3].getSpritesAsSet().has(vert)).toBe(true)
 
-    expect(engine.toSnapshot()).toMatchSnapshot()
   })
 })

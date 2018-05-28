@@ -1,1004 +1,679 @@
-title ParaLands
-author Lukas
+title Beam Islands
+author mjau
+homepage http://twitter.com/kamjau
 run_rules_on_level_start
-again_interval 0.05
-norepeat_action
+realtime_interval 0.3
+text_color #f197e9
+(debug)
 
-========
-OBJECTS
-========
+( for ludum dare 29 )
 
+=========
+ OBJECTS
+=========
 
-Background
-darkgray
+(
+	#000000 Black
+	#df2619 Inactive border
+	#078ffd Active border
+	#a27d5b Bridge
+	#6719ac Dark water
+	#a13cb7 Light water
+	#f197e9 Beam water
+	#606060 Beam under
+	#f7e26b Player
+	#ffffff White
+)
 
-Floor1
-darkgray
+Animate
+Transparent
 
-Floor2
-#444444
+BgNW1 .
+#6719ac #a13cb7
+00000
+00000
+00000
+00000
+00000
 
-Wall
-gray #444444 #bbbbbb
-.222.
-20001
-20001
-20001
+BgNE1
+#6719ac #a13cb7
+00000
+00000
+00100
+00000
+00000
+
+BgSW1
+#6719ac #a13cb7
+00000
+00000
+00000
+01000
+00000
+
+BgSE1
+#6719ac #a13cb7
+00000
+00000
+00000
+00000
+00000
+
+BgNW2
+#6719ac #a13cb7
+00000
+00000
+00000
+00000
+00000
+
+BgNE2
+#6719ac #a13cb7
+00000
+00000
+00000
+00000
+00000
+
+BgSW2
+#6719ac #a13cb7
+00000
+00000
+00000
+01100
+00000
+
+BgSE2
+#6719ac #a13cb7
+00000
+00000
+00000
+00000
+00000
+
+BgNW3
+#6719ac #a13cb7
+00000
+00000
+00000
+00000
+00000
+
+BgNE3
+#6719ac #a13cb7
+00000
+00000
+01000
+00000
+00000
+
+BgSW3
+#6719ac #a13cb7
+00000
+00000
+00000
+00100
+00000
+
+BgSE3
+#6719ac #a13cb7
+00000
+00000
+00000
+00000
+00000
+
+BgNW4
+#6719ac #a13cb7
+00000
+00000
+00000
+00000
+00000
+
+BgNE4
+#6719ac #a13cb7
+00000
+00000
+01100
+00000
+00000
+
+BgSW4
+#6719ac #a13cb7
+00000
+00000
+00000
+00000
+00000
+
+BgSE4
+#6719ac #a13cb7
+00000
+00000
+00000
+00000
+00000
+
+PlayerTop
+#f7e26b
+.....
+.....
+.....
+.0.0.
+.000.
+
+Player
+#f7e26b #000000
+01010
+.000.
+.0.0.
+.....
+.....
+
+Island #
+#000000
+
+FromBlockIsland
+Transparent
+
+IslandEdgeDetect
+Transparent
+
+IslandInterior
+Transparent
+
+IslandSide
+#000000
+00000
+.....
+.....
+.....
+.....
+
+BeamTop1
+#ffffff #f197e9 #a13cb7
+..2..
+..1..
+..0..
+..1..
+..0..
+
+BeamTop2
+#ffffff #f197e9 #a13cb7
+.....
+..2..
+..1..
+..0..
+..0..
+
+Beam o
+#ffffff #f197e9 #a13cb7
+.101.
+.000.
+.000.
+.000.
+.212.
+
+BeamReflect
+#a13cb7
+..0..
+.....
+.....
+.....
+.....
+
+Bridge -
+#000000 #a27d5b
+.....
 .111.
+.101.
+.111.
+.000.
 
-WallConnectorN
-gray #444444 #bbbbbb
-20001
+BeamUnder
+#606060
+.....
+..0..
+.000.
+.000.
+.....
+
+PlayerIsland
+Transparent #078ffd
+.....
+.....
+..0..
+.....
+.....
+
+BlockIsland
+Transparent #df2619
+.....
+.....
+..0..
+.....
+.....
+
+IslandEdgeN
+Transparent #df2619
+11111
 .....
 .....
 .....
 .....
 
-WallConnectorS
-gray #444444 #bbbbbb
+PlayerIslandEdgeN
+Transparent #078ffd
+11111
 .....
 .....
 .....
 .....
-20001
 
-WallConnectorE
-gray #444444 #bbbbbb
-....2
-....0
-....0
-....0
+IslandEdgeS
+Transparent #df2619
+.....
+.....
+.....
+.....
+11111
+
+PlayerIslandEdgeS
+Transparent #078ffd
+.....
+.....
+.....
+.....
+11111
+
+IslandEdgeE
+Transparent #df2619
+....1
+....1
+....1
+....1
 ....1
 
-WallConnectorW
-gray #444444 #bbbbbb
-2....
-0....
-0....
-0....
+PlayerIslandEdgeE
+Transparent #078ffd
+....1
+....1
+....1
+....1
+....1
+
+IslandEdgeW
+Transparent #df2619
+1....
+1....
+1....
+1....
 1....
 
-WallConnectorNE
-gray
-....0
+PlayerIslandEdgeW
+Transparent #078ffd
+1....
+1....
+1....
+1....
+1....
+
+
+IslandInnerEdgeNW
+Transparent #df2619
+1....
 .....
 .....
 .....
 .....
 
-WallConnectorNW
-gray
-0....
+PlayerIslandInnerEdgeNW
+Transparent #078ffd
+1....
 .....
 .....
 .....
 .....
 
-WallConnectorSE
-gray
+IslandInnerEdgeNE
+Transparent #df2619
+....1
 .....
 .....
 .....
 .....
-....0
 
-WallConnectorSW
-gray
+PlayerIslandInnerEdgeNE
+Transparent #078ffd
+....1
 .....
 .....
 .....
 .....
-0....
 
-Pit
-black
-
-PlayerOrange
-orange blue
-.000.
-.101.
-00000
-.000.
-.0.0.
-
-PlayerBlue
-blue orange
-.000.
-.101.
-00000
-.000.
-.0.0.
-
-PlayerTrans1
-orange blue black
-.....
-.000.
-.101.
-22222
-.222.
-
-PlayerTrans2
-black
-.....
-.....
-.000.
-00000
-.000.
-
-PlayerTrans3
-blue orange black
-.....
-.000.
-.101.
-22222
-.222.
-
-CrateOrange
-orange #ffbb88 #bb6600
-11112
-10002
-10002
-10002
-22222
-
-CrateBlue
-blue #8888ff #0000bb
-11112
-10002
-10002
-10002
-22222
-
-CrateOmni
-orange #ffbb88 #bb6600 blue #8888ff #0000bb
-11145
-10035
-10035
-10335
-22555
-
-BallOrange
-orange #ffbb88 #bb6600
-.002.
-01002
-00002
-20002
-.222.
-
-BallBlue
-blue #8888ff #0000bb
-.002.
-01002
-00002
-20002
-.222.
-
-BallOmni
-orange #ffbb88 #bb6600 blue #0000bb
-.004.
-01034
-00034
-20334
-.244.
-
-DoorOrange
-orange #bb6600
-.000.
-00000
-10001
-11111
-.111.
-
-DoorOpenOrange
-orange
-.....
-.....
-.000.
-00000
-.000.
-
-DoorBlue
-blue #0000bb
-.000.
-00000
-10001
-11111
-.111.
-
-DoorOpenBlue
-blue
-.....
-.....
-.000.
-00000
-.000.
-
-DoorOmni
-orange #bb6600 blue #0000bb
-.002.
-00022
-10223
-11333
-.133.
-
-DoorOpenOmni
-orange blue
-.....
-.....
-.001.
-00011
-.011.
-
-SwitchOrange
-orange
-.....
-..0..
-.000.
-..0..
-.....
-
-SwitchBlue
-blue
-.....
-..0..
-.000.
-..0..
-.....
-
-SwitchOmni
-orange blue
-.....
-..0..
-.001.
-..1..
-.....
-
-TrapdoorOrange
-orange #ffbb88
-.000.
-01010
-00000
-01010
-.000.
-
-TrapdoorBlue
-blue #8888ff
-.000.
-01010
-00000
-01010
-.000.
-
-TrapdoorOmni
-orange #ffbb88 blue #8888ff
-.002.
-01032
-00022
-01232
-.022.
-
-EnemyOrangeIdle
-orange #ffbb88
-.....
-..0..
-.101.
-.0.0.
-.0.0.
-
-EnemyOrangeActive
-orange #ffbb88
-.....
-.....
-..0..
-.101.
-.0.0.
-
-EnemyBlueIdle
-blue #8888ff
-.....
-..0..
-.101.
-.0.0.
-.0.0.
-
-EnemyBlueActive
-blue #8888ff
-.....
-.....
-..0..
-.101.
-.0.0.
-
-EnemyOmniIdle
-orange #ffbb88 blue #8888ff
-.....
-..0..
-.123.
-.0.2.
-.0.2.
-
-EnemyOmniActive
-orange #ffbb88 blue #8888ff
-.....
-.....
-..0..
-.123.
-.0.2.
-
-PlatformOrange
-#bb6600
-.....
-.000.
-.000.
-.000.
-.....
-
-PlatformBlue
-#0000bb
-.....
-.000.
-.000.
-.000.
-.....
-
-PlatformOmni
-#bb6600 #0000bb
-.....
-.001.
-.001.
-.011.
-.....
-
-GoalFr1
-gray lightgray
-.000.
-00111
-01001
-00011
-.111.
-
-GoalFr2
-gray lightgray
-.111.
-01011
-01001
-00101
-.000.
-
-GoalFr3
-gray lightgray
-.111.
-11000
-10010
-11100
-.000.
-
-GoalFr4
-gray lightgray
-.000.
-10100
-10010
-11010
-.111.
-
-Blood
-red
-
-InactiveCrate
-white
-0.0.0
-.....
-0...0
-.....
-0.0.0
-
-InactiveBall
-white
-.0.0.
-0...0
-.....
-0...0
-.0.0.
-
-InactivePlatform
-white
-.....
-.0.0.
-.....
-.0.0.
-.....
-
-InactiveDoor
-white
-.0.0.
-0...0
-.0.0.
-.....
-.....
-
-InactiveDoorOpen
-white
-.....
-.....
-.0.0.
-0...0
-.0.0.
-
-InactiveSwitch
-transparent
-
-InactiveTrapdoor
-white
-0...0
+IslandInnerEdgeSW
+Transparent #df2619
 .....
 .....
 .....
-0...0
-
-InactiveEnemy
-white
 .....
-..0..
-.0.0.
+1....
+
+PlayerIslandInnerEdgeSW
+Transparent #078ffd
 .....
-.0.0.
+.....
+.....
+.....
+1....
 
-TempCrate
-transparent
+IslandInnerEdgeSE
+Transparent #df2619
+.....
+.....
+.....
+.....
+....1
 
-TempBall
-transparent
+PlayerIslandInnerEdgeSE
+Transparent #078ffd
+.....
+.....
+.....
+.....
+....1
 
-TempPlatform
-transparent
+========
+ LEGEND
+========
 
-tempDoor
-transparent
+@ = Player and Island
 
-tempDoorOpen
-transparent
+Background = BgNW1 or BgNE1 or BgSW1 or BgSE1 or BgNW2 or BgNE2 or BgSW2 or BgSE2 or BgNW3 or BgNE3 or BgSW3 or BgSE3 or BgNW4 or BgNE4 or BgSW4 or BgSE4
 
-tempSwitch
-transparent
+IslandEdgeV = IslandEdgeN or IslandEdgeS
+IslandEdgeH = IslandEdgeE or IslandEdgeW
+IslandInnerEdge = IslandInnerEdgeNW or IslandInnerEdgeNE or IslandInnerEdgeSW or IslandInnerEdgeSE
+IslandEdge = IslandEdgeH or IslandEdgeV or IslandInnerEdge or IslandEdgeDetect or IslandInterior
+Movable = Player or Island or IslandEdge or PlayerIsland
+MoveBlock = Island or Bridge
+Walkable = Island or Bridge
+BeamTop = BeamTop1 or BeamTop2
 
-TempTrapdoor
-transparent
+IslandEdgeDetectN = IslandEdgeN or IslandEdgeDetect
+IslandEdgeDetectS = IslandEdgeS or IslandEdgeDetect
+IslandEdgeDetectE = IslandEdgeE or IslandEdgeDetect
+IslandEdgeDetectW = IslandEdgeW or IslandEdgeDetect
 
-TempEnemy
-transparent
+Cleanup = IslandInnerEdge or BeamTop or BeamUnder or IslandSide or PlayerTop or BeamReflect
 
-Init
-transparent
+Frame2 = BgNW2 or BgNW4
 
-EnemyTurn
-transparent
+========
+ SOUNDS
+========
 
-Buffer
-transparent
+SFX0 57465701 ( beam )
+SFX1 45881509 ( merge )
+SFX2 70148904 ( can't move )
+SFX3 3171908  ( move )
+EndLevel 94824903
 
-Animate
-transparent
-
-PlayerShadow
-transparent
-
-OrangeToBlue
-transparent
-
-BlueToOrange
-transparent
-
-JumpNow
-transparent
-
-PlayerCrosshair
-transparent
-
-TrapdoorTriggered
-transparent
-
-InactiveTrapdoorTriggered
-transparent
-
-TempTrapdoorTriggered
-transparent
-
-=======
-LEGEND
-=======
-
-. = Background
-# = Wall
-@ = PlayerOrange and Init
-! = GoalFr1
-1 = CrateOrange and InactiveCrate
-a = CrateOmni
-2 = BallOrange and InactiveBall
-b = BallOmni
-3 = EnemyOrangeIdle and InactiveEnemy
-c = EnemyOmniIdle
-4 = DoorOrange and InactiveDoor
-d = DoorOmni
-5 = SwitchOrange and InactiveSwitch
-e = SwitchOmni
-6 = Pit and TrapdoorOrange and InactiveTrapdoor
-f = Pit and TrapdoorOmni
-* = Pit
-
-(main game objects)
-Floor = Floor1 or Floor2
-Player = PlayerOrange or PlayerBlue or PlayerTrans1 or PlayerTrans2 or PlayerTrans3
-Goal = GoalFr1 or GoalFr2 or GoalFr3 or GoalFr4
-
-(PU game objects)
-MonoCrate = CrateOrange or CrateBlue
-Crate = MonoCrate or CrateOmni
-MonoBall = BallOrange or BallBlue
-Ball = MonoBall or BallOmni
-MonoPlatform = PlatformOrange or PlatformBlue
-Platform = MonoPlatform or PlatformOmni
-MonoDoor = DoorOrange or DoorBlue
-Door = DoorOmni or MonoDoor
-MonoDoorOpen = DoorOpenOrange or DoorOpenBlue
-DoorOpen = DoorOpenOmni or MonoDoorOpen
-MonoSwitch = SwitchOrange or SwitchBlue
-Switch = SwitchOmni or MonoSwitch
-MonoTrapdoor = TrapdoorOrange or TrapdoorBlue
-Trapdoor = MonoTrapdoor or TrapdoorOmni
-
-Pushable = Ball or Crate
-InactivePushable = InactiveBall or InactiveCrate
-PushableOmni = BallOmni or CrateOmni
-
-EnemyOrange = EnemyOrangeIdle or EnemyOrangeActive
-EnemyBlue = EnemyBlueIdle or EnemyBlueActive
-EnemyOmni = EnemyOmniIdle or EnemyOmniActive
-MonoEnemy = EnemyOrange or EnemyBlue
-Enemy = MonoEnemy or EnemyOmni
-MonoEnemyActive = EnemyBlueActive or EnemyOrangeActive
-EnemyActive = MonoEnemyActive or EnemyOmniActive
-
-(general obstacles)
-Obstacle = Wall or Player or Crate or Ball or Enemy or Door
-
-(inactive obstacles)
-InactiveObstacle = InactiveCrate or InactiveBall or InactiveEnemy or InactiveDoor
-
-(obstacles for inactive objects)
-ObstacleForInactive = InactiveObstacle or Wall or CrateOmni or BallOmni or EnemyOmni
-
-(obstacles for active enemy)
-ObstacleForMonoEnemy = Wall or Enemy or Door
-
-(obstacles for omni enemy)
-ObstacleForOmniEnemy = ObstacleForMonoEnemy or InactiveEnemy or InactiveDoor
-
-(Have 4 different Pitfillers, so the correct platform is built)
-PitFillerOrange = CrateOrange or BallOrange
-PitFillerBlue = CrateBlue or BallBlue
-PitFillerOmni = CrateOmni or BallOmni
-PitFillerInactive = InactiveCrate or InactiveBall
-
-(Fillings)
-Filling = Platform or Trapdoor
-InactiveFilling = InactivePlatform or InactiveTrapdoor or PlatformOmni or TrapdoorOmni
-
-(Weights for doors)
-Weight = Player or Crate or Ball or Enemy
-InactiveWeight = InactiveCrate or InactiveBall or InactiveEnemy or CrateOmni or BallOmni or EnemyOmni
-
-(Trapdoor triggers)
-Trigger = Player or Enemy
-InactiveTrigger = InactiveEnemy or EnemyOmni
-OmniTrigger = Trigger or InactiveTrigger
-
-(Temporary objects, eg buffers, flags, ...)
-TempAnimTurn = Init or Buffer or EnemyTurn or Animate or PlayerCrosshair
-TempInputTurn = PlayerShadow
-
-=======
-SOUNDS
-=======
-
-sfx1 27102304
-sfx2 11336309
-Pushable move 69429507
-sfx3 47602107
-sfx4 91878702
-Trapdoor Destroy 77067304
-
-================
-COLLISIONLAYERS
-================
+=================
+ COLLISIONLAYERS
+=================
 
 Background
-Floor1, Floor2
-Goal, Pit, Switch, DoorOpen
-Platform, Trapdoor
-InactivePlatform, InactiveTrapdoor
-TempPlatform, TempTrapdoor
-InactiveTrapdoorTriggered
-TempTrapdoorTriggered
-TrapdoorTriggered
-Player, Wall, Crate, Ball, Enemy, Door
-InactiveSwitch, InactiveDoorOpen
-TempSwitch, TempDoorOpen
-InactiveCrate, InactiveBall, InactiveEnemy, InactiveDoor
-TempCrate, TempBall, TempEnemy, TempDoor
-
-(Some flags. Just to be sure, might as well use a seperate layer for each)
 Animate
-Buffer
-Init
-EnemyTurn
-PlayerShadow
-OrangeToBlue, BlueToOrange
-JumpNow
-PlayerCrosshair
-
-(wall connector sprites. Unfortunately, each one needs its own layer)
-WallConnectorN
-WallConnectorE
-WallConnectorS
-WallConnectorW
-WallConnectorNE
-WallConnectorNW
-WallConnectorSE
-WallConnectorSW
-
-(DEATH)
-Blood
-
-======
-RULES
-======
-
-(INIT TURN)
-(Rules in this section are only run once on level start)
-
-(init floor)
-[Init][Player] -> [Init][Player Floor1]
-[Floor1|no Floor] -> [Floor1|Floor2]
-+[Floor2|no Floor] -> [Floor2|Floor1]
-
-(init walls)
-right [Init][Wall|Wall] -> [Init][Wall WallConnectorE|Wall WallConnectorW]
-down [Init][Wall|Wall] -> [Init][Wall WallConnectorS|Wall WallConnectorN]
-[Init][WallConnectorN WallConnectorE] -> [Init][WallConnectorN WallConnectorE WallConnectorNE]
-[Init][WallConnectorN WallConnectorW] -> [Init][WallConnectorN WallConnectorW WallConnectorNW]
-[Init][WallConnectorS WallConnectorE] -> [Init][WallConnectorS WallConnectorE WallConnectorSE]
-[Init][WallConnectorS WallConnectorW] -> [Init][WallConnectorS WallConnectorW WallConnectorSW]
-
-==============
-WINCONDITIONS
-==============
-
-some Player on Goal
+IslandSide, BeamReflect
+Beam
+Island, Bridge
+IslandEdgeN, PlayerIslandEdgeN
+IslandEdgeS, PlayerIslandEdgeS
+IslandEdgeE, PlayerIslandEdgeE
+IslandEdgeW, PlayerIslandEdgeW
+IslandInnerEdgeNW, PlayerIslandInnerEdgeNW
+IslandInnerEdgeNE, PlayerIslandInnerEdgeNE
+IslandInnerEdgeSW, PlayerIslandInnerEdgeSW
+IslandInnerEdgeSE, PlayerIslandInnerEdgeSE
+IslandInterior, IslandEdgeDetect
+BeamUnder
+Player
+PlayerIsland, BlockIsland, FromBlockIsland
+BeamTop
+PlayerTop
 
 =======
-LEVELS
+ RULES
 =======
 
-
-message Have you ever wondered ...
-message ... if you weren't there ...
-message ... would the universe really care?
-
-
-message I - Nothing New Under the Sun
-
-@##
-#.#
-###
-
-
-message II - Universe Hopper
-
-########*
-#..1.1.##
-#..1.1.!#
-#..1.1.##
-#.#######
-#.#*****#
-#.#*1*1*#
-#.#**1**#
-#.#*1*1*#
-#.#*****#
-#.#######
-#*.@.1..#
-#########
-
-
-message III - The Best of Both Worlds
-
-****#########****
-#####.......#****
-#...#.#.#.#.#####
-#.1.........*.*!#
-#####.#.#.#.#####
-#.b............@#
-#...#.#.#.#.#####
-#####.......#****
-****#########****
-
-
-message IV - Two Times Two
-
-*##########
-##...*#.*!#
-#.11....#*#
-##..#*#.#.#
-*#.##.*...#
-*########@#
-********###
-
-message V - Dimensional Prelude
-
-*####****
-*#d!#****
-##*###***
-#*.*.#***
-#@.#*###*
-#....4.##
-#.1#5#a.#
-#.1.....#
-#..######
-####*****
-
-
-message VI - Dimensional Gateways
-
-******#####******
-******#...#******
-#######.5.#######
-#...#...@...#...#
-#!.*d.1.e.a.4.1.#
-#...#.......#...#
-#######.5.#######
-******#...#******
-******#####******
-
-
-message VII - Two Times Four
-
-****###******
-**###.#######
-###..1..#eee#
-#!d@1.1..ee##
-###..1..#eee#
-**###.#######
-****###******
-
-
-message VIII - Game of Marbles
-
-#########**
-#.......#**
-#.2...2.#**
-#.@.....###
-#...5...d!#
-#.b.....###
-#.2...2.#**
-#.......#**
-#########**
-
-
-message IX - Fixing a Hole
-
-#######*********
-#..**!#*********
-#..####*********
-##6##########***
-##..........###*
-*#.##d##d##d#.##
-*#.##.##.##....#
-*#@..6..6...2.##
-*#.##.##.##...#*
-*#d##d##d##...#*
-*#............#*
-*####.1.b.....##
-*#**5..........#
-*###############
-
-
-message X - Half Time
-
-*****###*******
-*#####*#*******
-*#!..#*###*****
-*#.#d#.a.#*****
-*#.d5...5#*****
-####.....#####*
-#**...5..6...#*
-###a.....#...#*
-**#.5...5#...#*
-**####6###...#*
-*****#....2.2##
-*****#.....2..#
-*****#....2.b.#
-*****######..@#
-**********#####
-
-
-message XI - Nemesis
-
-#########******
-#.......#******
-#.#####.#***###
-#.#c#@#.#***#c#
-#.#a#.#.#####d#
-#.#*....b..f.e#
-#.#######b###.#
-###*#..3#f#*#.#
-****#.###.###.#
-****#....*...*#
-****#########d#
-************#!#
-************###
-
-
-message XII - Every Breath You Take
-
-****######***
-****#....#***
-****#.##.#***
-****#....#***
-****##c######
-****#*@*****#
-****#*.....*#
-****#*.b...*#
-****#*.....*#
-****#*...b.*#
-****#*.....*#
-****#*****.*#
-##########.##
-#!*b*b*b....#
-########.##.#
-*******#....#
-*******######
-
-
-message XIII - Stalking Across Universes
-
-**#########***
-**#.......#***
-**#.#...#.#***
-###.......####
-#c@...1...b*!#
-###.......####
-**#.#...#.#***
-**#.......#***
-**#########***
-
-
-message XIV - A Little Help From My Friends
-
-********######
-#########....#
-#.........##3#
-#.#####.b.####
-#.#.####..#***
-#.#..*!#.##***
-#.##.###..#***
-#..#......#***
-##.#.######***
-*#@#.#********
-*#####********
-
-
-message XV - Hope Spot
-
-***#####*###
-***#...#*#!#
-***#.1.#*#*#
-####.#####.#
-#.c#.e.2d..#
-#.##.#.###.#
-#.#@...#*#.#
-#.##.#.###.#
-#....#.....#
-############
-
-
-message XVI - Hope for the Hopeless
-
-***######*****
-***#*##*#####*
-***#....#*#*##
-***#.**.....*#
-***#.**.*.*.##
-####....*...##
-#!*b.e1..4.@c#
-####....*...##
-***#.**.*.*.##
-***#.**.....*#
-***#....#*#*##
-***#*##*#####*
-***######*****
-
-
-message XVII - Blockade
-
-**###
-**#!#
-###*#
-#.#.#
-#.b.#
-#.b.#
-#3#@#
-#####
-
-
-
-message XVIII - Pas de Trois
-
-###########
-#.........#
-#.........#
-#....3....#
-#.........#
-#..e...e..#
-#.........#
-#.........#
-#####@#####
-****#d#****
-****#!#****
-****###****
-
-
-message XIX - Orange Blues
-
-********###**
-********#!###
-#########6.3#
-#...c...d.###
-#.......#f#**
-#..#.#..#.#**
-#..#5#..###**
-#..###..#****
-#.......#****
-#.1...1.#****
-#.##@##.#****
-#.......#****
-#########****
-
-
-message XX - The Last Waltz
-
-**********###****
-**#########3#****
-**#c.##...#d#****
-**##.##.#2#.#****
-**#..#......#****
-###.##.#..#.#****
-#...*.......#****
-#.#a##......#****
-#.#6##.#..1.#****
-#.#6#.......#****
-#...#e#b##b####**
-###f#f#d##d##.#**
-**#@#e.*..*.#.###
-**#########..bb.#
-**********#!#.#f#
-**********###..3#
-************#####
-
-
-message Congratulations! Thanks for playing, hope you enjoyed.
-
-message Encore
-message [Might be a bit too much trial-and-error for an "official" level]
-
-###*###**********
-#c#*#e#*########*
-#d###a#*#......#*
-#...#@###....#.#*
-#.#b#........d3#*
-###.#.###..a.####
-###.#.#*#....dbc#
-#!.*f*###....####
-###f#..##....#***
-**#.##f#######***
-**####.#*********
-***#cd.#*********
-***#####*********
+[ no Background ] -> [ BgNW1 ]
+down  [ BgNW1 | BgNW1 ] -> [ BgNW1 | BgSW1 ]
+right [ BgNW1 | BgNW1 ] -> [ BgNW1 | BgNE1 ]
+right [ BgSW1 | BgSW1 ] -> [ BgSW1 | BgSE1 ]
+
+[ stationary Player ][ Background ] -> [ Player ][ Background Animate ]
+[ BgNW1 Animate ] -> [ BgNW2 ]
+[ BgNE1 Animate ] -> [ BgNE2 ]
+[ BgSW1 Animate ] -> [ BgSW2 ]
+[ BgSE1 Animate ] -> [ BgSE2 ]
+[ BgNW2 Animate ] -> [ BgNW3 ]
+[ BgNE2 Animate ] -> [ BgNE3 ]
+[ BgSW2 Animate ] -> [ BgSW3 ]
+[ BgSE2 Animate ] -> [ BgSE3 ]
+[ BgNW3 Animate ] -> [ BgNW4 ]
+[ BgNE3 Animate ] -> [ BgNE4 ]
+[ BgSW3 Animate ] -> [ BgSW4 ]
+[ BgSE3 Animate ] -> [ BgSE4 ]
+[ BgNW4 Animate ] -> [ BgNW1 ]
+[ BgNE4 Animate ] -> [ BgNE1 ]
+[ BgSW4 Animate ] -> [ BgSW1 ]
+[ BgSE4 Animate ] -> [ BgSE1 ]
+
+[ Cleanup ] -> []
+
+( reset player island edges )
+[ PlayerIslandEdgeN ] -> [ IslandEdgeN ]
+[ PlayerIslandEdgeS ] -> [ IslandEdgeS ]
+[ PlayerIslandEdgeE ] -> [ IslandEdgeE ]
+[ PlayerIslandEdgeW ] -> [ IslandEdgeW ]
+[ PlayerIslandInnerEdgeNE ] -> [ IslandInnerEdgeNE ]
+[ PlayerIslandInnerEdgeNW ] -> [ IslandInnerEdgeNW ]
+[ PlayerIslandInnerEdgeSE ] -> [ IslandInnerEdgeSE ]
+[ PlayerIslandInnerEdgeSW ] -> [ IslandInnerEdgeSW ]
+
+( merge )
+[ action Player ][ IslandEdge ] -> [ action Player ][]
+[ action Player ] -> [ Player ] SFX1
+
+( simple movement )
+[ > Player | Walkable ] -> [ | Player Walkable ]
+[ > Player Bridge | no Walkable ] -> [ Player Bridge | ]
+
+( swap island types if player changed islands )
+[ Player Bridge ][ PlayerIsland ] -> [ Player Bridge ][ BlockIsland ]
+[ Player BlockIsland ] -> [ Player FromBlockIsland ]
+[ Player FromBlockIsland ][ BlockIsland ] -> [ Player FromBlockIsland ][ FromBlockIsland ]
+[ Player FromBlockIsland ][ PlayerIsland ] -> [ Player FromBlockIsland ][ BlockIsland ]
+[ FromBlockIsland ] -> []
+
+( beam holes in unoccupied islands )
+[ Beam Island BlockIsland IslandEdge ] -> [ Beam Island BlockIsland ]
+[ Beam Island BlockIsland ] -> [ up Beam ] SFX0
+up    [ up Beam | BlockIsland ] -> [ up Beam | BlockIsland IslandEdgeS ]
+down  [ up Beam | BlockIsland ] -> [ up Beam | BlockIsland IslandEdgeN ]
+right [ up Beam | BlockIsland ] -> [ up Beam | BlockIsland IslandEdgeW ]
+left  [ up Beam | BlockIsland ] -> [ up Beam | BlockIsland IslandEdgeE ]
+[ up Beam ] -> [ Beam ]
+
+( edge detection )
+[ Island no IslandEdge ] -> [ Island IslandEdgeN IslandEdgeS IslandEdgeE IslandEdgeW IslandEdgeDetect ]
+up    [ IslandEdgeDetect IslandEdgeN | IslandEdgeDetect ] -> [ IslandEdgeDetect | IslandEdgeDetect ]
+down  [ IslandEdgeDetect IslandEdgeS | IslandEdgeDetect ] -> [ IslandEdgeDetect | IslandEdgeDetect ]
+right [ IslandEdgeDetect IslandEdgeE | IslandEdgeDetect ] -> [ IslandEdgeDetect | IslandEdgeDetect ]
+left  [ IslandEdgeDetect IslandEdgeW | IslandEdgeDetect ] -> [ IslandEdgeDetect | IslandEdgeDetect ]
+[ IslandEdgeDetect ] -> [ IslandInterior ]
+
+right [ IslandEdgeN no IslandEdgeE | no IslandEdgeN ] -> [ IslandEdgeN | IslandInnerEdgeNW ]
+left  [ IslandEdgeN no IslandEdgeW | no IslandEdgeN ] -> [ IslandEdgeN | IslandInnerEdgeNE ]
+right [ IslandEdgeS no IslandEdgeE | no IslandEdgeS ] -> [ IslandEdgeS | IslandInnerEdgeSW ]
+left  [ IslandEdgeS no IslandEdgeW | no IslandEdgeS ] -> [ IslandEdgeS | IslandInnerEdgeSE ]
+
+( player island )
+[ Player Island ] -> [ Player Island PlayerIsland ]
+  up    [ PlayerIsland no IslandEdgeN | Island ] -> [ PlayerIsland | Island PlayerIsland ]
++ down  [ PlayerIsland no IslandEdgeS | Island ] -> [ PlayerIsland | Island PlayerIsland ]
++ right [ PlayerIsland no IslandEdgeE | Island ] -> [ PlayerIsland | Island PlayerIsland ]
++ left  [ PlayerIsland no IslandEdgeW | Island ] -> [ PlayerIsland | Island PlayerIsland ]
+[ Island no PlayerIsland ] -> [ Island BlockIsland ]
+
+( rigid movement )
+[ > Player ][ PlayerIsland ] -> [ > Player ][ > PlayerIsland ]
+[ > PlayerIsland Island | no MoveBlock ] -> [ > PlayerIsland > Island | ]
+[ < Island | Island no BlockIsland ] -> [ < Island | < Island ]
+[ stationary Island PlayerIsland ][ moving Player ] -> [ Island PlayerIsland ][ stationary Player ] SFX2
+[ stationary Island PlayerIsland ][ moving Movable ] -> [ Island stationary PlayerIsland ][ stationary Movable ]
+
+[ > PlayerIsland IslandEdge ] -> [ > PlayerIsland > IslandEdge ]
+
+( highlight player island edges )
+[ PlayerIsland IslandEdgeN ] -> [ PlayerIsland PlayerIslandEdgeN ]
+[ PlayerIsland IslandEdgeS ] -> [ PlayerIsland PlayerIslandEdgeS ]
+[ PlayerIsland IslandEdgeE ] -> [ PlayerIsland PlayerIslandEdgeE ]
+[ PlayerIsland IslandEdgeW ] -> [ PlayerIsland PlayerIslandEdgeW ]
+[ PlayerIsland IslandInnerEdgeNE ] -> [ PlayerIsland PlayerIslandInnerEdgeNE ]
+[ PlayerIsland IslandInnerEdgeNW ] -> [ PlayerIsland PlayerIslandInnerEdgeNW ]
+[ PlayerIsland IslandInnerEdgeSE ] -> [ PlayerIsland PlayerIslandInnerEdgeSE ]
+[ PlayerIsland IslandInnerEdgeSW ] -> [ PlayerIsland PlayerIslandInnerEdgeSW ]
+
+( fx )
+[ > Island | no Island ] -> [ | Island ] SFX3
+up [ Beam no Island | ] -> [ Beam | BeamTop1 ]
+down [ Beam | ] -> [ Beam | BeamReflect ]
+[ Beam Island ] -> [ Beam Island BeamUnder ]
+down [ Island | ] -> [ Island | IslandSide ]
+[ > Player | Walkable ] -> [ | Player Walkable ]
+up [ Player | ] -> [ Player | PlayerTop ]
+[ BeamTop1 ][ Frame2 ] -> [ BeamTop2 ][ Frame2 ]
+
+===============
+ WINCONDITIONS
+===============
+
+all Beam on BeamUnder
+
+========
+ LEVELS
+========
+
+message cover all beams
+
+(ok)
+...........
+...........
+...........
+......o....
+...##..o...
+...@#......
+...........
+...........
+
+message unattended beams are dangerous
+
+(ok)
+..............
+.......###....
+......#####...
+......#..##...
+.........##...
+...#####.##...
+..-#@#o#.##...
+...#####.##...
+.........##...
+.......###o...
+..............
+..............
+.........o....
+..............
+
+message merge adjacent platforms with X
+
+(ok)
+.............
+.............
+......o......
+...o...#.o...
+.......#.....
+...#..@#.....
+...##..#..#..
+.......-###..
+.............
+.............
+
+message good luck!
+
+(ok)
+...........
+...........
+.....-.....
+....###....
+...o.@.o...
+....###....
+.....-.....
+...........
+...........
+
+(ok)
+...............
+...............
+.......-.......
+..o............
+......###......
+....-.#o#.-....
+......##@......
+...........##..
+.......-.......
+...............
+...............
+
+(ok)
+..................
+..............###.
+....o...........#.
+.-..........##..#.
+............##..#.
+........#@......#.
+......#######.....
+.....-..#....-....
+...o..............
+.....-............
+..................
+
+(ok)
+...-.....-...
+.....o.o.....
+....-.-.-....
+.............
+.............
+........###..
+..###.o..##..
+..#@#........
+..###........
+.............
+
+(ok)
+............
+.....#......
+...o###.o...
+...#-#.-.#..
+..###.#.###.
+...#.#@#.#..
+....-.#-....
+...o.#..o...
+....###.....
+.....#......
+............
+
+message congratulations! you win!

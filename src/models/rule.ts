@@ -145,10 +145,30 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
             // Evaluate!
             // let didExecute = false
             const mutators = this._conditionBrackets.map((bracket, index) => {
-                const firstMatches = new Set(bracket.getFirstCells()) // Make it an Array just so we copy the elements out because Sets are mutable
+                // Sort the firstMatches so they are applied in order from top->bottom and left->right
+                const firstMatches = [...bracket.getFirstCells()].sort((a, b) => {
+                    // if (a.rowIndex < b.rowIndex) {
+                    //     return -1
+                    // } else if (a.rowIndex > b.rowIndex) {
+                    //     return 1
+                    // } else {
+                    //     if (a.colIndex < b.colIndex) {
+                    //         return -1
+                    //     } else if (a.colIndex > b.colIndex) {
+                    //         return 1
+                    //     } else {
+                    //         throw new Error(`BUG: We seem to be comparing the same cell`)
+                    //     }
+                    // }
+                    return a.rowIndex - b.rowIndex || a.colIndex - b.colIndex
+                })
                 const ret: CellMutation[][] = []
                 for (const firstCell of firstMatches) {
-                    ret.push(bracket.evaluate(this._actionBrackets[index], firstCell))
+                    // Check if firstCell is still in the set
+                    // (a previous application of this rule could have made it no longer apply)
+                    if (bracket.getFirstCells().has(firstCell)) {
+                        ret.push(bracket.evaluate(this._actionBrackets[index], firstCell))
+                    }
                 }
                 if (process.env['NODE_ENV'] !== 'production') {
                     this.__coverageCount++

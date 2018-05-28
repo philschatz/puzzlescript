@@ -538,4 +538,98 @@ describe('engine', () => {
     expect(crate.getCellsThatMatch().size).toBe(0)
 
   })
+
+  it('Evaluates the rules as-if they were evaluated from top->bottom and left->right (e.g. beam islands waves)', () => {
+    const { engine, data } = parseEngine(`title Match 3 Block Push
+
+    ========
+    OBJECTS
+    ========
+
+    BgNW1 .
+    #6719ac #a13cb7
+    00000
+    00000
+    00000
+    00000
+    00000
+
+    BgNE1
+    #6719ac #a13cb7
+    00000
+    00000
+    00100
+    00000
+    00000
+
+    BgSW1
+    #6719ac #a13cb7
+    00000
+    00000
+    00000
+    01000
+    00000
+
+    BgSE1
+    #6719ac #a13cb7
+    00000
+    00000
+    00000
+    00000
+    00000
+
+
+    =======
+    LEGEND
+    =======
+
+    Background = BgNW1 OR BgNE1 OR BgSW1 OR BgSE1
+
+    ================
+    COLLISIONLAYERS
+    ================
+
+    Background
+
+    ======
+    RULES
+    ======
+
+    [ NO Background ] -> [ BgNW1 ]
+    DOWN  [ BgNW1 | BgNW1 ] -> [ BgNW1 | BgSW1 ]
+    RIGHT [ BgNW1 | BgNW1 ] -> [ BgNW1 | BgNE1 ]
+    RIGHT [ BgSW1 | BgSW1 ] -> [ BgSW1 | BgSE1 ]
+
+
+    =======
+    LEVELS
+    =======
+
+    ...........
+    ...........
+    ...........
+    ...........
+    ...........
+    ...........
+    ...........
+    ...........
+    ...........
+    ...........
+
+    `)
+    const bgnw1 = data._getSpriteByName('bgnw1')
+    const bgsw1 = data._getSpriteByName('bgsw1')
+    const bgne1 = data._getSpriteByName('bgne1')
+    const bgse1 = data._getSpriteByName('bgse1')
+    engine.tick()
+
+    // This mimics the 1st level of Beam Islands because picking a smaller size does not
+    // cause the problem to appear
+    expect(bgnw1.getCellsThatMatch().size).toBe(30) // fails if this is 18 (or any other number)
+    expect(bgsw1.getCellsThatMatch().size).toBe(30)
+    expect(bgne1.getCellsThatMatch().size).toBe(25)
+    expect(bgse1.getCellsThatMatch().size).toBe(25)
+
+  })
+
 })

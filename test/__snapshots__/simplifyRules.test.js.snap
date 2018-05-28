@@ -4,33 +4,16 @@ exports[`Rule simplifier converts VERTICAL and HORIZONTAL at the beginning of a 
 Array [
   Array [
     Array [
-      "Wall",
-    ],
-    Array [
-      "PrettyHorizWall",
-      "Wall",
+      "SimpleWall",
     ],
     Array [
       "PrettyHorizWall",
     ],
     Array [
-      "Wall",
-    ],
-  ],
-  Array [
-    Array [
-      "PrettyVertWall",
-      "Wall",
+      "PrettyHorizWall",
     ],
     Array [
-      "Background",
-    ],
-    Array [
-      "Background",
-    ],
-    Array [
-      "PrettyVertWall",
-      "Wall",
+      "SimpleWall",
     ],
   ],
   Array [
@@ -49,17 +32,30 @@ Array [
   ],
   Array [
     Array [
-      "Wall",
+      "PrettyVertWall",
+    ],
+    Array [
+      "Background",
+    ],
+    Array [
+      "Background",
+    ],
+    Array [
+      "PrettyVertWall",
+    ],
+  ],
+  Array [
+    Array [
+      "SimpleWall",
     ],
     Array [
       "PrettyHorizWall",
-      "Wall",
     ],
     Array [
       "PrettyHorizWall",
     ],
     Array [
-      "Wall",
+      "SimpleWall",
     ],
   ],
 ]
