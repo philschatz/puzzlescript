@@ -451,4 +451,91 @@ describe('engine', () => {
     expect(water.getCellsThatMatch().size).toBe(1)
     expect(player.getCellsThatMatch().size).toBe(2)
   })
+
+  it('Runs LATE rules after sprites have moved', () => {
+    const { engine, data } = parseEngine(`title Match 3 Block Push
+
+    ========
+    OBJECTS
+    ========
+
+    Background
+    LIGHTGREEN GREEN
+    11111
+    01111
+    11101
+    11111
+    10111
+
+
+    Player
+    Black Orange White Blue
+    .000.
+    .111.
+    22222
+    .333.
+    .3.3.
+
+    Crate
+    Orange Yellow
+    00000
+    0...0
+    0...0
+    0...0
+    00000
+
+
+    =======
+    LEGEND
+    =======
+
+    . = Background
+    P = Player
+    * = Crate
+
+
+    =======
+    SOUNDS
+    =======
+
+    ================
+    COLLISIONLAYERS
+    ================
+
+    Background
+    Player, Crate
+
+    ======
+    RULES
+    ======
+
+    ( Put this rule 1st so we know it gets executed AFTER the move occurs)
+    LATE [ Crate | Crate | Crate ] -> [ | | ]
+
+    RIGHT [ STATIONARY Player ] -> [ > Player ]
+
+    [ > Player | Crate ] -> [ > Player | > Crate  ]
+
+
+    ==============
+    WINCONDITIONS
+    ==============
+
+    All Crate on Target
+
+    =======
+    LEVELS
+    =======
+
+    ..*
+    P*.
+    ..*
+
+    `)
+    const crate = data._getSpriteByName('crate')
+    engine.tick()
+
+    expect(crate.getCellsThatMatch().size).toBe(0)
+
+  })
 })

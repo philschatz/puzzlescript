@@ -192,8 +192,16 @@ export default class Engine extends EventEmitter2 {
   }
 
   tickUpdateCells() {
+    return this._tickUpdateCells(false)
+  }
+
+  tickUpdateCellsLate() {
+    return this._tickUpdateCells(true)
+  }
+
+  _tickUpdateCells(runLateRules: boolean) {
     const changedCellMutations: Set<CellMutation> = new Set()
-    for (const rule of this.gameData.rules) {
+    for (const rule of this.gameData.rules.filter(r => r.isLate() === runLateRules)) {
       const cellMutations = rule.evaluate()
       for (const mutation of cellMutations) {
         changedCellMutations.add(mutation)
@@ -268,7 +276,8 @@ export default class Engine extends EventEmitter2 {
   tick() {
     const changedCellMutations = this.tickUpdateCells()
     const movedCells = this.tickMoveSprites(changedCellMutations)
-    const changedCells = new Set([...changedCellMutations.entries()].filter(([_cell, didSpritesChange]) => didSpritesChange).map(([cell]) => cell))
+    const changedCellsLate = this.tickUpdateCellsLate()
+    const changedCells = new Set([...changedCellMutations.entries(), ...changedCellsLate.entries()].filter(([_cell, didSpritesChange]) => didSpritesChange).map(([cell]) => cell))
     return setAddAll(changedCells, movedCells)
   }
 

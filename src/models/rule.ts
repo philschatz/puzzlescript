@@ -58,6 +58,17 @@ export class SimpleRuleGroup extends BaseForLines implements IRule {
     getChildRules() {
         return this._rules
     }
+
+    isLate() {
+        // All rules in a group should be parked as late if any is marked as late
+        return this._rules[0].isLate()
+    }
+    isAgain() {
+        return this._rules[0].isAgain()
+    }
+    isRigid() {
+        return this._rules[0].isRigid()
+    }
 }
 
 // This is a rule that has been expanded from `DOWN [ > player < cat RIGHT dog ] -> [ ^ crate ]` to:
@@ -112,7 +123,7 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
     }
 
     evaluate() {
-        if (this._actionBrackets.length === 0 || this._isLate || this._isAgain || this._isRigid) {
+        if (this._actionBrackets.length === 0 || this._isAgain || this._isRigid) {
             // TODO: Just commands are not supported yet
             return []
         }
@@ -1013,6 +1024,9 @@ export class HackNode extends RuleBracketNeighbor {
 export interface IRule extends IGameNode {
     evaluate: () => CellMutation[]
     getChildRules: () => IRule[]
+    isLate: () => boolean
+    isRigid: () => boolean
+    isAgain: () => boolean
 }
 
 export class GameRuleLoop extends BaseForLines {
