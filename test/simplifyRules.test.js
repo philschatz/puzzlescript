@@ -50,25 +50,25 @@ LEVELS
 
 ` // end game
 
-function parseEngine (code) {
-  const { data, error } = Parser.parse(code)
-  expect(error && error.message).toBeFalsy() // Use && so the error messages are shorter
+function parseEngine(code) {
+    const { data, error } = Parser.parse(code)
+    expect(error && error.message).toBeFalsy() // Use && so the error messages are shorter
 
-  const engine = new Engine(data)
-  engine.setLevel(0)
-  return { engine, data }
+    const engine = new Engine(data)
+    engine.setLevel(0)
+    return { engine, data }
 }
 
 describe('Rule simplifier', () => {
-  it('expands horizontal rules', () => {
-    const {engine, data} = parseEngine(HORIZONTAL_GAME)
-    const foo = data.rules
-    expect(foo.length).toBe(1)
-    expect(foo[0]._rules.length).toBe(2)
-  })
+    it('expands horizontal rules', () => {
+        const { engine, data } = parseEngine(HORIZONTAL_GAME)
+        const foo = data.rules
+        expect(foo.length).toBe(1)
+        expect(foo[0]._rules.length).toBe(2)
+    })
 
-  it('treats adjacent neighbors that are the same as distinct (e.g. [ Wall | Wall ]', () => {
-    const {engine, data} = parseEngine(`title check that Horizontal Expands
+    it('treats adjacent neighbors that are the same as distinct (e.g. [ Wall | Wall ]', () => {
+        const { engine, data } = parseEngine(`title check that Horizontal Expands
 
     ========
     OBJECTS
@@ -114,15 +114,15 @@ describe('Rule simplifier', () => {
     WW
 
     `) // end game
-    const rightExtension = data._getSpriteByName('RightExtension')
-    engine.tick()
+        const rightExtension = data._getSpriteByName('RightExtension')
+        engine.tick()
 
-    expect(engine.currentLevel[0][0].getSpritesAsSet().has(rightExtension)).toBe(true)
-  })
+        expect(engine.currentLevel[0][0].getSpritesAsSet().has(rightExtension)).toBe(true)
+    })
 
-  it('converts VERTICAL and HORIZONTAL at the beginning of a rule into 2 rules', () => {
-    debugger
-    const {engine, data} = parseEngine(`title check that Horizontal Expands
+    it('converts VERTICAL and HORIZONTAL at the beginning of a rule into 2 rules', () => {
+        debugger
+        const { engine, data } = parseEngine(`title check that Horizontal Expands
 
     ========
     OBJECTS
@@ -176,26 +176,26 @@ describe('Rule simplifier', () => {
     WWWW
 
     `) // end game
-    const horiz = data._getSpriteByName('PrettyHorizWall')
-    const vert = data._getSpriteByName('PrettyVertWall')
-    engine.tick()
-    expect(engine.toSnapshot()).toMatchSnapshot()
+        const horiz = data._getSpriteByName('PrettyHorizWall')
+        const vert = data._getSpriteByName('PrettyVertWall')
+        engine.tick()
+        expect(engine.toSnapshot()).toMatchSnapshot()
 
-    expect(data.rules.length).toBe(2)
-    expect(data.rules[0]._rules.length).toBe(2) // just LEFT RIGHT
-    expect(data.rules[1]._rules.length).toBe(2) // just UP DOWN
+        expect(data.rules.length).toBe(2)
+        expect(data.rules[0]._rules.length).toBe(2) // just LEFT RIGHT
+        expect(data.rules[1]._rules.length).toBe(2) // just UP DOWN
 
-    expect(engine.currentLevel[0][1].getSpritesAsSet().has(horiz)).toBe(true)
-    expect(engine.currentLevel[0][2].getSpritesAsSet().has(horiz)).toBe(true)
+        expect(engine.currentLevel[0][1].getSpritesAsSet().has(horiz)).toBe(true)
+        expect(engine.currentLevel[0][2].getSpritesAsSet().has(horiz)).toBe(true)
 
-    expect(engine.currentLevel[3][1].getSpritesAsSet().has(horiz)).toBe(true)
-    expect(engine.currentLevel[3][2].getSpritesAsSet().has(horiz)).toBe(true)
+        expect(engine.currentLevel[3][1].getSpritesAsSet().has(horiz)).toBe(true)
+        expect(engine.currentLevel[3][2].getSpritesAsSet().has(horiz)).toBe(true)
 
-    expect(engine.currentLevel[1][0].getSpritesAsSet().has(vert)).toBe(true)
-    expect(engine.currentLevel[1][3].getSpritesAsSet().has(vert)).toBe(true)
+        expect(engine.currentLevel[1][0].getSpritesAsSet().has(vert)).toBe(true)
+        expect(engine.currentLevel[1][3].getSpritesAsSet().has(vert)).toBe(true)
 
-    expect(engine.currentLevel[2][0].getSpritesAsSet().has(vert)).toBe(true)
-    expect(engine.currentLevel[2][3].getSpritesAsSet().has(vert)).toBe(true)
+        expect(engine.currentLevel[2][0].getSpritesAsSet().has(vert)).toBe(true)
+        expect(engine.currentLevel[2][3].getSpritesAsSet().has(vert)).toBe(true)
 
-  })
+    })
 })

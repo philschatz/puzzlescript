@@ -112,7 +112,7 @@ export function getRuleSemantics() {
                 // console.log(`Prevented creating a duplicate bracket: ${key}`)
             }
             return cacheBrackets.get(key)
-       },
+        },
         RuleBracketNeighbor: function (_1) {
             return _1.parse()
         },

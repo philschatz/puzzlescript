@@ -6,16 +6,16 @@ const { lookupColorPalette } = require('../src/colors')
 const C_WHITE = { r: 255, g: 255, b: 255 }
 const C_BLACK = { r: 0, g: 0, b: 0 }
 
-function parseAndReturnFirstSpritePixels (code) {
-  const { data } = Parser.parse(code)
-  const cell = data.levels[0].getRows()[0][0]
-  // console.log(cell.getSprites())
-  return { pixels: UI.getPixelsForCell(data, cell), data }
+function parseAndReturnFirstSpritePixels(code) {
+    const { data } = Parser.parse(code)
+    const cell = data.levels[0].getRows()[0][0]
+    // console.log(cell.getSprites())
+    return { pixels: UI.getPixelsForCell(data, cell), data }
 }
 
 describe('UI', () => {
-  it('Renders a single sprite', () => {
-    const { pixels } = parseAndReturnFirstSpritePixels(`
+    it('Renders a single sprite', () => {
+        const { pixels } = parseAndReturnFirstSpritePixels(`
 title foo
 
 ===
@@ -40,16 +40,16 @@ LEVELS
 w
 `)
 
-    // Expect a white diagonal
-    expect(pixels[0][0].toRgb()).toEqual(C_WHITE)
-    expect(pixels[1][1].toRgb()).toEqual(C_WHITE)
-    expect(pixels[2][2].toRgb()).toEqual(C_WHITE)
-    expect(pixels[3][3].toRgb()).toEqual(C_WHITE)
-    expect(pixels[4][4].toRgb()).toEqual(C_WHITE)
-  })
+        // Expect a white diagonal
+        expect(pixels[0][0].toRgb()).toEqual(C_WHITE)
+        expect(pixels[1][1].toRgb()).toEqual(C_WHITE)
+        expect(pixels[2][2].toRgb()).toEqual(C_WHITE)
+        expect(pixels[3][3].toRgb()).toEqual(C_WHITE)
+        expect(pixels[4][4].toRgb()).toEqual(C_WHITE)
+    })
 
-  it('Overlays sprites based on the collision layer', () => {
-    const { pixels } = parseAndReturnFirstSpritePixels(`
+    it('Overlays sprites based on the collision layer', () => {
+        const { pixels } = parseAndReturnFirstSpritePixels(`
 title foo
 
 ===
@@ -90,19 +90,19 @@ LEVELS
 W
 `)
 
-    // Expect a white diagonal
-    expect(pixels[0][0].toRgb()).toEqual(C_WHITE)
-    expect(pixels[1][1].toRgb()).toEqual(C_WHITE)
-    expect(pixels[2][2].toRgb()).toEqual(C_WHITE)
-    expect(pixels[3][3].toRgb()).toEqual(C_WHITE)
-    expect(pixels[4][4].toRgb()).toEqual(C_WHITE)
+        // Expect a white diagonal
+        expect(pixels[0][0].toRgb()).toEqual(C_WHITE)
+        expect(pixels[1][1].toRgb()).toEqual(C_WHITE)
+        expect(pixels[2][2].toRgb()).toEqual(C_WHITE)
+        expect(pixels[3][3].toRgb()).toEqual(C_WHITE)
+        expect(pixels[4][4].toRgb()).toEqual(C_WHITE)
 
-    // Expect the other pixels to be black
-    expect(pixels[0][1].toRgb()).toEqual(C_BLACK)
-  })
+        // Expect the other pixels to be black
+        expect(pixels[0][1].toRgb()).toEqual(C_BLACK)
+    })
 
-  it('Verifies the transparent pixels pass through to sprites lower in the list of sprites (mirror isles)', () => {
-    const { pixels, data } = parseAndReturnFirstSpritePixels(`
+    it('Verifies the transparent pixels pass through to sprites lower in the list of sprites (mirror isles)', () => {
+        const { pixels, data } = parseAndReturnFirstSpritePixels(`
 title Mirror Isles player transparent
 
 ========
@@ -141,13 +141,13 @@ P
 
 `)
 
-    expect(data.getMagicBackgroundSprite().getPixels()[0][0].toRgb()).toEqual(C_WHITE)
-    expect(pixels[0][0].toRgb()).toEqual(C_WHITE)
-    expect(pixels[0][2].toRgb()).toEqual(C_BLACK)
-  })
+        expect(data.getMagicBackgroundSprite().getPixels()[0][0].toRgb()).toEqual(C_WHITE)
+        expect(pixels[0][0].toRgb()).toEqual(C_WHITE)
+        expect(pixels[0][2].toRgb()).toEqual(C_BLACK)
+    })
 
-  it('uses default color palette when none specified', () => {
-    const game1 = parseAndReturnFirstSpritePixels(`
+    it('uses default color palette when none specified', () => {
+        const game1 = parseAndReturnFirstSpritePixels(`
       title Game 1 with color palette
       color_palette pastel
 
@@ -187,9 +187,9 @@ P
 
       `)
 
-    expect(game1.pixels[0][0].toHex().toLowerCase()).toEqual(lookupColorPalette('pastel', 'lightblue').toLowerCase())
+        expect(game1.pixels[0][0].toHex().toLowerCase()).toEqual(lookupColorPalette('pastel', 'lightblue').toLowerCase())
 
-    const game2 = parseAndReturnFirstSpritePixels(`
+        const game2 = parseAndReturnFirstSpritePixels(`
       title Game 2 with no color palette
 
       ========
@@ -228,12 +228,12 @@ P
 
       `)
 
-    expect(game2.pixels[0][0].toHex().toLowerCase()).toEqual(lookupColorPalette('arnecolors', 'lightblue').toLowerCase())
-  })
+        expect(game2.pixels[0][0].toHex().toLowerCase()).toEqual(lookupColorPalette('arnecolors', 'lightblue').toLowerCase())
+    })
 
-  it.skip('Does not replace the pixels in a sprite (grr, we should just use immutable objects', () => {
-    // not sure how to test
-    // This was caused by collapseSpritesToPixels using the 1st sprite (instead of copying it)
-    // and then layering other sprites on top
-  })
+    it.skip('Does not replace the pixels in a sprite (grr, we should just use immutable objects', () => {
+        // not sure how to test
+        // This was caused by collapseSpritesToPixels using the 1st sprite (instead of copying it)
+        // and then layering other sprites on top
+    })
 })

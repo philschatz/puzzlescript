@@ -236,7 +236,7 @@ class SimpleBracket extends BaseForLines implements ICacheable {
         }
         // Loop Upstream
         // check the neighbors upstream of curCell
-        const firstCell  = this.matchesUpstream(cell, index)
+        const firstCell = this.matchesUpstream(cell, index)
         if (!firstCell) {
             return
         }
@@ -336,7 +336,7 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
         const spritesBefore = new Set(cell.getSpritesAsSet())
         const newSpritesAndWantsToMoves = [...cell.getSpriteAndWantsToMoves()]
 
-        const {conditionSprites, actionSprites, actionTiles} = this._getConditionAndActionSprites(actionNeighbor)
+        const { conditionSprites, actionSprites, actionTiles } = this._getConditionAndActionSprites(actionNeighbor)
 
         const spritesToRemove = setDifference(conditionSprites, actionSprites)
         const spritesToAdd = setDifference(actionSprites, conditionSprites)
@@ -410,7 +410,7 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
             }
         })
 
-        return {conditionSprites, actionSprites, actionTiles}
+        return { conditionSprites, actionSprites, actionTiles }
     }
 
     addBracket(bracket: SimpleBracket, index: number) {
@@ -651,7 +651,7 @@ export class GameRule extends BaseForLines implements ICacheable {
         return `${this._brackets.map(x => x.toKey())} -> ${this._actionBrackets.map(x => x.toKey())} ${this._commands.join(' ')}`
     }
 
-    simplify(ruleCache: Map<string, SimpleRule>,bracketCache: Map<string, SimpleBracket>, neighborCache: Map<string, SimpleNeighbor>, tileCache: Map<string, SimpleTileWithModifier>) {
+    simplify(ruleCache: Map<string, SimpleRule>, bracketCache: Map<string, SimpleBracket>, neighborCache: Map<string, SimpleNeighbor>, tileCache: Map<string, SimpleTileWithModifier>) {
         const simpleRules = this.convertToMultiple().map(r => r.toSimple(ruleCache, bracketCache, neighborCache, tileCache))
         // Register listeners to Cell changes
         for (const rule of simpleRules) {
@@ -752,14 +752,14 @@ export class GameRule extends BaseForLines implements ICacheable {
             return [RULE_DIRECTION_ABSOLUTE.UP, RULE_DIRECTION_ABSOLUTE.DOWN]
         }
         const directions = this._modifiers.filter(m => RULE_DIRECTION_ABSOLUTE_SET.has(m)).map(d => {
-            switch(d) {
+            switch (d) {
                 case RULE_MODIFIER.UP:
                     return RULE_DIRECTION_ABSOLUTE.UP
-                    case RULE_MODIFIER.DOWN:
+                case RULE_MODIFIER.DOWN:
                     return RULE_DIRECTION_ABSOLUTE.DOWN
-                    case RULE_MODIFIER.LEFT:
+                case RULE_MODIFIER.LEFT:
                     return RULE_DIRECTION_ABSOLUTE.LEFT
-                    case RULE_MODIFIER.RIGHT:
+                case RULE_MODIFIER.RIGHT:
                     return RULE_DIRECTION_ABSOLUTE.RIGHT
                 default:
                     throw new Error(`BUG: Invalid rule direction "${d}"`)
@@ -1058,7 +1058,7 @@ export class GameRuleLoop extends BaseForLines {
         this._rules = rules
     }
 
-    simplify(ruleCache: Map<string, SimpleRule>,bracketCache: Map<string, SimpleBracket>, neighborCache: Map<string, SimpleNeighbor>, tileCache: Map<string, SimpleTileWithModifier>) {
+    simplify(ruleCache: Map<string, SimpleRule>, bracketCache: Map<string, SimpleBracket>, neighborCache: Map<string, SimpleNeighbor>, tileCache: Map<string, SimpleTileWithModifier>) {
         return new SimpleRuleGroup(this.__source, this._rules.map(rule => rule.simplify(ruleCache, bracketCache, neighborCache, tileCache)))
     }
     evaluate() {

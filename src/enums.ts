@@ -7,4 +7,4 @@ export enum RULE_DIRECTION {
     RANDOM = 'RANDOM', // Not sure how this differs from RANDOMDIR yet
     RANDOMDIR = 'RANDOMDIR',
     STATIONARY = 'STATIONARY'
-  }
+}

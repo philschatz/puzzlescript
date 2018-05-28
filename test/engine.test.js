@@ -370,90 +370,90 @@ sw
 
 ` // end game
 
-function parseEngine (code) {
-  const { data, error } = Parser.parse(code)
-  expect(error && error.message).toBeFalsy() // Use && so the error messages are shorter
+function parseEngine(code) {
+    const { data, error } = Parser.parse(code)
+    expect(error && error.message).toBeFalsy() // Use && so the error messages are shorter
 
-  const engine = new Engine(data)
-  engine.setLevel(0)
-  return { engine, data }
+    const engine = new Engine(data)
+    engine.setLevel(0)
+    return { engine, data }
 }
 
-function getSpriteByName (data, name) {
-  return data.objects.filter((sprite) => sprite._name === name)[0]
+function getSpriteByName(data, name) {
+    return data.objects.filter((sprite) => sprite._name === name)[0]
 }
 
 describe('engine', () => {
-  it('evaluates a simple game', () => {
-    const { engine, data } = parseEngine(SIMPLE_GAME)
-    const one = data._getSpriteByName('one')
-    // const zero = data._getSpriteByName('zero')
-    engine.tick()
-    expect(engine.toSnapshot()).toMatchSnapshot()
-    expect(engine.currentLevel[0][0].getSpritesAsSet()).toContain(one)
-  })
+    it('evaluates a simple game', () => {
+        const { engine, data } = parseEngine(SIMPLE_GAME)
+        const one = data._getSpriteByName('one')
+        // const zero = data._getSpriteByName('zero')
+        engine.tick()
+        expect(engine.toSnapshot()).toMatchSnapshot()
+        expect(engine.currentLevel[0][0].getSpritesAsSet()).toContain(one)
+    })
 
-  it('draws corner sprites correctly (according to mirror isles)', () => {
-    const { engine, data } = parseEngine(MIRROR_ISLES_CORNERS)
-    engine.tick()
-    expect(engine.toSnapshot()).toMatchSnapshot()
-    const expectedSprite = getSpriteByName(data, 'RemoveLandRUD')
-    const interestingCell = engine.currentLevel[0][0]
-    const sprites = interestingCell.getSpritesAsSet()
-    expect(sprites.has(expectedSprite)).toBe(true)
+    it('draws corner sprites correctly (according to mirror isles)', () => {
+        const { engine, data } = parseEngine(MIRROR_ISLES_CORNERS)
+        engine.tick()
+        expect(engine.toSnapshot()).toMatchSnapshot()
+        const expectedSprite = getSpriteByName(data, 'RemoveLandRUD')
+        const interestingCell = engine.currentLevel[0][0]
+        const sprites = interestingCell.getSpritesAsSet()
+        expect(sprites.has(expectedSprite)).toBe(true)
 
-    // Ensure that the CrateInHole does not exist anywhere
-    const crateInHole = data._getSpriteByName('CrateInHole')
-    expect(crateInHole.getCellsThatMatch().size).toBe(0)
-  })
+        // Ensure that the CrateInHole does not exist anywhere
+        const crateInHole = data._getSpriteByName('CrateInHole')
+        expect(crateInHole.getCellsThatMatch().size).toBe(0)
+    })
 
-  it('draws corner sprites correctly (according to skipping stones)', () => {
-    const { engine, data } = parseEngine(SKIPPING_STONES_CORNERS)
-    engine.tick()
-    expect(engine.toSnapshot()).toMatchSnapshot()
-    const expectedSprite = getSpriteByName(data, 'RemoveLandRUD')
-    const interestingCell = engine.currentLevel[0][0]
-    const sprites = interestingCell.getSpritesAsSet()
-    expect(sprites.has(expectedSprite)).toBe(true)
+    it('draws corner sprites correctly (according to skipping stones)', () => {
+        const { engine, data } = parseEngine(SKIPPING_STONES_CORNERS)
+        engine.tick()
+        expect(engine.toSnapshot()).toMatchSnapshot()
+        const expectedSprite = getSpriteByName(data, 'RemoveLandRUD')
+        const interestingCell = engine.currentLevel[0][0]
+        const sprites = interestingCell.getSpritesAsSet()
+        expect(sprites.has(expectedSprite)).toBe(true)
 
-    engine.tick()
-    expect(engine.toSnapshot()).toMatchSnapshot()
+        engine.tick()
+        expect(engine.toSnapshot()).toMatchSnapshot()
 
-    expect(sprites.has(expectedSprite)).toBe(true)
-    const neighborCell = engine.currentLevel[0][1]
-    const neighborSprites = neighborCell.getSpritesAsSet()
-    expect(neighborSprites.has(expectedSprite)).toBe(false)
-  })
+        expect(sprites.has(expectedSprite)).toBe(true)
+        const neighborCell = engine.currentLevel[0][1]
+        const neighborSprites = neighborCell.getSpritesAsSet()
+        expect(neighborSprites.has(expectedSprite)).toBe(false)
+    })
 
-  it('draws corner sprites correctly according to mirror isles (just the RightUp corner should be blue)', () => {
-    const { engine, data } = parseEngine(MIRROR_ISLES_CORNERS2)
-    engine.tick()
-    const expectedSprite = getSpriteByName(data, 'RemoveLandRU')
-    const expectedSprite2 = getSpriteByName(data, 'RemoveLandRD')
-    const interestingCell = engine.currentLevel[0][0]
-    let sprites = interestingCell.getSpritesAsSet()
-    expect(sprites.has(expectedSprite)).toBe(true)
-    expect(engine.currentLevel[1][0].getSpritesAsSet().has(expectedSprite2)).toBe(true)
+    it('draws corner sprites correctly according to mirror isles (just the RightUp corner should be blue)', () => {
+        const { engine, data } = parseEngine(MIRROR_ISLES_CORNERS2)
+        engine.tick()
+        const expectedSprite = getSpriteByName(data, 'RemoveLandRU')
+        const expectedSprite2 = getSpriteByName(data, 'RemoveLandRD')
+        const interestingCell = engine.currentLevel[0][0]
+        let sprites = interestingCell.getSpritesAsSet()
+        expect(sprites.has(expectedSprite)).toBe(true)
+        expect(engine.currentLevel[1][0].getSpritesAsSet().has(expectedSprite2)).toBe(true)
 
-    // Ensure that the CrateInHole does not exist anywhere
-    const crateInHole = data._getSpriteByName('CrateInHole')
-    expect(crateInHole.getCellsThatMatch().size).toBe(0)
-  })
+        // Ensure that the CrateInHole does not exist anywhere
+        const crateInHole = data._getSpriteByName('CrateInHole')
+        expect(crateInHole.getCellsThatMatch().size).toBe(0)
+    })
 
-  it('Respects when an OR LegendItem is on the right side of a Rule to preserve the sprite that was there', () => {
-    const { engine, data } = parseEngine(HACK_THE_NET_NODES)
-    const player = data._getSpriteByName('player')
-    const sand = data._getSpriteByName('sand')
-    const water = data._getSpriteByName('water')
-    engine.tick()
+    it('Respects when an OR LegendItem is on the right side of a Rule to preserve the sprite that was there', () => {
+        const { engine, data } = parseEngine(HACK_THE_NET_NODES)
+        const player = data._getSpriteByName('player')
+        const sand = data._getSpriteByName('sand')
+        const water = data._getSpriteByName('water')
+        engine.tick()
 
-    expect(sand.getCellsThatMatch().size).toBe(1)
-    expect(water.getCellsThatMatch().size).toBe(1)
-    expect(player.getCellsThatMatch().size).toBe(2)
-  })
+        expect(sand.getCellsThatMatch().size).toBe(1)
+        expect(water.getCellsThatMatch().size).toBe(1)
+        expect(player.getCellsThatMatch().size).toBe(2)
+    })
 
-  it('Runs LATE rules after sprites have moved', () => {
-    const { engine, data } = parseEngine(`title Match 3 Block Push
+    it('Runs LATE rules after sprites have moved', () => {
+        const { engine, data } = parseEngine(`title Match 3 Block Push
 
     ========
     OBJECTS
@@ -532,15 +532,15 @@ describe('engine', () => {
     ..*
 
     `)
-    const crate = data._getSpriteByName('crate')
-    engine.tick()
+        const crate = data._getSpriteByName('crate')
+        engine.tick()
 
-    expect(crate.getCellsThatMatch().size).toBe(0)
+        expect(crate.getCellsThatMatch().size).toBe(0)
 
-  })
+    })
 
-  it('Evaluates the rules as-if they were evaluated from top->bottom and left->right (e.g. beam islands waves)', () => {
-    const { engine, data } = parseEngine(`title Match 3 Block Push
+    it('Evaluates the rules as-if they were evaluated from top->bottom and left->right (e.g. beam islands waves)', () => {
+        const { engine, data } = parseEngine(`title Match 3 Block Push
 
     ========
     OBJECTS
@@ -617,19 +617,19 @@ describe('engine', () => {
     ...........
 
     `)
-    const bgnw1 = data._getSpriteByName('bgnw1')
-    const bgsw1 = data._getSpriteByName('bgsw1')
-    const bgne1 = data._getSpriteByName('bgne1')
-    const bgse1 = data._getSpriteByName('bgse1')
-    engine.tick()
+        const bgnw1 = data._getSpriteByName('bgnw1')
+        const bgsw1 = data._getSpriteByName('bgsw1')
+        const bgne1 = data._getSpriteByName('bgne1')
+        const bgse1 = data._getSpriteByName('bgse1')
+        engine.tick()
 
-    // This mimics the 1st level of Beam Islands because picking a smaller size does not
-    // cause the problem to appear
-    expect(bgnw1.getCellsThatMatch().size).toBe(30) // fails if this is 18 (or any other number)
-    expect(bgsw1.getCellsThatMatch().size).toBe(30)
-    expect(bgne1.getCellsThatMatch().size).toBe(25)
-    expect(bgse1.getCellsThatMatch().size).toBe(25)
+        // This mimics the 1st level of Beam Islands because picking a smaller size does not
+        // cause the problem to appear
+        expect(bgnw1.getCellsThatMatch().size).toBe(30) // fails if this is 18 (or any other number)
+        expect(bgsw1.getCellsThatMatch().size).toBe(30)
+        expect(bgne1.getCellsThatMatch().size).toBe(25)
+        expect(bgse1.getCellsThatMatch().size).toBe(25)
 
-  })
+    })
 
 })

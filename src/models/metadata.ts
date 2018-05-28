@@ -5,12 +5,12 @@ class Dimension {
     height: number
 
     constructor(width: number, height: number) {
-      this.width = width
-      this.height = height
+        this.width = width
+        this.height = height
     }
-  }
+}
 
-  export class GameMetadata {
+export class GameMetadata {
     author?: string
     homepage?: string
     youtube?: string
@@ -34,6 +34,6 @@ class Dimension {
     constructor() { }
 
     _setValue(key: any, value: any) {
-      this[key] = value
+        this[key] = value
     }
-  }
+}
