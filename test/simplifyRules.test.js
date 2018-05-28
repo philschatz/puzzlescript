@@ -119,4 +119,83 @@ describe('Rule simplifier', () => {
 
     expect(engine.currentLevel[0][0].getSpritesAsSet().has(rightExtension)).toBe(true)
   })
+
+  it('converts VERTICAL and HORIZONTAL at the beginning of a rule into 2 rules', () => {
+    debugger
+    const {engine, data} = parseEngine(`title check that Horizontal Expands
+
+    ========
+    OBJECTS
+    ========
+
+    Background
+    blue
+
+    Player
+    green
+
+    Wall
+    yellow
+
+    PrettyHorizWall
+    Blue
+
+    PrettyVertWall
+    Blue
+
+    =======
+    LEGEND
+    =======
+
+    . = Background
+    W = Wall
+
+    ================
+    COLLISIONLAYERS
+    ================
+
+    Background
+    Player
+    Wall
+    PrettyHorizWall, PrettyVertWall
+
+    ======
+    RULES
+    ======
+
+    HORIZONTAL [ Wall | Wall | Wall ] -> [ Wall | PrettyHorizWall | Wall ]
+    VERTICAL [ Wall | Wall | Wall ] -> [ Wall | PrettyVertWall | Wall ]
+
+    =======
+    LEVELS
+    =======
+
+    WWWW
+    W..W
+    W..W
+    WWWW
+
+    `) // end game
+    const horiz = data._getSpriteByName('PrettyHorizWall')
+    const vert = data._getSpriteByName('PrettyVertWall')
+    engine.tick()
+
+    expect(data.rules.length).toBe(2)
+    expect(data.rules[0]._rules.length).toBe(2) // just LEFT RIGHT
+    expect(data.rules[1]._rules.length).toBe(2) // just UP DOWN
+
+    expect(engine.currentLevel[0][1].getSpritesAsSet().has(horiz)).toBe(true)
+    expect(engine.currentLevel[0][2].getSpritesAsSet().has(horiz)).toBe(true)
+
+    expect(engine.currentLevel[3][1].getSpritesAsSet().has(horiz)).toBe(true)
+    expect(engine.currentLevel[3][2].getSpritesAsSet().has(horiz)).toBe(true)
+
+    expect(engine.currentLevel[1][0].getSpritesAsSet().has(vert)).toBe(true)
+    expect(engine.currentLevel[1][3].getSpritesAsSet().has(vert)).toBe(true)
+
+    expect(engine.currentLevel[2][0].getSpritesAsSet().has(vert)).toBe(true)
+    expect(engine.currentLevel[2][3].getSpritesAsSet().has(vert)).toBe(true)
+
+    expect(engine.toSnapshot()).toMatchSnapshot()
+  })
 })

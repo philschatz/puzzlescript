@@ -700,6 +700,13 @@ export class GameRule extends BaseForLines implements ICacheable {
     }
 
     getDirectionModifiers() {
+        // Convert HORIZONTAL and VERTICAL to 2:
+        if (this._modifiers.indexOf(RULE_MODIFIER.HORIZONTAL) >= 0) {
+            return [RULE_DIRECTION_ABSOLUTE.LEFT, RULE_DIRECTION_ABSOLUTE.RIGHT]
+        }
+        if (this._modifiers.indexOf(RULE_MODIFIER.VERTICAL) >= 0) {
+            return [RULE_DIRECTION_ABSOLUTE.UP, RULE_DIRECTION_ABSOLUTE.DOWN]
+        }
         const directions = this._modifiers.filter(m => RULE_DIRECTION_ABSOLUTE_SET.has(m)).map(d => {
             switch(d) {
                 case RULE_MODIFIER.UP:

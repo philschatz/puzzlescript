@@ -1,0 +1,66 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Rule simplifier converts VERTICAL and HORIZONTAL at the beginning of a rule into 2 rules 1`] = `
+Array [
+  Array [
+    Array [
+      "Wall",
+    ],
+    Array [
+      "PrettyHorizWall",
+      "Wall",
+    ],
+    Array [
+      "PrettyHorizWall",
+    ],
+    Array [
+      "Wall",
+    ],
+  ],
+  Array [
+    Array [
+      "PrettyVertWall",
+      "Wall",
+    ],
+    Array [
+      "Background",
+    ],
+    Array [
+      "Background",
+    ],
+    Array [
+      "PrettyVertWall",
+      "Wall",
+    ],
+  ],
+  Array [
+    Array [
+      "PrettyVertWall",
+    ],
+    Array [
+      "Background",
+    ],
+    Array [
+      "Background",
+    ],
+    Array [
+      "PrettyVertWall",
+    ],
+  ],
+  Array [
+    Array [
+      "Wall",
+    ],
+    Array [
+      "PrettyHorizWall",
+      "Wall",
+    ],
+    Array [
+      "PrettyHorizWall",
+    ],
+    Array [
+      "Wall",
+    ],
+  ],
+]
+`;

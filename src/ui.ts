@@ -230,3 +230,18 @@ function writeText(x: number, y: number, text: string) {
 }
 
 export default new UI()
+
+// Mac terminal does not render all the colors so some pixels do not look different.
+// See 391852197b1aef15558342df2670d635 (the grid)
+// for (let g = 0; g < 256; g+=16) {
+//   for (let b = 0; b < 256; b+=16) {
+//     for (let r = 0; r < 256; r+=16) {
+//         axel.bg(r,g,b)
+//       process.stdout.write(' ')
+//     }
+//     axel.bg(0,0,0)
+//     process.stdout.write('\n')
+//   }
+//   axel.bg(0,0,0)
+//   process.stdout.write('\n')
+// }
