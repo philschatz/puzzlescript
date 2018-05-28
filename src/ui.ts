@@ -1,9 +1,50 @@
-import * as axel from 'axel'
+import * as ansiStyles from 'ansi-styles'
+import * as ansiEscapes from 'ansi-escapes'
 import * as supportsColor from 'supports-color'
 import { GameSprite } from './models/tile'
 import { GameData } from './models/game'
 import { IColor } from './models/colors'
 import { Cell } from './engine'
+
+// Determine if this
+// 'truecolor' if this terminal supports 16m colors. 256 colors otherwise
+const supports16mColors = process.env['COLORTERM'] === 'truecolor'
+
+function setBgColor(hex) {
+  if (supports16mColors) {
+    process.stdout.write(ansiStyles.bgColor.ansi16m.hex(hex))
+  } else {
+    process.stdout.write(ansiStyles.bgColor.ansi256.hex(hex))
+  }
+}
+function setFgColor(hex) {
+  if (supports16mColors) {
+    process.stdout.write(ansiStyles.color.ansi16m.hex(hex))
+  } else {
+    process.stdout.write(ansiStyles.color.ansi256.hex(hex))
+  }
+}
+function moveTo(x, y) {
+  process.stdout.write(ansiEscapes.cursorTo(x, y))
+}
+function hideCursor() {
+  process.stdout.write(ansiEscapes.cursorHide)
+}
+function showCursor() {
+  process.stdout.write(ansiEscapes.cursorShow)
+}
+function clearScreen() {
+  process.stdout.write(ansiEscapes.clearScreen)
+}
+function drawPixelChar(x, y, hex, char = ' ') {
+  setBgColor(hex)
+  moveTo(x, y)
+  process.stdout.write(char)
+}
+function writeTextAt(x, y, msg) {
+  moveTo(x, y)
+  process.stdout.write(msg)
+}
 
 // First Sprite one is on top.
 // This caused a 2x speedup while rendering.
@@ -57,7 +98,6 @@ class UI {
       console.log('Playing a game in the console requires color support. Unfortunately, color is not supported so not rendering (for now). We could just do an ASCII dump or something, using  ░▒▓█ to denote shades of cells')
       return
     }
-    // axel.cursor.off()
 
     // Handle resize events by redrawing the game. Ooh, we do not have Cells at this point.
     // TODO Run renderScreen on cells from the engine rather than cells from the Level data
@@ -69,8 +109,8 @@ class UI {
     }
     process.stdout.on('resize', this._resizeHandler)
 
-    axel.fg(255, 255, 255)
-    axel.bg(0, 0, 0)
+    setFgColor('#ffffff')
+    setBgColor('#000000')
 
     this.clearScreen()
 
@@ -79,19 +119,19 @@ class UI {
       if (data.metadata.flickscreen && rowIndex > data.metadata.flickscreen.height) {
         return
       }
-      row.forEach((col, colIndex) => {
+      row.forEach((cell, colIndex) => {
         // Don't draw too much for this demo
         if (data.metadata.flickscreen && colIndex > data.metadata.flickscreen.width) {
           return
         }
 
-        this.drawCell(data, col, false)
+        this.drawCell(data, cell, false)
       })
     })
     // Clear back to sane colors
-    axel.fg(255, 255, 255)
-    axel.bg(0, 0, 0)
-    // axel.cursor.restore()
+    setFgColor('#ffffff')
+    setBgColor('#000000')
+    // restoreCursor()
 
     // Just for debugging, print the game title (doing it here helps with Jest rendering correctly)
     this.writeDebug(`"${data.title}"`)
@@ -102,6 +142,19 @@ class UI {
       console.log(`Updating cell [${cell.rowIndex}][${cell.colIndex}] to have sprites: [${cell.getSprites().map(sprite => sprite._name)}]`)
       return
     }
+
+    // Check if the cell can be completely drawn on the screen. If not, print ellipses
+    const cellIsTooWide = (cell.colIndex + 1) * 10 > process.stdout.columns // 10 because we print 2 chars per pixel
+    const cellIsTooHigh = (cell.rowIndex + 1) * 5 > process.stdout.rows
+    if (cellIsTooWide || cellIsTooHigh) {
+      // do not draw the cell
+      return
+    } else if (cellIsTooWide) {
+      // TODO: print ellipsis so user knows they should resize their terminal
+      // TODO: If implementing this, then change the initial if to be `&&` instead
+      // of `||`
+    }
+
     const spritesForDebugging = cell.getSprites()
     const {rowIndex, colIndex} = cell
     const pixels: IColor[][] = this.getPixelsForCell(data, cell)
@@ -110,9 +163,6 @@ class UI {
       spriteRow.forEach((spriteColor: IColor, spriteColIndex) => {
         const x = (colIndex * 5 + spriteColIndex) * 2 + 1 // Use 2 characters for 1 pixel on the X-axis. X column is 1-based
         const y = rowIndex * 5 + spriteRowIndex + 1 // Y column is 1-based
-        let r
-        let g
-        let b
 
         // Don't draw below the edge of the screen. Otherwise, bad scrolling things will happen
         if (y >= process.stdout.rows) {
@@ -122,10 +172,8 @@ class UI {
         let color: IColor
 
         // Always draw a transparent character so we can see if something is not rendering
-        // axel.fg(255, 255, 255)
-        // axel.bg(0, 0, 0)
-        // axel.point(x, y, '░')
-        // axel.point(x + 1, y, '░') // double-width because the console is narrow
+        drawPixelChar(x, y, '#ffffff', '░')
+        drawPixelChar(x + 1, y, '#ffffff', '░') // double-width because the console is narrow
 
         if (spriteColor) {
           if (!spriteColor.isTransparent()) {
@@ -137,32 +185,26 @@ class UI {
         }
 
         if (!!color) {
-          const rgb = color.toRgb()
-          r = rgb.r
-          g = rgb.g
-          b = rgb.b
+          const {r, g, b} = color.toRgb()
+          const hex = color.toHex()
 
-          // TODO: brush is readonly. What are you trying to set here?
-          // axel.brush = ' ' // " ░▒▓█"
-          axel.fg(255, 255, 255)
-          axel.bg(r, g, b)
-          axel.point(x, y, ' ')
-          axel.point(x + 1, y, ' ') // double-width because the console is narrow
+          drawPixelChar(x, y, hex)
+          drawPixelChar(x + 1, y, hex) // double-width because the console is narrow
 
           // Print a debug number which contains the number of sprites in this cell
           // Change the foreground color to be black if the color is light
           if (r > 192 && g > 192 && b > 192) {
-            axel.fg(0, 0, 0)
+            setFgColor('#000000')
           }
           if (spritesForDebugging[spriteRowIndex]) {
             let spriteName = spritesForDebugging[spriteRowIndex]._name
             if (spriteName.length > 10) {
               spriteName = `${spriteName.substring(0, 5)}.${spriteName.substring(spriteName.length - 4)}`
             }
-            axel.text(x, y, `${spriteName.substring(spriteColIndex * 2, spriteColIndex * 2 + 2)}`)
+            writeTextAt(x, y, `${spriteName.substring(spriteColIndex * 2, spriteColIndex * 2 + 2)}`)
           }
           if (spriteRowIndex === 4 && spriteColIndex === 4) {
-            axel.text(x + 1, y, `${spritesForDebugging.length}`)
+            writeTextAt(x + 1, y, `${spritesForDebugging.length}`)
           }
         }
       })
@@ -192,14 +234,14 @@ class UI {
       return
     }
 
-    axel.fg(255, 255, 255)
-    axel.bg(0, 0, 0)
+    setFgColor('#ffffff')
+    setBgColor('#000000')
     // Output \n for each row that we have. That way any output from before is preserved
     // const rows = process.stdout.rows || 0
     // for (let i = 0; i < rows; i++) {
     //   console.log('\n')
     // }
-    axel.clear()
+    clearScreen()
   }
 
   writeDebug(text: string) {
@@ -207,8 +249,8 @@ class UI {
       console.log(`Writing Debug text "${text}"`)
       return
     }
-    axel.fg(255, 255, 255)
-    axel.bg(0, 0, 0)
+    setFgColor('#ffffff')
+    setBgColor('#000000')
     writeText(0, 0, `[${text}]`)
   }
 }
@@ -217,7 +259,9 @@ function restoreCursor() {
   if (!supportsColor.stdout) {
     return
   }
-  axel.cursor.restore()
+  setFgColor('#ffffff')
+  setBgColor('#000000')
+  moveTo(process.stdout.columns, process.stdout.rows)
 }
 
 function writeText(x: number, y: number, text: string) {
@@ -225,7 +269,7 @@ function writeText(x: number, y: number, text: string) {
     console.log(`Writing text at [${y}][${x}]: "${text}"`)
     return
   }
-  axel.text(x, y, text)
+  writeTextAt(x, y, text)
   restoreCursor()
 }
 
@@ -233,15 +277,12 @@ export default new UI()
 
 // Mac terminal does not render all the colors so some pixels do not look different.
 // See 391852197b1aef15558342df2670d635 (the grid)
-// for (let g = 0; g < 256; g+=16) {
-//   for (let b = 0; b < 256; b+=16) {
-//     for (let r = 0; r < 256; r+=16) {
-//         axel.bg(r,g,b)
-//       process.stdout.write(' ')
+// for (let r = 0; r < 256; r+=16) {
+//   for (let g = 0; g < 256; g+=16) {
+//     for (let b = 0; b < 256; b+=16) {
+//       console.log(ansiStyles.bgColor.ansi16m.rgb(r, g, b) + ' ' + ansiStyles.bgColor.close)
 //     }
-//     axel.bg(0,0,0)
-//     process.stdout.write('\n')
+//     console.log(ansiStyles.bgColor.ansi16m.rgb(0, 0, 0) + '\n' + ansiStyles.bgColor.close)
 //   }
-//   axel.bg(0,0,0)
-//   process.stdout.write('\n')
+//   console.log(ansiStyles.bgColor.ansi16m.rgb(0, 0, 0) + '\n' + ansiStyles.bgColor.close)
 // }

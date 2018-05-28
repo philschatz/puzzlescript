@@ -16,10 +16,11 @@
     "debug": "tsc; node --inspect-brk lib/runGame.js"
   },
   "dependencies": {
-    "@types/axel": "0.0.0",
+    "@types/ansi-styles": "^3.2.0",
     "@types/glob": "^5.0.35",
     "@types/lodash": "^4.14.108",
-    "axel": "0.0.3",
+    "ansi-escapes": "^3.1.0",
+    "ansi-styles": "^3.2.1",
     "eventemitter2": "^5.0.1",
     "glob": "^7.1.2",
     "jest": "^22.4.3",

@@ -3,21 +3,23 @@ import { BaseForLines, IGameCode, IGameNode } from './game'
 export interface IColor extends IGameNode {
     isTransparent: () => boolean
     toRgb: () => RGB
+    toHex: () => string
 }
 
 export class HexColor extends BaseForLines implements IColor {
-    _color: RGB
-    _colorName: string // only for unit tests & debugging
+    _hex: string
 
-    constructor(source: IGameCode, color: string) {
+    constructor(source: IGameCode, hex: string) {
         super(source)
-        this._color = hexToRgb(color)
-        this._colorName = color
+        this._hex = hex
     }
 
     isTransparent() { return false }
     toRgb() {
-        return this._color
+        return hexToRgb(this._hex)
+    }
+    toHex() {
+        return this._hex
     }
 }
 
@@ -29,6 +31,9 @@ export class TransparentColor extends BaseForLines implements IColor {
     isTransparent() { return true }
     toRgb(): RGB {
         throw new Error('BUG: Transparent colors do not have RGB data')
+    }
+    toHex(): string {
+        throw new Error('BUG: Transparent colors do not have a hex color value')
     }
 }
 

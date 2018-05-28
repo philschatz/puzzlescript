@@ -31098,12 +31098,8 @@ GameData {
       "_cellSet": Set {},
       "_color": HexColor {
         "__coverageCount": 0,
-        "_color": RGB {
-          "b": 111,
-          "g": 186,
-          "r": 192,
-        },
         "_colorName": "#C0BA6F",
+        "_hex": "#C0BA6F",
       },
       "_name": "player",
       "_optionalLegendChar": undefined,
@@ -31131,12 +31127,8 @@ GameData {
       "_cellSet": Set {},
       "_color": HexColor {
         "__coverageCount": 0,
-        "_color": RGB {
-          "b": 111,
-          "g": 186,
-          "r": 192,
-        },
         "_colorName": "#C0BA6F",
+        "_hex": "#C0BA6F",
       },
       "_name": "player",
       "_optionalLegendChar": undefined,
@@ -33209,30 +33201,18 @@ GameData {
       "_colors": Array [
         HexColor {
           "__coverageCount": 0,
-          "_color": RGB {
-            "b": 107,
-            "g": 226,
-            "r": 247,
-          },
           "_colorName": "#f7e26b",
+          "_hex": "#f7e26b",
         },
         HexColor {
           "__coverageCount": 0,
-          "_color": RGB {
-            "b": 51,
-            "g": 38,
-            "r": 190,
-          },
           "_colorName": "#be2633",
+          "_hex": "#be2633",
         },
         HexColor {
           "__coverageCount": 0,
-          "_color": RGB {
-            "b": 255,
-            "g": 255,
-            "r": 255,
-          },
           "_colorName": "#FFFFFF",
+          "_hex": "#FFFFFF",
         },
       ],
       "_name": "Table",
@@ -33261,30 +33241,18 @@ GameData {
           },
           HexColor {
             "__coverageCount": 0,
-            "_color": RGB {
-              "b": 51,
-              "g": 38,
-              "r": 190,
-            },
             "_colorName": "#be2633",
+            "_hex": "#be2633",
           },
           HexColor {
             "__coverageCount": 0,
-            "_color": RGB {
-              "b": 255,
-              "g": 255,
-              "r": 255,
-            },
             "_colorName": "#FFFFFF",
+            "_hex": "#FFFFFF",
           },
           HexColor {
             "__coverageCount": 0,
-            "_color": RGB {
-              "b": 51,
-              "g": 38,
-              "r": 190,
-            },
             "_colorName": "#be2633",
+            "_hex": "#be2633",
           },
           TransparentColor {
             "__coverageCount": 0,
@@ -33296,30 +33264,18 @@ GameData {
           },
           HexColor {
             "__coverageCount": 0,
-            "_color": RGB {
-              "b": 255,
-              "g": 255,
-              "r": 255,
-            },
             "_colorName": "#FFFFFF",
+            "_hex": "#FFFFFF",
           },
           HexColor {
             "__coverageCount": 0,
-            "_color": RGB {
-              "b": 51,
-              "g": 38,
-              "r": 190,
-            },
             "_colorName": "#be2633",
+            "_hex": "#be2633",
           },
           HexColor {
             "__coverageCount": 0,
-            "_color": RGB {
-              "b": 255,
-              "g": 255,
-              "r": 255,
-            },
             "_colorName": "#FFFFFF",
+            "_hex": "#FFFFFF",
           },
           TransparentColor {
             "__coverageCount": 0,
@@ -33331,30 +33287,18 @@ GameData {
           },
           HexColor {
             "__coverageCount": 0,
-            "_color": RGB {
-              "b": 51,
-              "g": 38,
-              "r": 190,
-            },
             "_colorName": "#be2633",
+            "_hex": "#be2633",
           },
           HexColor {
             "__coverageCount": 0,
-            "_color": RGB {
-              "b": 255,
-              "g": 255,
-              "r": 255,
-            },
             "_colorName": "#FFFFFF",
+            "_hex": "#FFFFFF",
           },
           HexColor {
             "__coverageCount": 0,
-            "_color": RGB {
-              "b": 51,
-              "g": 38,
-              "r": 190,
-            },
             "_colorName": "#be2633",
+            "_hex": "#be2633",
           },
           TransparentColor {
             "__coverageCount": 0,
@@ -33366,24 +33310,16 @@ GameData {
           },
           HexColor {
             "__coverageCount": 0,
-            "_color": RGB {
-              "b": 107,
-              "g": 226,
-              "r": 247,
-            },
             "_colorName": "#f7e26b",
+            "_hex": "#f7e26b",
           },
           TransparentColor {
             "__coverageCount": 0,
           },
           HexColor {
             "__coverageCount": 0,
-            "_color": RGB {
-              "b": 107,
-              "g": 226,
-              "r": 247,
-            },
             "_colorName": "#f7e26b",
+            "_hex": "#f7e26b",
           },
           TransparentColor {
             "__coverageCount": 0,
@@ -33397,12 +33333,8 @@ GameData {
       "_cellSet": Set {},
       "_color": HexColor {
         "__coverageCount": 0,
-        "_color": RGB {
-          "b": 107,
-          "g": 226,
-          "r": 247,
-        },
         "_colorName": "#f7e26b",
+        "_hex": "#f7e26b",
       },
       "_name": "ChairRightLoose",
       "_optionalLegendChar": undefined,
@@ -33429,12 +33361,8 @@ GameData {
       "_colors": Array [
         HexColor {
           "__coverageCount": 0,
-          "_color": RGB {
-            "b": 107,
-            "g": 226,
-            "r": 247,
-          },
           "_colorName": "#f7e26b",
+          "_hex": "#f7e26b",
         },
       ],
       "_name": "player",
@@ -33443,236 +33371,136 @@ GameData {
         Array [
           HexColor {
             "__coverageCount": 0,
-            "_color": RGB {
-              "b": 107,
-              "g": 226,
-              "r": 247,
-            },
             "_colorName": "#f7e26b",
+            "_hex": "#f7e26b",
           },
           HexColor {
             "__coverageCount": 0,
-            "_color": RGB {
-              "b": 107,
-              "g": 226,
-              "r": 247,
-            },
             "_colorName": "#f7e26b",
+            "_hex": "#f7e26b",
           },
           HexColor {
             "__coverageCount": 0,
-            "_color": RGB {
-              "b": 107,
-              "g": 226,
-              "r": 247,
-            },
             "_colorName": "#f7e26b",
+            "_hex": "#f7e26b",
           },
           HexColor {
             "__coverageCount": 0,
-            "_color": RGB {
-              "b": 107,
-              "g": 226,
-              "r": 247,
-            },
             "_colorName": "#f7e26b",
+            "_hex": "#f7e26b",
           },
           HexColor {
             "__coverageCount": 0,
-            "_color": RGB {
-              "b": 107,
-              "g": 226,
-              "r": 247,
-            },
             "_colorName": "#f7e26b",
+            "_hex": "#f7e26b",
           },
         ],
         Array [
           HexColor {
             "__coverageCount": 0,
-            "_color": RGB {
-              "b": 107,
-              "g": 226,
-              "r": 247,
-            },
             "_colorName": "#f7e26b",
+            "_hex": "#f7e26b",
           },
           HexColor {
             "__coverageCount": 0,
-            "_color": RGB {
-              "b": 107,
-              "g": 226,
-              "r": 247,
-            },
             "_colorName": "#f7e26b",
+            "_hex": "#f7e26b",
           },
           HexColor {
             "__coverageCount": 0,
-            "_color": RGB {
-              "b": 107,
-              "g": 226,
-              "r": 247,
-            },
             "_colorName": "#f7e26b",
+            "_hex": "#f7e26b",
           },
           HexColor {
             "__coverageCount": 0,
-            "_color": RGB {
-              "b": 107,
-              "g": 226,
-              "r": 247,
-            },
             "_colorName": "#f7e26b",
+            "_hex": "#f7e26b",
           },
           HexColor {
             "__coverageCount": 0,
-            "_color": RGB {
-              "b": 107,
-              "g": 226,
-              "r": 247,
-            },
             "_colorName": "#f7e26b",
+            "_hex": "#f7e26b",
           },
         ],
         Array [
           HexColor {
             "__coverageCount": 0,
-            "_color": RGB {
-              "b": 107,
-              "g": 226,
-              "r": 247,
-            },
             "_colorName": "#f7e26b",
+            "_hex": "#f7e26b",
           },
           HexColor {
             "__coverageCount": 0,
-            "_color": RGB {
-              "b": 107,
-              "g": 226,
-              "r": 247,
-            },
             "_colorName": "#f7e26b",
+            "_hex": "#f7e26b",
           },
           HexColor {
             "__coverageCount": 0,
-            "_color": RGB {
-              "b": 107,
-              "g": 226,
-              "r": 247,
-            },
             "_colorName": "#f7e26b",
+            "_hex": "#f7e26b",
           },
           HexColor {
             "__coverageCount": 0,
-            "_color": RGB {
-              "b": 107,
-              "g": 226,
-              "r": 247,
-            },
             "_colorName": "#f7e26b",
+            "_hex": "#f7e26b",
           },
           HexColor {
             "__coverageCount": 0,
-            "_color": RGB {
-              "b": 107,
-              "g": 226,
-              "r": 247,
-            },
             "_colorName": "#f7e26b",
+            "_hex": "#f7e26b",
           },
         ],
         Array [
           HexColor {
             "__coverageCount": 0,
-            "_color": RGB {
-              "b": 107,
-              "g": 226,
-              "r": 247,
-            },
             "_colorName": "#f7e26b",
+            "_hex": "#f7e26b",
           },
           HexColor {
             "__coverageCount": 0,
-            "_color": RGB {
-              "b": 107,
-              "g": 226,
-              "r": 247,
-            },
             "_colorName": "#f7e26b",
+            "_hex": "#f7e26b",
           },
           HexColor {
             "__coverageCount": 0,
-            "_color": RGB {
-              "b": 107,
-              "g": 226,
-              "r": 247,
-            },
             "_colorName": "#f7e26b",
+            "_hex": "#f7e26b",
           },
           HexColor {
             "__coverageCount": 0,
-            "_color": RGB {
-              "b": 107,
-              "g": 226,
-              "r": 247,
-            },
             "_colorName": "#f7e26b",
+            "_hex": "#f7e26b",
           },
           HexColor {
             "__coverageCount": 0,
-            "_color": RGB {
-              "b": 107,
-              "g": 226,
-              "r": 247,
-            },
             "_colorName": "#f7e26b",
+            "_hex": "#f7e26b",
           },
         ],
         Array [
           HexColor {
             "__coverageCount": 0,
-            "_color": RGB {
-              "b": 107,
-              "g": 226,
-              "r": 247,
-            },
             "_colorName": "#f7e26b",
+            "_hex": "#f7e26b",
           },
           HexColor {
             "__coverageCount": 0,
-            "_color": RGB {
-              "b": 107,
-              "g": 226,
-              "r": 247,
-            },
             "_colorName": "#f7e26b",
+            "_hex": "#f7e26b",
           },
           HexColor {
             "__coverageCount": 0,
-            "_color": RGB {
-              "b": 107,
-              "g": 226,
-              "r": 247,
-            },
             "_colorName": "#f7e26b",
+            "_hex": "#f7e26b",
           },
           HexColor {
             "__coverageCount": 0,
-            "_color": RGB {
-              "b": 107,
-              "g": 226,
-              "r": 247,
-            },
             "_colorName": "#f7e26b",
+            "_hex": "#f7e26b",
           },
           HexColor {
             "__coverageCount": 0,
-            "_color": RGB {
-              "b": 107,
-              "g": 226,
-              "r": 247,
-            },
             "_colorName": "#f7e26b",
+            "_hex": "#f7e26b",
           },
         ],
       ],
@@ -33683,12 +33511,8 @@ GameData {
       "_cellSet": Set {},
       "_color": HexColor {
         "__coverageCount": 0,
-        "_color": RGB {
-          "b": 107,
-          "g": 226,
-          "r": 247,
-        },
         "_colorName": "#f7e26b",
+        "_hex": "#f7e26b",
       },
       "_name": "00",
       "_optionalLegendChar": undefined,
@@ -33699,12 +33523,8 @@ GameData {
       "_cellSet": Set {},
       "_color": HexColor {
         "__coverageCount": 0,
-        "_color": RGB {
-          "b": 107,
-          "g": 226,
-          "r": 247,
-        },
         "_colorName": "#f7e26b",
+        "_hex": "#f7e26b",
       },
       "_name": "01",
       "_optionalLegendChar": undefined,
