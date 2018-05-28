@@ -632,4 +632,87 @@ describe('engine', () => {
 
     })
 
+
+    it('Removes sprites that were in the OR  tile of a condition but not present in the action side', () => {
+        const { engine, data } = parseEngine(`title Aaaah! I'm Being Attacked by a Giant Tentacle!
+        realtime_interval 0.6
+
+        ========
+        OBJECTS
+        ========
+
+        Background
+        #ccc #ddd #bee
+        10000
+        12220
+        12220
+        12220
+        11110
+
+        Player
+        Brown #fda Purple pink black
+        .000.
+        .111.
+        22222
+        22222
+        .434.
+
+
+        RNG1
+        transparent
+
+        RNG2
+        transparent
+
+        =======
+        LEGEND
+        =======
+        . = Background
+        P = Player AND RNG1
+
+        RNG = RNG1 OR RNG2
+
+        =======
+        SOUNDS
+        =======
+
+        ================
+        COLLISIONLAYERS
+        ================
+        Background
+        RNG1, RNG2
+        Player
+
+
+        ======
+        RULES
+        ======
+
+        (OR'd fields are not removed even though they should be)
+        ([ Player ] -> [ Player RANDOM RNG ])
+        [RNG] -> []
+
+
+        ==============
+        WINCONDITIONS
+        ==============
+
+        =======
+        LEVELS
+        =======
+
+        P
+
+    `) // end game definition
+        const rng1 = data._getSpriteByName('RNG1')
+        const rng2 = data._getSpriteByName('RNG2')
+        debugger
+        engine.tick()
+
+        // [RNG] -> [] should result in the sprites not appearing
+        expect(rng1.getCellsThatMatch().size).toBe(0)
+        expect(rng2.getCellsThatMatch().size).toBe(0)
+
+    })
+
 })

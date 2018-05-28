@@ -36634,150 +36634,15 @@ GameData {
               "_neighbors": Array [
                 SimpleNeighbor {
                   "__coverageCount": 0,
-                  "_brackets": Map {
-                    SimpleBracket {
-                      "__coverageCount": 0,
-                      "_direction": "RIGHT",
-                      "_firstCells": Set {},
-                      "_neighbors": Array [
-                        [Circular],
-                        SimpleEllipsisNeighbor {
-                          "__coverageCount": 0,
-                          "_brackets": Map {
-                            [Circular] => Set {
-                              1,
-                            },
-                          },
-                          "_localCellCache": Set {},
-                          "_tilesWithModifier": Set {
-                            SimpleEllipsisTileWithModifier {
-                              "__coverageCount": 0,
-                              "_direction": "STATIONARY",
-                              "_isNegated": false,
-                              "_isRandom": false,
-                              "_neighbors": Set {},
-                              "_tile": null,
-                            },
-                          },
-                        },
-                        [Circular],
-                        [Circular],
-                      ],
-                    } => Set {
-                      0,
-                      2,
-                      3,
-                    },
-                    SimpleBracket {
-                      "__coverageCount": 0,
-                      "_direction": "LEFT",
-                      "_firstCells": Set {},
-                      "_neighbors": Array [
-                        [Circular],
-                        SimpleEllipsisNeighbor {
-                          "__coverageCount": 0,
-                          "_brackets": Map {
-                            [Circular] => Set {
-                              1,
-                            },
-                          },
-                          "_localCellCache": Set {},
-                          "_tilesWithModifier": Set {
-                            SimpleEllipsisTileWithModifier {
-                              "__coverageCount": 0,
-                              "_direction": "STATIONARY",
-                              "_isNegated": false,
-                              "_isRandom": false,
-                              "_neighbors": Set {},
-                              "_tile": null,
-                            },
-                          },
-                        },
-                        [Circular],
-                        [Circular],
-                      ],
-                    } => Set {
-                      0,
-                      2,
-                      3,
-                    },
-                    SimpleBracket {
-                      "__coverageCount": 0,
-                      "_direction": "DOWN",
-                      "_firstCells": Set {},
-                      "_neighbors": Array [
-                        [Circular],
-                        SimpleEllipsisNeighbor {
-                          "__coverageCount": 0,
-                          "_brackets": Map {
-                            [Circular] => Set {
-                              1,
-                            },
-                          },
-                          "_localCellCache": Set {},
-                          "_tilesWithModifier": Set {
-                            SimpleEllipsisTileWithModifier {
-                              "__coverageCount": 0,
-                              "_direction": "STATIONARY",
-                              "_isNegated": false,
-                              "_isRandom": false,
-                              "_neighbors": Set {},
-                              "_tile": null,
-                            },
-                          },
-                        },
-                        [Circular],
-                        [Circular],
-                      ],
-                    } => Set {
-                      0,
-                      2,
-                      3,
-                    },
-                    SimpleBracket {
-                      "__coverageCount": 0,
-                      "_direction": "UP",
-                      "_firstCells": Set {},
-                      "_neighbors": Array [
-                        [Circular],
-                        SimpleEllipsisNeighbor {
-                          "__coverageCount": 0,
-                          "_brackets": Map {
-                            [Circular] => Set {
-                              1,
-                            },
-                          },
-                          "_localCellCache": Set {},
-                          "_tilesWithModifier": Set {
-                            SimpleEllipsisTileWithModifier {
-                              "__coverageCount": 0,
-                              "_direction": "STATIONARY",
-                              "_isNegated": false,
-                              "_isRandom": false,
-                              "_neighbors": Set {},
-                              "_tile": null,
-                            },
-                          },
-                        },
-                        [Circular],
-                        [Circular],
-                      ],
-                    } => Set {
-                      0,
-                      2,
-                      3,
-                    },
-                  },
+                  "_brackets": Map {},
                   "_localCellCache": Set {},
                   "_tilesWithModifier": Set {
                     SimpleTileWithModifier {
                       "__coverageCount": 0,
                       "_direction": null,
                       "_isNegated": false,
-                      "_isRandom": false,
-                      "_neighbors": Set {
-                        [Circular],
-                      },
+                      "_isRandom": true,
+                      "_neighbors": Set {},
                       "_tile": GameLegendTileSimple {
                         "__coverageCount": 0,
                         "_spriteNameOrLevelChar": "z",
@@ -36791,7 +36656,156 @@ GameData {
                             "_name": "testObject",
                             "_optionalLegendChar": undefined,
                             "_tileWithModifierSet": Set {
-                              [Circular],
+                              SimpleTileWithModifier {
+                                "__coverageCount": 0,
+                                "_direction": null,
+                                "_isNegated": false,
+                                "_isRandom": false,
+                                "_neighbors": Set {
+                                  SimpleNeighbor {
+                                    "__coverageCount": 0,
+                                    "_brackets": Map {
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "RIGHT",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                          SimpleEllipsisNeighbor {
+                                            "__coverageCount": 0,
+                                            "_brackets": Map {
+                                              [Circular] => Set {
+                                                1,
+                                              },
+                                            },
+                                            "_localCellCache": Set {},
+                                            "_tilesWithModifier": Set {
+                                              SimpleEllipsisTileWithModifier {
+                                                "__coverageCount": 0,
+                                                "_direction": "STATIONARY",
+                                                "_isNegated": false,
+                                                "_isRandom": false,
+                                                "_neighbors": Set {},
+                                                "_tile": null,
+                                              },
+                                            },
+                                          },
+                                          [Circular],
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                        2,
+                                        3,
+                                      },
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "LEFT",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                          SimpleEllipsisNeighbor {
+                                            "__coverageCount": 0,
+                                            "_brackets": Map {
+                                              [Circular] => Set {
+                                                1,
+                                              },
+                                            },
+                                            "_localCellCache": Set {},
+                                            "_tilesWithModifier": Set {
+                                              SimpleEllipsisTileWithModifier {
+                                                "__coverageCount": 0,
+                                                "_direction": "STATIONARY",
+                                                "_isNegated": false,
+                                                "_isRandom": false,
+                                                "_neighbors": Set {},
+                                                "_tile": null,
+                                              },
+                                            },
+                                          },
+                                          [Circular],
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                        2,
+                                        3,
+                                      },
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "DOWN",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                          SimpleEllipsisNeighbor {
+                                            "__coverageCount": 0,
+                                            "_brackets": Map {
+                                              [Circular] => Set {
+                                                1,
+                                              },
+                                            },
+                                            "_localCellCache": Set {},
+                                            "_tilesWithModifier": Set {
+                                              SimpleEllipsisTileWithModifier {
+                                                "__coverageCount": 0,
+                                                "_direction": "STATIONARY",
+                                                "_isNegated": false,
+                                                "_isRandom": false,
+                                                "_neighbors": Set {},
+                                                "_tile": null,
+                                              },
+                                            },
+                                          },
+                                          [Circular],
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                        2,
+                                        3,
+                                      },
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "UP",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                          SimpleEllipsisNeighbor {
+                                            "__coverageCount": 0,
+                                            "_brackets": Map {
+                                              [Circular] => Set {
+                                                1,
+                                              },
+                                            },
+                                            "_localCellCache": Set {},
+                                            "_tilesWithModifier": Set {
+                                              SimpleEllipsisTileWithModifier {
+                                                "__coverageCount": 0,
+                                                "_direction": "STATIONARY",
+                                                "_isNegated": false,
+                                                "_isRandom": false,
+                                                "_neighbors": Set {},
+                                                "_tile": null,
+                                              },
+                                            },
+                                          },
+                                          [Circular],
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                        2,
+                                        3,
+                                      },
+                                    },
+                                    "_localCellCache": Set {},
+                                    "_tilesWithModifier": Set {
+                                      [Circular],
+                                    },
+                                  },
+                                },
+                                "_tile": [Circular],
+                              },
                             },
                           },
                         ],
@@ -36805,7 +36819,156 @@ GameData {
                             "_name": "testObject",
                             "_optionalLegendChar": undefined,
                             "_tileWithModifierSet": Set {
-                              [Circular],
+                              SimpleTileWithModifier {
+                                "__coverageCount": 0,
+                                "_direction": null,
+                                "_isNegated": false,
+                                "_isRandom": false,
+                                "_neighbors": Set {
+                                  SimpleNeighbor {
+                                    "__coverageCount": 0,
+                                    "_brackets": Map {
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "RIGHT",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                          SimpleEllipsisNeighbor {
+                                            "__coverageCount": 0,
+                                            "_brackets": Map {
+                                              [Circular] => Set {
+                                                1,
+                                              },
+                                            },
+                                            "_localCellCache": Set {},
+                                            "_tilesWithModifier": Set {
+                                              SimpleEllipsisTileWithModifier {
+                                                "__coverageCount": 0,
+                                                "_direction": "STATIONARY",
+                                                "_isNegated": false,
+                                                "_isRandom": false,
+                                                "_neighbors": Set {},
+                                                "_tile": null,
+                                              },
+                                            },
+                                          },
+                                          [Circular],
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                        2,
+                                        3,
+                                      },
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "LEFT",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                          SimpleEllipsisNeighbor {
+                                            "__coverageCount": 0,
+                                            "_brackets": Map {
+                                              [Circular] => Set {
+                                                1,
+                                              },
+                                            },
+                                            "_localCellCache": Set {},
+                                            "_tilesWithModifier": Set {
+                                              SimpleEllipsisTileWithModifier {
+                                                "__coverageCount": 0,
+                                                "_direction": "STATIONARY",
+                                                "_isNegated": false,
+                                                "_isRandom": false,
+                                                "_neighbors": Set {},
+                                                "_tile": null,
+                                              },
+                                            },
+                                          },
+                                          [Circular],
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                        2,
+                                        3,
+                                      },
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "DOWN",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                          SimpleEllipsisNeighbor {
+                                            "__coverageCount": 0,
+                                            "_brackets": Map {
+                                              [Circular] => Set {
+                                                1,
+                                              },
+                                            },
+                                            "_localCellCache": Set {},
+                                            "_tilesWithModifier": Set {
+                                              SimpleEllipsisTileWithModifier {
+                                                "__coverageCount": 0,
+                                                "_direction": "STATIONARY",
+                                                "_isNegated": false,
+                                                "_isRandom": false,
+                                                "_neighbors": Set {},
+                                                "_tile": null,
+                                              },
+                                            },
+                                          },
+                                          [Circular],
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                        2,
+                                        3,
+                                      },
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "UP",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                          SimpleEllipsisNeighbor {
+                                            "__coverageCount": 0,
+                                            "_brackets": Map {
+                                              [Circular] => Set {
+                                                1,
+                                              },
+                                            },
+                                            "_localCellCache": Set {},
+                                            "_tilesWithModifier": Set {
+                                              SimpleEllipsisTileWithModifier {
+                                                "__coverageCount": 0,
+                                                "_direction": "STATIONARY",
+                                                "_isNegated": false,
+                                                "_isRandom": false,
+                                                "_neighbors": Set {},
+                                                "_tile": null,
+                                              },
+                                            },
+                                          },
+                                          [Circular],
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                        2,
+                                        3,
+                                      },
+                                    },
+                                    "_localCellCache": Set {},
+                                    "_tilesWithModifier": Set {
+                                      [Circular],
+                                    },
+                                  },
+                                },
+                                "_tile": [Circular],
+                              },
                             },
                           },
                         ],
@@ -37522,150 +37685,15 @@ GameData {
               "_neighbors": Array [
                 SimpleNeighbor {
                   "__coverageCount": 0,
-                  "_brackets": Map {
-                    SimpleBracket {
-                      "__coverageCount": 0,
-                      "_direction": "RIGHT",
-                      "_firstCells": Set {},
-                      "_neighbors": Array [
-                        [Circular],
-                        SimpleEllipsisNeighbor {
-                          "__coverageCount": 0,
-                          "_brackets": Map {
-                            [Circular] => Set {
-                              1,
-                            },
-                          },
-                          "_localCellCache": Set {},
-                          "_tilesWithModifier": Set {
-                            SimpleEllipsisTileWithModifier {
-                              "__coverageCount": 0,
-                              "_direction": "STATIONARY",
-                              "_isNegated": false,
-                              "_isRandom": false,
-                              "_neighbors": Set {},
-                              "_tile": null,
-                            },
-                          },
-                        },
-                        [Circular],
-                        [Circular],
-                      ],
-                    } => Set {
-                      0,
-                      2,
-                      3,
-                    },
-                    SimpleBracket {
-                      "__coverageCount": 0,
-                      "_direction": "LEFT",
-                      "_firstCells": Set {},
-                      "_neighbors": Array [
-                        [Circular],
-                        SimpleEllipsisNeighbor {
-                          "__coverageCount": 0,
-                          "_brackets": Map {
-                            [Circular] => Set {
-                              1,
-                            },
-                          },
-                          "_localCellCache": Set {},
-                          "_tilesWithModifier": Set {
-                            SimpleEllipsisTileWithModifier {
-                              "__coverageCount": 0,
-                              "_direction": "STATIONARY",
-                              "_isNegated": false,
-                              "_isRandom": false,
-                              "_neighbors": Set {},
-                              "_tile": null,
-                            },
-                          },
-                        },
-                        [Circular],
-                        [Circular],
-                      ],
-                    } => Set {
-                      0,
-                      2,
-                      3,
-                    },
-                    SimpleBracket {
-                      "__coverageCount": 0,
-                      "_direction": "DOWN",
-                      "_firstCells": Set {},
-                      "_neighbors": Array [
-                        [Circular],
-                        SimpleEllipsisNeighbor {
-                          "__coverageCount": 0,
-                          "_brackets": Map {
-                            [Circular] => Set {
-                              1,
-                            },
-                          },
-                          "_localCellCache": Set {},
-                          "_tilesWithModifier": Set {
-                            SimpleEllipsisTileWithModifier {
-                              "__coverageCount": 0,
-                              "_direction": "STATIONARY",
-                              "_isNegated": false,
-                              "_isRandom": false,
-                              "_neighbors": Set {},
-                              "_tile": null,
-                            },
-                          },
-                        },
-                        [Circular],
-                        [Circular],
-                      ],
-                    } => Set {
-                      0,
-                      2,
-                      3,
-                    },
-                    SimpleBracket {
-                      "__coverageCount": 0,
-                      "_direction": "UP",
-                      "_firstCells": Set {},
-                      "_neighbors": Array [
-                        [Circular],
-                        SimpleEllipsisNeighbor {
-                          "__coverageCount": 0,
-                          "_brackets": Map {
-                            [Circular] => Set {
-                              1,
-                            },
-                          },
-                          "_localCellCache": Set {},
-                          "_tilesWithModifier": Set {
-                            SimpleEllipsisTileWithModifier {
-                              "__coverageCount": 0,
-                              "_direction": "STATIONARY",
-                              "_isNegated": false,
-                              "_isRandom": false,
-                              "_neighbors": Set {},
-                              "_tile": null,
-                            },
-                          },
-                        },
-                        [Circular],
-                        [Circular],
-                      ],
-                    } => Set {
-                      0,
-                      2,
-                      3,
-                    },
-                  },
+                  "_brackets": Map {},
                   "_localCellCache": Set {},
                   "_tilesWithModifier": Set {
                     SimpleTileWithModifier {
                       "__coverageCount": 0,
                       "_direction": null,
                       "_isNegated": false,
-                      "_isRandom": false,
-                      "_neighbors": Set {
-                        [Circular],
-                      },
+                      "_isRandom": true,
+                      "_neighbors": Set {},
                       "_tile": GameLegendTileSimple {
                         "__coverageCount": 0,
                         "_spriteNameOrLevelChar": "z",
@@ -37679,7 +37707,156 @@ GameData {
                             "_name": "testObject",
                             "_optionalLegendChar": undefined,
                             "_tileWithModifierSet": Set {
-                              [Circular],
+                              SimpleTileWithModifier {
+                                "__coverageCount": 0,
+                                "_direction": null,
+                                "_isNegated": false,
+                                "_isRandom": false,
+                                "_neighbors": Set {
+                                  SimpleNeighbor {
+                                    "__coverageCount": 0,
+                                    "_brackets": Map {
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "RIGHT",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                          SimpleEllipsisNeighbor {
+                                            "__coverageCount": 0,
+                                            "_brackets": Map {
+                                              [Circular] => Set {
+                                                1,
+                                              },
+                                            },
+                                            "_localCellCache": Set {},
+                                            "_tilesWithModifier": Set {
+                                              SimpleEllipsisTileWithModifier {
+                                                "__coverageCount": 0,
+                                                "_direction": "STATIONARY",
+                                                "_isNegated": false,
+                                                "_isRandom": false,
+                                                "_neighbors": Set {},
+                                                "_tile": null,
+                                              },
+                                            },
+                                          },
+                                          [Circular],
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                        2,
+                                        3,
+                                      },
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "LEFT",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                          SimpleEllipsisNeighbor {
+                                            "__coverageCount": 0,
+                                            "_brackets": Map {
+                                              [Circular] => Set {
+                                                1,
+                                              },
+                                            },
+                                            "_localCellCache": Set {},
+                                            "_tilesWithModifier": Set {
+                                              SimpleEllipsisTileWithModifier {
+                                                "__coverageCount": 0,
+                                                "_direction": "STATIONARY",
+                                                "_isNegated": false,
+                                                "_isRandom": false,
+                                                "_neighbors": Set {},
+                                                "_tile": null,
+                                              },
+                                            },
+                                          },
+                                          [Circular],
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                        2,
+                                        3,
+                                      },
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "DOWN",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                          SimpleEllipsisNeighbor {
+                                            "__coverageCount": 0,
+                                            "_brackets": Map {
+                                              [Circular] => Set {
+                                                1,
+                                              },
+                                            },
+                                            "_localCellCache": Set {},
+                                            "_tilesWithModifier": Set {
+                                              SimpleEllipsisTileWithModifier {
+                                                "__coverageCount": 0,
+                                                "_direction": "STATIONARY",
+                                                "_isNegated": false,
+                                                "_isRandom": false,
+                                                "_neighbors": Set {},
+                                                "_tile": null,
+                                              },
+                                            },
+                                          },
+                                          [Circular],
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                        2,
+                                        3,
+                                      },
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "UP",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                          SimpleEllipsisNeighbor {
+                                            "__coverageCount": 0,
+                                            "_brackets": Map {
+                                              [Circular] => Set {
+                                                1,
+                                              },
+                                            },
+                                            "_localCellCache": Set {},
+                                            "_tilesWithModifier": Set {
+                                              SimpleEllipsisTileWithModifier {
+                                                "__coverageCount": 0,
+                                                "_direction": "STATIONARY",
+                                                "_isNegated": false,
+                                                "_isRandom": false,
+                                                "_neighbors": Set {},
+                                                "_tile": null,
+                                              },
+                                            },
+                                          },
+                                          [Circular],
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                        2,
+                                        3,
+                                      },
+                                    },
+                                    "_localCellCache": Set {},
+                                    "_tilesWithModifier": Set {
+                                      [Circular],
+                                    },
+                                  },
+                                },
+                                "_tile": [Circular],
+                              },
                             },
                           },
                         ],
@@ -37693,7 +37870,156 @@ GameData {
                             "_name": "testObject",
                             "_optionalLegendChar": undefined,
                             "_tileWithModifierSet": Set {
-                              [Circular],
+                              SimpleTileWithModifier {
+                                "__coverageCount": 0,
+                                "_direction": null,
+                                "_isNegated": false,
+                                "_isRandom": false,
+                                "_neighbors": Set {
+                                  SimpleNeighbor {
+                                    "__coverageCount": 0,
+                                    "_brackets": Map {
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "RIGHT",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                          SimpleEllipsisNeighbor {
+                                            "__coverageCount": 0,
+                                            "_brackets": Map {
+                                              [Circular] => Set {
+                                                1,
+                                              },
+                                            },
+                                            "_localCellCache": Set {},
+                                            "_tilesWithModifier": Set {
+                                              SimpleEllipsisTileWithModifier {
+                                                "__coverageCount": 0,
+                                                "_direction": "STATIONARY",
+                                                "_isNegated": false,
+                                                "_isRandom": false,
+                                                "_neighbors": Set {},
+                                                "_tile": null,
+                                              },
+                                            },
+                                          },
+                                          [Circular],
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                        2,
+                                        3,
+                                      },
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "LEFT",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                          SimpleEllipsisNeighbor {
+                                            "__coverageCount": 0,
+                                            "_brackets": Map {
+                                              [Circular] => Set {
+                                                1,
+                                              },
+                                            },
+                                            "_localCellCache": Set {},
+                                            "_tilesWithModifier": Set {
+                                              SimpleEllipsisTileWithModifier {
+                                                "__coverageCount": 0,
+                                                "_direction": "STATIONARY",
+                                                "_isNegated": false,
+                                                "_isRandom": false,
+                                                "_neighbors": Set {},
+                                                "_tile": null,
+                                              },
+                                            },
+                                          },
+                                          [Circular],
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                        2,
+                                        3,
+                                      },
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "DOWN",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                          SimpleEllipsisNeighbor {
+                                            "__coverageCount": 0,
+                                            "_brackets": Map {
+                                              [Circular] => Set {
+                                                1,
+                                              },
+                                            },
+                                            "_localCellCache": Set {},
+                                            "_tilesWithModifier": Set {
+                                              SimpleEllipsisTileWithModifier {
+                                                "__coverageCount": 0,
+                                                "_direction": "STATIONARY",
+                                                "_isNegated": false,
+                                                "_isRandom": false,
+                                                "_neighbors": Set {},
+                                                "_tile": null,
+                                              },
+                                            },
+                                          },
+                                          [Circular],
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                        2,
+                                        3,
+                                      },
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "UP",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                          SimpleEllipsisNeighbor {
+                                            "__coverageCount": 0,
+                                            "_brackets": Map {
+                                              [Circular] => Set {
+                                                1,
+                                              },
+                                            },
+                                            "_localCellCache": Set {},
+                                            "_tilesWithModifier": Set {
+                                              SimpleEllipsisTileWithModifier {
+                                                "__coverageCount": 0,
+                                                "_direction": "STATIONARY",
+                                                "_isNegated": false,
+                                                "_isRandom": false,
+                                                "_neighbors": Set {},
+                                                "_tile": null,
+                                              },
+                                            },
+                                          },
+                                          [Circular],
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                        2,
+                                        3,
+                                      },
+                                    },
+                                    "_localCellCache": Set {},
+                                    "_tilesWithModifier": Set {
+                                      [Circular],
+                                    },
+                                  },
+                                },
+                                "_tile": [Circular],
+                              },
                             },
                           },
                         ],
@@ -38410,150 +38736,15 @@ GameData {
               "_neighbors": Array [
                 SimpleNeighbor {
                   "__coverageCount": 0,
-                  "_brackets": Map {
-                    SimpleBracket {
-                      "__coverageCount": 0,
-                      "_direction": "RIGHT",
-                      "_firstCells": Set {},
-                      "_neighbors": Array [
-                        [Circular],
-                        SimpleEllipsisNeighbor {
-                          "__coverageCount": 0,
-                          "_brackets": Map {
-                            [Circular] => Set {
-                              1,
-                            },
-                          },
-                          "_localCellCache": Set {},
-                          "_tilesWithModifier": Set {
-                            SimpleEllipsisTileWithModifier {
-                              "__coverageCount": 0,
-                              "_direction": "STATIONARY",
-                              "_isNegated": false,
-                              "_isRandom": false,
-                              "_neighbors": Set {},
-                              "_tile": null,
-                            },
-                          },
-                        },
-                        [Circular],
-                        [Circular],
-                      ],
-                    } => Set {
-                      0,
-                      2,
-                      3,
-                    },
-                    SimpleBracket {
-                      "__coverageCount": 0,
-                      "_direction": "LEFT",
-                      "_firstCells": Set {},
-                      "_neighbors": Array [
-                        [Circular],
-                        SimpleEllipsisNeighbor {
-                          "__coverageCount": 0,
-                          "_brackets": Map {
-                            [Circular] => Set {
-                              1,
-                            },
-                          },
-                          "_localCellCache": Set {},
-                          "_tilesWithModifier": Set {
-                            SimpleEllipsisTileWithModifier {
-                              "__coverageCount": 0,
-                              "_direction": "STATIONARY",
-                              "_isNegated": false,
-                              "_isRandom": false,
-                              "_neighbors": Set {},
-                              "_tile": null,
-                            },
-                          },
-                        },
-                        [Circular],
-                        [Circular],
-                      ],
-                    } => Set {
-                      0,
-                      2,
-                      3,
-                    },
-                    SimpleBracket {
-                      "__coverageCount": 0,
-                      "_direction": "DOWN",
-                      "_firstCells": Set {},
-                      "_neighbors": Array [
-                        [Circular],
-                        SimpleEllipsisNeighbor {
-                          "__coverageCount": 0,
-                          "_brackets": Map {
-                            [Circular] => Set {
-                              1,
-                            },
-                          },
-                          "_localCellCache": Set {},
-                          "_tilesWithModifier": Set {
-                            SimpleEllipsisTileWithModifier {
-                              "__coverageCount": 0,
-                              "_direction": "STATIONARY",
-                              "_isNegated": false,
-                              "_isRandom": false,
-                              "_neighbors": Set {},
-                              "_tile": null,
-                            },
-                          },
-                        },
-                        [Circular],
-                        [Circular],
-                      ],
-                    } => Set {
-                      0,
-                      2,
-                      3,
-                    },
-                    SimpleBracket {
-                      "__coverageCount": 0,
-                      "_direction": "UP",
-                      "_firstCells": Set {},
-                      "_neighbors": Array [
-                        [Circular],
-                        SimpleEllipsisNeighbor {
-                          "__coverageCount": 0,
-                          "_brackets": Map {
-                            [Circular] => Set {
-                              1,
-                            },
-                          },
-                          "_localCellCache": Set {},
-                          "_tilesWithModifier": Set {
-                            SimpleEllipsisTileWithModifier {
-                              "__coverageCount": 0,
-                              "_direction": "STATIONARY",
-                              "_isNegated": false,
-                              "_isRandom": false,
-                              "_neighbors": Set {},
-                              "_tile": null,
-                            },
-                          },
-                        },
-                        [Circular],
-                        [Circular],
-                      ],
-                    } => Set {
-                      0,
-                      2,
-                      3,
-                    },
-                  },
+                  "_brackets": Map {},
                   "_localCellCache": Set {},
                   "_tilesWithModifier": Set {
                     SimpleTileWithModifier {
                       "__coverageCount": 0,
                       "_direction": null,
                       "_isNegated": false,
-                      "_isRandom": false,
-                      "_neighbors": Set {
-                        [Circular],
-                      },
+                      "_isRandom": true,
+                      "_neighbors": Set {},
                       "_tile": GameLegendTileSimple {
                         "__coverageCount": 0,
                         "_spriteNameOrLevelChar": "z",
@@ -38567,7 +38758,156 @@ GameData {
                             "_name": "testObject",
                             "_optionalLegendChar": undefined,
                             "_tileWithModifierSet": Set {
-                              [Circular],
+                              SimpleTileWithModifier {
+                                "__coverageCount": 0,
+                                "_direction": null,
+                                "_isNegated": false,
+                                "_isRandom": false,
+                                "_neighbors": Set {
+                                  SimpleNeighbor {
+                                    "__coverageCount": 0,
+                                    "_brackets": Map {
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "RIGHT",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                          SimpleEllipsisNeighbor {
+                                            "__coverageCount": 0,
+                                            "_brackets": Map {
+                                              [Circular] => Set {
+                                                1,
+                                              },
+                                            },
+                                            "_localCellCache": Set {},
+                                            "_tilesWithModifier": Set {
+                                              SimpleEllipsisTileWithModifier {
+                                                "__coverageCount": 0,
+                                                "_direction": "STATIONARY",
+                                                "_isNegated": false,
+                                                "_isRandom": false,
+                                                "_neighbors": Set {},
+                                                "_tile": null,
+                                              },
+                                            },
+                                          },
+                                          [Circular],
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                        2,
+                                        3,
+                                      },
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "LEFT",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                          SimpleEllipsisNeighbor {
+                                            "__coverageCount": 0,
+                                            "_brackets": Map {
+                                              [Circular] => Set {
+                                                1,
+                                              },
+                                            },
+                                            "_localCellCache": Set {},
+                                            "_tilesWithModifier": Set {
+                                              SimpleEllipsisTileWithModifier {
+                                                "__coverageCount": 0,
+                                                "_direction": "STATIONARY",
+                                                "_isNegated": false,
+                                                "_isRandom": false,
+                                                "_neighbors": Set {},
+                                                "_tile": null,
+                                              },
+                                            },
+                                          },
+                                          [Circular],
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                        2,
+                                        3,
+                                      },
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "DOWN",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                          SimpleEllipsisNeighbor {
+                                            "__coverageCount": 0,
+                                            "_brackets": Map {
+                                              [Circular] => Set {
+                                                1,
+                                              },
+                                            },
+                                            "_localCellCache": Set {},
+                                            "_tilesWithModifier": Set {
+                                              SimpleEllipsisTileWithModifier {
+                                                "__coverageCount": 0,
+                                                "_direction": "STATIONARY",
+                                                "_isNegated": false,
+                                                "_isRandom": false,
+                                                "_neighbors": Set {},
+                                                "_tile": null,
+                                              },
+                                            },
+                                          },
+                                          [Circular],
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                        2,
+                                        3,
+                                      },
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "UP",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                          SimpleEllipsisNeighbor {
+                                            "__coverageCount": 0,
+                                            "_brackets": Map {
+                                              [Circular] => Set {
+                                                1,
+                                              },
+                                            },
+                                            "_localCellCache": Set {},
+                                            "_tilesWithModifier": Set {
+                                              SimpleEllipsisTileWithModifier {
+                                                "__coverageCount": 0,
+                                                "_direction": "STATIONARY",
+                                                "_isNegated": false,
+                                                "_isRandom": false,
+                                                "_neighbors": Set {},
+                                                "_tile": null,
+                                              },
+                                            },
+                                          },
+                                          [Circular],
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                        2,
+                                        3,
+                                      },
+                                    },
+                                    "_localCellCache": Set {},
+                                    "_tilesWithModifier": Set {
+                                      [Circular],
+                                    },
+                                  },
+                                },
+                                "_tile": [Circular],
+                              },
                             },
                           },
                         ],
@@ -38581,7 +38921,156 @@ GameData {
                             "_name": "testObject",
                             "_optionalLegendChar": undefined,
                             "_tileWithModifierSet": Set {
-                              [Circular],
+                              SimpleTileWithModifier {
+                                "__coverageCount": 0,
+                                "_direction": null,
+                                "_isNegated": false,
+                                "_isRandom": false,
+                                "_neighbors": Set {
+                                  SimpleNeighbor {
+                                    "__coverageCount": 0,
+                                    "_brackets": Map {
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "RIGHT",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                          SimpleEllipsisNeighbor {
+                                            "__coverageCount": 0,
+                                            "_brackets": Map {
+                                              [Circular] => Set {
+                                                1,
+                                              },
+                                            },
+                                            "_localCellCache": Set {},
+                                            "_tilesWithModifier": Set {
+                                              SimpleEllipsisTileWithModifier {
+                                                "__coverageCount": 0,
+                                                "_direction": "STATIONARY",
+                                                "_isNegated": false,
+                                                "_isRandom": false,
+                                                "_neighbors": Set {},
+                                                "_tile": null,
+                                              },
+                                            },
+                                          },
+                                          [Circular],
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                        2,
+                                        3,
+                                      },
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "LEFT",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                          SimpleEllipsisNeighbor {
+                                            "__coverageCount": 0,
+                                            "_brackets": Map {
+                                              [Circular] => Set {
+                                                1,
+                                              },
+                                            },
+                                            "_localCellCache": Set {},
+                                            "_tilesWithModifier": Set {
+                                              SimpleEllipsisTileWithModifier {
+                                                "__coverageCount": 0,
+                                                "_direction": "STATIONARY",
+                                                "_isNegated": false,
+                                                "_isRandom": false,
+                                                "_neighbors": Set {},
+                                                "_tile": null,
+                                              },
+                                            },
+                                          },
+                                          [Circular],
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                        2,
+                                        3,
+                                      },
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "DOWN",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                          SimpleEllipsisNeighbor {
+                                            "__coverageCount": 0,
+                                            "_brackets": Map {
+                                              [Circular] => Set {
+                                                1,
+                                              },
+                                            },
+                                            "_localCellCache": Set {},
+                                            "_tilesWithModifier": Set {
+                                              SimpleEllipsisTileWithModifier {
+                                                "__coverageCount": 0,
+                                                "_direction": "STATIONARY",
+                                                "_isNegated": false,
+                                                "_isRandom": false,
+                                                "_neighbors": Set {},
+                                                "_tile": null,
+                                              },
+                                            },
+                                          },
+                                          [Circular],
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                        2,
+                                        3,
+                                      },
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "UP",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                          SimpleEllipsisNeighbor {
+                                            "__coverageCount": 0,
+                                            "_brackets": Map {
+                                              [Circular] => Set {
+                                                1,
+                                              },
+                                            },
+                                            "_localCellCache": Set {},
+                                            "_tilesWithModifier": Set {
+                                              SimpleEllipsisTileWithModifier {
+                                                "__coverageCount": 0,
+                                                "_direction": "STATIONARY",
+                                                "_isNegated": false,
+                                                "_isRandom": false,
+                                                "_neighbors": Set {},
+                                                "_tile": null,
+                                              },
+                                            },
+                                          },
+                                          [Circular],
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                        2,
+                                        3,
+                                      },
+                                    },
+                                    "_localCellCache": Set {},
+                                    "_tilesWithModifier": Set {
+                                      [Circular],
+                                    },
+                                  },
+                                },
+                                "_tile": [Circular],
+                              },
                             },
                           },
                         ],
@@ -39298,150 +39787,15 @@ GameData {
               "_neighbors": Array [
                 SimpleNeighbor {
                   "__coverageCount": 0,
-                  "_brackets": Map {
-                    SimpleBracket {
-                      "__coverageCount": 0,
-                      "_direction": "RIGHT",
-                      "_firstCells": Set {},
-                      "_neighbors": Array [
-                        [Circular],
-                        SimpleEllipsisNeighbor {
-                          "__coverageCount": 0,
-                          "_brackets": Map {
-                            [Circular] => Set {
-                              1,
-                            },
-                          },
-                          "_localCellCache": Set {},
-                          "_tilesWithModifier": Set {
-                            SimpleEllipsisTileWithModifier {
-                              "__coverageCount": 0,
-                              "_direction": "STATIONARY",
-                              "_isNegated": false,
-                              "_isRandom": false,
-                              "_neighbors": Set {},
-                              "_tile": null,
-                            },
-                          },
-                        },
-                        [Circular],
-                        [Circular],
-                      ],
-                    } => Set {
-                      0,
-                      2,
-                      3,
-                    },
-                    SimpleBracket {
-                      "__coverageCount": 0,
-                      "_direction": "LEFT",
-                      "_firstCells": Set {},
-                      "_neighbors": Array [
-                        [Circular],
-                        SimpleEllipsisNeighbor {
-                          "__coverageCount": 0,
-                          "_brackets": Map {
-                            [Circular] => Set {
-                              1,
-                            },
-                          },
-                          "_localCellCache": Set {},
-                          "_tilesWithModifier": Set {
-                            SimpleEllipsisTileWithModifier {
-                              "__coverageCount": 0,
-                              "_direction": "STATIONARY",
-                              "_isNegated": false,
-                              "_isRandom": false,
-                              "_neighbors": Set {},
-                              "_tile": null,
-                            },
-                          },
-                        },
-                        [Circular],
-                        [Circular],
-                      ],
-                    } => Set {
-                      0,
-                      2,
-                      3,
-                    },
-                    SimpleBracket {
-                      "__coverageCount": 0,
-                      "_direction": "DOWN",
-                      "_firstCells": Set {},
-                      "_neighbors": Array [
-                        [Circular],
-                        SimpleEllipsisNeighbor {
-                          "__coverageCount": 0,
-                          "_brackets": Map {
-                            [Circular] => Set {
-                              1,
-                            },
-                          },
-                          "_localCellCache": Set {},
-                          "_tilesWithModifier": Set {
-                            SimpleEllipsisTileWithModifier {
-                              "__coverageCount": 0,
-                              "_direction": "STATIONARY",
-                              "_isNegated": false,
-                              "_isRandom": false,
-                              "_neighbors": Set {},
-                              "_tile": null,
-                            },
-                          },
-                        },
-                        [Circular],
-                        [Circular],
-                      ],
-                    } => Set {
-                      0,
-                      2,
-                      3,
-                    },
-                    SimpleBracket {
-                      "__coverageCount": 0,
-                      "_direction": "UP",
-                      "_firstCells": Set {},
-                      "_neighbors": Array [
-                        [Circular],
-                        SimpleEllipsisNeighbor {
-                          "__coverageCount": 0,
-                          "_brackets": Map {
-                            [Circular] => Set {
-                              1,
-                            },
-                          },
-                          "_localCellCache": Set {},
-                          "_tilesWithModifier": Set {
-                            SimpleEllipsisTileWithModifier {
-                              "__coverageCount": 0,
-                              "_direction": "STATIONARY",
-                              "_isNegated": false,
-                              "_isRandom": false,
-                              "_neighbors": Set {},
-                              "_tile": null,
-                            },
-                          },
-                        },
-                        [Circular],
-                        [Circular],
-                      ],
-                    } => Set {
-                      0,
-                      2,
-                      3,
-                    },
-                  },
+                  "_brackets": Map {},
                   "_localCellCache": Set {},
                   "_tilesWithModifier": Set {
                     SimpleTileWithModifier {
                       "__coverageCount": 0,
                       "_direction": null,
                       "_isNegated": false,
-                      "_isRandom": false,
-                      "_neighbors": Set {
-                        [Circular],
-                      },
+                      "_isRandom": true,
+                      "_neighbors": Set {},
                       "_tile": GameLegendTileSimple {
                         "__coverageCount": 0,
                         "_spriteNameOrLevelChar": "z",
@@ -39455,7 +39809,156 @@ GameData {
                             "_name": "testObject",
                             "_optionalLegendChar": undefined,
                             "_tileWithModifierSet": Set {
-                              [Circular],
+                              SimpleTileWithModifier {
+                                "__coverageCount": 0,
+                                "_direction": null,
+                                "_isNegated": false,
+                                "_isRandom": false,
+                                "_neighbors": Set {
+                                  SimpleNeighbor {
+                                    "__coverageCount": 0,
+                                    "_brackets": Map {
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "RIGHT",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                          SimpleEllipsisNeighbor {
+                                            "__coverageCount": 0,
+                                            "_brackets": Map {
+                                              [Circular] => Set {
+                                                1,
+                                              },
+                                            },
+                                            "_localCellCache": Set {},
+                                            "_tilesWithModifier": Set {
+                                              SimpleEllipsisTileWithModifier {
+                                                "__coverageCount": 0,
+                                                "_direction": "STATIONARY",
+                                                "_isNegated": false,
+                                                "_isRandom": false,
+                                                "_neighbors": Set {},
+                                                "_tile": null,
+                                              },
+                                            },
+                                          },
+                                          [Circular],
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                        2,
+                                        3,
+                                      },
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "LEFT",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                          SimpleEllipsisNeighbor {
+                                            "__coverageCount": 0,
+                                            "_brackets": Map {
+                                              [Circular] => Set {
+                                                1,
+                                              },
+                                            },
+                                            "_localCellCache": Set {},
+                                            "_tilesWithModifier": Set {
+                                              SimpleEllipsisTileWithModifier {
+                                                "__coverageCount": 0,
+                                                "_direction": "STATIONARY",
+                                                "_isNegated": false,
+                                                "_isRandom": false,
+                                                "_neighbors": Set {},
+                                                "_tile": null,
+                                              },
+                                            },
+                                          },
+                                          [Circular],
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                        2,
+                                        3,
+                                      },
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "DOWN",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                          SimpleEllipsisNeighbor {
+                                            "__coverageCount": 0,
+                                            "_brackets": Map {
+                                              [Circular] => Set {
+                                                1,
+                                              },
+                                            },
+                                            "_localCellCache": Set {},
+                                            "_tilesWithModifier": Set {
+                                              SimpleEllipsisTileWithModifier {
+                                                "__coverageCount": 0,
+                                                "_direction": "STATIONARY",
+                                                "_isNegated": false,
+                                                "_isRandom": false,
+                                                "_neighbors": Set {},
+                                                "_tile": null,
+                                              },
+                                            },
+                                          },
+                                          [Circular],
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                        2,
+                                        3,
+                                      },
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "UP",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                          SimpleEllipsisNeighbor {
+                                            "__coverageCount": 0,
+                                            "_brackets": Map {
+                                              [Circular] => Set {
+                                                1,
+                                              },
+                                            },
+                                            "_localCellCache": Set {},
+                                            "_tilesWithModifier": Set {
+                                              SimpleEllipsisTileWithModifier {
+                                                "__coverageCount": 0,
+                                                "_direction": "STATIONARY",
+                                                "_isNegated": false,
+                                                "_isRandom": false,
+                                                "_neighbors": Set {},
+                                                "_tile": null,
+                                              },
+                                            },
+                                          },
+                                          [Circular],
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                        2,
+                                        3,
+                                      },
+                                    },
+                                    "_localCellCache": Set {},
+                                    "_tilesWithModifier": Set {
+                                      [Circular],
+                                    },
+                                  },
+                                },
+                                "_tile": [Circular],
+                              },
                             },
                           },
                         ],
@@ -39469,7 +39972,156 @@ GameData {
                             "_name": "testObject",
                             "_optionalLegendChar": undefined,
                             "_tileWithModifierSet": Set {
-                              [Circular],
+                              SimpleTileWithModifier {
+                                "__coverageCount": 0,
+                                "_direction": null,
+                                "_isNegated": false,
+                                "_isRandom": false,
+                                "_neighbors": Set {
+                                  SimpleNeighbor {
+                                    "__coverageCount": 0,
+                                    "_brackets": Map {
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "RIGHT",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                          SimpleEllipsisNeighbor {
+                                            "__coverageCount": 0,
+                                            "_brackets": Map {
+                                              [Circular] => Set {
+                                                1,
+                                              },
+                                            },
+                                            "_localCellCache": Set {},
+                                            "_tilesWithModifier": Set {
+                                              SimpleEllipsisTileWithModifier {
+                                                "__coverageCount": 0,
+                                                "_direction": "STATIONARY",
+                                                "_isNegated": false,
+                                                "_isRandom": false,
+                                                "_neighbors": Set {},
+                                                "_tile": null,
+                                              },
+                                            },
+                                          },
+                                          [Circular],
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                        2,
+                                        3,
+                                      },
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "LEFT",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                          SimpleEllipsisNeighbor {
+                                            "__coverageCount": 0,
+                                            "_brackets": Map {
+                                              [Circular] => Set {
+                                                1,
+                                              },
+                                            },
+                                            "_localCellCache": Set {},
+                                            "_tilesWithModifier": Set {
+                                              SimpleEllipsisTileWithModifier {
+                                                "__coverageCount": 0,
+                                                "_direction": "STATIONARY",
+                                                "_isNegated": false,
+                                                "_isRandom": false,
+                                                "_neighbors": Set {},
+                                                "_tile": null,
+                                              },
+                                            },
+                                          },
+                                          [Circular],
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                        2,
+                                        3,
+                                      },
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "DOWN",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                          SimpleEllipsisNeighbor {
+                                            "__coverageCount": 0,
+                                            "_brackets": Map {
+                                              [Circular] => Set {
+                                                1,
+                                              },
+                                            },
+                                            "_localCellCache": Set {},
+                                            "_tilesWithModifier": Set {
+                                              SimpleEllipsisTileWithModifier {
+                                                "__coverageCount": 0,
+                                                "_direction": "STATIONARY",
+                                                "_isNegated": false,
+                                                "_isRandom": false,
+                                                "_neighbors": Set {},
+                                                "_tile": null,
+                                              },
+                                            },
+                                          },
+                                          [Circular],
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                        2,
+                                        3,
+                                      },
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "UP",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                          SimpleEllipsisNeighbor {
+                                            "__coverageCount": 0,
+                                            "_brackets": Map {
+                                              [Circular] => Set {
+                                                1,
+                                              },
+                                            },
+                                            "_localCellCache": Set {},
+                                            "_tilesWithModifier": Set {
+                                              SimpleEllipsisTileWithModifier {
+                                                "__coverageCount": 0,
+                                                "_direction": "STATIONARY",
+                                                "_isNegated": false,
+                                                "_isRandom": false,
+                                                "_neighbors": Set {},
+                                                "_tile": null,
+                                              },
+                                            },
+                                          },
+                                          [Circular],
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                        2,
+                                        3,
+                                      },
+                                    },
+                                    "_localCellCache": Set {},
+                                    "_tilesWithModifier": Set {
+                                      [Circular],
+                                    },
+                                  },
+                                },
+                                "_tile": [Circular],
+                              },
                             },
                           },
                         ],

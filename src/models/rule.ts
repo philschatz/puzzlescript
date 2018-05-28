@@ -380,16 +380,31 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
         const actionSprites: Set<GameSprite> = new Set()
 
         // remove sprites in tiles that are listed on the condition side
-        this._tilesWithModifier.forEach(tileWithModifier => {
-            if (!tileWithModifier._tile.isOr()) {
-                if (!tileWithModifier.isNo()) {
+        for (const tileWithModifier of this._tilesWithModifier) {
+            if (!tileWithModifier.isNo()) {
+                if (tileWithModifier._tile.isOr()) {
+                    // Check if the action side also has the OR tile. If not, the sprites need to be removed
+                    let hasOrInAction = false
+                    for (const t of actionNeighbor._tilesWithModifier) {
+                        if (t._tile === tileWithModifier._tile) {
+                            hasOrInAction = true
+                        }
+                    }
+                    if (!hasOrInAction) {
+                        // Copy/pasta from below
+                        conditionTiles.set(tileWithModifier._tile, tileWithModifier)
+                        for (const sprite of tileWithModifier._tile.getSprites()) {
+                            conditionSprites.add(sprite)
+                        }
+                    }
+                } else {
                     conditionTiles.set(tileWithModifier._tile, tileWithModifier)
                     for (const sprite of tileWithModifier._tile.getSprites()) {
                         conditionSprites.add(sprite)
                     }
                 }
             }
-        })
+        }
         // add sprites that are listed on the action side
         actionNeighbor._tilesWithModifier.forEach(tileWithModifier => {
             // OR tiles on the right side are only useful if the tile is RANDOM (we choose one of the OR options)
@@ -520,11 +535,15 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
     }
 
     toKey() {
-        return `{-?${this._isNegated}} dir="${this._direction}" [${this._tile.getSprites().map(sprite => sprite._getName()).sort()}]`
+        return `{-?${this._isNegated}} {#?${this._isRandom}} dir="${this._direction}" [${this._tile.getSprites().map(sprite => sprite._getName()).sort()}]`
     }
 
-    isNo() { return this._isNegated }
-    isRandom() { return this._isRandom }
+    isNo() {
+        return this._isNegated
+    }
+    isRandom() {
+        return this._isRandom
+    }
 
     addRuleBracketNeighbor(neighbor: SimpleNeighbor) {
         this._neighbors.add(neighbor)

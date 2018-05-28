@@ -82,6 +82,7 @@ async function run() {
                 // })
 
                 UI.renderScreen(data, engine.currentLevel)
+                UI.writeDebug(`Game: "${data.title}"`)
 
                 // record the appliedRules in a coverage.json file
                 const codeCoverageTemp = new Map() // key = Line number, value = count of times the rule executed
@@ -127,6 +128,9 @@ async function run() {
                     if (i > 1) { // Skip the 1st couple because they might be cleaning up the level
                         maxTickAndRenderTime = Math.max(maxTickAndRenderTime, Date.now() - startTime)
                     }
+
+                    const msg = `Tick ${i} of "${data.title}" (took ${Date.now() - startTime}ms) Changed: ${[...changedCells].map(cell => cell.rowIndex + ':' + cell.colIndex).join(', ') + '   '}`
+                    UI.writeDebug(msg.substring(0, 160))
 
                     await sleep(500)
 
