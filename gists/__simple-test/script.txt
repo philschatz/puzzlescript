@@ -1,679 +1,548 @@
-title Beam Islands
-author mjau
-homepage http://twitter.com/kamjau
-run_rules_on_level_start
-realtime_interval 0.3
-text_color #f197e9
-(debug)
-
-( for ludum dare 29 )
-
-=========
- OBJECTS
-=========
-
-(
-	#000000 Black
-	#df2619 Inactive border
-	#078ffd Active border
-	#a27d5b Bridge
-	#6719ac Dark water
-	#a13cb7 Light water
-	#f197e9 Beam water
-	#606060 Beam under
-	#f7e26b Player
-	#ffffff White
-)
-
-Animate
-Transparent
-
-BgNW1 .
-#6719ac #a13cb7
-00000
-00000
-00000
-00000
-00000
-
-BgNE1
-#6719ac #a13cb7
-00000
-00000
-00100
-00000
-00000
-
-BgSW1
-#6719ac #a13cb7
-00000
-00000
-00000
-01000
-00000
-
-BgSE1
-#6719ac #a13cb7
-00000
-00000
-00000
-00000
-00000
-
-BgNW2
-#6719ac #a13cb7
-00000
-00000
-00000
-00000
-00000
-
-BgNE2
-#6719ac #a13cb7
-00000
-00000
-00000
-00000
-00000
-
-BgSW2
-#6719ac #a13cb7
-00000
-00000
-00000
-01100
-00000
-
-BgSE2
-#6719ac #a13cb7
-00000
-00000
-00000
-00000
-00000
-
-BgNW3
-#6719ac #a13cb7
-00000
-00000
-00000
-00000
-00000
-
-BgNE3
-#6719ac #a13cb7
-00000
-00000
-01000
-00000
-00000
-
-BgSW3
-#6719ac #a13cb7
-00000
-00000
-00000
-00100
-00000
-
-BgSE3
-#6719ac #a13cb7
-00000
-00000
-00000
-00000
-00000
-
-BgNW4
-#6719ac #a13cb7
-00000
-00000
-00000
-00000
-00000
-
-BgNE4
-#6719ac #a13cb7
-00000
-00000
-01100
-00000
-00000
-
-BgSW4
-#6719ac #a13cb7
-00000
-00000
-00000
-00000
-00000
-
-BgSE4
-#6719ac #a13cb7
-00000
-00000
-00000
-00000
-00000
-
-PlayerTop
-#f7e26b
-.....
-.....
-.....
-.0.0.
-.000.
-
-Player
-#f7e26b #000000
-01010
-.000.
-.0.0.
-.....
-.....
-
-Island #
-#000000
-
-FromBlockIsland
-Transparent
-
-IslandEdgeDetect
-Transparent
-
-IslandInterior
-Transparent
-
-IslandSide
-#000000
-00000
-.....
-.....
-.....
-.....
-
-BeamTop1
-#ffffff #f197e9 #a13cb7
-..2..
-..1..
-..0..
-..1..
-..0..
-
-BeamTop2
-#ffffff #f197e9 #a13cb7
-.....
-..2..
-..1..
-..0..
-..0..
-
-Beam o
-#ffffff #f197e9 #a13cb7
-.101.
-.000.
-.000.
-.000.
-.212.
-
-BeamReflect
-#a13cb7
-..0..
-.....
-.....
-.....
-.....
-
-Bridge -
-#000000 #a27d5b
-.....
-.111.
-.101.
-.111.
-.000.
-
-BeamUnder
-#606060
-.....
-..0..
-.000.
-.000.
-.....
-
-PlayerIsland
-Transparent #078ffd
-.....
-.....
-..0..
-.....
-.....
-
-BlockIsland
-Transparent #df2619
-.....
-.....
-..0..
-.....
-.....
-
-IslandEdgeN
-Transparent #df2619
-11111
-.....
-.....
-.....
-.....
-
-PlayerIslandEdgeN
-Transparent #078ffd
-11111
-.....
-.....
-.....
-.....
-
-IslandEdgeS
-Transparent #df2619
-.....
-.....
-.....
-.....
-11111
-
-PlayerIslandEdgeS
-Transparent #078ffd
-.....
-.....
-.....
-.....
-11111
-
-IslandEdgeE
-Transparent #df2619
-....1
-....1
-....1
-....1
-....1
-
-PlayerIslandEdgeE
-Transparent #078ffd
-....1
-....1
-....1
-....1
-....1
-
-IslandEdgeW
-Transparent #df2619
-1....
-1....
-1....
-1....
-1....
-
-PlayerIslandEdgeW
-Transparent #078ffd
-1....
-1....
-1....
-1....
-1....
-
-
-IslandInnerEdgeNW
-Transparent #df2619
-1....
-.....
-.....
-.....
-.....
-
-PlayerIslandInnerEdgeNW
-Transparent #078ffd
-1....
-.....
-.....
-.....
-.....
-
-IslandInnerEdgeNE
-Transparent #df2619
-....1
-.....
-.....
-.....
-.....
-
-PlayerIslandInnerEdgeNE
-Transparent #078ffd
-....1
-.....
-.....
-.....
-.....
-
-IslandInnerEdgeSW
-Transparent #df2619
-.....
-.....
-.....
-.....
-1....
-
-PlayerIslandInnerEdgeSW
-Transparent #078ffd
-.....
-.....
-.....
-.....
-1....
-
-IslandInnerEdgeSE
-Transparent #df2619
-.....
-.....
-.....
-.....
-....1
-
-PlayerIslandInnerEdgeSE
-Transparent #078ffd
-.....
-.....
-.....
-.....
-....1
+title Spider's Hollow
+author John Thyer
+again_interval 0.1
 
 ========
- LEGEND
+OBJECTS
 ========
 
-@ = Player and Island
-
-Background = BgNW1 or BgNE1 or BgSW1 or BgSE1 or BgNW2 or BgNE2 or BgSW2 or BgSE2 or BgNW3 or BgNE3 or BgSW3 or BgSE3 or BgNW4 or BgNE4 or BgSW4 or BgSE4
-
-IslandEdgeV = IslandEdgeN or IslandEdgeS
-IslandEdgeH = IslandEdgeE or IslandEdgeW
-IslandInnerEdge = IslandInnerEdgeNW or IslandInnerEdgeNE or IslandInnerEdgeSW or IslandInnerEdgeSE
-IslandEdge = IslandEdgeH or IslandEdgeV or IslandInnerEdge or IslandEdgeDetect or IslandInterior
-Movable = Player or Island or IslandEdge or PlayerIsland
-MoveBlock = Island or Bridge
-Walkable = Island or Bridge
-BeamTop = BeamTop1 or BeamTop2
-
-IslandEdgeDetectN = IslandEdgeN or IslandEdgeDetect
-IslandEdgeDetectS = IslandEdgeS or IslandEdgeDetect
-IslandEdgeDetectE = IslandEdgeE or IslandEdgeDetect
-IslandEdgeDetectW = IslandEdgeW or IslandEdgeDetect
-
-Cleanup = IslandInnerEdge or BeamTop or BeamUnder or IslandSide or PlayerTop or BeamReflect
-
-Frame2 = BgNW2 or BgNW4
-
-========
- SOUNDS
-========
-
-SFX0 57465701 ( beam )
-SFX1 45881509 ( merge )
-SFX2 70148904 ( can't move )
-SFX3 3171908  ( move )
-EndLevel 94824903
-
-=================
- COLLISIONLAYERS
-=================
+( Background objects )
 
 Background
-Animate
-IslandSide, BeamReflect
-Beam
-Island, Bridge
-IslandEdgeN, PlayerIslandEdgeN
-IslandEdgeS, PlayerIslandEdgeS
-IslandEdgeE, PlayerIslandEdgeE
-IslandEdgeW, PlayerIslandEdgeW
-IslandInnerEdgeNW, PlayerIslandInnerEdgeNW
-IslandInnerEdgeNE, PlayerIslandInnerEdgeNE
-IslandInnerEdgeSW, PlayerIslandInnerEdgeSW
-IslandInnerEdgeSE, PlayerIslandInnerEdgeSE
-IslandInterior, IslandEdgeDetect
-BeamUnder
+Brown #8b5d2e
+00100
+00001
+01000
+00100
+10000
+
+Entrance
+Brown  #ad7438
+00100
+00001
+01000
+00100
+10000
+
+
+BackgroundBlack
+Black
+00000
+00000
+00000
+00000
+00000
+
+BackgroundRed
+Red
+00000
+00000
+00000
+00000
+00000
+
+Sky1
+#8fc2fc
+00000
+00000
+00000
+00000
+00000
+
+Sky2
+#afd4ff
+00000
+00000
+00000
+00000
+00000
+
+Sky3
+#9ecbff
+00000
+00000
+00000
+00000
+00000
+
+Wood
+#52361b #3f2a14 #654321
+00000
+11111
+00000
+22222
+11111
+
+BackgroundWeb
+#a8a8a8 #bdbdbd
+00000
+00000
+00000
+00000
+00000
+
+Leaf1
+#3f7f18 #5db724
+..0..
+.010.
+.100.
+.110.
+..11.
+
+Leaf2
+#3f7f18 #5db724
+.11..
+.110.
+.100.
+.010.
+..0..
+
+( Collision-detecting objects )
+
 Player
-PlayerIsland, BlockIsland, FromBlockIsland
-BeamTop
-PlayerTop
+#28A9C9 #d180fc (#f49ade) (#7DA012) #C3C3C3 #ebcb99 #2873c9
+.111.
+21312
+20002
+.000.
+.4.4.
+
+Fairy
+#fc6f86 #7DA012 #C3C3C3 #ebcb99 #ff3f5f
+.111.
+21312
+20002
+.000.
+.4.4.
+
+TrappedFairy
+#828282 #7DA012 #C3C3C3 #ebcb99 #8e8e8e
+.111.
+41314
+44444
+00000
+.444.
+
+
+Wall
+#52361b #3f2a14 #654321
+00000
+11111
+00000
+22222
+11111
+
+Hole
+Brown #8b5d2e Black DarkGrey
+.222.
+22222
+22222
+22222
+.222.
+
+Block
+#52361b #3f2a14 #654321
+.121.
+10001
+02102
+10021
+.101.
+
+Web1
+#a8a8a8 #bdbdbd
+.001.
+0..01
+.01.0
+1.010
+.1.0.
+
+Web2
+#a8a8a8 #bdbdbd
+.001.
+0..01
+.01.0
+1.010
+.1.0.
+
+Web3
+#a8a8a8 #bdbdbd
+.001.
+0..01
+.01.0
+1.010
+.1.0.
+
+Spider
+Black DarkRed
+.....
+.000.
+01010
+.000.
+0...0
+
+SpiderRed
+Black Red
+.....
+.000.
+01010
+.000.
+0...0
+
+( Invisible control objects )
+
+SpiderSleep
+Black
+.....
+.....
+.....
+.....
+.....
+
+Path1
+#FFAAAA
+00000
+0...0
+0...0
+0...0
+00000
+
+Path2
+#55FF55
+00000
+0...0
+0...0
+0...0
+00000
+
+Path3
+#0000FF
+00000
+0...0
+0...0
+0...0
+00000
+
+RightPath
+Blue
+.....
+.....
+..0..
+.....
+.....
+
+Timer
+Red
+.....
+.....
+.....
+.....
+.....
+
+TimerAlarm
+Green
+.....
+.....
+.....
+.....
+.....
+
+Timer2
+Yellow
+.....
+.....
+.....
+.....
+.....
+
+TimerSleep
+LightRed
+.....
+.....
+.....
+.....
+.....
 
 =======
- RULES
+LEGEND
 =======
 
-[ no Background ] -> [ BgNW1 ]
-down  [ BgNW1 | BgNW1 ] -> [ BgNW1 | BgSW1 ]
-right [ BgNW1 | BgNW1 ] -> [ BgNW1 | BgNE1 ]
-right [ BgSW1 | BgSW1 ] -> [ BgSW1 | BgSE1 ]
+( Legend icons are largely arbitrary, next project I'll work out a better system )
 
-[ stationary Player ][ Background ] -> [ Player ][ Background Animate ]
-[ BgNW1 Animate ] -> [ BgNW2 ]
-[ BgNE1 Animate ] -> [ BgNE2 ]
-[ BgSW1 Animate ] -> [ BgSW2 ]
-[ BgSE1 Animate ] -> [ BgSE2 ]
-[ BgNW2 Animate ] -> [ BgNW3 ]
-[ BgNE2 Animate ] -> [ BgNE3 ]
-[ BgSW2 Animate ] -> [ BgSW3 ]
-[ BgSE2 Animate ] -> [ BgSE3 ]
-[ BgNW3 Animate ] -> [ BgNW4 ]
-[ BgNE3 Animate ] -> [ BgNE4 ]
-[ BgSW3 Animate ] -> [ BgSW4 ]
-[ BgSE3 Animate ] -> [ BgSE4 ]
-[ BgNW4 Animate ] -> [ BgNW1 ]
-[ BgNE4 Animate ] -> [ BgNE1 ]
-[ BgSW4 Animate ] -> [ BgSW1 ]
-[ BgSE4 Animate ] -> [ BgSE1 ]
+. = Background
+, = BackgroundBlack
+; = Sky1
+: = Sky2
+" = Sky3
+' = Wood
+# = Wall
+P = Player and Entrance
+W = Spider
+B = Block
+S = Web1 and Background
+D = Web1 and BackgroundWeb
+H = Hole and Background
+E = Hole and Wood
+Q = Web1 and Block
+$ = Wood and Fairy
+[ = Player and Wood
+L = Leaf1 and Sky1
+U = Leaf2 and Sky3
+I = Leaf2 and Sky1
+Y = Leaf1 and Sky3
+T = TrappedFairy and Web1 and BackgroundWeb
+G = Player and Web1 and BackgroundWeb and SpiderSleep
+! = Timer and BackgroundBlack
+@ = TimerAlarm and BackgroundBlack
+% = Player and SpiderSleep and Entrance
+& = TimerAlarm and Wall
+2 = Timer2 and BackgroundBlack
+* = TimerSleep and BackgroundBlack
 
-[ Cleanup ] -> []
+( Shortcut catch-all terms for defining rules and collisions )
 
-( reset player island edges )
-[ PlayerIslandEdgeN ] -> [ IslandEdgeN ]
-[ PlayerIslandEdgeS ] -> [ IslandEdgeS ]
-[ PlayerIslandEdgeE ] -> [ IslandEdgeE ]
-[ PlayerIslandEdgeW ] -> [ IslandEdgeW ]
-[ PlayerIslandInnerEdgeNE ] -> [ IslandInnerEdgeNE ]
-[ PlayerIslandInnerEdgeNW ] -> [ IslandInnerEdgeNW ]
-[ PlayerIslandInnerEdgeSE ] -> [ IslandInnerEdgeSE ]
-[ PlayerIslandInnerEdgeSW ] -> [ IslandInnerEdgeSW ]
+Path = Path1 or Path2 or Path3
+Obstacle = Wall or Block
+Leaf = Leaf1 or Leaf2
+Sky = Sky1 or Sky2 or Sky3
+StickyWeb = Web1 or Web2
 
-( merge )
-[ action Player ][ IslandEdge ] -> [ action Player ][]
-[ action Player ] -> [ Player ] SFX1
+=======
+SOUNDS
+=======
 
-( simple movement )
-[ > Player | Walkable ] -> [ | Player Walkable ]
-[ > Player Bridge | no Walkable ] -> [ Player Bridge | ]
+Player MOVE 36772507
+Block MOVE 57485107
+Web2 Create 72977302
+Web3 Create 72977302
+Sfx0 83744503
+startgame 92244503
+SpiderRed Create 76932302
 
-( swap island types if player changed islands )
-[ Player Bridge ][ PlayerIsland ] -> [ Player Bridge ][ BlockIsland ]
-[ Player BlockIsland ] -> [ Player FromBlockIsland ]
-[ Player FromBlockIsland ][ BlockIsland ] -> [ Player FromBlockIsland ][ FromBlockIsland ]
-[ Player FromBlockIsland ][ PlayerIsland ] -> [ Player FromBlockIsland ][ BlockIsland ]
-[ FromBlockIsland ] -> []
+================
+COLLISIONLAYERS
+================
 
-( beam holes in unoccupied islands )
-[ Beam Island BlockIsland IslandEdge ] -> [ Beam Island BlockIsland ]
-[ Beam Island BlockIsland ] -> [ up Beam ] SFX0
-up    [ up Beam | BlockIsland ] -> [ up Beam | BlockIsland IslandEdgeS ]
-down  [ up Beam | BlockIsland ] -> [ up Beam | BlockIsland IslandEdgeN ]
-right [ up Beam | BlockIsland ] -> [ up Beam | BlockIsland IslandEdgeW ]
-left  [ up Beam | BlockIsland ] -> [ up Beam | BlockIsland IslandEdgeE ]
-[ up Beam ] -> [ Beam ]
+Background
+BackgroundBlack, BackgroundWeb, BackgroundRed, Sky, Wood, Entrance
+Web1, Web2, Web3, Hole, Leaf
+Wall,Player,Block, Fairy, TrappedFairy, Spider
+SpiderRed, SpiderSleep
+Path1,Path2,Path3
+RightPath
+Timer, TimerAlarm, Timer2, TimerSleep
 
-( edge detection )
-[ Island no IslandEdge ] -> [ Island IslandEdgeN IslandEdgeS IslandEdgeE IslandEdgeW IslandEdgeDetect ]
-up    [ IslandEdgeDetect IslandEdgeN | IslandEdgeDetect ] -> [ IslandEdgeDetect | IslandEdgeDetect ]
-down  [ IslandEdgeDetect IslandEdgeS | IslandEdgeDetect ] -> [ IslandEdgeDetect | IslandEdgeDetect ]
-right [ IslandEdgeDetect IslandEdgeE | IslandEdgeDetect ] -> [ IslandEdgeDetect | IslandEdgeDetect ]
-left  [ IslandEdgeDetect IslandEdgeW | IslandEdgeDetect ] -> [ IslandEdgeDetect | IslandEdgeDetect ]
-[ IslandEdgeDetect ] -> [ IslandInterior ]
+======
+RULES
+======
 
-right [ IslandEdgeN no IslandEdgeE | no IslandEdgeN ] -> [ IslandEdgeN | IslandInnerEdgeNW ]
-left  [ IslandEdgeN no IslandEdgeW | no IslandEdgeN ] -> [ IslandEdgeN | IslandInnerEdgeNE ]
-right [ IslandEdgeS no IslandEdgeE | no IslandEdgeS ] -> [ IslandEdgeS | IslandInnerEdgeSW ]
-left  [ IslandEdgeS no IslandEdgeW | no IslandEdgeS ] -> [ IslandEdgeS | IslandInnerEdgeSE ]
+ ( Pushing blocks if you're stuck in a web )
 
-( player island )
-[ Player Island ] -> [ Player Island PlayerIsland ]
-  up    [ PlayerIsland no IslandEdgeN | Island ] -> [ PlayerIsland | Island PlayerIsland ]
-+ down  [ PlayerIsland no IslandEdgeS | Island ] -> [ PlayerIsland | Island PlayerIsland ]
-+ right [ PlayerIsland no IslandEdgeE | Island ] -> [ PlayerIsland | Island PlayerIsland ]
-+ left  [ PlayerIsland no IslandEdgeW | Island ] -> [ PlayerIsland | Island PlayerIsland ]
-[ Island no PlayerIsland ] -> [ Island BlockIsland ]
+ [ > Player no StickyWeb | Block ] -> [ > Player | > Block ]
 
-( rigid movement )
-[ > Player ][ PlayerIsland ] -> [ > Player ][ > PlayerIsland ]
-[ > PlayerIsland Island | no MoveBlock ] -> [ > PlayerIsland > Island | ]
-[ < Island | Island no BlockIsland ] -> [ < Island | < Island ]
-[ stationary Island PlayerIsland ][ moving Player ] -> [ Island PlayerIsland ][ stationary Player ] SFX2
-[ stationary Island PlayerIsland ][ moving Movable ] -> [ Island stationary PlayerIsland ][ stationary Movable ]
+ ( Defines web behavior )
 
-[ > PlayerIsland IslandEdge ] -> [ > PlayerIsland > IslandEdge ]
+ [ Player | Web2 ] -> [ Player | Web1 ]
+ [ Player | Web3 ] -> [ Player | Web1 ]
+ [ > Player Web1 ] -> [ Player Web2 ]
+ [ > Player Web2 ] -> [ Player Web3 ]
 
-( highlight player island edges )
-[ PlayerIsland IslandEdgeN ] -> [ PlayerIsland PlayerIslandEdgeN ]
-[ PlayerIsland IslandEdgeS ] -> [ PlayerIsland PlayerIslandEdgeS ]
-[ PlayerIsland IslandEdgeE ] -> [ PlayerIsland PlayerIslandEdgeE ]
-[ PlayerIsland IslandEdgeW ] -> [ PlayerIsland PlayerIslandEdgeW ]
-[ PlayerIsland IslandInnerEdgeNE ] -> [ PlayerIsland PlayerIslandInnerEdgeNE ]
-[ PlayerIsland IslandInnerEdgeNW ] -> [ PlayerIsland PlayerIslandInnerEdgeNW ]
-[ PlayerIsland IslandInnerEdgeSE ] -> [ PlayerIsland PlayerIslandInnerEdgeSE ]
-[ PlayerIsland IslandInnerEdgeSW ] -> [ PlayerIsland PlayerIslandInnerEdgeSW ]
+ ( Keeps player and spider from swapping places )
 
-( fx )
-[ > Island | no Island ] -> [ | Island ] SFX3
-up [ Beam no Island | ] -> [ Beam | BeamTop1 ]
-down [ Beam | ] -> [ Beam | BeamReflect ]
-[ Beam Island ] -> [ Beam Island BeamUnder ]
-down [ Island | ] -> [ Island | IslandSide ]
-[ > Player | Walkable ] -> [ | Player Walkable ]
-up [ Player | ] -> [ Player | PlayerTop ]
-[ BeamTop1 ][ Frame2 ] -> [ BeamTop2 ][ Frame2 ]
+ [ > Player | Spider ] -> [ Player | Spider ]
 
-===============
- WINCONDITIONS
-===============
+ ( Spider can be pushed )
 
-all Beam on BeamUnder
+ [ > Block | Spider ] -> [ > Block | > Spider]
 
-========
- LEVELS
-========
+ ( Define fairy behavior during intro cutscene)
 
-message cover all beams
+ [ Stationary Fairy ] -> [randomDir Fairy]
 
-(ok)
-...........
-...........
-...........
-......o....
-...##..o...
-...@#......
-...........
-...........
+ ( Win state )
 
-message unattended beams are dangerous
+ [ > Player | Hole no Block ] -> [ | Player Hole ] Sfx0 Win
 
-(ok)
-..............
-.......###....
-......#####...
-......#..##...
-.........##...
-...#####.##...
-..-#@#o#.##...
-...#####.##...
-.........##...
-.......###o...
-..............
-..............
-.........o....
-..............
+( Tweaked version of Maadball's pathfinding algorithm -- many thanks! )
+( Source: https://groups.google.com/forum/#!topic/puzzlescript/lHy9O4DuWhk )
 
-message merge adjacent platforms with X
+ [ Player ][ Spider | no Obstacle ] -> [ Player ][ Spider | Path1 ]
 
-(ok)
-.............
-.............
-......o......
-...o...#.o...
-.......#.....
-...#..@#.....
-...##..#..#..
-.......-###..
-.............
-.............
+startloop
+ [ Player Path1 ] -> [ Player Path1 ]
+ [ Player ][ Path1 | no Obstacle no Spider no Path3 ] -> [  Player ][ Path1 | Path2 ]
+ [ Player ][ Path2 | no Obstacle no Path1 ] -> [  Player ][ Path2 | Path3 ]
+ [ Player Path3 ] -> [ Player Path3 ]
+ [ Player ][ Path3 | no Obstacle no Path2 ] -> [ Player ][ Path3 | Path1 ]
+endloop
 
-message good luck!
+[ Player Path ] -> [ Player Path RightPath ]
 
-(ok)
-...........
-...........
-.....-.....
-....###....
-...o.@.o...
-....###....
-.....-.....
-...........
-...........
+startloop
+ [ Path3 RightPath | Path2 ] -> [ RightPath | Path2 RightPath ]
+ [ Path2 RightPath | Path1 ] -> [ RightPath | Path1 RightPath ]
+ [ Path1 RightPath | Path3 ] -> [ RightPath | Path3 RightPath ]
+endloop
 
-(ok)
-...............
-...............
-.......-.......
-..o............
-......###......
-....-.#o#.-....
-......##@......
-...........##..
-.......-.......
-...............
-...............
+[ Path ] -> [ ]
+[ Player ] -> [ Player ]
+[ Spider | RightPath no Block] -> [ > Spider | ]
+[ RightPath ] -> [ ]
 
-(ok)
-..................
-..............###.
-....o...........#.
-.-..........##..#.
-............##..#.
-........#@......#.
-......#######.....
-.....-..#....-....
-...o..............
-.....-............
-..................
+( Ends last room )
 
-(ok)
-...-.....-...
-.....o.o.....
-....-.-.-....
-.............
-.............
-........###..
-..###.o..##..
-..#@#........
-..###........
-.............
+ late[ TrappedFairy ][ SpiderRed ] -> [ TrappedFairy ][ SpiderRed]  Win
 
-(ok)
-............
-.....#......
-...o###.o...
-...#-#.-.#..
-..###.#.###.
-...#.#@#.#..
-....-.#-....
-...o.#..o...
-....###.....
-.....#......
-............
+( Death animation)
 
-message congratulations! you win!
+ [ > Spider | Player ] -> [ | SpiderRed ]
+ late [ SpiderRed ][ BackgroundBlack ] -> [ SpiderRed ][ BackgroundRed ]
+
+( Spider Spawning )
+
+ [ Timer ] -> [ Right Timer ]
+ [ Timer2 ] -> [ Right Timer2]
+ [ Timer2 | TimerAlarm ][ TimerSleep ] -> [ | ][ Timer ]
+
+ late [ Timer | TimerAlarm ][ SpiderSleep ] -> [ | ][Spider]
+
+==============
+WINCONDITIONS
+==============
+
+( Defined in rules )
+
+=======
+LEVELS
+=======
+
+message Once upon a time, five tiny adorable fairies happened upon a hollow in a great old tree.
+
+::'''''''::
+::''$''''::
+::'''''$'::
+U"'''E'''""
+''''''''$""
+"Y$''''''""
+;;'''''''I;
+;;'''['''''
+;;''''''';L
+
+message The smallest and most fearful of the fairies peered inside, but was too afraid to go in.
+
+message The other four, who were more curious and adventurous, entered the tree. This left the little fairy all alone.
+
+::'''''''::
+::'''''''::
+::'''''''::
+U"'''E'''""
+'''''''''""
+"Y'''''''""
+;;'''''''I;
+;;'''['''''
+;;''''''';L
+
+message She waited and waited, but her friends didn't return. Mustering her courage, she ventured in after them.
+
+,###,,,,,,,
+,#H#,,,,,,,
+,#.#,###,,,
+,#S###.#,,,
+,#SSS..#,,,
+######B##,,
+#P....B.#,,
+#####..##,,
+,,,,####,,,
+
+message This was unwise.
+
+,#######,,,
+,#P....##,,
+,#......#,,
+,###BBB##,,
+,,,#...#,,,
+#####S##,,,
+#H.SSS#,,,,
+#######,,,,
+,,,,,,,,,,,
+
+message You see, the brave little fairy didn't know about -me-.
+
+,###,,,,,,,
+,#.########
+,#.....SSS#
+,#.#####S.#
+,#B....##.#
+##.###.#..#
+#P.#SS.#H##
+##.#WS.###,
+,#######,,,
+
+message Watch out for my web little fairy. It's easy to get stuck.
+
+!,,#######,
+####.....#@
+#HS#..##.#,
+##S#...#.#,
+,#S##..#.#,
+,#SS..B#.#,
+,###....%#,
+,,,##B.###,
+,,,,####,,,
+
+!,,,,,,,@,,
+########,,,
+#%ssb..##,,
+#...b...##,
+######b..##
+,,####.bss#
+,,#hs.b.ss#
+,,####.b.##
+,,,,,#####,
+
+!,,,,,,,,,@
+,,#####,,,,
+###.b.###,,
+#s......#,,
+#.###ss.#,,
+#.h#ssb.#,,
+#bb%.b#.#,,
+###.....#,,
+,,#######,,
+
+!,,,,,#&##,
+,,,####SH#,
+,,,#..SS##,
+,,,#..BS.#,
+,###..B..#,
+,#%#SBBBS#,
+,#.......#,
+,#########,
+,,,,,,,,,,,
+
+message Don't worry. Like all the best fairy tales, this one has a happy ending.
+
+,#########,
+##...bb.%#,
+#.s#s...##,
+#.########,
+#s.s##ssh#,
+#bb.##s#s#,
+###ssssss#,
+,,########,
+,,,,,,,,,,,
+
+message The brave little fairy finds her friends.
+
+*,,,,,,,,,,
+,#########@
+,#DDTDDDD#,
+,#DDDDTDD#,
+,#DDDDDDG#,
+,#TDDDDDD#,
+,#DDDTDDD#,
+,#########@
+2,,,,,,,,,,
+
+message And she'll never be apart from them again.
+
+( End of code )

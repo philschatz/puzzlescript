@@ -24,7 +24,7 @@ export class Cell {
     this._spriteAndWantsToMoves = new Map()
 
     for (const sprite of sprites) {
-      this._spriteAndWantsToMoves.set(sprite, null)
+      this._spriteAndWantsToMoves.set(sprite, RULE_DIRECTION_ABSOLUTE.STATIONARY)
     }
 
   }
@@ -97,10 +97,13 @@ export class Cell {
     return hasCollision
   }
   clearWantsToMove(sprite: GameSprite) {
-    this._spriteAndWantsToMoves.set(sprite, null)
-    sprite.updateCell(this, null)
+    this._spriteAndWantsToMoves.set(sprite, RULE_DIRECTION_ABSOLUTE.STATIONARY)
+    sprite.updateCell(this, RULE_DIRECTION_ABSOLUTE.STATIONARY)
   }
   addSprite(sprite: GameSprite, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
+    if (!wantsToMove) {
+      throw new Error(`BUG: Must set wantsToMove to be something non-null`)
+    }
     this._spriteAndWantsToMoves.set(sprite, wantsToMove)
     sprite.addCell(this, wantsToMove)
   }
@@ -225,7 +228,7 @@ export default class Engine extends EventEmitter2 {
     for (const cell of changedCells) {
       for (let [sprite, wantsToMove] of cell.getSpriteAndWantsToMoves()) {
 
-        if (wantsToMove) {
+        if (wantsToMove !== RULE_DIRECTION_ABSOLUTE.STATIONARY) {
           if (wantsToMove === RULE_DIRECTION.ACTION) {
             // just clear the wantsToMove flag
             cell.clearWantsToMove(sprite)
@@ -258,7 +261,7 @@ export default class Engine extends EventEmitter2 {
             // Make sure
             if (neighbor && !neighbor.hasCollisionWithSprite(sprite)) {
               cell.removeSprite(sprite)
-              neighbor.addSprite(sprite, null)
+              neighbor.addSprite(sprite, RULE_DIRECTION_ABSOLUTE.STATIONARY)
               movedCells.add(neighbor)
               movedCells.add(cell)
             } else {

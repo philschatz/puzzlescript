@@ -219,7 +219,7 @@ PW
     expect(engine.currentLevel[0][0].getSpritesAsSet().has(player)).toBe(true)
 
     // Make sure the wantsToMove flag is cleared
-    expect(engine.currentLevel[0][0].getWantsToMove(player)).toBeFalsy()
+    expect(engine.currentLevel[0][0].getWantsToMove(player)).toBe('STATIONARY')
 
     // nothing actually changed visually
     expect(changedCells.size).toBe(0)
@@ -272,7 +272,7 @@ P.
     expect(engine.currentLevel[0][0].getSpritesAsSet().has(player)).toBe(true)
 
     // Make sure the wantsToMove flag is cleared
-    expect(engine.currentLevel[0][0].getWantsToMove(player)).toBeFalsy()
+    expect(engine.currentLevel[0][0].getWantsToMove(player)).toBe('STATIONARY')
 
     // nothing actually changed visually
     expect(changedCells.size).toBe(0)
