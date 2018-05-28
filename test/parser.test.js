@@ -392,7 +392,7 @@ yellow
     expect(data._getSpriteByName('player').getCollisionLayerNum()).toBeGreaterThan(0)
   })
 
-  it.skip('Denotes if a rule is late, rigid, or again', () => {
+  it('Denotes if a rule is late, rigid, or again', () => {
     const { data } = checkParse(`
     title foo
 
@@ -413,27 +413,26 @@ yellow
     RULES
     ===
 
-    [ Player ] -> []
     LATE [ Player ] -> []
     RIGID [ Player ] -> []
     [ Player ] -> [] AGAIN
     LATE RIGID [ Player ] -> [] AGAIN
+    [ Player ] -> []
 
     [ Player ] -> [ Player again] (from "Rose")
     `)
 
-    function expector (rule, vanilla, late, rigid, again) {
+    function expector (rule, late, rigid, again) {
       expect(rule.isLate()).toBe(late)
       expect(rule.isRigid()).toBe(rigid)
       expect(rule.isAgain()).toBe(again)
-      expect(rule.isVanilla()).toBe(vanilla)
     }
-    expector(data.rules[0], true, false, false, false)
-    expector(data.rules[1], false, true, false, false)
-    expector(data.rules[2], false, false, true, false)
-    expector(data.rules[3], false, false, false, true)
-    expector(data.rules[4], false, true, true, true)
-    expector(data.rules[5], false, false, false, true)
+    expector(data.rules[0].getChildRules()[0], true, false, false)
+    expector(data.rules[1].getChildRules()[0], false, true, false)
+    expector(data.rules[2].getChildRules()[0], false, false, true)
+    expector(data.rules[3].getChildRules()[0], true, true, true)
+    expector(data.rules[4].getChildRules()[0], false, false, false)
+    expector(data.rules[5].getChildRules()[0], false, false, true)
   })
 
   describe('Expected Failures', () => {

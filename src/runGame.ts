@@ -9,6 +9,7 @@ import UI from './ui'
 import Engine from './engine'
 import { setAddAll } from './util';
 import { start } from 'repl';
+import { IRule } from './models/rule';
 
 async function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms))
@@ -141,10 +142,23 @@ async function run() {
 
 
 
+        function recursivelyGetRules(rules: IRule[]) {
+          let ret = []
+          for (const rule of rules) {
+            ret.push(rule)
+            ret = ret.concat(recursivelyGetRules(rule.getChildRules()))
+          }
+          return ret
+        }
+
         // record the tick coverage
-        for (const node of [].concat(data.rules)/*.concat(data.objects).concat(data.legends)*//*.concat(data.levels)*/) {
+        for (const node of [].concat(recursivelyGetRules(data.rules))/*.concat(data.objects).concat(data.legends)*//*.concat(data.levels)*/) {
           const line = coverageKey(node)
-          codeCoverageTemp.set(line, node.__coverageCount)
+          if (codeCoverageTemp.has(line)) {
+            codeCoverageTemp.set(line, codeCoverageTemp.get(line) + node.__coverageCount)
+          } else {
+            codeCoverageTemp.set(line, node.__coverageCount)
+          }
         }
 
         const codeCoverage2 = [...codeCoverageTemp.entries()].map(([key, value]) => {

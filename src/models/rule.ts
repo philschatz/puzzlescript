@@ -54,6 +54,10 @@ export class SimpleRuleGroup extends BaseForLines implements IRule {
         }
         return mutations
     }
+
+    getChildRules() {
+        return this._rules
+    }
 }
 
 // This is a rule that has been expanded from `DOWN [ > player < cat RIGHT dog ] -> [ ^ crate ]` to:
@@ -72,21 +76,24 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
     _actionBrackets: SimpleBracket[]
     _commands: string[]
     _isLate: boolean
-    _isRigid: boolean
     _isAgain: boolean
+    _isRigid: boolean
     _isSubscribedToCellChanges: boolean
-    constructor(source: IGameCode, evaluationDirection: RULE_DIRECTION_ABSOLUTE, conditionBrackets: SimpleBracket[], actionBrackets: SimpleBracket[], commands: string[], isLate: boolean, isRigid: boolean, isAgain: boolean) {
+    constructor(source: IGameCode, evaluationDirection: RULE_DIRECTION_ABSOLUTE, conditionBrackets: SimpleBracket[], actionBrackets: SimpleBracket[], commands: string[], isLate: boolean, isAgain: boolean, isRigid: boolean) {
         super(source)
         this._evaluationDirection = evaluationDirection
         this._conditionBrackets = conditionBrackets
         this._actionBrackets = actionBrackets
         this._commands = commands
         this._isLate = isLate
-        this._isRigid = isRigid
         this._isAgain = isAgain
+        this._isRigid = isRigid
     }
     toKey() {
-        return `${this._conditionBrackets.map(x => x.toKey())} -> ${this._actionBrackets.map(x => x.toKey())} ${this._commands.join(' ')}`
+        return `{Late?${this._isLate}}{Rigid?${this._isRigid}}{again?${this._isAgain}}${this._conditionBrackets.map(x => x.toKey())} -> ${this._actionBrackets.map(x => x.toKey())} ${this._commands.join(' ')}`
+    }
+    getChildRules() {
+        return []
     }
     subscribeToCellChanges() {
         if (!this._isSubscribedToCellChanges) {
@@ -147,6 +154,9 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
         }
         return _.flatten(allMutators)
     }
+    isLate() { return this._isLate }
+    isAgain() { return this._isAgain }
+    isRigid() { return this._isRigid }
 
 }
 
@@ -623,7 +633,7 @@ export class GameRule extends BaseForLines implements ICacheable {
         if (directions.length !== 1) {
             throw new Error(`BUG: should have exactly 1 direction by now but found the following: "${directions}"`)
         }
-        return cacheSetAndGet(ruleCache, new SimpleRule(this.__source, directions[0], this._brackets.map(x => x.toSimple(directions[0], ruleCache, bracketCache, neighborCache, tileCache)), this._actionBrackets.map(x => x.toSimple(directions[0], ruleCache, bracketCache, neighborCache, tileCache)), this._commands, this.isLate(), this.isRigid(), this.isAgain()))
+        return cacheSetAndGet(ruleCache, new SimpleRule(this.__source, directions[0], this._brackets.map(x => x.toSimple(directions[0], ruleCache, bracketCache, neighborCache, tileCache)), this._actionBrackets.map(x => x.toSimple(directions[0], ruleCache, bracketCache, neighborCache, tileCache)), this._commands, this.isLate(), this.isAgain(), this.isRigid()))
     }
 
     convertToMultiple() {
@@ -683,7 +693,9 @@ export class GameRule extends BaseForLines implements ICacheable {
     clone(direction: RULE_DIRECTION_ABSOLUTE, nameToExpand: RULE_MODIFIER, newName: RULE_DIRECTION) {
         const conditionBrackets = this._brackets.map(bracket => bracket.clone(direction, nameToExpand, newName))
         const actionBrackets = this._actionBrackets.map(bracket => bracket.clone(direction, nameToExpand, newName))
-        return new GameRule(this.__source, [RULE_MODIFIER[direction]], conditionBrackets, actionBrackets, this._commands)
+        // retain LATE and RIGID but discard the rest of the modifiers
+        const modifiers = _.intersection(this._modifiers, [RULE_MODIFIER.LATE, RULE_MODIFIER.RIGID]).concat([RULE_MODIFIER[direction]])
+        return new GameRule(this.__source, modifiers, conditionBrackets, actionBrackets, this._commands)
     }
 
     hasModifier(modifier: RULE_MODIFIER) {
@@ -765,14 +777,11 @@ export class GameRule extends BaseForLines implements ICacheable {
     isLate() {
         return this._modifiers.indexOf(RULE_MODIFIER.LATE) >= 0
     }
-    isRigid() {
-        return this._modifiers.indexOf(RULE_MODIFIER.RIGID) >= 0
-    }
     isAgain() {
         return this._commands.indexOf(RULE_COMMAND.AGAIN) >= 0
     }
-    isVanilla() {
-        return !(this.isLate() || this.isRigid() || this.isAgain())
+    isRigid() {
+        return this._modifiers.indexOf(RULE_MODIFIER.RIGID) >= 0
     }
 
 }
@@ -1003,9 +1012,10 @@ export class HackNode extends RuleBracketNeighbor {
 
 export interface IRule extends IGameNode {
     evaluate: () => CellMutation[]
+    getChildRules: () => IRule[]
 }
 
-export class GameRuleLoop extends BaseForLines implements IRule {
+export class GameRuleLoop extends BaseForLines {
     _rules: GameRule[]
 
     constructor(source: IGameCode, rules: GameRule[]) {

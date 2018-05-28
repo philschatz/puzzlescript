@@ -28891,7 +28891,7 @@ GameData {
               "_neighbors": Set {
                 SimpleNeighbor {
                   "__coverageCount": 0,
-                  "_brackets": Array [
+                  "_brackets": Map {
                     SimpleBracket {
                       "__coverageCount": 0,
                       "_direction": "RIGHT",
@@ -28899,8 +28899,40 @@ GameData {
                       "_neighbors": Array [
                         [Circular],
                       ],
+                    } => Set {
+                      0,
                     },
-                  ],
+                    SimpleBracket {
+                      "__coverageCount": 0,
+                      "_direction": "LEFT",
+                      "_firstCells": Set {},
+                      "_neighbors": Array [
+                        [Circular],
+                      ],
+                    } => Set {
+                      0,
+                    },
+                    SimpleBracket {
+                      "__coverageCount": 0,
+                      "_direction": "DOWN",
+                      "_firstCells": Set {},
+                      "_neighbors": Array [
+                        [Circular],
+                      ],
+                    } => Set {
+                      0,
+                    },
+                    SimpleBracket {
+                      "__coverageCount": 0,
+                      "_direction": "UP",
+                      "_firstCells": Set {},
+                      "_neighbors": Array [
+                        [Circular],
+                      ],
+                    } => Set {
+                      0,
+                    },
+                  },
                   "_localCellCache": Set {},
                   "_tilesWithModifier": Set {
                     [Circular],
@@ -28912,7 +28944,7 @@ GameData {
           },
         },
       ],
-      "id": 0,
+      "id": 3,
     },
   ],
   "legends": Array [],
@@ -28927,7 +28959,7 @@ GameData {
         "_sprites": Array [
           [Circular],
         ],
-        "id": 0,
+        "id": 3,
       },
       "_color": TransparentColor {
         "__coverageCount": 0,
@@ -28943,7 +28975,7 @@ GameData {
           "_neighbors": Set {
             SimpleNeighbor {
               "__coverageCount": 0,
-              "_brackets": Array [
+              "_brackets": Map {
                 SimpleBracket {
                   "__coverageCount": 0,
                   "_direction": "RIGHT",
@@ -28951,8 +28983,40 @@ GameData {
                   "_neighbors": Array [
                     [Circular],
                   ],
+                } => Set {
+                  0,
                 },
-              ],
+                SimpleBracket {
+                  "__coverageCount": 0,
+                  "_direction": "LEFT",
+                  "_firstCells": Set {},
+                  "_neighbors": Array [
+                    [Circular],
+                  ],
+                } => Set {
+                  0,
+                },
+                SimpleBracket {
+                  "__coverageCount": 0,
+                  "_direction": "DOWN",
+                  "_firstCells": Set {},
+                  "_neighbors": Array [
+                    [Circular],
+                  ],
+                } => Set {
+                  0,
+                },
+                SimpleBracket {
+                  "__coverageCount": 0,
+                  "_direction": "UP",
+                  "_firstCells": Set {},
+                  "_neighbors": Array [
+                    [Circular],
+                  ],
+                } => Set {
+                  0,
+                },
+              },
               "_localCellCache": Set {},
               "_tilesWithModifier": Set {
                 [Circular],
@@ -28978,7 +29042,7 @@ GameData {
               "_neighbors": Array [
                 SimpleNeighbor {
                   "__coverageCount": 0,
-                  "_brackets": Array [],
+                  "_brackets": Map {},
                   "_localCellCache": Set {},
                   "_tilesWithModifier": Set {},
                 },
@@ -28994,9 +29058,41 @@ GameData {
               "_neighbors": Array [
                 SimpleNeighbor {
                   "__coverageCount": 0,
-                  "_brackets": Array [
-                    [Circular],
-                  ],
+                  "_brackets": Map {
+                    [Circular] => Set {
+                      0,
+                    },
+                    SimpleBracket {
+                      "__coverageCount": 0,
+                      "_direction": "LEFT",
+                      "_firstCells": Set {},
+                      "_neighbors": Array [
+                        [Circular],
+                      ],
+                    } => Set {
+                      0,
+                    },
+                    SimpleBracket {
+                      "__coverageCount": 0,
+                      "_direction": "DOWN",
+                      "_firstCells": Set {},
+                      "_neighbors": Array [
+                        [Circular],
+                      ],
+                    } => Set {
+                      0,
+                    },
+                    SimpleBracket {
+                      "__coverageCount": 0,
+                      "_direction": "UP",
+                      "_firstCells": Set {},
+                      "_neighbors": Array [
+                        [Circular],
+                      ],
+                    } => Set {
+                      0,
+                    },
+                  },
                   "_localCellCache": Set {},
                   "_tilesWithModifier": Set {
                     SimpleTileWithModifier {
@@ -29015,7 +29111,7 @@ GameData {
                           "_sprites": Array [
                             [Circular],
                           ],
-                          "id": 0,
+                          "id": 3,
                         },
                         "_color": TransparentColor {
                           "__coverageCount": 0,
@@ -29034,7 +29130,7 @@ GameData {
           ],
           "_evaluationDirection": "RIGHT",
           "_isAgain": false,
-          "_isLate": false,
+          "_isLate": true,
           "_isRigid": false,
           "_isSubscribedToCellChanges": true,
         },
@@ -29043,12 +29139,12 @@ GameData {
           "_actionBrackets": Array [
             SimpleBracket {
               "__coverageCount": 0,
-              "_direction": "RIGHT",
+              "_direction": "LEFT",
               "_firstCells": Set {},
               "_neighbors": Array [
                 SimpleNeighbor {
                   "__coverageCount": 0,
-                  "_brackets": Array [],
+                  "_brackets": Map {},
                   "_localCellCache": Set {},
                   "_tilesWithModifier": Set {},
                 },
@@ -29059,14 +29155,46 @@ GameData {
           "_conditionBrackets": Array [
             SimpleBracket {
               "__coverageCount": 0,
-              "_direction": "RIGHT",
+              "_direction": "LEFT",
               "_firstCells": Set {},
               "_neighbors": Array [
                 SimpleNeighbor {
                   "__coverageCount": 0,
-                  "_brackets": Array [
-                    [Circular],
-                  ],
+                  "_brackets": Map {
+                    SimpleBracket {
+                      "__coverageCount": 0,
+                      "_direction": "RIGHT",
+                      "_firstCells": Set {},
+                      "_neighbors": Array [
+                        [Circular],
+                      ],
+                    } => Set {
+                      0,
+                    },
+                    [Circular] => Set {
+                      0,
+                    },
+                    SimpleBracket {
+                      "__coverageCount": 0,
+                      "_direction": "DOWN",
+                      "_firstCells": Set {},
+                      "_neighbors": Array [
+                        [Circular],
+                      ],
+                    } => Set {
+                      0,
+                    },
+                    SimpleBracket {
+                      "__coverageCount": 0,
+                      "_direction": "UP",
+                      "_firstCells": Set {},
+                      "_neighbors": Array [
+                        [Circular],
+                      ],
+                    } => Set {
+                      0,
+                    },
+                  },
                   "_localCellCache": Set {},
                   "_tilesWithModifier": Set {
                     SimpleTileWithModifier {
@@ -29085,7 +29213,7 @@ GameData {
                           "_sprites": Array [
                             [Circular],
                           ],
-                          "id": 0,
+                          "id": 3,
                         },
                         "_color": TransparentColor {
                           "__coverageCount": 0,
@@ -29102,9 +29230,9 @@ GameData {
               ],
             },
           ],
-          "_evaluationDirection": "RIGHT",
+          "_evaluationDirection": "LEFT",
           "_isAgain": false,
-          "_isLate": false,
+          "_isLate": true,
           "_isRigid": false,
           "_isSubscribedToCellChanges": true,
         },
@@ -29113,12 +29241,12 @@ GameData {
           "_actionBrackets": Array [
             SimpleBracket {
               "__coverageCount": 0,
-              "_direction": "RIGHT",
+              "_direction": "DOWN",
               "_firstCells": Set {},
               "_neighbors": Array [
                 SimpleNeighbor {
                   "__coverageCount": 0,
-                  "_brackets": Array [],
+                  "_brackets": Map {},
                   "_localCellCache": Set {},
                   "_tilesWithModifier": Set {},
                 },
@@ -29129,14 +29257,46 @@ GameData {
           "_conditionBrackets": Array [
             SimpleBracket {
               "__coverageCount": 0,
-              "_direction": "RIGHT",
+              "_direction": "DOWN",
               "_firstCells": Set {},
               "_neighbors": Array [
                 SimpleNeighbor {
                   "__coverageCount": 0,
-                  "_brackets": Array [
-                    [Circular],
-                  ],
+                  "_brackets": Map {
+                    SimpleBracket {
+                      "__coverageCount": 0,
+                      "_direction": "RIGHT",
+                      "_firstCells": Set {},
+                      "_neighbors": Array [
+                        [Circular],
+                      ],
+                    } => Set {
+                      0,
+                    },
+                    SimpleBracket {
+                      "__coverageCount": 0,
+                      "_direction": "LEFT",
+                      "_firstCells": Set {},
+                      "_neighbors": Array [
+                        [Circular],
+                      ],
+                    } => Set {
+                      0,
+                    },
+                    [Circular] => Set {
+                      0,
+                    },
+                    SimpleBracket {
+                      "__coverageCount": 0,
+                      "_direction": "UP",
+                      "_firstCells": Set {},
+                      "_neighbors": Array [
+                        [Circular],
+                      ],
+                    } => Set {
+                      0,
+                    },
+                  },
                   "_localCellCache": Set {},
                   "_tilesWithModifier": Set {
                     SimpleTileWithModifier {
@@ -29155,7 +29315,7 @@ GameData {
                           "_sprites": Array [
                             [Circular],
                           ],
-                          "id": 0,
+                          "id": 3,
                         },
                         "_color": TransparentColor {
                           "__coverageCount": 0,
@@ -29172,9 +29332,9 @@ GameData {
               ],
             },
           ],
-          "_evaluationDirection": "RIGHT",
+          "_evaluationDirection": "DOWN",
           "_isAgain": false,
-          "_isLate": false,
+          "_isLate": true,
           "_isRigid": false,
           "_isSubscribedToCellChanges": true,
         },
@@ -29183,12 +29343,12 @@ GameData {
           "_actionBrackets": Array [
             SimpleBracket {
               "__coverageCount": 0,
-              "_direction": "RIGHT",
+              "_direction": "UP",
               "_firstCells": Set {},
               "_neighbors": Array [
                 SimpleNeighbor {
                   "__coverageCount": 0,
-                  "_brackets": Array [],
+                  "_brackets": Map {},
                   "_localCellCache": Set {},
                   "_tilesWithModifier": Set {},
                 },
@@ -29199,14 +29359,46 @@ GameData {
           "_conditionBrackets": Array [
             SimpleBracket {
               "__coverageCount": 0,
-              "_direction": "RIGHT",
+              "_direction": "UP",
               "_firstCells": Set {},
               "_neighbors": Array [
                 SimpleNeighbor {
                   "__coverageCount": 0,
-                  "_brackets": Array [
-                    [Circular],
-                  ],
+                  "_brackets": Map {
+                    SimpleBracket {
+                      "__coverageCount": 0,
+                      "_direction": "RIGHT",
+                      "_firstCells": Set {},
+                      "_neighbors": Array [
+                        [Circular],
+                      ],
+                    } => Set {
+                      0,
+                    },
+                    SimpleBracket {
+                      "__coverageCount": 0,
+                      "_direction": "LEFT",
+                      "_firstCells": Set {},
+                      "_neighbors": Array [
+                        [Circular],
+                      ],
+                    } => Set {
+                      0,
+                    },
+                    SimpleBracket {
+                      "__coverageCount": 0,
+                      "_direction": "DOWN",
+                      "_firstCells": Set {},
+                      "_neighbors": Array [
+                        [Circular],
+                      ],
+                    } => Set {
+                      0,
+                    },
+                    [Circular] => Set {
+                      0,
+                    },
+                  },
                   "_localCellCache": Set {},
                   "_tilesWithModifier": Set {
                     SimpleTileWithModifier {
@@ -29225,7 +29417,7 @@ GameData {
                           "_sprites": Array [
                             [Circular],
                           ],
-                          "id": 0,
+                          "id": 3,
                         },
                         "_color": TransparentColor {
                           "__coverageCount": 0,
@@ -29242,294 +29434,9 @@ GameData {
               ],
             },
           ],
-          "_evaluationDirection": "RIGHT",
+          "_evaluationDirection": "UP",
           "_isAgain": false,
-          "_isLate": false,
-          "_isRigid": false,
-          "_isSubscribedToCellChanges": true,
-        },
-      ],
-    },
-    SimpleRuleGroup {
-      "__coverageCount": 0,
-      "_rules": Array [
-        SimpleRule {
-          "__coverageCount": 0,
-          "_actionBrackets": Array [
-            SimpleBracket {
-              "__coverageCount": 0,
-              "_direction": "RIGHT",
-              "_firstCells": Set {},
-              "_neighbors": Array [
-                SimpleNeighbor {
-                  "__coverageCount": 0,
-                  "_brackets": Array [],
-                  "_localCellCache": Set {},
-                  "_tilesWithModifier": Set {},
-                },
-              ],
-            },
-          ],
-          "_commands": Array [],
-          "_conditionBrackets": Array [
-            SimpleBracket {
-              "__coverageCount": 0,
-              "_direction": "RIGHT",
-              "_firstCells": Set {},
-              "_neighbors": Array [
-                SimpleNeighbor {
-                  "__coverageCount": 0,
-                  "_brackets": Array [
-                    [Circular],
-                  ],
-                  "_localCellCache": Set {},
-                  "_tilesWithModifier": Set {
-                    SimpleTileWithModifier {
-                      "__coverageCount": 0,
-                      "_direction": null,
-                      "_isNegated": false,
-                      "_isRandom": false,
-                      "_neighbors": Set {
-                        [Circular],
-                      },
-                      "_tile": GameSpriteSingleColor {
-                        "__coverageCount": 0,
-                        "_cellSet": Set {},
-                        "_collisionLayer": CollisionLayer {
-                          "__coverageCount": 0,
-                          "_sprites": Array [
-                            [Circular],
-                          ],
-                          "id": 0,
-                        },
-                        "_color": TransparentColor {
-                          "__coverageCount": 0,
-                        },
-                        "_name": "player",
-                        "_optionalLegendChar": undefined,
-                        "_tileWithModifierSet": Set {
-                          [Circular],
-                        },
-                      },
-                    },
-                  },
-                },
-              ],
-            },
-          ],
-          "_evaluationDirection": "RIGHT",
-          "_isAgain": false,
-          "_isLate": false,
-          "_isRigid": false,
-          "_isSubscribedToCellChanges": true,
-        },
-        SimpleRule {
-          "__coverageCount": 0,
-          "_actionBrackets": Array [
-            SimpleBracket {
-              "__coverageCount": 0,
-              "_direction": "RIGHT",
-              "_firstCells": Set {},
-              "_neighbors": Array [
-                SimpleNeighbor {
-                  "__coverageCount": 0,
-                  "_brackets": Array [],
-                  "_localCellCache": Set {},
-                  "_tilesWithModifier": Set {},
-                },
-              ],
-            },
-          ],
-          "_commands": Array [],
-          "_conditionBrackets": Array [
-            SimpleBracket {
-              "__coverageCount": 0,
-              "_direction": "RIGHT",
-              "_firstCells": Set {},
-              "_neighbors": Array [
-                SimpleNeighbor {
-                  "__coverageCount": 0,
-                  "_brackets": Array [
-                    [Circular],
-                  ],
-                  "_localCellCache": Set {},
-                  "_tilesWithModifier": Set {
-                    SimpleTileWithModifier {
-                      "__coverageCount": 0,
-                      "_direction": null,
-                      "_isNegated": false,
-                      "_isRandom": false,
-                      "_neighbors": Set {
-                        [Circular],
-                      },
-                      "_tile": GameSpriteSingleColor {
-                        "__coverageCount": 0,
-                        "_cellSet": Set {},
-                        "_collisionLayer": CollisionLayer {
-                          "__coverageCount": 0,
-                          "_sprites": Array [
-                            [Circular],
-                          ],
-                          "id": 0,
-                        },
-                        "_color": TransparentColor {
-                          "__coverageCount": 0,
-                        },
-                        "_name": "player",
-                        "_optionalLegendChar": undefined,
-                        "_tileWithModifierSet": Set {
-                          [Circular],
-                        },
-                      },
-                    },
-                  },
-                },
-              ],
-            },
-          ],
-          "_evaluationDirection": "RIGHT",
-          "_isAgain": false,
-          "_isLate": false,
-          "_isRigid": false,
-          "_isSubscribedToCellChanges": true,
-        },
-        SimpleRule {
-          "__coverageCount": 0,
-          "_actionBrackets": Array [
-            SimpleBracket {
-              "__coverageCount": 0,
-              "_direction": "RIGHT",
-              "_firstCells": Set {},
-              "_neighbors": Array [
-                SimpleNeighbor {
-                  "__coverageCount": 0,
-                  "_brackets": Array [],
-                  "_localCellCache": Set {},
-                  "_tilesWithModifier": Set {},
-                },
-              ],
-            },
-          ],
-          "_commands": Array [],
-          "_conditionBrackets": Array [
-            SimpleBracket {
-              "__coverageCount": 0,
-              "_direction": "RIGHT",
-              "_firstCells": Set {},
-              "_neighbors": Array [
-                SimpleNeighbor {
-                  "__coverageCount": 0,
-                  "_brackets": Array [
-                    [Circular],
-                  ],
-                  "_localCellCache": Set {},
-                  "_tilesWithModifier": Set {
-                    SimpleTileWithModifier {
-                      "__coverageCount": 0,
-                      "_direction": null,
-                      "_isNegated": false,
-                      "_isRandom": false,
-                      "_neighbors": Set {
-                        [Circular],
-                      },
-                      "_tile": GameSpriteSingleColor {
-                        "__coverageCount": 0,
-                        "_cellSet": Set {},
-                        "_collisionLayer": CollisionLayer {
-                          "__coverageCount": 0,
-                          "_sprites": Array [
-                            [Circular],
-                          ],
-                          "id": 0,
-                        },
-                        "_color": TransparentColor {
-                          "__coverageCount": 0,
-                        },
-                        "_name": "player",
-                        "_optionalLegendChar": undefined,
-                        "_tileWithModifierSet": Set {
-                          [Circular],
-                        },
-                      },
-                    },
-                  },
-                },
-              ],
-            },
-          ],
-          "_evaluationDirection": "RIGHT",
-          "_isAgain": false,
-          "_isLate": false,
-          "_isRigid": false,
-          "_isSubscribedToCellChanges": true,
-        },
-        SimpleRule {
-          "__coverageCount": 0,
-          "_actionBrackets": Array [
-            SimpleBracket {
-              "__coverageCount": 0,
-              "_direction": "RIGHT",
-              "_firstCells": Set {},
-              "_neighbors": Array [
-                SimpleNeighbor {
-                  "__coverageCount": 0,
-                  "_brackets": Array [],
-                  "_localCellCache": Set {},
-                  "_tilesWithModifier": Set {},
-                },
-              ],
-            },
-          ],
-          "_commands": Array [],
-          "_conditionBrackets": Array [
-            SimpleBracket {
-              "__coverageCount": 0,
-              "_direction": "RIGHT",
-              "_firstCells": Set {},
-              "_neighbors": Array [
-                SimpleNeighbor {
-                  "__coverageCount": 0,
-                  "_brackets": Array [
-                    [Circular],
-                  ],
-                  "_localCellCache": Set {},
-                  "_tilesWithModifier": Set {
-                    SimpleTileWithModifier {
-                      "__coverageCount": 0,
-                      "_direction": null,
-                      "_isNegated": false,
-                      "_isRandom": false,
-                      "_neighbors": Set {
-                        [Circular],
-                      },
-                      "_tile": GameSpriteSingleColor {
-                        "__coverageCount": 0,
-                        "_cellSet": Set {},
-                        "_collisionLayer": CollisionLayer {
-                          "__coverageCount": 0,
-                          "_sprites": Array [
-                            [Circular],
-                          ],
-                          "id": 0,
-                        },
-                        "_color": TransparentColor {
-                          "__coverageCount": 0,
-                        },
-                        "_name": "player",
-                        "_optionalLegendChar": undefined,
-                        "_tileWithModifierSet": Set {
-                          [Circular],
-                        },
-                      },
-                    },
-                  },
-                },
-              ],
-            },
-          ],
-          "_evaluationDirection": "RIGHT",
-          "_isAgain": false,
-          "_isLate": false,
+          "_isLate": true,
           "_isRigid": false,
           "_isSubscribedToCellChanges": true,
         },
@@ -29548,7 +29455,7 @@ GameData {
               "_neighbors": Array [
                 SimpleNeighbor {
                   "__coverageCount": 0,
-                  "_brackets": Array [],
+                  "_brackets": Map {},
                   "_localCellCache": Set {},
                   "_tilesWithModifier": Set {},
                 },
@@ -29564,9 +29471,41 @@ GameData {
               "_neighbors": Array [
                 SimpleNeighbor {
                   "__coverageCount": 0,
-                  "_brackets": Array [
-                    [Circular],
-                  ],
+                  "_brackets": Map {
+                    [Circular] => Set {
+                      0,
+                    },
+                    SimpleBracket {
+                      "__coverageCount": 0,
+                      "_direction": "LEFT",
+                      "_firstCells": Set {},
+                      "_neighbors": Array [
+                        [Circular],
+                      ],
+                    } => Set {
+                      0,
+                    },
+                    SimpleBracket {
+                      "__coverageCount": 0,
+                      "_direction": "DOWN",
+                      "_firstCells": Set {},
+                      "_neighbors": Array [
+                        [Circular],
+                      ],
+                    } => Set {
+                      0,
+                    },
+                    SimpleBracket {
+                      "__coverageCount": 0,
+                      "_direction": "UP",
+                      "_firstCells": Set {},
+                      "_neighbors": Array [
+                        [Circular],
+                      ],
+                    } => Set {
+                      0,
+                    },
+                  },
                   "_localCellCache": Set {},
                   "_tilesWithModifier": Set {
                     SimpleTileWithModifier {
@@ -29585,7 +29524,7 @@ GameData {
                           "_sprites": Array [
                             [Circular],
                           ],
-                          "id": 0,
+                          "id": 3,
                         },
                         "_color": TransparentColor {
                           "__coverageCount": 0,
@@ -29605,7 +29544,7 @@ GameData {
           "_evaluationDirection": "RIGHT",
           "_isAgain": false,
           "_isLate": false,
-          "_isRigid": false,
+          "_isRigid": true,
           "_isSubscribedToCellChanges": true,
         },
         SimpleRule {
@@ -29613,12 +29552,12 @@ GameData {
           "_actionBrackets": Array [
             SimpleBracket {
               "__coverageCount": 0,
-              "_direction": "RIGHT",
+              "_direction": "LEFT",
               "_firstCells": Set {},
               "_neighbors": Array [
                 SimpleNeighbor {
                   "__coverageCount": 0,
-                  "_brackets": Array [],
+                  "_brackets": Map {},
                   "_localCellCache": Set {},
                   "_tilesWithModifier": Set {},
                 },
@@ -29629,14 +29568,46 @@ GameData {
           "_conditionBrackets": Array [
             SimpleBracket {
               "__coverageCount": 0,
-              "_direction": "RIGHT",
+              "_direction": "LEFT",
               "_firstCells": Set {},
               "_neighbors": Array [
                 SimpleNeighbor {
                   "__coverageCount": 0,
-                  "_brackets": Array [
-                    [Circular],
-                  ],
+                  "_brackets": Map {
+                    SimpleBracket {
+                      "__coverageCount": 0,
+                      "_direction": "RIGHT",
+                      "_firstCells": Set {},
+                      "_neighbors": Array [
+                        [Circular],
+                      ],
+                    } => Set {
+                      0,
+                    },
+                    [Circular] => Set {
+                      0,
+                    },
+                    SimpleBracket {
+                      "__coverageCount": 0,
+                      "_direction": "DOWN",
+                      "_firstCells": Set {},
+                      "_neighbors": Array [
+                        [Circular],
+                      ],
+                    } => Set {
+                      0,
+                    },
+                    SimpleBracket {
+                      "__coverageCount": 0,
+                      "_direction": "UP",
+                      "_firstCells": Set {},
+                      "_neighbors": Array [
+                        [Circular],
+                      ],
+                    } => Set {
+                      0,
+                    },
+                  },
                   "_localCellCache": Set {},
                   "_tilesWithModifier": Set {
                     SimpleTileWithModifier {
@@ -29655,7 +29626,7 @@ GameData {
                           "_sprites": Array [
                             [Circular],
                           ],
-                          "id": 0,
+                          "id": 3,
                         },
                         "_color": TransparentColor {
                           "__coverageCount": 0,
@@ -29672,10 +29643,10 @@ GameData {
               ],
             },
           ],
-          "_evaluationDirection": "RIGHT",
+          "_evaluationDirection": "LEFT",
           "_isAgain": false,
           "_isLate": false,
-          "_isRigid": false,
+          "_isRigid": true,
           "_isSubscribedToCellChanges": true,
         },
         SimpleRule {
@@ -29683,12 +29654,12 @@ GameData {
           "_actionBrackets": Array [
             SimpleBracket {
               "__coverageCount": 0,
-              "_direction": "RIGHT",
+              "_direction": "DOWN",
               "_firstCells": Set {},
               "_neighbors": Array [
                 SimpleNeighbor {
                   "__coverageCount": 0,
-                  "_brackets": Array [],
+                  "_brackets": Map {},
                   "_localCellCache": Set {},
                   "_tilesWithModifier": Set {},
                 },
@@ -29699,14 +29670,46 @@ GameData {
           "_conditionBrackets": Array [
             SimpleBracket {
               "__coverageCount": 0,
-              "_direction": "RIGHT",
+              "_direction": "DOWN",
               "_firstCells": Set {},
               "_neighbors": Array [
                 SimpleNeighbor {
                   "__coverageCount": 0,
-                  "_brackets": Array [
-                    [Circular],
-                  ],
+                  "_brackets": Map {
+                    SimpleBracket {
+                      "__coverageCount": 0,
+                      "_direction": "RIGHT",
+                      "_firstCells": Set {},
+                      "_neighbors": Array [
+                        [Circular],
+                      ],
+                    } => Set {
+                      0,
+                    },
+                    SimpleBracket {
+                      "__coverageCount": 0,
+                      "_direction": "LEFT",
+                      "_firstCells": Set {},
+                      "_neighbors": Array [
+                        [Circular],
+                      ],
+                    } => Set {
+                      0,
+                    },
+                    [Circular] => Set {
+                      0,
+                    },
+                    SimpleBracket {
+                      "__coverageCount": 0,
+                      "_direction": "UP",
+                      "_firstCells": Set {},
+                      "_neighbors": Array [
+                        [Circular],
+                      ],
+                    } => Set {
+                      0,
+                    },
+                  },
                   "_localCellCache": Set {},
                   "_tilesWithModifier": Set {
                     SimpleTileWithModifier {
@@ -29725,7 +29728,7 @@ GameData {
                           "_sprites": Array [
                             [Circular],
                           ],
-                          "id": 0,
+                          "id": 3,
                         },
                         "_color": TransparentColor {
                           "__coverageCount": 0,
@@ -29742,10 +29745,10 @@ GameData {
               ],
             },
           ],
-          "_evaluationDirection": "RIGHT",
+          "_evaluationDirection": "DOWN",
           "_isAgain": false,
           "_isLate": false,
-          "_isRigid": false,
+          "_isRigid": true,
           "_isSubscribedToCellChanges": true,
         },
         SimpleRule {
@@ -29753,12 +29756,12 @@ GameData {
           "_actionBrackets": Array [
             SimpleBracket {
               "__coverageCount": 0,
-              "_direction": "RIGHT",
+              "_direction": "UP",
               "_firstCells": Set {},
               "_neighbors": Array [
                 SimpleNeighbor {
                   "__coverageCount": 0,
-                  "_brackets": Array [],
+                  "_brackets": Map {},
                   "_localCellCache": Set {},
                   "_tilesWithModifier": Set {},
                 },
@@ -29769,14 +29772,46 @@ GameData {
           "_conditionBrackets": Array [
             SimpleBracket {
               "__coverageCount": 0,
-              "_direction": "RIGHT",
+              "_direction": "UP",
               "_firstCells": Set {},
               "_neighbors": Array [
                 SimpleNeighbor {
                   "__coverageCount": 0,
-                  "_brackets": Array [
-                    [Circular],
-                  ],
+                  "_brackets": Map {
+                    SimpleBracket {
+                      "__coverageCount": 0,
+                      "_direction": "RIGHT",
+                      "_firstCells": Set {},
+                      "_neighbors": Array [
+                        [Circular],
+                      ],
+                    } => Set {
+                      0,
+                    },
+                    SimpleBracket {
+                      "__coverageCount": 0,
+                      "_direction": "LEFT",
+                      "_firstCells": Set {},
+                      "_neighbors": Array [
+                        [Circular],
+                      ],
+                    } => Set {
+                      0,
+                    },
+                    SimpleBracket {
+                      "__coverageCount": 0,
+                      "_direction": "DOWN",
+                      "_firstCells": Set {},
+                      "_neighbors": Array [
+                        [Circular],
+                      ],
+                    } => Set {
+                      0,
+                    },
+                    [Circular] => Set {
+                      0,
+                    },
+                  },
                   "_localCellCache": Set {},
                   "_tilesWithModifier": Set {
                     SimpleTileWithModifier {
@@ -29795,7 +29830,7 @@ GameData {
                           "_sprites": Array [
                             [Circular],
                           ],
-                          "id": 0,
+                          "id": 3,
                         },
                         "_color": TransparentColor {
                           "__coverageCount": 0,
@@ -29812,10 +29847,10 @@ GameData {
               ],
             },
           ],
-          "_evaluationDirection": "RIGHT",
+          "_evaluationDirection": "UP",
           "_isAgain": false,
           "_isLate": false,
-          "_isRigid": false,
+          "_isRigid": true,
           "_isSubscribedToCellChanges": true,
         },
       ],
@@ -29889,8 +29924,8 @@ GameData {
           "_conditionBrackets": Array [],
           "_evaluationDirection": "RIGHT",
           "_isAgain": true,
-          "_isLate": false,
-          "_isRigid": false,
+          "_isLate": true,
+          "_isRigid": true,
           "_isSubscribedToCellChanges": true,
         },
         SimpleRule {
@@ -29902,8 +29937,8 @@ GameData {
           "_conditionBrackets": Array [],
           "_evaluationDirection": "RIGHT",
           "_isAgain": true,
-          "_isLate": false,
-          "_isRigid": false,
+          "_isLate": true,
+          "_isRigid": true,
           "_isSubscribedToCellChanges": true,
         },
         SimpleRule {
@@ -29915,8 +29950,8 @@ GameData {
           "_conditionBrackets": Array [],
           "_evaluationDirection": "RIGHT",
           "_isAgain": true,
-          "_isLate": false,
-          "_isRigid": false,
+          "_isLate": true,
+          "_isRigid": true,
           "_isSubscribedToCellChanges": true,
         },
         SimpleRule {
@@ -29928,6 +29963,419 @@ GameData {
           "_conditionBrackets": Array [],
           "_evaluationDirection": "RIGHT",
           "_isAgain": true,
+          "_isLate": true,
+          "_isRigid": true,
+          "_isSubscribedToCellChanges": true,
+        },
+      ],
+    },
+    SimpleRuleGroup {
+      "__coverageCount": 0,
+      "_rules": Array [
+        SimpleRule {
+          "__coverageCount": 0,
+          "_actionBrackets": Array [
+            SimpleBracket {
+              "__coverageCount": 0,
+              "_direction": "RIGHT",
+              "_firstCells": Set {},
+              "_neighbors": Array [
+                SimpleNeighbor {
+                  "__coverageCount": 0,
+                  "_brackets": Map {},
+                  "_localCellCache": Set {},
+                  "_tilesWithModifier": Set {},
+                },
+              ],
+            },
+          ],
+          "_commands": Array [],
+          "_conditionBrackets": Array [
+            SimpleBracket {
+              "__coverageCount": 0,
+              "_direction": "RIGHT",
+              "_firstCells": Set {},
+              "_neighbors": Array [
+                SimpleNeighbor {
+                  "__coverageCount": 0,
+                  "_brackets": Map {
+                    [Circular] => Set {
+                      0,
+                    },
+                    SimpleBracket {
+                      "__coverageCount": 0,
+                      "_direction": "LEFT",
+                      "_firstCells": Set {},
+                      "_neighbors": Array [
+                        [Circular],
+                      ],
+                    } => Set {
+                      0,
+                    },
+                    SimpleBracket {
+                      "__coverageCount": 0,
+                      "_direction": "DOWN",
+                      "_firstCells": Set {},
+                      "_neighbors": Array [
+                        [Circular],
+                      ],
+                    } => Set {
+                      0,
+                    },
+                    SimpleBracket {
+                      "__coverageCount": 0,
+                      "_direction": "UP",
+                      "_firstCells": Set {},
+                      "_neighbors": Array [
+                        [Circular],
+                      ],
+                    } => Set {
+                      0,
+                    },
+                  },
+                  "_localCellCache": Set {},
+                  "_tilesWithModifier": Set {
+                    SimpleTileWithModifier {
+                      "__coverageCount": 0,
+                      "_direction": null,
+                      "_isNegated": false,
+                      "_isRandom": false,
+                      "_neighbors": Set {
+                        [Circular],
+                      },
+                      "_tile": GameSpriteSingleColor {
+                        "__coverageCount": 0,
+                        "_cellSet": Set {},
+                        "_collisionLayer": CollisionLayer {
+                          "__coverageCount": 0,
+                          "_sprites": Array [
+                            [Circular],
+                          ],
+                          "id": 3,
+                        },
+                        "_color": TransparentColor {
+                          "__coverageCount": 0,
+                        },
+                        "_name": "player",
+                        "_optionalLegendChar": undefined,
+                        "_tileWithModifierSet": Set {
+                          [Circular],
+                        },
+                      },
+                    },
+                  },
+                },
+              ],
+            },
+          ],
+          "_evaluationDirection": "RIGHT",
+          "_isAgain": false,
+          "_isLate": false,
+          "_isRigid": false,
+          "_isSubscribedToCellChanges": true,
+        },
+        SimpleRule {
+          "__coverageCount": 0,
+          "_actionBrackets": Array [
+            SimpleBracket {
+              "__coverageCount": 0,
+              "_direction": "LEFT",
+              "_firstCells": Set {},
+              "_neighbors": Array [
+                SimpleNeighbor {
+                  "__coverageCount": 0,
+                  "_brackets": Map {},
+                  "_localCellCache": Set {},
+                  "_tilesWithModifier": Set {},
+                },
+              ],
+            },
+          ],
+          "_commands": Array [],
+          "_conditionBrackets": Array [
+            SimpleBracket {
+              "__coverageCount": 0,
+              "_direction": "LEFT",
+              "_firstCells": Set {},
+              "_neighbors": Array [
+                SimpleNeighbor {
+                  "__coverageCount": 0,
+                  "_brackets": Map {
+                    SimpleBracket {
+                      "__coverageCount": 0,
+                      "_direction": "RIGHT",
+                      "_firstCells": Set {},
+                      "_neighbors": Array [
+                        [Circular],
+                      ],
+                    } => Set {
+                      0,
+                    },
+                    [Circular] => Set {
+                      0,
+                    },
+                    SimpleBracket {
+                      "__coverageCount": 0,
+                      "_direction": "DOWN",
+                      "_firstCells": Set {},
+                      "_neighbors": Array [
+                        [Circular],
+                      ],
+                    } => Set {
+                      0,
+                    },
+                    SimpleBracket {
+                      "__coverageCount": 0,
+                      "_direction": "UP",
+                      "_firstCells": Set {},
+                      "_neighbors": Array [
+                        [Circular],
+                      ],
+                    } => Set {
+                      0,
+                    },
+                  },
+                  "_localCellCache": Set {},
+                  "_tilesWithModifier": Set {
+                    SimpleTileWithModifier {
+                      "__coverageCount": 0,
+                      "_direction": null,
+                      "_isNegated": false,
+                      "_isRandom": false,
+                      "_neighbors": Set {
+                        [Circular],
+                      },
+                      "_tile": GameSpriteSingleColor {
+                        "__coverageCount": 0,
+                        "_cellSet": Set {},
+                        "_collisionLayer": CollisionLayer {
+                          "__coverageCount": 0,
+                          "_sprites": Array [
+                            [Circular],
+                          ],
+                          "id": 3,
+                        },
+                        "_color": TransparentColor {
+                          "__coverageCount": 0,
+                        },
+                        "_name": "player",
+                        "_optionalLegendChar": undefined,
+                        "_tileWithModifierSet": Set {
+                          [Circular],
+                        },
+                      },
+                    },
+                  },
+                },
+              ],
+            },
+          ],
+          "_evaluationDirection": "LEFT",
+          "_isAgain": false,
+          "_isLate": false,
+          "_isRigid": false,
+          "_isSubscribedToCellChanges": true,
+        },
+        SimpleRule {
+          "__coverageCount": 0,
+          "_actionBrackets": Array [
+            SimpleBracket {
+              "__coverageCount": 0,
+              "_direction": "DOWN",
+              "_firstCells": Set {},
+              "_neighbors": Array [
+                SimpleNeighbor {
+                  "__coverageCount": 0,
+                  "_brackets": Map {},
+                  "_localCellCache": Set {},
+                  "_tilesWithModifier": Set {},
+                },
+              ],
+            },
+          ],
+          "_commands": Array [],
+          "_conditionBrackets": Array [
+            SimpleBracket {
+              "__coverageCount": 0,
+              "_direction": "DOWN",
+              "_firstCells": Set {},
+              "_neighbors": Array [
+                SimpleNeighbor {
+                  "__coverageCount": 0,
+                  "_brackets": Map {
+                    SimpleBracket {
+                      "__coverageCount": 0,
+                      "_direction": "RIGHT",
+                      "_firstCells": Set {},
+                      "_neighbors": Array [
+                        [Circular],
+                      ],
+                    } => Set {
+                      0,
+                    },
+                    SimpleBracket {
+                      "__coverageCount": 0,
+                      "_direction": "LEFT",
+                      "_firstCells": Set {},
+                      "_neighbors": Array [
+                        [Circular],
+                      ],
+                    } => Set {
+                      0,
+                    },
+                    [Circular] => Set {
+                      0,
+                    },
+                    SimpleBracket {
+                      "__coverageCount": 0,
+                      "_direction": "UP",
+                      "_firstCells": Set {},
+                      "_neighbors": Array [
+                        [Circular],
+                      ],
+                    } => Set {
+                      0,
+                    },
+                  },
+                  "_localCellCache": Set {},
+                  "_tilesWithModifier": Set {
+                    SimpleTileWithModifier {
+                      "__coverageCount": 0,
+                      "_direction": null,
+                      "_isNegated": false,
+                      "_isRandom": false,
+                      "_neighbors": Set {
+                        [Circular],
+                      },
+                      "_tile": GameSpriteSingleColor {
+                        "__coverageCount": 0,
+                        "_cellSet": Set {},
+                        "_collisionLayer": CollisionLayer {
+                          "__coverageCount": 0,
+                          "_sprites": Array [
+                            [Circular],
+                          ],
+                          "id": 3,
+                        },
+                        "_color": TransparentColor {
+                          "__coverageCount": 0,
+                        },
+                        "_name": "player",
+                        "_optionalLegendChar": undefined,
+                        "_tileWithModifierSet": Set {
+                          [Circular],
+                        },
+                      },
+                    },
+                  },
+                },
+              ],
+            },
+          ],
+          "_evaluationDirection": "DOWN",
+          "_isAgain": false,
+          "_isLate": false,
+          "_isRigid": false,
+          "_isSubscribedToCellChanges": true,
+        },
+        SimpleRule {
+          "__coverageCount": 0,
+          "_actionBrackets": Array [
+            SimpleBracket {
+              "__coverageCount": 0,
+              "_direction": "UP",
+              "_firstCells": Set {},
+              "_neighbors": Array [
+                SimpleNeighbor {
+                  "__coverageCount": 0,
+                  "_brackets": Map {},
+                  "_localCellCache": Set {},
+                  "_tilesWithModifier": Set {},
+                },
+              ],
+            },
+          ],
+          "_commands": Array [],
+          "_conditionBrackets": Array [
+            SimpleBracket {
+              "__coverageCount": 0,
+              "_direction": "UP",
+              "_firstCells": Set {},
+              "_neighbors": Array [
+                SimpleNeighbor {
+                  "__coverageCount": 0,
+                  "_brackets": Map {
+                    SimpleBracket {
+                      "__coverageCount": 0,
+                      "_direction": "RIGHT",
+                      "_firstCells": Set {},
+                      "_neighbors": Array [
+                        [Circular],
+                      ],
+                    } => Set {
+                      0,
+                    },
+                    SimpleBracket {
+                      "__coverageCount": 0,
+                      "_direction": "LEFT",
+                      "_firstCells": Set {},
+                      "_neighbors": Array [
+                        [Circular],
+                      ],
+                    } => Set {
+                      0,
+                    },
+                    SimpleBracket {
+                      "__coverageCount": 0,
+                      "_direction": "DOWN",
+                      "_firstCells": Set {},
+                      "_neighbors": Array [
+                        [Circular],
+                      ],
+                    } => Set {
+                      0,
+                    },
+                    [Circular] => Set {
+                      0,
+                    },
+                  },
+                  "_localCellCache": Set {},
+                  "_tilesWithModifier": Set {
+                    SimpleTileWithModifier {
+                      "__coverageCount": 0,
+                      "_direction": null,
+                      "_isNegated": false,
+                      "_isRandom": false,
+                      "_neighbors": Set {
+                        [Circular],
+                      },
+                      "_tile": GameSpriteSingleColor {
+                        "__coverageCount": 0,
+                        "_cellSet": Set {},
+                        "_collisionLayer": CollisionLayer {
+                          "__coverageCount": 0,
+                          "_sprites": Array [
+                            [Circular],
+                          ],
+                          "id": 3,
+                        },
+                        "_color": TransparentColor {
+                          "__coverageCount": 0,
+                        },
+                        "_name": "player",
+                        "_optionalLegendChar": undefined,
+                        "_tileWithModifierSet": Set {
+                          [Circular],
+                        },
+                      },
+                    },
+                  },
+                },
+              ],
+            },
+          ],
+          "_evaluationDirection": "UP",
+          "_isAgain": false,
           "_isLate": false,
           "_isRigid": false,
           "_isSubscribedToCellChanges": true,
