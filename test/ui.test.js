@@ -187,7 +187,7 @@ P
 
       `)
 
-    expect(game1.pixels[0][0]._colorName.toLowerCase()).toEqual(lookupColorPalette('pastel', 'lightblue').toLowerCase())
+    expect(game1.pixels[0][0].toHex().toLowerCase()).toEqual(lookupColorPalette('pastel', 'lightblue').toLowerCase())
 
     const game2 = parseAndReturnFirstSpritePixels(`
       title Game 2 with no color palette
@@ -228,7 +228,7 @@ P
 
       `)
 
-    expect(game2.pixels[0][0]._colorName.toLowerCase()).toEqual(lookupColorPalette('arnecolors', 'lightblue').toLowerCase())
+    expect(game2.pixels[0][0].toHex().toLowerCase()).toEqual(lookupColorPalette('arnecolors', 'lightblue').toLowerCase())
   })
 
   it.skip('Does not replace the pixels in a sprite (grr, we should just use immutable objects', () => {

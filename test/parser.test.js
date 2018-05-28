@@ -228,7 +228,7 @@ OBJECTS
 player
 yellow
 `)
-      expect(data1.objects[0]._color._colorName.toLowerCase()).toBe(lookupColorPalette('gameboycolour', 'yellow').toLowerCase())
+      expect(data1.objects[0]._color.toHex().toLowerCase()).toBe(lookupColorPalette('gameboycolour', 'yellow').toLowerCase())
 
       const { data: data2 } = checkParse(`
 title foo
@@ -240,7 +240,7 @@ OBJECTS
 player
 yellow
 `)
-      expect(data2.objects[0]._color._colorName.toLowerCase()).toBe(lookupColorPalette('gameboycolour', 'yellow').toLowerCase())
+      expect(data2.objects[0]._color.toHex().toLowerCase()).toBe(lookupColorPalette('gameboycolour', 'yellow').toLowerCase())
     })
 
     it('Supports characters that would be invalid in one scope but are valid in another scope', () => {

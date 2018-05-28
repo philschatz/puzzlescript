@@ -168,10 +168,11 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
                     // (a previous application of this rule could have made it no longer apply)
                     if (bracket.getFirstCells().has(firstCell)) {
                         ret.push(bracket.evaluate(this._actionBrackets[index], firstCell))
+
+                        if (process.env['NODE_ENV'] !== 'production') {
+                            this.__coverageCount++
+                        }
                     }
-                }
-                if (process.env['NODE_ENV'] !== 'production') {
-                    this.__coverageCount++
                 }
                 // // Sometimes rules cannot execute. For example, `[ player ] -> [ > player ]`
                 // // should only work if there is a cell in that direction.
