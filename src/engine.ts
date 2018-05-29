@@ -100,11 +100,14 @@ export class Cell {
         this._spriteAndWantsToMoves.set(sprite, RULE_DIRECTION_ABSOLUTE.STATIONARY)
         sprite.updateCell(this, RULE_DIRECTION_ABSOLUTE.STATIONARY)
     }
-    addSprite(sprite: GameSprite, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
-        if (!wantsToMove) {
-            throw new Error(`BUG: Must set wantsToMove to be something non-null`)
+    addSprite(sprite: GameSprite, wantsToMove?: RULE_DIRECTION_ABSOLUTE) {
+
+        if (wantsToMove) {
+            this._spriteAndWantsToMoves.set(sprite, wantsToMove)
+        } else if (!this._spriteAndWantsToMoves.has(sprite)) {
+            wantsToMove = RULE_DIRECTION_ABSOLUTE.STATIONARY
+            this._spriteAndWantsToMoves.set(sprite, wantsToMove)
         }
-        this._spriteAndWantsToMoves.set(sprite, wantsToMove)
         sprite.addCell(this, wantsToMove)
     }
     removeSprite(sprite: GameSprite) {

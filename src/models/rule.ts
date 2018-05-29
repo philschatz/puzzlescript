@@ -362,8 +362,9 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
             } else if (tileWithModifier._direction === RULE_DIRECTION_ABSOLUTE.MOVING) {
                 // skip, since it must have been MOVING in the condition
                 continue
+            } else if (!tileWithModifier._direction) {
             } else {
-                direction = tileWithModifier._direction || RULE_DIRECTION_ABSOLUTE.STATIONARY // try not to send nulls
+                direction = tileWithModifier._direction
             }
             for (const sprite of sprites.getSprites()) {
                 cell.addSprite(sprite, direction)

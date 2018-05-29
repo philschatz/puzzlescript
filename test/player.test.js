@@ -69,7 +69,6 @@ describe('player movement', () => {
 
         const player = data.getPlayer()
         const playerSprite = data._getSpriteByName('player')
-        debugger
         engine.pressRight()
         engine.tick()
 
@@ -133,7 +132,6 @@ describe('player movement', () => {
 
         const player = data.getPlayer()
         const playerSprite = data._getSpriteByName('player')
-        debugger
         engine.pressRight()
         engine.tick()
 
@@ -151,4 +149,144 @@ describe('player movement', () => {
         expect(engine.currentLevel[0][3].getSpritesAsSet().has(playerSprite)).toBe(true)
     })
 
+
+    it('wantsToMove should become applied to sprites in another bracket', () => {
+        const { engine, data } = parseEngine(`title foo
+
+        (verbose_logging)
+        (debug)
+
+        (run_rules_on_level_start)
+
+        realtime_interval 0.1
+
+        ===
+        OBJECTS
+        ===
+
+        background
+        green
+
+        player
+        Yellow
+
+        shadow
+        black
+
+        ===
+        LEGEND
+        ===
+
+        . = background
+        P = Player
+        S = shadow
+
+        ====
+        SOUNDS
+        ====
+
+        ====
+        COLLISIONLAYERS
+        ====
+
+        background
+        player
+        shadow
+
+        ====
+        RULES
+        ====
+
+        [ > player ] [ shadow ] -> [ > player ] [ > shadow ]
+
+        ===
+        WINCONDITIONS
+        ===
+
+        ===
+        LEVELS
+        ===
+
+        P.
+        S.
+
+        `) // end game
+
+        const player = data.getPlayer()
+        const playerSprite = data._getSpriteByName('player')
+        const shadowSprite = data._getSpriteByName('shadow')
+        engine.pressRight()
+        engine.tick()
+
+        expect(engine.currentLevel[0][0].getSpritesAsSet().has(playerSprite)).toBe(false)
+        expect(engine.currentLevel[0][1].getSpritesAsSet().has(playerSprite)).toBe(true)
+
+        expect(engine.currentLevel[1][0].getSpritesAsSet().has(shadowSprite)).toBe(false)
+        expect(engine.currentLevel[1][1].getSpritesAsSet().has(shadowSprite)).toBe(true)
+    })
+
+    it('wantsToMove should remain when updating sprites', () => {
+        const { engine, data } = parseEngine(`title foo
+
+        (verbose_logging)
+        (debug)
+
+        (run_rules_on_level_start)
+
+        realtime_interval 0.1
+
+        ===
+        OBJECTS
+        ===
+
+        background
+        green
+
+        player
+        Yellow
+
+        ===
+        LEGEND
+        ===
+
+        . = background
+        P = Player
+
+        ====
+        SOUNDS
+        ====
+
+        ====
+        COLLISIONLAYERS
+        ====
+
+        background
+        player
+
+        ====
+        RULES
+        ====
+
+        [ player ] -> [ player ]
+
+        ===
+        WINCONDITIONS
+        ===
+
+        ===
+        LEVELS
+        ===
+
+        P.
+
+        `) // end game
+
+        const player = data.getPlayer()
+        const playerSprite = data._getSpriteByName('player')
+        engine.pressRight()
+        engine.tick()
+
+        expect(engine.currentLevel[0][0].getSpritesAsSet().has(playerSprite)).toBe(false)
+        expect(engine.currentLevel[0][1].getSpritesAsSet().has(playerSprite)).toBe(true)
+    })
 })

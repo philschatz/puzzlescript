@@ -12,6 +12,7 @@ import { setAddAll, RULE_DIRECTION_ABSOLUTE } from './util';
 import { start } from 'repl';
 import { IRule } from './models/rule';
 import { RULE_DIRECTION } from './enums';
+import { saveCoverageFile } from './recordCoverage';
 
 async function sleep(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms))
@@ -25,10 +26,6 @@ stdin.setRawMode(true);
 stdin.resume();
 stdin.setEncoding('utf8');
 
-// stdin.on('data', function(key){
-
-//     // console.log(toUnicode(key))
-
 function toUnicode(theString) {
     var unicodeString = '';
     for (var i=0; i < theString.length; i++) {
@@ -41,24 +38,11 @@ function toUnicode(theString) {
     }
     return unicodeString;
   }
-//     if (key == '\u001B\u005B\u0041') {
-//         process.stdout.write('up');
-//     }
-//     if (key == '\u001B\u005B\u0043') {
-//         process.stdout.write('right');
-//     }
-//     if (key == '\u001B\u005B\u0042') {
-//         process.stdout.write('down');
-//     }
-//     if (key == '\u001B\u005B\u0044') {
-//         process.stdout.write('left');
-//     }
-
-//     if (key == '\u0003') { process.exit(); }    // ctrl-c
-// });
 
 async function run() {
-    const code = readFileSync('./gists/__simple-test/script.txt', 'utf-8')
+    const gameFile = './gists/__simple-test/script.txt'
+    const absPath = path.resolve(gameFile)
+    const code = readFileSync(absPath, 'utf-8')
     const startTime = Date.now()
     const { data, error, trace, validationMessages } = Parser.parse(code)
     console.log(`Parsing took ${Date.now() - startTime}ms`)
@@ -87,24 +71,31 @@ async function run() {
 
             // https://stackoverflow.com/a/30687420
             stdin.on('data', function(key){
-                UI.writeDebug(`pressed....: "${toUnicode(key)}"`)
-                if (key === 'w' || key === '\u001B\u005B\u0041') {
-                    doMove(RULE_DIRECTION_ABSOLUTE.UP)
+                switch (key) {
+                    case 'w':
+                    case '\u001B\u005B\u0041': // UP-ARROW
+                        return doMove(RULE_DIRECTION_ABSOLUTE.UP)
+                    case 's':
+                    case '\u001B\u005B\u0042': // DOWN-ARROW
+                        return doMove(RULE_DIRECTION_ABSOLUTE.DOWN)
+                    case 'a':
+                    case '\u001B\u005B\u0044': // LEFT-ARROW
+                        return doMove(RULE_DIRECTION_ABSOLUTE.LEFT)
+                    case 'd':
+                    case '\u001B\u005B\u0043': // RIGHT-ARROW
+                        return doMove(RULE_DIRECTION_ABSOLUTE.RIGHT)
+                    case 'x':
+                    case ' ':
+                        return doMove(RULE_DIRECTION_ABSOLUTE.ACTION)
+                    case '\u0003': // Ctrl+C
+                        return process.exit(1)
+                    case '\u001B':
+                        saveCoverageFile(data, absPath, 'playgame')
+                        return process.exit(0)
+                    default:
+                        UI.writeDebug(`pressed....: "${toUnicode(key)}"`)
                 }
-                if (key === 's' || key === '\u001B\u005B\u0042') {
-                    doMove(RULE_DIRECTION_ABSOLUTE.DOWN)
-                }
-                if (key === 'a' || key === '\u001B\u005B\u0044') {
-                    doMove(RULE_DIRECTION_ABSOLUTE.LEFT)
-                }
-                if (key === 'd' || key === '\u001B\u005B\u0043') {
-                    doMove(RULE_DIRECTION_ABSOLUTE.RIGHT)
-                }
-                if (key === ' ') {
-                    doMove(RULE_DIRECTION_ABSOLUTE.ACTION)
-                }
-                if (key === '\u0003') { process.exit(); }    // ctrl-c
-            });
+            })
 
             // engine.on('cell:updated', cell => {
             //   UI.drawCellAt(data, cell, cell.rowIndex, cell.colIndex, false)
@@ -114,20 +105,19 @@ async function run() {
             UI.writeDebug(`Game: "${data.title}"`)
 
             for (var i = 0; i < 10000; i++) {
-                await sleep(100)
-                const changedCells = engine.tick()
 
-                // UI.renderScreen(data, engine.currentLevel)
+                const startTime = Date.now()
+                const changedCells = engine.tick()
 
                 // Draw any cells that moved
                 for (const cell of changedCells) {
                     UI.drawCell(data, cell, false)
                 }
 
-                // const msg = `Tick ${i} of "${data.title}" (took ${Date.now() - startTime}ms) Changed: ${[...changedCells].map(cell => cell.rowIndex + ':' + cell.colIndex).join(', ') + '   '}`
-                // UI.writeDebug(msg.substring(0, 160))
+                const msg = `Tick ${i} took ${Date.now() - startTime}ms. Changed: ${[...changedCells].map(cell => cell.rowIndex + ':' + cell.colIndex).join(', ') + '   '}`
+                UI.writeDebug(msg.substring(0, 160))
 
-                await sleep(Math.max(500 - (Date.now() - startTime), 0))
+                await sleep(Math.max(100 - (Date.now() - startTime), 0))
 
                 if (changedCells.size === 0) {
                     break
