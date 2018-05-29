@@ -77,4 +77,78 @@ describe('player movement', () => {
         expect(engine.currentLevel[0][0].getSpritesAsSet().has(playerSprite)).toBe(false)
     })
 
+    it('players next to each other should move in unison', () => {
+        const { engine, data } = parseEngine(`title foo
+
+        (verbose_logging)
+        (debug)
+
+        (run_rules_on_level_start)
+
+        realtime_interval 0.1
+
+        ===
+        OBJECTS
+        ===
+
+        background
+        green
+
+        player
+        Yellow
+
+        ===
+        LEGEND
+        ===
+
+        . = background
+        P = Player
+
+        ====
+        SOUNDS
+        ====
+
+        ====
+        COLLISIONLAYERS
+        ====
+
+        background
+        player
+
+        ====
+        RULES
+        ====
+
+        ===
+        WINCONDITIONS
+        ===
+
+        ===
+        LEVELS
+        ===
+
+        PP..
+
+        `) // end game
+
+        const player = data.getPlayer()
+        const playerSprite = data._getSpriteByName('player')
+        debugger
+        engine.pressRight()
+        engine.tick()
+
+        expect(engine.currentLevel[0][0].getSpritesAsSet().has(playerSprite)).toBe(false)
+        expect(engine.currentLevel[0][1].getSpritesAsSet().has(playerSprite)).toBe(true)
+        expect(engine.currentLevel[0][2].getSpritesAsSet().has(playerSprite)).toBe(true)
+        expect(engine.currentLevel[0][3].getSpritesAsSet().has(playerSprite)).toBe(false)
+
+        engine.pressRight()
+        engine.tick()
+
+        expect(engine.currentLevel[0][0].getSpritesAsSet().has(playerSprite)).toBe(false)
+        expect(engine.currentLevel[0][1].getSpritesAsSet().has(playerSprite)).toBe(false)
+        expect(engine.currentLevel[0][2].getSpritesAsSet().has(playerSprite)).toBe(true)
+        expect(engine.currentLevel[0][3].getSpritesAsSet().has(playerSprite)).toBe(true)
+    })
+
 })

@@ -359,6 +359,9 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
             let direction: RULE_DIRECTION_ABSOLUTE = null
             if (tileWithModifier.isRandom()) {
                 direction = RULE_DIRECTION_ABSOLUTE.STATIONARY
+            } else if (tileWithModifier._direction === RULE_DIRECTION_ABSOLUTE.MOVING) {
+                // skip, since it must have been MOVING in the condition
+                continue
             } else {
                 direction = tileWithModifier._direction || RULE_DIRECTION_ABSOLUTE.STATIONARY // try not to send nulls
             }

@@ -234,52 +234,67 @@ export default class Engine extends EventEmitter2 {
         let movedCells: Set<Cell> = new Set()
         const changedCells = new Set([...changedCellMutations.keys()])
         // Loop over all the cells, see if a Rule matches, apply the transition, and notify that cells changed
-        for (const cell of changedCells) {
-            for (let [sprite, wantsToMove] of cell.getSpriteAndWantsToMoves()) {
+        let somethingChanged
+        do {
+            somethingChanged = false
+            for (const cell of changedCells) {
+                for (let [sprite, wantsToMove] of cell.getSpriteAndWantsToMoves()) {
 
-                if (wantsToMove !== RULE_DIRECTION_ABSOLUTE.STATIONARY) {
-                    if (wantsToMove === RULE_DIRECTION.ACTION) {
-                        // just clear the wantsToMove flag
-                        cell.clearWantsToMove(sprite)
-                    } else if (wantsToMove === RULE_DIRECTION.STATIONARY) {
-                        cell.clearWantsToMove(sprite)
-                    } else {
-                        if (wantsToMove === RULE_DIRECTION.RANDOMDIR) {
-                            const rand = nextRandom(4)
-                            switch (rand) {
-                                case 0:
-                                    wantsToMove = RULE_DIRECTION.UP
-                                    break
-                                case 1:
-                                    wantsToMove = RULE_DIRECTION.DOWN
-                                    break
-                                case 2:
-                                    wantsToMove = RULE_DIRECTION.LEFT
-                                    break
-                                case 3:
-                                    wantsToMove = RULE_DIRECTION.RIGHT
-                                    break
-                                default:
-                                    throw new Error(`BUG: Random number generator yielded something other than 0-3. "${rand}"`)
-                            }
-                        }
-                        if (wantsToMove === RULE_DIRECTION.RANDOM) {
-                            throw new Error('BUG: should have converted RANDOM to something else earlier')
-                        }
-                        const neighbor = cell.getNeighbor(wantsToMove)
-                        // Make sure
-                        if (neighbor && !neighbor.hasCollisionWithSprite(sprite)) {
-                            cell.removeSprite(sprite)
-                            neighbor.addSprite(sprite, RULE_DIRECTION_ABSOLUTE.STATIONARY)
-                            movedCells.add(neighbor)
-                            movedCells.add(cell)
-                        } else {
-                            // Clear the wantsToMove flag if we hit a wall (a sprite in the same collisionLayer) or are at the end of the map
+                    if (wantsToMove !== RULE_DIRECTION_ABSOLUTE.STATIONARY) {
+                        if (wantsToMove === RULE_DIRECTION.ACTION) {
+                            // just clear the wantsToMove flag
+                            somethingChanged = true
                             cell.clearWantsToMove(sprite)
-                            // movedCells.add(cell)
+                        } else if (wantsToMove === RULE_DIRECTION.STATIONARY) {
+                            somethingChanged = true
+                            cell.clearWantsToMove(sprite)
+                        } else {
+                            if (wantsToMove === RULE_DIRECTION.RANDOMDIR) {
+                                const rand = nextRandom(4)
+                                switch (rand) {
+                                    case 0:
+                                        wantsToMove = RULE_DIRECTION.UP
+                                        break
+                                    case 1:
+                                        wantsToMove = RULE_DIRECTION.DOWN
+                                        break
+                                    case 2:
+                                        wantsToMove = RULE_DIRECTION.LEFT
+                                        break
+                                    case 3:
+                                        wantsToMove = RULE_DIRECTION.RIGHT
+                                        break
+                                    default:
+                                        throw new Error(`BUG: Random number generator yielded something other than 0-3. "${rand}"`)
+                                }
+                            }
+                            if (wantsToMove === RULE_DIRECTION.RANDOM) {
+                                throw new Error('BUG: should have converted RANDOM to something else earlier')
+                            }
+                            const neighbor = cell.getNeighbor(wantsToMove)
+                            // Make sure
+                            if (neighbor && !neighbor.hasCollisionWithSprite(sprite)) {
+                                cell.removeSprite(sprite)
+                                neighbor.addSprite(sprite, RULE_DIRECTION_ABSOLUTE.STATIONARY)
+                                movedCells.add(neighbor)
+                                movedCells.add(cell)
+                                somethingChanged = true
+                                changedCells.delete(cell)
+                            } else {
+                                // Clear the wantsToMove flag LATER if we hit a wall (a sprite in the same collisionLayer) or are at the end of the map
+                                // We do this later because we are looping as long as something changed
+                                // cell.clearWantsToMove(sprite)
+                            }
                         }
                     }
                 }
+            }
+        } while (somethingChanged)
+
+        // Clear the wantsToMove from all remaining cells
+        for (const cell of changedCells) {
+            for (const [sprite, wantsToMove] of cell.getSpriteAndWantsToMoves()) {
+                cell.clearWantsToMove(sprite)
             }
         }
         return movedCells
