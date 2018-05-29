@@ -1,265 +1,679 @@
-title Separation
-author Marcos Donnantuoni
-homepage https://marcosd.itch.io
+title Beam Islands
+author mjau
+homepage http://twitter.com/kamjau
+run_rules_on_level_start
+realtime_interval 0.3
+text_color #f197e9
+(debug)
 
-key_repeat_interval 0.17
-noaction
+( for ludum dare 29 )
+
+=========
+ OBJECTS
+=========
+
+(
+	#000000 Black
+	#df2619 Inactive border
+	#078ffd Active border
+	#a27d5b Bridge
+	#6719ac Dark water
+	#a13cb7 Light water
+	#f197e9 Beam water
+	#606060 Beam under
+	#f7e26b Player
+	#ffffff White
+)
+
+Animate
+Transparent
+
+BgNW1 .
+#6719ac #a13cb7
+00000
+00000
+00000
+00000
+00000
+
+BgNE1
+#6719ac #a13cb7
+00000
+00000
+00100
+00000
+00000
+
+BgSW1
+#6719ac #a13cb7
+00000
+00000
+00000
+01000
+00000
+
+BgSE1
+#6719ac #a13cb7
+00000
+00000
+00000
+00000
+00000
+
+BgNW2
+#6719ac #a13cb7
+00000
+00000
+00000
+00000
+00000
+
+BgNE2
+#6719ac #a13cb7
+00000
+00000
+00000
+00000
+00000
+
+BgSW2
+#6719ac #a13cb7
+00000
+00000
+00000
+01100
+00000
+
+BgSE2
+#6719ac #a13cb7
+00000
+00000
+00000
+00000
+00000
+
+BgNW3
+#6719ac #a13cb7
+00000
+00000
+00000
+00000
+00000
+
+BgNE3
+#6719ac #a13cb7
+00000
+00000
+01000
+00000
+00000
+
+BgSW3
+#6719ac #a13cb7
+00000
+00000
+00000
+00100
+00000
+
+BgSE3
+#6719ac #a13cb7
+00000
+00000
+00000
+00000
+00000
+
+BgNW4
+#6719ac #a13cb7
+00000
+00000
+00000
+00000
+00000
+
+BgNE4
+#6719ac #a13cb7
+00000
+00000
+01100
+00000
+00000
+
+BgSW4
+#6719ac #a13cb7
+00000
+00000
+00000
+00000
+00000
+
+BgSE4
+#6719ac #a13cb7
+00000
+00000
+00000
+00000
+00000
+
+PlayerTop
+#f7e26b
+.....
+.....
+.....
+.0.0.
+.000.
+
+Player
+#f7e26b #000000
+01010
+.000.
+.0.0.
+.....
+.....
+
+Island #
+#000000
+
+FromBlockIsland
+Transparent
+
+IslandEdgeDetect
+Transparent
+
+IslandInterior
+Transparent
+
+IslandSide
+#000000
+00000
+.....
+.....
+.....
+.....
+
+BeamTop1
+#ffffff #f197e9 #a13cb7
+..2..
+..1..
+..0..
+..1..
+..0..
+
+BeamTop2
+#ffffff #f197e9 #a13cb7
+.....
+..2..
+..1..
+..0..
+..0..
+
+Beam o
+#ffffff #f197e9 #a13cb7
+.101.
+.000.
+.000.
+.000.
+.212.
+
+BeamReflect
+#a13cb7
+..0..
+.....
+.....
+.....
+.....
+
+Bridge -
+#000000 #a27d5b
+.....
+.111.
+.101.
+.111.
+.000.
+
+BeamUnder
+#606060
+.....
+..0..
+.000.
+.000.
+.....
+
+PlayerIsland
+Transparent #078ffd
+.....
+.....
+..0..
+.....
+.....
+
+BlockIsland
+Transparent #df2619
+.....
+.....
+..0..
+.....
+.....
+
+IslandEdgeN
+Transparent #df2619
+11111
+.....
+.....
+.....
+.....
+
+PlayerIslandEdgeN
+Transparent #078ffd
+11111
+.....
+.....
+.....
+.....
+
+IslandEdgeS
+Transparent #df2619
+.....
+.....
+.....
+.....
+11111
+
+PlayerIslandEdgeS
+Transparent #078ffd
+.....
+.....
+.....
+.....
+11111
+
+IslandEdgeE
+Transparent #df2619
+....1
+....1
+....1
+....1
+....1
+
+PlayerIslandEdgeE
+Transparent #078ffd
+....1
+....1
+....1
+....1
+....1
+
+IslandEdgeW
+Transparent #df2619
+1....
+1....
+1....
+1....
+1....
+
+PlayerIslandEdgeW
+Transparent #078ffd
+1....
+1....
+1....
+1....
+1....
+
+
+IslandInnerEdgeNW
+Transparent #df2619
+1....
+.....
+.....
+.....
+.....
+
+PlayerIslandInnerEdgeNW
+Transparent #078ffd
+1....
+.....
+.....
+.....
+.....
+
+IslandInnerEdgeNE
+Transparent #df2619
+....1
+.....
+.....
+.....
+.....
+
+PlayerIslandInnerEdgeNE
+Transparent #078ffd
+....1
+.....
+.....
+.....
+.....
+
+IslandInnerEdgeSW
+Transparent #df2619
+.....
+.....
+.....
+.....
+1....
+
+PlayerIslandInnerEdgeSW
+Transparent #078ffd
+.....
+.....
+.....
+.....
+1....
+
+IslandInnerEdgeSE
+Transparent #df2619
+.....
+.....
+.....
+.....
+....1
+
+PlayerIslandInnerEdgeSE
+Transparent #078ffd
+.....
+.....
+.....
+.....
+....1
 
 ========
-OBJECTS
+ LEGEND
 ========
 
-background
-lightgrey
+@ = Player and Island
 
-wall
-#888888 #777777 #666666 #555555
-11112
-12223
-12223
-12223
-23333
+Background = BgNW1 or BgNE1 or BgSW1 or BgSE1 or BgNW2 or BgNE2 or BgSW2 or BgSE2 or BgNW3 or BgNE3 or BgSW3 or BgSE3 or BgNW4 or BgNE4 or BgSW4 or BgSE4
 
-dice1
-#dd4444 #cc0000 #ff0000 #990000 black
-00001
-02223
-02423
-02223
-13333
+IslandEdgeV = IslandEdgeN or IslandEdgeS
+IslandEdgeH = IslandEdgeE or IslandEdgeW
+IslandInnerEdge = IslandInnerEdgeNW or IslandInnerEdgeNE or IslandInnerEdgeSW or IslandInnerEdgeSE
+IslandEdge = IslandEdgeH or IslandEdgeV or IslandInnerEdge or IslandEdgeDetect or IslandInterior
+Movable = Player or Island or IslandEdge or PlayerIsland
+MoveBlock = Island or Bridge
+Walkable = Island or Bridge
+BeamTop = BeamTop1 or BeamTop2
 
-dice2
-#00dd00 #00cc00 black #00aa00 #006000
-00001
-03324
-03334
-02334
-14444
+IslandEdgeDetectN = IslandEdgeN or IslandEdgeDetect
+IslandEdgeDetectS = IslandEdgeS or IslandEdgeDetect
+IslandEdgeDetectE = IslandEdgeE or IslandEdgeDetect
+IslandEdgeDetectW = IslandEdgeW or IslandEdgeDetect
 
-dice3
-#4444ff #0000ee black #0000ff #0000aa
-00001
-03324
-03234
-02334
-14444
+Cleanup = IslandInnerEdge or BeamTop or BeamUnder or IslandSide or PlayerTop or BeamReflect
 
-dice4
-#ffff00 #ffbb00 black #ffd240 #ff9600
-00001
-02324
-03334
-02324
-14444
+Frame2 = BgNW2 or BgNW4
 
-happy
-transparent
+========
+ SOUNDS
+========
 
-=======
-LEGEND
-=======
+SFX0 57465701 ( beam )
+SFX1 45881509 ( merge )
+SFX2 70148904 ( can't move )
+SFX3 3171908  ( move )
+EndLevel 94824903
 
-. = Background
-# = wall
-1 = dice1
-2 = dice2
-3 = dice3
-4 = dice4
-player = dice1 or dice2 or dice3 or dice4
+=================
+ COLLISIONLAYERS
+=================
+
+Background
+Animate
+IslandSide, BeamReflect
+Beam
+Island, Bridge
+IslandEdgeN, PlayerIslandEdgeN
+IslandEdgeS, PlayerIslandEdgeS
+IslandEdgeE, PlayerIslandEdgeE
+IslandEdgeW, PlayerIslandEdgeW
+IslandInnerEdgeNW, PlayerIslandInnerEdgeNW
+IslandInnerEdgeNE, PlayerIslandInnerEdgeNE
+IslandInnerEdgeSW, PlayerIslandInnerEdgeSW
+IslandInnerEdgeSE, PlayerIslandInnerEdgeSE
+IslandInterior, IslandEdgeDetect
+BeamUnder
+Player
+PlayerIsland, BlockIsland, FromBlockIsland
+BeamTop
+PlayerTop
 
 =======
-SOUNDS
+ RULES
 =======
 
-player move 34146307
-player cantmove 34146307
-endlevel 30742508
-startgame 92244503
+[ no Background ] -> [ BgNW1 ]
+down  [ BgNW1 | BgNW1 ] -> [ BgNW1 | BgSW1 ]
+right [ BgNW1 | BgNW1 ] -> [ BgNW1 | BgNE1 ]
+right [ BgSW1 | BgSW1 ] -> [ BgSW1 | BgSE1 ]
 
-================
-COLLISIONLAYERS
-================
+[ stationary Player ][ Background ] -> [ Player ][ Background Animate ]
+[ BgNW1 Animate ] -> [ BgNW2 ]
+[ BgNE1 Animate ] -> [ BgNE2 ]
+[ BgSW1 Animate ] -> [ BgSW2 ]
+[ BgSE1 Animate ] -> [ BgSE2 ]
+[ BgNW2 Animate ] -> [ BgNW3 ]
+[ BgNE2 Animate ] -> [ BgNE3 ]
+[ BgSW2 Animate ] -> [ BgSW3 ]
+[ BgSE2 Animate ] -> [ BgSE3 ]
+[ BgNW3 Animate ] -> [ BgNW4 ]
+[ BgNE3 Animate ] -> [ BgNE4 ]
+[ BgSW3 Animate ] -> [ BgSW4 ]
+[ BgSE3 Animate ] -> [ BgSE4 ]
+[ BgNW4 Animate ] -> [ BgNW1 ]
+[ BgNE4 Animate ] -> [ BgNE1 ]
+[ BgSW4 Animate ] -> [ BgSW1 ]
+[ BgSE4 Animate ] -> [ BgSE1 ]
 
-background
-wall, dice1, dice2, dice3, dice4
-happy
+[ Cleanup ] -> []
 
-======
-RULES
-======
+( reset player island edges )
+[ PlayerIslandEdgeN ] -> [ IslandEdgeN ]
+[ PlayerIslandEdgeS ] -> [ IslandEdgeS ]
+[ PlayerIslandEdgeE ] -> [ IslandEdgeE ]
+[ PlayerIslandEdgeW ] -> [ IslandEdgeW ]
+[ PlayerIslandInnerEdgeNE ] -> [ IslandInnerEdgeNE ]
+[ PlayerIslandInnerEdgeNW ] -> [ IslandInnerEdgeNW ]
+[ PlayerIslandInnerEdgeSE ] -> [ IslandInnerEdgeSE ]
+[ PlayerIslandInnerEdgeSW ] -> [ IslandInnerEdgeSW ]
 
-[ happy ] -> [ ]
+( merge )
+[ action Player ][ IslandEdge ] -> [ action Player ][]
+[ action Player ] -> [ Player ] SFX1
 
-late [ dice1 | dice1 ] -> [ dice1 happy | dice1 happy ]
-late [ dice2 | dice2 ] -> [ dice2 happy | dice2 happy ]
-late [ dice3 | dice3 ] -> [ dice3 happy | dice3 happy ]
-late [ dice4 | dice4 ] -> [ dice4 happy | dice4 happy ]
+( simple movement )
+[ > Player | Walkable ] -> [ | Player Walkable ]
+[ > Player Bridge | no Walkable ] -> [ Player Bridge | ]
 
-==============
-WINCONDITIONS
-==============
+( swap island types if player changed islands )
+[ Player Bridge ][ PlayerIsland ] -> [ Player Bridge ][ BlockIsland ]
+[ Player BlockIsland ] -> [ Player FromBlockIsland ]
+[ Player FromBlockIsland ][ BlockIsland ] -> [ Player FromBlockIsland ][ FromBlockIsland ]
+[ Player FromBlockIsland ][ PlayerIsland ] -> [ Player FromBlockIsland ][ BlockIsland ]
+[ FromBlockIsland ] -> []
 
-no player on happy
+( beam holes in unoccupied islands )
+[ Beam Island BlockIsland IslandEdge ] -> [ Beam Island BlockIsland ]
+[ Beam Island BlockIsland ] -> [ up Beam ] SFX0
+up    [ up Beam | BlockIsland ] -> [ up Beam | BlockIsland IslandEdgeS ]
+down  [ up Beam | BlockIsland ] -> [ up Beam | BlockIsland IslandEdgeN ]
+right [ up Beam | BlockIsland ] -> [ up Beam | BlockIsland IslandEdgeW ]
+left  [ up Beam | BlockIsland ] -> [ up Beam | BlockIsland IslandEdgeE ]
+[ up Beam ] -> [ Beam ]
 
-=======
-LEVELS
-=======
+( edge detection )
+[ Island no IslandEdge ] -> [ Island IslandEdgeN IslandEdgeS IslandEdgeE IslandEdgeW IslandEdgeDetect ]
+up    [ IslandEdgeDetect IslandEdgeN | IslandEdgeDetect ] -> [ IslandEdgeDetect | IslandEdgeDetect ]
+down  [ IslandEdgeDetect IslandEdgeS | IslandEdgeDetect ] -> [ IslandEdgeDetect | IslandEdgeDetect ]
+right [ IslandEdgeDetect IslandEdgeE | IslandEdgeDetect ] -> [ IslandEdgeDetect | IslandEdgeDetect ]
+left  [ IslandEdgeDetect IslandEdgeW | IslandEdgeDetect ] -> [ IslandEdgeDetect | IslandEdgeDetect ]
+[ IslandEdgeDetect ] -> [ IslandInterior ]
 
-message Groups of the same color must be separated
+right [ IslandEdgeN no IslandEdgeE | no IslandEdgeN ] -> [ IslandEdgeN | IslandInnerEdgeNW ]
+left  [ IslandEdgeN no IslandEdgeW | no IslandEdgeN ] -> [ IslandEdgeN | IslandInnerEdgeNE ]
+right [ IslandEdgeS no IslandEdgeE | no IslandEdgeS ] -> [ IslandEdgeS | IslandInnerEdgeSW ]
+left  [ IslandEdgeS no IslandEdgeW | no IslandEdgeS ] -> [ IslandEdgeS | IslandInnerEdgeSE ]
 
-#######
-#.....#
-#.1...#
-#.1.#.#
-#.....#
-#.....#
-#######
+( player island )
+[ Player Island ] -> [ Player Island PlayerIsland ]
+  up    [ PlayerIsland no IslandEdgeN | Island ] -> [ PlayerIsland | Island PlayerIsland ]
++ down  [ PlayerIsland no IslandEdgeS | Island ] -> [ PlayerIsland | Island PlayerIsland ]
++ right [ PlayerIsland no IslandEdgeE | Island ] -> [ PlayerIsland | Island PlayerIsland ]
++ left  [ PlayerIsland no IslandEdgeW | Island ] -> [ PlayerIsland | Island PlayerIsland ]
+[ Island no PlayerIsland ] -> [ Island BlockIsland ]
 
-message Level 1 of 12
-( size [6, 4] obj 4 kol 20
-segs 4 steps 10 frond 51 )
-( rrdll lluuu )
-########
-##....##
-#..11..#
-#..11..#
-#..##..#
-########
+( rigid movement )
+[ > Player ][ PlayerIsland ] -> [ > Player ][ > PlayerIsland ]
+[ > PlayerIsland Island | no MoveBlock ] -> [ > PlayerIsland > Island | ]
+[ < Island | Island no BlockIsland ] -> [ < Island | < Island ]
+[ stationary Island PlayerIsland ][ moving Player ] -> [ Island PlayerIsland ][ stationary Player ] SFX2
+[ stationary Island PlayerIsland ][ moving Movable ] -> [ Island stationary PlayerIsland ][ stationary Movable ]
 
-message Level 2 of 12
-( size [6, 6] obj 4 kol 25
-segs 6 steps 12 frond 150 )
-( rrull drrdd dd )
-########
-#..22..#
-#......#
-#......#
-#......#
-#......#
-#.#22#.#
-########
+[ > PlayerIsland IslandEdge ] -> [ > PlayerIsland > IslandEdge ]
 
-message Level 3 of 12
-( size [6, 6] obj 4 kol 25
-segs 9 steps 11 frond 89 )
-( rdrul luldd l )
-########
-#......#
-#......#
-##.33.##
-##.33.##
-#......#
-#......#
-########
+( highlight player island edges )
+[ PlayerIsland IslandEdgeN ] -> [ PlayerIsland PlayerIslandEdgeN ]
+[ PlayerIsland IslandEdgeS ] -> [ PlayerIsland PlayerIslandEdgeS ]
+[ PlayerIsland IslandEdgeE ] -> [ PlayerIsland PlayerIslandEdgeE ]
+[ PlayerIsland IslandEdgeW ] -> [ PlayerIsland PlayerIslandEdgeW ]
+[ PlayerIsland IslandInnerEdgeNE ] -> [ PlayerIsland PlayerIslandInnerEdgeNE ]
+[ PlayerIsland IslandInnerEdgeNW ] -> [ PlayerIsland PlayerIslandInnerEdgeNW ]
+[ PlayerIsland IslandInnerEdgeSE ] -> [ PlayerIsland PlayerIslandInnerEdgeSE ]
+[ PlayerIsland IslandInnerEdgeSW ] -> [ PlayerIsland PlayerIslandInnerEdgeSW ]
 
-message Level 4 of 12
-( size [5, 5] obj 3 kol 23
-segs 10 steps 10 frond 9 )
-( rurlu rldlu )
-#######
-##...##
-#..4..#
-#..4..#
-#..4..#
-#.....#
-#######
+( fx )
+[ > Island | no Island ] -> [ | Island ] SFX3
+up [ Beam no Island | ] -> [ Beam | BeamTop1 ]
+down [ Beam | ] -> [ Beam | BeamReflect ]
+[ Beam Island ] -> [ Beam Island BeamUnder ]
+down [ Island | ] -> [ Island | IslandSide ]
+[ > Player | Walkable ] -> [ | Player Walkable ]
+up [ Player | ] -> [ Player | PlayerTop ]
+[ BeamTop1 ][ Frame2 ] -> [ BeamTop2 ][ Frame2 ]
 
-message Level 5 of 12
-( size [6, 6] obj 4 kol 32
-segs 13 steps 15 frond 56 )
-( rdrul drddr lluld )
-########
-##....##
-##....##
-##.11.##
-##.11.##
-#......#
-##....##
-########
+===============
+ WINCONDITIONS
+===============
 
-message Level 6 of 12
-( size [6, 6] obj 4 kol 34
-segs 15 steps 20 frond 42 )
-( rrddu rddlu urlur lldlu )
-########
-##....##
-#......#
-#..22..#
-#..22..#
-#......#
-##....##
-########
+all Beam on BeamUnder
 
-message Level 7 of 12
-( size [6, 6] obj 6 kol 37
-segs 18 steps 21 frond 1817 )
-( urdru llurr urdld rllul d )
-########
-#......#
-#..33..#
-##....##
-##....##
-#3.33.3#
-#......#
-########
+========
+ LEVELS
+========
 
-message Level 8 of 12
-( size [6, 6] obj 6 kol 43
-segs 24 steps 34 frond 911 )
-( rlurd lllur rdluu rrdlu urdlu rdddl uuur )
-########
-##.##.##
-#.4..4.#
-#......#
-#......#
-#.4..4.#
-##4..4##
-########
+message cover all beams
 
-message Level 9 of 12
-( size [5, 5] obj 7 kol 42
-segs 25 steps 29 frond 631 )
-( rrlur drull lrurd lurdd rldur ldlu )
-#######
-##.1.##
-#.1.1.#
-#.121.#
-#.....#
-#..1..#
-#######
+(ok)
+...........
+...........
+...........
+......o....
+...##..o...
+...@#......
+...........
+...........
 
-message Level 10 of 12
-( size [5, 4] obj 8 kol 39
-segs 28 steps 29 frond 13 )
-( ruuld lulur druru ldrur uldlu lurd )
-#####
-#2.2#
-#2#2#
-#3.3#
-#2#2#
-#####
+message unattended beams are dangerous
 
-message Level 11 of 12
-( size [6, 6] obj 8 kol 47
-segs 31 steps 37 frond 1159 )
-( drdru ldruu rlurd ddduu lurdd ruldr duldr ul )
-########
-##.33.##
-##....##
-#.3..3.#
-#.3..3.#
-##....##
-###44###
-########
+(ok)
+..............
+.......###....
+......#####...
+......#..##...
+.........##...
+...#####.##...
+..-#@#o#.##...
+...#####.##...
+.........##...
+.......###o...
+..............
+..............
+.........o....
+..............
 
-message Level 12 of 12
-( size [5, 5] obj 8 kol 41
-segs 46 steps 46 frond 9 )
-( rulul dldru ldldr uldld rurdr dlurd rdlur drdlu ldldr u )
-#####
-##.##
-#4#4#
-#4.4#
-#4#4#
-#1.1#
-#####
+message merge adjacent platforms with X
+
+(ok)
+.............
+.............
+......o......
+...o...#.o...
+.......#.....
+...#..@#.....
+...##..#..#..
+.......-###..
+.............
+.............
+
+message good luck!
+
+(ok)
+...........
+...........
+.....-.....
+....###....
+...o.@.o...
+....###....
+.....-.....
+...........
+...........
+
+(ok)
+...............
+...............
+.......-.......
+..o............
+......###......
+....-.#o#.-....
+......##@......
+...........##..
+.......-.......
+...............
+...............
+
+(ok)
+..................
+..............###.
+....o...........#.
+.-..........##..#.
+............##..#.
+........#@......#.
+......#######.....
+.....-..#....-....
+...o..............
+.....-............
+..................
+
+(ok)
+...-.....-...
+.....o.o.....
+....-.-.-....
+.............
+.............
+........###..
+..###.o..##..
+..#@#........
+..###........
+.............
+
+(ok)
+............
+.....#......
+...o###.o...
+...#-#.-.#..
+..###.#.###.
+...#.#@#.#..
+....-.#-....
+...o.#..o...
+....###.....
+.....#......
+............
+
+message congratulations! you win!

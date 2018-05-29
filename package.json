@@ -1,8 +1,9 @@
 {
   "scripts": {
     "lint": "standard --fix preprocessor.js ./test/**/*.js",
-    "tsc": "tsc --watch",
     "prestart": "rm -rf ./lib/; rm ./coverage/coverage-gist*.json; rm -rf ./coverage/lcov-report/; tsc",
+    "tsc": "tsc",
+    "play": "tsc && node lib/playGame.js",
     "start": "node -r source-map-support/register ./lib/runGame.js",
     "start-coverage": "tsc && istanbul cover -x '**/node_modules/**' ./lib/runGame.js",
     "start-debug": "tsc && node --inspect-brk lib/runGame.js",
