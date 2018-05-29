@@ -116,15 +116,24 @@ export class Cell {
             this.removeSprite(sprite)
         }
     }
+    setWantsToMove(tile: IGameTile, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
+        for (const sprite of tile.getSprites()) {
+            if (this._spriteAndWantsToMoves.has(sprite)) {
+                this.addSprite(sprite, wantsToMove)
+            }
+        }
+    }
 }
 
 export default class Engine extends EventEmitter2 {
     gameData: GameData
     currentLevel: Cell[][]
+    _pendingCellMutations: Set<Cell> // Might be better to just create SimpleRules that are executed at the beginning
 
     constructor(gameData: GameData) {
         super()
         this.gameData = gameData
+        this._pendingCellMutations = new Set()
     }
 
     setLevel(levelNum: number) {
@@ -278,17 +287,40 @@ export default class Engine extends EventEmitter2 {
 
     tick() {
         const changedCellMutations = this.tickUpdateCells()
+        for (const cell of this._pendingCellMutations) {
+            if (!changedCellMutations.has(cell)) {
+                changedCellMutations.set(cell, true)
+            }
+        }
+        this._pendingCellMutations.clear()
         const movedCells = this.tickMoveSprites(changedCellMutations)
         const changedCellsLate = this.tickUpdateCellsLate()
         const changedCells = new Set([...changedCellMutations.entries(), ...changedCellsLate.entries()].filter(([_cell, didSpritesChange]) => didSpritesChange).map(([cell]) => cell))
         return setAddAll(changedCells, movedCells)
     }
 
-    pressUp() { }
-    pressDown() { }
-    pressLeft() { }
-    pressRight() { }
-    pressAction() { }
+    press(direction: RULE_DIRECTION_ABSOLUTE) {
+        const t = this.gameData.getPlayer()
+        for (const cell of t.getCellsThatMatch()) {
+            cell.setWantsToMove(t, direction)
+            this._pendingCellMutations.add(cell)
+        }
+    }
+    pressUp() {
+        this.press(RULE_DIRECTION_ABSOLUTE.UP)
+    }
+    pressDown() {
+        this.press(RULE_DIRECTION_ABSOLUTE.DOWN)
+    }
+    pressLeft() {
+        this.press(RULE_DIRECTION_ABSOLUTE.LEFT)
+    }
+    pressRight() {
+        this.press(RULE_DIRECTION_ABSOLUTE.RIGHT)
+    }
+    pressAction() {
+        this.press(RULE_DIRECTION_ABSOLUTE.ACTION)
+    }
     pressUndo() { }
     pressRestart() { }
 }

@@ -7,9 +7,10 @@ import Parser from './parser/parser'
 import { IGameNode } from './models/game'
 import UI from './ui'
 import Engine from './engine'
-import { setAddAll } from './util';
+import { setAddAll, RULE_DIRECTION_ABSOLUTE } from './util';
 import { start } from 'repl';
 import { IRule } from './models/rule';
+import { RULE_DIRECTION } from './enums';
 
 async function sleep(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms))
@@ -114,8 +115,18 @@ async function run() {
                 global['cells_updated_count'] = 0
                 global['rules_updated_count'] = 0
 
+                const keypresses = [
+                    RULE_DIRECTION_ABSOLUTE.UP, RULE_DIRECTION_ABSOLUTE.DOWN, RULE_DIRECTION_ABSOLUTE.DOWN, RULE_DIRECTION_ABSOLUTE.UP,
+                    RULE_DIRECTION_ABSOLUTE.LEFT, RULE_DIRECTION_ABSOLUTE.RIGHT, RULE_DIRECTION_ABSOLUTE.RIGHT, RULE_DIRECTION_ABSOLUTE.LEFT,
+                    RULE_DIRECTION_ABSOLUTE.ACTION,
+                    RULE_DIRECTION_ABSOLUTE.DOWN, RULE_DIRECTION_ABSOLUTE.UP, RULE_DIRECTION_ABSOLUTE.UP, RULE_DIRECTION_ABSOLUTE.DOWN,
+                    RULE_DIRECTION_ABSOLUTE.RIGHT, RULE_DIRECTION_ABSOLUTE.LEFT, RULE_DIRECTION_ABSOLUTE.LEFT, RULE_DIRECTION_ABSOLUTE.RIGHT,
+                    RULE_DIRECTION_ABSOLUTE.ACTION
+                ]
+
                 let maxTickAndRenderTime = -1
-                for (var i = 0; i < 10; i++) {
+                for (var i = 0; i < keypresses.length; i++) {
+                    engine.press(keypresses[i])
                     startTime = Date.now()
                     const changedCells = engine.tick()
 
@@ -132,7 +143,7 @@ async function run() {
                     const msg = `Tick ${i} of "${data.title}" (took ${Date.now() - startTime}ms) Changed: ${[...changedCells].map(cell => cell.rowIndex + ':' + cell.colIndex).join(', ') + '   '}`
                     UI.writeDebug(msg.substring(0, 160))
 
-                    await sleep(500)
+                    await sleep(Math.max(500 - (Date.now() - startTime), 0))
 
                     if (changedCells.size === 0) {
                         break

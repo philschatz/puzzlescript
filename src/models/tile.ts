@@ -17,6 +17,7 @@ export interface IGameTile extends IGameNode {
     getCollisionLayerNum: () => number
     matchesCell: (cell: Cell) => boolean
     isOr: () => boolean
+    getCellsThatMatch: () => Set<Cell>
 }
 
 export class GameSprite extends BaseForLines implements IGameTile {
@@ -263,6 +264,15 @@ export class GameLegendTile extends BaseForLines implements IGameTile {
         return this._collisionLayer.id
     }
 
+    getCellsThatMatch() {
+        const matches = new Set()
+        for (const sprite of this.getSprites()) {
+            for (const cell of sprite.getCellsThatMatch()) {
+                matches.add(cell)
+            }
+        }
+        return matches
+    }
 }
 
 export class GameLegendTileSimple extends GameLegendTile {

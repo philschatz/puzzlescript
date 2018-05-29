@@ -12803,7 +12803,7 @@ GameData {
           "_tileWithModifierSet": Set {
             SimpleTileWithModifier {
               "__coverageCount": 0,
-              "_direction": null,
+              "_direction": "MOVING",
               "_isNegated": false,
               "_isRandom": false,
               "_neighbors": Set {
@@ -12874,7 +12874,7 @@ GameData {
           "_tileWithModifierSet": Set {
             SimpleTileWithModifier {
               "__coverageCount": 0,
-              "_direction": null,
+              "_direction": "MOVING",
               "_isNegated": false,
               "_isRandom": false,
               "_neighbors": Set {
@@ -12949,7 +12949,7 @@ GameData {
       "_tileWithModifierSet": Set {
         SimpleTileWithModifier {
           "__coverageCount": 0,
-          "_direction": null,
+          "_direction": "MOVING",
           "_isNegated": false,
           "_isRandom": false,
           "_neighbors": Set {
@@ -13086,7 +13086,7 @@ GameData {
                   "_tilesWithModifier": Set {
                     SimpleTileWithModifier {
                       "__coverageCount": 0,
-                      "_direction": null,
+                      "_direction": "MOVING",
                       "_isNegated": false,
                       "_isRandom": false,
                       "_neighbors": Set {
@@ -13201,7 +13201,7 @@ GameData {
                   "_tilesWithModifier": Set {
                     SimpleTileWithModifier {
                       "__coverageCount": 0,
-                      "_direction": null,
+                      "_direction": "MOVING",
                       "_isNegated": false,
                       "_isRandom": false,
                       "_neighbors": Set {
@@ -13316,7 +13316,7 @@ GameData {
                   "_tilesWithModifier": Set {
                     SimpleTileWithModifier {
                       "__coverageCount": 0,
-                      "_direction": null,
+                      "_direction": "MOVING",
                       "_isNegated": false,
                       "_isRandom": false,
                       "_neighbors": Set {
@@ -13431,7 +13431,7 @@ GameData {
                   "_tilesWithModifier": Set {
                     SimpleTileWithModifier {
                       "__coverageCount": 0,
-                      "_direction": null,
+                      "_direction": "MOVING",
                       "_isNegated": false,
                       "_isRandom": false,
                       "_neighbors": Set {

@@ -561,7 +561,7 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
 
     matchesCell(cell: Cell, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
         const hasTile = this._tile && this._tile.matchesCell(cell)
-        return this._isNegated != (hasTile && (this._direction === wantsToMove || this._direction === null))
+        return this._isNegated != (hasTile && (this._direction === wantsToMove || this._direction === null || this._direction === RULE_DIRECTION_ABSOLUTE.MOVING && RULE_DIRECTION_ABSOLUTE_SET.has(wantsToMove)))
     }
 
     matchesFirstCell(cells: Iterable<Cell>, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
@@ -978,6 +978,9 @@ export class TileWithModifier extends BaseForLines implements ICacheable {
                 break
             case 'RANDOMDIR':
                 direction = RULE_DIRECTION_ABSOLUTE.RANDOMDIR
+                break
+            case 'MOVING':
+                direction = RULE_DIRECTION_ABSOLUTE.MOVING
                 break
             default:
                 direction = null

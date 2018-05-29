@@ -1,6 +1,6 @@
 import * as _ from 'lodash'
 import { GameMetadata } from './metadata'
-import { GameSprite, GameLegendTileSimple } from './tile'
+import { GameSprite, GameLegendTileSimple, IGameTile } from './tile'
 import { GameRule, SimpleRule, IRule } from './rule'
 import { GameSound } from './sound'
 import { LevelMap } from './level'
@@ -156,6 +156,9 @@ export class GameData {
 
     getMagicBackgroundSprite() {
         return this._getSpriteByName('background')
+    }
+    getPlayer(): IGameTile {
+        return this._getSpriteByName('player') || this.legends.find(tile => tile._spriteNameOrLevelChar.toLocaleLowerCase() === 'player')
     }
 }
 
