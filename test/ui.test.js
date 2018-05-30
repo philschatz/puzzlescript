@@ -10,7 +10,8 @@ function parseAndReturnFirstSpritePixels(code) {
     const { data } = Parser.parse(code)
     const cell = data.levels[0].getRows()[0][0]
     // console.log(cell.getSprites())
-    return { pixels: UI.getPixelsForCell(data, cell), data }
+    UI.setGame(data)
+    return { pixels: UI.getPixelsForCell(cell), data }
 }
 
 describe('UI', () => {

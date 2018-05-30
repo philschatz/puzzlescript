@@ -65,7 +65,7 @@ async function run() {
                 const changedCells = engine.tick()
                 // Draw any cells that moved
                 for (const cell of changedCells) {
-                    UI.drawCell(data, cell, false)
+                    UI.drawCell(cell, false)
                 }
             }
 
@@ -101,7 +101,8 @@ async function run() {
             //   UI.drawCellAt(data, cell, cell.rowIndex, cell.colIndex, false)
             // })
 
-            UI.renderScreen(data, engine.currentLevel)
+            UI.setGame(data)
+            UI.renderScreen(engine.currentLevel)
             UI.writeDebug(`Game: "${data.title}"`)
 
             for (var i = 0; i < 10000; i++) {
@@ -111,7 +112,7 @@ async function run() {
 
                 // Draw any cells that moved
                 for (const cell of changedCells) {
-                    UI.drawCell(data, cell, false)
+                    UI.drawCell(cell, false)
                 }
 
                 const msg = `Tick ${i} took ${Date.now() - startTime}ms. Changed: ${[...changedCells].map(cell => cell.rowIndex + ':' + cell.colIndex).join(', ') + '   '}`

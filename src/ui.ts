@@ -109,6 +109,7 @@ function collapseSpritesToPixels(spritesToDraw: GameSprite[], backgroundColor: I
 }
 
 class UI {
+    _gameData: GameData
     _cellColorCache: CellColorCache
     _renderedPixels: string[][] // string is the hex code of the pixel
     _resizeHandler?: () => void
@@ -117,7 +118,12 @@ class UI {
         this._resizeHandler = null
         this._renderedPixels = []
     }
-    renderScreen(data: GameData, levelRows: Cell[][]) {
+    setGame(data: GameData) {
+        this._gameData = data
+        this._cellColorCache.clear()
+        this._renderedPixels = []
+    }
+    renderScreen(levelRows: Cell[][]) {
         if (!supportsColor.stdout) {
             console.log('Playing a game in the console requires color support. Unfortunately, color is not supported so not rendering (for now). We could just do an ASCII dump or something, using  ░▒▓█ to denote shades of cells')
             return
@@ -132,7 +138,7 @@ class UI {
             process.stdout.off('resize', this._resizeHandler)
         }
         this._resizeHandler = () => {
-            this.renderScreen(data, levelRows)
+            this.renderScreen(levelRows)
         }
         process.stdout.on('resize', this._resizeHandler)
 
@@ -143,16 +149,16 @@ class UI {
 
         levelRows.forEach((row, rowIndex) => {
             // Don't draw too much for this demo
-            if (data.metadata.flickscreen && rowIndex > data.metadata.flickscreen.height) {
+            if (this._gameData.metadata.flickscreen && rowIndex > this._gameData.metadata.flickscreen.height) {
                 return
             }
             row.forEach((cell, colIndex) => {
                 // Don't draw too much for this demo
-                if (data.metadata.flickscreen && colIndex > data.metadata.flickscreen.width) {
+                if (this._gameData.metadata.flickscreen && colIndex > this._gameData.metadata.flickscreen.width) {
                     return
                 }
 
-                this.drawCell(data, cell, false)
+                this.drawCell(cell, false)
             })
         })
         // Clear back to sane colors
@@ -161,7 +167,7 @@ class UI {
         // restoreCursor()
 
         // Just for debugging, print the game title (doing it here helps with Jest rendering correctly)
-        this.writeDebug(`"${data.title}"`)
+        this.writeDebug(`"${this._gameData.title}"`)
     }
 
     setPixel(x: number, y: number, hex: string) {
@@ -178,7 +184,7 @@ class UI {
         }
     }
 
-    drawCell(data: GameData, cell: Cell, dontRestoreCursor: boolean) {
+    drawCell(cell: Cell, dontRestoreCursor: boolean) {
         if (!supportsColor.stdout) {
             console.log(`Updating cell [${cell.rowIndex}][${cell.colIndex}] to have sprites: [${cell.getSprites().map(sprite => sprite._name)}]`)
             return
@@ -198,7 +204,7 @@ class UI {
 
         const spritesForDebugging = cell.getSprites()
         const { rowIndex, colIndex } = cell
-        const pixels: IColor[][] = this.getPixelsForCell(data, cell)
+        const pixels: IColor[][] = this.getPixelsForCell(cell)
 
         pixels.forEach((spriteRow, spriteRowIndex) => {
             spriteRow.forEach((spriteColor: IColor, spriteColIndex) => {
@@ -220,8 +226,8 @@ class UI {
                     if (!spriteColor.isTransparent()) {
                         color = spriteColor
                     }
-                    else if (data.metadata.background_color) {
-                        color = data.metadata.background_color
+                    else if (this._gameData.metadata.background_color) {
+                        color = this._gameData.metadata.background_color
                     }
                 }
 
@@ -258,16 +264,16 @@ class UI {
         }
     }
 
-    getPixelsForCell(data: GameData, cell: Cell) {
+    getPixelsForCell(cell: Cell) {
         const spritesToDraw = cell.getSprites() // Not sure why, but entanglement renders properly when reversed
 
         // If there is a magic background object then rely on it last
-        let magicBackgroundSprite = data.getMagicBackgroundSprite()
+        let magicBackgroundSprite = this._gameData.getMagicBackgroundSprite()
         if (magicBackgroundSprite) {
             spritesToDraw.push(magicBackgroundSprite)
         }
 
-        const pixels = this._cellColorCache.get(spritesToDraw, data.metadata.background_color)
+        const pixels = this._cellColorCache.get(spritesToDraw, this._gameData.metadata.background_color)
         return pixels
     }
 

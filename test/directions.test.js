@@ -346,7 +346,6 @@ LEVELS
 P.
 
 `)
-
         setRandomValuesForTesting([0, 1])
         const changedCells = engine.tick()
         console.log('Random seed index is now at', getRandomSeed())

@@ -52,10 +52,11 @@ async function run() {
                 console.log(`Loading Cells into the level took ${Date.now() - startTime}ms`)
 
                 // engine.on('cell:updated', cell => {
-                //   UI.drawCellAt(data, cell, cell.rowIndex, cell.colIndex, false)
+                //   UI.drawCellAt(cell, cell.rowIndex, cell.colIndex, false)
                 // })
 
-                UI.renderScreen(data, engine.currentLevel)
+                UI.setGame(data)
+                UI.renderScreen(engine.currentLevel)
                 UI.writeDebug(`Game: "${data.title}"`)
 
 
@@ -83,7 +84,7 @@ async function run() {
 
                     // Draw any cells that moved
                     for (const cell of changedCells) {
-                        UI.drawCell(data, cell, false)
+                        UI.drawCell(cell, false)
                     }
                     if (i > 1) { // Skip the 1st couple because they might be cleaning up the level
                         maxTickAndRenderTime = Math.max(maxTickAndRenderTime, Date.now() - startTime)
