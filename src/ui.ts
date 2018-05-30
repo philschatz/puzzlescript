@@ -46,6 +46,26 @@ function writeTextAt(x, y, msg) {
     process.stdout.write(msg)
 }
 
+class CellColorCache {
+    _cache: Map<string, IColor[][]>
+
+    constructor() {
+        this._cache = new Map()
+    }
+
+    get(spritesToDraw: GameSprite[], backgroundColor: IColor) {
+        const key = spritesToDraw.map(s => s._name).join(' ')
+        if (!this._cache.has(key)) {
+            this._cache.set(key, collapseSpritesToPixels(spritesToDraw, backgroundColor))
+        }
+        return this._cache.get(key)
+    }
+
+    clear() {
+        this._cache.clear()
+    }
+}
+
 // First Sprite one is on top.
 // This caused a 2x speedup while rendering.
 function collapseSpritesToPixels(spritesToDraw: GameSprite[], backgroundColor: IColor) {
@@ -89,15 +109,22 @@ function collapseSpritesToPixels(spritesToDraw: GameSprite[], backgroundColor: I
 }
 
 class UI {
+    _cellColorCache: CellColorCache
+    _renderedPixels: string[][] // string is the hex code of the pixel
     _resizeHandler?: () => void
     constructor() {
+        this._cellColorCache = new CellColorCache()
         this._resizeHandler = null
+        this._renderedPixels = []
     }
     renderScreen(data: GameData, levelRows: Cell[][]) {
         if (!supportsColor.stdout) {
             console.log('Playing a game in the console requires color support. Unfortunately, color is not supported so not rendering (for now). We could just do an ASCII dump or something, using  ░▒▓█ to denote shades of cells')
             return
         }
+
+        this._cellColorCache.clear()
+        this._renderedPixels = []
 
         // Handle resize events by redrawing the game. Ooh, we do not have Cells at this point.
         // TODO Run renderScreen on cells from the engine rather than cells from the Level data
@@ -137,6 +164,20 @@ class UI {
         this.writeDebug(`"${data.title}"`)
     }
 
+    setPixel(x: number, y: number, hex: string) {
+        if (process.env['NODE_ENV'] !== 'production') {
+            drawPixelChar(x, y, hex)
+        } else {
+            if (!this._renderedPixels[y]) {
+                this._renderedPixels[y] = []
+            }
+            if (this._renderedPixels[y][x] !== hex) {
+                drawPixelChar(x, y, hex)
+                this._renderedPixels[y][x] = hex
+            }
+        }
+    }
+
     drawCell(data: GameData, cell: Cell, dontRestoreCursor: boolean) {
         if (!supportsColor.stdout) {
             console.log(`Updating cell [${cell.rowIndex}][${cell.colIndex}] to have sprites: [${cell.getSprites().map(sprite => sprite._name)}]`)
@@ -172,8 +213,8 @@ class UI {
                 let color: IColor
 
                 // Always draw a transparent character so we can see if something is not rendering
-                drawPixelChar(x, y, '#ffffff', '░')
-                drawPixelChar(x + 1, y, '#ffffff', '░') // double-width because the console is narrow
+                // this.setPixel(x, y, '#ffffff', '░')
+                // this.setPixel(x + 1, y, '#ffffff', '░') // double-width because the console is narrow
 
                 if (spriteColor) {
                     if (!spriteColor.isTransparent()) {
@@ -188,23 +229,25 @@ class UI {
                     const { r, g, b } = color.toRgb()
                     const hex = color.toHex()
 
-                    drawPixelChar(x, y, hex)
-                    drawPixelChar(x + 1, y, hex) // double-width because the console is narrow
+                    this.setPixel(x, y, hex)
+                    this.setPixel(x + 1, y, hex) // double-width because the console is narrow
 
                     // Print a debug number which contains the number of sprites in this cell
                     // Change the foreground color to be black if the color is light
-                    if (r > 192 && g > 192 && b > 192) {
-                        setFgColor('#000000')
-                    }
-                    if (spritesForDebugging[spriteRowIndex]) {
-                        let spriteName = spritesForDebugging[spriteRowIndex]._name
-                        if (spriteName.length > 10) {
-                            spriteName = `${spriteName.substring(0, 5)}.${spriteName.substring(spriteName.length - 4)}`
+                    if (process.env['NODE_ENV'] !== 'production') {
+                        if (r > 192 && g > 192 && b > 192) {
+                            setFgColor('#000000')
                         }
-                        writeTextAt(x, y, `${spriteName.substring(spriteColIndex * 2, spriteColIndex * 2 + 2)}`)
-                    }
-                    if (spriteRowIndex === 4 && spriteColIndex === 4) {
-                        writeTextAt(x + 1, y, `${spritesForDebugging.length}`)
+                        if (spritesForDebugging[spriteRowIndex]) {
+                            let spriteName = spritesForDebugging[spriteRowIndex]._name
+                            if (spriteName.length > 10) {
+                                spriteName = `${spriteName.substring(0, 5)}.${spriteName.substring(spriteName.length - 4)}`
+                            }
+                            writeTextAt(x, y, `${spriteName.substring(spriteColIndex * 2, spriteColIndex * 2 + 2)}`)
+                        }
+                        if (spriteRowIndex === 4 && spriteColIndex === 4) {
+                            writeTextAt(x + 1, y, `${spritesForDebugging.length}`)
+                        }
                     }
                 }
             })
@@ -224,7 +267,7 @@ class UI {
             spritesToDraw.push(magicBackgroundSprite)
         }
 
-        const pixels = collapseSpritesToPixels(spritesToDraw, data.metadata.background_color)
+        const pixels = this._cellColorCache.get(spritesToDraw, data.metadata.background_color)
         return pixels
     }
 

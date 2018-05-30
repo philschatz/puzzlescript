@@ -13,6 +13,9 @@ This is a remake of PuzzleScript that has the following features:
 
 # Dev Commands
 
+- `npm run play` runs the first game in the gists directory without debugging info (10x faster) (uses `NODE_ENV=production`)
+- `npm run play-dev` runs the first game in the gists directory with sprite info (useful for debugging)
+- `npm run play-debug` runs the first game with a Chrome Debugger open so you can set breakpoints
 - `npm install`
 - `npm test`
 - `npm run watch` Run the tests and when you update the source, it re-runs the tests
