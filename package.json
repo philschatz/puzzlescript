@@ -7,7 +7,7 @@
     "play-dev": "tsc && node -r source-map-support/register ./lib/playGame.js",
     "prestart": "rm -rf ./lib/; rm ./coverage/coverage-gist*.json; rm -rf ./coverage/lcov-report/; tsc",
     "start": "NODE_ENV=production node -r source-map-support/register ./lib/runGames.js",
-    "start-dev": "node -r source-map-support/register ./lib/runGames.js",
+    "start-dev": "tsc && node -r source-map-support/register ./lib/runGames.js",
     "start-coverage": "tsc && istanbul cover -x '**/node_modules/**' ./lib/runGames.js",
     "start-debug": "tsc && node --inspect-brk lib/runGames.js",
     "start-debug-cli": "tsc && node inspect lib/runGames.js",

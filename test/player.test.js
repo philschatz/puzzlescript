@@ -289,4 +289,69 @@ describe('player movement', () => {
         expect(engine.currentLevel[0][0].getSpritesAsSet().has(playerSprite)).toBe(false)
         expect(engine.currentLevel[0][1].getSpritesAsSet().has(playerSprite)).toBe(true)
     })
+
+    it('wantsToMove should be removed when the condition has a direction but the right does not', () => {
+        const { engine, data } = parseEngine(`title foo
+
+        (verbose_logging)
+        (debug)
+
+        (run_rules_on_level_start)
+
+        realtime_interval 0.1
+
+        ===
+        OBJECTS
+        ===
+
+        background
+        green
+
+        player
+        Yellow
+
+        ===
+        LEGEND
+        ===
+
+        . = background
+        P = Player
+
+        ====
+        SOUNDS
+        ====
+
+        ====
+        COLLISIONLAYERS
+        ====
+
+        background
+        player
+
+        ====
+        RULES
+        ====
+
+        [ > Player ] -> [ Player ]
+
+        ===
+        WINCONDITIONS
+        ===
+
+        ===
+        LEVELS
+        ===
+
+        P.
+
+        `) // end game
+
+        const player = data.getPlayer()
+        const playerSprite = data._getSpriteByName('player')
+        engine.pressRight()
+        engine.tick()
+
+        expect(engine.currentLevel[0][0].getSpritesAsSet().has(playerSprite)).toBe(true)
+        expect(engine.currentLevel[0][1].getSpritesAsSet().has(playerSprite)).toBe(false)
+    })
 })

@@ -336,17 +336,14 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
         const spritesBefore = new Set(cell.getSpritesAsSet())
         const newSpritesAndWantsToMoves = [...cell.getSpriteAndWantsToMoves()]
 
-        const { conditionSprites, actionSprites, actionTiles } = this._getConditionAndActionSprites(actionNeighbor)
-
-        const spritesToRemove = setDifference(conditionSprites, actionSprites)
-        const spritesToAdd = setDifference(actionSprites, conditionSprites)
+        const { spritesToRemove, spritesToUpdate, spritesToAdd } = this._getConditionAndActionSprites(cell, actionNeighbor)
 
         // Remove any sprites that are in the same collisionLayer as sprites that are being added
         const collisionLayerOfSpritesToRemove = new Map<number, GameSprite>()
         for (const sprite of cell.getSpritesAsSet()) {
             collisionLayerOfSpritesToRemove.set(sprite.getCollisionLayerNum(), sprite)
         }
-        for (const sprite of spritesToAdd) {
+        for (const sprite of spritesToAdd.keys()) {
             if (collisionLayerOfSpritesToRemove.has(sprite.getCollisionLayerNum())) {
                 spritesToRemove.add(collisionLayerOfSpritesToRemove.get(sprite.getCollisionLayerNum()))
             }
@@ -355,20 +352,11 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
         cell.removeSprites(spritesToRemove)
 
         // add sprites that are listed on the action side
-        for (const [sprites, tileWithModifier] of actionTiles.entries()) {
-            let direction: RULE_DIRECTION_ABSOLUTE = null
-            if (tileWithModifier.isRandom()) {
-                direction = RULE_DIRECTION_ABSOLUTE.STATIONARY
-            } else if (tileWithModifier._direction === RULE_DIRECTION_ABSOLUTE.MOVING) {
-                // skip, since it must have been MOVING in the condition
-                continue
-            } else if (!tileWithModifier._direction) {
-            } else {
-                direction = tileWithModifier._direction
-            }
-            for (const sprite of sprites.getSprites()) {
-                cell.addSprite(sprite, direction)
-            }
+        for (let [sprite, direction] of spritesToUpdate) {
+            cell.addSprite(sprite, direction)
+        }
+        for (let [sprite, direction] of spritesToAdd) {
+            cell.addSprite(sprite, direction)
         }
 
         // TODO: Be better about recording when the cell actually updated
@@ -377,59 +365,126 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
         return new CellMutation(cell, didSpritesChange)
     }
 
-    _getConditionAndActionSprites(actionNeighbor: SimpleNeighbor) {
-        const conditionTiles = new Map<IGameTile, SimpleTileWithModifier>()
-        const actionTiles = new Map<IGameTile, SimpleTileWithModifier>()
-        const conditionSprites: Set<GameSprite> = new Set()
-        const actionSprites: Set<GameSprite> = new Set()
-
-        // remove sprites in tiles that are listed on the condition side
-        for (const tileWithModifier of this._tilesWithModifier) {
-            if (!tileWithModifier.isNo()) {
-                if (tileWithModifier._tile.isOr()) {
-                    // Check if the action side also has the OR tile. If not, the sprites need to be removed
-                    let hasOrInAction = false
-                    for (const t of actionNeighbor._tilesWithModifier) {
-                        if (t._tile === tileWithModifier._tile) {
-                            hasOrInAction = true
-                        }
-                    }
-                    if (!hasOrInAction) {
-                        // Copy/pasta from below
-                        conditionTiles.set(tileWithModifier._tile, tileWithModifier)
-                        for (const sprite of tileWithModifier._tile.getSprites()) {
-                            conditionSprites.add(sprite)
-                        }
+    getSpriteMap(cell: Cell) {
+        const spriteMap = new Map<GameSprite, RULE_DIRECTION_ABSOLUTE>()
+        for (const t of this._tilesWithModifier) {
+            if (t.isRandom()) {
+                const sprites = t._tile.getSprites()
+                if (sprites.length === 1) {
+                    // Decide whether or not to include the sprite
+                    if (nextRandom(2)) {
+                        spriteMap.set(sprites[0], RULE_DIRECTION_ABSOLUTE.STATIONARY)
                     }
                 } else {
-                    conditionTiles.set(tileWithModifier._tile, tileWithModifier)
-                    for (const sprite of tileWithModifier._tile.getSprites()) {
-                        conditionSprites.add(sprite)
-                    }
+                    const index = nextRandom(sprites.length)
+                    const sprite = sprites[index]
+                    // It seems like `[ RANDOM > tree ]` does not exist anywhere
+                    // (RANDOM flag and a direction)
+                    spriteMap.set(sprite, RULE_DIRECTION_ABSOLUTE.STATIONARY)
+                }
+            } else if (!t.isNo()) {
+                let sprites
+                if (t._tile.isOr()) {
+                    // only update sprites that are in the cell
+                    sprites = setIntersection(new Set(t._tile.getSprites()), cell.getSpritesAsSet())
+                } else {
+                    sprites = t._tile.getSprites()
+                }
+                for (const sprite of sprites) {
+                    spriteMap.set(sprite, t._direction)
                 }
             }
         }
-        // add sprites that are listed on the action side
-        actionNeighbor._tilesWithModifier.forEach(tileWithModifier => {
-            // OR tiles on the right side are only useful if the tile is RANDOM (we choose one of the OR options)
-            if (tileWithModifier._tile.isOr()) {
-                if (tileWithModifier.isRandom()) {
-                    const sprites = tileWithModifier._tile.getSprites()
-                    const index = nextRandom(sprites.length)
-                    actionTiles.set(sprites[index], tileWithModifier)
-                    actionSprites.add(sprites[index])
-                }
-            } else {
-                if (!tileWithModifier.isNo()) {
-                    actionTiles.set(tileWithModifier._tile, tileWithModifier)
-                    for (const sprite of tileWithModifier._tile.getSprites()) {
-                        actionSprites.add(sprite)
-                    }
-                }
-            }
-        })
+        return spriteMap
+    }
 
-        return { conditionSprites, actionSprites, actionTiles }
+    _getConditionAndActionSprites(cell: Cell, actionNeighbor: SimpleNeighbor) {
+        // Return:
+        // - sprites to remove
+        // - sprites to update (with wantsToMove)
+        // - sprites to add (with wantsToMove)
+        //
+        // Notes:
+        // If the action has an OR tile then the condition has the same OR tile
+        // If the action has a MOVING direction then the condition has a MOVING direction
+
+
+        // [   player ] -> [   player ]
+        // [ > player ] -> [   player ]
+        // [   Thing  ] -> [   Thing  ]
+        // [ > Thing  ] -> [   Thing  ]
+        // [   Thing  ] -> [ > Thing  ]
+        // [ mvng Thing ] -> [ mvng Thing ]
+        // [ Thing ] -> [ ]
+        // [ Thing ] -> [ tree ]
+        // [ a ] -> [ b ]
+        // [ NO a ] -> [ b ]
+        // [ a ] -> [ NO a ] ???
+        // [ MOVING a ] -> [ MOVING a ] ???
+        // [ MOVING a MOVING c ] -> [ MOVING c MOVING b ] : c moves but b is stationary
+
+        const conditionSpritesMap = this.getSpriteMap(cell)
+        const actionSpritesMap = actionNeighbor.getSpriteMap(cell)
+
+        const spritesToRemove = new Set<GameSprite>()
+        const spritesToUpdate = new Map<GameSprite, RULE_DIRECTION_ABSOLUTE>()
+        const spritesToAdd = new Map<GameSprite, RULE_DIRECTION_ABSOLUTE>()
+
+        // Determine the direction should have based on what was specified in the condition
+        function getActionDir(sprite: GameSprite) {
+            const conditionDir = conditionSpritesMap.get(sprite)
+            const actionDir = actionSpritesMap.get(sprite)
+            let direction
+            switch (actionDir) {
+                case RULE_DIRECTION_ABSOLUTE.UP:
+                case RULE_DIRECTION_ABSOLUTE.DOWN:
+                case RULE_DIRECTION_ABSOLUTE.LEFT:
+                case RULE_DIRECTION_ABSOLUTE.RIGHT:
+                case RULE_DIRECTION_ABSOLUTE.ACTION:
+                case RULE_DIRECTION_ABSOLUTE.RANDOMDIR:
+                case RULE_DIRECTION_ABSOLUTE.STATIONARY:
+                    direction = actionDir
+                    break
+                case RULE_DIRECTION_ABSOLUTE.MOVING:
+                    if (conditionDir === RULE_DIRECTION_ABSOLUTE.MOVING) {
+                        direction = null
+                    } else {
+                        // could just have MOVING on the right hand side
+                        direction = RULE_DIRECTION_ABSOLUTE.STATIONARY
+                    }
+                    break
+                case null:
+                    if (conditionDir) {
+                        // Stop moving because the condition was moving
+                        direction = RULE_DIRECTION_ABSOLUTE.STATIONARY
+                    } else {
+                        // Don't change the direction
+                        direction = null
+                    }
+                    break
+                default:
+                    throw new Error(`BUG: Unsupported direction "${actionDir}"`)
+            }
+            return direction
+        }
+
+        for (const sprite of setDifference(new Set(conditionSpritesMap.keys()), new Set(actionSpritesMap.keys()))) {
+            spritesToRemove.add(sprite)
+        }
+
+        for (const sprite of setIntersection(new Set(conditionSpritesMap.keys()), new Set(actionSpritesMap.keys()))) {
+            const direction = getActionDir(sprite)
+            if (direction) { // optimization
+                spritesToUpdate.set(sprite, direction)
+            }
+        }
+
+        for (const sprite of setDifference(new Set(actionSpritesMap.keys()), new Set(conditionSpritesMap.keys()))) {
+            const direction = getActionDir(sprite)
+            spritesToAdd.set(sprite, direction)
+        }
+
+        return { spritesToRemove, spritesToUpdate, spritesToAdd }
     }
 
     addBracket(bracket: SimpleBracket, index: number) {

@@ -62,9 +62,7 @@ export class Cell {
             case RULE_MODIFIER.RIGHT:
                 return this._getRelativeNeighbor(0, 1)
             default:
-                console.error(`BUG: Unsupported direction "${direction}"`)
-                return this
-            // throw new Error(`BUG: Unsupported direction "${direction}"`)
+                throw new Error(`BUG: Unsupported direction "${direction}"`)
         }
     }
     wantsToMoveTo(tile: IGameTile, absoluteDirection: RULE_DIRECTION) {
