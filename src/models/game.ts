@@ -155,7 +155,7 @@ export class GameData {
     }
 
     getMagicBackgroundSprite() {
-        return this._getSpriteByName('background')
+        return this._getSpriteByName('background') || this.legends.find(tile => tile._spriteNameOrLevelChar.toLocaleLowerCase() === 'background').getSprites()[0]
     }
     getPlayer(): IGameTile {
         return this._getSpriteByName('player') || this.legends.find(tile => tile._spriteNameOrLevelChar.toLocaleLowerCase() === 'player')
