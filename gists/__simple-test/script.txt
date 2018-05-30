@@ -172,7 +172,7 @@ Player
 .....
 .....
 
-Island #
+Island
 #000000
 
 FromBlockIsland
@@ -389,7 +389,8 @@ Transparent #078ffd
  LEGEND
 ========
 
-@ = Player and Island
+@ = Player and Island and PlayerIsland and BgNW1
+# = Island and PlayerIsland
 
 Background = BgNW1 or BgNE1 or BgSW1 or BgSE1 or BgNW2 or BgNE2 or BgSW2 or BgSE2 or BgNW3 or BgNE3 or BgSW3 or BgSE3 or BgNW4 or BgNE4 or BgSW4 or BgSE4
 
@@ -451,20 +452,12 @@ PlayerTop
 
 ( simple movement )
 
-( player island )
-[ Player Island ] -> [ Player Island PlayerIsland ]
-  up    [ PlayerIsland | Island ] -> [ PlayerIsland | Island PlayerIsland ]
-+ down  [ PlayerIsland | Island ] -> [ PlayerIsland | Island PlayerIsland ]
-+ right [ PlayerIsland | Island ] -> [ PlayerIsland | Island PlayerIsland ]
-+ left  [ PlayerIsland | Island ] -> [ PlayerIsland | Island PlayerIsland ]
 
 ( rigid movement )
 (this is the culprit)
 [ > Player ][ PlayerIsland ] -> [ > Player ][ > PlayerIsland ]
 [ > PlayerIsland Island  ] -> [ > PlayerIsland > Island ]
-[ < Island | Island ] -> [ < Island | < Island ]
 
-[ > PlayerIsland IslandEdge ] -> [ > PlayerIsland > IslandEdge ]
 
 
 
@@ -477,7 +470,7 @@ PlayerTop
  LEVELS
 ========
 
-...@#..
+@#.....
 
 ...........
 ...........

@@ -280,7 +280,8 @@ export default class Engine extends EventEmitter2 {
                                 movedCells.add(neighbor)
                                 movedCells.add(cell)
                                 somethingChanged = true
-                                changedCells.delete(cell)
+                                // Don't delete until we are sure none of the sprites want to move
+                                // changedCells.delete(cell)
                             } else {
                                 // Clear the wantsToMove flag LATER if we hit a wall (a sprite in the same collisionLayer) or are at the end of the map
                                 // We do this later because we are looping as long as something changed
