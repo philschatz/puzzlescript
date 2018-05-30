@@ -453,10 +453,10 @@ PlayerTop
 
 ( player island )
 [ Player Island ] -> [ Player Island PlayerIsland ]
-  up    [ PlayerIsland no IslandEdgeN | Island ] -> [ PlayerIsland | Island PlayerIsland ]
-+ down  [ PlayerIsland no IslandEdgeS | Island ] -> [ PlayerIsland | Island PlayerIsland ]
-+ right [ PlayerIsland no IslandEdgeE | Island ] -> [ PlayerIsland | Island PlayerIsland ]
-+ left  [ PlayerIsland no IslandEdgeW | Island ] -> [ PlayerIsland | Island PlayerIsland ]
+  up    [ PlayerIsland | Island ] -> [ PlayerIsland | Island PlayerIsland ]
++ down  [ PlayerIsland | Island ] -> [ PlayerIsland | Island PlayerIsland ]
++ right [ PlayerIsland | Island ] -> [ PlayerIsland | Island PlayerIsland ]
++ left  [ PlayerIsland | Island ] -> [ PlayerIsland | Island PlayerIsland ]
 
 ( rigid movement )
 (this is the culprit)
