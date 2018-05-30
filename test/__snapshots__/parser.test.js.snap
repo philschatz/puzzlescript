@@ -12803,7 +12803,7 @@ GameData {
           "_tileWithModifierSet": Set {
             SimpleTileWithModifier {
               "__coverageCount": 0,
-              "_direction": "MOVING",
+              "_direction": "UP",
               "_isNegated": false,
               "_isRandom": false,
               "_neighbors": Set {
@@ -12812,7 +12812,7 @@ GameData {
                   "_brackets": Map {
                     SimpleBracket {
                       "__coverageCount": 0,
-                      "_direction": "RIGHT",
+                      "_direction": "UP",
                       "_firstCells": Set {},
                       "_neighbors": Array [
                         [Circular],
@@ -12820,9 +12820,27 @@ GameData {
                     } => Set {
                       0,
                     },
+                  },
+                  "_localCellCache": Set {},
+                  "_tilesWithModifier": Set {
+                    [Circular],
+                  },
+                },
+              },
+              "_tile": [Circular],
+            },
+            SimpleTileWithModifier {
+              "__coverageCount": 0,
+              "_direction": "DOWN",
+              "_isNegated": false,
+              "_isRandom": false,
+              "_neighbors": Set {
+                SimpleNeighbor {
+                  "__coverageCount": 0,
+                  "_brackets": Map {
                     SimpleBracket {
                       "__coverageCount": 0,
-                      "_direction": "LEFT",
+                      "_direction": "UP",
                       "_firstCells": Set {},
                       "_neighbors": Array [
                         [Circular],
@@ -12830,9 +12848,27 @@ GameData {
                     } => Set {
                       0,
                     },
+                  },
+                  "_localCellCache": Set {},
+                  "_tilesWithModifier": Set {
+                    [Circular],
+                  },
+                },
+              },
+              "_tile": [Circular],
+            },
+            SimpleTileWithModifier {
+              "__coverageCount": 0,
+              "_direction": "LEFT",
+              "_isNegated": false,
+              "_isRandom": false,
+              "_neighbors": Set {
+                SimpleNeighbor {
+                  "__coverageCount": 0,
+                  "_brackets": Map {
                     SimpleBracket {
                       "__coverageCount": 0,
-                      "_direction": "DOWN",
+                      "_direction": "UP",
                       "_firstCells": Set {},
                       "_neighbors": Array [
                         [Circular],
@@ -12840,6 +12876,52 @@ GameData {
                     } => Set {
                       0,
                     },
+                  },
+                  "_localCellCache": Set {},
+                  "_tilesWithModifier": Set {
+                    [Circular],
+                  },
+                },
+              },
+              "_tile": [Circular],
+            },
+            SimpleTileWithModifier {
+              "__coverageCount": 0,
+              "_direction": "RIGHT",
+              "_isNegated": false,
+              "_isRandom": false,
+              "_neighbors": Set {
+                SimpleNeighbor {
+                  "__coverageCount": 0,
+                  "_brackets": Map {
+                    SimpleBracket {
+                      "__coverageCount": 0,
+                      "_direction": "UP",
+                      "_firstCells": Set {},
+                      "_neighbors": Array [
+                        [Circular],
+                      ],
+                    } => Set {
+                      0,
+                    },
+                  },
+                  "_localCellCache": Set {},
+                  "_tilesWithModifier": Set {
+                    [Circular],
+                  },
+                },
+              },
+              "_tile": [Circular],
+            },
+            SimpleTileWithModifier {
+              "__coverageCount": 0,
+              "_direction": "ACTION",
+              "_isNegated": false,
+              "_isRandom": false,
+              "_neighbors": Set {
+                SimpleNeighbor {
+                  "__coverageCount": 0,
+                  "_brackets": Map {
                     SimpleBracket {
                       "__coverageCount": 0,
                       "_direction": "UP",
@@ -12874,7 +12956,7 @@ GameData {
           "_tileWithModifierSet": Set {
             SimpleTileWithModifier {
               "__coverageCount": 0,
-              "_direction": "MOVING",
+              "_direction": "UP",
               "_isNegated": false,
               "_isRandom": false,
               "_neighbors": Set {
@@ -12883,7 +12965,7 @@ GameData {
                   "_brackets": Map {
                     SimpleBracket {
                       "__coverageCount": 0,
-                      "_direction": "RIGHT",
+                      "_direction": "UP",
                       "_firstCells": Set {},
                       "_neighbors": Array [
                         [Circular],
@@ -12891,9 +12973,27 @@ GameData {
                     } => Set {
                       0,
                     },
+                  },
+                  "_localCellCache": Set {},
+                  "_tilesWithModifier": Set {
+                    [Circular],
+                  },
+                },
+              },
+              "_tile": [Circular],
+            },
+            SimpleTileWithModifier {
+              "__coverageCount": 0,
+              "_direction": "DOWN",
+              "_isNegated": false,
+              "_isRandom": false,
+              "_neighbors": Set {
+                SimpleNeighbor {
+                  "__coverageCount": 0,
+                  "_brackets": Map {
                     SimpleBracket {
                       "__coverageCount": 0,
-                      "_direction": "LEFT",
+                      "_direction": "UP",
                       "_firstCells": Set {},
                       "_neighbors": Array [
                         [Circular],
@@ -12901,9 +13001,27 @@ GameData {
                     } => Set {
                       0,
                     },
+                  },
+                  "_localCellCache": Set {},
+                  "_tilesWithModifier": Set {
+                    [Circular],
+                  },
+                },
+              },
+              "_tile": [Circular],
+            },
+            SimpleTileWithModifier {
+              "__coverageCount": 0,
+              "_direction": "LEFT",
+              "_isNegated": false,
+              "_isRandom": false,
+              "_neighbors": Set {
+                SimpleNeighbor {
+                  "__coverageCount": 0,
+                  "_brackets": Map {
                     SimpleBracket {
                       "__coverageCount": 0,
-                      "_direction": "DOWN",
+                      "_direction": "UP",
                       "_firstCells": Set {},
                       "_neighbors": Array [
                         [Circular],
@@ -12911,6 +13029,52 @@ GameData {
                     } => Set {
                       0,
                     },
+                  },
+                  "_localCellCache": Set {},
+                  "_tilesWithModifier": Set {
+                    [Circular],
+                  },
+                },
+              },
+              "_tile": [Circular],
+            },
+            SimpleTileWithModifier {
+              "__coverageCount": 0,
+              "_direction": "RIGHT",
+              "_isNegated": false,
+              "_isRandom": false,
+              "_neighbors": Set {
+                SimpleNeighbor {
+                  "__coverageCount": 0,
+                  "_brackets": Map {
+                    SimpleBracket {
+                      "__coverageCount": 0,
+                      "_direction": "UP",
+                      "_firstCells": Set {},
+                      "_neighbors": Array [
+                        [Circular],
+                      ],
+                    } => Set {
+                      0,
+                    },
+                  },
+                  "_localCellCache": Set {},
+                  "_tilesWithModifier": Set {
+                    [Circular],
+                  },
+                },
+              },
+              "_tile": [Circular],
+            },
+            SimpleTileWithModifier {
+              "__coverageCount": 0,
+              "_direction": "ACTION",
+              "_isNegated": false,
+              "_isRandom": false,
+              "_neighbors": Set {
+                SimpleNeighbor {
+                  "__coverageCount": 0,
+                  "_brackets": Map {
                     SimpleBracket {
                       "__coverageCount": 0,
                       "_direction": "UP",
@@ -12949,7 +13113,7 @@ GameData {
       "_tileWithModifierSet": Set {
         SimpleTileWithModifier {
           "__coverageCount": 0,
-          "_direction": "MOVING",
+          "_direction": "UP",
           "_isNegated": false,
           "_isRandom": false,
           "_neighbors": Set {
@@ -12958,7 +13122,7 @@ GameData {
               "_brackets": Map {
                 SimpleBracket {
                   "__coverageCount": 0,
-                  "_direction": "RIGHT",
+                  "_direction": "UP",
                   "_firstCells": Set {},
                   "_neighbors": Array [
                     [Circular],
@@ -12966,9 +13130,36 @@ GameData {
                 } => Set {
                   0,
                 },
+              },
+              "_localCellCache": Set {},
+              "_tilesWithModifier": Set {
+                [Circular],
+              },
+            },
+          },
+          "_tile": GameLegendTileSimple {
+            "__coverageCount": 0,
+            "_spriteNameOrLevelChar": "z",
+            "_spritesCache": Array [
+              [Circular],
+            ],
+            "_tiles": Array [
+              [Circular],
+            ],
+          },
+        },
+        SimpleTileWithModifier {
+          "__coverageCount": 0,
+          "_direction": "DOWN",
+          "_isNegated": false,
+          "_isRandom": false,
+          "_neighbors": Set {
+            SimpleNeighbor {
+              "__coverageCount": 0,
+              "_brackets": Map {
                 SimpleBracket {
                   "__coverageCount": 0,
-                  "_direction": "LEFT",
+                  "_direction": "UP",
                   "_firstCells": Set {},
                   "_neighbors": Array [
                     [Circular],
@@ -12976,9 +13167,36 @@ GameData {
                 } => Set {
                   0,
                 },
+              },
+              "_localCellCache": Set {},
+              "_tilesWithModifier": Set {
+                [Circular],
+              },
+            },
+          },
+          "_tile": GameLegendTileSimple {
+            "__coverageCount": 0,
+            "_spriteNameOrLevelChar": "z",
+            "_spritesCache": Array [
+              [Circular],
+            ],
+            "_tiles": Array [
+              [Circular],
+            ],
+          },
+        },
+        SimpleTileWithModifier {
+          "__coverageCount": 0,
+          "_direction": "LEFT",
+          "_isNegated": false,
+          "_isRandom": false,
+          "_neighbors": Set {
+            SimpleNeighbor {
+              "__coverageCount": 0,
+              "_brackets": Map {
                 SimpleBracket {
                   "__coverageCount": 0,
-                  "_direction": "DOWN",
+                  "_direction": "UP",
                   "_firstCells": Set {},
                   "_neighbors": Array [
                     [Circular],
@@ -12986,6 +13204,70 @@ GameData {
                 } => Set {
                   0,
                 },
+              },
+              "_localCellCache": Set {},
+              "_tilesWithModifier": Set {
+                [Circular],
+              },
+            },
+          },
+          "_tile": GameLegendTileSimple {
+            "__coverageCount": 0,
+            "_spriteNameOrLevelChar": "z",
+            "_spritesCache": Array [
+              [Circular],
+            ],
+            "_tiles": Array [
+              [Circular],
+            ],
+          },
+        },
+        SimpleTileWithModifier {
+          "__coverageCount": 0,
+          "_direction": "RIGHT",
+          "_isNegated": false,
+          "_isRandom": false,
+          "_neighbors": Set {
+            SimpleNeighbor {
+              "__coverageCount": 0,
+              "_brackets": Map {
+                SimpleBracket {
+                  "__coverageCount": 0,
+                  "_direction": "UP",
+                  "_firstCells": Set {},
+                  "_neighbors": Array [
+                    [Circular],
+                  ],
+                } => Set {
+                  0,
+                },
+              },
+              "_localCellCache": Set {},
+              "_tilesWithModifier": Set {
+                [Circular],
+              },
+            },
+          },
+          "_tile": GameLegendTileSimple {
+            "__coverageCount": 0,
+            "_spriteNameOrLevelChar": "z",
+            "_spritesCache": Array [
+              [Circular],
+            ],
+            "_tiles": Array [
+              [Circular],
+            ],
+          },
+        },
+        SimpleTileWithModifier {
+          "__coverageCount": 0,
+          "_direction": "ACTION",
+          "_isNegated": false,
+          "_isRandom": false,
+          "_neighbors": Set {
+            SimpleNeighbor {
+              "__coverageCount": 0,
+              "_brackets": Map {
                 SimpleBracket {
                   "__coverageCount": 0,
                   "_direction": "UP",
@@ -13026,7 +13308,7 @@ GameData {
           "_actionBrackets": Array [
             SimpleBracket {
               "__coverageCount": 0,
-              "_direction": "RIGHT",
+              "_direction": "UP",
               "_firstCells": Set {},
               "_neighbors": Array [
                 SimpleNeighbor {
@@ -13042,7 +13324,7 @@ GameData {
           "_conditionBrackets": Array [
             SimpleBracket {
               "__coverageCount": 0,
-              "_direction": "RIGHT",
+              "_direction": "UP",
               "_firstCells": Set {},
               "_neighbors": Array [
                 SimpleNeighbor {
@@ -13051,42 +13333,12 @@ GameData {
                     [Circular] => Set {
                       0,
                     },
-                    SimpleBracket {
-                      "__coverageCount": 0,
-                      "_direction": "LEFT",
-                      "_firstCells": Set {},
-                      "_neighbors": Array [
-                        [Circular],
-                      ],
-                    } => Set {
-                      0,
-                    },
-                    SimpleBracket {
-                      "__coverageCount": 0,
-                      "_direction": "DOWN",
-                      "_firstCells": Set {},
-                      "_neighbors": Array [
-                        [Circular],
-                      ],
-                    } => Set {
-                      0,
-                    },
-                    SimpleBracket {
-                      "__coverageCount": 0,
-                      "_direction": "UP",
-                      "_firstCells": Set {},
-                      "_neighbors": Array [
-                        [Circular],
-                      ],
-                    } => Set {
-                      0,
-                    },
                   },
                   "_localCellCache": Set {},
                   "_tilesWithModifier": Set {
                     SimpleTileWithModifier {
                       "__coverageCount": 0,
-                      "_direction": "MOVING",
+                      "_direction": "UP",
                       "_isNegated": false,
                       "_isRandom": false,
                       "_neighbors": Set {
@@ -13106,6 +13358,118 @@ GameData {
                             "_optionalLegendChar": undefined,
                             "_tileWithModifierSet": Set {
                               [Circular],
+                              SimpleTileWithModifier {
+                                "__coverageCount": 0,
+                                "_direction": "DOWN",
+                                "_isNegated": false,
+                                "_isRandom": false,
+                                "_neighbors": Set {
+                                  SimpleNeighbor {
+                                    "__coverageCount": 0,
+                                    "_brackets": Map {
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "UP",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                      },
+                                    },
+                                    "_localCellCache": Set {},
+                                    "_tilesWithModifier": Set {
+                                      [Circular],
+                                    },
+                                  },
+                                },
+                                "_tile": [Circular],
+                              },
+                              SimpleTileWithModifier {
+                                "__coverageCount": 0,
+                                "_direction": "LEFT",
+                                "_isNegated": false,
+                                "_isRandom": false,
+                                "_neighbors": Set {
+                                  SimpleNeighbor {
+                                    "__coverageCount": 0,
+                                    "_brackets": Map {
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "UP",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                      },
+                                    },
+                                    "_localCellCache": Set {},
+                                    "_tilesWithModifier": Set {
+                                      [Circular],
+                                    },
+                                  },
+                                },
+                                "_tile": [Circular],
+                              },
+                              SimpleTileWithModifier {
+                                "__coverageCount": 0,
+                                "_direction": "RIGHT",
+                                "_isNegated": false,
+                                "_isRandom": false,
+                                "_neighbors": Set {
+                                  SimpleNeighbor {
+                                    "__coverageCount": 0,
+                                    "_brackets": Map {
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "UP",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                      },
+                                    },
+                                    "_localCellCache": Set {},
+                                    "_tilesWithModifier": Set {
+                                      [Circular],
+                                    },
+                                  },
+                                },
+                                "_tile": [Circular],
+                              },
+                              SimpleTileWithModifier {
+                                "__coverageCount": 0,
+                                "_direction": "ACTION",
+                                "_isNegated": false,
+                                "_isRandom": false,
+                                "_neighbors": Set {
+                                  SimpleNeighbor {
+                                    "__coverageCount": 0,
+                                    "_brackets": Map {
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "UP",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                      },
+                                    },
+                                    "_localCellCache": Set {},
+                                    "_tilesWithModifier": Set {
+                                      [Circular],
+                                    },
+                                  },
+                                },
+                                "_tile": [Circular],
+                              },
                             },
                           },
                         ],
@@ -13120,6 +13484,118 @@ GameData {
                             "_optionalLegendChar": undefined,
                             "_tileWithModifierSet": Set {
                               [Circular],
+                              SimpleTileWithModifier {
+                                "__coverageCount": 0,
+                                "_direction": "DOWN",
+                                "_isNegated": false,
+                                "_isRandom": false,
+                                "_neighbors": Set {
+                                  SimpleNeighbor {
+                                    "__coverageCount": 0,
+                                    "_brackets": Map {
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "UP",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                      },
+                                    },
+                                    "_localCellCache": Set {},
+                                    "_tilesWithModifier": Set {
+                                      [Circular],
+                                    },
+                                  },
+                                },
+                                "_tile": [Circular],
+                              },
+                              SimpleTileWithModifier {
+                                "__coverageCount": 0,
+                                "_direction": "LEFT",
+                                "_isNegated": false,
+                                "_isRandom": false,
+                                "_neighbors": Set {
+                                  SimpleNeighbor {
+                                    "__coverageCount": 0,
+                                    "_brackets": Map {
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "UP",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                      },
+                                    },
+                                    "_localCellCache": Set {},
+                                    "_tilesWithModifier": Set {
+                                      [Circular],
+                                    },
+                                  },
+                                },
+                                "_tile": [Circular],
+                              },
+                              SimpleTileWithModifier {
+                                "__coverageCount": 0,
+                                "_direction": "RIGHT",
+                                "_isNegated": false,
+                                "_isRandom": false,
+                                "_neighbors": Set {
+                                  SimpleNeighbor {
+                                    "__coverageCount": 0,
+                                    "_brackets": Map {
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "UP",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                      },
+                                    },
+                                    "_localCellCache": Set {},
+                                    "_tilesWithModifier": Set {
+                                      [Circular],
+                                    },
+                                  },
+                                },
+                                "_tile": [Circular],
+                              },
+                              SimpleTileWithModifier {
+                                "__coverageCount": 0,
+                                "_direction": "ACTION",
+                                "_isNegated": false,
+                                "_isRandom": false,
+                                "_neighbors": Set {
+                                  SimpleNeighbor {
+                                    "__coverageCount": 0,
+                                    "_brackets": Map {
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "UP",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                      },
+                                    },
+                                    "_localCellCache": Set {},
+                                    "_tilesWithModifier": Set {
+                                      [Circular],
+                                    },
+                                  },
+                                },
+                                "_tile": [Circular],
+                              },
                             },
                           },
                         ],
@@ -13130,237 +13606,7 @@ GameData {
               ],
             },
           ],
-          "_evaluationDirection": "RIGHT",
-          "_isAgain": false,
-          "_isLate": false,
-          "_isRigid": false,
-          "_isSubscribedToCellChanges": true,
-        },
-        SimpleRule {
-          "__coverageCount": 0,
-          "_actionBrackets": Array [
-            SimpleBracket {
-              "__coverageCount": 0,
-              "_direction": "LEFT",
-              "_firstCells": Set {},
-              "_neighbors": Array [
-                SimpleNeighbor {
-                  "__coverageCount": 0,
-                  "_brackets": Map {},
-                  "_localCellCache": Set {},
-                  "_tilesWithModifier": Set {},
-                },
-              ],
-            },
-          ],
-          "_commands": Array [],
-          "_conditionBrackets": Array [
-            SimpleBracket {
-              "__coverageCount": 0,
-              "_direction": "LEFT",
-              "_firstCells": Set {},
-              "_neighbors": Array [
-                SimpleNeighbor {
-                  "__coverageCount": 0,
-                  "_brackets": Map {
-                    SimpleBracket {
-                      "__coverageCount": 0,
-                      "_direction": "RIGHT",
-                      "_firstCells": Set {},
-                      "_neighbors": Array [
-                        [Circular],
-                      ],
-                    } => Set {
-                      0,
-                    },
-                    [Circular] => Set {
-                      0,
-                    },
-                    SimpleBracket {
-                      "__coverageCount": 0,
-                      "_direction": "DOWN",
-                      "_firstCells": Set {},
-                      "_neighbors": Array [
-                        [Circular],
-                      ],
-                    } => Set {
-                      0,
-                    },
-                    SimpleBracket {
-                      "__coverageCount": 0,
-                      "_direction": "UP",
-                      "_firstCells": Set {},
-                      "_neighbors": Array [
-                        [Circular],
-                      ],
-                    } => Set {
-                      0,
-                    },
-                  },
-                  "_localCellCache": Set {},
-                  "_tilesWithModifier": Set {
-                    SimpleTileWithModifier {
-                      "__coverageCount": 0,
-                      "_direction": "MOVING",
-                      "_isNegated": false,
-                      "_isRandom": false,
-                      "_neighbors": Set {
-                        [Circular],
-                      },
-                      "_tile": GameLegendTileSimple {
-                        "__coverageCount": 0,
-                        "_spriteNameOrLevelChar": "z",
-                        "_spritesCache": Array [
-                          GameSpriteSingleColor {
-                            "__coverageCount": 0,
-                            "_cellSet": Set {},
-                            "_color": TransparentColor {
-                              "__coverageCount": 0,
-                            },
-                            "_name": "testObject",
-                            "_optionalLegendChar": undefined,
-                            "_tileWithModifierSet": Set {
-                              [Circular],
-                            },
-                          },
-                        ],
-                        "_tiles": Array [
-                          GameSpriteSingleColor {
-                            "__coverageCount": 0,
-                            "_cellSet": Set {},
-                            "_color": TransparentColor {
-                              "__coverageCount": 0,
-                            },
-                            "_name": "testObject",
-                            "_optionalLegendChar": undefined,
-                            "_tileWithModifierSet": Set {
-                              [Circular],
-                            },
-                          },
-                        ],
-                      },
-                    },
-                  },
-                },
-              ],
-            },
-          ],
-          "_evaluationDirection": "LEFT",
-          "_isAgain": false,
-          "_isLate": false,
-          "_isRigid": false,
-          "_isSubscribedToCellChanges": true,
-        },
-        SimpleRule {
-          "__coverageCount": 0,
-          "_actionBrackets": Array [
-            SimpleBracket {
-              "__coverageCount": 0,
-              "_direction": "DOWN",
-              "_firstCells": Set {},
-              "_neighbors": Array [
-                SimpleNeighbor {
-                  "__coverageCount": 0,
-                  "_brackets": Map {},
-                  "_localCellCache": Set {},
-                  "_tilesWithModifier": Set {},
-                },
-              ],
-            },
-          ],
-          "_commands": Array [],
-          "_conditionBrackets": Array [
-            SimpleBracket {
-              "__coverageCount": 0,
-              "_direction": "DOWN",
-              "_firstCells": Set {},
-              "_neighbors": Array [
-                SimpleNeighbor {
-                  "__coverageCount": 0,
-                  "_brackets": Map {
-                    SimpleBracket {
-                      "__coverageCount": 0,
-                      "_direction": "RIGHT",
-                      "_firstCells": Set {},
-                      "_neighbors": Array [
-                        [Circular],
-                      ],
-                    } => Set {
-                      0,
-                    },
-                    SimpleBracket {
-                      "__coverageCount": 0,
-                      "_direction": "LEFT",
-                      "_firstCells": Set {},
-                      "_neighbors": Array [
-                        [Circular],
-                      ],
-                    } => Set {
-                      0,
-                    },
-                    [Circular] => Set {
-                      0,
-                    },
-                    SimpleBracket {
-                      "__coverageCount": 0,
-                      "_direction": "UP",
-                      "_firstCells": Set {},
-                      "_neighbors": Array [
-                        [Circular],
-                      ],
-                    } => Set {
-                      0,
-                    },
-                  },
-                  "_localCellCache": Set {},
-                  "_tilesWithModifier": Set {
-                    SimpleTileWithModifier {
-                      "__coverageCount": 0,
-                      "_direction": "MOVING",
-                      "_isNegated": false,
-                      "_isRandom": false,
-                      "_neighbors": Set {
-                        [Circular],
-                      },
-                      "_tile": GameLegendTileSimple {
-                        "__coverageCount": 0,
-                        "_spriteNameOrLevelChar": "z",
-                        "_spritesCache": Array [
-                          GameSpriteSingleColor {
-                            "__coverageCount": 0,
-                            "_cellSet": Set {},
-                            "_color": TransparentColor {
-                              "__coverageCount": 0,
-                            },
-                            "_name": "testObject",
-                            "_optionalLegendChar": undefined,
-                            "_tileWithModifierSet": Set {
-                              [Circular],
-                            },
-                          },
-                        ],
-                        "_tiles": Array [
-                          GameSpriteSingleColor {
-                            "__coverageCount": 0,
-                            "_cellSet": Set {},
-                            "_color": TransparentColor {
-                              "__coverageCount": 0,
-                            },
-                            "_name": "testObject",
-                            "_optionalLegendChar": undefined,
-                            "_tileWithModifierSet": Set {
-                              [Circular],
-                            },
-                          },
-                        ],
-                      },
-                    },
-                  },
-                },
-              ],
-            },
-          ],
-          "_evaluationDirection": "DOWN",
+          "_evaluationDirection": "UP",
           "_isAgain": false,
           "_isLate": false,
           "_isRigid": false,
@@ -13393,36 +13639,6 @@ GameData {
                 SimpleNeighbor {
                   "__coverageCount": 0,
                   "_brackets": Map {
-                    SimpleBracket {
-                      "__coverageCount": 0,
-                      "_direction": "RIGHT",
-                      "_firstCells": Set {},
-                      "_neighbors": Array [
-                        [Circular],
-                      ],
-                    } => Set {
-                      0,
-                    },
-                    SimpleBracket {
-                      "__coverageCount": 0,
-                      "_direction": "LEFT",
-                      "_firstCells": Set {},
-                      "_neighbors": Array [
-                        [Circular],
-                      ],
-                    } => Set {
-                      0,
-                    },
-                    SimpleBracket {
-                      "__coverageCount": 0,
-                      "_direction": "DOWN",
-                      "_firstCells": Set {},
-                      "_neighbors": Array [
-                        [Circular],
-                      ],
-                    } => Set {
-                      0,
-                    },
                     [Circular] => Set {
                       0,
                     },
@@ -13431,7 +13647,7 @@ GameData {
                   "_tilesWithModifier": Set {
                     SimpleTileWithModifier {
                       "__coverageCount": 0,
-                      "_direction": "MOVING",
+                      "_direction": "DOWN",
                       "_isNegated": false,
                       "_isRandom": false,
                       "_neighbors": Set {
@@ -13450,6 +13666,1045 @@ GameData {
                             "_name": "testObject",
                             "_optionalLegendChar": undefined,
                             "_tileWithModifierSet": Set {
+                              SimpleTileWithModifier {
+                                "__coverageCount": 0,
+                                "_direction": "UP",
+                                "_isNegated": false,
+                                "_isRandom": false,
+                                "_neighbors": Set {
+                                  SimpleNeighbor {
+                                    "__coverageCount": 0,
+                                    "_brackets": Map {
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "UP",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                      },
+                                    },
+                                    "_localCellCache": Set {},
+                                    "_tilesWithModifier": Set {
+                                      [Circular],
+                                    },
+                                  },
+                                },
+                                "_tile": [Circular],
+                              },
+                              [Circular],
+                              SimpleTileWithModifier {
+                                "__coverageCount": 0,
+                                "_direction": "LEFT",
+                                "_isNegated": false,
+                                "_isRandom": false,
+                                "_neighbors": Set {
+                                  SimpleNeighbor {
+                                    "__coverageCount": 0,
+                                    "_brackets": Map {
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "UP",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                      },
+                                    },
+                                    "_localCellCache": Set {},
+                                    "_tilesWithModifier": Set {
+                                      [Circular],
+                                    },
+                                  },
+                                },
+                                "_tile": [Circular],
+                              },
+                              SimpleTileWithModifier {
+                                "__coverageCount": 0,
+                                "_direction": "RIGHT",
+                                "_isNegated": false,
+                                "_isRandom": false,
+                                "_neighbors": Set {
+                                  SimpleNeighbor {
+                                    "__coverageCount": 0,
+                                    "_brackets": Map {
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "UP",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                      },
+                                    },
+                                    "_localCellCache": Set {},
+                                    "_tilesWithModifier": Set {
+                                      [Circular],
+                                    },
+                                  },
+                                },
+                                "_tile": [Circular],
+                              },
+                              SimpleTileWithModifier {
+                                "__coverageCount": 0,
+                                "_direction": "ACTION",
+                                "_isNegated": false,
+                                "_isRandom": false,
+                                "_neighbors": Set {
+                                  SimpleNeighbor {
+                                    "__coverageCount": 0,
+                                    "_brackets": Map {
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "UP",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                      },
+                                    },
+                                    "_localCellCache": Set {},
+                                    "_tilesWithModifier": Set {
+                                      [Circular],
+                                    },
+                                  },
+                                },
+                                "_tile": [Circular],
+                              },
+                            },
+                          },
+                        ],
+                        "_tiles": Array [
+                          GameSpriteSingleColor {
+                            "__coverageCount": 0,
+                            "_cellSet": Set {},
+                            "_color": TransparentColor {
+                              "__coverageCount": 0,
+                            },
+                            "_name": "testObject",
+                            "_optionalLegendChar": undefined,
+                            "_tileWithModifierSet": Set {
+                              SimpleTileWithModifier {
+                                "__coverageCount": 0,
+                                "_direction": "UP",
+                                "_isNegated": false,
+                                "_isRandom": false,
+                                "_neighbors": Set {
+                                  SimpleNeighbor {
+                                    "__coverageCount": 0,
+                                    "_brackets": Map {
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "UP",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                      },
+                                    },
+                                    "_localCellCache": Set {},
+                                    "_tilesWithModifier": Set {
+                                      [Circular],
+                                    },
+                                  },
+                                },
+                                "_tile": [Circular],
+                              },
+                              [Circular],
+                              SimpleTileWithModifier {
+                                "__coverageCount": 0,
+                                "_direction": "LEFT",
+                                "_isNegated": false,
+                                "_isRandom": false,
+                                "_neighbors": Set {
+                                  SimpleNeighbor {
+                                    "__coverageCount": 0,
+                                    "_brackets": Map {
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "UP",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                      },
+                                    },
+                                    "_localCellCache": Set {},
+                                    "_tilesWithModifier": Set {
+                                      [Circular],
+                                    },
+                                  },
+                                },
+                                "_tile": [Circular],
+                              },
+                              SimpleTileWithModifier {
+                                "__coverageCount": 0,
+                                "_direction": "RIGHT",
+                                "_isNegated": false,
+                                "_isRandom": false,
+                                "_neighbors": Set {
+                                  SimpleNeighbor {
+                                    "__coverageCount": 0,
+                                    "_brackets": Map {
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "UP",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                      },
+                                    },
+                                    "_localCellCache": Set {},
+                                    "_tilesWithModifier": Set {
+                                      [Circular],
+                                    },
+                                  },
+                                },
+                                "_tile": [Circular],
+                              },
+                              SimpleTileWithModifier {
+                                "__coverageCount": 0,
+                                "_direction": "ACTION",
+                                "_isNegated": false,
+                                "_isRandom": false,
+                                "_neighbors": Set {
+                                  SimpleNeighbor {
+                                    "__coverageCount": 0,
+                                    "_brackets": Map {
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "UP",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                      },
+                                    },
+                                    "_localCellCache": Set {},
+                                    "_tilesWithModifier": Set {
+                                      [Circular],
+                                    },
+                                  },
+                                },
+                                "_tile": [Circular],
+                              },
+                            },
+                          },
+                        ],
+                      },
+                    },
+                  },
+                },
+              ],
+            },
+          ],
+          "_evaluationDirection": "UP",
+          "_isAgain": false,
+          "_isLate": false,
+          "_isRigid": false,
+          "_isSubscribedToCellChanges": true,
+        },
+        SimpleRule {
+          "__coverageCount": 0,
+          "_actionBrackets": Array [
+            SimpleBracket {
+              "__coverageCount": 0,
+              "_direction": "UP",
+              "_firstCells": Set {},
+              "_neighbors": Array [
+                SimpleNeighbor {
+                  "__coverageCount": 0,
+                  "_brackets": Map {},
+                  "_localCellCache": Set {},
+                  "_tilesWithModifier": Set {},
+                },
+              ],
+            },
+          ],
+          "_commands": Array [],
+          "_conditionBrackets": Array [
+            SimpleBracket {
+              "__coverageCount": 0,
+              "_direction": "UP",
+              "_firstCells": Set {},
+              "_neighbors": Array [
+                SimpleNeighbor {
+                  "__coverageCount": 0,
+                  "_brackets": Map {
+                    [Circular] => Set {
+                      0,
+                    },
+                  },
+                  "_localCellCache": Set {},
+                  "_tilesWithModifier": Set {
+                    SimpleTileWithModifier {
+                      "__coverageCount": 0,
+                      "_direction": "LEFT",
+                      "_isNegated": false,
+                      "_isRandom": false,
+                      "_neighbors": Set {
+                        [Circular],
+                      },
+                      "_tile": GameLegendTileSimple {
+                        "__coverageCount": 0,
+                        "_spriteNameOrLevelChar": "z",
+                        "_spritesCache": Array [
+                          GameSpriteSingleColor {
+                            "__coverageCount": 0,
+                            "_cellSet": Set {},
+                            "_color": TransparentColor {
+                              "__coverageCount": 0,
+                            },
+                            "_name": "testObject",
+                            "_optionalLegendChar": undefined,
+                            "_tileWithModifierSet": Set {
+                              SimpleTileWithModifier {
+                                "__coverageCount": 0,
+                                "_direction": "UP",
+                                "_isNegated": false,
+                                "_isRandom": false,
+                                "_neighbors": Set {
+                                  SimpleNeighbor {
+                                    "__coverageCount": 0,
+                                    "_brackets": Map {
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "UP",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                      },
+                                    },
+                                    "_localCellCache": Set {},
+                                    "_tilesWithModifier": Set {
+                                      [Circular],
+                                    },
+                                  },
+                                },
+                                "_tile": [Circular],
+                              },
+                              SimpleTileWithModifier {
+                                "__coverageCount": 0,
+                                "_direction": "DOWN",
+                                "_isNegated": false,
+                                "_isRandom": false,
+                                "_neighbors": Set {
+                                  SimpleNeighbor {
+                                    "__coverageCount": 0,
+                                    "_brackets": Map {
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "UP",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                      },
+                                    },
+                                    "_localCellCache": Set {},
+                                    "_tilesWithModifier": Set {
+                                      [Circular],
+                                    },
+                                  },
+                                },
+                                "_tile": [Circular],
+                              },
+                              [Circular],
+                              SimpleTileWithModifier {
+                                "__coverageCount": 0,
+                                "_direction": "RIGHT",
+                                "_isNegated": false,
+                                "_isRandom": false,
+                                "_neighbors": Set {
+                                  SimpleNeighbor {
+                                    "__coverageCount": 0,
+                                    "_brackets": Map {
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "UP",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                      },
+                                    },
+                                    "_localCellCache": Set {},
+                                    "_tilesWithModifier": Set {
+                                      [Circular],
+                                    },
+                                  },
+                                },
+                                "_tile": [Circular],
+                              },
+                              SimpleTileWithModifier {
+                                "__coverageCount": 0,
+                                "_direction": "ACTION",
+                                "_isNegated": false,
+                                "_isRandom": false,
+                                "_neighbors": Set {
+                                  SimpleNeighbor {
+                                    "__coverageCount": 0,
+                                    "_brackets": Map {
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "UP",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                      },
+                                    },
+                                    "_localCellCache": Set {},
+                                    "_tilesWithModifier": Set {
+                                      [Circular],
+                                    },
+                                  },
+                                },
+                                "_tile": [Circular],
+                              },
+                            },
+                          },
+                        ],
+                        "_tiles": Array [
+                          GameSpriteSingleColor {
+                            "__coverageCount": 0,
+                            "_cellSet": Set {},
+                            "_color": TransparentColor {
+                              "__coverageCount": 0,
+                            },
+                            "_name": "testObject",
+                            "_optionalLegendChar": undefined,
+                            "_tileWithModifierSet": Set {
+                              SimpleTileWithModifier {
+                                "__coverageCount": 0,
+                                "_direction": "UP",
+                                "_isNegated": false,
+                                "_isRandom": false,
+                                "_neighbors": Set {
+                                  SimpleNeighbor {
+                                    "__coverageCount": 0,
+                                    "_brackets": Map {
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "UP",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                      },
+                                    },
+                                    "_localCellCache": Set {},
+                                    "_tilesWithModifier": Set {
+                                      [Circular],
+                                    },
+                                  },
+                                },
+                                "_tile": [Circular],
+                              },
+                              SimpleTileWithModifier {
+                                "__coverageCount": 0,
+                                "_direction": "DOWN",
+                                "_isNegated": false,
+                                "_isRandom": false,
+                                "_neighbors": Set {
+                                  SimpleNeighbor {
+                                    "__coverageCount": 0,
+                                    "_brackets": Map {
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "UP",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                      },
+                                    },
+                                    "_localCellCache": Set {},
+                                    "_tilesWithModifier": Set {
+                                      [Circular],
+                                    },
+                                  },
+                                },
+                                "_tile": [Circular],
+                              },
+                              [Circular],
+                              SimpleTileWithModifier {
+                                "__coverageCount": 0,
+                                "_direction": "RIGHT",
+                                "_isNegated": false,
+                                "_isRandom": false,
+                                "_neighbors": Set {
+                                  SimpleNeighbor {
+                                    "__coverageCount": 0,
+                                    "_brackets": Map {
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "UP",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                      },
+                                    },
+                                    "_localCellCache": Set {},
+                                    "_tilesWithModifier": Set {
+                                      [Circular],
+                                    },
+                                  },
+                                },
+                                "_tile": [Circular],
+                              },
+                              SimpleTileWithModifier {
+                                "__coverageCount": 0,
+                                "_direction": "ACTION",
+                                "_isNegated": false,
+                                "_isRandom": false,
+                                "_neighbors": Set {
+                                  SimpleNeighbor {
+                                    "__coverageCount": 0,
+                                    "_brackets": Map {
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "UP",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                      },
+                                    },
+                                    "_localCellCache": Set {},
+                                    "_tilesWithModifier": Set {
+                                      [Circular],
+                                    },
+                                  },
+                                },
+                                "_tile": [Circular],
+                              },
+                            },
+                          },
+                        ],
+                      },
+                    },
+                  },
+                },
+              ],
+            },
+          ],
+          "_evaluationDirection": "UP",
+          "_isAgain": false,
+          "_isLate": false,
+          "_isRigid": false,
+          "_isSubscribedToCellChanges": true,
+        },
+        SimpleRule {
+          "__coverageCount": 0,
+          "_actionBrackets": Array [
+            SimpleBracket {
+              "__coverageCount": 0,
+              "_direction": "UP",
+              "_firstCells": Set {},
+              "_neighbors": Array [
+                SimpleNeighbor {
+                  "__coverageCount": 0,
+                  "_brackets": Map {},
+                  "_localCellCache": Set {},
+                  "_tilesWithModifier": Set {},
+                },
+              ],
+            },
+          ],
+          "_commands": Array [],
+          "_conditionBrackets": Array [
+            SimpleBracket {
+              "__coverageCount": 0,
+              "_direction": "UP",
+              "_firstCells": Set {},
+              "_neighbors": Array [
+                SimpleNeighbor {
+                  "__coverageCount": 0,
+                  "_brackets": Map {
+                    [Circular] => Set {
+                      0,
+                    },
+                  },
+                  "_localCellCache": Set {},
+                  "_tilesWithModifier": Set {
+                    SimpleTileWithModifier {
+                      "__coverageCount": 0,
+                      "_direction": "RIGHT",
+                      "_isNegated": false,
+                      "_isRandom": false,
+                      "_neighbors": Set {
+                        [Circular],
+                      },
+                      "_tile": GameLegendTileSimple {
+                        "__coverageCount": 0,
+                        "_spriteNameOrLevelChar": "z",
+                        "_spritesCache": Array [
+                          GameSpriteSingleColor {
+                            "__coverageCount": 0,
+                            "_cellSet": Set {},
+                            "_color": TransparentColor {
+                              "__coverageCount": 0,
+                            },
+                            "_name": "testObject",
+                            "_optionalLegendChar": undefined,
+                            "_tileWithModifierSet": Set {
+                              SimpleTileWithModifier {
+                                "__coverageCount": 0,
+                                "_direction": "UP",
+                                "_isNegated": false,
+                                "_isRandom": false,
+                                "_neighbors": Set {
+                                  SimpleNeighbor {
+                                    "__coverageCount": 0,
+                                    "_brackets": Map {
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "UP",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                      },
+                                    },
+                                    "_localCellCache": Set {},
+                                    "_tilesWithModifier": Set {
+                                      [Circular],
+                                    },
+                                  },
+                                },
+                                "_tile": [Circular],
+                              },
+                              SimpleTileWithModifier {
+                                "__coverageCount": 0,
+                                "_direction": "DOWN",
+                                "_isNegated": false,
+                                "_isRandom": false,
+                                "_neighbors": Set {
+                                  SimpleNeighbor {
+                                    "__coverageCount": 0,
+                                    "_brackets": Map {
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "UP",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                      },
+                                    },
+                                    "_localCellCache": Set {},
+                                    "_tilesWithModifier": Set {
+                                      [Circular],
+                                    },
+                                  },
+                                },
+                                "_tile": [Circular],
+                              },
+                              SimpleTileWithModifier {
+                                "__coverageCount": 0,
+                                "_direction": "LEFT",
+                                "_isNegated": false,
+                                "_isRandom": false,
+                                "_neighbors": Set {
+                                  SimpleNeighbor {
+                                    "__coverageCount": 0,
+                                    "_brackets": Map {
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "UP",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                      },
+                                    },
+                                    "_localCellCache": Set {},
+                                    "_tilesWithModifier": Set {
+                                      [Circular],
+                                    },
+                                  },
+                                },
+                                "_tile": [Circular],
+                              },
+                              [Circular],
+                              SimpleTileWithModifier {
+                                "__coverageCount": 0,
+                                "_direction": "ACTION",
+                                "_isNegated": false,
+                                "_isRandom": false,
+                                "_neighbors": Set {
+                                  SimpleNeighbor {
+                                    "__coverageCount": 0,
+                                    "_brackets": Map {
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "UP",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                      },
+                                    },
+                                    "_localCellCache": Set {},
+                                    "_tilesWithModifier": Set {
+                                      [Circular],
+                                    },
+                                  },
+                                },
+                                "_tile": [Circular],
+                              },
+                            },
+                          },
+                        ],
+                        "_tiles": Array [
+                          GameSpriteSingleColor {
+                            "__coverageCount": 0,
+                            "_cellSet": Set {},
+                            "_color": TransparentColor {
+                              "__coverageCount": 0,
+                            },
+                            "_name": "testObject",
+                            "_optionalLegendChar": undefined,
+                            "_tileWithModifierSet": Set {
+                              SimpleTileWithModifier {
+                                "__coverageCount": 0,
+                                "_direction": "UP",
+                                "_isNegated": false,
+                                "_isRandom": false,
+                                "_neighbors": Set {
+                                  SimpleNeighbor {
+                                    "__coverageCount": 0,
+                                    "_brackets": Map {
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "UP",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                      },
+                                    },
+                                    "_localCellCache": Set {},
+                                    "_tilesWithModifier": Set {
+                                      [Circular],
+                                    },
+                                  },
+                                },
+                                "_tile": [Circular],
+                              },
+                              SimpleTileWithModifier {
+                                "__coverageCount": 0,
+                                "_direction": "DOWN",
+                                "_isNegated": false,
+                                "_isRandom": false,
+                                "_neighbors": Set {
+                                  SimpleNeighbor {
+                                    "__coverageCount": 0,
+                                    "_brackets": Map {
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "UP",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                      },
+                                    },
+                                    "_localCellCache": Set {},
+                                    "_tilesWithModifier": Set {
+                                      [Circular],
+                                    },
+                                  },
+                                },
+                                "_tile": [Circular],
+                              },
+                              SimpleTileWithModifier {
+                                "__coverageCount": 0,
+                                "_direction": "LEFT",
+                                "_isNegated": false,
+                                "_isRandom": false,
+                                "_neighbors": Set {
+                                  SimpleNeighbor {
+                                    "__coverageCount": 0,
+                                    "_brackets": Map {
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "UP",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                      },
+                                    },
+                                    "_localCellCache": Set {},
+                                    "_tilesWithModifier": Set {
+                                      [Circular],
+                                    },
+                                  },
+                                },
+                                "_tile": [Circular],
+                              },
+                              [Circular],
+                              SimpleTileWithModifier {
+                                "__coverageCount": 0,
+                                "_direction": "ACTION",
+                                "_isNegated": false,
+                                "_isRandom": false,
+                                "_neighbors": Set {
+                                  SimpleNeighbor {
+                                    "__coverageCount": 0,
+                                    "_brackets": Map {
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "UP",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                      },
+                                    },
+                                    "_localCellCache": Set {},
+                                    "_tilesWithModifier": Set {
+                                      [Circular],
+                                    },
+                                  },
+                                },
+                                "_tile": [Circular],
+                              },
+                            },
+                          },
+                        ],
+                      },
+                    },
+                  },
+                },
+              ],
+            },
+          ],
+          "_evaluationDirection": "UP",
+          "_isAgain": false,
+          "_isLate": false,
+          "_isRigid": false,
+          "_isSubscribedToCellChanges": true,
+        },
+        SimpleRule {
+          "__coverageCount": 0,
+          "_actionBrackets": Array [
+            SimpleBracket {
+              "__coverageCount": 0,
+              "_direction": "UP",
+              "_firstCells": Set {},
+              "_neighbors": Array [
+                SimpleNeighbor {
+                  "__coverageCount": 0,
+                  "_brackets": Map {},
+                  "_localCellCache": Set {},
+                  "_tilesWithModifier": Set {},
+                },
+              ],
+            },
+          ],
+          "_commands": Array [],
+          "_conditionBrackets": Array [
+            SimpleBracket {
+              "__coverageCount": 0,
+              "_direction": "UP",
+              "_firstCells": Set {},
+              "_neighbors": Array [
+                SimpleNeighbor {
+                  "__coverageCount": 0,
+                  "_brackets": Map {
+                    [Circular] => Set {
+                      0,
+                    },
+                  },
+                  "_localCellCache": Set {},
+                  "_tilesWithModifier": Set {
+                    SimpleTileWithModifier {
+                      "__coverageCount": 0,
+                      "_direction": "ACTION",
+                      "_isNegated": false,
+                      "_isRandom": false,
+                      "_neighbors": Set {
+                        [Circular],
+                      },
+                      "_tile": GameLegendTileSimple {
+                        "__coverageCount": 0,
+                        "_spriteNameOrLevelChar": "z",
+                        "_spritesCache": Array [
+                          GameSpriteSingleColor {
+                            "__coverageCount": 0,
+                            "_cellSet": Set {},
+                            "_color": TransparentColor {
+                              "__coverageCount": 0,
+                            },
+                            "_name": "testObject",
+                            "_optionalLegendChar": undefined,
+                            "_tileWithModifierSet": Set {
+                              SimpleTileWithModifier {
+                                "__coverageCount": 0,
+                                "_direction": "UP",
+                                "_isNegated": false,
+                                "_isRandom": false,
+                                "_neighbors": Set {
+                                  SimpleNeighbor {
+                                    "__coverageCount": 0,
+                                    "_brackets": Map {
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "UP",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                      },
+                                    },
+                                    "_localCellCache": Set {},
+                                    "_tilesWithModifier": Set {
+                                      [Circular],
+                                    },
+                                  },
+                                },
+                                "_tile": [Circular],
+                              },
+                              SimpleTileWithModifier {
+                                "__coverageCount": 0,
+                                "_direction": "DOWN",
+                                "_isNegated": false,
+                                "_isRandom": false,
+                                "_neighbors": Set {
+                                  SimpleNeighbor {
+                                    "__coverageCount": 0,
+                                    "_brackets": Map {
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "UP",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                      },
+                                    },
+                                    "_localCellCache": Set {},
+                                    "_tilesWithModifier": Set {
+                                      [Circular],
+                                    },
+                                  },
+                                },
+                                "_tile": [Circular],
+                              },
+                              SimpleTileWithModifier {
+                                "__coverageCount": 0,
+                                "_direction": "LEFT",
+                                "_isNegated": false,
+                                "_isRandom": false,
+                                "_neighbors": Set {
+                                  SimpleNeighbor {
+                                    "__coverageCount": 0,
+                                    "_brackets": Map {
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "UP",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                      },
+                                    },
+                                    "_localCellCache": Set {},
+                                    "_tilesWithModifier": Set {
+                                      [Circular],
+                                    },
+                                  },
+                                },
+                                "_tile": [Circular],
+                              },
+                              SimpleTileWithModifier {
+                                "__coverageCount": 0,
+                                "_direction": "RIGHT",
+                                "_isNegated": false,
+                                "_isRandom": false,
+                                "_neighbors": Set {
+                                  SimpleNeighbor {
+                                    "__coverageCount": 0,
+                                    "_brackets": Map {
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "UP",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                      },
+                                    },
+                                    "_localCellCache": Set {},
+                                    "_tilesWithModifier": Set {
+                                      [Circular],
+                                    },
+                                  },
+                                },
+                                "_tile": [Circular],
+                              },
                               [Circular],
                             },
                           },
@@ -13464,6 +14719,118 @@ GameData {
                             "_name": "testObject",
                             "_optionalLegendChar": undefined,
                             "_tileWithModifierSet": Set {
+                              SimpleTileWithModifier {
+                                "__coverageCount": 0,
+                                "_direction": "UP",
+                                "_isNegated": false,
+                                "_isRandom": false,
+                                "_neighbors": Set {
+                                  SimpleNeighbor {
+                                    "__coverageCount": 0,
+                                    "_brackets": Map {
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "UP",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                      },
+                                    },
+                                    "_localCellCache": Set {},
+                                    "_tilesWithModifier": Set {
+                                      [Circular],
+                                    },
+                                  },
+                                },
+                                "_tile": [Circular],
+                              },
+                              SimpleTileWithModifier {
+                                "__coverageCount": 0,
+                                "_direction": "DOWN",
+                                "_isNegated": false,
+                                "_isRandom": false,
+                                "_neighbors": Set {
+                                  SimpleNeighbor {
+                                    "__coverageCount": 0,
+                                    "_brackets": Map {
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "UP",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                      },
+                                    },
+                                    "_localCellCache": Set {},
+                                    "_tilesWithModifier": Set {
+                                      [Circular],
+                                    },
+                                  },
+                                },
+                                "_tile": [Circular],
+                              },
+                              SimpleTileWithModifier {
+                                "__coverageCount": 0,
+                                "_direction": "LEFT",
+                                "_isNegated": false,
+                                "_isRandom": false,
+                                "_neighbors": Set {
+                                  SimpleNeighbor {
+                                    "__coverageCount": 0,
+                                    "_brackets": Map {
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "UP",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                      },
+                                    },
+                                    "_localCellCache": Set {},
+                                    "_tilesWithModifier": Set {
+                                      [Circular],
+                                    },
+                                  },
+                                },
+                                "_tile": [Circular],
+                              },
+                              SimpleTileWithModifier {
+                                "__coverageCount": 0,
+                                "_direction": "RIGHT",
+                                "_isNegated": false,
+                                "_isRandom": false,
+                                "_neighbors": Set {
+                                  SimpleNeighbor {
+                                    "__coverageCount": 0,
+                                    "_brackets": Map {
+                                      SimpleBracket {
+                                        "__coverageCount": 0,
+                                        "_direction": "UP",
+                                        "_firstCells": Set {},
+                                        "_neighbors": Array [
+                                          [Circular],
+                                        ],
+                                      } => Set {
+                                        0,
+                                      },
+                                    },
+                                    "_localCellCache": Set {},
+                                    "_tilesWithModifier": Set {
+                                      [Circular],
+                                    },
+                                  },
+                                },
+                                "_tile": [Circular],
+                              },
                               [Circular],
                             },
                           },

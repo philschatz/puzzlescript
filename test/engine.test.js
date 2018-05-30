@@ -706,7 +706,6 @@ describe('engine', () => {
     `) // end game definition
         const rng1 = data._getSpriteByName('RNG1')
         const rng2 = data._getSpriteByName('RNG2')
-        debugger
         engine.tick()
 
         // [RNG] -> [] should result in the sprites not appearing

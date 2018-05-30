@@ -121,7 +121,6 @@ describe('Rule simplifier', () => {
     })
 
     it('converts VERTICAL and HORIZONTAL at the beginning of a rule into 2 rules', () => {
-        debugger
         const { engine, data } = parseEngine(`title check that Horizontal Expands
 
     ========
@@ -197,5 +196,134 @@ describe('Rule simplifier', () => {
         expect(engine.currentLevel[2][0].getSpritesAsSet().has(vert)).toBe(true)
         expect(engine.currentLevel[2][3].getSpritesAsSet().has(vert)).toBe(true)
 
+    })
+
+
+    it('expands MOVING into simple UP DOWN LEFT RIGHT ACTION rules', () => {
+        const { engine, data } = parseEngine(`title check that MOVING Expands
+
+    ========
+    OBJECTS
+    ========
+
+    Background
+    blue
+
+    Player
+    green
+
+    Shadow
+    black
+
+    =======
+    LEGEND
+    =======
+
+    . = Background
+    P = Player
+    S = Shadow
+
+    ================
+    COLLISIONLAYERS
+    ================
+
+    Background
+    Shadow
+    Player
+
+    ======
+    RULES
+    ======
+
+    RIGHT [ Player ] -> [ > Player ]
+    DOWN [ MOVING Player | Shadow ] -> [ MOVING Player | MOVING Shadow ]
+
+    =======
+    LEVELS
+    =======
+
+    P..
+    S..
+
+    `) // end game
+        const player = data._getSpriteByName('player')
+        const shadow = data._getSpriteByName('shadow')
+        engine.tick()
+
+        expect(data.rules.length).toBe(2)
+        expect(data.rules[0]._rules.length).toBe(1) // Not interesting
+        expect(data.rules[1]._rules.length).toBe(5) // UP DOWN LEFT RIGHT ACTION
+
+        expect(engine.toSnapshot()).toMatchSnapshot()
+
+        expect(engine.currentLevel[0][0].getSpritesAsSet().has(player)).toBe(false)
+        expect(engine.currentLevel[0][1].getSpritesAsSet().has(player)).toBe(true)
+
+        expect(engine.currentLevel[1][0].getSpritesAsSet().has(shadow)).toBe(false)
+        expect(engine.currentLevel[1][1].getSpritesAsSet().has(shadow)).toBe(true)
+    })
+
+    it('expands MOVING in multiple brackets into simple UP DOWN LEFT RIGHT ACTION rules', () => {
+        const { engine, data } = parseEngine(`title check that MOVING Expands
+
+    ========
+    OBJECTS
+    ========
+
+    Background
+    blue
+
+    Player
+    green
+
+    Shadow
+    black
+
+    =======
+    LEGEND
+    =======
+
+    . = Background
+    P = Player
+    S = Shadow
+
+    ================
+    COLLISIONLAYERS
+    ================
+
+    Background
+    Shadow
+    Player
+
+    ======
+    RULES
+    ======
+
+    RIGHT [ Player ] -> [ > Player ]
+    DOWN [ MOVING Player ] [ STATIONARY Shadow ] -> [ MOVING Player ] [ MOVING Shadow ]
+
+    =======
+    LEVELS
+    =======
+
+    P..
+    S..
+
+    `) // end game
+        const player = data._getSpriteByName('player')
+        const shadow = data._getSpriteByName('shadow')
+        engine.tick()
+
+        expect(data.rules.length).toBe(2)
+        expect(data.rules[0]._rules.length).toBe(1) // Not interesting
+        expect(data.rules[1]._rules.length).toBe(5) // UP DOWN LEFT RIGHT ACTION
+
+        expect(engine.toSnapshot()).toMatchSnapshot()
+
+        expect(engine.currentLevel[0][0].getSpritesAsSet().has(player)).toBe(false)
+        expect(engine.currentLevel[0][1].getSpritesAsSet().has(player)).toBe(true)
+
+        expect(engine.currentLevel[1][0].getSpritesAsSet().has(shadow)).toBe(false)
+        expect(engine.currentLevel[1][1].getSpritesAsSet().has(shadow)).toBe(true)
     })
 })

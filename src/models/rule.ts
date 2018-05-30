@@ -445,14 +445,6 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
                 case RULE_DIRECTION_ABSOLUTE.STATIONARY:
                     direction = actionDir
                     break
-                case RULE_DIRECTION_ABSOLUTE.MOVING:
-                    if (conditionDir === RULE_DIRECTION_ABSOLUTE.MOVING) {
-                        direction = null
-                    } else {
-                        // could just have MOVING on the right hand side
-                        direction = RULE_DIRECTION_ABSOLUTE.STATIONARY
-                    }
-                    break
                 case null:
                     if (conditionDir) {
                         // Stop moving because the condition was moving
@@ -620,7 +612,7 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
 
     matchesCell(cell: Cell, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
         const hasTile = this._tile && this._tile.matchesCell(cell)
-        return this._isNegated != (hasTile && (this._direction === wantsToMove || this._direction === null || this._direction === RULE_DIRECTION_ABSOLUTE.MOVING && RULE_DIRECTION_ABSOLUTE_SET.has(wantsToMove)))
+        return this._isNegated != (hasTile && (this._direction === wantsToMove || this._direction === null))
     }
 
     matchesFirstCell(cells: Iterable<Cell>, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
@@ -754,6 +746,7 @@ export class GameRule extends BaseForLines implements ICacheable {
             const expandModifiers = new Map()
             expandModifiers.set(RULE_MODIFIER.HORIZONTAL, [RULE_DIRECTION.LEFT, RULE_DIRECTION.RIGHT])
             expandModifiers.set(RULE_MODIFIER.VERTICAL, [RULE_DIRECTION.UP, RULE_DIRECTION.DOWN])
+            expandModifiers.set(RULE_MODIFIER.MOVING, [RULE_DIRECTION.UP, RULE_DIRECTION.DOWN, RULE_DIRECTION.LEFT, RULE_DIRECTION.RIGHT, RULE_DIRECTION.ACTION])
             // switch (direction) {
             //     case RULE_DIRECTION_ABSOLUTE.UP:
             //     case RULE_DIRECTION_ABSOLUTE.DOWN:
@@ -1037,9 +1030,6 @@ export class TileWithModifier extends BaseForLines implements ICacheable {
                 break
             case 'RANDOMDIR':
                 direction = RULE_DIRECTION_ABSOLUTE.RANDOMDIR
-                break
-            case 'MOVING':
-                direction = RULE_DIRECTION_ABSOLUTE.MOVING
                 break
             default:
                 direction = null

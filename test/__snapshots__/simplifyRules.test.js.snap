@@ -60,3 +60,53 @@ Array [
   ],
 ]
 `;
+
+exports[`Rule simplifier expands MOVING in multiple brackets into simple UP DOWN LEFT RIGHT ACTION rules 1`] = `
+Array [
+  Array [
+    Array [],
+    Array [
+      "Player",
+      "Background",
+    ],
+    Array [
+      "Background",
+    ],
+  ],
+  Array [
+    Array [],
+    Array [
+      "Shadow",
+      "Background",
+    ],
+    Array [
+      "Background",
+    ],
+  ],
+]
+`;
+
+exports[`Rule simplifier expands MOVING into simple UP DOWN LEFT RIGHT ACTION rules 1`] = `
+Array [
+  Array [
+    Array [],
+    Array [
+      "Player",
+      "Background",
+    ],
+    Array [
+      "Background",
+    ],
+  ],
+  Array [
+    Array [],
+    Array [
+      "Shadow",
+      "Background",
+    ],
+    Array [
+      "Background",
+    ],
+  ],
+]
+`;
