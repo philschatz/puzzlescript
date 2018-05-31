@@ -39,12 +39,18 @@ function opposite(dir: RULE_DIRECTION_ABSOLUTE) {
 
 export class SimpleRuleGroup extends BaseForLines implements IRule {
     _rules: IRule[]
-    constructor(source: IGameCode, rules: IRule[]) {
+    _hasDebugger: boolean
+    constructor(source: IGameCode, rules: IRule[], hasDebugger: boolean) {
         super(source)
         this._rules = rules
+        this._hasDebugger = hasDebugger
     }
 
     evaluate() {
+        if (this._hasDebugger) {
+            // A "DEBUGGER" flag was set in the game so we are pausing here
+            debugger
+        }
         let mutations = []
         for (const rule of this._rules) {
             const ret = rule.evaluate()
@@ -729,10 +735,11 @@ export class GameRule extends BaseForLines implements ICacheable {
     _hasEllipsis: boolean
     _brackets: RuleBracket[]
     _actionBrackets: RuleBracket[]
+    _hasDebugger: boolean // Used for setting a breakpoint when evaluating the rule
     // _conditionCommandPair: RuleConditionCommandPair[]
 
     toKey() {
-        return `${this._brackets.map(x => x.toKey())} -> ${this._actionBrackets.map(x => x.toKey())} ${this._commands.join(' ')}`
+        return `${this._brackets.map(x => x.toKey())} -> ${this._actionBrackets.map(x => x.toKey())} ${this._commands.join(' ')} {debugger?${this._hasDebugger}}`
     }
 
     simplify(ruleCache: Map<string, SimpleRule>, bracketCache: Map<string, SimpleBracket>, neighborCache: Map<string, SimpleNeighbor>, tileCache: Map<string, SimpleTileWithModifier>) {
@@ -741,7 +748,7 @@ export class GameRule extends BaseForLines implements ICacheable {
         for (const rule of simpleRules) {
             rule.subscribeToCellChanges()
         }
-        return new SimpleRuleGroup(this.__source, simpleRules)
+        return new SimpleRuleGroup(this.__source, simpleRules, this._hasDebugger)
     }
 
     toSimple(ruleCache: Map<string, SimpleRule>, bracketCache: Map<string, SimpleBracket>, neighborCache: Map<string, SimpleNeighbor>, tileCache: Map<string, SimpleTileWithModifier>) {
@@ -812,7 +819,7 @@ export class GameRule extends BaseForLines implements ICacheable {
         const actionBrackets = this._actionBrackets.map(bracket => bracket.clone(direction, nameToExpand, newName))
         // retain LATE and RIGID but discard the rest of the modifiers
         const modifiers = _.intersection(this._modifiers, [RULE_MODIFIER.LATE, RULE_MODIFIER.RIGID]).concat([RULE_MODIFIER[direction]])
-        return new GameRule(this.__source, modifiers, conditionBrackets, actionBrackets, this._commands)
+        return new GameRule(this.__source, modifiers, conditionBrackets, actionBrackets, this._commands, this._hasDebugger)
     }
 
     hasModifier(modifier: RULE_MODIFIER) {
@@ -857,13 +864,14 @@ export class GameRule extends BaseForLines implements ICacheable {
         }
     }
 
-    constructor(source: IGameCode, modifiers: RULE_MODIFIER[], conditions: RuleBracket[], actions: RuleBracket[], commands: string[]) {
+    constructor(source: IGameCode, modifiers: RULE_MODIFIER[], conditions: RuleBracket[], actions: RuleBracket[], commands: string[], hasDebugger: boolean) {
         super(source)
         this._modifiers = modifiers
         this._commands = commands
         this._hasEllipsis = false
         this._brackets = conditions
         this._actionBrackets = actions
+        this._hasDebugger = hasDebugger
 
         // Set _hasEllipsis value
         for (let i = 0; i < conditions.length; i++) {
@@ -1137,14 +1145,16 @@ export interface IRule extends IGameNode {
 
 export class GameRuleLoop extends BaseForLines {
     _rules: GameRule[]
+    _hasDebugger: boolean
 
-    constructor(source: IGameCode, rules: GameRule[]) {
+    constructor(source: IGameCode, rules: GameRule[], hasDebugger: boolean) {
         super(source)
         this._rules = rules
+        this._hasDebugger = hasDebugger
     }
 
     simplify(ruleCache: Map<string, SimpleRule>, bracketCache: Map<string, SimpleBracket>, neighborCache: Map<string, SimpleNeighbor>, tileCache: Map<string, SimpleTileWithModifier>) {
-        return new SimpleRuleGroup(this.__source, this._rules.map(rule => rule.simplify(ruleCache, bracketCache, neighborCache, tileCache)))
+        return new SimpleRuleGroup(this.__source, this._rules.map(rule => rule.simplify(ruleCache, bracketCache, neighborCache, tileCache)), this._hasDebugger)
     }
     evaluate() {
         // Keep looping as long as once of the rules evaluated something

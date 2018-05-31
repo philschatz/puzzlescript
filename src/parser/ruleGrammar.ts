@@ -15,7 +15,7 @@ export const RULE_GRAMMAR = `
         | RuleGroup // Do this before Rule because we need to look for a "+" on the following Rule
         | Rule
 
-    Rule = (RuleModifierLeft* RuleBracket)+ "->" (RuleModifier? RuleBracket)* RuleCommand* MessageCommand? lineTerminator+
+    Rule = t_DEBUGGER? (RuleModifierLeft* RuleBracket)+ "->" (RuleModifier? RuleBracket)* RuleCommand* MessageCommand? lineTerminator+
 
     RuleBracket = "[" NonemptyListOf<RuleBracketNeighbor, "|"> t_AGAIN? "]" // t_AGAIN is a HACK. It should be in the list of commands but it's not.
     RuleBracketNeighbor
@@ -74,11 +74,13 @@ export const RULE_GRAMMAR = `
     MessageCommand = t_MESSAGE words*
 
     RuleLoop =
+        t_DEBUGGER?
         t_STARTLOOP lineTerminator+
         RuleItem+
         t_ENDLOOP lineTerminator+
 
     RuleGroup =
+        t_DEBUGGER?
         Rule
         (t_GROUP_RULE_PLUS Rule)+
 
@@ -94,14 +96,14 @@ export function getRuleSemantics() {
         RuleItem: function (_1) {
             return _1.parse()
         },
-        RuleLoop: function (_startloop, _whitespace1, rules, _endloop, _whitespace2) {
-            return new GameRuleLoop(this.source, rules.parse())
+        RuleLoop: function (hasDebugger, _startloop, _whitespace1, rules, _endloop, _whitespace2) {
+            return new GameRuleLoop(this.source, rules.parse(), !!hasDebugger.parse()[0])
         },
-        RuleGroup: function (firstRule, _plusses, followingRules) {
-            return new GameRuleGroup(this.source, [firstRule.parse()].concat(followingRules.parse()))
+        RuleGroup: function (hasDebugger, firstRule, _plusses, followingRules) {
+            return new GameRuleGroup(this.source, [firstRule.parse()].concat(followingRules.parse()), !!hasDebugger.parse()[0])
         },
-        Rule: function (modifiers, conditions, _arrow, _unusuedModifer, actions, commands, optionalMessageCommand, _whitespace) {
-            return new GameRule(this.source, _.flatten(modifiers.parse()), conditions.parse(), actions.parse(), commands.parse().concat(optionalMessageCommand.parse()))
+        Rule: function (optionalDebugger, modifiers, conditions, _arrow, _unusuedModifer, actions, commands, optionalMessageCommand, _whitespace) {
+            return new GameRule(this.source, _.flatten(modifiers.parse()), conditions.parse(), actions.parse(), commands.parse().concat(optionalMessageCommand.parse()), !!optionalDebugger.parse()[0])
         },
         RuleBracket: function (_openBracket, neighbors, hackAgain, _closeBracket) {
             const b = new RuleBracket(this.source, neighbors.parse(), hackAgain.parse())
