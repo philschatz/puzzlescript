@@ -779,4 +779,76 @@ describe('engine', () => {
 
     })
 
+
+    it('preserves wantsToMove when a sprite is replaced but it is in the same collision layer', () => {
+        const { engine, data } = parseEngine(`title foo
+        realtime_interval 0.6
+
+        ========
+        OBJECTS
+        ========
+
+        Background .
+        gray
+
+        Player P
+        transparent
+
+        SpriteA A
+        green
+
+        SpriteB B
+        blue
+
+        =======
+        LEGEND
+        =======
+
+        =======
+        SOUNDS
+        =======
+
+        ================
+        COLLISIONLAYERS
+        ================
+        Background
+        Player
+        SpriteA, SpriteB
+
+
+        ======
+        RULES
+        ======
+
+        (just get A to move)
+        RIGHT [ STATIONARY A ] -> [ > A ]
+        (swap A with B and the wantsToMove should be preserved)
+        RIGHT [ A ] -> [ B ]
+
+
+        ==============
+        WINCONDITIONS
+        ==============
+
+        =======
+        LEVELS
+        =======
+
+        PA.
+
+    `) // end game definition
+
+        const spriteA = data._getSpriteByName('spritea')
+        const spriteB = data._getSpriteByName('spriteb')
+        engine.tick()
+
+        // Check that movement was transferred from A to B
+        expect(engine.currentLevel[0][2].getSpritesAsSet().has(spriteB)).toBe(true)
+        // The rest are just sanity-checks
+        expect(engine.currentLevel[0][2].getSpritesAsSet().has(spriteA)).toBe(false)
+        expect(spriteA.getCellsThatMatch().size).toBe(0)
+        expect(spriteB.getCellsThatMatch().size).toBe(1)
+
+    })
+
 })

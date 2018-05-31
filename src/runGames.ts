@@ -95,9 +95,9 @@ async function run() {
 
                     await sleep(Math.max(200 - (Date.now() - startTime), 0))
 
-                    if (changedCells.size === 0) {
-                        break
-                    }
+                    // if (changedCells.size === 0) {
+                    //     break
+                    // }
 
                 }
                 console.log('Max time spent updating:', global['max_time_spent_updating']);

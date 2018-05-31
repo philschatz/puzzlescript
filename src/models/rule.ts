@@ -481,6 +481,20 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
         }
 
         for (const sprite of setDifference(new Set(conditionSpritesMap.keys()), new Set(actionSpritesMap.keys()))) {
+            // In the original implementation, wantsToMove is stored for the collisionLayer,
+            // not on the sprite. Since we do not do that, we have to transfer the wantsToMove
+            // when a sprite in a collisionLayer is swapped with another sprite in the same layer.
+            //
+            // Check if the removed sprite is in the same collisionLayer as an action Sprite.
+            // If so, preserve the wantsToMove direction
+            for (const [actionSprite, actionSpriteDirection] of actionSpritesMap) {
+                if (conditionSpritesMap.get(sprite) === null
+                    &&  sprite.getCollisionLayerNum() === actionSprite.getCollisionLayerNum()
+                    && actionSpriteDirection === null) {
+
+                    spritesToAdd.set(actionSprite, cell.getWantsToMove(sprite))
+                }
+            }
             spritesToRemove.add(sprite)
         }
 
@@ -493,7 +507,9 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
 
         for (const sprite of setDifference(new Set(actionSpritesMap.keys()), new Set(conditionSpritesMap.keys()))) {
             const direction = getActionDir(sprite)
-            spritesToAdd.set(sprite, direction)
+            if (!spritesToAdd.has(sprite)) { // could have been added earlier via the transferDirectionWhenCollisionLayerMatches code above
+                spritesToAdd.set(sprite, direction)
+            }
         }
 
         return { spritesToRemove, spritesToUpdate, spritesToAdd }

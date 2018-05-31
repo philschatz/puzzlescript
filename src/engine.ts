@@ -13,6 +13,10 @@ const MAX_REPEATS = 10
 // This Object exists so the UI has something to bind to
 export class Cell {
     _engine: Engine
+    // In the original implementation, wantsToMove is stored for the collisionLayer,
+    // not on the sprite. Since we do not do that, we have to transfer the wantsToMove
+    // when a sprite in a collisionLayer is swapped with another sprite in the same layer.
+    // TODO: Store wantsToMove information using the collisionLayer as a key rather than the sprite.
     _spriteAndWantsToMoves: Map<GameSprite, string>
     rowIndex: number
     colIndex: number
@@ -76,7 +80,12 @@ export class Cell {
         return wantsToMove
     }
     getWantsToMove(sprite: GameSprite) {
-        return this._spriteAndWantsToMoves.get(sprite)
+        const wantsToMove = this._spriteAndWantsToMoves.get(sprite)
+        if (wantsToMove) {
+            return RULE_DIRECTION_ABSOLUTE[wantsToMove]
+        } else {
+            return null
+        }
     }
     directionForSprite(sprite: GameSprite) {
         const entry = [...this._spriteAndWantsToMoves].filter(([a]) => a.getCollisionLayerNum() === sprite.getCollisionLayerNum())[0]
