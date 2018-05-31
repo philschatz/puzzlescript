@@ -37,7 +37,7 @@ function checkGrammar(code) {
     return tree
 }
 
-describe('BIG', () => {
+describe.skip('BIG', () => {
     it('Reads in a big file', () => {
         checkGrammar(readFileSync('./gists/z_on-board_itch/toobig-script.txt', 'utf-8'))
     })

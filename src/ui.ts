@@ -252,7 +252,11 @@ class UI {
                             writeTextAt(x, y, `${spriteName.substring(spriteColIndex * 2, spriteColIndex * 2 + 2)}`)
                         }
                         if (spriteRowIndex === 4 && spriteColIndex === 4) {
-                            writeTextAt(x + 1, y, `${spritesForDebugging.length}`)
+                            if (spritesForDebugging.length > 9) {
+                                writeTextAt(x, y, `${spritesForDebugging.length}`)
+                            } else {
+                                writeTextAt(x + 1, y, `${spritesForDebugging.length}`)
+                            }
                         }
                     }
                 }

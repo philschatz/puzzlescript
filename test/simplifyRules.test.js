@@ -236,7 +236,7 @@ describe('Rule simplifier', () => {
     ======
 
     RIGHT [ Player ] -> [ > Player ]
-    DOWN [ MOVING Player | Shadow ] -> [ MOVING Player | MOVING Shadow ]
+    [ MOVING Player | Shadow ] -> [ MOVING Player | MOVING Shadow ]
 
     =======
     LEVELS
@@ -252,7 +252,7 @@ describe('Rule simplifier', () => {
 
         expect(data.rules.length).toBe(2)
         expect(data.rules[0]._rules.length).toBe(1) // Not interesting
-        expect(data.rules[1]._rules.length).toBe(5) // UP DOWN LEFT RIGHT ACTION
+        expect(data.rules[1]._rules.length).toBe(4 * 5) // UP DOWN LEFT RIGHT ACTION
 
         expect(engine.toSnapshot()).toMatchSnapshot()
 

@@ -851,4 +851,90 @@ describe('engine', () => {
 
     })
 
+
+    it('percolates wantsToMove up (Beam Islands PlayerIsland)', () => {
+        const { engine, data } = parseEngine(`title foo
+        realtime_interval 0.6
+
+        ========
+        OBJECTS
+        ========
+
+        Background
+        gray
+
+        Player
+        transparent
+
+        Island
+        green
+
+        PlayerIsland
+        blue
+
+        BlockIsland
+        Transparent
+
+
+        =======
+        LEGEND
+        =======
+
+        . = Background
+        P = Player AND Island AND PlayerIsland
+        I = Island and PlayerIsland
+        s = Island (for blocking movement)
+
+        MoveBlock = Island
+
+        =======
+        SOUNDS
+        =======
+
+        ================
+        COLLISIONLAYERS
+        ================
+        Background
+        Player
+        PlayerIsland, BlockIsland
+        Island
+
+
+        ======
+        RULES
+        ======
+
+        RIGHT [ STATIONARY Player ] -> [ > Player ]
+        [ Island NO PlayerIsland ] -> [ Island BlockIsland ]
+        [ > Player ][ PlayerIsland ] -> [ > Player ][ > PlayerIsland ]
+    (
+        [ > PlayerIsland Island | NO MoveBlock ] -> [ > PlayerIsland > Island | ]
+
+        [ < Island | Island NO BlockIsland ] -> [ < Island | < Island ]
+    )
+        [ STATIONARY Island PlayerIsland ][ MOVING Player ] -> [ Island PlayerIsland ][ STATIONARY Player ] (SFX2)
+
+
+        ==============
+        WINCONDITIONS
+        ==============
+
+        =======
+        LEVELS
+        =======
+
+        PIs..
+
+    `) // end game definition
+
+        const player = data._getSpriteByName('player')
+        const island = data._getSpriteByName('island')
+        const playerIsland = data._getSpriteByName('playerisland')
+        engine.tickUpdateCells()
+
+        expect(player.getCellsThatMatch().size).toBe(1)
+        expect([...player.getCellsThatMatch()][0].getWantsToMove(player)).toBe('STATIONARY')
+
+    })
+
 })

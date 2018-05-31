@@ -39,18 +39,12 @@ function opposite(dir: RULE_DIRECTION_ABSOLUTE) {
 
 export class SimpleRuleGroup extends BaseForLines implements IRule {
     _rules: IRule[]
-    _hasDebugger: boolean
-    constructor(source: IGameCode, rules: IRule[], hasDebugger: boolean) {
+    constructor(source: IGameCode, rules: IRule[]) {
         super(source)
         this._rules = rules
-        this._hasDebugger = hasDebugger
     }
 
     evaluate() {
-        if (this._hasDebugger) {
-            // A "DEBUGGER" flag was set in the game so we are pausing here
-            debugger
-        }
         let mutations = []
         for (const rule of this._rules) {
             const ret = rule.evaluate()
@@ -96,7 +90,8 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
     _isAgain: boolean
     _isRigid: boolean
     _isSubscribedToCellChanges: boolean
-    constructor(source: IGameCode, evaluationDirection: RULE_DIRECTION_ABSOLUTE, conditionBrackets: SimpleBracket[], actionBrackets: SimpleBracket[], commands: string[], isLate: boolean, isAgain: boolean, isRigid: boolean) {
+    _hasDebugger: boolean
+    constructor(source: IGameCode, evaluationDirection: RULE_DIRECTION_ABSOLUTE, conditionBrackets: SimpleBracket[], actionBrackets: SimpleBracket[], commands: string[], isLate: boolean, isAgain: boolean, isRigid: boolean, hasDebugger: boolean) {
         super(source)
         this._evaluationDirection = evaluationDirection
         this._conditionBrackets = conditionBrackets
@@ -105,9 +100,10 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
         this._isLate = isLate
         this._isAgain = isAgain
         this._isRigid = isRigid
+        this._hasDebugger = hasDebugger
     }
     toKey() {
-        return `{Late?${this._isLate}}{Rigid?${this._isRigid}}{again?${this._isAgain}}${this._conditionBrackets.map(x => x.toKey())} -> ${this._actionBrackets.map(x => x.toKey())} ${this._commands.join(' ')}`
+        return `{Late?${this._isLate}}{Rigid?${this._isRigid}}{again?${this._isAgain}} ${this._evaluationDirection} ${this._conditionBrackets.map(x => x.toKey())} -> ${this._actionBrackets.map(x => x.toKey())} ${this._commands.join(' ')} {debugger?${this._hasDebugger}}`
     }
     getChildRules() {
         return []
@@ -148,6 +144,10 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
         }
 
         if (matchesAllBrackets) {
+            if (this._hasDebugger) {
+                // A "DEBUGGER" flag was set in the game so we are pausing here
+                debugger
+            }
             // Evaluate!
             // let didExecute = false
             const mutators = this._conditionBrackets.map((bracket, index) => {
@@ -528,24 +528,26 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
         })
     }
 
-    matchesCell(cell: Cell, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
-        let shouldMatch = true
+    matchesCell(cell: Cell, tileWithModifier: SimpleTileWithModifier, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
         for (const t of this._tilesWithModifier) {
-            if (!t.matchesCell(cell, wantsToMove)) {
-                shouldMatch = false
-                break
+            if (t === tileWithModifier) {
+                if (!t.matchesCellWantsToMove(cell, wantsToMove)) {
+                    return false
+                }
+            } else if (!t.matchesCellExistingWantsToMove(cell)) {
+                return false
             }
         }
-        return shouldMatch
+        return true
     }
 
-    matchesFirstCell(cells: Iterable<Cell>, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
-        return this.matchesCell(cells[0], wantsToMove)
+    matchesFirstCell(cells: Iterable<Cell>, t: SimpleTileWithModifier, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
+        return this.matchesCell(cells[0], t, wantsToMove)
     }
 
     addCells(t: SimpleTileWithModifier, sprite: GameSprite, cells: Iterable<Cell>, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
         for (const cell of cells) {
-            const matchesTiles = this.matchesCell(cell, wantsToMove)
+            const matchesTiles = this.matchesCell(cell, t, wantsToMove)
             if (matchesTiles) {
                 // Commented because updates could cause the cell to already be in the cache
                 //if (!this.hasCell(cell)) {
@@ -646,13 +648,26 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
         }
     }
 
-    matchesCell(cell: Cell, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
+    matchesCellExistingWantsToMove(cell: Cell) {
+        const hasTile = this._tile && this._tile.matchesCell(cell)
+        const tileSprites = this._tile.getSprites()
+        let wantsToMove = RULE_DIRECTION_ABSOLUTE.STATIONARY
+        for (const sprite of tileSprites) {
+            if (cell.getWantsToMove(sprite)) {
+                wantsToMove = cell.getWantsToMove(sprite)
+                break
+            }
+        }
+        return this._isNegated != (hasTile && (this._direction === wantsToMove || this._direction === null))
+    }
+
+    matchesCellWantsToMove(cell: Cell, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
         const hasTile = this._tile && this._tile.matchesCell(cell)
         return this._isNegated != (hasTile && (this._direction === wantsToMove || this._direction === null))
     }
 
     matchesFirstCell(cells: Iterable<Cell>, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
-        return this.matchesCell(cells[0], wantsToMove)
+        return this.matchesCellWantsToMove(cells[0], wantsToMove)
     }
 
     addCells(sprite: GameSprite, cells: Iterable<Cell>, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
@@ -755,7 +770,7 @@ export class GameRule extends BaseForLines implements ICacheable {
     // _conditionCommandPair: RuleConditionCommandPair[]
 
     toKey() {
-        return `${this._brackets.map(x => x.toKey())} -> ${this._actionBrackets.map(x => x.toKey())} ${this._commands.join(' ')} {debugger?${this._hasDebugger}}`
+        return `${this._modifiers.join(' ')} ${this._brackets.map(x => x.toKey())} -> ${this._actionBrackets.map(x => x.toKey())} ${this._commands.join(' ')} {debugger?${this._hasDebugger}}`
     }
 
     simplify(ruleCache: Map<string, SimpleRule>, bracketCache: Map<string, SimpleBracket>, neighborCache: Map<string, SimpleNeighbor>, tileCache: Map<string, SimpleTileWithModifier>) {
@@ -764,7 +779,7 @@ export class GameRule extends BaseForLines implements ICacheable {
         for (const rule of simpleRules) {
             rule.subscribeToCellChanges()
         }
-        return new SimpleRuleGroup(this.__source, simpleRules, this._hasDebugger)
+        return new SimpleRuleGroup(this.__source, simpleRules)
     }
 
     toSimple(ruleCache: Map<string, SimpleRule>, bracketCache: Map<string, SimpleBracket>, neighborCache: Map<string, SimpleNeighbor>, tileCache: Map<string, SimpleTileWithModifier>) {
@@ -772,35 +787,45 @@ export class GameRule extends BaseForLines implements ICacheable {
         if (directions.length !== 1) {
             throw new Error(`BUG: should have exactly 1 direction by now but found the following: "${directions}"`)
         }
-        return cacheSetAndGet(ruleCache, new SimpleRule(this.__source, directions[0], this._brackets.map(x => x.toSimple(directions[0], ruleCache, bracketCache, neighborCache, tileCache)), this._actionBrackets.map(x => x.toSimple(directions[0], ruleCache, bracketCache, neighborCache, tileCache)), this._commands, this.isLate(), this.isAgain(), this.isRigid()))
+        return cacheSetAndGet(ruleCache, new SimpleRule(this.__source, directions[0], this._brackets.map(x => x.toSimple(directions[0], ruleCache, bracketCache, neighborCache, tileCache)), this._actionBrackets.map(x => x.toSimple(directions[0], ruleCache, bracketCache, neighborCache, tileCache)), this._commands, this.isLate(), this.isAgain(), this.isRigid(), this._hasDebugger))
     }
 
     convertToMultiple() {
-        let rulesToConvert = [this]
+        let rulesToConvert = []
         let convertedRules = []
 
         for (const direction of this.getDirectionModifiers()) {
-            const expandModifiers = new Map()
-            expandModifiers.set(RULE_MODIFIER.HORIZONTAL, [RULE_DIRECTION.LEFT, RULE_DIRECTION.RIGHT])
-            expandModifiers.set(RULE_MODIFIER.VERTICAL, [RULE_DIRECTION.UP, RULE_DIRECTION.DOWN])
-            expandModifiers.set(RULE_MODIFIER.MOVING, [RULE_DIRECTION.UP, RULE_DIRECTION.DOWN, RULE_DIRECTION.LEFT, RULE_DIRECTION.RIGHT, RULE_DIRECTION.ACTION])
-            // switch (direction) {
-            //     case RULE_DIRECTION_ABSOLUTE.UP:
-            //     case RULE_DIRECTION_ABSOLUTE.DOWN:
-            //         expandModifiers.set(RULE_MODIFIER.PARALLEL, [RULE_DIRECTION.UP, RULE_DIRECTION.DOWN])
-            //         expandModifiers.set(RULE_MODIFIER.PERPENDICULAR, [RULE_DIRECTION.LEFT, RULE_DIRECTION.RIGHT])
-            //         break
-            //     case RULE_DIRECTION_ABSOLUTE.LEFT:
-            //     case RULE_DIRECTION_ABSOLUTE.RIGHT:
-            //         expandModifiers.set(RULE_MODIFIER.PARALLEL, [RULE_DIRECTION.LEFT, RULE_DIRECTION.RIGHT])
-            //         expandModifiers.set(RULE_MODIFIER.PERPENDICULAR, [RULE_DIRECTION.UP, RULE_DIRECTION.DOWN])
-            //         break
-            //     default:
-            //         throw new Error(`BUG: Invalid direction`)
-            // }
+            const expandedDirection = this.clone(direction, null, null)
+            rulesToConvert.push(expandedDirection)
+        }
 
+        const expandModifiers = new Map()
+        expandModifiers.set(RULE_MODIFIER.HORIZONTAL, [RULE_DIRECTION.LEFT, RULE_DIRECTION.RIGHT])
+        expandModifiers.set(RULE_MODIFIER.VERTICAL, [RULE_DIRECTION.UP, RULE_DIRECTION.DOWN])
+        expandModifiers.set(RULE_MODIFIER.MOVING, [RULE_DIRECTION.UP, RULE_DIRECTION.DOWN, RULE_DIRECTION.LEFT, RULE_DIRECTION.RIGHT, RULE_DIRECTION.ACTION])
+        // switch (direction) {
+        //     case RULE_DIRECTION_ABSOLUTE.UP:
+        //     case RULE_DIRECTION_ABSOLUTE.DOWN:
+        //         expandModifiers.set(RULE_MODIFIER.PARALLEL, [RULE_DIRECTION.UP, RULE_DIRECTION.DOWN])
+        //         expandModifiers.set(RULE_MODIFIER.PERPENDICULAR, [RULE_DIRECTION.LEFT, RULE_DIRECTION.RIGHT])
+        //         break
+        //     case RULE_DIRECTION_ABSOLUTE.LEFT:
+        //     case RULE_DIRECTION_ABSOLUTE.RIGHT:
+        //         expandModifiers.set(RULE_MODIFIER.PARALLEL, [RULE_DIRECTION.LEFT, RULE_DIRECTION.RIGHT])
+        //         expandModifiers.set(RULE_MODIFIER.PERPENDICULAR, [RULE_DIRECTION.UP, RULE_DIRECTION.DOWN])
+        //         break
+        //     default:
+        //         throw new Error(`BUG: Invalid direction`)
+        // }
+
+        let didExpand
+        do {
+            didExpand = false
             for (const rule of rulesToConvert) {
-                let didExpand = false
+                const direction = rule.getDirectionModifiers()[0]
+                if (rule.getDirectionModifiers().length !== 1) {
+                    throw new Error(`BUG: should have already expanded the rule to only contian one direction`)
+                }
                 for (const [nameToExpand, variations] of expandModifiers) {
                     if (rule.hasModifier(nameToExpand)) {
                         for (const variation of variations) {
@@ -810,24 +835,16 @@ export class GameRule extends BaseForLines implements ICacheable {
                     }
                 }
                 // If nothing was expanded and this is the current rule
-                // then just simplify it (converting all the relative directions to absolute)
+                // then just keep it
                 if (!didExpand) {
-                    if (rule === this) {
-                        // Simplify the current rule
-                        // the special `null` nameToExpand means to just copy the tile
-                        convertedRules.push(this)
-                        convertedRules.push(rule.clone(direction, null, null))
-                    } else {
-                        convertedRules.push(rule)
-                    }
+                    convertedRules.push(rule)
                 }
             }
-
             rulesToConvert = convertedRules
             convertedRules = []
-        }
-        // Remove the original, non-converted rule
-        return rulesToConvert.filter(rule => rule !== this)
+        } while (didExpand)
+
+        return rulesToConvert
     }
 
     clone(direction: RULE_DIRECTION_ABSOLUTE, nameToExpand: RULE_MODIFIER, newName: RULE_DIRECTION) {
@@ -906,11 +923,6 @@ export class GameRule extends BaseForLines implements ICacheable {
         if (conditions.length === actions.length) {
         } else if (actions.length !== 0) {
             throw new Error(`Invalid Rule. The number of brackets on the right must match the structure of the left hand side or be 0`)
-        }
-        // TODO: build the _conditionCommandPair
-        if (commands.length > 0) {
-            this._brackets = []
-            this._actionBrackets = []
         }
     }
 
@@ -1170,7 +1182,7 @@ export class GameRuleLoop extends BaseForLines {
     }
 
     simplify(ruleCache: Map<string, SimpleRule>, bracketCache: Map<string, SimpleBracket>, neighborCache: Map<string, SimpleNeighbor>, tileCache: Map<string, SimpleTileWithModifier>) {
-        return new SimpleRuleGroup(this.__source, this._rules.map(rule => rule.simplify(ruleCache, bracketCache, neighborCache, tileCache)), this._hasDebugger)
+        return new SimpleRuleGroup(this.__source, this._rules.map(rule => rule.simplify(ruleCache, bracketCache, neighborCache, tileCache)))
     }
     evaluate() {
         // Keep looping as long as once of the rules evaluated something

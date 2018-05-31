@@ -109,7 +109,7 @@ P.
         // 3. Late: Update all the cells with new sprites ...
         // 4. Late: Move all the sprites that want to move
         // next tick for all the AGAIN rules
-        expect(engine.currentLevel[0][0].getWantsToMove(player)).toBe('UP')
+        expect(engine.currentLevel[0][0].getWantsToMove(player)).toBe('RIGHT')
 
         // Ensure only 1 cell was marked for update
         expect(changedCellMutations.size).toBe(1)
@@ -547,7 +547,7 @@ LEVELS
     RULES
     ===
 
-    [ STATIONARY player NO cooldown ] -> [ > player > cooldown ]
+    RIGHT [ STATIONARY player NO cooldown ] -> [ > player > cooldown ]
 
     =======
     LEVELS

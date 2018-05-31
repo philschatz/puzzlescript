@@ -536,7 +536,7 @@ left  [ IslandEdgeS no IslandEdgeW | no IslandEdgeS ] -> [ IslandEdgeS | IslandI
 [ stationary Island PlayerIsland ][ moving Player ] -> [ Island PlayerIsland ][ stationary Player ] SFX2
 [ stationary Island PlayerIsland ][ moving Movable ] -> [ Island stationary PlayerIsland ][ stationary Movable ]
 
-DEBUGGER [ > PlayerIsland IslandEdge ] -> [ > PlayerIsland > IslandEdge ]
+[ > PlayerIsland IslandEdge ] -> [ > PlayerIsland > IslandEdge ]
 
 ( highlight player island edges )
 [ PlayerIsland IslandEdgeN ] -> [ PlayerIsland PlayerIslandEdgeN ]

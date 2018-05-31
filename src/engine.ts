@@ -225,11 +225,13 @@ export default class Engine extends EventEmitter2 {
 
     _tickUpdateCells(runLateRules: boolean) {
         const changedCellMutations: Set<CellMutation> = new Set()
+        let ruleIndex = 0
         for (const rule of this.gameData.rules.filter(r => r.isLate() === runLateRules)) {
             const cellMutations = rule.evaluate()
             for (const mutation of cellMutations) {
                 changedCellMutations.add(mutation)
             }
+            ruleIndex++ // Just for debugging
         }
 
         // We may have mutated the same cell 4 times (e.g. [Player]->[>Player]) so consolidate
