@@ -4,58 +4,58 @@ exports[`Rule simplifier converts VERTICAL and HORIZONTAL at the beginning of a 
 Array [
   Array [
     Array [
-      "SimpleWall",
+      "STATIONARY SimpleWall",
     ],
     Array [
-      "PrettyHorizWall",
+      "STATIONARY PrettyHorizWall",
     ],
     Array [
-      "PrettyHorizWall",
+      "STATIONARY PrettyHorizWall",
     ],
     Array [
-      "SimpleWall",
-    ],
-  ],
-  Array [
-    Array [
-      "PrettyVertWall",
-    ],
-    Array [
-      "Background",
-    ],
-    Array [
-      "Background",
-    ],
-    Array [
-      "PrettyVertWall",
+      "STATIONARY SimpleWall",
     ],
   ],
   Array [
     Array [
-      "PrettyVertWall",
+      "STATIONARY PrettyVertWall",
     ],
     Array [
-      "Background",
+      "STATIONARY Background",
     ],
     Array [
-      "Background",
+      "STATIONARY Background",
     ],
     Array [
-      "PrettyVertWall",
+      "STATIONARY PrettyVertWall",
     ],
   ],
   Array [
     Array [
-      "SimpleWall",
+      "STATIONARY PrettyVertWall",
     ],
     Array [
-      "PrettyHorizWall",
+      "STATIONARY Background",
     ],
     Array [
-      "PrettyHorizWall",
+      "STATIONARY Background",
     ],
     Array [
-      "SimpleWall",
+      "STATIONARY PrettyVertWall",
+    ],
+  ],
+  Array [
+    Array [
+      "STATIONARY SimpleWall",
+    ],
+    Array [
+      "STATIONARY PrettyHorizWall",
+    ],
+    Array [
+      "STATIONARY PrettyHorizWall",
+    ],
+    Array [
+      "STATIONARY SimpleWall",
     ],
   ],
 ]
@@ -66,21 +66,21 @@ Array [
   Array [
     Array [],
     Array [
-      "Player",
-      "Background",
+      "STATIONARY Background",
+      "STATIONARY Player",
     ],
     Array [
-      "Background",
+      "STATIONARY Background",
     ],
   ],
   Array [
     Array [],
     Array [
-      "Shadow",
-      "Background",
+      "STATIONARY Background",
+      "STATIONARY Shadow",
     ],
     Array [
-      "Background",
+      "STATIONARY Background",
     ],
   ],
 ]
@@ -91,21 +91,21 @@ Array [
   Array [
     Array [],
     Array [
-      "Player",
-      "Background",
+      "STATIONARY Background",
+      "STATIONARY Player",
     ],
     Array [
-      "Background",
+      "STATIONARY Background",
     ],
   ],
   Array [
     Array [],
     Array [
-      "Shadow",
-      "Background",
+      "STATIONARY Background",
+      "STATIONARY Shadow",
     ],
     Array [
-      "Background",
+      "STATIONARY Background",
     ],
   ],
 ]

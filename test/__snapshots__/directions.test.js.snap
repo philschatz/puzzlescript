@@ -4,10 +4,10 @@ exports[`Directions Marks a sprite when it wants to move 1`] = `
 Array [
   Array [
     Array [
-      "Player",
+      "UP Player",
     ],
     Array [
-      "Background",
+      "STATIONARY Background",
     ],
   ],
 ]

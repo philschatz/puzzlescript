@@ -145,35 +145,49 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
             // Evaluate!
             // let didExecute = false
             const mutators = this._conditionBrackets.map((bracket, index) => {
-                // Sort the firstMatches so they are applied in order from top->bottom and left->right
-                const firstMatches = [...bracket.getFirstCells()].sort((a, b) => {
-                    // if (a.rowIndex < b.rowIndex) {
-                    //     return -1
-                    // } else if (a.rowIndex > b.rowIndex) {
-                    //     return 1
-                    // } else {
-                    //     if (a.colIndex < b.colIndex) {
-                    //         return -1
-                    //     } else if (a.colIndex > b.colIndex) {
-                    //         return 1
-                    //     } else {
-                    //         throw new Error(`BUG: We seem to be comparing the same cell`)
-                    //     }
-                    // }
-                    return a.rowIndex - b.rowIndex || a.colIndex - b.colIndex
-                })
+                // Continually loop until nothing changed because applying the bracket could cause more matches to pop up.
+                // e.g. `RIGHT [ A | b ] -> [ A | A ]` and the map `Abbbbbb`
                 const ret: CellMutation[][] = []
-                for (const firstCell of firstMatches) {
-                    // Check if firstCell is still in the set
-                    // (a previous application of this rule could have made it no longer apply)
-                    if (bracket.getFirstCells().has(firstCell)) {
-                        ret.push(bracket.evaluate(this._actionBrackets[index], firstCell))
+                const processedFirstCells = new Set<Cell>()
+                let somethingChanged
+                do {
+                    somethingChanged = false
+                    // Sort the firstMatches so they are applied in order from top->bottom and left->right
+                    const firstMatches = [...bracket.getFirstCells()]
+                    // Exclude cells we have already processed
+                    .filter(cell => !processedFirstCells.has(cell))
+                    .sort((a, b) => {
+                        // if (a.rowIndex < b.rowIndex) {
+                        //     return -1
+                        // } else if (a.rowIndex > b.rowIndex) {
+                        //     return 1
+                        // } else {
+                        //     if (a.colIndex < b.colIndex) {
+                        //         return -1
+                        //     } else if (a.colIndex > b.colIndex) {
+                        //         return 1
+                        //     } else {
+                        //         throw new Error(`BUG: We seem to be comparing the same cell`)
+                        //     }
+                        // }
+                        return a.rowIndex - b.rowIndex || a.colIndex - b.colIndex
+                    })
+                    for (const firstCell of firstMatches) {
+                        // Check if firstCell is still in the set
+                        // (a previous application of this rule could have made it no longer apply)
+                        if (bracket.getFirstCells().has(firstCell)) {
+                            ret.push(bracket.evaluate(this._actionBrackets[index], firstCell))
 
-                        if (process.env['NODE_ENV'] !== 'production') {
-                            this.__coverageCount++
+                            processedFirstCells.add(firstCell)
+                            somethingChanged = true
+                            if (process.env['NODE_ENV'] !== 'production') {
+                                this.__coverageCount++
+                            }
                         }
                     }
-                }
+
+                } while (somethingChanged)
+
                 // // Sometimes rules cannot execute. For example, `[ player ] -> [ > player ]`
                 // // should only work if there is a cell in that direction.
                 // // If there is no such cell, then the rule should not execute

@@ -714,4 +714,69 @@ describe('engine', () => {
 
     })
 
+    it('Evaluates brackets when new cells match mid-evaluation', () => {
+        const { engine, data } = parseEngine(`title foo
+        realtime_interval 0.6
+
+        ========
+        OBJECTS
+        ========
+
+        Background .
+        gray
+
+        Player P
+        Brown
+
+        SpriteA A
+        green
+
+        SpriteB B
+        blue
+
+        =======
+        LEGEND
+        =======
+
+        =======
+        SOUNDS
+        =======
+
+        ================
+        COLLISIONLAYERS
+        ================
+        Background
+        Player
+        SpriteA
+        SpriteB
+
+
+        ======
+        RULES
+        ======
+
+        RIGHT [ A | B ] -> [ A | A ]
+
+
+        ==============
+        WINCONDITIONS
+        ==============
+
+        =======
+        LEVELS
+        =======
+
+        PABBB
+
+    `) // end game definition
+
+    const spriteA = data._getSpriteByName('spritea')
+        const spriteB = data._getSpriteByName('spriteb')
+        engine.tick()
+
+        expect(spriteA.getCellsThatMatch().size).toBe(4)
+        expect(spriteB.getCellsThatMatch().size).toBe(0)
+
+    })
+
 })

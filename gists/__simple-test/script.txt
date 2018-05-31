@@ -172,7 +172,7 @@ Player
 .....
 .....
 
-Island
+Island #
 #000000
 
 FromBlockIsland
@@ -389,10 +389,12 @@ Transparent #078ffd
  LEGEND
 ========
 
-@ = Player and Island and PlayerIsland and BgNW1
-# = Island and PlayerIsland
-
 Background = BgNW1 or BgNE1 or BgSW1 or BgSE1 or BgNW2 or BgNE2 or BgSW2 or BgSE2 or BgNW3 or BgNE3 or BgSW3 or BgSE3 or BgNW4 or BgNE4 or BgSW4 or BgSE4
+
+
+A = PlayerIsland and Player and IslandInterior and IslandEdgeW and IslandEdgeS and IslandEdgeN and Island
+B = PlayerIsland and IslandInterior and IslandEdgeS and IslandEdgeN and Island
+C = PlayerIsland and IslandInterior and IslandEdgeE and IslandEdgeS and IslandEdgeN and Island
 
 IslandEdgeV = IslandEdgeN or IslandEdgeS
 IslandEdgeH = IslandEdgeE or IslandEdgeW
@@ -452,12 +454,17 @@ PlayerTop
 
 ( simple movement )
 
+( edge detection )
+
+( player island )
 
 ( rigid movement )
-(this is the culprit)
 [ > Player ][ PlayerIsland ] -> [ > Player ][ > PlayerIsland ]
-[ > PlayerIsland Island  ] -> [ > PlayerIsland > Island ]
+(PHIL. Adding in the "NO Moveblock" is the culprit. Removing it makes both implementations run the same)
+[ > PlayerIsland Island | no MoveBlock ] -> [ > PlayerIsland > Island | ]
+[ < Island | Island no BlockIsland ] -> [ < Island | < Island ]
 
+[ > PlayerIsland IslandEdge ] -> [ > PlayerIsland > IslandEdge ]
 
 
 
@@ -470,13 +477,4 @@ PlayerTop
  LEVELS
 ========
 
-@#.....
-
-...........
-...........
-...........
-...###.....
-...###.....
-...@##.....
-...........
-...........
+..ABC...

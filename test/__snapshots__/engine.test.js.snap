@@ -4,11 +4,11 @@ exports[`engine draws corner sprites correctly (according to mirror isles) 1`] =
 Array [
   Array [
     Array [
-      "RemoveLandRUD",
-      "Background",
+      "STATIONARY Background",
+      "STATIONARY RemoveLandRUD",
     ],
     Array [
-      "Hole",
+      "STATIONARY Hole",
     ],
   ],
 ]
@@ -18,14 +18,14 @@ exports[`engine draws corner sprites correctly (according to skipping stones) 1`
 Array [
   Array [
     Array [
-      "RemoveLandRUD",
-      "Sand",
+      "STATIONARY Sand",
+      "STATIONARY RemoveLandRUD",
     ],
     Array [
-      "Background",
+      "STATIONARY Background",
     ],
     Array [
-      "Background",
+      "STATIONARY Background",
     ],
   ],
 ]
@@ -35,14 +35,14 @@ exports[`engine draws corner sprites correctly (according to skipping stones) 2`
 Array [
   Array [
     Array [
-      "RemoveLandRUD",
-      "Sand",
+      "STATIONARY Sand",
+      "STATIONARY RemoveLandRUD",
     ],
     Array [
-      "Background",
+      "STATIONARY Background",
     ],
     Array [
-      "Background",
+      "STATIONARY Background",
     ],
   ],
 ]
@@ -52,10 +52,10 @@ exports[`engine evaluates a simple game 1`] = `
 Array [
   Array [
     Array [
-      "one",
+      "STATIONARY one",
     ],
     Array [
-      "Player",
+      "STATIONARY Player",
     ],
   ],
 ]

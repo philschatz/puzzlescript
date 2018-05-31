@@ -197,9 +197,11 @@ export default class Engine extends EventEmitter2 {
     toSnapshot() {
         return this.currentLevel.map(row => {
             return row.map(cell => {
-                return cell.getSprites().map((sprite) => {
-                    return sprite._name
+                const ret = []
+                cell.getSpriteAndWantsToMoves().forEach((wantsToMove, sprite) => {
+                    ret.push(`${wantsToMove} ${sprite._name}`)
                 })
+                return ret
             })
         })
     }
