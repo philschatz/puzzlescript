@@ -96,6 +96,7 @@ async function run() {
             type: 'list',
             name: 'chosenLevel',
             message: 'Which Level would you like to play?',
+            default: levels.indexOf(levels.filter(l => l.isMap())[0]), // 1st non-message level
             pageSize: Math.max(15, process.stdout.rows - 15),
             choices: levels.map((levelMap, index) => {
                 if (levelMap.isMap()) {
