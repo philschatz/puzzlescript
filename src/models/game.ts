@@ -160,6 +160,15 @@ export class GameData {
     getPlayer(): IGameTile {
         return this._getSpriteByName('player') || this.legends.find(tile => tile._spriteNameOrLevelChar.toLocaleLowerCase() === 'player')
     }
+
+    clearCaches() {
+        for (const rule of this.rules) {
+            rule.clearCaches()
+        }
+        for (const sprite of this.objects) {
+            sprite.clearCaches()
+        }
+    }
 }
 
 export class GameMessage extends BaseForLines {

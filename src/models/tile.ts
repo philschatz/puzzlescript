@@ -72,6 +72,9 @@ export class GameSprite extends BaseForLines implements IGameTile {
         }
         return null
     }
+    clearCaches() {
+        this._cellSet.clear()
+    }
     matchesCell(cell: Cell): any {
         return cell.getSpritesAsSet().has(this)
     }

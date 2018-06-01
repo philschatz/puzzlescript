@@ -150,6 +150,9 @@ export default class Engine extends EventEmitter2 {
 
     setLevel(levelNum: number) {
         const level = this.gameData.levels[levelNum]
+        if (!level) {
+            throw new Error(`Invalid levelNum: ${levelNum}`)
+        }
         if (process.env['NODE_ENV'] !== 'production') {
             level.__coverageCount++
         }
@@ -201,6 +204,7 @@ export default class Engine extends EventEmitter2 {
         // Return the cells so the UI can listen to when they change
         return this.getCells()
     }
+
     getCells() {
         return _.flatten(this.currentLevel)
     }
@@ -381,6 +385,10 @@ export default class Engine extends EventEmitter2 {
     pressAction() {
         this.press(RULE_DIRECTION_ABSOLUTE.ACTION)
     }
+
+    pressRestart(levelNum) {
+        this.gameData.clearCaches()
+        this.setLevel(levelNum)
+    }
     pressUndo() { }
-    pressRestart() { }
 }

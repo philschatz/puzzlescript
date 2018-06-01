@@ -55,6 +55,12 @@ export class SimpleRuleGroup extends BaseForLines implements IRule {
         return mutations
     }
 
+    clearCaches() {
+        for (const rule of this._rules) {
+            rule.clearCaches()
+        }
+    }
+
     getChildRules() {
         return this._rules
     }
@@ -121,6 +127,11 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
                 }
             }
             this._isSubscribedToCellChanges = true
+        }
+    }
+    clearCaches() {
+        for (const bracket of this._conditionBrackets) {
+            bracket.clearCaches()
         }
     }
 
@@ -230,6 +241,13 @@ class SimpleBracket extends BaseForLines implements ICacheable {
         this._neighbors.forEach((neighbor, index) => {
             neighbor.addBracket(this, index)
         })
+    }
+
+    clearCaches() {
+        this._firstCells.clear()
+        for (const neighbor of this._neighbors) {
+            neighbor.clearCaches()
+        }
     }
 
     getFirstCells() {
@@ -383,6 +401,10 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
         const spritesNow = cell.getSpritesAsSet()
         const didSpritesChange = !setEquals(spritesBefore, spritesNow)
         return new CellMutation(cell, didSpritesChange)
+    }
+
+    clearCaches() {
+        this._localCellCache.clear()
     }
 
     getSpriteMap(cell: Cell) {
@@ -1169,6 +1191,7 @@ export interface IRule extends IGameNode {
     isLate: () => boolean
     isRigid: () => boolean
     isAgain: () => boolean
+    clearCaches: () => void
 }
 
 export class GameRuleLoop extends BaseForLines {
