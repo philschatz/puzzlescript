@@ -3,7 +3,7 @@ import { EventEmitter2 } from 'eventemitter2'
 import { GameData } from './models/game'
 import { LevelMap } from './models/level';
 import { GameSprite, GameLegendTileSimple, IGameTile } from './models/tile'
-import { GameRule, CellMutation } from './models/rule'
+import { GameRule, CellMutation, IRule } from './models/rule'
 import { RULE_MODIFIER, nextRandom, setAddAll, RULE_DIRECTION_ABSOLUTE } from './util'
 import { RULE_DIRECTION } from './enums';
 
@@ -139,11 +139,13 @@ export default class Engine extends EventEmitter2 {
     gameData: GameData
     currentLevel: Cell[][]
     _pendingCellMutations: Set<Cell> // Might be better to just create SimpleRules that are executed at the beginning
+    _pendingAgainRules: IRule[]
 
     constructor(gameData: GameData) {
         super()
         this.gameData = gameData
         this._pendingCellMutations = new Set()
+        this._pendingAgainRules = []
     }
 
     setLevel(levelNum: number) {
@@ -216,18 +218,22 @@ export default class Engine extends EventEmitter2 {
     }
 
     tickUpdateCells() {
-        return this._tickUpdateCells(false)
+        return this._tickUpdateCells(this.gameData.rules.filter(r => !r.isLate()))
     }
 
     tickUpdateCellsLate() {
-        return this._tickUpdateCells(true)
+        return this._tickUpdateCells(this.gameData.rules.filter(r => r.isLate()))
     }
 
-    _tickUpdateCells(runLateRules: boolean) {
+    _tickUpdateCells(rules: Iterable<IRule>) {
         const changedCellMutations: Set<CellMutation> = new Set()
+        const evaluatedRules: IRule[] = []
         let ruleIndex = 0
-        for (const rule of this.gameData.rules.filter(r => r.isLate() === runLateRules)) {
+        for (const rule of rules) {
             const cellMutations = rule.evaluate()
+            if (cellMutations.length > 0) {
+                evaluatedRules.push(rule)
+            }
             for (const mutation of cellMutations) {
                 changedCellMutations.add(mutation)
             }
@@ -235,18 +241,18 @@ export default class Engine extends EventEmitter2 {
         }
 
         // We may have mutated the same cell 4 times (e.g. [Player]->[>Player]) so consolidate
-        const ret: Map<Cell, boolean> = new Map()
+        const changedCells = new Set<Cell>()
         for (const mutation of changedCellMutations) {
-            if (!ret.get(mutation.cell)) {
-                ret.set(mutation.cell, mutation.didSpritesChange)
-            }
+            changedCells.add(mutation.cell)
+            // if (!changedCells.has(mutation.cell)) {
+            //     changedCells.set(mutation.cell, mutation.didSpritesChange)
+            // }
         }
-        return ret
+        return {evaluatedRules: evaluatedRules, changedCells: changedCells}
     }
 
-    tickMoveSprites(changedCellMutations: Map<Cell, boolean>) {
+    tickMoveSprites(changedCells: Set<Cell>) {
         let movedCells: Set<Cell> = new Set()
-        const changedCells = new Set([...changedCellMutations.keys()])
         // Loop over all the cells, see if a Rule matches, apply the transition, and notify that cells changed
         let somethingChanged
         do {
@@ -315,18 +321,42 @@ export default class Engine extends EventEmitter2 {
         return movedCells
     }
 
-    tick() {
-        const changedCellMutations = this.tickUpdateCells()
+    tickNormal() {
+        const {changedCells: changedCellMutations, evaluatedRules} = this.tickUpdateCells()
+
+        // Save the "AGAIN" rules that ran so they can be re-evaluated at the next tick
+        this._pendingAgainRules = evaluatedRules.filter(r => r.isAgain())
+
         for (const cell of this._pendingCellMutations) {
-            if (!changedCellMutations.has(cell)) {
-                changedCellMutations.set(cell, true)
-            }
+            changedCellMutations.add(cell)
         }
         this._pendingCellMutations.clear()
-        const movedCells = this.tickMoveSprites(changedCellMutations)
-        const changedCellsLate = this.tickUpdateCellsLate()
-        const changedCells = new Set([...changedCellMutations.entries(), ...changedCellsLate.entries()].filter(([_cell, didSpritesChange]) => didSpritesChange).map(([cell]) => cell))
-        return setAddAll(changedCells, movedCells)
+        const movedCells = this.tickMoveSprites(new Set<Cell>(changedCellMutations.keys()))
+        const {changedCells: changedCellsLate, evaluatedRules: evaluatedRulesLate} = this.tickUpdateCellsLate()
+        return {
+            changedCells: setAddAll(setAddAll(changedCellMutations, changedCellsLate), movedCells),
+            evaluatedRules: evaluatedRules.concat(evaluatedRulesLate)
+        }
+    }
+
+    tickAgain() {
+        const {changedCells, evaluatedRules} = this._tickUpdateCells(this._pendingAgainRules)
+        this._pendingAgainRules = evaluatedRules // we can assume that they were all AGAIN rules at this point
+        return {
+            changedCells: new Set(changedCells.keys()),
+            evaluatedRules
+        }
+    }
+
+    tick() {
+        let ret : { changedCells: Set<Cell>, evaluatedRules: IRule[] }
+        if (this._pendingAgainRules.length > 0) {
+            // run the AGAIN rules
+            ret = this.tickAgain()
+        } else {
+            ret = this.tickNormal()
+        }
+        return new Set(ret.changedCells.keys())
     }
 
     press(direction: RULE_DIRECTION_ABSOLUTE) {

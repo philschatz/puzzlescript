@@ -125,7 +125,7 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
     }
 
     evaluate() {
-        if (this._actionBrackets.length === 0 || this._isAgain || this._isRigid) {
+        if (this._actionBrackets.length === 0 || this._isRigid) {
             // TODO: Just commands are not supported yet
             return []
         }
