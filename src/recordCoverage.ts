@@ -67,7 +67,7 @@ export function saveCoverageFile(data: GameData, absPath: string, coverageFilena
     }
 
     // record the tick coverage
-    for (const node of [].concat(recursivelyGetRules(data.rules)).concat(data.objects).concat(data.legends)/*.concat(data.levels)*/) {
+    for (const node of [].concat(recursivelyGetRules(data.rules)).concat(data.objects).concat(data.legends).concat(data.winConditions)/*.concat(data.levels)*/) {
         const line = coverageKey(node)
         if (codeCoverageTemp.has(line)) {
             codeCoverageTemp.set(line, codeCoverageTemp.get(line) + node.__coverageCount)

@@ -78,7 +78,7 @@ async function run() {
                 for (var i = 0; i < keypresses.length; i++) {
                     engine.press(keypresses[i])
                     startTime = Date.now()
-                    const changedCells = engine.tick()
+                    const {changedCells} = engine.tick()
 
                     // UI.renderScreen(data, engine.currentLevel)
 

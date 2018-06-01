@@ -156,7 +156,7 @@ LEVELS
 P.
 
 `)
-        const changedCells = engine.tick()
+        const {changedCells} = engine.tick()
         // expect(engine.toSnapshot()).toMatchSnapshot()
         const player = data._getSpriteByName('player')
         expect(engine.currentLevel[0][1].getSpritesAsSet().has(player)).toBe(true)
@@ -212,7 +212,7 @@ LEVELS
 PW
 
 `)
-        const changedCells = engine.tick()
+        const {changedCells} = engine.tick()
         // expect(engine.toSnapshot()).toMatchSnapshot()
         const player = data._getSpriteByName('player')
         expect(engine.currentLevel[0][1].getSpritesAsSet().has(player)).toBe(false)
@@ -266,7 +266,7 @@ LEVELS
 P.
 
 `)
-        const changedCells = engine.tick()
+        const {changedCells} = engine.tick()
         // expect(engine.toSnapshot()).toMatchSnapshot()
         const player = data._getSpriteByName('player')
         expect(engine.currentLevel[0][0].getSpritesAsSet().has(player)).toBe(true)
@@ -347,7 +347,7 @@ P.
 
 `)
         setRandomValuesForTesting([0, 1])
-        const changedCells = engine.tick()
+        const {changedCells} = engine.tick()
         console.log('Random seed index is now at', getRandomSeed())
         // expect(engine.toSnapshot()).toMatchSnapshot()
         const one = data._getSpriteByName('one')
@@ -425,7 +425,7 @@ LEVELS
 
 `)
         setRandomValuesForTesting([2, 1])
-        const changedCells = engine.tick()
+        const {changedCells} = engine.tick()
         // expect(engine.toSnapshot()).toMatchSnapshot()
         const player = data._getSpriteByName('player')
         expect(engine.currentLevel[2][2].getSpritesAsSet().has(player)).toBe(false)

@@ -360,7 +360,20 @@ export default class Engine extends EventEmitter2 {
         } else {
             ret = this.tickNormal()
         }
-        return new Set(ret.changedCells.keys())
+        return {
+            changedCells: new Set(ret.changedCells.keys()),
+            isWinning: this.isWinning()
+        }
+    }
+
+    isWinning() {
+        let conditionsSatisfied = true
+        this.gameData.winConditions.forEach(winCondition => {
+            if (!winCondition.isSatisfied(this.getCells())) {
+                conditionsSatisfied = false
+            }
+        })
+        return conditionsSatisfied
     }
 
     press(direction: RULE_DIRECTION_ABSOLUTE) {

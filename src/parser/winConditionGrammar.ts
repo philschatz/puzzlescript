@@ -1,12 +1,12 @@
-import { WinConditionSimple, WinConditionOn } from '../models/winCondition'
+import { WinConditionSimple, WinConditionOn, WIN_QUALIFIER } from '../models/winCondition'
 
 export const WINCONDITIONS_GRAMMAR = `
     WinConditionItem
         = WinConditionItemSimple
         | WinConditionItemOn
 
-    WinConditionItemSimple = winConditionItemPrefix ruleVariableName lineTerminator+
-    WinConditionItemOn = winConditionItemPrefix ruleVariableName t_ON ruleVariableName lineTerminator+
+    WinConditionItemSimple = winConditionItemPrefix lookupRuleVariableName lineTerminator+
+    WinConditionItemOn = winConditionItemPrefix lookupRuleVariableName t_ON lookupRuleVariableName lineTerminator+
 
     winConditionItemPrefix
         = t_NO
@@ -18,10 +18,12 @@ export const WINCONDITIONS_GRAMMAR = `
 export function getWinConditionSemantics() {
     return {
         WinConditionItemSimple: function (qualifierEnum, spriteName, _whitespace) {
-            return new WinConditionSimple(this.source, qualifierEnum.parse(), spriteName.parse())
+            const qualifier: string = qualifierEnum.parse()
+            return new WinConditionSimple(this.source, WIN_QUALIFIER[qualifier], spriteName.parse())
         },
-        WinConditionItemOn: function (qualifierEnum, spriteName, _on, targetObjectName, _whitespace) {
-            return new WinConditionOn(this.source, qualifierEnum.parse(), spriteName.parse(), targetObjectName.parse())
+        WinConditionItemOn: function (qualifierEnum, sprite, _on, onSprite, _whitespace) {
+            const qualifier: string = qualifierEnum.parse()
+            return new WinConditionOn(this.source, WIN_QUALIFIER[qualifier], sprite.parse(), onSprite.parse())
         }
     }
 }

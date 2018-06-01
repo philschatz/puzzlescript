@@ -521,8 +521,6 @@ describe('engine', () => {
     WINCONDITIONS
     ==============
 
-    All Crate on Target
-
     =======
     LEVELS
     =======

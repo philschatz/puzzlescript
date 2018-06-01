@@ -104,7 +104,7 @@ async function run() {
         console.log(`-------------------------------------`)
 
         const levels = data.levels
-        const {chosenLevel} = await inquirer.prompt<{chosenLevel: string}>([{
+        let {chosenLevel} = await inquirer.prompt<{chosenLevel: number}>([{
             type: 'list',
             name: 'chosenLevel',
             message: 'Which Level would you like to play?',
@@ -160,7 +160,7 @@ async function run() {
 
         function doMove(direction: RULE_DIRECTION_ABSOLUTE) {
             engine.press(direction)
-            const changedCells = engine.tick()
+            const {changedCells} = engine.tick()
             // Draw any cells that moved
             for (const cell of changedCells) {
                 UI.drawCell(cell, false)
@@ -214,7 +214,20 @@ async function run() {
         while(true) {
 
             const startTime = Date.now()
-            const changedCells = engine.tick()
+            const {changedCells, isWinning} = engine.tick()
+
+            if (isWinning) {
+                chosenLevel++
+                // Skip the messages since they are not implmented yet
+                while(!data.levels[chosenLevel].isMap()) {
+                    chosenLevel++
+                }
+
+                engine.pressRestart(chosenLevel)
+                UI.renderScreen(engine.currentLevel)
+
+                continue
+            }
 
             // Draw any cells that moved
             for (const cell of changedCells) {
