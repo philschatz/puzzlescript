@@ -4,6 +4,7 @@ import * as glob from 'glob'
 import * as pify from 'pify'
 import * as keypress from 'keypress'
 import * as inquirer from 'inquirer'
+import * as autocomplete from 'inquirer-autocomplete-prompt'
 import * as firstline from 'firstline'
 import chalk from 'chalk'
 
@@ -16,6 +17,7 @@ import { start } from 'repl';
 import { IRule } from './models/rule';
 import { RULE_DIRECTION } from './enums';
 import { saveCoverageFile } from './recordCoverage';
+
 
 async function sleep(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms))
@@ -51,21 +53,31 @@ async function run() {
         })
     }
 
-    const chosenGame = await inquirer.prompt<{gamePath: string}>([{
-        type: 'list',
-        name: 'gamePath',
+    inquirer.registerPrompt('autocomplete', autocomplete)
+    const question: inquirer.Question = <inquirer.Question> {
+        type: 'autocomplete',
+        name: 'gameTitle',
         message: 'Which game would you like to play?',
         pageSize: Math.max(15, process.stdout.rows - 15),
-        choices: games.map(({id, title, filePath}) => {
-            return {
-                name: `${title} ${chalk.dim(`(${id})`)}`,
-                value: filePath,
-                short: id,
+        source: async (answers, input) => {
+            if (!input) {
+                return Promise.resolve(games.map(game => game.title))
             }
-        })
-    }])
+            return Promise.resolve(games.filter(({id, title, filePath}) => {
+                return title.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            }).map(game => game.title))
+        },
+        // choices: games.map(({id, title, filePath}) => {
+        //     return {
+        //         name: `${title} ${chalk.dim(`(${id})`)}`,
+        //         value: filePath,
+        //         short: id,
+        //     }
+        // })
+    }
+    const {gameTitle} = await inquirer.prompt<{gameTitle: string}>([question])
 
-    const {gamePath} = chosenGame
+    const gamePath = games.filter(game => game.title === gameTitle)[0].filePath
     const absPath = path.resolve(gamePath)
     const code = readFileSync(absPath, 'utf-8')
     const startTime = Date.now()

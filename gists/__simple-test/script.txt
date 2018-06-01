@@ -1,4 +1,4 @@
-title Beam Islands
+title Beam Islands Test
 author mjau
 homepage http://twitter.com/kamjau
 run_rules_on_level_start
