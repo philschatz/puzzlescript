@@ -1,58 +1,57 @@
 title foo
 
-        ========
-        OBJECTS
-        ========
+========
+OBJECTS
+========
 
-        Background
-        gray
+Background
+gray
 
-        Player
-        transparent
+Player
+transparent
 
-        Red R
-        red
+Red R
+red
 
-        Green G
-        green
+Green G
+green
 
-        Blue B
-        blue
+Blue B
+blue
 
-        =======
-        LEGEND
-        =======
+=======
+LEGEND
+=======
 
-        . = Background
-        P = Player
+. = Background
+P = Player
 
-        Color = Red OR Green OR Blue
+Color = Red OR Green OR Blue
 
-        =======
-        SOUNDS
-        =======
+=======
+SOUNDS
+=======
 
-        ================
-        COLLISIONLAYERS
-        ================
+================
+COLLISIONLAYERS
+================
+Background
+Player
+Color
 
-        Background
-        Player
-        Color
+======
+RULES
+======
 
-        ======
-        RULES
-        ======
+(shift colors to the right)
+RIGHT [ Color | NO Color ] -> [ NO Color | Color ]
 
-        (add the Color onto the Player)
-        RIGHT [ Color ] [ Player NO Color ] -> [ ] [ Player Color ]
+==============
+WINCONDITIONS
+==============
 
-        ==============
-        WINCONDITIONS
-        ==============
+=======
+LEVELS
+=======
 
-        =======
-        LEVELS
-        =======
-
-        PRGB
+RG.B..

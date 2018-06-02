@@ -123,56 +123,75 @@ describe('Rule simplifier', () => {
     it('converts VERTICAL and HORIZONTAL at the beginning of a rule into 2 rules', () => {
         const { engine, data } = parseEngine(`title check that Horizontal Expands
 
-    ========
-    OBJECTS
-    ========
+        ========
+        OBJECTS
+        ========
 
-    Background
-    blue
+        Background
+        black
 
-    Player
-    green
+        Player
+        green
 
-    SimpleWall
-    Yellow
+        SimpleWall
+        Yellow
 
-    PrettyHorizWall
-    Blue
+        PrettyHorizWall
+        Blue
+        .....
+        .....
+        00000
+        .....
+        .....
 
-    PrettyVertWall
-    Blue
+        PrettyVertWall
+        Blue
+        ..0..
+        ..0..
+        ..0..
+        ..0..
+        ..0..
 
-    =======
-    LEGEND
-    =======
 
-    . = Background
-    W = SimpleWall
-    Wall = SimpleWall OR PrettyHorizWall OR PrettyVertWall
+        =======
+        LEGEND
+        =======
 
-    ================
-    COLLISIONLAYERS
-    ================
+        . = Background
+        W = SimpleWall
+        Wall = SimpleWall OR PrettyHorizWall OR PrettyVertWall
 
-    Background
-    Player
-    Wall, PrettyHorizWall, PrettyVertWall
+        ===
+        SOUNDS
+        ===
 
-    ======
-    RULES
-    ======
+        ================
+        COLLISIONLAYERS
+        ================
 
-    HORIZONTAL [ Wall | SimpleWall | Wall ] -> [ Wall | PrettyHorizWall | Wall ]
-    VERTICAL [ Wall | SimpleWall | Wall ] -> [ Wall | PrettyVertWall | Wall ]
+        Background
+        Player
+        Wall, PrettyHorizWall, PrettyVertWall
 
-    =======
-    LEVELS
-    =======
+        ======
+        RULES
+        ======
 
-    WWWW
-    W..W
-    W..W
-    WWWW
+        HORIZONTAL [ Wall | SimpleWall | Wall ] -> [ Wall | PrettyHorizWall | Wall ]
+        VERTICAL [ Wall | SimpleWall | Wall ] -> [ Wall | PrettyVertWall | Wall ]
+
+        ===
+        WINCONDITIONS
+        ===
+
+        =======
+        LEVELS
+        =======
+
+        WWWW
+        W..W
+        W..W
+        WWWW
 
     `) // end game
         const horiz = data._getSpriteByName('PrettyHorizWall')

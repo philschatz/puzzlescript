@@ -129,6 +129,7 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
             this._isSubscribedToCellChanges = true
         }
     }
+
     clearCaches() {
         for (const bracket of this._conditionBrackets) {
             bracket.clearCaches()
@@ -141,41 +142,24 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
             return []
         }
         let allMutators: CellMutation[][] = []
-        // Determine which directions to loop over
-        // Include any simple UP, DOWN, LEFT, RIGHT ones
-        let directionsToCheck = []
+
+        // Remember which cells we apready processed
+        const alreadyProcessed: Set<Cell>[] = []
+        for (const bracket of this._conditionBrackets) {
+            alreadyProcessed.push(new Set())
+        }
 
         let somethingChanged
         do {
             somethingChanged = false
 
-            // check that all the bracketPairs have at least one match
-            let matchesAllBrackets = true
-            for (const bracket of this._conditionBrackets) {
-                const firstMatches = bracket.getFirstCells()
-                if (firstMatches.size === 0) {
-                    matchesAllBrackets = false
-                }
-            }
-
-            if (matchesAllBrackets) {
-                if (this._hasDebugger) {
-                    // A "DEBUGGER" flag was set in the game so we are pausing here
-                    debugger
-                }
-                // Evaluate!
-
-                // This will be used to store the sprites that are in an OR tile.
-                // Example: `[ Color ] [ Player ] -> [ ] [ Player Color ]`
-                const magicOrTiles = new Map<IGameTile, Set<GameSprite>>()
-
-                this._conditionBrackets.forEach((bracket, index) => {
-                    // Continually loop until nothing changed because applying the bracket could cause more matches to pop up.
-                    // e.g. `RIGHT [ A | b ] -> [ A | A ]` and the map `Abbbbbb`
-                    const ret: CellMutation[][] = []
-                    // Sort the firstMatches so they are applied in order from top->bottom and left->right
-                    const firstMatches = [...bracket.getFirstCells()]
+            // check that all the bracketCells have at least one match
+            let bracketCells: Cell[] = []
+            for (let index = 0; index < this._conditionBrackets.length; index++) {
+                function sortByPos(cells: Set<Cell>) {
+                    return [...cells]
                     // Exclude cells we have already processed
+                    .filter(cell => !alreadyProcessed[index].has(cell))
                     .sort((a, b) => {
                         // if (a.rowIndex < b.rowIndex) {
                         //     return -1
@@ -193,38 +177,60 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
                         return a.rowIndex - b.rowIndex || a.colIndex - b.colIndex
                     })
 
-                    // if (firstMatches.length > 0) {
-                    //     const firstCell = firstMatches[0]
-                    for (const firstCell of firstMatches) {
+                }
+                const condition = sortByPos(this._conditionBrackets[index].getFirstCells())[0]
+                if (condition) {
+                    bracketCells.push(condition)
+                } else {
+                    break
+                }
+            }
 
-                        // Check if firstCell is still in the set
-                        // (a previous application of this rule could have made it no longer apply)
-                        if (bracket.getFirstCells().has(firstCell)) {
-                            const mutations = bracket.evaluate(this._actionBrackets[index], firstCell, magicOrTiles)
+            if (bracketCells.length === this._conditionBrackets.length) {
+                // Get ready to Evaluate
+                if (this._hasDebugger) {
+                    // A "DEBUGGER" flag was set in the game so we are pausing here
+                    debugger
+                }
 
-                            if (process.env['NODE_ENV'] !== 'production') {
-                                this.__coverageCount++
-                            }
+                // This will be used to store the sprites that are in an OR tile.
+                // Example: `[ Color ] [ Player ] -> [ ] [ Player Color ]`
+                const magicOrTiles = new Map<IGameTile, Set<GameSprite>>()
+                for (let index = 0; index < this._conditionBrackets.length; index++) {
+                    const bracket = this._conditionBrackets[index]
+                    const cell = bracketCells[index]
+                    bracket.populateMagicOrTiles(cell, magicOrTiles)
+                }
 
-                            // If at least one modifier changedSprites then somethingChanged = true
-                            for (const mutation of mutations) {
-                                if (mutation.didSpritesChange) {
-                                    somethingChanged = true
-                                }
-                            }
-                            ret.push(mutations)
-                        }
+                // Evaluate!
+                for (let index = 0; index < this._conditionBrackets.length; index++) {
+                    const bracket = this._conditionBrackets[index]
+                    const cell = bracketCells[index]
+                    const mutations = bracket.evaluate(this._actionBrackets[index], cell, magicOrTiles)
 
-                        // only evaluate the 1st match where something changed.
-                        if (somethingChanged) {
-                            break
-                        }
+                    if (process.env['NODE_ENV'] !== 'production') {
+                        this.__coverageCount++
                     }
 
-                    allMutators.push(_.flatten(ret))
-                })
-
+                    // If at least one modifier changedSprites then somethingChanged = true
+                    let someSpriteChanged = false
+                    for (const mutation of mutations) {
+                        if (mutation.didSpritesChange) {
+                            someSpriteChanged = true
+                        }
+                    }
+                    if (someSpriteChanged) {
+                        somethingChanged = true
+                    } else if (!alreadyProcessed[index].has(cell)) {
+                        somethingChanged = true
+                        alreadyProcessed[index].add(cell)
+                    } else {
+                        // nothing changed... somethingChanged = false
+                    }
+                    allMutators.push(mutations)
+                }
             }
+
         } while(somethingChanged)
 
         return _.flatten(allMutators)
@@ -277,6 +283,12 @@ class SimpleBracket extends BaseForLines implements ICacheable {
             index++
         }
         return ret
+    }
+
+    populateMagicOrTiles(cell: Cell, magicOrTiles: Map<IGameTile, Set<GameSprite>>) {
+        for (const neighbor of this._neighbors) {
+            neighbor.populateMagicOrTiles(cell, magicOrTiles)
+        }
     }
 
     addCell(index: number, neighbor: SimpleNeighbor, t: SimpleTileWithModifier, sprite: GameSprite, cell: Cell, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
@@ -442,6 +454,16 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
         this._localCellCache.clear()
     }
 
+    // set this ahead of time becuase order does not matter when populating the magicOrTiles `[ > Player | Pill ] -> [ Pill OldPos | Player ]`
+    populateMagicOrTiles(cell: Cell, magicOrTiles: Map<IGameTile, Set<GameSprite>>) {
+        for (const t of this._tilesWithModifier) {
+            if (!t.isNo() && t._tile.isOr()) {
+                const sprites = setIntersection(new Set(t._tile.getSprites()), cell.getSpritesAsSet())
+                magicOrTiles.set(t._tile, sprites)
+            }
+        }
+    }
+
     getSpriteMap(cell: Cell, magicOrTiles: Map<IGameTile, Set<GameSprite>>, isAction: boolean) {
         const spriteMap = new Map<GameSprite, RULE_DIRECTION_ABSOLUTE>()
         for (const t of this._tilesWithModifier) {
@@ -465,14 +487,27 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
                     // only update sprites that are in the cell
                     // If we are on the action side then we need to look up the sprites that were in the OR tile on the condition side
                     if (isAction) {
-                        if (magicOrTiles.has(t._tile)) {
+                        // Check if the Cell contains the OrTile, otherwise check the magicOrTiles.
+                        // The reason is that the following are 2 valid rules with different ways of pulling their values:
+                        // [ Wall | SimpleWall | Wall ] -> [ Wall | VertWall | Wall ]
+                        // [ Color | ] -> [ | Color ]
+                        //
+                        // If this doesn't work then we'll need to be given a set of Tiles that are in the condition side and decide that way
+                        if (t._tile.matchesCell(cell)) {
+                            sprites = setIntersection(new Set(t._tile.getSprites()), cell.getSpritesAsSet())
+                        } else if (magicOrTiles.has(t._tile)) {
                             sprites = magicOrTiles.get(t._tile)
                         } else {
+                            console.log([...magicOrTiles.keys()])
+                            console.error(this.toString())
                             throw new Error(`ERROR: Invalid OR tile on the action side of a Rule. The same OR tile needs to be on the condition side: "${t._tile.getName()}"`)
                         }
                     } else {
                         sprites = setIntersection(new Set(t._tile.getSprites()), cell.getSpritesAsSet())
-                        magicOrTiles.set(t._tile, sprites)
+                        // set this ahead of time becuase order does not matter when populating the magicOrTiles `[ > Player | Pill ] -> [ Pill OldPos | Player ]`
+                        if (!magicOrTiles.has(t._tile)) {
+                            throw new Error(`BUG: Should have already been populated`)
+                        }
                     }
                 } else {
                     sprites = t._tile.getSprites()
