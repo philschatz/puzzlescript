@@ -149,7 +149,6 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
         do {
             somethingChanged = false
 
-            debugger
             // check that all the bracketPairs have at least one match
             let matchesAllBrackets = true
             for (const bracket of this._conditionBrackets) {
@@ -214,6 +213,11 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
                                 }
                             }
                             ret.push(mutations)
+                        }
+
+                        // only evaluate the 1st match where something changed.
+                        if (somethingChanged) {
+                            break
                         }
                     }
 

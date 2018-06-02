@@ -1056,7 +1056,7 @@ describe('engine', () => {
         ======
 
         (shift colors to the right)
-        DEBUGGER RIGHT [ Color | NO Color ] -> [ NO Color | Color ]
+        RIGHT [ Color | NO Color ] -> [ NO Color | Color ]
 
         ==============
         WINCONDITIONS
@@ -1153,16 +1153,11 @@ describe('engine', () => {
 
         // The original implementation expects the tick to end this way:
         // RED BACKGROUND GREEN BLUE
-        // expect(red.getCellsThatMatch().size).toBe(1)
-        // expect(green.getCellsThatMatch().size).toBe(1)
-        // expect(blue.getCellsThatMatch().size).toBe(1)
-        // expect(engine.currentLevel[0][0].getSpritesAsSet().has(red)).toBe(true)
-        // expect(engine.currentLevel[0][2].getSpritesAsSet().has(green)).toBe(true)
-        // expect(engine.currentLevel[0][3].getSpritesAsSet().has(blue)).toBe(true)
-
-        expect(red.getCellsThatMatch().size).toBe(0)
-        expect(green.getCellsThatMatch().size).toBe(0)
+        expect(red.getCellsThatMatch().size).toBe(1)
+        expect(green.getCellsThatMatch().size).toBe(1)
         expect(blue.getCellsThatMatch().size).toBe(1)
-        expect(engine.currentLevel[0][0].getSpritesAsSet().has(blue)).toBe(true)
+        expect(engine.currentLevel[0][0].getSpritesAsSet().has(red)).toBe(true)
+        expect(engine.currentLevel[0][2].getSpritesAsSet().has(green)).toBe(true)
+        expect(engine.currentLevel[0][3].getSpritesAsSet().has(blue)).toBe(true)
     })
 })
