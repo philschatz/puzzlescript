@@ -935,4 +935,234 @@ describe('engine', () => {
 
     })
 
+    it('moves sprites to a new neighbor (simple)', () => {
+        const { engine, data } = parseEngine(`title foo
+
+        ========
+        OBJECTS
+        ========
+
+        Background
+        gray
+
+        Player
+        transparent
+
+        Red R
+        red
+
+        Green G
+        green
+
+        Blue B
+        blue
+
+        =======
+        LEGEND
+        =======
+
+        . = Background
+        P = Player
+
+        Color = Red OR Green OR Blue
+
+        =======
+        SOUNDS
+        =======
+
+        ================
+        COLLISIONLAYERS
+        ================
+        Background
+        Player
+        Color
+
+        ======
+        RULES
+        ======
+
+        (shift colors to the right)
+        RIGHT [ Color | NO Color ] -> [ NO Color | Color ]
+
+        ==============
+        WINCONDITIONS
+        ==============
+
+        =======
+        LEVELS
+        =======
+
+        B.
+
+    `) // end game definition
+
+        // Testing something like `left [ > Counter | MirrorUR ] -> [ | MirrorUR up Counter ]`
+        const red = data._getSpriteByName('red')
+        const green = data._getSpriteByName('green')
+        const blue = data._getSpriteByName('blue')
+        engine.tick()
+
+        expect(red.getCellsThatMatch().size).toBe(0)
+        expect(green.getCellsThatMatch().size).toBe(0)
+        expect(blue.getCellsThatMatch().size).toBe(1)
+        expect(engine.currentLevel[0][0].getSpritesAsSet().has(blue)).toBe(false)
+        expect(engine.currentLevel[0][1].getSpritesAsSet().has(blue)).toBe(true)
+    })
+
+    it('moves sprites to a new neighbor (intermediate)', () => {
+        const { engine, data } = parseEngine(`title foo
+
+        ========
+        OBJECTS
+        ========
+
+        Background
+        gray
+
+        Player
+        transparent
+
+        Red R
+        red
+
+        Green G
+        green
+
+        Blue B
+        blue
+
+        =======
+        LEGEND
+        =======
+
+        . = Background
+        P = Player
+
+        Color = Red OR Green OR Blue
+
+        =======
+        SOUNDS
+        =======
+
+        ================
+        COLLISIONLAYERS
+        ================
+        Background
+        Player
+        Color
+
+        ======
+        RULES
+        ======
+
+        (shift colors to the right)
+        DEBUGGER RIGHT [ Color | NO Color ] -> [ NO Color | Color ]
+
+        ==============
+        WINCONDITIONS
+        ==============
+
+        =======
+        LEVELS
+        =======
+
+        RG.B..
+
+    `) // end game definition
+
+        // Testing something like `left [ > Counter | MirrorUR ] -> [ | MirrorUR up Counter ]`
+        const red = data._getSpriteByName('red')
+        const green = data._getSpriteByName('green')
+        const blue = data._getSpriteByName('blue')
+        engine.tick()
+
+        expect(red.getCellsThatMatch().size).toBe(1)
+        expect(green.getCellsThatMatch().size).toBe(1)
+        expect(blue.getCellsThatMatch().size).toBe(1)
+        expect(engine.currentLevel[0][3].getSpritesAsSet().has(red)).toBe(true)
+        expect(engine.currentLevel[0][4].getSpritesAsSet().has(green)).toBe(true)
+        expect(engine.currentLevel[0][5].getSpritesAsSet().has(blue)).toBe(true)
+    })
+
+    it('swaps an OR tile to a different bracket', () => {
+        const { engine, data } = parseEngine(`title foo
+
+        ========
+        OBJECTS
+        ========
+
+        Background
+        gray
+
+        Player
+        transparent
+
+        Red R
+        red
+
+        Green G
+        green
+
+        Blue B
+        blue
+
+        =======
+        LEGEND
+        =======
+
+        . = Background
+        P = Player
+
+        Color = Red OR Green OR Blue
+
+        =======
+        SOUNDS
+        =======
+
+        ================
+        COLLISIONLAYERS
+        ================
+        Background
+        Player
+        Color
+
+        ======
+        RULES
+        ======
+
+        (add the Color onto the Player)
+        RIGHT [ Color ] [ Player NO Color ] -> [ ] [ Player Color ]
+
+        ==============
+        WINCONDITIONS
+        ==============
+
+        =======
+        LEVELS
+        =======
+
+        PRGB
+
+    `) // end game definition
+
+        // Testing something like `left [ > Counter | MirrorUR ] -> [ | MirrorUR up Counter ]`
+        const red = data._getSpriteByName('red')
+        const green = data._getSpriteByName('green')
+        const blue = data._getSpriteByName('blue')
+        engine.tick()
+
+        // The original implementation expects the tick to end this way:
+        // RED BACKGROUND GREEN BLUE
+        // expect(red.getCellsThatMatch().size).toBe(1)
+        // expect(green.getCellsThatMatch().size).toBe(1)
+        // expect(blue.getCellsThatMatch().size).toBe(1)
+        // expect(engine.currentLevel[0][0].getSpritesAsSet().has(red)).toBe(true)
+        // expect(engine.currentLevel[0][2].getSpritesAsSet().has(green)).toBe(true)
+        // expect(engine.currentLevel[0][3].getSpritesAsSet().has(blue)).toBe(true)
+
+        expect(red.getCellsThatMatch().size).toBe(0)
+        expect(green.getCellsThatMatch().size).toBe(0)
+        expect(blue.getCellsThatMatch().size).toBe(1)
+        expect(engine.currentLevel[0][0].getSpritesAsSet().has(blue)).toBe(true)
+    })
 })

@@ -234,7 +234,7 @@ async function run() {
                 UI.drawCell(cell, false)
             }
 
-            const msg = `Tick ${i} took ${Date.now() - startTime}ms. Changed: ${[...changedCells].map(cell => cell.rowIndex + ':' + cell.colIndex).join(', ') + '   '}`
+            const msg = `Level: ${chosenLevel} Tick: ${i} took ${Date.now() - startTime}ms. Changed: ${[...changedCells].map(cell => cell.rowIndex + ':' + cell.colIndex).join(', ') + '   '}`
             UI.writeDebug(msg.substring(0, 160))
 
             await sleep(Math.max(100 - (Date.now() - startTime), 0))

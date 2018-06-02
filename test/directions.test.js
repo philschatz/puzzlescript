@@ -337,7 +337,7 @@ RULES
 ===
 
 (set direction so it is only evaluated once)
-LEFT [ Background ] -> [ Background RANDOM DieSide ]
+LEFT [ Background NO DieSide ] -> [ Background RANDOM DieSide ]
 
 =======
 LEVELS
@@ -360,23 +360,6 @@ P.
         let threeCell = threeCells[0]
         expect(threeCells.length).toBe(1)
         expect(engine.currentLevel[0][1].getSpritesAsSet().has(three)).toBe(true)
-
-        // Ensure 0 cells were marked for re-rendering
-        // expect(changedCells.size).toBe(0)
-        // Grr, since the RANDOM code was executed (and other sprites could have changed)
-        // we err on the side of caution and report the Cell as having been changed even though it
-        // might not have.
-        engine.tick()
-        // Check if the star "randomly" popped up
-        let twoCells = [...two.getCellsThatMatch()]
-        let twoCell = twoCells[0]
-        expect(twoCells.length).toBe(1)
-        expect(engine.currentLevel[0][1].getSpritesAsSet().has(two)).toBe(true)
-
-        // Ensure that the three cell was removed (since they are in the same collisionLayer)
-        threeCells = [...three.getCellsThatMatch()]
-        threeCell = threeCells[0]
-        expect(threeCells.length).toBe(0)
     })
 
     it('Moves the sprite in a "random" direction using "RANDOMDIR" in a bracket', () => {

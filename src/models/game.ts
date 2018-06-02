@@ -151,7 +151,7 @@ export class GameData {
     }
 
     _getSpriteByName(name: string) {
-        return this.objects.filter(sprite => sprite._getName().toLowerCase() === name.toLowerCase())[0]
+        return this.objects.filter(sprite => sprite.getName().toLowerCase() === name.toLowerCase())[0]
     }
 
     getMagicBackgroundSprite() {

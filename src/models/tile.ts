@@ -18,6 +18,7 @@ export interface IGameTile extends IGameNode {
     matchesCell: (cell: Cell) => boolean
     isOr: () => boolean
     getCellsThatMatch: () => Set<Cell>
+    getName: () => string
 }
 
 export class GameSprite extends BaseForLines implements IGameTile {
@@ -40,7 +41,7 @@ export class GameSprite extends BaseForLines implements IGameTile {
     getPixels(): IColor[][] {
         throw new Error('BUG: Subclasses should implement this')
     }
-    _getName() {
+    getName() {
         return this._name
     }
     _getDescendantTiles(): GameLegendTile[] {
@@ -234,6 +235,9 @@ export class GameLegendTile extends BaseForLines implements IGameTile {
             throw new Error('BUG: This is an abstract method')
         }
         return false
+    }
+    getName() {
+        return this._spriteNameOrLevelChar
     }
     getSpritesForRuleAction() {
         return this.getSprites()

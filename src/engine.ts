@@ -367,7 +367,7 @@ export default class Engine extends EventEmitter2 {
     }
 
     isWinning() {
-        let conditionsSatisfied = true
+        let conditionsSatisfied = this.gameData.winConditions.length > 0 // true
         this.gameData.winConditions.forEach(winCondition => {
             if (!winCondition.isSatisfied(this.getCells())) {
                 conditionsSatisfied = false
