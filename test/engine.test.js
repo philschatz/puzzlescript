@@ -1131,7 +1131,7 @@ describe('engine', () => {
         ======
 
         (add the Color onto the Player)
-        RIGHT [ Color ] [ Player NO Color ] -> [ ] [ Player Color ]
+        DEBUGGER RIGHT [ Color ] [ Player NO Color ] -> [ ] [ Player Color ]
 
         ==============
         WINCONDITIONS
@@ -1159,5 +1159,90 @@ describe('engine', () => {
         expect(engine.currentLevel[0][0].getSpritesAsSet().has(red)).toBe(true)
         expect(engine.currentLevel[0][2].getSpritesAsSet().has(green)).toBe(true)
         expect(engine.currentLevel[0][3].getSpritesAsSet().has(blue)).toBe(true)
+    })
+
+    it('keeps running the rule even when only the direction changed', () => {
+        const { engine, data } = parseEngine(`title foo
+
+        ========
+        OBJECTS
+        ========
+
+        Background
+        gray
+
+        Player
+        transparent
+
+        Red R
+        red
+
+        Green G
+        green
+
+        Blue B
+        blue
+
+        =======
+        LEGEND
+        =======
+
+        . = Background
+        P = Player
+
+        Color = Red OR Green OR Blue
+        A = Red AND Green AND Blue
+
+        =======
+        SOUNDS
+        =======
+
+        ================
+        COLLISIONLAYERS
+        ================
+        Background
+        Player
+        Red
+        Green
+        Blue
+
+        ======
+        RULES
+        ======
+
+        DOWN [ STATIONARY Red ] -> [ > Red ]
+        [ > Red Blue ] -> [ > Red > Blue ]
+
+        ==============
+        WINCONDITIONS
+        ==============
+
+        =======
+        LEVELS
+        =======
+
+        AAA
+        ...
+
+    `) // end game definition
+
+        const red = data._getSpriteByName('red')
+        const green = data._getSpriteByName('green')
+        const blue = data._getSpriteByName('blue')
+        engine.tick()
+        expect(engine.toSnapshot()).toMatchSnapshot()
+
+        expect(red.getCellsThatMatch().size).toBe(3)
+        expect(green.getCellsThatMatch().size).toBe(3)
+        expect(blue.getCellsThatMatch().size).toBe(3)
+        expect(engine.currentLevel[0][0].getSpritesAsSet().has(green)).toBe(true)
+        expect(engine.currentLevel[0][1].getSpritesAsSet().has(green)).toBe(true)
+        expect(engine.currentLevel[0][2].getSpritesAsSet().has(green)).toBe(true)
+        expect(engine.currentLevel[1][0].getSpritesAsSet().has(red)).toBe(true)
+        expect(engine.currentLevel[1][1].getSpritesAsSet().has(red)).toBe(true)
+        expect(engine.currentLevel[1][2].getSpritesAsSet().has(red)).toBe(true)
+        expect(engine.currentLevel[1][0].getSpritesAsSet().has(blue)).toBe(true)
+        expect(engine.currentLevel[1][1].getSpritesAsSet().has(blue)).toBe(true)
+        expect(engine.currentLevel[1][2].getSpritesAsSet().has(blue)).toBe(true)
     })
 })

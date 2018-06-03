@@ -60,3 +60,36 @@ Array [
   ],
 ]
 `;
+
+exports[`engine keeps running the rule even when only the direction changed 1`] = `
+Array [
+  Array [
+    Array [
+      "STATIONARY Green",
+    ],
+    Array [
+      "STATIONARY Green",
+    ],
+    Array [
+      "STATIONARY Green",
+    ],
+  ],
+  Array [
+    Array [
+      "STATIONARY Background",
+      "STATIONARY Blue",
+      "STATIONARY Red",
+    ],
+    Array [
+      "STATIONARY Background",
+      "STATIONARY Blue",
+      "STATIONARY Red",
+    ],
+    Array [
+      "STATIONARY Background",
+      "STATIONARY Blue",
+      "STATIONARY Red",
+    ],
+  ],
+]
+`;

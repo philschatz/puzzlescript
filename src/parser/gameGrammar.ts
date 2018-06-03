@@ -87,7 +87,14 @@ export const COMMON_GRAMMAR = `
 
 export const STRINGTOKEN_GRAMMAR = `
     // special flag that can appear before rules so the debugger pauses before the rule is evaluated
-    t_DEBUGGER = caseInsensitive<"DEBUGGER">
+    t_DEBUGGER
+        = t_DEBUGGER_ADD
+        | t_DEBUGGER_REMOVE
+        | t_DEBUGGER_DEFAULT
+    t_DEBUGGER_DEFAULT = caseInsensitive<"DEBUGGER">
+    t_DEBUGGER_ADD = caseInsensitive<"DEBUGGER_ADD">
+    t_DEBUGGER_REMOVE = caseInsensitive<"DEBUGGER_REMOVE">
+
 
     // Section titles
     t_OBJECTS = caseInsensitive<"OBJECTS">

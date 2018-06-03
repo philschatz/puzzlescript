@@ -17,17 +17,17 @@ export const RULE_GRAMMAR = `
 
     Rule = t_DEBUGGER? (RuleModifierLeft* RuleBracket)+ "->" (RuleModifier? RuleBracket)* RuleCommand* MessageCommand? lineTerminator+
 
-    RuleBracket = "[" NonemptyListOf<RuleBracketNeighbor, "|"> t_AGAIN? "]" // t_AGAIN is a HACK. It should be in the list of commands but it's not.
+    RuleBracket = "[" NonemptyListOf<RuleBracketNeighbor, "|"> t_AGAIN? "]" t_DEBUGGER? // t_AGAIN is a HACK. It should be in the list of commands but it's not.
     RuleBracketNeighbor
         = HackTileNameIsSFX1 // to parse '... -> [ SFX1 ]' (they should be commands)
         | HackTileNameIsSFX2 // to parse '... -> [ tilename SFX1 ]'
         | RuleBracketEllipsisNeighbor
         | RuleBracketNoEllipsisNeighbor
 
-    RuleBracketEllipsisNeighbor = t_ELLIPSIS
-    RuleBracketNoEllipsisNeighbor = TileWithModifier*
+    RuleBracketEllipsisNeighbor = t_ELLIPSIS t_DEBUGGER?
+    RuleBracketNoEllipsisNeighbor = TileWithModifier* t_DEBUGGER?
 
-    TileWithModifier = tileModifier* lookupRuleVariableName
+    TileWithModifier = t_DEBUGGER? tileModifier* lookupRuleVariableName
 
     tileModifier = space* tileModifierInner space+ // Force-check that there is whitespace after the cellLayerModifier so things like "STATIONARYZ" or "NOZ" are not parsed as a modifier (they are a variable that happens to begin with the same text as a modifier)
 
@@ -84,8 +84,8 @@ export const RULE_GRAMMAR = `
         Rule
         (t_GROUP_RULE_PLUS Rule)+
 
-    HackTileNameIsSFX1 = t_SFX
-    HackTileNameIsSFX2 = lookupRuleVariableName t_SFX
+    HackTileNameIsSFX1 = t_SFX t_DEBUGGER?
+    HackTileNameIsSFX2 = lookupRuleVariableName t_SFX t_DEBUGGER?
 `
 
 export function getRuleSemantics() {
@@ -96,17 +96,17 @@ export function getRuleSemantics() {
         RuleItem: function (_1) {
             return _1.parse()
         },
-        RuleLoop: function (hasDebugger, _startloop, _whitespace1, rules, _endloop, _whitespace2) {
-            return new GameRuleLoop(this.source, rules.parse(), !!hasDebugger.parse()[0])
+        RuleLoop: function (debugFlag, _startloop, _whitespace1, rules, _endloop, _whitespace2) {
+            return new GameRuleLoop(this.source, rules.parse(), debugFlag.parse()[0])
         },
-        RuleGroup: function (hasDebugger, firstRule, _plusses, followingRules) {
-            return new GameRuleGroup(this.source, [firstRule.parse()].concat(followingRules.parse()), !!hasDebugger.parse()[0])
+        RuleGroup: function (debugFlag, firstRule, _plusses, followingRules) {
+            return new GameRuleGroup(this.source, [firstRule.parse()].concat(followingRules.parse()), debugFlag.parse()[0])
         },
-        Rule: function (optionalDebugger, modifiers, conditions, _arrow, _unusuedModifer, actions, commands, optionalMessageCommand, _whitespace) {
-            return new GameRule(this.source, _.flatten(modifiers.parse()), conditions.parse(), actions.parse(), commands.parse().concat(optionalMessageCommand.parse()), !!optionalDebugger.parse()[0])
+        Rule: function (debugFlag, modifiers, conditions, _arrow, _unusuedModifer, actions, commands, optionalMessageCommand, _whitespace) {
+            return new GameRule(this.source, _.flatten(modifiers.parse()), conditions.parse(), actions.parse(), commands.parse().concat(optionalMessageCommand.parse()), debugFlag.parse()[0])
         },
-        RuleBracket: function (_openBracket, neighbors, hackAgain, _closeBracket) {
-            const b = new RuleBracket(this.source, neighbors.parse(), hackAgain.parse())
+        RuleBracket: function (_openBracket, neighbors, hackAgain, _closeBracket, debugFlag) {
+            const b = new RuleBracket(this.source, neighbors.parse(), hackAgain.parse(), debugFlag.parse()[0])
             const key = b.toKey()
             if (!cacheBrackets.has(key)) {
                 cacheBrackets.set(key, b)
@@ -118,12 +118,12 @@ export function getRuleSemantics() {
         RuleBracketNeighbor: function (_1) {
             return _1.parse()
         },
-        RuleBracketEllipsisNeighbor: function (_1) {
-            const tileWithModifier = new TileWithModifier(this.source, "...", null)
-            return new RuleBracketNeighbor(this.source, [tileWithModifier], true)
+        RuleBracketEllipsisNeighbor: function (_1, debugFlag) {
+            const tileWithModifier = new TileWithModifier(this.source, "...", null, debugFlag.parse()[0])
+            return new RuleBracketNeighbor(this.source, [tileWithModifier], true, debugFlag.parse()[0])
         },
-        RuleBracketNoEllipsisNeighbor: function (tileWithModifier) {
-            const n = new RuleBracketNeighbor(this.source, tileWithModifier.parse(), false)
+        RuleBracketNoEllipsisNeighbor: function (tileWithModifier, debugFlag) {
+            const n = new RuleBracketNeighbor(this.source, tileWithModifier.parse(), false, debugFlag.parse()[0])
             const key = n.toKey()
             if (!cacheNeighbors.has(key)) {
                 cacheNeighbors.set(key, n)
@@ -132,8 +132,8 @@ export function getRuleSemantics() {
             }
             return cacheNeighbors.get(key)
         },
-        TileWithModifier: function (optionalModifier, tile) {
-            const t = new TileWithModifier(this.source, optionalModifier.parse()[0], tile.parse())
+        TileWithModifier: function (debugFlag, optionalModifier, tile) {
+            const t = new TileWithModifier(this.source, optionalModifier.parse()[0], tile.parse(), debugFlag.parse()[0])
             const key = t.toKey()
             if (!cacheTilesWithModifiers.has(key)) {
                 cacheTilesWithModifiers.set(key, t)
@@ -145,11 +145,11 @@ export function getRuleSemantics() {
         tileModifier: function (_whitespace1, tileModifier, _whitespace2) {
             return tileModifier.parse()
         },
-        HackTileNameIsSFX1: function (sfx) {
-            return new HackNode(this.source, sfx.parse())
+        HackTileNameIsSFX1: function (sfx, debugFlag) {
+            return new HackNode(this.source, sfx.parse(), debugFlag.parse()[0])
         },
-        HackTileNameIsSFX2: function (tile, sfx) {
-            return new HackNode(this.source, { tile: tile.parse(), sfx: sfx.parse() })
+        HackTileNameIsSFX2: function (tile, sfx, debugFlag) {
+            return new HackNode(this.source, { tile: tile.parse(), sfx: sfx.parse() }, debugFlag.parse()[0])
         },
     }
 }

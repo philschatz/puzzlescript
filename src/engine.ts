@@ -133,6 +133,9 @@ export class Cell {
             }
         }
     }
+    toString() {
+        return `Cell [${this.rowIndex}][${this.colIndex}] ${[...this.getSpriteAndWantsToMoves().entries()].map(([sprite, wantsToMove]) => `${wantsToMove} ${sprite.getName()}`).join(' ')}`
+    }
 }
 
 export default class Engine extends EventEmitter2 {
