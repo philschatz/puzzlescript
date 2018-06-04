@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync } from 'fs'
+import { readFileSync, writeFileSync, existsSync } from 'fs'
 import * as path from 'path'
 import * as glob from 'glob'
 import * as pify from 'pify'
@@ -77,7 +77,7 @@ async function run() {
     }
     const {gameTitle} = await inquirer.prompt<{gameTitle: string}>([question])
 
-    const gamePath = games.filter(game => game.title === gameTitle)[0].filePath
+    const {filePath: gamePath, id: gistId} = games.filter(game => game.title === gameTitle)[0]
     const absPath = path.resolve(gamePath)
     const code = readFileSync(absPath, 'utf-8')
     const startTime = Date.now()
@@ -214,6 +214,13 @@ async function run() {
         //   UI.drawCellAt(data, cell, cell.rowIndex, cell.colIndex, false)
         // })
 
+        // Load the solutions file (if it exists) so we can append to it
+        const solutionsPath = path.join(__dirname, `../gist-solutions/${gistId}.json`)
+        let solutions = []
+        if (existsSync(solutionsPath)) {
+            solutions = JSON.parse(readFileSync(solutionsPath, 'utf-8'))
+        }
+
         UI.setGame(data)
         UI.renderScreen(engine.currentLevel)
         UI.writeDebug(`Game: "${data.title}"`)
@@ -225,6 +232,13 @@ async function run() {
             const {changedCells, isWinning} = engine.tick()
 
             if (isWinning) {
+                // Save the solution
+                const newSolution = keypresses.join('')
+                if (!solutions[chosenLevel] || solutions[chosenLevel].length > newSolution.length) {
+                    solutions[chosenLevel] = keypresses.join('')
+                    debugger
+                    writeFileSync(solutionsPath, JSON.stringify(solutions, null, 2))
+                }
                 keypresses = []
                 chosenLevel++
                 // Skip the messages since they are not implmented yet
