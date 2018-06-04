@@ -1,57 +1,110 @@
-title foo
+title BeamishIslands testing
+author mjau
+run_rules_on_level_start
+realtime_interval 0.3
 
-========
+( for ludum dare 29 )
+
+=========
 OBJECTS
+=========
+
+BgNW1 .
+#6719ac #a13cb7
+00000
+00000
+00000
+00000
+00000
+
+
+Player
+#f7e26b #000000
+01010
+.000.
+.0.0.
+.....
+.....
+
+Island #
+#000000
+
+
+PlayerIsland
+#078ffd
+.....
+.....
+..0..
+.....
+.....
+
+BlockIsland
+#df2619
+.....
+.....
+..0..
+.....
+.....
+
+
+Bridge -
+#000000 #a27d5b
+.....
+.111.
+.101.
+.111.
+.000.
+
+
+========
+LEGEND
 ========
 
-Background
-gray
+@ = Player and Island
 
-Player
-transparent
+Background = BgNW1
+Movable = Island or PlayerIsland or Player
+MoveBlock = Island or Bridge
 
-Red R
-red
 
-Green G
-green
-
-Blue B
-blue
-
-=======
-LEGEND
-=======
-
-. = Background
-P = Player
-
-Color = Red OR Green OR Blue
-
-=======
+========
 SOUNDS
-=======
+========
 
-================
+
+=================
 COLLISIONLAYERS
-================
+=================
+
 Background
+Island, Bridge
 Player
-Color
+PlayerIsland, BlockIsland
 
-======
+=======
 RULES
-======
+=======
 
-(shift colors to the right)
-RIGHT [ Color | NO Color ] -> [ NO Color | Color ]
 
-==============
+( player island )
+(use RIGHT in the rules only to reduce the number of rules that are updated)
+RIGHT [ Player Island ] -> [ Player Island PlayerIsland ]
+down  [ PlayerIsland | Island ] -> [ PlayerIsland | Island PlayerIsland ]
+
+( rigid movement )
+LEFT [ > Player ][ PlayerIsland ] -> [ > Player ][ > PlayerIsland ]
+DEBUGGER LEFT [ > PlayerIsland Island  | no MoveBlock ] -> [ > PlayerIsland > Island | ]
+DEBUGGER RIGHT [ < Island  | Island no BlockIsland ] -> [ < Island | < Island ]
+DEBUGGER RIGHT [ stationary Island PlayerIsland ][ moving Player ] -> [ Island PlayerIsland ][ stationary Player ] (SFX2)
+DEBUGGER RIGHT [ stationary Island PlayerIsland ][ LEFT Movable ] DEBUGGER_REMOVE  -> [ Island stationary PlayerIsland ][ stationary Movable ]
+
+===============
 WINCONDITIONS
-==============
+===============
 
-=======
+========
 LEVELS
-=======
+========
 
-RG.B..
+.@
+-#

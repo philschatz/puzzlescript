@@ -534,7 +534,6 @@ describe('engine', () => {
         engine.tick()
 
         expect(crate.getCellsThatMatch().size).toBe(0)
-
     })
 
     it('Evaluates the rules as-if they were evaluated from top->bottom and left->right (e.g. beam islands waves)', () => {
@@ -627,9 +626,7 @@ describe('engine', () => {
         expect(bgsw1.getCellsThatMatch().size).toBe(30)
         expect(bgne1.getCellsThatMatch().size).toBe(25)
         expect(bgse1.getCellsThatMatch().size).toBe(25)
-
     })
-
 
     it('Removes sprites that were in the OR  tile of a condition but not present in the action side', () => {
         const { engine, data } = parseEngine(`title Aaaah! I'm Being Attacked by a Giant Tentacle!
@@ -709,7 +706,6 @@ describe('engine', () => {
         // [RNG] -> [] should result in the sprites not appearing
         expect(rng1.getCellsThatMatch().size).toBe(0)
         expect(rng2.getCellsThatMatch().size).toBe(0)
-
     })
 
     it('Evaluates brackets when new cells match mid-evaluation', () => {
@@ -768,15 +764,13 @@ describe('engine', () => {
 
     `) // end game definition
 
-    const spriteA = data._getSpriteByName('spritea')
+        const spriteA = data._getSpriteByName('spritea')
         const spriteB = data._getSpriteByName('spriteb')
         engine.tick()
 
         expect(spriteA.getCellsThatMatch().size).toBe(4)
         expect(spriteB.getCellsThatMatch().size).toBe(0)
-
     })
-
 
     it('preserves wantsToMove when a sprite is replaced but it is in the same collision layer', () => {
         const { engine, data } = parseEngine(`title foo
@@ -846,11 +840,10 @@ describe('engine', () => {
         expect(engine.currentLevel[0][2].getSpritesAsSet().has(spriteA)).toBe(false)
         expect(spriteA.getCellsThatMatch().size).toBe(0)
         expect(spriteB.getCellsThatMatch().size).toBe(1)
-
     })
 
-
     it('percolates wantsToMove up (Beam Islands PlayerIsland)', () => {
+        // This test ran indefinitely at one point
         const { engine, data } = parseEngine(`title foo
         realtime_interval 0.6
 
@@ -902,6 +895,8 @@ describe('engine', () => {
         RULES
         ======
 
+        ( These Rules cause the engine to run indefinitely )
+
         RIGHT [ STATIONARY Player ] -> [ > Player ]
         [ Island NO PlayerIsland ] -> [ Island BlockIsland ]
         [ > Player ][ PlayerIsland ] -> [ > Player ][ > PlayerIsland ]
@@ -932,7 +927,6 @@ describe('engine', () => {
 
         expect(player.getCellsThatMatch().size).toBe(1)
         expect([...player.getCellsThatMatch()][0].getWantsToMove(player)).toBe('STATIONARY')
-
     })
 
     it('moves sprites to a new neighbor (simple)', () => {
@@ -1131,7 +1125,7 @@ describe('engine', () => {
         ======
 
         (add the Color onto the Player)
-        DEBUGGER RIGHT [ Color ] [ Player NO Color ] -> [ ] [ Player Color ]
+        RIGHT [ Color ] [ Player NO Color ] -> [ ] [ Player Color ]
 
         ==============
         WINCONDITIONS
@@ -1244,5 +1238,137 @@ describe('engine', () => {
         expect(engine.currentLevel[1][0].getSpritesAsSet().has(blue)).toBe(true)
         expect(engine.currentLevel[1][1].getSpritesAsSet().has(blue)).toBe(true)
         expect(engine.currentLevel[1][2].getSpritesAsSet().has(blue)).toBe(true)
+    })
+
+    it('does not move the island when there is a bridge in the way (simulated RIGID keyword)', () => {
+        const { engine, data } = parseEngine(`title BeamishIslands testing
+        author mjau
+        run_rules_on_level_start
+        realtime_interval 0.3
+
+        ( for ludum dare 29 )
+
+        =========
+         OBJECTS
+        =========
+
+        BgNW1 .
+        #6719ac #a13cb7
+        00000
+        00000
+        00000
+        00000
+        00000
+
+
+        Player
+        #f7e26b #000000
+        01010
+        .000.
+        .0.0.
+        .....
+        .....
+
+        Island #
+        #000000
+
+
+        PlayerIsland
+        #078ffd
+        .....
+        .....
+        ..0..
+        .....
+        .....
+
+        BlockIsland
+        #df2619
+        .....
+        .....
+        ..0..
+        .....
+        .....
+
+
+        Bridge -
+        #000000 #a27d5b
+        .....
+        .111.
+        .101.
+        .111.
+        .000.
+
+
+        ========
+         LEGEND
+        ========
+
+        @ = Player and Island
+
+        Background = BgNW1
+        Movable = Player or Island or PlayerIsland
+        MoveBlock = Island or Bridge
+
+
+        ========
+         SOUNDS
+        ========
+
+
+        =================
+         COLLISIONLAYERS
+        =================
+
+        Background
+        Island, Bridge
+        Player
+        PlayerIsland, BlockIsland
+
+        =======
+         RULES
+        =======
+
+
+        ( player island )
+        (use RIGHT in the rules only to reduce the number of rules that are updated)
+        RIGHT [ Player Island ] -> [ Player Island PlayerIsland ]
+        down  [ PlayerIsland | Island ] -> [ PlayerIsland | Island PlayerIsland ]
+
+        ( rigid movement )
+        LEFT [ > Player ][ PlayerIsland ] -> [ > Player ][ > PlayerIsland ]
+        LEFT [ > PlayerIsland Island  | no MoveBlock ] -> [ > PlayerIsland > Island | ]
+        RIGHT [ < Island  | Island no BlockIsland ] -> [ < Island | < Island ]
+        RIGHT [ stationary Island PlayerIsland ][ moving Player ] -> [ Island PlayerIsland ][ stationary Player ] (SFX2)
+        RIGHT [ stationary Island PlayerIsland ][ LEFT Movable ]  -> [ Island stationary PlayerIsland ][ stationary Movable ]
+
+        ===============
+         WINCONDITIONS
+        ===============
+
+        ========
+         LEVELS
+        ========
+
+        .@
+        -#
+
+    `) // end game definition
+
+        const island = data._getSpriteByName('island')
+        const playerIsland = data._getSpriteByName('PlayerIsland')
+        engine.pressLeft()
+        engine.tick()
+        expect(engine.toSnapshot()).toMatchSnapshot()
+
+        expect(island.getCellsThatMatch().size).toBe(2)
+        expect(playerIsland.getCellsThatMatch().size).toBe(2)
+        // Check that the Island did not move
+        expect(engine.currentLevel[0][0].getSpritesAsSet().has(island)).toBe(false)
+        expect(engine.currentLevel[0][1].getSpritesAsSet().has(island)).toBe(true)
+        expect(engine.currentLevel[1][1].getSpritesAsSet().has(island)).toBe(true)
+        // Check that the PlayerIsland didn't move either
+        expect(engine.currentLevel[0][0].getSpritesAsSet().has(playerIsland)).toBe(false)
+        expect(engine.currentLevel[0][1].getSpritesAsSet().has(playerIsland)).toBe(true)
+        expect(engine.currentLevel[1][1].getSpritesAsSet().has(playerIsland)).toBe(true)
     })
 })

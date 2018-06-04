@@ -1,5 +1,29 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`engine does not move the island when there is a bridge in the way (simulated RIGID keyword) 1`] = `
+Array [
+  Array [
+    Array [
+      "STATIONARY BgNW1",
+      "STATIONARY Player",
+    ],
+    Array [
+      "STATIONARY Island",
+      "STATIONARY PlayerIsland",
+    ],
+  ],
+  Array [
+    Array [
+      "STATIONARY Bridge",
+    ],
+    Array [
+      "STATIONARY Island",
+      "STATIONARY PlayerIsland",
+    ],
+  ],
+]
+`;
+
 exports[`engine draws corner sprites correctly (according to mirror isles) 1`] = `
 Array [
   Array [

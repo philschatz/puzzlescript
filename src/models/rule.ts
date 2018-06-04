@@ -304,12 +304,14 @@ class SimpleBracket extends BaseForLines implements ICacheable {
     _neighbors: SimpleNeighbor[]
     _firstCells: Set<Cell>
     _debugFlag: DEBUG_FLAG
-    constructor(source: IGameCode, direction: RULE_DIRECTION_ABSOLUTE, neighbors: SimpleNeighbor[], debugFlag: DEBUG_FLAG) {
+    _hasEllipsis: boolean
+    constructor(source: IGameCode, direction: RULE_DIRECTION_ABSOLUTE, neighbors: SimpleNeighbor[], hasEllipsis: boolean, debugFlag: DEBUG_FLAG) {
         super(source)
         this._direction = direction
         this._neighbors = neighbors
         this._firstCells = new Set()
         this._debugFlag = debugFlag
+        this._hasEllipsis = hasEllipsis
     }
     toKey() {
         return `${this._direction}[${this._neighbors.map(n => n.toKey()).join('|')}]{debugging?${this._debugFlag}}`
@@ -336,6 +338,9 @@ class SimpleBracket extends BaseForLines implements ICacheable {
         if (this._debugFlag === DEBUG_FLAG.BREAKPOINT_EVALUATE) {
             // pausing here because it is in the code
             debugger
+        }
+        if (this._hasEllipsis) {
+            return []
         }
         const ret: CellMutation[] = []
         let curCell = cell
@@ -412,7 +417,7 @@ class SimpleBracket extends BaseForLines implements ICacheable {
         for (let x = index + 1; x < this._neighbors.length; x++) {
             curCell = curCell.getNeighbor(this._direction)
             // TODO: Convert the neighbor check into a method
-            if (curCell && (this._neighbors[x]._tilesWithModifier.size === 0 || this._neighbors[x].hasCell(curCell))) {
+            if (curCell && (this._neighbors[x]._tilesWithModifier.size === 0 || this._neighbors[x].matchesCellSimple(curCell))) {
                 // keep going
             } else {
                 matched = false
@@ -441,7 +446,7 @@ class SimpleBracket extends BaseForLines implements ICacheable {
         // check the neighbors upstream of curCell
         for (let x = index - 1; x >= 0; x--) {
             curCell = curCell.getNeighbor(opposite(this._direction))
-            if (curCell && (this._neighbors[x]._tilesWithModifier.size === 0 || this._neighbors[x].hasCell(curCell))) {
+            if (curCell && (this._neighbors[x]._tilesWithModifier.size === 0 || this._neighbors[x].matchesCellSimple(curCell))) {
                 // keep going
             } else {
                 matched = false
@@ -473,14 +478,14 @@ class SimpleBracket extends BaseForLines implements ICacheable {
 class SimpleNeighbor extends BaseForLines implements ICacheable {
     _tilesWithModifier: Set<SimpleTileWithModifier>
     _brackets: Map<SimpleBracket, Set<number>>
-    _localCellCache: Set<Cell>
+    // _localCellCache: Map<Cell, Set<GameSprite>>
     _debugFlag: DEBUG_FLAG
 
     constructor(source: IGameCode, tilesWithModifier: Set<SimpleTileWithModifier>, debugFlag: DEBUG_FLAG) {
         super(source)
         this._tilesWithModifier = tilesWithModifier
         this._brackets = new Map()
-        this._localCellCache = new Set()
+        // this._localCellCache = new Map()
         this._debugFlag = debugFlag
     }
     toKey() {
@@ -529,7 +534,10 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
     }
 
     clearCaches() {
-        this._localCellCache.clear()
+        // this._localCellCache.clear()
+        for (const t of this._tilesWithModifier) {
+            t.clearCaches()
+        }
     }
 
     // set this ahead of time becuase order does not matter when populating the magicOrTiles `[ > Player | Pill ] -> [ Pill OldPos | Player ]`
@@ -679,9 +687,12 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
         }
 
         for (const sprite of setIntersection(new Set(conditionSpritesMap.keys()), new Set(actionSpritesMap.keys()))) {
-            const direction = getActionDir(sprite)
-            if (direction) { // optimization
-                spritesToUpdate.set(sprite, direction)
+            const desiredDirection = getActionDir(sprite)
+            // Only update if the direction changed.
+            // That way things like `[ > Player ] -> [ > Player ]` are not marked as modified
+            const currentDirection = cell.getWantsToMove(sprite)
+            if (currentDirection !== (desiredDirection || RULE_DIRECTION_ABSOLUTE.STATIONARY)) {
+                spritesToUpdate.set(sprite, desiredDirection)
             }
         }
 
@@ -708,6 +719,9 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
         })
     }
 
+    matchesCellSimple(cell: Cell) {
+        return this.matchesCell(cell, null, null)
+    }
     matchesCell(cell: Cell, tileWithModifier: SimpleTileWithModifier, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
         for (const t of this._tilesWithModifier) {
             if (t === tileWithModifier) {
@@ -719,6 +733,18 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
             }
         }
         return true
+    }
+    matchesCellWithout(cell: Cell, sprite: GameSprite) {
+        // Temporarily remove the sprite from the cell
+        if (cell._spriteAndWantsToMoves.has(sprite)) {
+            const wantsToMove = cell._spriteAndWantsToMoves.get(sprite)
+            cell._spriteAndWantsToMoves.delete(sprite)
+            const matches = this.matchesCellSimple(cell)
+            cell._spriteAndWantsToMoves.set(sprite, wantsToMove)
+            return matches
+        } else {
+            return this.matchesCellSimple(cell)
+        }
     }
 
     matchesFirstCell(cells: Iterable<Cell>, t: SimpleTileWithModifier, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
@@ -740,20 +766,20 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
                         bracket.addCell(index, this, t, sprite, cell, wantsToMove)
                     }
                 }
-                this._localCellCache.add(cell)
+                // this._localCellCache.add(cell)
                 //}
             } else {
                 // adding the Cell causes the set of Tiles to no longer match.
                 // If it previously matched, notify the bracket that it no longer matches
                 // (and delete it from our cache)
-                if (this.hasCell(cell)) {
+                // if (this.hasCell(cell)) {
                     for (const [bracket, indexes] of this._brackets.entries()) {
                         for (const index of indexes) {
                             bracket.removeCell(index, this, t, sprite, cell)
                         }
                     }
-                    this._localCellCache.delete(cell)
-                }
+                    // this._localCellCache.delete(cell)
+                // }
             }
         }
     }
@@ -766,21 +792,26 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
             debugger
         }
         for (const cell of cells) {
-            if (this.hasCell(cell)) {
-                // remove it from upstream
-                for (const [bracket, indexes] of this._brackets.entries()) {
-                    for (const index of indexes) {
-                        bracket.removeCell(index, this, t, sprite, cell)
+            // if (this.hasCell(cell)) {
+                // Check if the cell still matches. If not, remove it from upstream
+                // It's a little funky if we have a NO tile. I _think_ we need to negate the
+                // result of matchesCellWithout in that case but not completely sure
+                if (t.isNo() === this.matchesCellWithout(cell, sprite)) {
+                    // remove it from upstream
+                    for (const [bracket, indexes] of this._brackets.entries()) {
+                        for (const index of indexes) {
+                            bracket.removeCell(index, this, t, sprite, cell)
+                        }
                     }
                 }
-                this._localCellCache.delete(cell)
-            }
+            //     this._localCellCache.delete(cell)
+            // }
         }
     }
 
-    hasCell(cell: Cell) {
-        return this._localCellCache.has(cell)
-    }
+    // hasCell(cell: Cell, sprite: GameSprite) {
+    //     return this._localCellCache.get(cell).has(sprite)
+    // }
 
 }
 
@@ -794,6 +825,10 @@ class SimpleEllipsisNeighbor extends SimpleNeighbor {
     subscribeToTileChanges() {
         // don't subscribe to changes since we do not handle ellipses
     }
+    // Define a stub because SimpleBracket calls this
+    matchesCellSimple() {
+        return false
+    }
 }
 
 export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
@@ -803,6 +838,7 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
     _tile: IGameTile
     _neighbors: Set<SimpleNeighbor>
     _debugFlag: DEBUG_FLAG
+    // _localCache: Map<Cell, Set<GameSprite>>
     constructor(source: IGameCode, isNegated: boolean, isRandom: boolean, direction: RULE_DIRECTION_ABSOLUTE, tile: IGameTile, debugFlag: DEBUG_FLAG) {
         super(source)
         this._isNegated = isNegated
@@ -811,10 +847,15 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
         this._tile = tile
         this._neighbors = new Set()
         this._debugFlag = debugFlag
+        // this._localCache = new Map()
     }
 
     toKey() {
         return `{-?${this._isNegated}} {#?${this._isRandom}} dir="${this._direction}" [${this._tile.getSprites().map(sprite => sprite.getName()).sort()}]{debugging?${this._debugFlag}}`
+    }
+
+    clearCaches() {
+        // this._localCache.clear()
     }
 
     isNo() {
@@ -837,6 +878,16 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
             }
         }
     }
+
+    // _addCellToCache(cell: Cell, sprites: Set<GameSprite>) {
+    //     this._localCache.set(cell, sprites)
+    // }
+
+    // _removeCellsFromCache(cells: Iterable<Cell>) {
+    //     for (const cell of cells) {
+    //         this._localCache.delete(cell)
+    //     }
+    // }
 
     matchesCellExistingWantsToMove(cell: Cell) {
         const hasTile = this._tile && this._tile.matchesCell(cell)
@@ -867,13 +918,19 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
         }
         // Cells all have the same sprites, so if the 1st matches, they all do
         if (this.matchesFirstCell(cells, wantsToMove)) {
+            // const cellsNotInCache = setDifference(new Set(cells), new Set(this._localCache.keys()))
             for (const neighbor of this._neighbors) {
+                // neighbor.addCells(this, sprite, cellsNotInCache, wantsToMove)
                 neighbor.addCells(this, sprite, cells, wantsToMove)
             }
+            // this._addCellsToCache(cellsNotInCache, wantsToMove)
         } else {
+            // const cellsInCache = setIntersection(new Set(cells), new Set(this._localCache.keys()))
             for (const neighbor of this._neighbors) {
+                // neighbor.removeCells(this, sprite, cellsInCache)
                 neighbor.removeCells(this, sprite, cells)
             }
+            // this._removeCellsFromCache(cellsInCache)
         }
     }
     updateCells(sprite: GameSprite, cells: Iterable<Cell>, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
@@ -895,13 +952,19 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
         }
         // Cells all have the same sprites, so if the 1st matches, they all do
         if (this.matchesFirstCell(cells, null/*STATIONARY*/)) {
+            // const cellsNotInCache = setDifference(new Set(cells), new Set(this._localCache.keys()))
             for (const neighbor of this._neighbors) {
+                // neighbor.addCells(this, sprite, cellsNotInCache, RULE_DIRECTION_ABSOLUTE.STATIONARY)
                 neighbor.addCells(this, sprite, cells, RULE_DIRECTION_ABSOLUTE.STATIONARY)
             }
+            // this._addCellsToCache(cellsNotInCache, RULE_DIRECTION_ABSOLUTE.STATIONARY)
         } else {
+            // const cellsInCache = setIntersection(new Set(cells), new Set(this._localCache.keys()))
             for (const neighbor of this._neighbors) {
+                // neighbor.removeCells(this, sprite, cellsInCache)
                 neighbor.removeCells(this, sprite, cells)
             }
+            // this._removeCellsFromCache(cellsInCache)
         }
     }
 
@@ -1178,7 +1241,7 @@ export class RuleBracket extends BaseForLines implements ICacheable {
     }
 
     toSimple(direction: RULE_DIRECTION_ABSOLUTE, ruleCache: Map<string, SimpleRule>, bracketCache: Map<string, SimpleBracket>, neighborCache: Map<string, SimpleNeighbor>, tileCache: Map<string, SimpleTileWithModifier>) {
-        return cacheSetAndGet(bracketCache, new SimpleBracket(this.__source, direction, this._neighbors.map(x => x.toSimple(ruleCache, bracketCache, neighborCache, tileCache)), this._debugFlag))
+        return cacheSetAndGet(bracketCache, new SimpleBracket(this.__source, direction, this._neighbors.map(x => x.toSimple(ruleCache, bracketCache, neighborCache, tileCache)), this._hasEllipsis, this._debugFlag))
     }
 
     hasEllipsis() {
@@ -1239,7 +1302,7 @@ export class TileWithModifier extends BaseForLines implements ICacheable {
         this._debugFlag = debugFlag
 
         if (!this._tile) {
-            console.error('TODO: Do something about ellipses')
+            console.warn('TODO: Do something about ellipses')
         }
 
     }
