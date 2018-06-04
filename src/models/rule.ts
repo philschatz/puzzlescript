@@ -97,7 +97,8 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
     _isRigid: boolean
     _isSubscribedToCellChanges: boolean
     _debugFlag: DEBUG_FLAG
-    constructor(source: IGameCode, evaluationDirection: RULE_DIRECTION_ABSOLUTE, conditionBrackets: SimpleBracket[], actionBrackets: SimpleBracket[], commands: string[], isLate: boolean, isAgain: boolean, isRigid: boolean, debugFlag: DEBUG_FLAG) {
+    _doesEvaluationOrderMatter: boolean
+    constructor(source: IGameCode, evaluationDirection: RULE_DIRECTION_ABSOLUTE, conditionBrackets: SimpleBracket[], actionBrackets: SimpleBracket[], commands: string[], isLate: boolean, isAgain: boolean, isRigid: boolean, debugFlag: DEBUG_FLAG, doesEvaluationOrderMatter: boolean) {
         super(source)
         this._evaluationDirection = evaluationDirection
         this._conditionBrackets = conditionBrackets
@@ -107,6 +108,7 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
         this._isAgain = isAgain
         this._isRigid = isRigid
         this._debugFlag = debugFlag
+        this._doesEvaluationOrderMatter = doesEvaluationOrderMatter
     }
     toKey() {
         return `{Late?${this._isLate}}{Rigid?${this._isRigid}}{again?${this._isAgain}} ${this._evaluationDirection} ${this._conditionBrackets.map(x => x.toKey())} -> ${this._actionBrackets.map(x => x.toKey())} ${this._commands.join(' ')} {debugger?${this._debugFlag}}`
@@ -141,6 +143,52 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
             // TODO: Just commands are not supported yet
             return []
         }
+
+        // If a Rule cannot impact itself then the evaluation order does not matter.
+        // We can vastly simplify the evaluation in that case
+        if (!this._doesEvaluationOrderMatter/*this._conditionBrackets.length === 1 && this._conditionBrackets[0]._neighbors.length === 1*/) {
+
+            // Verify that each condition bracket has matches
+            for (const condition of this._conditionBrackets) {
+                if (condition.getFirstCells().size == 0) {
+                    return [] // Rule did not match, so nothing ran
+                }
+            }
+
+            // Get ready to Evaluate
+            if (this._debugFlag === DEBUG_FLAG.BREAKPOINT_EVALUATE) {
+                // A "DEBUGGER" flag was set in the game so we are pausing here
+                debugger
+            }
+
+            const allMutations = []
+            for (let index = 0; index < this._conditionBrackets.length; index++) {
+                const condition = this._conditionBrackets[index]
+                const action = this._actionBrackets[index]
+                const magicOrTiles = new Map()
+                for (const cell of condition.getFirstCells()) {
+                    allMutations.push(condition.evaluate(action, cell, magicOrTiles))
+                }
+            }
+            return _.flatten(allMutations)
+        } else {
+            // If none of the conditions match then we do not need to evaluate
+            for (const bracket of this._conditionBrackets) {
+                if (bracket.getFirstCells().size === 0) {
+                    return []
+                }
+            }
+
+            const startTime = Date.now()
+            const ret = this.evaluateInOrder()
+            // console.log('SLLLLLOOOOOOWWWWW EVALUATION.........');
+            // console.log(this.toString())
+            // console.log('Evaluation took', Date.now() - startTime)
+            return ret
+        }
+    }
+
+    evaluateInOrder() {
         let allMutators: CellMutation[][] = []
 
         // Remember which cells we apready processed
@@ -314,7 +362,7 @@ class SimpleBracket extends BaseForLines implements ICacheable {
         this._hasEllipsis = hasEllipsis
     }
     toKey() {
-        return `${this._direction}[${this._neighbors.map(n => n.toKey()).join('|')}]{debugging?${this._debugFlag}}`
+        return `{${this._direction}[${this._neighbors.map(n => n.toKey()).join('|')}]{debugging?${this._debugFlag}}}`
     }
 
     subscribeToNeighborChanges() {
@@ -475,6 +523,12 @@ class SimpleBracket extends BaseForLines implements ICacheable {
     }
 }
 
+class SimpleBracketConditionOnly extends SimpleBracket {
+    evaluate() {
+        return []
+    }
+}
+
 class SimpleNeighbor extends BaseForLines implements ICacheable {
     _tilesWithModifier: Set<SimpleTileWithModifier>
     _brackets: Map<SimpleBracket, Set<number>>
@@ -493,9 +547,13 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
     }
 
     evaluate(actionNeighbor: SimpleNeighbor, cell: Cell, magicOrTiles: Map<IGameTile, Set<GameSprite>>) {
-        if (this._debugFlag === DEBUG_FLAG.BREAKPOINT_EVALUATE) {
+        if (actionNeighbor._debugFlag === DEBUG_FLAG.BREAKPOINT_EVALUATE) {
             // Pausing here because this breakpoint was marked in the game code
             debugger
+        }
+        if (this._debugFlag === DEBUG_FLAG.BREAKPOINT_EVALUATE) {
+            // Pausing here because this breakpoint was marked in the game code
+            debugger // Maybe this should be used for when the condition side is updated? (what to evaluate)
         }
         // Just remove all tiles for now and then add all of them back
         // TODO: only remove tiles that are matching the collisionLayer but wait, they already need to be exclusive
@@ -590,10 +648,6 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
                         }
                     } else {
                         sprites = setIntersection(new Set(t._tile.getSprites()), cell.getSpritesAsSet())
-                        // set this ahead of time becuase order does not matter when populating the magicOrTiles `[ > Player | Pill ] -> [ Pill OldPos | Player ]`
-                        if (!magicOrTiles.has(t._tile)) {
-                            throw new Error(`BUG: Should have already been populated`)
-                        }
                     }
                 } else {
                     sprites = t._tile.getSprites()
@@ -690,16 +744,19 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
             const desiredDirection = getActionDir(sprite)
             // Only update if the direction changed.
             // That way things like `[ > Player ] -> [ > Player ]` are not marked as modified
-            const currentDirection = cell.getWantsToMove(sprite)
-            if (currentDirection !== (desiredDirection || RULE_DIRECTION_ABSOLUTE.STATIONARY)) {
+            const conditionDirection = conditionSpritesMap.get(sprite)
+            if (conditionDirection !== desiredDirection) {
                 spritesToUpdate.set(sprite, desiredDirection)
             }
         }
 
         for (const sprite of setDifference(new Set(actionSpritesMap.keys()), new Set(conditionSpritesMap.keys()))) {
-            const direction = getActionDir(sprite)
+            const desiredDirection = getActionDir(sprite)
+            const conditionDirection = conditionSpritesMap.get(sprite)
             if (!spritesToAdd.has(sprite)) { // could have been added earlier via the transferDirectionWhenCollisionLayerMatches code above
-                spritesToAdd.set(sprite, direction)
+                if (desiredDirection !== conditionDirection) {
+                    spritesToAdd.set(sprite, desiredDirection)
+                }
             }
         }
 
@@ -851,7 +908,7 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
     }
 
     toKey() {
-        return `{-?${this._isNegated}} {#?${this._isRandom}} dir="${this._direction}" [${this._tile.getSprites().map(sprite => sprite.getName()).sort()}]{debugging?${this._debugFlag}}`
+        return `{-?${this._isNegated}} {#?${this._isRandom}} dir="${this._direction}" [${this._tile.getSprites().map(sprite => sprite.getName()).sort().join(' ')}]{debugging?${this._debugFlag}}`
     }
 
     clearCaches() {
@@ -1052,7 +1109,91 @@ export class GameRule extends BaseForLines implements ICacheable {
         if (directions.length !== 1) {
             throw new Error(`BUG: should have exactly 1 direction by now but found the following: "${directions}"`)
         }
-        return cacheSetAndGet(ruleCache, new SimpleRule(this.__source, directions[0], this._brackets.map(x => x.toSimple(directions[0], ruleCache, bracketCache, neighborCache, tileCache)), this._actionBrackets.map(x => x.toSimple(directions[0], ruleCache, bracketCache, neighborCache, tileCache)), this._commands, this.isLate(), this.isAgain(), this.isRigid(), this._debugFlag))
+
+        // Check if the condition matches the action. If so, we can simplify evaluation.
+        const conditionBrackets = this._brackets.map(x => x.toSimple(directions[0], ruleCache, bracketCache, neighborCache, tileCache))
+        const actionBrackets = this._actionBrackets.map(x => x.toSimple(directions[0], ruleCache, bracketCache, neighborCache, tileCache))
+
+        // Below (in the loop) we check to see if evaluation order matters
+        let doesEvaluationOrderMatter = false
+
+        for (let index = 0; index < conditionBrackets.length; index++) {
+            const condition = conditionBrackets[index]
+            const action = actionBrackets[index]
+            // Skip rules with no action bracket `[ > Player ] -> CHECKPOINT`
+            if (!action) {
+                continue
+            }
+
+            // Optimization. Brackets that are only used for testing conditions
+            // can be optimized out so they do not need to be evaluated.
+            if (condition === action) {
+                conditionBrackets[index] = new SimpleBracketConditionOnly(condition.__source, condition._direction, condition._neighbors, condition._hasEllipsis, condition._debugFlag)
+                // actionBrackets[index] = null
+            }
+
+            // If there is only 1 bracket with only 1 neighbor then order does not matter
+            // So we can skip the introspection loops below
+            if (conditionBrackets.length === 1 && conditionBrackets[0]._neighbors.length === 1) {
+                continue
+            }
+            // Brackets that only involve adding/removing Tiles (or directions) that are not on the condition side can be evaluated easier
+            // since they do not need to run in-order
+            const conditionTilesWithModifiers = new Set()
+            const conditionTilesMap = new Map()
+            const actionTilesWithModifiers = new Set()
+            for (let index = 0; index < condition._neighbors.length; index++) {
+                const neighbor = condition._neighbors[index]
+                for (const t of neighbor._tilesWithModifier) {
+                    conditionTilesWithModifiers.add(t)
+                    conditionTilesMap.set(t._tile, {direction: t._direction, neighborIndex: index})
+                }
+            }
+            for (let index = 0; index < action._neighbors.length; index++) {
+                const neighbor = action._neighbors[index]
+                for (const t of neighbor._tilesWithModifier) {
+                    actionTilesWithModifiers.add(t)
+                    if (t._tile /* because of ellipsis*/ && t._tile.isOr()) {
+                        // check if the condition contains the OR tile and maybe is more specific
+                        let orTileOnConditionSide
+                        for (const conditionTile of condition._neighbors[index]._tilesWithModifier) {
+                            if (t._tile === conditionTile._tile && !conditionTile.isNo()) {
+                                orTileOnConditionSide = conditionTile
+                            }
+                        }
+                        if (orTileOnConditionSide) {
+
+                        } else {
+                            console.log('Marking as slow because the action side has an OR tile')
+                            console.log(this.toString())
+                            doesEvaluationOrderMatter = true // not strictly true, but it means we need to use the magicOrTiles
+                        }
+                    }
+                }
+            }
+            const uniqueActionTiles = setDifference(actionTilesWithModifiers, conditionTilesWithModifiers)
+            for (const t of uniqueActionTiles) {
+                if (conditionTilesMap.has(t._tile)) { //use .get instead of HAS because if we are setting a direction then we should be ok
+                    // Determine the neighbor index of the tile
+                    for (let index = 0; index < action._neighbors.length; index++) {
+                        const neighbor = action._neighbors[index]
+                        if (neighbor._tilesWithModifier.has(t)) {
+                            if (index !== conditionTilesMap.get(t._tile).neighborIndex) {
+                                console.log('Marking as slow because the action side has a Tile that may modify the condition and need to re-run')
+                                console.log(this.toString())
+                                console.log(t.toString())
+                                console.log(t._tile.toString())
+                                console.log('------------------------------------');
+
+                                doesEvaluationOrderMatter = true
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return cacheSetAndGet(ruleCache, new SimpleRule(this.__source, directions[0], conditionBrackets, actionBrackets, this._commands, this.isLate(), this.isAgain(), this.isRigid(), this._debugFlag, doesEvaluationOrderMatter))
     }
 
     convertToMultiple() {

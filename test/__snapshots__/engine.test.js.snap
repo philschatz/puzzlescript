@@ -5,11 +5,11 @@ Array [
   Array [
     Array [
       "STATIONARY BgNW1",
-      "STATIONARY Player",
     ],
     Array [
-      "STATIONARY Island",
       "STATIONARY PlayerIsland",
+      "STATIONARY Island",
+      "STATIONARY Player",
     ],
   ],
   Array [
@@ -113,6 +113,21 @@ Array [
       "STATIONARY Background",
       "STATIONARY Blue",
       "STATIONARY Red",
+    ],
+  ],
+]
+`;
+
+exports[`engine removes the wantsToMove when specified in the rule 1`] = `
+Array [
+  Array [
+    Array [],
+    Array [
+      "STATIONARY Background",
+      "STATIONARY Player",
+    ],
+    Array [
+      "STATIONARY Background",
     ],
   ],
 ]

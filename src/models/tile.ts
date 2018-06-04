@@ -5,7 +5,7 @@ import { CollisionLayer } from './collisionLayer'
 import { Cell } from '../engine'
 import { TileWithModifier, SimpleTileWithModifier } from './rule';
 import { RULE_DIRECTION } from '../enums';
-import { RULE_DIRECTION_ABSOLUTE } from '../util';
+import { RULE_DIRECTION_ABSOLUTE, setIntersection } from '../util';
 
 export interface IGameTile extends IGameNode {
     _getDescendantTiles: () => IGameTile[]
@@ -18,6 +18,7 @@ export interface IGameTile extends IGameNode {
     matchesCell: (cell: Cell) => boolean
     isOr: () => boolean
     getCellsThatMatch: () => Set<Cell>
+    getSpritesThatMatch: (cell: Cell) => Set<GameSprite>
     getName: () => string
 }
 
@@ -78,6 +79,13 @@ export class GameSprite extends BaseForLines implements IGameTile {
     }
     matchesCell(cell: Cell): any {
         return cell.getSpritesAsSet().has(this)
+    }
+    getSpritesThatMatch(cell: Cell) {
+        if (cell.getSpritesAsSet().has(this)) {
+            return new Set([this])
+        } else {
+            return new Set()
+        }
     }
 
     addTileWithModifier(t: SimpleTileWithModifier) {
@@ -236,6 +244,13 @@ export class GameLegendTile extends BaseForLines implements IGameTile {
         }
         return false
     }
+    getSpritesThatMatch(cell: Cell) {
+        if (!!true) {
+            throw new Error('BUG: This is an abstract method')
+        }
+        return new Set()
+    }
+
     getName() {
         return this._spriteNameOrLevelChar
     }
@@ -301,6 +316,11 @@ export class GameLegendTileSimple extends GameLegendTile {
         }
         return true
     }
+
+    getSpritesThatMatch(cell: Cell) {
+        return setIntersection(new Set(this.getSprites()), cell.getSpritesAsSet())
+    }
+
 }
 
 export class GameLegendTileAnd extends GameLegendTile {
@@ -317,6 +337,10 @@ export class GameLegendTileAnd extends GameLegendTile {
             }
         }
         return true
+    }
+
+    getSpritesThatMatch(cell: Cell) {
+        return setIntersection(new Set(this.getSprites()), cell.getSpritesAsSet())
     }
 }
 
@@ -342,6 +366,10 @@ export class GameLegendTileOr extends GameLegendTile {
         // When assigning an OR, just use the 1st tile, not all of them
         return [this._tiles[0].getSprites()[0]]
         // return [this.getSprites()[0]] <-- this one is sorted by collisionLayer
+    }
+
+    getSpritesThatMatch(cell: Cell) {
+        return setIntersection(new Set(this.getSprites()), cell.getSpritesAsSet())
     }
 
 }

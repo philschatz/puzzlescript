@@ -170,25 +170,33 @@ async function run() {
         function restartLevel() {
             engine.pressRestart(chosenLevel)
             UI.renderScreen(engine.currentLevel)
+            keypresses = [] // clear key history
         }
+
+        let keypresses = []
 
         // https://stackoverflow.com/a/30687420
         process.stdin.on('data', function(key){
             switch (key) {
                 case 'w':
                 case '\u001B\u005B\u0041': // UP-ARROW
+                    keypresses.push('u')
                     return doMove(RULE_DIRECTION_ABSOLUTE.UP)
                 case 's':
                 case '\u001B\u005B\u0042': // DOWN-ARROW
+                    keypresses.push('d')
                     return doMove(RULE_DIRECTION_ABSOLUTE.DOWN)
                 case 'a':
                 case '\u001B\u005B\u0044': // LEFT-ARROW
+                    keypresses.push('l')
                     return doMove(RULE_DIRECTION_ABSOLUTE.LEFT)
                 case 'd':
                 case '\u001B\u005B\u0043': // RIGHT-ARROW
+                    keypresses.push('r')
                     return doMove(RULE_DIRECTION_ABSOLUTE.RIGHT)
                 case 'x':
                 case ' ':
+                    keypresses.push('x')
                     return doMove(RULE_DIRECTION_ABSOLUTE.ACTION)
                 case 'r':
                     return restartLevel()
@@ -217,6 +225,7 @@ async function run() {
             const {changedCells, isWinning} = engine.tick()
 
             if (isWinning) {
+                keypresses = []
                 chosenLevel++
                 // Skip the messages since they are not implmented yet
                 while(!data.levels[chosenLevel].isMap()) {
@@ -234,7 +243,7 @@ async function run() {
                 UI.drawCell(cell, false)
             }
 
-            const msg = `Level: ${chosenLevel} Tick: ${i} took ${Date.now() - startTime}ms. Changed: ${[...changedCells].map(cell => cell.rowIndex + ':' + cell.colIndex).join(', ') + '   '}`
+            const msg = `Level: ${chosenLevel} Tick: ${i} took ${Date.now() - startTime}ms. Moves: ${keypresses.join('')} Changed: ${[...changedCells].map(cell => cell.rowIndex + ':' + cell.colIndex).join(', ') + '   '}`
             UI.writeDebug(msg.substring(0, 160))
 
             await sleep(Math.max(100 - (Date.now() - startTime), 0))

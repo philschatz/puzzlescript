@@ -1,13 +1,15 @@
 /* eslint-env jasmine */
+const fs = require('fs')
+const path = require('path')
 const { default: Engine } = require('../src/engine')
 const { default: Parser } = require('../src/parser/parser')
 
-function parseEngine(code) {
+function parseEngine(code, levelNum = 0) {
     const { data, error } = Parser.parse(code)
     expect(error && error.message).toBeFalsy() // Use && so the error messages are shorter
 
     const engine = new Engine(data)
-    engine.setLevel(0)
+    engine.setLevel(levelNum)
     return { engine, data }
 }
 
@@ -353,5 +355,89 @@ describe('player movement', () => {
 
         expect(engine.currentLevel[0][0].getSpritesAsSet().has(playerSprite)).toBe(true)
         expect(engine.currentLevel[0][1].getSpritesAsSet().has(playerSprite)).toBe(false)
+    })
+
+    it('only creates one Player when Player is an OR tile', () => {
+        const { engine, data } = parseEngine(`title foo
+
+        ===
+        OBJECTS
+        ===
+
+        background
+        green
+
+        player1
+        Yellow
+
+        player2
+        blue
+
+        ===
+        LEGEND
+        ===
+
+        . = background
+        P = Player1
+        Player = player1 OR player2
+
+        ====
+        SOUNDS
+        ====
+
+        ====
+        COLLISIONLAYERS
+        ====
+
+        background
+        player
+
+        ====
+        RULES
+        ====
+
+        ===
+        WINCONDITIONS
+        ===
+
+        ===
+        LEVELS
+        ===
+
+        P..
+
+        `) // end game
+
+        const player1 = data._getSpriteByName('player1')
+        const player2 = data._getSpriteByName('player2')
+        engine.pressRight()
+        engine.tick()
+
+        expect(player1.getCellsThatMatch().size).toBe(1)
+        expect(player2.getCellsThatMatch().size).toBe(0)
+        expect(engine.currentLevel[0][1].getSpritesAsSet().has(player1)).toBe(true)
+    })
+
+    it('plays a level of Beam Islands', () => {
+        const LEVEL_NUM = 3
+        const LEVEL_SOLUTION = 'lluuuxlduruuxddddd'
+        const { engine, data } = parseEngine(fs.readFileSync(path.join(__dirname, '../gists/2b9ece642cd7cdfb4a5f2c9fa8455e40/script.txt'), 'utf-8'), LEVEL_NUM) // end game
+        let didWin = false
+
+        const keypresses = LEVEL_SOLUTION.split('')
+        for (const key of keypresses) {
+            switch(key) {
+                case 'u': engine.pressUp(); break
+                case 'd': engine.pressDown(); break
+                case 'l': engine.pressLeft(); break
+                case 'r': engine.pressRight(); break
+                case 'x': engine.pressAction(); break
+            }
+            const {isWinning} = engine.tick()
+            if (isWinning) {
+                didWin = true
+            }
+        }
+        expect(didWin).toBe(true)
     })
 })

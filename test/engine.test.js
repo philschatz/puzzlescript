@@ -514,7 +514,7 @@ describe('engine', () => {
 
     RIGHT [ STATIONARY Player ] -> [ > Player ]
 
-    [ > Player | Crate ] -> [ > Player | > Crate  ]
+    [ > Player | Crate ] -> [ > Player | > Crate ]
 
 
     ==============
@@ -832,6 +832,7 @@ describe('engine', () => {
 
         const spriteA = data._getSpriteByName('spritea')
         const spriteB = data._getSpriteByName('spriteb')
+        debugger
         engine.tick()
 
         // Check that movement was transferred from A to B
@@ -1354,6 +1355,7 @@ describe('engine', () => {
 
     `) // end game definition
 
+        const player = data._getSpriteByName('player')
         const island = data._getSpriteByName('island')
         const playerIsland = data._getSpriteByName('PlayerIsland')
         engine.pressLeft()
@@ -1370,5 +1372,71 @@ describe('engine', () => {
         expect(engine.currentLevel[0][0].getSpritesAsSet().has(playerIsland)).toBe(false)
         expect(engine.currentLevel[0][1].getSpritesAsSet().has(playerIsland)).toBe(true)
         expect(engine.currentLevel[1][1].getSpritesAsSet().has(playerIsland)).toBe(true)
+
+        // Check that the player did not move either
+        expect(engine.currentLevel[0][0].getSpritesAsSet().has(player)).toBe(false)
+        expect(engine.currentLevel[0][1].getSpritesAsSet().has(player)).toBe(true)
     })
+
+
+    it('removes the wantsToMove when specified in the rule', () => {
+        const { engine, data } = parseEngine(`title foo
+
+        ========
+        OBJECTS
+        ========
+
+        Background
+        gray
+
+        Player
+        transparent
+
+        =======
+        LEGEND
+        =======
+
+        . = Background
+        P = Player
+
+        =======
+        SOUNDS
+        =======
+
+        ================
+        COLLISIONLAYERS
+        ================
+        Background
+        Player
+
+        ======
+        RULES
+        ======
+
+        [ > Player | ] -> [ | Player ]
+
+        ==============
+        WINCONDITIONS
+        ==============
+
+        =======
+        LEVELS
+        =======
+
+        P..
+
+    `) // end game definition
+
+        const player = data._getSpriteByName('player')
+        engine.pressRight()
+        engine.tick()
+        expect(engine.toSnapshot()).toMatchSnapshot()
+
+        expect(player.getCellsThatMatch().size).toBe(1)
+        // Don't double-move the Player (verify that we remove the wantsToMove)
+        expect(engine.currentLevel[0][0].getSpritesAsSet().has(player)).toBe(false)
+        expect(engine.currentLevel[0][2].getSpritesAsSet().has(player)).toBe(false)
+        expect(engine.currentLevel[0][1].getSpritesAsSet().has(player)).toBe(true)
+    })
+
 })

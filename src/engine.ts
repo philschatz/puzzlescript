@@ -141,17 +141,18 @@ export class Cell {
 export default class Engine extends EventEmitter2 {
     gameData: GameData
     currentLevel: Cell[][]
-    _pendingCellMutations: Set<Cell> // Might be better to just create SimpleRules that are executed at the beginning
+    _pendingPlayerWantsToMove: RULE_DIRECTION_ABSOLUTE
     _pendingAgainRules: IRule[]
 
     constructor(gameData: GameData) {
         super()
         this.gameData = gameData
-        this._pendingCellMutations = new Set()
         this._pendingAgainRules = []
     }
 
     setLevel(levelNum: number) {
+        this.gameData.clearCaches()
+
         const level = this.gameData.levels[levelNum]
         if (!level) {
             throw new Error(`Invalid levelNum: ${levelNum}`)
@@ -329,15 +330,24 @@ export default class Engine extends EventEmitter2 {
     }
 
     tickNormal() {
-        const {changedCells: changedCellMutations, evaluatedRules} = this.tickUpdateCells()
+        let changedCellMutations = new Set()
+        if (this._pendingPlayerWantsToMove) {
+            const t = this.gameData.getPlayer()
+            for (const cell of t.getCellsThatMatch()) {
+                for (const sprite of t.getSpritesThatMatch(cell)) {
+                    cell.addSprite(sprite, this._pendingPlayerWantsToMove)
+                    changedCellMutations.add(cell)
+                }
+            }
+            this._pendingPlayerWantsToMove = null
+        }
+
+        const {changedCells: changedCellMutations2, evaluatedRules} = this.tickUpdateCells()
+        changedCellMutations = setAddAll(changedCellMutations, changedCellMutations2)
 
         // Save the "AGAIN" rules that ran so they can be re-evaluated at the next tick
         this._pendingAgainRules = evaluatedRules.filter(r => r.isAgain())
 
-        for (const cell of this._pendingCellMutations) {
-            changedCellMutations.add(cell)
-        }
-        this._pendingCellMutations.clear()
         const movedCells = this.tickMoveSprites(new Set<Cell>(changedCellMutations.keys()))
         const {changedCells: changedCellsLate, evaluatedRules: evaluatedRulesLate} = this.tickUpdateCellsLate()
         return {
@@ -380,11 +390,7 @@ export default class Engine extends EventEmitter2 {
     }
 
     press(direction: RULE_DIRECTION_ABSOLUTE) {
-        const t = this.gameData.getPlayer()
-        for (const cell of t.getCellsThatMatch()) {
-            cell.setWantsToMove(t, direction)
-            this._pendingCellMutations.add(cell)
-        }
+        this._pendingPlayerWantsToMove = direction
     }
     pressUp() {
         this.press(RULE_DIRECTION_ABSOLUTE.UP)
@@ -403,7 +409,6 @@ export default class Engine extends EventEmitter2 {
     }
 
     pressRestart(levelNum) {
-        this.gameData.clearCaches()
         this.setLevel(levelNum)
     }
     pressUndo() { }
