@@ -1,4 +1,4 @@
-title SwapBot
+title SwapBot Bonus
 author John Williams
 homepage john.m.dubs@gmail.com
 (Please send me an email if you enjoy the game!)
@@ -24,7 +24,7 @@ Green Black
 
 HoleNormal
 Black
- 
+
 HoleTop
 Black #282117
 11111
@@ -334,7 +334,7 @@ DarkGreen Darkblue
 00000
 00000
 00000
- 
+
 WallBottom
 DarkGreen Darkblue
 00000
@@ -607,7 +607,7 @@ late Down [ WallNormal | no Wall ] -> [ WallBottom | ]
 late Down [ WallBottom | Wall ] -> [ WallNormal | Wall ]
 
 (PrettyHoles)
- 
+
 late Up [ HoleNormal | no Hole ] -> [ HoleTop | ]
 late Up [ HoleTop | Hole ] -> [ HoleNormal | Hole ]
 
