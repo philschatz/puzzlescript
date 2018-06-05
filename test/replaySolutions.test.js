@@ -52,11 +52,6 @@ describe('replays levels of games', () => {
                 for (let i = 0; i < keypresses.length; i++) {
                     const key = keypresses[i]
                     switch(key) {
-                        case 'u': engine.pressUp(); break
-                        case 'd': engine.pressDown(); break
-                        case 'l': engine.pressLeft(); break
-                        case 'r': engine.pressRight(); break
-                        case 'x': engine.pressAction(); break
                         case 'W': engine.pressUp(); break
                         case 'S': engine.pressDown(); break
                         case 'A': engine.pressLeft(); break
