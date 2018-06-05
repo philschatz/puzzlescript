@@ -103,14 +103,28 @@ async function run() {
         console.log(`  ${prettyKey('esc')}          : Exit the Game`)
         console.log(`-------------------------------------`)
 
+        // Load the solutions file (if it exists) so we can append to it
+        const solutionsPath = path.join(__dirname, `../gist-solutions/${gistId}.json`)
+        let solutions = []
+        if (existsSync(solutionsPath)) {
+            solutions = JSON.parse(readFileSync(solutionsPath, 'utf-8'))
+        }
+
         const levels = data.levels
+        const firstUncompletedLevel = levels
+        .indexOf(levels
+            .filter((l, index) => !solutions[index])
+            .filter(l => l.isMap())[0]
+        )
+
         let {chosenLevel} = await inquirer.prompt<{chosenLevel: number}>([{
             type: 'list',
             name: 'chosenLevel',
             message: 'Which Level would you like to play?',
-            default: levels.indexOf(levels.filter(l => l.isMap())[0]), // 1st non-message level
+            default: firstUncompletedLevel, // 1st non-message level
             pageSize: Math.max(15, process.stdout.rows - 15),
             choices: levels.map((levelMap, index) => {
+                const hasSolution = solutions[index]
                 if (levelMap.isMap()) {
                     const rows = levelMap.getRows()
                     const cols = rows[0]
@@ -130,9 +144,16 @@ async function run() {
                             value: index,
                         }
                     } else {
-                        return {
-                            name: `${chalk.whiteBright(`${index}`)} ${chalk.green(`(${cols.length} x ${rows.length})`)}`,
-                            value: index,
+                        if (hasSolution) {
+                            return {
+                                name: `${chalk.green(`${index}`)} ${chalk.dim(`(${cols.length} x ${rows.length}) ${chalk.green('(SOLVED)')}`)}`,
+                                value: index,
+                            }
+                        } else {
+                            return {
+                                name: `${chalk.whiteBright(`${index}`)} ${chalk.green(`(${cols.length} x ${rows.length})`)}`,
+                                value: index,
+                            }
                         }
                     }
                 } else {
@@ -160,11 +181,11 @@ async function run() {
 
         function doMove(direction: RULE_DIRECTION_ABSOLUTE) {
             engine.press(direction)
-            const {changedCells} = engine.tick()
-            // Draw any cells that moved
-            for (const cell of changedCells) {
-                UI.drawCell(cell, false)
-            }
+            // const {changedCells} = engine.tick()
+            // // Draw any cells that moved
+            // for (const cell of changedCells) {
+            //     UI.drawCell(cell, false)
+            // }
         }
 
         function restartLevel() {
@@ -180,23 +201,23 @@ async function run() {
             switch (key) {
                 case 'w':
                 case '\u001B\u005B\u0041': // UP-ARROW
-                    keypresses.push('u')
+                    keypresses.push('W')
                     return doMove(RULE_DIRECTION_ABSOLUTE.UP)
                 case 's':
                 case '\u001B\u005B\u0042': // DOWN-ARROW
-                    keypresses.push('d')
+                    keypresses.push('S')
                     return doMove(RULE_DIRECTION_ABSOLUTE.DOWN)
                 case 'a':
                 case '\u001B\u005B\u0044': // LEFT-ARROW
-                    keypresses.push('l')
+                    keypresses.push('A')
                     return doMove(RULE_DIRECTION_ABSOLUTE.LEFT)
                 case 'd':
                 case '\u001B\u005B\u0043': // RIGHT-ARROW
-                    keypresses.push('r')
+                    keypresses.push('D')
                     return doMove(RULE_DIRECTION_ABSOLUTE.RIGHT)
                 case 'x':
                 case ' ':
-                    keypresses.push('x')
+                    keypresses.push('X')
                     return doMove(RULE_DIRECTION_ABSOLUTE.ACTION)
                 case 'r':
                     return restartLevel()
@@ -214,13 +235,6 @@ async function run() {
         //   UI.drawCellAt(data, cell, cell.rowIndex, cell.colIndex, false)
         // })
 
-        // Load the solutions file (if it exists) so we can append to it
-        const solutionsPath = path.join(__dirname, `../gist-solutions/${gistId}.json`)
-        let solutions = []
-        if (existsSync(solutionsPath)) {
-            solutions = JSON.parse(readFileSync(solutionsPath, 'utf-8'))
-        }
-
         UI.setGame(data)
         UI.renderScreen(engine.currentLevel)
         UI.writeDebug(`Game: "${data.title}"`)
@@ -229,12 +243,13 @@ async function run() {
         while(true) {
 
             const startTime = Date.now()
+            const hasAgain = engine.hasAgain()
             const {changedCells, isWinning} = engine.tick()
 
             if (isWinning) {
                 // Save the solution
                 const newSolution = keypresses.join('')
-                if (!solutions[chosenLevel] || solutions[chosenLevel].length > newSolution.length) {
+                if (!solutions[chosenLevel] || solutions[chosenLevel].toLowerCase() === solutions[chosenLevel] || solutions[chosenLevel].length > newSolution.length) {
                     solutions[chosenLevel] = keypresses.join('')
                     debugger
                     writeFileSync(solutionsPath, JSON.stringify(solutions, null, 2))
@@ -260,7 +275,12 @@ async function run() {
             const msg = `Level: ${chosenLevel} Tick: ${i} took ${Date.now() - startTime}ms. Moves: ${keypresses.join('')} Changed: ${[...changedCells].map(cell => cell.rowIndex + ':' + cell.colIndex).join(', ') + '   '}`
             UI.writeDebug(msg.substring(0, 160))
 
-            await sleep(Math.max(100 - (Date.now() - startTime), 0))
+            await sleep(Math.max(500 - (Date.now() - startTime), 0))
+            if (hasAgain) {
+                keypresses.push(',')
+            } else {
+                keypresses.push('.') // Add a "tick"
+            }
             i++
         }
 

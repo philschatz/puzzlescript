@@ -57,14 +57,29 @@ describe('replays levels of games', () => {
                         case 'l': engine.pressLeft(); break
                         case 'r': engine.pressRight(); break
                         case 'x': engine.pressAction(); break
+                        case 'W': engine.pressUp(); break
+                        case 'S': engine.pressDown(); break
+                        case 'A': engine.pressLeft(); break
+                        case 'D': engine.pressRight(); break
+                        case 'X': engine.pressAction(); break
+                        case '.':
+                        case ',':
+                            break
+                        default:
+                            throw new Error(`ERROR: Unsupported character "${key}"`)
                     }
-                    const {isWinning: isWinning} = engine.tick()
+
+                    let didWin = false
+                    // do { // loop until we are done with animations
+                        const {isWinning} = engine.tick()
+                        didWin = didWin || isWinning
+                    // } while(engine.hasAgain())
 
                     if (SHOW_STEPS) {
                         UI.renderScreen(engine.currentLevel)
                     }
 
-                    if (isWinning) {
+                    if (didWin) {
                         wonAtKeyIndex = i
                         break
                     }
@@ -76,7 +91,7 @@ describe('replays levels of games', () => {
                     UI.renderScreen(engine.currentLevel)
                 }
 
-                expect({levelNumber: index, wonAtKeyIndex}).toEqual({levelNumber: index, wonAtKeyIndex: keypresses.length - 1})
+                expect({title: data.title, levelNumber: index, wonAtKeyIndex}).toEqual({title: data.title, levelNumber: index, wonAtKeyIndex: keypresses.length - 1})
 
             }
         })

@@ -379,6 +379,10 @@ export default class Engine extends EventEmitter2 {
         }
     }
 
+    hasAgain() {
+        return this._pendingAgainRules.length > 0
+    }
+
     isWinning() {
         let conditionsSatisfied = this.gameData.winConditions.length > 0 // true
         this.gameData.winConditions.forEach(winCondition => {
