@@ -4,7 +4,7 @@ import * as supportsColor from 'supports-color'
 import { GameSprite } from './models/tile'
 import { GameData } from './models/game'
 import { IColor } from './models/colors'
-import { Cell } from './engine'
+import Engine, { Cell } from './engine'
 
 // Determine if this
 // 'truecolor' if this terminal supports 16m colors. 256 colors otherwise
@@ -110,24 +110,50 @@ function collapseSpritesToPixels(spritesToDraw: GameSprite[], backgroundColor: I
 
 class UI {
     _gameData: GameData
+    _engine: Engine
     _cellColorCache: CellColorCache
     _renderedPixels: string[][] // string is the hex code of the pixel
     _resizeHandler?: () => void
+    _windowOffsetColStart: number
+    _windowOffsetRowStart: number
+    _windowOffsetWidth: number
+    _windowOffsetHeight: number
     constructor() {
         this._cellColorCache = new CellColorCache()
         this._resizeHandler = null
         this._renderedPixels = []
+        this._windowOffsetColStart = 0
+        this._windowOffsetRowStart = 0
     }
-    setGame(data: GameData) {
-        this._gameData = data
+    setGame(engine: Engine) {
+        this._engine = engine
+        this._gameData = engine.gameData
         this._cellColorCache.clear()
         this._renderedPixels = []
+
+        // reset flickscreen and zoomscreen settings
+        this._windowOffsetColStart = 0
+        this._windowOffsetRowStart = 0
+
+        this._windowOffsetWidth = null
+        this._windowOffsetHeight = null
+        if (this._gameData.metadata.flickscreen) {
+            const {width, height} = this._gameData.metadata.flickscreen
+            this._windowOffsetWidth = width
+            this._windowOffsetHeight = height
+        } else if (this._gameData.metadata.zoomscreen) {
+            const {width, height} = this._gameData.metadata.zoomscreen
+            this._windowOffsetWidth = width
+            this._windowOffsetHeight = height
+        }
+
     }
-    renderScreen(levelRows: Cell[][]) {
+    renderScreen() {
         if (!supportsColor.stdout) {
             console.log('Playing a game in the console requires color support. Unfortunately, color is not supported so not rendering (for now). We could just do an ASCII dump or something, using  ░▒▓█ to denote shades of cells')
             return
         }
+        const levelRows = this._engine.currentLevel
 
         this._cellColorCache.clear()
         this._renderedPixels = []
@@ -138,26 +164,15 @@ class UI {
             process.stdout.off('resize', this._resizeHandler)
         }
         this._resizeHandler = () => {
-            this.renderScreen(levelRows)
+            this.renderScreen()
         }
         process.stdout.on('resize', this._resizeHandler)
 
         setFgColor('#ffffff')
         setBgColor('#000000')
 
-        this.clearScreen()
-
         levelRows.forEach((row, rowIndex) => {
-            // Don't draw too much for this demo
-            if (this._gameData.metadata.flickscreen && rowIndex > this._gameData.metadata.flickscreen.height) {
-                return
-            }
             row.forEach((cell, colIndex) => {
-                // Don't draw too much for this demo
-                if (this._gameData.metadata.flickscreen && colIndex > this._gameData.metadata.flickscreen.width) {
-                    return
-                }
-
                 this.drawCell(cell, false)
             })
         })
@@ -168,6 +183,51 @@ class UI {
 
         // Just for debugging, print the game title (doing it here helps with Jest rendering correctly)
         this.writeDebug(`"${this._gameData.title}"`)
+    }
+
+    cellPosToXY(cell: Cell) {
+        const {colIndex, rowIndex} = cell
+        let isOnScreen = true // can be set to false for many reasons
+        let cellStartX = -1
+        let cellStartY = -1
+        if (this._windowOffsetHeight && this._windowOffsetWidth) {
+            if (this._windowOffsetColStart > colIndex ||
+                this._windowOffsetRowStart > rowIndex ||
+                this._windowOffsetColStart + this._windowOffsetWidth <= colIndex ||
+                this._windowOffsetRowStart + this._windowOffsetHeight <= rowIndex) {
+
+                // cell is off-screen
+                isOnScreen = false
+            }
+        }
+        cellStartX = (colIndex - this._windowOffsetColStart) * 5 /*pixels*/ * 2 /*characters to make a pixel squareish*/
+        cellStartY = (rowIndex - this._windowOffsetRowStart) * 5 /*pixels*/ + 1 // y is 1-based
+
+        // Check if the cell can be completely drawn on the screen. If not, print ellipses
+        const cellIsTooWide = (cellStartX + 5 * 2) > process.stdout.columns // 10 because we print 2 chars per pixel
+        const cellIsTooHigh = (cellStartY + 5) > process.stdout.rows
+        if (cellIsTooWide || cellIsTooHigh) {
+            // do not draw the cell
+            isOnScreen = false
+        }
+        return {isOnScreen, cellStartX, cellStartY}
+    }
+
+    flickScreenToShowPlayer(cell: Cell) {
+        const {rowIndex, colIndex} = cell
+        this._windowOffsetColStart = Math.floor(colIndex / this._windowOffsetWidth) * this._windowOffsetWidth
+        this._windowOffsetRowStart = Math.floor(rowIndex / this._windowOffsetHeight) * this._windowOffsetHeight
+        this.renderScreen()
+    }
+
+    zoomScreenToShowPlayer(cell: Cell) {
+        const {rowIndex, colIndex} = cell
+        this._windowOffsetColStart = colIndex - Math.floor(this._windowOffsetWidth / 2)
+        this._windowOffsetRowStart = rowIndex - Math.floor(this._windowOffsetHeight / 2)
+        // ensure that there is not extra space to the left or up (e.g. if the player is in the top-left of the level they should not be in the center of the screen)
+        this._windowOffsetColStart = Math.max(0, this._windowOffsetColStart)
+        this._windowOffsetRowStart = Math.max(0, this._windowOffsetRowStart)
+        this.renderScreen()
     }
 
     setPixel(x: number, y: number, hex: string) {
@@ -185,31 +245,37 @@ class UI {
     }
 
     drawCell(cell: Cell, dontRestoreCursor: boolean) {
+        const { rowIndex, colIndex } = cell
         if (!supportsColor.stdout) {
             console.log(`Updating cell [${cell.rowIndex}][${cell.colIndex}] to have sprites: [${cell.getSprites().map(sprite => sprite._name)}]`)
             return
         }
 
-        // Check if the cell can be completely drawn on the screen. If not, print ellipses
-        const cellIsTooWide = (cell.colIndex + 1) * 10 > process.stdout.columns // 10 because we print 2 chars per pixel
-        const cellIsTooHigh = (cell.rowIndex + 1) * 5 > process.stdout.rows
-        if (cellIsTooWide || cellIsTooHigh) {
-            // do not draw the cell
-            return
-        } else if (cellIsTooWide) {
-            // TODO: print ellipsis so user knows they should resize their terminal
-            // TODO: If implementing this, then change the initial if to be `&&` instead
-            // of `||`
-        }
-
         const spritesForDebugging = cell.getSprites()
-        const { rowIndex, colIndex } = cell
         const pixels: IColor[][] = this.getPixelsForCell(cell)
 
+        let {isOnScreen, cellStartX, cellStartY} = this.cellPosToXY(cell)
+
+        // Sort of HACKy... If the player is not visible on the screen then we need to
+        // move the screen so that they are visible.
+        if (!isOnScreen && this._gameData.getPlayer().matchesCell(cell)) {
+            if (this._gameData.metadata.flickscreen) {
+                // Flick the screen over and re-render the whole screen (hence the `return`)
+                return this.flickScreenToShowPlayer(cell)
+            } else if (this._gameData.metadata.zoomscreen) {
+                return this.zoomScreenToShowPlayer(cell)
+            } else {
+                throw new Error(`BUG: Could not move player into the screen`)
+            }
+        }
+
+        if (!isOnScreen) {
+            return // no need to render because it is off-screen
+        }
         pixels.forEach((spriteRow, spriteRowIndex) => {
             spriteRow.forEach((spriteColor: IColor, spriteColIndex) => {
-                const x = (colIndex * 5 + spriteColIndex) * 2 + 1 // Use 2 characters for 1 pixel on the X-axis. X column is 1-based
-                const y = rowIndex * 5 + spriteRowIndex + 1 // Y column is 1-based
+                const x = cellStartX + (spriteColIndex * 2) // Use 2 characters for 1 pixel on the X-axis.
+                const y = cellStartY + spriteRowIndex
 
                 // Don't draw below the edge of the screen. Otherwise, bad scrolling things will happen
                 if (y >= process.stdout.rows) {

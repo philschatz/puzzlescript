@@ -55,8 +55,9 @@ async function run() {
                 //   UI.drawCellAt(cell, cell.rowIndex, cell.colIndex, false)
                 // })
 
-                UI.setGame(data)
-                UI.renderScreen(engine.currentLevel)
+                UI.setGame(engine)
+                UI.clearScreen()
+                UI.renderScreen()
                 UI.writeDebug(`Game: "${data.title}"`)
 
 

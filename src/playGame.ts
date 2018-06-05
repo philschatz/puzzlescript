@@ -190,7 +190,7 @@ async function run() {
 
         function restartLevel() {
             engine.pressRestart(chosenLevel)
-            UI.renderScreen(engine.currentLevel)
+            UI.renderScreen()
             keypresses = [] // clear key history
         }
 
@@ -235,8 +235,8 @@ async function run() {
         //   UI.drawCellAt(data, cell, cell.rowIndex, cell.colIndex, false)
         // })
 
-        UI.setGame(data)
-        UI.renderScreen(engine.currentLevel)
+        UI.setGame(engine)
+        UI.renderScreen()
         UI.writeDebug(`Game: "${data.title}"`)
 
         let i = 0
@@ -262,7 +262,7 @@ async function run() {
                 }
 
                 engine.pressRestart(chosenLevel)
-                UI.renderScreen(engine.currentLevel)
+                UI.renderScreen()
 
                 continue
             }
