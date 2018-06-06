@@ -1,9 +1,13 @@
 [
   null,
   null,
-  "AASDDD",
+  {
+    "solution": "AASDDD"
+  },
   null,
   null,
   null,
-  "WDWASAAWDSDWAWD"
+  {
+    "solution": "WDWASAAWDSDWAWD"
+  }
 ]

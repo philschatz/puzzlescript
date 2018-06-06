@@ -1,9 +1,15 @@
 [
   null,
-  "DDD",
+  {
+    "solution": "DDD"
+  },
   null,
   null,
-  "SSASD",
+  {
+    "solution": "SSASD"
+  },
   null,
-  "DDAASWDDDSSWAAWASDASWDSWDASDWDSASA"
+  {
+    "solution": "DDAASWDDDSSWAAWASDASWDSWDASDWDSASA"
+  }
 ]

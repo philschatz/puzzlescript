@@ -105,15 +105,15 @@ async function run() {
 
         // Load the solutions file (if it exists) so we can append to it
         const solutionsPath = path.join(__dirname, `../gist-solutions/${gistId}.json`)
-        let solutions = []
+        let recordings = []
         if (existsSync(solutionsPath)) {
-            solutions = JSON.parse(readFileSync(solutionsPath, 'utf-8'))
+            recordings = JSON.parse(readFileSync(solutionsPath, 'utf-8'))
         }
 
         const levels = data.levels
         const firstUncompletedLevel = levels
         .indexOf(levels
-            .filter((l, index) => !solutions[index])
+            .filter((l, index) => !recordings[index])
             .filter(l => l.isMap())[0]
         )
 
@@ -124,7 +124,7 @@ async function run() {
             default: firstUncompletedLevel, // 1st non-message level
             pageSize: Math.max(15, process.stdout.rows - 15),
             choices: levels.map((levelMap, index) => {
-                const hasSolution = solutions[index]
+                const hasSolution = recordings[index]
                 if (levelMap.isMap()) {
                     const rows = levelMap.getRows()
                     const cols = rows[0]
@@ -224,8 +224,11 @@ async function run() {
                 case '\u0003': // Ctrl+C
                     return process.exit(1)
                 case '\u001B': // Escape
-
                     saveCoverageFile(data, absPath, 'playgame')
+                    // Save the partially-completed steps
+                    recordings[chosenLevel] = recordings[chosenLevel] || {}
+                    recordings[chosenLevel].partial = keypresses.join('')
+                    writeFileSync(solutionsPath, JSON.stringify(recordings, null, 2))
                     return process.exit(0)
                 default:
                     UI.writeDebug(`pressed....: "${toUnicode(key)}"`)
@@ -251,10 +254,12 @@ async function run() {
             if (isWinning) {
                 // Save the solution
                 const newSolution = keypresses.join('')
-                if (!solutions[chosenLevel] || solutions[chosenLevel].toLowerCase() === solutions[chosenLevel] || solutions[chosenLevel].length > newSolution.length) {
-                    solutions[chosenLevel] = keypresses.join('')
-                    debugger
-                    writeFileSync(solutionsPath, JSON.stringify(solutions, null, 2))
+                if (!recordings[chosenLevel]) {
+                    recordings[chosenLevel] = { solution: keypresses.join('')}
+                    writeFileSync(solutionsPath, JSON.stringify(recordings, null, 2))
+                } else if (recordings[chosenLevel].solution.length > newSolution.length) {
+                    recordings[chosenLevel].solution = keypresses.join('')
+                    writeFileSync(solutionsPath, JSON.stringify(recordings, null, 2))
                 }
                 keypresses = []
                 chosenLevel++

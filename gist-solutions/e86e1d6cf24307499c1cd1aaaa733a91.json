@@ -1,7 +1,11 @@
 [
   null,
-  ".W.D.WW.A.AS.SD......",
+  {
+    "solution": ".W.D.WW.A.AS.SD......"
+  },
   null,
   null,
-  "..AS.DD.WA...XS.X.S...S.........."
+  {
+    "solution": "..AS.DD.WA...XS.X.S...S.........."
+  }
 ]

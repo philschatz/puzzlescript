@@ -1,8 +1,14 @@
 [
   null,
-  "WWDW",
+  {
+    "solution": "WWDW"
+  },
   null,
-  "DDWWAAW",
+  {
+    "solution": "DDWWAAW"
+  },
   null,
-  "WWDDDDDDDWWAAAAAAAWWWDDDDW"
+  {
+    "solution": "WWDDDDDDDWWAAAAAAAWWWDDDDW"
+  }
 ]

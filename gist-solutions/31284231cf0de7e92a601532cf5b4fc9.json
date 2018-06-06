@@ -1,4 +1,8 @@
 [
-  ".DD.D.DD.D.DD,D.D.D.D.D.D.D.X",
-  ".S.S.S..A,X"
+  {
+    "solution": ".DD.D.DD.D.DD,D.D.D.D.D.D.D.X"
+  },
+  {
+    "solution": ".S.S.S..A,X"
+  }
 ]

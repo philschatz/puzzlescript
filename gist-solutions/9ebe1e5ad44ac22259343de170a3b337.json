@@ -1,5 +1,11 @@
 [
-  "D.DD.DD.DD.DD",
-  "DDD.DD.DD.DD.WW.AAW.WD.DD.DDD.D",
-  "..DD.DDD.DW.WA.A..A.WW.WW.A..DD.DD.A.SS.SS..W.W.AA.S.D.DS.SA.AA..AW.WWW.WW.DDD.DD.WW"
+  {
+    "solution": "D.DD.DD.DD.DD"
+  },
+  {
+    "solution": "DDD.DD.DD.DD.WW.AAW.WD.DD.DDD.D"
+  },
+  {
+    "solution": "..DD.DDD.DW.WA.A..A.WW.WW.A..DD.DD.A.SS.SS..W.W.AA.S.D.DS.SA.AA..AW.WWW.WW.DDD.DD.WW"
+  }
 ]

@@ -1,10 +1,18 @@
 [
   null,
-  "DDDDWW",
+  {
+    "solution": "DDDDWW"
+  },
   null,
-  "DWWXSSSSS",
+  {
+    "solution": "DWWXSSSSS"
+  },
   null,
-  "ASDSDDWAXWW",
+  {
+    "solution": "ASDSDDWAXWW"
+  },
   null,
-  "AWAAWDDDAAWDDWDDDSSSSAAAXAAXDDDD"
+  {
+    "solution": "AWAAWDDDAAWDDWDDDSSSSAAAXAAXDDDD"
+  }
 ]

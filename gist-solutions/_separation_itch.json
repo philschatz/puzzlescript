@@ -1,10 +1,18 @@
 [
   null,
-  "..D.D",
+  {
+    "solution": "..D.D"
+  },
   null,
-  "....W.A.....A..S.S..D.D.D.S.W..W.W",
+  {
+    "solution": "....W.A.....A..S.S..D.D.D.S.W..W.W"
+  },
   null,
-  "..S...S..........W..A....S.A.S.D.D.D..D.S.S",
+  {
+    "solution": "..S...S..........W..A....S.A.S.D.D.D..D.S.S"
+  },
   null,
-  ".......W..A.A..S...S.....DD.D..D.D...W.......S.A.A......A..A"
+  {
+    "solution": ".......W..A.A..S...S.....DD.D..D.D...W.......S.A.A......A..A"
+  }
 ]

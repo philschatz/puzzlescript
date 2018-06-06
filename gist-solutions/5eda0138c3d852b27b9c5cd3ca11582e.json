@@ -1,11 +1,19 @@
 [
   null,
-  "...S.S.S.S.A.A.AA..A",
+  {
+    "solution": "...S.S.S.S.A.A.AA..A"
+  },
   null,
-  "..W.W.W.D.X.W.D.D.D..D",
+  {
+    "solution": "..W.W.W.D.X.W.D.D.D..D"
+  },
   null,
-  ".A.A.A.A.S.A.SS..S.D.S",
+  {
+    "solution": ".A.A.A.A.S.A.SS..S.D.S"
+  },
   null,
   null,
-  "..DD.D.D.D.D.W.W.W.W"
+  {
+    "solution": "..DD.D.D.D.D.W.W.W.W"
+  }
 ]

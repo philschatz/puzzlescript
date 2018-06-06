@@ -30,12 +30,12 @@ describe('replays levels of games', () => {
 
         it(`plays all the solved levels of ${GIST_ID}`, async () => {
             const { engine, data } = parseEngine(fs.readFileSync(path.join(__dirname, `../gists/${GIST_ID}/script.txt`), 'utf-8'))
-            const solutions = JSON.parse(fs.readFileSync(path.join(SOLUTION_ROOT, solutionFilename), 'utf-8'))
+            const recordings = JSON.parse(fs.readFileSync(path.join(SOLUTION_ROOT, solutionFilename), 'utf-8'))
 
-            for (let index = 0; index < solutions.length; index++) {
-                const solution = solutions[index]
-                if (!solution) {
-                    continue // skip message-only levels
+            for (let index = 0; index < recordings.length; index++) {
+                const recording = recordings[index]
+                if (!recording || !recording.solution) {
+                    continue // skip message-only levels or levels that do not have a solution
                 }
                 engine.setLevel(index)
 
@@ -45,7 +45,7 @@ describe('replays levels of games', () => {
 
                 const DID_NOT_WIN = 'DID_NOT_WIN'
                 let wonAtKeyIndex = DID_NOT_WIN
-                const keypresses = solution.split('')
+                const keypresses = recording.solution.split('')
 
                 // Do one tick in the beginning to make sure the sprites are all loaded up
                 engine.tick()

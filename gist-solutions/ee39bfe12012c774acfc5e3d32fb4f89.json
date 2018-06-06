@@ -1,9 +1,15 @@
 [
   null,
   null,
-  "DWWWWD.D..D..A..DA.D.D.DD",
+  {
+    "solution": "DWWWWD.D..D..A..DA.D.D.DD"
+  },
   null,
-  "DD...AAAA..A.SA.DD.AWWDDWWWDD.D..AAAA..ASA.DDD.AAWWDDWWWDD..D.AAAA..A.SA.DDDD.DD",
+  {
+    "solution": "DD...AAAA..A.SA.DD.AWWDDWWWDD.D..AAAA..ASA.DDD.AAWWDDWWWDD..D.AAAA..A.SA.DDDD.DD"
+  },
   null,
-  "AWWWWWD.D....D.AA.A.SA.DDDDDAAAAWWWWWWWSD.AS.D.A.SSSD.DA.AWWWDD..DDD..D"
+  {
+    "solution": "AWWWWWD.D....D.AA.A.SA.DDDDDAAAAWWWWWWWSD.AS.D.A.SSSD.DA.AWWWDD..DDD..D"
+  }
 ]
