@@ -9,7 +9,7 @@ import { RULE_MODIFIER, setDifference, setIntersection, nextRandom, RULE_DIRECTI
 import { Cell } from '../engine'
 import { RULE_DIRECTION } from '../enums';
 
-const MAX_ITERATIONS_IN_LOOP = 100
+const MAX_ITERATIONS_IN_LOOP = 350 // Set by the Random World Generation game
 
 enum RULE_COMMAND {
     AGAIN = 'AGAIN'
@@ -48,13 +48,13 @@ export class SimpleRuleGroup extends BaseForLines implements IRule {
         // Keep looping as long as one of the rules evaluated something
         const allMutations: CellMutation[][] = []
         for (let iteration = 0; iteration < MAX_ITERATIONS_IN_LOOP; iteration++) {
-            // if (iteration === MAX_ITERATIONS_IN_LOOP - 10) {
-            //     // Provide a breakpoint just before we run out of MAX_ITERATIONS_IN_LOOP
-            //     debugger
-            // }
+            if (iteration === MAX_ITERATIONS_IN_LOOP - 10) {
+                // Provide a breakpoint just before we run out of MAX_ITERATIONS_IN_LOOP
+                // so that we can step through the evaluations.
+                debugger
+            }
             if (iteration === MAX_ITERATIONS_IN_LOOP - 1) {
                 console.error(this.toString())
-                debugger
                 throw new Error(`BUG: Iterated too many times in startloop or + (rule group)`)
             }
             let evaluatedSomething = false

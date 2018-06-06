@@ -118,6 +118,7 @@ class UI {
     _windowOffsetRowStart: number
     _windowOffsetWidth: number
     _windowOffsetHeight: number
+    _enabledZoomScreenBecauseSmallTerminal: boolean
     constructor() {
         this._cellColorCache = new CellColorCache()
         this._resizeHandler = null
@@ -229,6 +230,12 @@ class UI {
         this._windowOffsetRowStart = Math.max(0, this._windowOffsetRowStart)
         this.renderScreen()
     }
+    enableZoomScreenBecauseSmallTerminal(cell: Cell) {
+        this._enabledZoomScreenBecauseSmallTerminal = true
+        this._windowOffsetWidth = Math.floor(process.stdout.columns / (5 * 2))
+        this._windowOffsetHeight = Math.floor(process.stdout.rows / 5)
+        this.zoomScreenToShowPlayer(cell)
+    }
 
     setPixel(x: number, y: number, hex: string) {
         if (process.env['NODE_ENV'] !== 'production') {
@@ -262,10 +269,10 @@ class UI {
             if (this._gameData.metadata.flickscreen) {
                 // Flick the screen over and re-render the whole screen (hence the `return`)
                 return this.flickScreenToShowPlayer(cell)
-            } else if (this._gameData.metadata.zoomscreen) {
+            } else if (this._gameData.metadata.zoomscreen || this._enabledZoomScreenBecauseSmallTerminal) {
                 return this.zoomScreenToShowPlayer(cell)
             } else {
-                throw new Error(`BUG: Could not move player into the screen`)
+                return this.enableZoomScreenBecauseSmallTerminal(cell)
             }
         }
 
