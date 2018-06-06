@@ -49,6 +49,9 @@ export class Cell {
         // Retur na new set so we can mutate it later
         return new Map(this._spriteAndWantsToMoves)
     }
+    hasSprite(sprite: GameSprite) {
+        return this._spriteAndWantsToMoves.has(sprite)
+    }
 
     _getRelativeNeighbor(y: number, x: number) {
         const row = this._engine.currentLevel[this.rowIndex + y]

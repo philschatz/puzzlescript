@@ -9,7 +9,7 @@ import { RULE_MODIFIER, setDifference, setIntersection, nextRandom, RULE_DIRECTI
 import { Cell } from '../engine'
 import { RULE_DIRECTION } from '../enums';
 
-const MAX_ITERATIONS_IN_LOOP = 10
+const MAX_ITERATIONS_IN_LOOP = 100
 
 enum RULE_COMMAND {
     AGAIN = 'AGAIN'
@@ -45,14 +45,42 @@ export class SimpleRuleGroup extends BaseForLines implements IRule {
     }
 
     evaluate() {
-        let mutations = []
-        for (const rule of this._rules) {
-            const ret = rule.evaluate()
-            if (ret.length > 0) {
-                mutations = mutations.concat(ret)
+        // Keep looping as long as one of the rules evaluated something
+        const allMutations: CellMutation[][] = []
+        for (let iteration = 0; iteration < MAX_ITERATIONS_IN_LOOP; iteration++) {
+            // if (iteration === MAX_ITERATIONS_IN_LOOP - 10) {
+            //     // Provide a breakpoint just before we run out of MAX_ITERATIONS_IN_LOOP
+            //     debugger
+            // }
+            if (iteration === MAX_ITERATIONS_IN_LOOP - 1) {
+                console.error(this.toString())
+                debugger
+                throw new Error(`BUG: Iterated too many times in startloop or + (rule group)`)
+            }
+            let evaluatedSomething = false
+            for (const rule of this._rules) {
+                const ret = rule.evaluate()
+                if (ret.length > 0) {
+                    evaluatedSomething = true
+                    allMutations.push(ret)
+                    break
+                }
+            }
+            if (!evaluatedSomething) {
+                break
             }
         }
-        return mutations
+        return _.flatten(allMutations)
+
+
+        // let mutations = []
+        // for (const rule of this._rules) {
+        //     const ret = rule.evaluate()
+        //     if (ret.length > 0) {
+        //         mutations = mutations.concat(ret)
+        //     }
+        // }
+        // return mutations
     }
 
     clearCaches() {
@@ -156,7 +184,7 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
             }
 
             // Get ready to Evaluate
-            if (this._debugFlag === DEBUG_FLAG.BREAKPOINT_EVALUATE) {
+            if (this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
                 // A "DEBUGGER" flag was set in the game so we are pausing here
                 debugger
             }
@@ -245,7 +273,7 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
                 }
 
                 // Get ready to Evaluate
-                if (this._debugFlag === DEBUG_FLAG.BREAKPOINT_EVALUATE) {
+                if (this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
                     // A "DEBUGGER" flag was set in the game so we are pausing here
                     debugger
                 }
@@ -383,9 +411,8 @@ class SimpleBracket extends BaseForLines implements ICacheable {
     }
 
     evaluate(actionBracket: SimpleBracket, cell: Cell, magicOrTiles: Map<IGameTile, Set<GameSprite>>) {
-        if (this._debugFlag === DEBUG_FLAG.BREAKPOINT_EVALUATE) {
-            // pausing here because it is in the code
-            debugger
+        if (actionBracket._debugFlag === DEBUG_FLAG.BREAKPOINT) {
+            debugger // pausing here because it is in the code
         }
         if (this._hasEllipsis) {
             return []
@@ -395,7 +422,10 @@ class SimpleBracket extends BaseForLines implements ICacheable {
         let index = 0
         for (const neighbor of this._neighbors) {
             const actionNeighbor = actionBracket._neighbors[index]
-            ret.push(neighbor.evaluate(actionNeighbor, curCell, magicOrTiles))
+            const mutation = neighbor.evaluate(actionNeighbor, curCell, magicOrTiles)
+            if (mutation) {
+                ret.push(mutation)
+            }
             curCell = curCell.getNeighbor(this._direction)
             index++
         }
@@ -408,17 +438,29 @@ class SimpleBracket extends BaseForLines implements ICacheable {
         }
     }
 
-    addCell(index: number, neighbor: SimpleNeighbor, t: SimpleTileWithModifier, sprite: GameSprite, cell: Cell, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
-        if (this._debugFlag === DEBUG_FLAG.BREAKPOINT_ADD) {
+    _addFirstCell(firstCell: Cell) {
+        if (this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
             // Pausing here because it was marked in the code
             debugger
         }
+        this._firstCells.add(firstCell)
+    }
+
+    _removeFirstCell(firstCell: Cell) {
+        if (this._debugFlag === DEBUG_FLAG.BREAKPOINT_REMOVE) {
+            // Pausing here because it was marked in the code
+            debugger
+        }
+        this._firstCells.delete(firstCell)
+    }
+
+    addCell(index: number, neighbor: SimpleNeighbor, t: SimpleTileWithModifier, sprite: GameSprite, cell: Cell, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
         // check if downstream neighbors match
         if (!this.matchesDownstream(cell, index)) {
             // Try to remove the match if there is one
             const firstCell = this.getUpstream(cell, index)
             if (firstCell) {
-                this._firstCells.delete(firstCell)
+                this._removeFirstCell(cell)
             }
             return
         }
@@ -429,30 +471,26 @@ class SimpleBracket extends BaseForLines implements ICacheable {
             // Try to remove the match if there is one
             const firstCell = this.getUpstream(cell, index)
             if (firstCell) {
-                this._firstCells.delete(firstCell)
+                this._removeFirstCell(firstCell)
             }
             return
         }
 
         // Add to the set of firstNeighbors
         // We have a match. Add to the firstCells set.
-        this._firstCells.add(firstCell)
+        this._addFirstCell(firstCell)
     }
     // updateCell(neighbor: SimpleNeighbor, t: SimpleTileWithModifier, sprite: GameSprite, cell: Cell, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
     //     this.updateCellOld(cell, sprite, t, neighbor, wantsToMove, true)
     // }
     removeCell(index: number, neighbor: SimpleNeighbor, t: SimpleTileWithModifier, sprite: GameSprite, cell: Cell) {
-        if (this._debugFlag === DEBUG_FLAG.BREAKPOINT_REMOVE) {
-            // pausing here because it was marked in the code
-            debugger
-        }
         // cell was removed
         // Loop Upstream
         const firstCell = this.getFirstCellToRemove(cell, index)
         // Bracket might not match for all directions (likely not), so we might not find a firstCell to remove
         // But that's OK.
         if (firstCell && this._firstCells.has(firstCell)) {
-            this._firstCells.delete(firstCell)
+            this._removeFirstCell(firstCell)
         }
     }
 
@@ -547,13 +585,9 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
     }
 
     evaluate(actionNeighbor: SimpleNeighbor, cell: Cell, magicOrTiles: Map<IGameTile, Set<GameSprite>>) {
-        if (actionNeighbor._debugFlag === DEBUG_FLAG.BREAKPOINT_EVALUATE) {
+        if (actionNeighbor._debugFlag === DEBUG_FLAG.BREAKPOINT) {
             // Pausing here because this breakpoint was marked in the game code
             debugger
-        }
-        if (this._debugFlag === DEBUG_FLAG.BREAKPOINT_EVALUATE) {
-            // Pausing here because this breakpoint was marked in the game code
-            debugger // Maybe this should be used for when the condition side is updated? (what to evaluate)
         }
         // Just remove all tiles for now and then add all of them back
         // TODO: only remove tiles that are matching the collisionLayer but wait, they already need to be exclusive
@@ -586,9 +620,14 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
         }
 
         // TODO: Be better about recording when the cell actually updated
-        const spritesNow = cell.getSpritesAsSet()
-        const didSpritesChange = !setEquals(spritesBefore, spritesNow)
-        return new CellMutation(cell, didSpritesChange)
+        if (spritesToRemove.size + spritesToUpdate.size + spritesToAdd.size > 0) {
+            const spritesNow = cell.getSpritesAsSet()
+            const didSpritesChange = !setEquals(spritesBefore, spritesNow) // TODO: just change this to spritesToRemove + spritesToAdd > 0
+            return new CellMutation(cell, didSpritesChange)
+        } else {
+            return null
+        }
+
     }
 
     clearCaches() {
@@ -734,7 +773,12 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
                     &&  sprite.getCollisionLayerNum() === actionSprite.getCollisionLayerNum()
                     && actionSpriteDirection === null) {
 
-                    spritesToAdd.set(actionSprite, cell.getWantsToMove(sprite))
+                    if (cell.hasSprite(actionSprite)) {
+                        spritesToUpdate.set(actionSprite, cell.getWantsToMove(sprite))
+                    } else {
+                        spritesToAdd.set(actionSprite, cell.getWantsToMove(sprite))
+                    }
+
                 }
             }
             spritesToRemove.add(sprite)
@@ -742,20 +786,50 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
 
         for (const sprite of setIntersection(new Set(conditionSpritesMap.keys()), new Set(actionSpritesMap.keys()))) {
             const desiredDirection = getActionDir(sprite)
+            const currentDirection = cell.getWantsToMove(sprite)
+            const conditionDirection = conditionSpritesMap.get(sprite)
             // Only update if the direction changed.
             // That way things like `[ > Player ] -> [ > Player ]` are not marked as modified
-            const conditionDirection = conditionSpritesMap.get(sprite)
-            if (conditionDirection !== desiredDirection) {
-                spritesToUpdate.set(sprite, desiredDirection)
+
+            if (cell.hasSprite(sprite)) {
+                // Cases for directions:
+                // [    Player ] -> [    Player ]  : no change in direction
+                // [ UP Player ] -> [ UP Player ]  : no change in direction
+                // [    Player ] -> [ UP Player ]  : possible change in direction
+                // [ UP Player ] -> [    Player ]  : definite change in direction (to STATIONARY)
+                // [ <  Player ] -> [ UP Player ]  : definite change in direction
+                if (currentDirection === desiredDirection) {
+                    // Do nothing
+                } else if (conditionDirection  == desiredDirection) {
+                    // Do nothing
+                } else {
+                    spritesToUpdate.set(sprite, desiredDirection || RULE_DIRECTION_ABSOLUTE.STATIONARY)
+                }
+            } else {
+                spritesToAdd.set(sprite, desiredDirection || RULE_DIRECTION_ABSOLUTE.STATIONARY)
             }
         }
 
         for (const sprite of setDifference(new Set(actionSpritesMap.keys()), new Set(conditionSpritesMap.keys()))) {
             const desiredDirection = getActionDir(sprite)
             const conditionDirection = conditionSpritesMap.get(sprite)
+            const currentDirection = cell.getWantsToMove(sprite)
             if (!spritesToAdd.has(sprite)) { // could have been added earlier via the transferDirectionWhenCollisionLayerMatches code above
-                if (desiredDirection !== conditionDirection) {
-                    spritesToAdd.set(sprite, desiredDirection)
+                if (cell.hasSprite(sprite)) {
+                    // See the table above for the various cases
+                    if (currentDirection === desiredDirection) {
+                        // Do nothing
+                    } else if (conditionDirection  == desiredDirection) {
+                        // Do nothing
+                    } else {
+                        if (cell.getSpritesAsSet().has(sprite)) {
+                            spritesToUpdate.set(sprite, desiredDirection || RULE_DIRECTION_ABSOLUTE.STATIONARY)
+                        } else {
+                            spritesToAdd.set(sprite, desiredDirection || RULE_DIRECTION_ABSOLUTE.STATIONARY)
+                        }
+                    }
+                } else {
+                    spritesToAdd.set(sprite, desiredDirection || RULE_DIRECTION_ABSOLUTE.STATIONARY)
                 }
             }
         }
@@ -809,7 +883,7 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
     }
 
     addCells(t: SimpleTileWithModifier, sprite: GameSprite, cells: Iterable<Cell>, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
-        if (this._debugFlag === DEBUG_FLAG.BREAKPOINT_ADD) {
+        if (this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
             // Pausing here because it was marked in the code
             debugger
         }
@@ -969,7 +1043,7 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
     }
 
     addCells(sprite: GameSprite, cells: Iterable<Cell>, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
-        if (this._debugFlag === DEBUG_FLAG.BREAKPOINT_ADD) {
+        if (this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
             // Pause here because it was marked in the code
             debugger
         }
@@ -991,7 +1065,7 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
         }
     }
     updateCells(sprite: GameSprite, cells: Iterable<Cell>, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
-        if (this._debugFlag === DEBUG_FLAG.BREAKPOINT_ADD) {
+        if (this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
             // Pause here because it was marked in the code
             debugger
         }

@@ -2,6 +2,120 @@
 const { default: Engine } = require('../src/engine')
 const { default: Parser } = require('../src/parser/parser')
 
+
+const EMPTY_GAME = `
+title foo
+
+===
+OBJECTS
+===
+
+background
+transparent
+
+Player
+yellow
+00000
+0...0
+0...0
+0...0
+00000
+
+===
+LEGEND
+===
+
+. = background
+P = Player
+
+====
+SOUNDS
+====
+
+====
+COLLISIONLAYERS
+====
+
+background
+player
+
+
+====
+RULES
+====
+
+
+===
+WINCONDITIONS
+===
+
+
+===
+LEVELS
+===
+
+P.
+
+` // End EMPTY_GAME
+
+
+const NOOP_GAME = `
+title foo
+
+===
+OBJECTS
+===
+
+background
+transparent
+
+Player
+yellow
+00000
+0...0
+0...0
+0...0
+00000
+
+===
+LEGEND
+===
+
+. = background
+P = Player
+
+====
+SOUNDS
+====
+
+====
+COLLISIONLAYERS
+====
+
+background
+player
+
+
+====
+RULES
+====
+
+[ player ] -> [ player ]
+
+===
+WINCONDITIONS
+===
+
+
+===
+LEVELS
+===
+
+P.
+
+` // End NOOP_GAME
+
+
 const SIMPLE_GAME = `
 title foo
 
@@ -384,6 +498,31 @@ function getSpriteByName(data, name) {
 }
 
 describe('engine', () => {
+    it('evaluates an empty game', () => {
+        const { engine, data } = parseEngine(EMPTY_GAME)
+        const player = data.getPlayer()
+        engine.tick()
+        expect(engine.currentLevel[0][0].getSpritesAsSet().has(player)).toBe(true)
+
+        engine.pressRight()
+        engine.tick()
+        expect(player.getCellsThatMatch().size).toBe(1)
+        expect(engine.currentLevel[0][1].getSpritesAsSet().has(player)).toBe(true)
+        expect(engine.toSnapshot()).toMatchSnapshot()
+    })
+    it('evaluates a no-op game', () => {
+        const { engine, data } = parseEngine(NOOP_GAME)
+        const player = data.getPlayer()
+        engine.tick()
+        expect(engine.currentLevel[0][0].getSpritesAsSet().has(player)).toBe(true)
+
+        engine.pressRight()
+        engine.tick()
+        expect(player.getCellsThatMatch().size).toBe(1)
+        expect(engine.currentLevel[0][1].getSpritesAsSet().has(player)).toBe(true)
+        expect(engine.toSnapshot()).toMatchSnapshot()
+    })
+
     it('evaluates a simple game', () => {
         const { engine, data } = parseEngine(SIMPLE_GAME)
         const one = data._getSpriteByName('one')
@@ -832,7 +971,6 @@ describe('engine', () => {
 
         const spriteA = data._getSpriteByName('spritea')
         const spriteB = data._getSpriteByName('spriteb')
-        debugger
         engine.tick()
 
         // Check that movement was transferred from A to B

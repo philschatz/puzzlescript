@@ -7,9 +7,9 @@ Array [
       "STATIONARY BgNW1",
     ],
     Array [
+      "STATIONARY Player",
       "STATIONARY PlayerIsland",
       "STATIONARY Island",
-      "STATIONARY Player",
     ],
   ],
   Array [
@@ -72,6 +72,18 @@ Array [
 ]
 `;
 
+exports[`engine evaluates a no-op game 1`] = `
+Array [
+  Array [
+    Array [],
+    Array [
+      "STATIONARY background",
+      "STATIONARY Player",
+    ],
+  ],
+]
+`;
+
 exports[`engine evaluates a simple game 1`] = `
 Array [
   Array [
@@ -79,6 +91,18 @@ Array [
       "STATIONARY one",
     ],
     Array [
+      "STATIONARY Player",
+    ],
+  ],
+]
+`;
+
+exports[`engine evaluates an empty game 1`] = `
+Array [
+  Array [
+    Array [],
+    Array [
+      "STATIONARY background",
       "STATIONARY Player",
     ],
   ],

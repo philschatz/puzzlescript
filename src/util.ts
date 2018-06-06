@@ -102,7 +102,6 @@ export enum RULE_MODIFIER {
 }
 
 export enum DEBUG_FLAG {
-    BREAKPOINT_EVALUATE = 'DEBUGGER', // only when the rule matches elements
-    BREAKPOINT_ADD = 'DEBUGGER_ADD', // only when a cell causes an entry to be added to the matched set
+    BREAKPOINT = 'DEBUGGER', // only when the rule matches elements
     BREAKPOINT_REMOVE = 'DEBUGGER_REMOVE', // only when a cell causes an entry to be removed from the matched set
 }

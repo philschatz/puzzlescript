@@ -90,7 +90,7 @@ Player
 RULES
 ===
 
-[ Player ] -> [ > Player ]
+RIGHT [ Player ] -> [ > Player ]
 
 =======
 LEVELS
@@ -203,7 +203,7 @@ Player, Wall
 RULES
 ===
 
-[ Player ] -> [ > Player ]
+RIGHT [ Player ] -> [ > Player ]
 
 =======
 LEVELS

@@ -40,7 +40,7 @@ describe('replays levels of games', () => {
                 engine.setLevel(index)
 
                 if (SHOW_STEPS) {
-                    UI.setGame(data)
+                    UI.setGame(engine)
                 }
 
                 const DID_NOT_WIN = 'DID_NOT_WIN'
@@ -83,7 +83,7 @@ describe('replays levels of games', () => {
 
                 if (wonAtKeyIndex === DID_NOT_WIN || (wonAtKeyIndex !== keypresses.length - 1)) {
                     console.error('Screendump of level')
-                    UI.setGame(data)
+                    UI.setGame(engine)
                     UI.clearScreen()
                     UI.renderScreen(engine.currentLevel)
                 }

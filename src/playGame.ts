@@ -223,7 +223,8 @@ async function run() {
                     return restartLevel()
                 case '\u0003': // Ctrl+C
                     return process.exit(1)
-                case '\u001B':
+                case '\u001B': // Escape
+
                     saveCoverageFile(data, absPath, 'playgame')
                     return process.exit(0)
                 default:
@@ -236,6 +237,7 @@ async function run() {
         // })
 
         UI.setGame(engine)
+        UI.clearScreen()
         UI.renderScreen()
         UI.writeDebug(`Game: "${data.title}"`)
 
@@ -275,7 +277,7 @@ async function run() {
             const msg = `Level: ${chosenLevel} Tick: ${i} took ${Date.now() - startTime}ms. Moves: ${keypresses.join('')} Changed: ${[...changedCells].map(cell => cell.rowIndex + ':' + cell.colIndex).join(', ') + '   '}`
             UI.writeDebug(msg.substring(0, 160))
 
-            await sleep(Math.max(500 - (Date.now() - startTime), 0))
+            await sleep(Math.max(50 - (Date.now() - startTime), 0))
             if (hasAgain) {
                 keypresses.push(',')
             } else {
