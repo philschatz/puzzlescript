@@ -1,0 +1,111 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`engine runs RANDOM in groups properly (e.g. Mirror Isles) 1`] = `
+Array [
+  Array [
+    Array [
+      "STATIONARY Background",
+      "STATIONARY HasReflection",
+      "STATIONARY Player",
+    ],
+    Array [
+      "STATIONARY Background",
+      "STATIONARY LOS",
+    ],
+    Array [
+      "STATIONARY MirrorDR",
+    ],
+    Array [
+      "STATIONARY Background",
+      "STATIONARY LOS",
+    ],
+    Array [
+      "STATIONARY Background",
+      "STATIONARY HasReflection",
+      "STATIONARY Player",
+    ],
+  ],
+  Array [
+    Array [
+      "STATIONARY Background",
+      "STATIONARY LOS",
+    ],
+    Array [
+      "STATIONARY Background",
+    ],
+    Array [
+      "STATIONARY Background",
+      "STATIONARY LOS",
+    ],
+    Array [
+      "STATIONARY Background",
+    ],
+    Array [
+      "STATIONARY Background",
+      "STATIONARY LOS",
+    ],
+  ],
+  Array [
+    Array [
+      "STATIONARY MirrorUR",
+    ],
+    Array [
+      "STATIONARY Background",
+      "STATIONARY LOS",
+    ],
+    Array [
+      "STATIONARY Reflection",
+    ],
+    Array [
+      "STATIONARY Background",
+      "STATIONARY LOS",
+    ],
+    Array [
+      "STATIONARY MirrorDL",
+    ],
+  ],
+  Array [
+    Array [
+      "STATIONARY Background",
+      "STATIONARY LOS",
+    ],
+    Array [
+      "STATIONARY Background",
+    ],
+    Array [
+      "STATIONARY Background",
+      "STATIONARY LOS",
+    ],
+    Array [
+      "STATIONARY Background",
+    ],
+    Array [
+      "STATIONARY Background",
+      "STATIONARY LOS",
+    ],
+  ],
+  Array [
+    Array [
+      "STATIONARY Background",
+      "STATIONARY HasReflection",
+      "STATIONARY Player",
+    ],
+    Array [
+      "STATIONARY Background",
+      "STATIONARY LOS",
+    ],
+    Array [
+      "STATIONARY MirrorUL",
+    ],
+    Array [
+      "STATIONARY Background",
+      "STATIONARY LOS",
+    ],
+    Array [
+      "STATIONARY Background",
+      "STATIONARY HasReflection",
+      "STATIONARY Player",
+    ],
+  ],
+]
+`;

@@ -82,48 +82,32 @@ export class SimpleRuleGroup extends BaseForLines implements IRule {
             let rulesToEvaluate
             if (this.isRandom()) {
                 // Randomly pick one of the rules. I wonder if it needs to be smart
+                // It is important that it only be evaluated once (hence the returns)
                 const evaluatableRules = this._rules.filter(r => r.canEvaluate())
                 if (evaluatableRules.length === 0) {
-                    rulesToEvaluate = evaluatableRules
+                    return []
                 } else if (evaluatableRules.length === 1) {
-                    rulesToEvaluate = evaluatableRules
+                    return evaluatableRules[0].evaluate()
                 } else {
                     const randomIndex = nextRandom(evaluatableRules.length)
-                    rulesToEvaluate = [evaluatableRules[randomIndex]]
+                    const rule = evaluatableRules[randomIndex]
+                    return rule.evaluate()
                 }
             } else {
-                rulesToEvaluate = this._rules
-            }
-            let evaluatedSomething = false
-            for (const rule of rulesToEvaluate) {
-                // Keep evaluating the rule until nothing changes
-                let innerEvaluatedSomething = false
-                for (let innerIteration = 0; innerIteration < MAX_ITERATIONS_IN_LOOP; innerIteration++) {
-                    if (process.env['NODE_ENV'] !== 'production' && innerIteration === MAX_ITERATIONS_IN_LOOP - 10) {
-                        // Provide a breakpoint just before we run out of MAX_ITERATIONS_IN_LOOP
-                        // so that we can step through the evaluations.
-                        UI.renderScreen(); debugger
-                    }
-                    if (innerIteration === MAX_ITERATIONS_IN_LOOP - 1) {
-                        throw new Error('`BUG: Iterated too many times in rule or rule group')
-                    }
+                let evaluatedSomething = false
+                for (const rule of this._rules) {
+                    // Keep evaluating the rule until nothing changes
                     const ret = rule.evaluate()
                     if (ret.length > 0) {
-                        innerEvaluatedSomething = true
                         evaluatedSomething = true
                         allMutations.push(ret)
-                        continue
-                    } else {
-                        break
                     }
                 }
-                if (!innerEvaluatedSomething) {
-                    continue
+                if (!evaluatedSomething) {
+                    break
                 }
             }
-            if (!evaluatedSomething) {
-                break
-            }
+
         }
         return _.flatten(allMutations)
 
@@ -249,6 +233,29 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
         return true
     }
     evaluate() {
+        const allMutations: CellMutation[][] = []
+        // Keep evaluating the rule until nothing changes
+        let innerEvaluatedSomething = false
+        for (let innerIteration = 0; innerIteration < MAX_ITERATIONS_IN_LOOP; innerIteration++) {
+            if (process.env['NODE_ENV'] !== 'production' && innerIteration === MAX_ITERATIONS_IN_LOOP - 10) {
+                // Provide a breakpoint just before we run out of MAX_ITERATIONS_IN_LOOP
+                // so that we can step through the evaluations.
+                UI.renderScreen(); debugger
+            }
+            if (innerIteration === MAX_ITERATIONS_IN_LOOP - 1) {
+                throw new Error('`BUG: Iterated too many times in rule or rule group')
+            }
+            const ret = this._evaluate()
+            if (ret.length > 0) {
+                innerEvaluatedSomething = true
+                allMutations.push(ret)
+            } else {
+                break
+            }
+        }
+        return _.flatten(allMutations)
+    }
+    _evaluate() {
         if (this._actionBrackets.length === 0 || this._isRigid) {
             // TODO: Just commands are not supported yet
             return []
@@ -322,24 +329,24 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
             for (let index = 0; index < this._conditionBrackets.length; index++) {
                 function sortByPos(cells: Set<Cell>) {
                     return [...cells]
-                    // Exclude cells we have already processed
-                    // .filter(cell => !alreadyProcessed.has(cell.toString()))
-                    .sort((a, b) => {
-                        // if (a.rowIndex < b.rowIndex) {
-                        //     return -1
-                        // } else if (a.rowIndex > b.rowIndex) {
-                        //     return 1
-                        // } else {
-                        //     if (a.colIndex < b.colIndex) {
-                        //         return -1
-                        //     } else if (a.colIndex > b.colIndex) {
-                        //         return 1
-                        //     } else {
-                        //         throw new Error(`BUG: We seem to be comparing the same cell`)
-                        //     }
-                        // }
-                        return a.rowIndex - b.rowIndex || a.colIndex - b.colIndex
-                    })
+                        // Exclude cells we have already processed
+                        // .filter(cell => !alreadyProcessed.has(cell.toString()))
+                        .sort((a, b) => {
+                            // if (a.rowIndex < b.rowIndex) {
+                            //     return -1
+                            // } else if (a.rowIndex > b.rowIndex) {
+                            //     return 1
+                            // } else {
+                            //     if (a.colIndex < b.colIndex) {
+                            //         return -1
+                            //     } else if (a.colIndex > b.colIndex) {
+                            //         return 1
+                            //     } else {
+                            //         throw new Error(`BUG: We seem to be comparing the same cell`)
+                            //     }
+                            // }
+                            return a.rowIndex - b.rowIndex || a.colIndex - b.colIndex
+                        })
 
                 }
                 const conditionCells = sortByPos(this._conditionBrackets[index].getFirstCells())
@@ -386,9 +393,9 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
                         }
 
                         const cell = bracketCellsDouble[index]
-                        .filter(cell => !alreadyProcessed[index].has(cell.toString()))
-                        // Make sure the cell still matches (could have been updated. See BeamIslands background tiles that check right)
-                        .filter(cell => bracket.getFirstCells().has(cell))[0]
+                            .filter(cell => !alreadyProcessed[index].has(cell.toString()))
+                            // Make sure the cell still matches (could have been updated. See BeamIslands background tiles that check right)
+                            .filter(cell => bracket.getFirstCells().has(cell))[0]
                         // if (!cell || !bracket.getFirstCells().has(cell)) {
                         //     hasMoreCells = false
                         //     break
@@ -410,9 +417,9 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
                         const bracket = this._conditionBrackets[index]
                         const actionBracket = this._actionBrackets[index]
                         const cell = bracketCellsDouble[index]
-                        .filter(cell => !alreadyProcessed[index].has(cell.toString()))
-                        // Make sure the cell still matches (could have been updated. See BeamIslands background tiles that check right)
-                        .filter(cell => bracket.getFirstCells().has(cell))[0]
+                            .filter(cell => !alreadyProcessed[index].has(cell.toString()))
+                            // Make sure the cell still matches (could have been updated. See BeamIslands background tiles that check right)
+                            .filter(cell => bracket.getFirstCells().has(cell))[0]
                         if (!cell) {
                             emptyCellsCount++
                             continue
@@ -433,7 +440,7 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
                         }
                         if (someSpriteChanged) {
                             somethingChanged = true
-                        // } else if (!alreadyProcessed[index].has(cell)) {
+                            // } else if (!alreadyProcessed[index].has(cell)) {
                             // somethingChanged = true
                         } else {
                             // nothing changed... somethingChanged = false
@@ -451,7 +458,7 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
                 } while (hasMoreCells)
             }
 
-        } while(somethingChanged)
+        } while (somethingChanged)
 
         return _.flatten(allMutators)
     }
@@ -862,7 +869,7 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
             // If so, preserve the wantsToMove direction
             for (const [actionSprite, actionSpriteDirection] of actionSpritesMap) {
                 if (conditionSpritesMap.get(sprite) === null
-                    &&  sprite.getCollisionLayerNum() === actionSprite.getCollisionLayerNum()
+                    && sprite.getCollisionLayerNum() === actionSprite.getCollisionLayerNum()
                     && actionSpriteDirection === null) {
 
                     if (cell.hasSprite(actionSprite)) {
@@ -892,7 +899,7 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
                 // [ <  Player ] -> [ UP Player ]  : definite change in direction
                 if (currentDirection === desiredDirection) {
                     // Do nothing
-                } else if (conditionDirection  == desiredDirection) {
+                } else if (conditionDirection == desiredDirection) {
                     // Do nothing
                 } else {
                     spritesToUpdate.set(sprite, desiredDirection || RULE_DIRECTION_ABSOLUTE.STATIONARY)
@@ -911,7 +918,7 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
                     // See the table above for the various cases
                     if (currentDirection === desiredDirection) {
                         // Do nothing
-                    } else if (conditionDirection  == desiredDirection) {
+                    } else if (conditionDirection == desiredDirection) {
                         // Do nothing
                     } else {
                         if (cell.getSpritesAsSet().has(sprite)) {
@@ -996,12 +1003,12 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
                 // If it previously matched, notify the bracket that it no longer matches
                 // (and delete it from our cache)
                 // if (this.hasCell(cell)) {
-                    for (const [bracket, indexes] of this._brackets.entries()) {
-                        for (const index of indexes) {
-                            bracket.removeCell(index, this, t, sprite, cell)
-                        }
+                for (const [bracket, indexes] of this._brackets.entries()) {
+                    for (const index of indexes) {
+                        bracket.removeCell(index, this, t, sprite, cell)
                     }
-                    // this._localCellCache.delete(cell)
+                }
+                // this._localCellCache.delete(cell)
                 // }
             }
         }
@@ -1016,17 +1023,17 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
         }
         for (const cell of cells) {
             // if (this.hasCell(cell)) {
-                // Check if the cell still matches. If not, remove it from upstream
-                // It's a little funky if we have a NO tile. I _think_ we need to negate the
-                // result of matchesCellWithout in that case but not completely sure
-                if (t.isNo() === this.matchesCellWithout(cell, sprite)) {
-                    // remove it from upstream
-                    for (const [bracket, indexes] of this._brackets.entries()) {
-                        for (const index of indexes) {
-                            bracket.removeCell(index, this, t, sprite, cell)
-                        }
+            // Check if the cell still matches. If not, remove it from upstream
+            // It's a little funky if we have a NO tile. I _think_ we need to negate the
+            // result of matchesCellWithout in that case but not completely sure
+            if (t.isNo() === this.matchesCellWithout(cell, sprite)) {
+                // remove it from upstream
+                for (const [bracket, indexes] of this._brackets.entries()) {
+                    for (const index of indexes) {
+                        bracket.removeCell(index, this, t, sprite, cell)
                     }
                 }
+            }
             //     this._localCellCache.delete(cell)
             // }
         }
@@ -1312,7 +1319,7 @@ export class GameRule extends BaseForLines implements ICacheable {
                 const neighbor = condition._neighbors[index]
                 for (const t of neighbor._tilesWithModifier) {
                     conditionTilesWithModifiers.add(t)
-                    conditionTilesMap.set(t._tile, {direction: t._direction, neighborIndex: index})
+                    conditionTilesMap.set(t._tile, { direction: t._direction, neighborIndex: index })
                 }
             }
             for (let index = 0; index < action._neighbors.length; index++) {
