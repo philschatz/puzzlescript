@@ -435,6 +435,64 @@ yellow
         expector(data.rules[5].getChildRules()[0], false, false, true)
     })
 
+    describe('RANDOM keywork propagation', () => {
+        it('marks a rule as being RANDOM', () => {
+            const {data} = parseRule('RANDOM [.] -> []', ['.'])
+            expect(data.rules[0].isRandom()).toBe(true)
+        })
+
+        it('marks a rule Group as being RANDOM', () => {
+            const {data} = parseRule(`
+RANDOM [.] -> []
++ [Player] -> []`, ['.', 'Player'])
+            expect(data.rules[0].isRandom()).toBe(true)
+            // But make sure the actual rule is not marked as being random
+            expect(data.rules[0]._rules[0].isRandom()).toBe(false)
+        })
+
+        it('does not mark a rule Loop as being RANDOM', () => {
+            const {data} = parseRule(`
+STARTLOOP
+RANDOM [.] -> []
++ [Player] -> []
+ENDLOOP
+    `, ['.', 'Player'])
+            expect(data.rules[0].isRandom()).toBe(false)
+        })
+
+        it('properly groups loops and groups', () => {
+            const {data} = parseRule(`
+RIGHT [ ] -> [ ]
+STARTLOOP
+(1st rulegroup)
+RIGHT [ ] -> [ ]
++ RIGHT [ ] -> [ ]
++ RIGHT [ ] -> [ ]
+
++ RIGHT [ ] -> [ ]
+
+( 2nd rulegroup)
+RIGHT [ ] -> [ ]
++ RIGHT [ ] -> [ ]
+
+RIGHT [ ] -> [ ]
+ENDLOOP
+RIGHT [ ] -> [ ]
+    `, ['.', 'Player'])
+            debugger
+            expect(data.rules.length).toBe(3)
+            // startloop
+            expect(data.rules[1]._rules.length).toBe(3)
+            // 1st rulegroup
+            expect(data.rules[1]._rules[0]._rules.length).toBe(4)
+            // 2nd rulegroup
+            expect(data.rules[1]._rules[1]._rules.length).toBe(2)
+
+        })
+
+
+    })
+
     describe('Expected Failures', () => {
         // Something using collisionLayers. Like A and B are in the same layer and we try to run either: `[ A B ] -> []` or `[A] -> [A B]`
         // Check that the magic objects `Background` and `Player` are set to something

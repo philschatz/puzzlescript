@@ -5,9 +5,10 @@ import {
     IGameNode
 } from '../models/game'
 import { IGameTile, GameSprite } from './tile'
-import { RULE_MODIFIER, setDifference, setIntersection, nextRandom, RULE_DIRECTION_ABSOLUTE, RULE_DIRECTION_ABSOLUTE_SET, RULE_DIRECTION_ABSOLUTE_LIST, setEquals, DEBUG_FLAG } from '../util'
+import { RULE_MODIFIER, setDifference, setIntersection, nextRandom, RULE_DIRECTION_ABSOLUTE, RULE_DIRECTION_ABSOLUTE_SET, RULE_DIRECTION_ABSOLUTE_LIST, setEquals, DEBUG_FLAG, nextRandomFloat } from '../util'
 import { Cell } from '../engine'
 import { RULE_DIRECTION } from '../enums';
+import UI from '../ui'
 
 const MAX_ITERATIONS_IN_LOOP = 350 // Set by the Random World Generation game
 
@@ -39,31 +40,85 @@ function opposite(dir: RULE_DIRECTION_ABSOLUTE) {
 
 export class SimpleRuleGroup extends BaseForLines implements IRule {
     _rules: IRule[]
-    constructor(source: IGameCode, rules: IRule[]) {
+    _isRandom: boolean
+    constructor(source: IGameCode, isRandom: boolean, rules: IRule[]) {
         super(source)
+        this._isRandom = isRandom
         this._rules = rules
+        // Clear the "Random" bit from individual rules if they are part of a Rule
+        if (this.isRandom()) {
+            for (const rule of this._rules) {
+                rule.clearRandomFlag()
+            }
+        }
     }
 
+    canEvaluate() {
+        for (const rule of this._rules) {
+            if (rule.canEvaluate()) {
+                return true
+            }
+        }
+        return false
+    }
     evaluate() {
+        let randomFloat
+        if (this.isRandom()) {
+            randomFloat = nextRandomFloat()
+        }
+
         // Keep looping as long as one of the rules evaluated something
         const allMutations: CellMutation[][] = []
         for (let iteration = 0; iteration < MAX_ITERATIONS_IN_LOOP; iteration++) {
-            if (iteration === MAX_ITERATIONS_IN_LOOP - 10) {
+            if (process.env['NODE_ENV'] !== 'production' && iteration === MAX_ITERATIONS_IN_LOOP - 10) {
                 // Provide a breakpoint just before we run out of MAX_ITERATIONS_IN_LOOP
                 // so that we can step through the evaluations.
-                debugger
+                UI.renderScreen(); debugger
             }
             if (iteration === MAX_ITERATIONS_IN_LOOP - 1) {
                 console.error(this.toString())
                 throw new Error(`BUG: Iterated too many times in startloop or + (rule group)`)
             }
+            let rulesToEvaluate
+            if (this.isRandom()) {
+                // Randomly pick one of the rules. I wonder if it needs to be smart
+                const evaluatableRules = this._rules.filter(r => r.canEvaluate())
+                if (evaluatableRules.length === 0) {
+                    rulesToEvaluate = evaluatableRules
+                } else if (evaluatableRules.length === 1) {
+                    rulesToEvaluate = evaluatableRules
+                } else {
+                    const randomIndex = nextRandom(evaluatableRules.length)
+                    rulesToEvaluate = [evaluatableRules[randomIndex]]
+                }
+            } else {
+                rulesToEvaluate = this._rules
+            }
             let evaluatedSomething = false
-            for (const rule of this._rules) {
-                const ret = rule.evaluate()
-                if (ret.length > 0) {
-                    evaluatedSomething = true
-                    allMutations.push(ret)
-                    break
+            for (const rule of rulesToEvaluate) {
+                // Keep evaluating the rule until nothing changes
+                let innerEvaluatedSomething = false
+                for (let innerIteration = 0; innerIteration < MAX_ITERATIONS_IN_LOOP; innerIteration++) {
+                    if (process.env['NODE_ENV'] !== 'production' && innerIteration === MAX_ITERATIONS_IN_LOOP - 10) {
+                        // Provide a breakpoint just before we run out of MAX_ITERATIONS_IN_LOOP
+                        // so that we can step through the evaluations.
+                        UI.renderScreen(); debugger
+                    }
+                    if (innerIteration === MAX_ITERATIONS_IN_LOOP - 1) {
+                        throw new Error('`BUG: Iterated too many times in rule or rule group')
+                    }
+                    const ret = rule.evaluate()
+                    if (ret.length > 0) {
+                        innerEvaluatedSomething = true
+                        evaluatedSomething = true
+                        allMutations.push(ret)
+                        continue
+                    } else {
+                        break
+                    }
+                }
+                if (!innerEvaluatedSomething) {
+                    continue
                 }
             }
             if (!evaluatedSomething) {
@@ -103,6 +158,22 @@ export class SimpleRuleGroup extends BaseForLines implements IRule {
     isRigid() {
         return this._rules[0].isRigid()
     }
+    isRandom() {
+        return this._isRandom
+    }
+
+    clearRandomFlag() {
+        this._isRandom = false
+        for (const rule of this._rules) {
+            rule.clearRandomFlag()
+        }
+    }
+}
+
+class SimpleRuleLoop extends SimpleRuleGroup {
+    isRandom() {
+        return false
+    }
 }
 
 // This is a rule that has been expanded from `DOWN [ > player < cat RIGHT dog ] -> [ ^ crate ]` to:
@@ -123,10 +194,11 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
     _isLate: boolean
     _isAgain: boolean
     _isRigid: boolean
+    _isRandom: boolean
     _isSubscribedToCellChanges: boolean
     _debugFlag: DEBUG_FLAG
     _doesEvaluationOrderMatter: boolean
-    constructor(source: IGameCode, evaluationDirection: RULE_DIRECTION_ABSOLUTE, conditionBrackets: SimpleBracket[], actionBrackets: SimpleBracket[], commands: string[], isLate: boolean, isAgain: boolean, isRigid: boolean, debugFlag: DEBUG_FLAG, doesEvaluationOrderMatter: boolean) {
+    constructor(source: IGameCode, evaluationDirection: RULE_DIRECTION_ABSOLUTE, conditionBrackets: SimpleBracket[], actionBrackets: SimpleBracket[], commands: string[], isLate: boolean, isAgain: boolean, isRigid: boolean, isRandom: boolean, debugFlag: DEBUG_FLAG, doesEvaluationOrderMatter: boolean) {
         super(source)
         this._evaluationDirection = evaluationDirection
         this._conditionBrackets = conditionBrackets
@@ -135,6 +207,7 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
         this._isLate = isLate
         this._isAgain = isAgain
         this._isRigid = isRigid
+        this._isRandom = isRandom
         this._debugFlag = debugFlag
         this._doesEvaluationOrderMatter = doesEvaluationOrderMatter
     }
@@ -166,6 +239,15 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
         }
     }
 
+    canEvaluate() {
+        // Verify that each condition bracket has matches
+        for (const condition of this._conditionBrackets) {
+            if (condition.getFirstCells().size == 0) {
+                return false
+            }
+        }
+        return true
+    }
     evaluate() {
         if (this._actionBrackets.length === 0 || this._isRigid) {
             // TODO: Just commands are not supported yet
@@ -179,14 +261,18 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
             // Verify that each condition bracket has matches
             for (const condition of this._conditionBrackets) {
                 if (condition.getFirstCells().size == 0) {
+                    if (process.env['NODE_ENV'] !== 'production' && this._debugFlag === DEBUG_FLAG.BREAKPOINT_REMOVE) {
+                        // A "DEBUGGER_REMOVE" flag was set in the game so we are pausing here
+                        UI.renderScreen(); debugger
+                    }
                     return [] // Rule did not match, so nothing ran
                 }
             }
 
             // Get ready to Evaluate
-            if (this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
+            if (process.env['NODE_ENV'] !== 'production' && this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
                 // A "DEBUGGER" flag was set in the game so we are pausing here
-                debugger
+                UI.renderScreen(); debugger
             }
 
             const allMutations = []
@@ -273,9 +359,9 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
                 }
 
                 // Get ready to Evaluate
-                if (this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
+                if (process.env['NODE_ENV'] !== 'production' && this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
                     // A "DEBUGGER" flag was set in the game so we are pausing here
-                    debugger
+                    UI.renderScreen(); debugger
                 }
 
                 let hasMoreCells
@@ -372,7 +458,11 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
     isLate() { return this._isLate }
     isAgain() { return this._isAgain }
     isRigid() { return this._isRigid }
+    isRandom() { return this._isRandom }
 
+    clearRandomFlag() {
+        this._isRandom = false
+    }
 }
 
 class SimpleBracket extends BaseForLines implements ICacheable {
@@ -411,8 +501,8 @@ class SimpleBracket extends BaseForLines implements ICacheable {
     }
 
     evaluate(actionBracket: SimpleBracket, cell: Cell, magicOrTiles: Map<IGameTile, Set<GameSprite>>) {
-        if (actionBracket._debugFlag === DEBUG_FLAG.BREAKPOINT) {
-            debugger // pausing here because it is in the code
+        if (process.env['NODE_ENV'] !== 'production' && actionBracket._debugFlag === DEBUG_FLAG.BREAKPOINT) {
+            UI.renderScreen(); debugger // pausing here because it is in the code
         }
         if (this._hasEllipsis) {
             return []
@@ -439,19 +529,21 @@ class SimpleBracket extends BaseForLines implements ICacheable {
     }
 
     _addFirstCell(firstCell: Cell) {
-        if (this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
+        if (process.env['NODE_ENV'] !== 'production' && this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
             // Pausing here because it was marked in the code
-            debugger
+            UI.renderScreen(); debugger
         }
         this._firstCells.add(firstCell)
     }
 
     _removeFirstCell(firstCell: Cell) {
-        if (this._debugFlag === DEBUG_FLAG.BREAKPOINT_REMOVE) {
-            // Pausing here because it was marked in the code
-            debugger
+        if (this._firstCells.has(firstCell)) {
+            if (process.env['NODE_ENV'] !== 'production' && this._debugFlag === DEBUG_FLAG.BREAKPOINT_REMOVE) {
+                // Pausing here because it was marked in the code
+                UI.renderScreen(); debugger
+            }
+            this._firstCells.delete(firstCell)
         }
-        this._firstCells.delete(firstCell)
     }
 
     addCell(index: number, neighbor: SimpleNeighbor, t: SimpleTileWithModifier, sprite: GameSprite, cell: Cell, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
@@ -585,9 +677,9 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
     }
 
     evaluate(actionNeighbor: SimpleNeighbor, cell: Cell, magicOrTiles: Map<IGameTile, Set<GameSprite>>) {
-        if (actionNeighbor._debugFlag === DEBUG_FLAG.BREAKPOINT) {
+        if (process.env['NODE_ENV'] !== 'production' && actionNeighbor._debugFlag === DEBUG_FLAG.BREAKPOINT) {
             // Pausing here because this breakpoint was marked in the game code
-            debugger
+            UI.renderScreen(); debugger
         }
         // Just remove all tiles for now and then add all of them back
         // TODO: only remove tiles that are matching the collisionLayer but wait, they already need to be exclusive
@@ -883,9 +975,9 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
     }
 
     addCells(t: SimpleTileWithModifier, sprite: GameSprite, cells: Iterable<Cell>, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
-        if (this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
+        if (process.env['NODE_ENV'] !== 'production' && this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
             // Pausing here because it was marked in the code
-            debugger
+            UI.renderScreen(); debugger
         }
         for (const cell of cells) {
             const matchesTiles = this.matchesCell(cell, t, wantsToMove)
@@ -918,9 +1010,9 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
         this.addCells(t, sprite, cells, wantsToMove)
     }
     removeCells(t: SimpleTileWithModifier, sprite: GameSprite, cells: Iterable<Cell>) {
-        if (this._debugFlag === DEBUG_FLAG.BREAKPOINT_REMOVE) {
+        if (process.env['NODE_ENV'] !== 'production' && this._debugFlag === DEBUG_FLAG.BREAKPOINT_REMOVE) {
             // Pausing here because it was marked in the code
-            debugger
+            UI.renderScreen(); debugger
         }
         for (const cell of cells) {
             // if (this.hasCell(cell)) {
@@ -1043,9 +1135,9 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
     }
 
     addCells(sprite: GameSprite, cells: Iterable<Cell>, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
-        if (this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
+        if (process.env['NODE_ENV'] !== 'production' && this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
             // Pause here because it was marked in the code
-            debugger
+            UI.renderScreen(); debugger
         }
         // Cells all have the same sprites, so if the 1st matches, they all do
         if (this.matchesFirstCell(cells, wantsToMove)) {
@@ -1065,9 +1157,9 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
         }
     }
     updateCells(sprite: GameSprite, cells: Iterable<Cell>, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
-        if (this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
+        if (process.env['NODE_ENV'] !== 'production' && this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
             // Pause here because it was marked in the code
-            debugger
+            UI.renderScreen(); debugger
         }
         // Cells all have the same sprites, so if the 1st matches, they all do
         if (this.matchesFirstCell(cells, wantsToMove)) {
@@ -1077,9 +1169,9 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
         }
     }
     removeCells(sprite: GameSprite, cells: Iterable<Cell>) {
-        if (this._debugFlag === DEBUG_FLAG.BREAKPOINT_REMOVE) {
+        if (process.env['NODE_ENV'] !== 'production' && this._debugFlag === DEBUG_FLAG.BREAKPOINT_REMOVE) {
             // Pause here because it was marked in the code
-            debugger
+            UI.renderScreen(); debugger
         }
         // Cells all have the same sprites, so if the 1st matches, they all do
         if (this.matchesFirstCell(cells, null/*STATIONARY*/)) {
@@ -1175,7 +1267,7 @@ export class GameRule extends BaseForLines implements ICacheable {
         for (const rule of simpleRules) {
             rule.subscribeToCellChanges()
         }
-        return new SimpleRuleGroup(this.__source, simpleRules)
+        return new SimpleRuleGroup(this.__source, this.isRandom(), simpleRules)
     }
 
     toSimple(ruleCache: Map<string, SimpleRule>, bracketCache: Map<string, SimpleBracket>, neighborCache: Map<string, SimpleNeighbor>, tileCache: Map<string, SimpleTileWithModifier>) {
@@ -1267,7 +1359,7 @@ export class GameRule extends BaseForLines implements ICacheable {
             }
         }
 
-        return cacheSetAndGet(ruleCache, new SimpleRule(this.__source, directions[0], conditionBrackets, actionBrackets, this._commands, this.isLate(), this.isAgain(), this.isRigid(), this._debugFlag, doesEvaluationOrderMatter))
+        return cacheSetAndGet(ruleCache, new SimpleRule(this.__source, directions[0], conditionBrackets, actionBrackets, this._commands, this.isLate(), this.isAgain(), this.isRigid(), this.isRandom(), this._debugFlag, doesEvaluationOrderMatter))
     }
 
     convertToMultiple() {
@@ -1331,7 +1423,7 @@ export class GameRule extends BaseForLines implements ICacheable {
         const conditionBrackets = this._brackets.map(bracket => bracket.clone(direction, nameToExpand, newName))
         const actionBrackets = this._actionBrackets.map(bracket => bracket.clone(direction, nameToExpand, newName))
         // retain LATE and RIGID but discard the rest of the modifiers
-        const modifiers = _.intersection(this._modifiers, [RULE_MODIFIER.LATE, RULE_MODIFIER.RIGID]).concat([RULE_MODIFIER[direction]])
+        const modifiers = _.intersection(this._modifiers, [RULE_MODIFIER.LATE, RULE_MODIFIER.RIGID, RULE_MODIFIER.RANDOM]).concat([RULE_MODIFIER[direction]])
         return new GameRule(this.__source, modifiers, conditionBrackets, actionBrackets, this._commands, this._debugFlag)
     }
 
@@ -1415,6 +1507,9 @@ export class GameRule extends BaseForLines implements ICacheable {
     }
     isRigid() {
         return this._modifiers.indexOf(RULE_MODIFIER.RIGID) >= 0
+    }
+    isRandom() {
+        return this._modifiers.indexOf(RULE_MODIFIER.RANDOM) >= 0
     }
 
 }
@@ -1655,7 +1750,10 @@ export interface IRule extends IGameNode {
     isLate: () => boolean
     isRigid: () => boolean
     isAgain: () => boolean
+    isRandom: () => boolean
     clearCaches: () => void
+    clearRandomFlag: () => void
+    canEvaluate: () => boolean
 }
 
 export class GameRuleLoop extends BaseForLines {
@@ -1669,7 +1767,7 @@ export class GameRuleLoop extends BaseForLines {
     }
 
     simplify(ruleCache: Map<string, SimpleRule>, bracketCache: Map<string, SimpleBracket>, neighborCache: Map<string, SimpleNeighbor>, tileCache: Map<string, SimpleTileWithModifier>) {
-        return new SimpleRuleGroup(this.__source, this._rules.map(rule => rule.simplify(ruleCache, bracketCache, neighborCache, tileCache)))
+        return new SimpleRuleLoop(this.__source, this.isRandom(), this._rules.map(rule => rule.simplify(ruleCache, bracketCache, neighborCache, tileCache)))
     }
     evaluate() {
         // Keep looping as long as once of the rules evaluated something
@@ -1695,11 +1793,17 @@ export class GameRuleLoop extends BaseForLines {
         // return _.flatten(allMutations)
         return []
     }
-
+    isRandom() {
+        return !!this._rules.filter(r => r.isRandom())[0]
+    }
 }
 
 export class GameRuleGroup extends GameRuleLoop {
-    // do we really need this class?
+    // Yes. One propagates isRandom while the other does not
+    simplify(ruleCache: Map<string, SimpleRule>, bracketCache: Map<string, SimpleBracket>, neighborCache: Map<string, SimpleNeighbor>, tileCache: Map<string, SimpleTileWithModifier>) {
+        return new SimpleRuleGroup(this.__source, this.isRandom(), this._rules.map(rule => rule.simplify(ruleCache, bracketCache, neighborCache, tileCache)))
+    }
+
 }
 
 const M_STATIONARY = 'STATIONARY'

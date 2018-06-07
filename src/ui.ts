@@ -5,6 +5,7 @@ import { GameSprite } from './models/tile'
 import { GameData } from './models/game'
 import { IColor } from './models/colors'
 import Engine, { Cell } from './engine'
+import { RULE_DIRECTION_ABSOLUTE } from './util';
 
 // Determine if this
 // 'truecolor' if this terminal supports 16m colors. 256 colors otherwise
@@ -139,11 +140,11 @@ class UI {
         this._windowOffsetWidth = null
         this._windowOffsetHeight = null
         if (this._gameData.metadata.flickscreen) {
-            const {width, height} = this._gameData.metadata.flickscreen
+            const { width, height } = this._gameData.metadata.flickscreen
             this._windowOffsetWidth = width
             this._windowOffsetHeight = height
         } else if (this._gameData.metadata.zoomscreen) {
-            const {width, height} = this._gameData.metadata.zoomscreen
+            const { width, height } = this._gameData.metadata.zoomscreen
             this._windowOffsetWidth = width
             this._windowOffsetHeight = height
         }
@@ -187,7 +188,7 @@ class UI {
     }
 
     cellPosToXY(cell: Cell) {
-        const {colIndex, rowIndex} = cell
+        const { colIndex, rowIndex } = cell
         let isOnScreen = true // can be set to false for many reasons
         let cellStartX = -1
         let cellStartY = -1
@@ -211,18 +212,18 @@ class UI {
             // do not draw the cell
             isOnScreen = false
         }
-        return {isOnScreen, cellStartX, cellStartY}
+        return { isOnScreen, cellStartX, cellStartY }
     }
 
     flickScreenToShowPlayer(cell: Cell) {
-        const {rowIndex, colIndex} = cell
+        const { rowIndex, colIndex } = cell
         this._windowOffsetColStart = Math.floor(colIndex / this._windowOffsetWidth) * this._windowOffsetWidth
         this._windowOffsetRowStart = Math.floor(rowIndex / this._windowOffsetHeight) * this._windowOffsetHeight
         this.renderScreen()
     }
 
     zoomScreenToShowPlayer(cell: Cell) {
-        const {rowIndex, colIndex} = cell
+        const { rowIndex, colIndex } = cell
         this._windowOffsetColStart = colIndex - Math.floor(this._windowOffsetWidth / 2)
         this._windowOffsetRowStart = rowIndex - Math.floor(this._windowOffsetHeight / 2)
         // ensure that there is not extra space to the left or up (e.g. if the player is in the top-left of the level they should not be in the center of the screen)
@@ -261,7 +262,7 @@ class UI {
         const spritesForDebugging = cell.getSprites()
         const pixels: IColor[][] = this.getPixelsForCell(cell)
 
-        let {isOnScreen, cellStartX, cellStartY} = this.cellPosToXY(cell)
+        let { isOnScreen, cellStartX, cellStartY } = this.cellPosToXY(cell)
 
         // Sort of HACKy... If the player is not visible on the screen then we need to
         // move the screen so that they are visible.
@@ -317,8 +318,34 @@ class UI {
                         if (r > 192 && g > 192 && b > 192) {
                             setFgColor('#000000')
                         }
-                        if (spritesForDebugging[spriteRowIndex]) {
-                            let spriteName = spritesForDebugging[spriteRowIndex]._name
+                        const sprite = spritesForDebugging[spriteRowIndex]
+                        if (sprite) {
+                            let spriteName = sprite._name
+                            let wantsToMove
+
+                            switch (cell.getWantsToMove(sprite)) {
+                                case RULE_DIRECTION_ABSOLUTE.STATIONARY:
+                                    wantsToMove = ''
+                                    break
+                                case RULE_DIRECTION_ABSOLUTE.UP:
+                                    wantsToMove = '^'
+                                    break
+                                case RULE_DIRECTION_ABSOLUTE.DOWN:
+                                    wantsToMove = 'v'
+                                    break
+                                case RULE_DIRECTION_ABSOLUTE.LEFT:
+                                    wantsToMove = '<'
+                                    break
+                                case RULE_DIRECTION_ABSOLUTE.RIGHT:
+                                    wantsToMove = '>'
+                                    break
+                                case RULE_DIRECTION_ABSOLUTE.ACTION:
+                                    wantsToMove = 'X'
+                                    break
+                                default:
+                                    throw new Error(`BUG: Invalid wantsToMove "${cell.getWantsToMove(sprite)}"`)
+                            }
+                            spriteName = `${wantsToMove}${spriteName}`
                             if (spriteName.length > 10) {
                                 spriteName = `${spriteName.substring(0, 5)}.${spriteName.substring(spriteName.length - 4)}`
                             }
