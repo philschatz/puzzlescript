@@ -166,6 +166,19 @@ async function run() {
             })
         }])
 
+        // Allow the user to resume from where they left off
+        let ticksToRunFirst = ''
+        if (recordings[chosenLevel] && recordings[chosenLevel].partial) {
+            const {shouldResume} = await inquirer.prompt<{shouldResume: boolean}>({
+                type: 'confirm',
+                name: 'shouldResume',
+                message: 'Would you like to resume where you left off?',
+            })
+            if (shouldResume) {
+                ticksToRunFirst = recordings[chosenLevel].partial
+            }
+        }
+
         // Prepare the keyboard handler
         process.stdin.setRawMode(true)
         process.stdin.resume()
@@ -198,6 +211,9 @@ async function run() {
 
         // https://stackoverflow.com/a/30687420
         process.stdin.on('data', function(key){
+            handleKeyPress(key)
+        })
+        function handleKeyPress(key) {
             switch (key) {
                 case 'w':
                 case '\u001B\u005B\u0041': // UP-ARROW
@@ -233,7 +249,7 @@ async function run() {
                 default:
                     UI.writeDebug(`pressed....: "${toUnicode(key)}"`)
             }
-        })
+        }
 
         // engine.on('cell:updated', cell => {
         //   UI.drawCellAt(data, cell, cell.rowIndex, cell.colIndex, false)
@@ -244,7 +260,52 @@ async function run() {
         UI.renderScreen()
         UI.writeDebug(`Game: "${data.title}"`)
 
-        let i = 0
+        // Run a bunch of ticks in case the user partially played a level
+        let maxTickAndRenderTime = -1
+        for (var keyNum = 0; keyNum < ticksToRunFirst.length; keyNum++) {
+            switch (ticksToRunFirst[keyNum]) {
+                case 'W':
+                    engine.press(RULE_DIRECTION_ABSOLUTE.UP)
+                    break
+                case 'S':
+                    engine.press(RULE_DIRECTION_ABSOLUTE.DOWN)
+                    break
+                case 'A':
+                    engine.press(RULE_DIRECTION_ABSOLUTE.LEFT)
+                    break
+                case 'D':
+                    engine.press(RULE_DIRECTION_ABSOLUTE.RIGHT)
+                    break
+                case 'X':
+                    engine.press(RULE_DIRECTION_ABSOLUTE.ACTION)
+                    break
+                case '.':
+                case ',':
+                    // just .tick()
+                    break
+                default:
+                    throw new Error(`BUG: Invalid keypress character "${ticksToRunFirst[keyNum]}"`)
+            }
+            startTime = Date.now()
+            const { changedCells } = engine.tick()
+
+            // UI.renderScreen(data, engine.currentLevel)
+
+            // Draw any cells that moved
+            for (const cell of changedCells) {
+                UI.drawCell(cell, false)
+            }
+            if (keyNum > 1) { // Skip the 1st couple because they might be cleaning up the level
+                maxTickAndRenderTime = Math.max(maxTickAndRenderTime, Date.now() - startTime)
+            }
+
+            const msg = `Key ${keyNum} of "${data.title}" (took ${Date.now() - startTime}ms) Changed: ${[...changedCells].map(cell => cell.rowIndex + ':' + cell.colIndex).join(', ') + '   '}`
+            UI.writeDebug(msg.substring(0, 160))
+
+            // await sleep(Math.max(100 - (Date.now() - startTime), 0))
+        }
+
+        let tickNum = 0
         while(true) {
 
             const startTime = Date.now()
@@ -279,10 +340,10 @@ async function run() {
                 UI.drawCell(cell, false)
             }
 
-            const msg = `Level: ${chosenLevel} Tick: ${i} took ${Date.now() - startTime}ms. Moves: ${keypresses.join('')} Changed: ${[...changedCells].map(cell => cell.rowIndex + ':' + cell.colIndex).join(', ') + '   '}`
+            const msg = `Level: ${chosenLevel} Tick: ${tickNum} took ${Date.now() - startTime}ms. Moves: ${keypresses.join('')} Changed: ${[...changedCells].map(cell => cell.rowIndex + ':' + cell.colIndex).join(', ') + '   '}`
             UI.writeDebug(msg.substring(0, 160))
 
-            await sleep(Math.max(50 - (Date.now() - startTime), 0))
+            await sleep(Math.max(200 - (Date.now() - startTime), 0))
             if (hasAgain) {
                 keypresses.push(',')
             } else {
@@ -290,7 +351,7 @@ async function run() {
                     keypresses.push('.') // Add a "tick"
                 }
             }
-            i++
+            tickNum++
         }
 
         // UI.clearScreen()
