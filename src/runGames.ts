@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync } from 'fs'
+import { readFileSync, writeFileSync, existsSync } from 'fs'
 import * as path from 'path'
 import * as glob from 'glob'
 import * as pify from 'pify'
@@ -23,6 +23,8 @@ async function run() {
 
     for (let filename of files) {
         console.log(`Parsing and rendering ${filename}`)
+        const gistId = path.basename(path.dirname(filename))
+
         const code = readFileSync(filename, 'utf-8')
         const startTime = Date.now()
         const { data, error, trace, validationMessages } = Parser.parse(code)
@@ -43,8 +45,27 @@ async function run() {
                 })
             }
 
-            // Draw the "last" level (after the messages)
-            const level = data.levels.filter(level => level.isMap())[0]
+            // Draw the "first" level (after the messages)
+            let level = data.levels.filter(level => level.isMap())[0]
+            // have some default keypresses but load the most-recent partial if available
+            let keypressesStr = [
+                'WSSW',
+                'ADDDA',
+                'X',
+                'SWWS',
+                'DAAD'
+            ].join('').split('').join('.')
+            const recordingsPath = path.join(__dirname, `../gist-solutions/${gistId}.json`)
+            if (existsSync(recordingsPath)) {
+                const recordings = JSON.parse(readFileSync(recordingsPath, 'utf-8'))
+                const x = recordings.filter(r => !!r)
+                const recording = x[x.length - 1]
+                if (recording) {
+                    keypressesStr = recording.partial || recording.solution
+                    level = data.levels[recordings.indexOf(recording)]
+                }
+            }
+
             if (level) {
                 let startTime = Date.now()
                 const engine = new Engine(data)
@@ -66,20 +87,33 @@ async function run() {
                 global['cells_updated_count'] = 0
                 global['rules_updated_count'] = 0
 
-                const keypresses = [
-                    RULE_DIRECTION_ABSOLUTE.UP, RULE_DIRECTION_ABSOLUTE.DOWN, RULE_DIRECTION_ABSOLUTE.DOWN, RULE_DIRECTION_ABSOLUTE.UP,
-                    RULE_DIRECTION_ABSOLUTE.LEFT, RULE_DIRECTION_ABSOLUTE.RIGHT, RULE_DIRECTION_ABSOLUTE.RIGHT, RULE_DIRECTION_ABSOLUTE.RIGHT, RULE_DIRECTION_ABSOLUTE.LEFT,
-                    RULE_DIRECTION_ABSOLUTE.ACTION,
-                    RULE_DIRECTION_ABSOLUTE.DOWN, RULE_DIRECTION_ABSOLUTE.UP, RULE_DIRECTION_ABSOLUTE.UP, RULE_DIRECTION_ABSOLUTE.DOWN,
-                    RULE_DIRECTION_ABSOLUTE.RIGHT, RULE_DIRECTION_ABSOLUTE.LEFT, RULE_DIRECTION_ABSOLUTE.LEFT, RULE_DIRECTION_ABSOLUTE.RIGHT,
-                    RULE_DIRECTION_ABSOLUTE.ACTION
-                ]
-
                 let maxTickAndRenderTime = -1
-                for (var i = 0; i < keypresses.length; i++) {
-                    engine.press(keypresses[i])
+                for (var i = 0; i < keypressesStr.length; i++) {
+                    switch (keypressesStr[i]) {
+                        case 'W':
+                            engine.press(RULE_DIRECTION_ABSOLUTE.UP)
+                            break
+                        case 'S':
+                            engine.press(RULE_DIRECTION_ABSOLUTE.DOWN)
+                            break
+                        case 'A':
+                            engine.press(RULE_DIRECTION_ABSOLUTE.LEFT)
+                            break
+                        case 'D':
+                            engine.press(RULE_DIRECTION_ABSOLUTE.RIGHT)
+                            break
+                        case 'X':
+                            engine.press(RULE_DIRECTION_ABSOLUTE.ACTION)
+                            break
+                        case '.':
+                        case ',':
+                            // just .tick()
+                            break
+                        default:
+                            throw new Error(`BUG: Invalid keypress character "${keypressesStr[i]}"`)
+                    }
                     startTime = Date.now()
-                    const {changedCells} = engine.tick()
+                    const { changedCells } = engine.tick()
 
                     // UI.renderScreen(data, engine.currentLevel)
 
@@ -94,7 +128,7 @@ async function run() {
                     const msg = `Tick ${i} of "${data.title}" (took ${Date.now() - startTime}ms) Changed: ${[...changedCells].map(cell => cell.rowIndex + ':' + cell.colIndex).join(', ') + '   '}`
                     UI.writeDebug(msg.substring(0, 160))
 
-                    await sleep(Math.max(200 - (Date.now() - startTime), 0))
+                    await sleep(Math.max(100 - (Date.now() - startTime), 0))
 
                     // if (changedCells.size === 0) {
                     //     break

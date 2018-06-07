@@ -290,6 +290,11 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
                 for (const cell of condition.getFirstCells()) {
                     allMutations.push(condition.evaluate(action, cell, magicOrTiles))
                 }
+
+                if (process.env['NODE_ENV'] !== 'production') {
+                    this.__coverageCount++
+                }
+
             }
             return _.flatten(allMutations)
         } else {
