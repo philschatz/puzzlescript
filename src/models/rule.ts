@@ -1337,8 +1337,8 @@ export class GameRule extends BaseForLines implements ICacheable {
                         if (orTileOnConditionSide) {
 
                         } else {
-                            console.log('Marking as slow because the action side has an OR tile')
-                            console.log(this.toString())
+                            // console.log('Marking as slow because the action side has an OR tile')
+                            // console.log(this.toString())
                             doesEvaluationOrderMatter = true // not strictly true, but it means we need to use the magicOrTiles
                         }
                     }
@@ -1352,11 +1352,11 @@ export class GameRule extends BaseForLines implements ICacheable {
                         const neighbor = action._neighbors[index]
                         if (neighbor._tilesWithModifier.has(t)) {
                             if (index !== conditionTilesMap.get(t._tile).neighborIndex) {
-                                console.log('Marking as slow because the action side has a Tile that may modify the condition and need to re-run')
-                                console.log(this.toString())
-                                console.log(t.toString())
-                                console.log(t._tile.toString())
-                                console.log('------------------------------------');
+                                // console.log('Marking as slow because the action side has a Tile that may modify the condition and need to re-run')
+                                // console.log(this.toString())
+                                // console.log(t.toString())
+                                // console.log(t._tile.toString())
+                                // console.log('------------------------------------');
 
                                 doesEvaluationOrderMatter = true
                             }
