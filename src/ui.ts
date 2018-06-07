@@ -166,6 +166,7 @@ class UI {
             process.stdout.off('resize', this._resizeHandler)
         }
         this._resizeHandler = () => {
+            this.clearScreen()
             this.renderScreen()
         }
         process.stdout.on('resize', this._resizeHandler)

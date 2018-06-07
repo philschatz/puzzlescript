@@ -113,7 +113,7 @@ async function run() {
         const levels = data.levels
         const firstUncompletedLevel = levels
         .indexOf(levels
-            .filter((l, index) => !recordings[index])
+            .filter((l, index) => !(recordings[index] && recordings[index].solution))
             .filter(l => l.isMap())[0]
         )
 
@@ -124,7 +124,7 @@ async function run() {
             default: firstUncompletedLevel, // 1st non-message level
             pageSize: Math.max(15, process.stdout.rows - 15),
             choices: levels.map((levelMap, index) => {
-                const hasSolution = recordings[index]
+                const hasSolution = recordings[index] && recordings[index].solution
                 if (levelMap.isMap()) {
                     const rows = levelMap.getRows()
                     const cols = rows[0]
@@ -257,7 +257,7 @@ async function run() {
                 if (!recordings[chosenLevel]) {
                     recordings[chosenLevel] = { solution: keypresses.join('')}
                     writeFileSync(solutionsPath, JSON.stringify(recordings, null, 2))
-                } else if (recordings[chosenLevel].solution.length > newSolution.length) {
+                } else if (!recordings[chosenLevel].solution || recordings[chosenLevel].solution.length > newSolution.length) {
                     recordings[chosenLevel].solution = keypresses.join('')
                     writeFileSync(solutionsPath, JSON.stringify(recordings, null, 2))
                 }
@@ -286,7 +286,9 @@ async function run() {
             if (hasAgain) {
                 keypresses.push(',')
             } else {
-                keypresses.push('.') // Add a "tick"
+                if (changedCells.size > 0) {
+                    keypresses.push('.') // Add a "tick"
+                }
             }
             i++
         }

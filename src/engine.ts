@@ -350,7 +350,6 @@ export default class Engine extends EventEmitter2 {
 
         // Save the "AGAIN" rules that ran so they can be re-evaluated at the next tick
         this._pendingAgainRules = evaluatedRules.filter(r => r.isAgain())
-
         const movedCells = this.tickMoveSprites(new Set<Cell>(changedCellMutations.keys()))
         const {changedCells: changedCellsLate, evaluatedRules: evaluatedRulesLate} = this.tickUpdateCellsLate()
         return {
@@ -361,9 +360,17 @@ export default class Engine extends EventEmitter2 {
 
     tickAgain() {
         const {changedCells, evaluatedRules} = this._tickUpdateCells(this._pendingAgainRules)
-        this._pendingAgainRules = evaluatedRules // we can assume that they were all AGAIN rules at this point
+        // Save the "AGAIN" rules that ran so they can be re-evaluated at the next tick
+        const movedCells = this.tickMoveSprites(changedCells)
+        if (movedCells.size === 0) {
+            // done with the again rules. nothing moved
+            this._pendingAgainRules = []
+        } else {
+            this._pendingAgainRules = evaluatedRules.filter(r => r.isAgain())
+        }
+        // const {changedCells: changedCellsLate, evaluatedRules: evaluatedRulesLate} = this.tickUpdateCellsLate()
         return {
-            changedCells: new Set(changedCells.keys()),
+            changedCells: setAddAll(movedCells, changedCells.keys()),
             evaluatedRules
         }
     }
