@@ -653,7 +653,7 @@ source.connect(AUDIO_CONTEXT.destination)
 
 SoundEffect.MIN_SAMPLE_RATE = 22050;
 
-let CURERNT_SILENTBUFFER = null
+// let CURERNT_SILENTBUFFER = null
 
 // if (typeof AUDIO_CONTEXT == 'undefined') {
   SoundEffect = function SoundEffect(length, sample_rate) {
@@ -729,21 +729,20 @@ debugger
     return new Promise((resolve, reject) => {
         AUDIO_CONTEXT.decodeAudioData(decoded, (audioBuffer) => {
 
-            if (CURERNT_SILENTBUFFER) {
-                CURERNT_SILENTBUFFER.stop(0)
-            }
-
             var bufferNode = AUDIO_CONTEXT.createBufferSource()
             bufferNode.connect(AUDIO_CONTEXT.destination)
             bufferNode.buffer = audioBuffer
             bufferNode.loop = false
             bufferNode.start(0)
 
-            CURERNT_SILENTBUFFER = AUDIO_CONTEXT.createBufferSource()
-            CURERNT_SILENTBUFFER.connect(AUDIO_CONTEXT.destination)
-            CURERNT_SILENTBUFFER.buffer = makeSilence()
-            CURERNT_SILENTBUFFER.loop = true
-            CURERNT_SILENTBUFFER.start(0)
+            // if (CURERNT_SILENTBUFFER) {
+            //     CURERNT_SILENTBUFFER.stop(0)
+            // }
+            // CURERNT_SILENTBUFFER = AUDIO_CONTEXT.createBufferSource()
+            // CURERNT_SILENTBUFFER.connect(AUDIO_CONTEXT.destination)
+            // CURERNT_SILENTBUFFER.buffer = makeSilence()
+            // CURERNT_SILENTBUFFER.loop = true
+            // CURERNT_SILENTBUFFER.start(0)
 
             bufferNode.onended = async () => {
                 // bufferNode.stop(0)

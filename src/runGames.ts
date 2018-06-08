@@ -45,7 +45,7 @@ async function run() {
                 console.log(`DONE playing sound "${endTag}"`)
                 await sleep(10)
             }
-            if (!!true) continue
+            // if (!!true) continue
 
 
             if (validationMessages) {
