@@ -608,59 +608,59 @@ generateFromSeed = function(seed) {
   return result;
 };
 
-function SoundEffect(length, sample_rate) {
-  this._buffer = AUDIO_CONTEXT.createBuffer(1, length, sample_rate);
-}
+// function SoundEffect(length, sample_rate) {
+//   this._buffer = AUDIO_CONTEXT.createBuffer(1, length, sample_rate);
+// }
 
-SoundEffect.prototype.getBuffer = function() {
-  return this._buffer.getChannelData(0);
-};
+// SoundEffect.prototype.getBuffer = function() {
+//   return this._buffer.getChannelData(0);
+// };
 
 
-SoundEffect.prototype.play = function() {
-    debugger
-  var source = AUDIO_CONTEXT.createBufferSource();
-//   var filter1 = AUDIO_CONTEXT.createBiquadFilter();
-//   var filter2 = AUDIO_CONTEXT.createBiquadFilter();
-//   var filter3 = AUDIO_CONTEXT.createBiquadFilter();
-    // const filter1 = biquad.allpass({frequency: 1600}) // https://developer.mozilla.org/en-US/docs/Web/API/BiquadFilterNode/type
-    // const filter2 = biquad.allpass({frequency: 1600})
-    // const filter3 = biquad.allpass({frequency: 1600})
+// SoundEffect.prototype.play = function() {
+//     debugger
+//   var source = AUDIO_CONTEXT.createBufferSource();
+// //   var filter1 = AUDIO_CONTEXT.createBiquadFilter();
+// //   var filter2 = AUDIO_CONTEXT.createBiquadFilter();
+// //   var filter3 = AUDIO_CONTEXT.createBiquadFilter();
+//     // const filter1 = biquad.allpass({frequency: 1600}) // https://developer.mozilla.org/en-US/docs/Web/API/BiquadFilterNode/type
+//     // const filter2 = biquad.allpass({frequency: 1600})
+//     // const filter3 = biquad.allpass({frequency: 1600})
 
-  source.buffer = this._buffer;
-//   source.connect(filter1);
+//   source.buffer = this._buffer;
+// //   source.connect(filter1);
 
-//   filter1.frequency.value = 1600;
-//   filter2.frequency.value = 1600;
-//   filter3.frequency.value = 1600;
+// //   filter1.frequency.value = 1600;
+// //   filter2.frequency.value = 1600;
+// //   filter3.frequency.value = 1600;
 
-//   filter1.connect(filter2);
-//   filter2.connect(filter3);
-//   filter3.connect(AUDIO_CONTEXT.destination);
+// //   filter1.connect(filter2);
+// //   filter2.connect(filter3);
+// //   filter3.connect(AUDIO_CONTEXT.destination);
 
-source.connect(AUDIO_CONTEXT.destination)
+// source.connect(AUDIO_CONTEXT.destination)
 
-  var t = AUDIO_CONTEXT.currentTime;
-  if (typeof source.start != 'undefined') {
-    source.start(t);
-  } else {
-    source.noteOn(t);
-  }
-//   source.onended = function() {
-//     filter3.disconnect()
+//   var t = AUDIO_CONTEXT.currentTime;
+//   if (typeof source.start != 'undefined') {
+//     source.start(t);
+//   } else {
+//     source.noteOn(t);
 //   }
-};
-
-SoundEffect.MIN_SAMPLE_RATE = 22050;
+// //   source.onended = function() {
+// //     filter3.disconnect()
+// //   }
+// };
 
 // let CURERNT_SILENTBUFFER = null
 
 // if (typeof AUDIO_CONTEXT == 'undefined') {
-  SoundEffect = function SoundEffect(length, sample_rate) {
+  var SoundEffect = function SoundEffect(length, sample_rate) {
     this._sample_rate = sample_rate;
     this._buffer = new Array(length);
     this._audioElement = null;
   };
+
+  SoundEffect.MIN_SAMPLE_RATE = 22050;
 
   SoundEffect.prototype.getBuffer = function() {
     this._audioElement = null;
