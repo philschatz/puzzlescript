@@ -40,9 +40,8 @@ async function run() {
             // return
 
             for (const sfx of data.sounds) {
-                console.log('StART playing sound.....')
-                const promise = sfx.play()
-                const endTag = await promise
+                console.log(`StART playing sound..... ${sfx._soundCode}`)
+                const endTag = await sfx.play()
                 console.log(`DONE playing sound "${endTag}"`)
                 await sleep(10)
             }

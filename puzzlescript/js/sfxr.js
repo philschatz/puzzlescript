@@ -3,6 +3,10 @@ const {MakeRiff, FastBase64_Encode} = require('./riffwave')
 const Speaker = require('speaker')
 const {AudioContext} = require('web-audio-api')
 
+async function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms))
+}
+
 var SOUND_VOL = 0.25;
 var SAMPLE_RATE = 5512;
 var BIT_DEPTH = 8;
@@ -649,6 +653,8 @@ source.connect(AUDIO_CONTEXT.destination)
 
 SoundEffect.MIN_SAMPLE_RATE = 22050;
 
+// let CURERNT_SILENTBUFFER = null
+
 // if (typeof AUDIO_CONTEXT == 'undefined') {
   SoundEffect = function SoundEffect(length, sample_rate) {
     this._sample_rate = sample_rate;
@@ -680,6 +686,10 @@ SoundEffect.MIN_SAMPLE_RATE = 22050;
     const b64string = FastBase64_Encode(wav.wav)
     const decoded = Buffer.from(b64string, 'base64')
 
+    // if (CURERNT_SILENTBUFFER) {
+    //     CURERNT_SILENTBUFFER.stop(0)
+    // }
+
     return new Promise((resolve, reject) => {
         AUDIO_CONTEXT.decodeAudioData(decoded, (audioBuffer) => {
             var bufferNode = AUDIO_CONTEXT.createBufferSource()
@@ -687,14 +697,26 @@ SoundEffect.MIN_SAMPLE_RATE = 22050;
             bufferNode.buffer = audioBuffer
             bufferNode.loop = false
             bufferNode.start(0)
-            bufferNode.onended = () => {
-                debugger
-                AUDIO_CONTEXT.outStream._flush()
-                AUDIO_CONTEXT._kill()
+            bufferNode.onended = async () => {
+                const x = await sleep(10)
+                bufferNode.stop(0)
+
+                // Play silence
+                // CURERNT_SILENTBUFFER = AUDIO_CONTEXT.createBufferSource()
+                // CURERNT_SILENTBUFFER.buffer = [0] // silence
+                // CURERNT_SILENTBUFFER.loop = true
+                // CURERNT_SILENTBUFFER.connect(AUDIO_CONTEXT.destination)
+                // CURERNT_SILENTBUFFER.start(0)
+
+                // AUDIO_CONTEXT.outStream._flush()
                 // AUDIO_CONTEXT.outStream.end()
-                // AUDIO_CONTEXT.outStream.close()
-                AUDIO_CONTEXT = new AudioContext() // after ._kill() is called, we need to create a new context
-                AUDIO_CONTEXT.sampleRate = SAMPLE_RATE
+                debugger
+                // AUDIO_CONTEXT.outStream._flush()
+                // AUDIO_CONTEXT._kill()
+                // // AUDIO_CONTEXT.outStream.end()
+                // // AUDIO_CONTEXT.outStream.close()
+                // AUDIO_CONTEXT = new AudioContext() // after ._kill() is called, we need to create a new context
+                // AUDIO_CONTEXT.sampleRate = SAMPLE_RATE
                 debugger
                 resolve('SOUND_EFFECT_FINISHED_PLAYING')
             }
