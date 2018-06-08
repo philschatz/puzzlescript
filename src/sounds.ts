@@ -1,3 +1,3 @@
-import {playSound} from '../puzzlescript/js/sfxr'
+import {playSound, closeSounds} from '../puzzlescript/js/sfxr'
 
-export {playSound}
+export {playSound, closeSounds}

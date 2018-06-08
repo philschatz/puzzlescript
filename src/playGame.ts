@@ -17,6 +17,7 @@ import { start } from 'repl';
 import { IRule } from './models/rule';
 import { RULE_DIRECTION } from './enums';
 import { saveCoverageFile } from './recordCoverage';
+import { closeSounds } from './models/sound';
 
 
 async function sleep(ms: number) {
@@ -238,6 +239,7 @@ async function run() {
                 case 'r':
                     return restartLevel()
                 case '\u0003': // Ctrl+C
+                    closeSounds()
                     return process.exit(1)
                 case '\u001B': // Escape
                     saveCoverageFile(data, absPath, 'playgame')
@@ -245,6 +247,7 @@ async function run() {
                     recordings[chosenLevel] = recordings[chosenLevel] || {}
                     recordings[chosenLevel].partial = keypresses.join('')
                     writeFileSync(solutionsPath, JSON.stringify(recordings, null, 2))
+                    closeSounds()
                     return process.exit(0)
                 default:
                     UI.writeDebug(`pressed....: "${toUnicode(key)}"`)
@@ -356,6 +359,7 @@ async function run() {
 
         // UI.clearScreen()
     }
+
 }
 
 run()

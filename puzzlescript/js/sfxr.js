@@ -1107,6 +1107,13 @@ function playSound(seed) {
   return sound.play();
 }
 
+function closeSounds() {
+    AUDIO_CONTEXT.outStream._flush() // End the speaker
+    AUDIO_CONTEXT._playing = false // So we do not continue outputing sound (since onended did not actually work) ... maybe we should do bufferNode.on('kill', ...)
+    AUDIO_CONTEXT._kill()
+}
+
 module.exports = {
-    playSound
+    playSound,
+    closeSounds
 }

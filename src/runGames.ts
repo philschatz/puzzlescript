@@ -13,6 +13,7 @@ import { IRule } from './models/rule';
 import { RULE_DIRECTION } from './enums';
 import { saveCoverageFile } from './recordCoverage';
 import {playSound} from './sounds';
+import { closeSounds } from './models/sound';
 
 async function sleep(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms))
@@ -45,7 +46,7 @@ async function run() {
                 console.log(`DONE playing sound "${endTag}"`)
                 await sleep(10)
             }
-            // if (!!true) continue
+            if (!!true) continue
 
 
             if (validationMessages) {
@@ -159,6 +160,8 @@ async function run() {
             // UI.clearScreen()
         }
     }
+
+    closeSounds()
 }
 
 run()

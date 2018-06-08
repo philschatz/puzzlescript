@@ -1,6 +1,10 @@
 import { BaseForLines, IGameCode } from './game'
 import { IGameTile } from './tile'
-import {playSound} from '../sounds';
+import {playSound, closeSounds as closeSounds2} from '../sounds';
+
+export function closeSounds() {
+    closeSounds2()
+}
 
 // Abstract class
 export class GameSound extends BaseForLines {

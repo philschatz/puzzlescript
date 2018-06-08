@@ -43,10 +43,14 @@ This is a remake of PuzzleScript that has the following features:
 
 Sound hack:
 
-In `node_modules/web-audio-api/build/AudioContext.js` just above `if (this$0.outStream.write(this$0._encoder(outBuff._data)))` add:
+~~In `node_modules/web-audio-api/build/AudioContext.js` just above `if (this$0.outStream.write(this$0._encoder(outBuff._data)))` add:~~
 
 ```
 // PHILHACK
 if (!this$0._playing) { return }
 ```
 
+
+Fork `speaker` and change `deps/mpg123/mpg123.gyp` so that the `'Release': {` block instead says: `'defines': [ 'NDEBUG', 'NO_WARNING' ],` .
+
+This way we can keep the audio open, for sending sound effects but do not need to keep the NodeJS event loop to be really short (& keep sending sound data to `mpg123`) so that `mpg123` does not print warning messages about not having sound data to send to speakers.
