@@ -18,13 +18,12 @@ var SHAPES = [
   'square', 'sawtooth', 'sine', 'noise', 'triangle', 'breaker'
 ];
 
-const AUDIO_CONTEXT = new AudioContext()
+let AUDIO_CONTEXT = new AudioContext()
 
-AUDIO_CONTEXT.outStream = new Speaker({
-    channels: AUDIO_CONTEXT.format.numberOfChannels,
-    bitDepth: AUDIO_CONTEXT.format.bitDepth,
-    sampleRate: AUDIO_CONTEXT.sampleRate
-})
+// see https://github.com/audiojs/web-audio-api/issues/59
+// The samplerate is hardcoded to be 44100 for some reason
+// and an exception is thrown if this does not match the buffer that is being played
+AUDIO_CONTEXT.sampleRate = SAMPLE_RATE //5512
 
 function checkAudioContextExists(){
     if (AUDIO_CONTEXT==null){
@@ -662,7 +661,7 @@ SoundEffect.MIN_SAMPLE_RATE = 22050;
     return this._buffer;
   };
 
-  SoundEffect.prototype.play = function() {
+  SoundEffect.prototype.play = async function() {
     if (this._audioElement) {
       this._audioElement.cloneNode(false).play();
     } else {
@@ -672,15 +671,35 @@ SoundEffect.MIN_SAMPLE_RATE = 22050;
       }
       var wav = MakeRiff(this._sample_rate, BIT_DEPTH, this._buffer);
 
+      AUDIO_CONTEXT.outStream = new Speaker({
+        channels: AUDIO_CONTEXT.format.numberOfChannels,
+        bitDepth: AUDIO_CONTEXT.format.bitDepth,
+        sampleRate: AUDIO_CONTEXT.sampleRate
+    })
+
     const b64string = FastBase64_Encode(wav.wav)
     const decoded = Buffer.from(b64string, 'base64')
-    AUDIO_CONTEXT.decodeAudioData(decoded, (audioBuffer) => {
-        debugger
-        var bufferNode = AUDIO_CONTEXT.createBufferSource()
-        bufferNode.connect(AUDIO_CONTEXT.destination)
-        bufferNode.buffer = audioBuffer
-        bufferNode.loop = false
-        bufferNode.start(0)
+
+    return new Promise((resolve, reject) => {
+        AUDIO_CONTEXT.decodeAudioData(decoded, (audioBuffer) => {
+            var bufferNode = AUDIO_CONTEXT.createBufferSource()
+            bufferNode.connect(AUDIO_CONTEXT.destination)
+            bufferNode.buffer = audioBuffer
+            bufferNode.loop = false
+            bufferNode.start(0)
+            bufferNode.onended = () => {
+                debugger
+                AUDIO_CONTEXT.outStream._flush()
+                AUDIO_CONTEXT._kill()
+                // AUDIO_CONTEXT.outStream.end()
+                // AUDIO_CONTEXT.outStream.close()
+                AUDIO_CONTEXT = new AudioContext() // after ._kill() is called, we need to create a new context
+                AUDIO_CONTEXT.sampleRate = SAMPLE_RATE
+                debugger
+                resolve('SOUND_EFFECT_FINISHED_PLAYING')
+            }
+        })
+
     })
 
 
@@ -1014,7 +1033,7 @@ function playSound(seed) {
   checkAudioContextExists();
 //   if (unitTesting) return;
   var sound = cacheSeed(seed);
-  sound.play();
+  return sound.play();
 }
 
 module.exports = {

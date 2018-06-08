@@ -11,8 +11,8 @@ export class GameSound extends BaseForLines {
         this._soundCode = soundCode
     }
 
-    play() {
-        playSound(this._soundCode)
+    async play() {
+        return playSound(this._soundCode)
     }
 }
 

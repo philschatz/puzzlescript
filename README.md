@@ -38,3 +38,15 @@ This is a remake of PuzzleScript that has the following features:
 - **Rule** contains the conditions and actions to be executed.
   - It also contains methods for checking if the Rule matches a Cell and methods for how to change the Cell
 - **Cell** contains a set of Sprites and is used to represent the current state of the Game
+
+
+
+Sound hack:
+
+In `node_modules/web-audio-api/build/AudioContext.js` just above `if (this$0.outStream.write(this$0._encoder(outBuff._data)))` add:
+
+```
+// PHILHACK
+if (!this$0._playing) { return }
+```
+
