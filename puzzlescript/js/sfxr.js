@@ -653,7 +653,7 @@ source.connect(AUDIO_CONTEXT.destination)
 
 SoundEffect.MIN_SAMPLE_RATE = 22050;
 
-// let CURERNT_SILENTBUFFER = null
+let CURERNT_SILENTBUFFER = null
 
 // if (typeof AUDIO_CONTEXT == 'undefined') {
   SoundEffect = function SoundEffect(length, sample_rate) {
@@ -667,6 +667,12 @@ SoundEffect.MIN_SAMPLE_RATE = 22050;
     return this._buffer;
   };
 
+  AUDIO_CONTEXT.outStream = new Speaker({
+    channels: AUDIO_CONTEXT.format.numberOfChannels,
+    bitDepth: AUDIO_CONTEXT.format.bitDepth,
+    sampleRate: AUDIO_CONTEXT.sampleRate
+})
+
   SoundEffect.prototype.play = async function() {
     if (this._audioElement) {
       this._audioElement.cloneNode(false).play();
@@ -677,29 +683,72 @@ SoundEffect.MIN_SAMPLE_RATE = 22050;
       }
       var wav = MakeRiff(this._sample_rate, BIT_DEPTH, this._buffer);
 
-      AUDIO_CONTEXT.outStream = new Speaker({
-        channels: AUDIO_CONTEXT.format.numberOfChannels,
-        bitDepth: AUDIO_CONTEXT.format.bitDepth,
-        sampleRate: AUDIO_CONTEXT.sampleRate
-    })
 
     const b64string = FastBase64_Encode(wav.wav)
     const decoded = Buffer.from(b64string, 'base64')
+debugger
 
-    // if (CURERNT_SILENTBUFFER) {
-    //     CURERNT_SILENTBUFFER.stop(0)
-    // }
+
+    // from https://mdn.github.io/webaudio-examples/audio-buffer/
+    // which is from https://developer.mozilla.org/en-US/docs/Web/API/AudioBuffer
+    function makeSilence() {
+        var channels = 2;
+        // Create an empty two second stereo buffer at the
+        // sample rate of the AudioContext
+        var frameCount = AUDIO_CONTEXT.sampleRate * 2.0;
+
+        var myArrayBuffer = AUDIO_CONTEXT.createBuffer(channels, frameCount, AUDIO_CONTEXT.sampleRate);
+
+
+        // Fill the buffer with white noise;
+        //just random values between -1.0 and 1.0
+        for (var channel = 0; channel < channels; channel++) {
+            // This gives us the actual array that contains the data
+            var nowBuffering = myArrayBuffer.getChannelData(channel);
+            for (var i = 0; i < frameCount; i++) {
+                // Math.random() is in [0; 1.0]
+                // audio needs to be in [-1.0; 1.0]
+                nowBuffering[i] = 0;
+            }
+        }
+
+        // // Get an AudioBufferSourceNode.
+        // // This is the AudioNode to use when we want to play an AudioBuffer
+        // var source = AUDIO_CONTEXT.createBufferSource();
+        // // set the buffer in the AudioBufferSourceNode
+        // source.buffer = myArrayBuffer;
+        // // connect the AudioBufferSourceNode to the
+        // // destination so we can hear the sound
+        // source.connect(AUDIO_CONTEXT.destination);
+        // // start the source playing
+        // source.start();
+
+        return myArrayBuffer
+    }
 
     return new Promise((resolve, reject) => {
         AUDIO_CONTEXT.decodeAudioData(decoded, (audioBuffer) => {
+
+            if (CURERNT_SILENTBUFFER) {
+                CURERNT_SILENTBUFFER.stop(0)
+            }
+
             var bufferNode = AUDIO_CONTEXT.createBufferSource()
             bufferNode.connect(AUDIO_CONTEXT.destination)
             bufferNode.buffer = audioBuffer
             bufferNode.loop = false
             bufferNode.start(0)
+
+            CURERNT_SILENTBUFFER = AUDIO_CONTEXT.createBufferSource()
+            CURERNT_SILENTBUFFER.connect(AUDIO_CONTEXT.destination)
+            CURERNT_SILENTBUFFER.buffer = makeSilence()
+            CURERNT_SILENTBUFFER.loop = true
+            CURERNT_SILENTBUFFER.start(0)
+
             bufferNode.onended = async () => {
-                const x = await sleep(10)
-                bufferNode.stop(0)
+                // bufferNode.stop(0)
+
+                // const x = await sleep(10000)
 
                 // Play silence
                 // CURERNT_SILENTBUFFER = AUDIO_CONTEXT.createBufferSource()
@@ -711,7 +760,8 @@ SoundEffect.MIN_SAMPLE_RATE = 22050;
                 // AUDIO_CONTEXT.outStream._flush()
                 // AUDIO_CONTEXT.outStream.end()
                 debugger
-                // AUDIO_CONTEXT.outStream._flush()
+                // AUDIO_CONTEXT.outStream._flush() // End the speaker
+                // AUDIO_CONTEXT._playing = false // So we do not continue outputing sound (since onended did not actually work) ... maybe we should do bufferNode.on('kill', ...)
                 // AUDIO_CONTEXT._kill()
                 // // AUDIO_CONTEXT.outStream.end()
                 // // AUDIO_CONTEXT.outStream.close()
