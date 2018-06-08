@@ -36,7 +36,8 @@
     "pify": "^3.0.0",
     "source-map-support": "^0.5.6",
     "speaker": "^0.4.1",
-    "supports-color": "^5.4.0"
+    "supports-color": "^5.4.0",
+    "web-audio-api": "^0.2.2"
   },
   "devDependencies": {
     "@types/inquirer": "0.0.41",

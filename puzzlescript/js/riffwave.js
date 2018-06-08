@@ -103,7 +103,7 @@ function MakeRiff ( sampleRate, bitsPerSample,data) {
       u32ToArray(header.subChunk2Size),
       data
     );
-    
+
     dataURI = 'data:audio/wav;base64,' + FastBase64_Encode(wav);
 
     var result = {
@@ -117,5 +117,4 @@ function MakeRiff ( sampleRate, bitsPerSample,data) {
 }
 
 
-if (typeof exports != 'undefined')  // For node.js
-  exports.RIFFWAVE = RIFFWAVE;
+module.exports = {MakeRiff, FastBase64_Encode}

@@ -93,8 +93,8 @@ function RNG(seed) {
     this.seed = seed;
     if (seed == null) {
         seed = (Math.random() + Date.now()).toString();
-        //window.console.log("setting random seed "+seed); 
-        //print_call_stack();  
+        //window.console.log("setting random seed "+seed);
+        //print_call_stack();
 
     } else if (typeof seed === 'function') {
         // Use it as a uniform number generator
@@ -239,3 +239,6 @@ RNG.roller = function(expr, rng) {
         return total;
     };
 };
+
+
+module.exports = RNG

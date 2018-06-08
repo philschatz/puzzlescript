@@ -1,3 +1,8 @@
+const RNG = require('./rng')
+const {MakeRiff, FastBase64_Encode} = require('./riffwave')
+const Speaker = require('speaker')
+const {AudioContext} = require('web-audio-api')
+
 var SOUND_VOL = 0.25;
 var SAMPLE_RATE = 5512;
 var BIT_DEPTH = 8;
@@ -13,21 +18,23 @@ var SHAPES = [
   'square', 'sawtooth', 'sine', 'noise', 'triangle', 'breaker'
 ];
 
-var AUDIO_CONTEXT;
+const AUDIO_CONTEXT = new AudioContext()
+
+AUDIO_CONTEXT.outStream = new Speaker({
+    channels: AUDIO_CONTEXT.format.numberOfChannels,
+    bitDepth: AUDIO_CONTEXT.format.bitDepth,
+    sampleRate: AUDIO_CONTEXT.sampleRate
+})
 
 function checkAudioContextExists(){
-  try{
     if (AUDIO_CONTEXT==null){
       if (typeof AudioContext != 'undefined') {
-        AUDIO_CONTEXT = new AudioContext();
-      } else if (typeof webkitAudioContext != 'undefined') {
-        AUDIO_CONTEXT = new webkitAudioContext();
+        const context = new AudioContext()
+        AUDIO_CONTEXT = context
+      } else {
+        throw new Error('Audio not supported!')
       }
     }
-  }
-  catch (ex){
-    window.console.log(ex)
-  }
 }
 
 checkAudioContextExists();
@@ -608,35 +615,42 @@ SoundEffect.prototype.getBuffer = function() {
 
 
 SoundEffect.prototype.play = function() {
+    debugger
   var source = AUDIO_CONTEXT.createBufferSource();
-  var filter1 = AUDIO_CONTEXT.createBiquadFilter();
-  var filter2 = AUDIO_CONTEXT.createBiquadFilter();
-  var filter3 = AUDIO_CONTEXT.createBiquadFilter();
+//   var filter1 = AUDIO_CONTEXT.createBiquadFilter();
+//   var filter2 = AUDIO_CONTEXT.createBiquadFilter();
+//   var filter3 = AUDIO_CONTEXT.createBiquadFilter();
+    // const filter1 = biquad.allpass({frequency: 1600}) // https://developer.mozilla.org/en-US/docs/Web/API/BiquadFilterNode/type
+    // const filter2 = biquad.allpass({frequency: 1600})
+    // const filter3 = biquad.allpass({frequency: 1600})
 
   source.buffer = this._buffer;
-  source.connect(filter1);
+//   source.connect(filter1);
 
-  filter1.frequency.value = 1600;
-  filter2.frequency.value = 1600;
-  filter3.frequency.value = 1600;
+//   filter1.frequency.value = 1600;
+//   filter2.frequency.value = 1600;
+//   filter3.frequency.value = 1600;
 
-  filter1.connect(filter2);
-  filter2.connect(filter3);
-  filter3.connect(AUDIO_CONTEXT.destination);
+//   filter1.connect(filter2);
+//   filter2.connect(filter3);
+//   filter3.connect(AUDIO_CONTEXT.destination);
+
+source.connect(AUDIO_CONTEXT.destination)
+
   var t = AUDIO_CONTEXT.currentTime;
   if (typeof source.start != 'undefined') {
     source.start(t);
   } else {
     source.noteOn(t);
   }
-  source.onended = function() {
-    filter3.disconnect()
-  }
+//   source.onended = function() {
+//     filter3.disconnect()
+//   }
 };
 
 SoundEffect.MIN_SAMPLE_RATE = 22050;
 
-if (typeof AUDIO_CONTEXT == 'undefined') {
+// if (typeof AUDIO_CONTEXT == 'undefined') {
   SoundEffect = function SoundEffect(length, sample_rate) {
     this._sample_rate = sample_rate;
     this._buffer = new Array(length);
@@ -657,14 +671,27 @@ if (typeof AUDIO_CONTEXT == 'undefined') {
         this._buffer[i] = 255 & Math.floor(128 * Math.max(0, Math.min(this._buffer[i] + 1, 2)));
       }
       var wav = MakeRiff(this._sample_rate, BIT_DEPTH, this._buffer);
-      this._audioElement = new Audio();
-      this._audioElement.src = wav.dataURI;
-      this._audioElement.play();
+
+    const b64string = FastBase64_Encode(wav.wav)
+    const decoded = Buffer.from(b64string, 'base64')
+    AUDIO_CONTEXT.decodeAudioData(decoded, (audioBuffer) => {
+        debugger
+        var bufferNode = AUDIO_CONTEXT.createBufferSource()
+        bufferNode.connect(AUDIO_CONTEXT.destination)
+        bufferNode.buffer = audioBuffer
+        bufferNode.loop = false
+        bufferNode.start(0)
+    })
+
+
+    //   this._audioElement = new Audio();
+    //   this._audioElement.src = wav.dataURI;
+    //   this._audioElement.play();
     }
   };
 
   SoundEffect.MIN_SAMPLE_RATE = 1;
-}
+// }
 
 SoundEffect.generate = function(ps) {
 /*  window.console.log(ps.wave_type + "\t" + ps.seed);
@@ -949,12 +976,12 @@ window.console.log(psstring);*/
   return sound;
 };
 
-if (typeof exports != 'undefined') {
-  // For node.js
-  var RIFFWAVE = require('./riffwave').RIFFWAVE;
-  exports.Params = Params;
-  exports.generate = generate;
-}
+// if (typeof exports != 'undefined') {
+//   // For node.js
+//   var RIFFWAVE = require('./riffwave').RIFFWAVE;
+//   exports.Params = Params;
+//   exports.generate = generate;
+// }
 
 var sfxCache = {};
 var cachedSeeds = [];
@@ -985,7 +1012,11 @@ function cacheSeed(seed){
 
 function playSound(seed) {
   checkAudioContextExists();
-  if (unitTesting) return;
+//   if (unitTesting) return;
   var sound = cacheSeed(seed);
   sound.play();
+}
+
+module.exports = {
+    playSound
 }

@@ -1,5 +1,6 @@
 import { BaseForLines, IGameCode } from './game'
 import { IGameTile } from './tile'
+import {playSound} from '../sounds';
 
 // Abstract class
 export class GameSound extends BaseForLines {
@@ -8,6 +9,10 @@ export class GameSound extends BaseForLines {
     constructor(source: IGameCode, soundCode: number) {
         super(source)
         this._soundCode = soundCode
+    }
+
+    play() {
+        playSound(this._soundCode)
     }
 }
 

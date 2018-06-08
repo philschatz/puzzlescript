@@ -12,6 +12,7 @@ import { start } from 'repl';
 import { IRule } from './models/rule';
 import { RULE_DIRECTION } from './enums';
 import { saveCoverageFile } from './recordCoverage';
+import {playSound} from './sounds';
 
 async function sleep(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms))
@@ -37,6 +38,13 @@ async function run() {
         } else {
             // console.log(data.title)
             // return
+
+            for (const sfx of data.sounds) {
+                sfx.play()
+                await sleep(10)
+            }
+            if (!!true) continue
+
 
             if (validationMessages) {
                 validationMessages.forEach(({ gameNode, level, message }) => {

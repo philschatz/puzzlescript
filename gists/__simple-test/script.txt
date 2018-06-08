@@ -93,10 +93,10 @@ down  [ PlayerIsland | Island ] -> [ PlayerIsland | Island PlayerIsland ]
 
 ( rigid movement )
 LEFT [ > Player ][ PlayerIsland ] -> [ > Player ][ > PlayerIsland ]
-DEBUGGER LEFT [ > PlayerIsland Island  | no MoveBlock ] -> [ > PlayerIsland > Island | ]
-DEBUGGER RIGHT [ < Island  | Island no BlockIsland ] -> [ < Island | < Island ]
-DEBUGGER RIGHT [ stationary Island PlayerIsland ][ moving Player ] -> [ Island PlayerIsland ][ stationary Player ] (SFX2)
-DEBUGGER RIGHT [ stationary Island PlayerIsland ][ LEFT Movable ] DEBUGGER_REMOVE  -> [ Island stationary PlayerIsland ][ stationary Movable ]
+LEFT [ > PlayerIsland Island  | no MoveBlock ] -> [ > PlayerIsland > Island | ]
+RIGHT [ < Island  | Island no BlockIsland ] -> [ < Island | < Island ]
+RIGHT [ stationary Island PlayerIsland ][ moving Player ] -> [ Island PlayerIsland ][ stationary Player ] (SFX2)
+RIGHT [ stationary Island PlayerIsland ][ LEFT Movable ]  -> [ Island stationary PlayerIsland ][ stationary Movable ]
 
 ===============
 WINCONDITIONS
