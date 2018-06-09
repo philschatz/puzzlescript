@@ -2,14 +2,14 @@ import {
     BaseForLines,
     IGameCode,
     IGameNode,
-    GameData,
-    GameMessage
+    GameData
 } from '../models/game'
 import { GameMetadata } from '../models/metadata'
 import { HexColor, TransparentColor } from '../models/colors'
 import { lookupColorPalette } from '../colors'
 import { LookupHelper } from './lookup'
 import { ValidationLevel } from './parser'
+import { MessageLevel } from '../models/level';
 
 export const COMMON_GRAMMAR = `
     GameData =
@@ -81,8 +81,6 @@ export const COMMON_GRAMMAR = `
 
     ruleVariableName = ruleVariableChar+
     lookupRuleVariableName = ~t_AGAIN ruleVariableName // added t_AGAIN to parse '... -> [ tilename AGAIN ]' (it should be a command)
-
-    GameMessage = t_MESSAGE words*
 `
 
 export const STRINGTOKEN_GRAMMAR = `
@@ -298,13 +296,6 @@ export function getGameSemantics(lookup: LookupHelper, addValidationMessage) {
 
         Section: function (_threeDashes1, _lineTerminator1, _sectionName, _lineTerminator2, _threeDashes2, _8, _9, _10, _11) {
             return _10.parse()
-        },
-        MessageCommand: function (_message, message) {
-            return new GameMessage(this.source, message.parse())
-        },
-        GameMessage: function (_1, optionalMessage) {
-            // TODO: Maybe discard empty messages?
-            return new GameMessage(this.source, optionalMessage.parse()[0] /* Since the message is optional */)
         },
         widthAndHeight: function (_1, _2, _3) {
             return {

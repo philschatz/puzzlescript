@@ -50833,9 +50833,7 @@ GameData {
               ],
             },
           ],
-          "_commands": Array [
-            "AGAIN",
-          ],
+          "_commands": Array [],
           "_conditionBrackets": Array [
             SimpleBracket {
               "__coverageCount": 0,
@@ -50997,9 +50995,7 @@ GameData {
               ],
             },
           ],
-          "_commands": Array [
-            "AGAIN",
-          ],
+          "_commands": Array [],
           "_conditionBrackets": Array [
             SimpleBracket {
               "__coverageCount": 0,
@@ -51161,9 +51157,7 @@ GameData {
               ],
             },
           ],
-          "_commands": Array [
-            "AGAIN",
-          ],
+          "_commands": Array [],
           "_conditionBrackets": Array [
             SimpleBracket {
               "__coverageCount": 0,
@@ -51325,9 +51319,7 @@ GameData {
               ],
             },
           ],
-          "_commands": Array [
-            "AGAIN",
-          ],
+          "_commands": Array [],
           "_conditionBrackets": Array [
             SimpleBracket {
               "__coverageCount": 0,
@@ -51495,9 +51487,7 @@ GameData {
               ],
             },
           ],
-          "_commands": Array [
-            "AGAIN",
-          ],
+          "_commands": Array [],
           "_conditionBrackets": Array [
             SimpleBracket {
               "__coverageCount": 0,
@@ -51659,9 +51649,7 @@ GameData {
               ],
             },
           ],
-          "_commands": Array [
-            "AGAIN",
-          ],
+          "_commands": Array [],
           "_conditionBrackets": Array [
             SimpleBracket {
               "__coverageCount": 0,
@@ -51823,9 +51811,7 @@ GameData {
               ],
             },
           ],
-          "_commands": Array [
-            "AGAIN",
-          ],
+          "_commands": Array [],
           "_conditionBrackets": Array [
             SimpleBracket {
               "__coverageCount": 0,
@@ -51987,9 +51973,7 @@ GameData {
               ],
             },
           ],
-          "_commands": Array [
-            "AGAIN",
-          ],
+          "_commands": Array [],
           "_conditionBrackets": Array [
             SimpleBracket {
               "__coverageCount": 0,
@@ -52927,9 +52911,7 @@ GameData {
               ],
             },
           ],
-          "_commands": Array [
-            "AGAIN",
-          ],
+          "_commands": Array [],
           "_conditionBrackets": Array [
             SimpleBracketConditionOnly {
               "__coverageCount": 0,
@@ -53207,9 +53189,7 @@ GameData {
               ],
             },
           ],
-          "_commands": Array [
-            "AGAIN",
-          ],
+          "_commands": Array [],
           "_conditionBrackets": Array [
             SimpleBracketConditionOnly {
               "__coverageCount": 0,
@@ -53487,9 +53467,7 @@ GameData {
               ],
             },
           ],
-          "_commands": Array [
-            "AGAIN",
-          ],
+          "_commands": Array [],
           "_conditionBrackets": Array [
             SimpleBracketConditionOnly {
               "__coverageCount": 0,
@@ -53767,9 +53745,7 @@ GameData {
               ],
             },
           ],
-          "_commands": Array [
-            "AGAIN",
-          ],
+          "_commands": Array [],
           "_conditionBrackets": Array [
             SimpleBracketConditionOnly {
               "__coverageCount": 0,

@@ -70,7 +70,7 @@ class Parser {
                 getGameSemantics(lookup, addValidationMessage),
                 getTileSemantics(lookup),
                 getSoundSemantics(lookup),
-                getRuleSemantics(),
+                getRuleSemantics(lookup),
                 getLevelSemantics(lookup),
                 getCollisionLayerSemantics(lookup, addValidationMessage),
                 getWinConditionSemantics()

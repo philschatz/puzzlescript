@@ -9,6 +9,7 @@ import { RULE_MODIFIER, setDifference, setIntersection, nextRandom, RULE_DIRECTI
 import { Cell } from '../engine'
 import { RULE_DIRECTION } from '../enums';
 import UI from '../ui'
+import { AbstractCommand } from './command';
 
 const MAX_ITERATIONS_IN_LOOP = 350 // Set by the Random World Generation game
 
@@ -68,11 +69,13 @@ export class SimpleRuleGroup extends BaseForLines implements IRule {
         }
 
         // Keep looping as long as one of the rules evaluated something
-        const allMutations: CellMutation[][] = []
+        const allMutations: IMutation[][] = []
         for (let iteration = 0; iteration < MAX_ITERATIONS_IN_LOOP; iteration++) {
             if (process.env['NODE_ENV'] !== 'production' && iteration === MAX_ITERATIONS_IN_LOOP - 10) {
                 // Provide a breakpoint just before we run out of MAX_ITERATIONS_IN_LOOP
                 // so that we can step through the evaluations.
+                console.error(this.toString())
+                console.error('BUG: Iterated too many times in startloop or + (rule group)')
                 UI.renderScreen(); debugger
             }
             if (iteration === MAX_ITERATIONS_IN_LOOP - 1) {
@@ -99,7 +102,10 @@ export class SimpleRuleGroup extends BaseForLines implements IRule {
                     // Keep evaluating the rule until nothing changes
                     const ret = rule.evaluate()
                     if (ret.length > 0) {
-                        evaluatedSomething = true
+                        // filter because a Rule may have caused only command mutations
+                        if (ret.filter(m => m.hasCell()).length > 0) {
+                            evaluatedSomething = true
+                        }
                         allMutations.push(ret)
                     }
                 }
@@ -174,7 +180,7 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
     _evaluationDirection: RULE_DIRECTION_ABSOLUTE
     _conditionBrackets: SimpleBracket[]
     _actionBrackets: SimpleBracket[]
-    _commands: string[]
+    _commands: AbstractCommand[]
     _isLate: boolean
     _isAgain: boolean
     _isRigid: boolean
@@ -182,7 +188,7 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
     _isSubscribedToCellChanges: boolean
     _debugFlag: DEBUG_FLAG
     _doesEvaluationOrderMatter: boolean
-    constructor(source: IGameCode, evaluationDirection: RULE_DIRECTION_ABSOLUTE, conditionBrackets: SimpleBracket[], actionBrackets: SimpleBracket[], commands: string[], isLate: boolean, isAgain: boolean, isRigid: boolean, isRandom: boolean, debugFlag: DEBUG_FLAG, doesEvaluationOrderMatter: boolean) {
+    constructor(source: IGameCode, evaluationDirection: RULE_DIRECTION_ABSOLUTE, conditionBrackets: SimpleBracket[], actionBrackets: SimpleBracket[], commands: AbstractCommand[], isLate: boolean, isAgain: boolean, isRigid: boolean, isRandom: boolean, debugFlag: DEBUG_FLAG, doesEvaluationOrderMatter: boolean) {
         super(source)
         this._evaluationDirection = evaluationDirection
         this._conditionBrackets = conditionBrackets
@@ -233,7 +239,7 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
         return true
     }
     evaluate() {
-        const allMutations: CellMutation[][] = []
+        const allMutations: IMutation[][] = []
         // Keep evaluating the rule until nothing changes
         let innerEvaluatedSomething = false
         for (let innerIteration = 0; innerIteration < MAX_ITERATIONS_IN_LOOP; innerIteration++) {
@@ -247,8 +253,13 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
             }
             const ret = this._evaluate()
             if (ret.length > 0) {
-                innerEvaluatedSomething = true
                 allMutations.push(ret)
+                // filter because a Rule may have caused only command mutations
+                if (ret.filter(m => m.hasCell()).length > 0) {
+                    innerEvaluatedSomething = true
+                } else {
+                    break
+                }
             } else {
                 break
             }
@@ -256,66 +267,69 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
         return _.flatten(allMutations)
     }
     _evaluate() {
-        if (this._actionBrackets.length === 0 || this._isRigid) {
+        if (this._isRigid) {
             // TODO: Just commands are not supported yet
             return []
         }
 
+        // Verify that each condition bracket has matches
+        for (const condition of this._conditionBrackets) {
+            if (condition.getFirstCells().size == 0) {
+                if (process.env['NODE_ENV'] !== 'production' && this._debugFlag === DEBUG_FLAG.BREAKPOINT_REMOVE) {
+                    // A "DEBUGGER_REMOVE" flag was set in the game so we are pausing here
+                    UI.renderScreen(); debugger
+                }
+                return [] // Rule did not match, so nothing ran
+            }
+        }
+
         // If a Rule cannot impact itself then the evaluation order does not matter.
         // We can vastly simplify the evaluation in that case
-        if (!this._doesEvaluationOrderMatter/*this._conditionBrackets.length === 1 && this._conditionBrackets[0]._neighbors.length === 1*/) {
+        let ret: IMutation[] = []
+        // Some rules only contain commands.
+        // If there are actionBrackets then evaluate them.
+        if (this._actionBrackets.length > 0) {
+            if (!this._doesEvaluationOrderMatter/*this._conditionBrackets.length === 1 && this._conditionBrackets[0]._neighbors.length === 1*/) {
 
-            // Verify that each condition bracket has matches
-            for (const condition of this._conditionBrackets) {
-                if (condition.getFirstCells().size == 0) {
-                    if (process.env['NODE_ENV'] !== 'production' && this._debugFlag === DEBUG_FLAG.BREAKPOINT_REMOVE) {
-                        // A "DEBUGGER_REMOVE" flag was set in the game so we are pausing here
-                        UI.renderScreen(); debugger
+                // Get ready to Evaluate
+                if (process.env['NODE_ENV'] !== 'production' && this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
+                    // A "DEBUGGER" flag was set in the game so we are pausing here
+                    UI.renderScreen(); debugger
+                }
+
+                const allMutations = []
+                for (let index = 0; index < this._conditionBrackets.length; index++) {
+                    const condition = this._conditionBrackets[index]
+                    const action = this._actionBrackets[index]
+                    const magicOrTiles = new Map()
+                    for (const cell of condition.getFirstCells()) {
+                        allMutations.push(condition.evaluate(action, cell, magicOrTiles))
                     }
-                    return [] // Rule did not match, so nothing ran
+
+                    if (process.env['NODE_ENV'] !== 'production') {
+                        this.__coverageCount++
+                    }
+
                 }
+                ret = _.flatten(allMutations)
+            } else {
+                const startTime = Date.now()
+                ret = this.evaluateInOrder()
+                // console.log('SLLLLLOOOOOOWWWWW EVALUATION.........');
+                // console.log(this.toString())
+                // console.log('Evaluation took', Date.now() - startTime)
             }
-
-            // Get ready to Evaluate
-            if (process.env['NODE_ENV'] !== 'production' && this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
-                // A "DEBUGGER" flag was set in the game so we are pausing here
-                UI.renderScreen(); debugger
-            }
-
-            const allMutations = []
-            for (let index = 0; index < this._conditionBrackets.length; index++) {
-                const condition = this._conditionBrackets[index]
-                const action = this._actionBrackets[index]
-                const magicOrTiles = new Map()
-                for (const cell of condition.getFirstCells()) {
-                    allMutations.push(condition.evaluate(action, cell, magicOrTiles))
-                }
-
-                if (process.env['NODE_ENV'] !== 'production') {
-                    this.__coverageCount++
-                }
-
-            }
-            return _.flatten(allMutations)
-        } else {
-            // If none of the conditions match then we do not need to evaluate
-            for (const bracket of this._conditionBrackets) {
-                if (bracket.getFirstCells().size === 0) {
-                    return []
-                }
-            }
-
-            const startTime = Date.now()
-            const ret = this.evaluateInOrder()
-            // console.log('SLLLLLOOOOOOWWWWW EVALUATION.........');
-            // console.log(this.toString())
-            // console.log('Evaluation took', Date.now() - startTime)
-            return ret
         }
+
+        // Append any Commands that need to be evaluated
+        for (const command of this._commands) {
+            ret.push(new CommandMutation(command))
+        }
+        return ret
     }
 
     evaluateInOrder() {
-        let allMutators: CellMutation[][] = []
+        let allMutators: IMutation[][] = []
 
         // Remember which cells we apready processed
         // Entries are cell.toString() so we do not have to reprocess `[ > Player ] -> [ Player Color ]`
@@ -439,7 +453,7 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
                         let someSpriteChanged = false
                         for (const mutation of mutations) {
                             somethingChanged = true // could have just been a direction
-                            if (mutation.didSpritesChange) {
+                            if (mutation.getDidSpritesChange()) {
                                 someSpriteChanged = true
                             }
                         }
@@ -519,7 +533,7 @@ class SimpleBracket extends BaseForLines implements ICacheable {
         if (this._hasEllipsis) {
             return []
         }
-        const ret: CellMutation[] = []
+        const ret: IMutation[] = []
         let curCell = cell
         let index = 0
         for (const neighbor of this._neighbors) {
@@ -1262,12 +1276,13 @@ function cacheSetAndGet<A extends ICacheable>(cache: Map<string, A>, obj: A) {
 // See https://www.puzzlescript.net/Documentation/executionorder.html
 export class GameRule extends BaseForLines implements ICacheable {
     _modifiers: RULE_MODIFIER[]
-    _commands: string[]
+    _commands: AbstractCommand[]
     _hasEllipsis: boolean
     _brackets: RuleBracket[]
     _actionBrackets: RuleBracket[]
     _debugFlag: DEBUG_FLAG // Used for setting a breakpoint when evaluating the rule
     // _conditionCommandPair: RuleConditionCommandPair[]
+    _isAgain: boolean // special since it's not a command and it's not a modifier
 
     toKey() {
         return `${this._modifiers.join(' ')} ${this._brackets.map(x => x.toKey())} -> ${this._actionBrackets.map(x => x.toKey())} ${this._commands.join(' ')} {debugger?${this._debugFlag}}`
@@ -1436,7 +1451,7 @@ export class GameRule extends BaseForLines implements ICacheable {
         const actionBrackets = this._actionBrackets.map(bracket => bracket.clone(direction, nameToExpand, newName))
         // retain LATE and RIGID but discard the rest of the modifiers
         const modifiers = _.intersection(this._modifiers, [RULE_MODIFIER.LATE, RULE_MODIFIER.RIGID, RULE_MODIFIER.RANDOM]).concat([RULE_MODIFIER[direction]])
-        return new GameRule(this.__source, modifiers, conditionBrackets, actionBrackets, this._commands, this._debugFlag)
+        return new GameRule(this.__source, modifiers, conditionBrackets, actionBrackets, this._commands, this._isAgain, this._debugFlag)
     }
 
     hasModifier(modifier: RULE_MODIFIER) {
@@ -1481,7 +1496,7 @@ export class GameRule extends BaseForLines implements ICacheable {
         }
     }
 
-    constructor(source: IGameCode, modifiers: RULE_MODIFIER[], conditions: RuleBracket[], actions: RuleBracket[], commands: string[], debugFlag: DEBUG_FLAG) {
+    constructor(source: IGameCode, modifiers: RULE_MODIFIER[], conditions: RuleBracket[], actions: RuleBracket[], commands: AbstractCommand[], isAgain: boolean, debugFlag: DEBUG_FLAG) {
         super(source)
         this._modifiers = modifiers
         this._commands = commands
@@ -1489,6 +1504,7 @@ export class GameRule extends BaseForLines implements ICacheable {
         this._brackets = conditions
         this._actionBrackets = actions
         this._debugFlag = debugFlag
+        this._isAgain = isAgain
 
         // Set _hasEllipsis value
         for (let i = 0; i < conditions.length; i++) {
@@ -1515,7 +1531,7 @@ export class GameRule extends BaseForLines implements ICacheable {
         return this._modifiers.indexOf(RULE_MODIFIER.LATE) >= 0
     }
     isAgain() {
-        return this._commands.indexOf(RULE_COMMAND.AGAIN) >= 0
+        return this._isAgain
     }
     isRigid() {
         return this._modifiers.indexOf(RULE_MODIFIER.RIGID) >= 0
@@ -1757,7 +1773,7 @@ export class HackNode extends RuleBracketNeighbor {
 }
 
 export interface IRule extends IGameNode {
-    evaluate: () => CellMutation[]
+    evaluate: () => IMutation[]
     getChildRules: () => IRule[]
     isLate: () => boolean
     isRigid: () => boolean
@@ -1880,11 +1896,47 @@ export function relativeDirectionToAbsolute(currentDirection: RULE_DIRECTION_ABS
     }
 }
 
-export class CellMutation {
+
+export interface IMutation {
+    hasCell: () => boolean
+    getCell: () => Cell
+    hasCommand: () => boolean
+    getCommand: () => AbstractCommand
+    getDidSpritesChange: () => boolean
+}
+
+export class CellMutation implements IMutation {
     cell: Cell
     didSpritesChange: boolean
     constructor(cell: Cell, didSpritesChange: boolean) {
         this.cell = cell
         this.didSpritesChange = didSpritesChange
+    }
+    hasCell() { return true }
+    getCell() { return this.cell }
+    getDidSpritesChange() { return this.didSpritesChange }
+    hasCommand() { return false }
+    getCommand() {
+        if (!!true) {
+            throw new Error(`BUG: check hasCommand first`)
+        }
+        return null
+    }
+}
+
+export class CommandMutation implements IMutation {
+    command: AbstractCommand
+    constructor(command: AbstractCommand) {
+        this.command = command
+    }
+    hasCommand() { return true }
+    getCommand() { return this.command }
+    getDidSpritesChange() { return false }
+    hasCell() { return false }
+    getCell() {
+        if (!!true) {
+            throw new Error(`BUG: check hasCell first`)
+        }
+        return null
     }
 }

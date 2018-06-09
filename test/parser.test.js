@@ -479,7 +479,6 @@ RIGHT [ ] -> [ ]
 ENDLOOP
 RIGHT [ ] -> [ ]
     `, ['.', 'Player'])
-            debugger
             expect(data.rules.length).toBe(3)
             // startloop
             expect(data.rules[1]._rules.length).toBe(3)

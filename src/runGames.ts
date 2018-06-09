@@ -40,15 +40,6 @@ async function run() {
             // console.log(data.title)
             // return
 
-            for (const sfx of data.sounds) {
-                console.log(`StART playing sound..... ${sfx._soundCode}`)
-                const endTag = await sfx.play()
-                console.log(`DONE playing sound "${endTag}"`)
-                await sleep(10)
-            }
-            if (!!true) continue
-
-
             if (validationMessages) {
                 validationMessages.forEach(({ gameNode, level, message }) => {
                     const { lineNum, colNum } = gameNode.__getSourceLineAndColumn()
@@ -124,7 +115,7 @@ async function run() {
                             throw new Error(`BUG: Invalid keypress character "${keypressesStr[i]}"`)
                     }
                     startTime = Date.now()
-                    const { changedCells } = engine.tick()
+                    const { changedCells, soundToPlay } = engine.tick()
 
                     // UI.renderScreen(data, engine.currentLevel)
 
@@ -138,6 +129,10 @@ async function run() {
 
                     const msg = `Tick ${i} of "${data.title}" (took ${Date.now() - startTime}ms) Changed: ${[...changedCells].map(cell => cell.rowIndex + ':' + cell.colIndex).join(', ') + '   '}`
                     UI.writeDebug(msg.substring(0, 160))
+
+                    if (soundToPlay) {
+                        await soundToPlay.play()
+                    }
 
                     await sleep(Math.max(100 - (Date.now() - startTime), 0))
 

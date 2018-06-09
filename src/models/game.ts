@@ -170,18 +170,3 @@ export class GameData {
         }
     }
 }
-
-export class GameMessage extends BaseForLines {
-    _message: string
-
-    constructor(source: IGameCode, message: string) {
-        super(source)
-        this._message = message
-    }
-    isInvalid(): string {
-        return null
-    }
-    isMap() {
-        return false
-    }
-}

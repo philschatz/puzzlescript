@@ -8,6 +8,9 @@ import {
     RuleBracketNeighbor,
     TileWithModifier
 } from '../models/rule'
+import { AbstractCommand, COMMAND_TYPE, MessageCommand, AgainCommand, CancelCommand, CheckpointCommand, RestartCommand, WinCommand, SoundCommand } from '../models/command';
+import { RULE_MODIFIER } from '../util';
+import { LookupHelper } from './lookup';
 
 export const RULE_GRAMMAR = `
     RuleItem
@@ -88,7 +91,7 @@ export const RULE_GRAMMAR = `
     HackTileNameIsSFX2 = lookupRuleVariableName t_SFX t_DEBUGGER?
 `
 
-export function getRuleSemantics() {
+export function getRuleSemantics(lookup: LookupHelper) {
     const cacheTilesWithModifiers: Map<string, TileWithModifier> = new Map()
     const cacheNeighbors: Map<string, RuleBracketNeighbor> = new Map()
     const cacheBrackets: Map<string, RuleBracket> = new Map()
@@ -103,7 +106,16 @@ export function getRuleSemantics() {
             return new GameRuleGroup(this.source, [firstRule.parse()].concat(followingRules.parse()), debugFlag.parse()[0])
         },
         Rule: function (debugFlag, modifiers, conditions, _arrow, _unusuedModifer, actions, commands, optionalMessageCommand, _whitespace) {
-            return new GameRule(this.source, _.flatten(modifiers.parse()), conditions.parse(), actions.parse(), commands.parse().concat(optionalMessageCommand.parse()), debugFlag.parse()[0])
+            const modifiers2: RULE_MODIFIER[] = _.flatten(modifiers.parse())
+            const commands2: AbstractCommand[] = commands.parse()
+            const optionalMessageCommand2: MessageCommand = optionalMessageCommand.parse()
+
+            const isAgain = !!commands2.filter(c => c.getType() === COMMAND_TYPE.AGAIN)[0]
+            const commands3 = commands2.filter(c => c.getType() !== COMMAND_TYPE.AGAIN)
+            if (optionalMessageCommand2) {
+                commands2.push(optionalMessageCommand2)
+            }
+            return new GameRule(this.source, modifiers2, conditions.parse(), actions.parse(), commands3, isAgain, debugFlag.parse()[0])
         },
         RuleBracket: function (_openBracket, neighbors, hackAgain, _closeBracket, debugFlag) {
             const b = new RuleBracket(this.source, neighbors.parse(), hackAgain.parse(), debugFlag.parse()[0])
@@ -144,6 +156,38 @@ export function getRuleSemantics() {
         },
         tileModifier: function (_whitespace1, tileModifier, _whitespace2) {
             return tileModifier.parse()
+        },
+        MessageCommand: function (_message, message) {
+            return new MessageCommand(this.source, message.parse())
+        },
+        RuleCommand: function (type) {
+            const type2 = type.parse()
+            switch (type2) {
+                case COMMAND_TYPE.AGAIN:
+                    return new AgainCommand(this.source)
+                case COMMAND_TYPE.CANCEL:
+                    return new CancelCommand(this.source)
+                case COMMAND_TYPE.CHECKPOINT:
+                    return new CheckpointCommand(this.source)
+                case COMMAND_TYPE.RESTART:
+                    return new RestartCommand(this.source)
+                case COMMAND_TYPE.WIN:
+                    return new WinCommand(this.source)
+                case 'SFX0':
+                case 'SFX1':
+                case 'SFX2':
+                case 'SFX3':
+                case 'SFX4':
+                case 'SFX5':
+                case 'SFX6':
+                case 'SFX7':
+                case 'SFX8':
+                case 'SFX9':
+                case 'SFX10':
+                    return new SoundCommand(this.source, lookup.lookupSoundEffect(type2))
+                default:
+                    throw new Error(`BUG: Fallthrough. Did not match "${type2}"`)
+            }
         },
         HackTileNameIsSFX1: function (sfx, debugFlag) {
             return new HackNode(this.source, sfx.parse(), debugFlag.parse()[0])

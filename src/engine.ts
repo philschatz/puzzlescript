@@ -3,9 +3,11 @@ import { EventEmitter2 } from 'eventemitter2'
 import { GameData } from './models/game'
 import { LevelMap } from './models/level';
 import { GameSprite, GameLegendTileSimple, IGameTile } from './models/tile'
-import { GameRule, CellMutation, IRule } from './models/rule'
+import { GameRule, CellMutation, IRule, IMutation } from './models/rule'
 import { RULE_MODIFIER, nextRandom, setAddAll, RULE_DIRECTION_ABSOLUTE } from './util'
 import { RULE_DIRECTION } from './enums';
+import { AbstractCommand, COMMAND_TYPE } from './models/command';
+import { GameSound } from './models/sound';
 
 const MAX_REPEATS = 10
 
@@ -237,7 +239,7 @@ export default class Engine extends EventEmitter2 {
     }
 
     _tickUpdateCells(rules: Iterable<IRule>) {
-        const changedCellMutations: Set<CellMutation> = new Set()
+        const changedMutations: Set<IMutation> = new Set()
         const evaluatedRules: IRule[] = []
         let ruleIndex = 0
         for (const rule of rules) {
@@ -246,20 +248,25 @@ export default class Engine extends EventEmitter2 {
                 evaluatedRules.push(rule)
             }
             for (const mutation of cellMutations) {
-                changedCellMutations.add(mutation)
+                changedMutations.add(mutation)
             }
             ruleIndex++ // Just for debugging
         }
 
         // We may have mutated the same cell 4 times (e.g. [Player]->[>Player]) so consolidate
         const changedCells = new Set<Cell>()
-        for (const mutation of changedCellMutations) {
-            changedCells.add(mutation.cell)
+        const commands = new Set<AbstractCommand>()
+        for (const mutation of changedMutations) {
+            if (mutation.hasCell()) {
+                changedCells.add(mutation.getCell())
+            } else {
+                commands.add(mutation.getCommand())
+            }
             // if (!changedCells.has(mutation.cell)) {
             //     changedCells.set(mutation.cell, mutation.didSpritesChange)
             // }
         }
-        return {evaluatedRules: evaluatedRules, changedCells: changedCells}
+        return {evaluatedRules: evaluatedRules, changedCells: changedCells, commands: commands}
     }
 
     tickMoveSprites(changedCells: Set<Cell>) {
@@ -345,21 +352,22 @@ export default class Engine extends EventEmitter2 {
             this._pendingPlayerWantsToMove = null
         }
 
-        const {changedCells: changedCellMutations2, evaluatedRules} = this.tickUpdateCells()
+        const {changedCells: changedCellMutations2, evaluatedRules, commands} = this.tickUpdateCells()
         changedCellMutations = setAddAll(changedCellMutations, changedCellMutations2)
 
         // Save the "AGAIN" rules that ran so they can be re-evaluated at the next tick
         this._pendingAgainRules = evaluatedRules.filter(r => r.isAgain())
         const movedCells = this.tickMoveSprites(new Set<Cell>(changedCellMutations.keys()))
-        const {changedCells: changedCellsLate, evaluatedRules: evaluatedRulesLate} = this.tickUpdateCellsLate()
+        const {changedCells: changedCellsLate, evaluatedRules: evaluatedRulesLate, commands: commandsLate} = this.tickUpdateCellsLate()
         return {
             changedCells: setAddAll(setAddAll(changedCellMutations, changedCellsLate), movedCells),
-            evaluatedRules: evaluatedRules.concat(evaluatedRulesLate)
+            evaluatedRules: evaluatedRules.concat(evaluatedRulesLate),
+            commands: commands
         }
     }
 
     tickAgain() {
-        const {changedCells, evaluatedRules} = this._tickUpdateCells(this._pendingAgainRules)
+        const {changedCells, evaluatedRules, commands} = this._tickUpdateCells(this._pendingAgainRules)
         // Save the "AGAIN" rules that ran so they can be re-evaluated at the next tick
         const movedCells = this.tickMoveSprites(changedCells)
         if (movedCells.size === 0) {
@@ -371,21 +379,38 @@ export default class Engine extends EventEmitter2 {
         // const {changedCells: changedCellsLate, evaluatedRules: evaluatedRulesLate} = this.tickUpdateCellsLate()
         return {
             changedCells: setAddAll(movedCells, changedCells.keys()),
-            evaluatedRules
+            evaluatedRules,
+            commands
         }
     }
 
     tick() {
-        let ret : { changedCells: Set<Cell>, evaluatedRules: IRule[] }
+        let ret : { changedCells: Set<Cell>, evaluatedRules: IRule[] , commands: Set<AbstractCommand>}
         if (this._pendingAgainRules.length > 0) {
             // run the AGAIN rules
             ret = this.tickAgain()
         } else {
             ret = this.tickNormal()
         }
+        // TODO: Handle the commands like RESTART, CANCEL, WIN at this point
+        let soundToPlay: GameSound = null
+        let hasWinCommand = false
+        for (const command of ret.commands) {
+            switch (command.getType()) {
+                case COMMAND_TYPE.SFX:
+                    soundToPlay = command.getSound()
+                    break
+                case COMMAND_TYPE.WIN:
+                    hasWinCommand = true
+                    break
+                default:
+                    // console.error(`BUG: Unsupported command "${command.getType()}"`)
+            }
+        }
         return {
             changedCells: new Set(ret.changedCells.keys()),
-            isWinning: this.isWinning()
+            soundToPlay,
+            isWinning: hasWinCommand || this.isWinning()
         }
     }
 

@@ -102,7 +102,7 @@ export enum RULE_MODIFIER {
     ORTHOGONAL = 'ORTHOGONAL',
     MOVING = 'MOVING',
     LATE = 'LATE',
-    RIGID = 'RIGID'
+    RIGID = 'RIGID',
 }
 
 export enum DEBUG_FLAG {

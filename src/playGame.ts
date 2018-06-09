@@ -290,7 +290,7 @@ async function run() {
                     throw new Error(`BUG: Invalid keypress character "${ticksToRunFirst[keyNum]}"`)
             }
             startTime = Date.now()
-            const { changedCells } = engine.tick()
+            const { changedCells, soundToPlay } = engine.tick()
 
             // UI.renderScreen(data, engine.currentLevel)
 
@@ -305,6 +305,10 @@ async function run() {
             const msg = `Key ${keyNum} of "${data.title}" (took ${Date.now() - startTime}ms) Changed: ${[...changedCells].map(cell => cell.rowIndex + ':' + cell.colIndex).join(', ') + '   '}`
             UI.writeDebug(msg.substring(0, 160))
 
+            if (soundToPlay) {
+                await soundToPlay.play()
+            }
+
             // await sleep(Math.max(100 - (Date.now() - startTime), 0))
         }
 
@@ -313,7 +317,7 @@ async function run() {
 
             const startTime = Date.now()
             const hasAgain = engine.hasAgain()
-            const {changedCells, isWinning} = engine.tick()
+            const {changedCells, isWinning, soundToPlay} = engine.tick()
 
             if (isWinning) {
                 // Save the solution
@@ -345,6 +349,10 @@ async function run() {
 
             const msg = `Level: ${chosenLevel} Tick: ${tickNum} took ${Date.now() - startTime}ms. Moves: ${keypresses.join('')} Changed: ${[...changedCells].map(cell => cell.rowIndex + ':' + cell.colIndex).join(', ') + '   '}`
             UI.writeDebug(msg.substring(0, 160))
+
+            if (soundToPlay) {
+                await soundToPlay.play()
+            }
 
             await sleep(Math.max(200 - (Date.now() - startTime), 0))
             if (hasAgain) {

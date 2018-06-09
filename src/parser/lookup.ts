@@ -62,4 +62,7 @@ export class LookupHelper {
         }
         return value
     }
+    lookupSoundEffect(key: string) {
+        return this._allSoundEffects.get(key.toLowerCase())
+    }
 }

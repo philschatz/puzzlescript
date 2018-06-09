@@ -658,6 +658,7 @@ generateFromSeed = function(seed) {
     this._sample_rate = sample_rate;
     this._buffer = new Array(length);
     this._audioElement = null;
+    this._decodedBuffer = null
   };
 
   SoundEffect.MIN_SAMPLE_RATE = 22050;
@@ -667,17 +668,8 @@ generateFromSeed = function(seed) {
     return this._buffer;
   };
 
-  AUDIO_CONTEXT.outStream = new Speaker({
-    channels: AUDIO_CONTEXT.format.numberOfChannels,
-    bitDepth: AUDIO_CONTEXT.format.bitDepth,
-    sampleRate: AUDIO_CONTEXT.sampleRate
-})
-
-  SoundEffect.prototype.play = async function() {
-    if (this._audioElement) {
-      this._audioElement.cloneNode(false).play();
-    } else {
-      for (var i = 0; i < this._buffer.length; i++) {
+  SoundEffect.prototype.cacheDecodedBuffer = function() {
+    for (var i = 0; i < this._buffer.length; i++) {
         // bit_depth is always 8, rescale [-1.0, 1.0) to [0, 256)
         this._buffer[i] = 255 & Math.floor(128 * Math.max(0, Math.min(this._buffer[i] + 1, 2)));
       }
@@ -685,8 +677,16 @@ generateFromSeed = function(seed) {
 
 
     const b64string = FastBase64_Encode(wav.wav)
-    const decoded = Buffer.from(b64string, 'base64')
-debugger
+    this._decodedBuffer = Buffer.from(b64string, 'base64')
+  }
+
+  AUDIO_CONTEXT.outStream = new Speaker({
+    channels: AUDIO_CONTEXT.format.numberOfChannels,
+    bitDepth: AUDIO_CONTEXT.format.bitDepth,
+    sampleRate: AUDIO_CONTEXT.sampleRate
+})
+
+  SoundEffect.prototype.play = async function() {
 
 
     // from https://mdn.github.io/webaudio-examples/audio-buffer/
@@ -727,7 +727,7 @@ debugger
     }
 
     return new Promise((resolve, reject) => {
-        AUDIO_CONTEXT.decodeAudioData(decoded, (audioBuffer) => {
+        AUDIO_CONTEXT.decodeAudioData(this._decodedBuffer, (audioBuffer) => {
 
             var bufferNode = AUDIO_CONTEXT.createBufferSource()
             bufferNode.connect(AUDIO_CONTEXT.destination)
@@ -758,7 +758,7 @@ debugger
 
                 // AUDIO_CONTEXT.outStream._flush()
                 // AUDIO_CONTEXT.outStream.end()
-                debugger
+
                 // AUDIO_CONTEXT.outStream._flush() // End the speaker
                 // AUDIO_CONTEXT._playing = false // So we do not continue outputing sound (since onended did not actually work) ... maybe we should do bufferNode.on('kill', ...)
                 // AUDIO_CONTEXT._kill()
@@ -766,18 +766,12 @@ debugger
                 // // AUDIO_CONTEXT.outStream.close()
                 // AUDIO_CONTEXT = new AudioContext() // after ._kill() is called, we need to create a new context
                 // AUDIO_CONTEXT.sampleRate = SAMPLE_RATE
-                debugger
                 resolve('SOUND_EFFECT_FINISHED_PLAYING')
             }
         })
 
     })
 
-
-    //   this._audioElement = new Audio();
-    //   this._audioElement.src = wav.dataURI;
-    //   this._audioElement.play();
-    }
   };
 
   SoundEffect.MIN_SAMPLE_RATE = 1;
@@ -1062,6 +1056,8 @@ window.console.log(psstring);*/
       buffer[buffer_i++] = sample;
     }
   }
+
+  sound.cacheDecodedBuffer()
 
   return sound;
 };
