@@ -35,7 +35,7 @@
     "ohm-js": "^0.14.0",
     "pify": "^3.0.0",
     "source-map-support": "^0.5.6",
-    "speaker": "^0.4.1",
+    "speaker": "github:philschatz/node-speaker#cac7c5b7c434b52619bfbbd9530ab0871156e815",
     "supports-color": "^5.4.0",
     "web-audio-api": "^0.2.2"
   },
