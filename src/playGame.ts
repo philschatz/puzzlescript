@@ -263,6 +263,8 @@ async function run() {
         UI.renderScreen()
         UI.writeDebug(`Game: "${data.title}"`)
 
+        let currentlyPlayingSoundPromise = null // stack the sounds so we know if one is playing
+
         // Run a bunch of ticks in case the user partially played a level
         let maxTickAndRenderTime = -1
         for (var keyNum = 0; keyNum < ticksToRunFirst.length; keyNum++) {
@@ -292,6 +294,12 @@ async function run() {
             startTime = Date.now()
             const { changedCells, soundToPlay } = engine.tick()
 
+            if (soundToPlay) {
+                if (!currentlyPlayingSoundPromise) {
+                    currentlyPlayingSoundPromise = soundToPlay.play().then(() => currentlyPlayingSoundPromise = null)
+                }
+            }
+
             // UI.renderScreen(data, engine.currentLevel)
 
             // Draw any cells that moved
@@ -305,10 +313,7 @@ async function run() {
             const msg = `Key ${keyNum} of "${data.title}" (took ${Date.now() - startTime}ms) Changed: ${[...changedCells].map(cell => cell.rowIndex + ':' + cell.colIndex).join(', ') + '   '}`
             UI.writeDebug(msg.substring(0, 160))
 
-            if (soundToPlay) {
-                await soundToPlay.play()
-            }
-
+            await sleep(1) // sleep long enough to play sounds
             // await sleep(Math.max(100 - (Date.now() - startTime), 0))
         }
 
@@ -318,6 +323,12 @@ async function run() {
             const startTime = Date.now()
             const hasAgain = engine.hasAgain()
             const {changedCells, isWinning, soundToPlay} = engine.tick()
+
+            if (soundToPlay) {
+                if (!currentlyPlayingSoundPromise) {
+                    currentlyPlayingSoundPromise = soundToPlay.play().then(() => currentlyPlayingSoundPromise = null)
+                }
+            }
 
             if (isWinning) {
                 // Save the solution
@@ -349,10 +360,6 @@ async function run() {
 
             const msg = `Level: ${chosenLevel} Tick: ${tickNum} took ${Date.now() - startTime}ms. Moves: ${keypresses.join('')} Changed: ${[...changedCells].map(cell => cell.rowIndex + ':' + cell.colIndex).join(', ') + '   '}`
             UI.writeDebug(msg.substring(0, 160))
-
-            if (soundToPlay) {
-                await soundToPlay.play()
-            }
 
             await sleep(Math.max(200 - (Date.now() - startTime), 0))
             if (hasAgain) {

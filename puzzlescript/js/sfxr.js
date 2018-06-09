@@ -620,6 +620,7 @@ generateFromSeed = function(seed) {
 // SoundEffect.prototype.play = function() {
 //     debugger
 //   var source = AUDIO_CONTEXT.createBufferSource();
+// https://github.com/audiojs/audio-biquad
 // //   var filter1 = AUDIO_CONTEXT.createBiquadFilter();
 // //   var filter2 = AUDIO_CONTEXT.createBiquadFilter();
 // //   var filter3 = AUDIO_CONTEXT.createBiquadFilter();
