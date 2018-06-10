@@ -130,9 +130,9 @@ async function run() {
                     const msg = `Tick ${i} of "${data.title}" (took ${Date.now() - startTime}ms) Changed: ${[...changedCells].map(cell => cell.rowIndex + ':' + cell.colIndex).join(', ') + '   '}`
                     UI.writeDebug(msg.substring(0, 160))
 
-                    if (soundToPlay) {
-                        await soundToPlay.play()
-                    }
+                    // if (soundToPlay) {
+                    //     await soundToPlay.play()
+                    // }
 
                     await sleep(Math.max(100 - (Date.now() - startTime), 0))
 

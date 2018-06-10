@@ -139,15 +139,15 @@ async function run() {
                     } else if (isTooTall) {
                         message = `(too tall for your terminal)`
                     }
-                    if (message) {
+                    if (hasSolution) {
                         return {
-                            name: `${chalk.whiteBright(`${index}`)} ${chalk.red(`(${cols.length} x ${rows.length})`)} ${chalk.yellowBright(message)}`,
+                            name: `${chalk.green(`${index}`)} ${chalk.dim(`(${cols.length} x ${rows.length}) ${chalk.green('(SOLVED)')}`)} ${chalk.yellowBright(message)}`,
                             value: index,
                         }
                     } else {
-                        if (hasSolution) {
+                        if (message) {
                             return {
-                                name: `${chalk.green(`${index}`)} ${chalk.dim(`(${cols.length} x ${rows.length}) ${chalk.green('(SOLVED)')}`)}`,
+                                name: `${chalk.whiteBright(`${index}`)} ${chalk.red(`(${cols.length} x ${rows.length})`)} ${chalk.yellowBright(message)}`,
                                 value: index,
                             }
                         } else {

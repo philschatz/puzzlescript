@@ -7,7 +7,7 @@ Games with problems (aka what to work on next):
 - [ ] "Fish Friend": Cannot satisfy Win Condition (maybe it is a command)
 - [ ] "Dungeon Janitor": Smile face is not replaced with slime
 - [ ] "Aaaah! I'm Being Attacked by a Giant Tentacle!": tentacle does not stretch to follow player
-- [ ] "Hack the Net": blue lines should propagate and not pulsate
+- [x] "Hack the Net": blue lines should propagate and not pulsate
 - [ ] Atlas Shank: the rocks disappear when you pick them up
 - [ ] Tunnel Rat: UP does not work (stack trace)
 - [ ] "Flower dance": scrolls vertically (big level)

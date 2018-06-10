@@ -126,6 +126,7 @@ class UI {
         this._renderedPixels = []
         this._windowOffsetColStart = 0
         this._windowOffsetRowStart = 0
+        this._enabledZoomScreenBecauseSmallTerminal = false
     }
     setGame(engine: Engine) {
         this._engine = engine
@@ -166,10 +167,16 @@ class UI {
             process.stdout.off('resize', this._resizeHandler)
         }
         this._resizeHandler = () => {
+            this._enabledZoomScreenBecauseSmallTerminal = !this.isLevelSmallEnoughForSceren()
             this.clearScreen()
             this.renderScreen()
         }
         process.stdout.on('resize', this._resizeHandler)
+
+        if (!this.isLevelSmallEnoughForSceren()) {
+            this._enabledZoomScreenBecauseSmallTerminal = true
+            this.enableZoomScreenBecauseSmallTerminal()
+        }
 
         setFgColor('#ffffff')
         setBgColor('#000000')
@@ -232,17 +239,41 @@ class UI {
         this._windowOffsetRowStart = Math.max(0, this._windowOffsetRowStart)
         this.renderScreen()
     }
-    enableZoomScreenBecauseSmallTerminal(cell: Cell) {
+    isLevelSmallEnoughForSceren() {
+        let levelWidthCells
+        if (this._gameData.metadata.zoomscreen) {
+            levelWidthCells = this._gameData.metadata.zoomscreen.width
+        } else if (this._gameData.metadata.flickscreen) {
+            levelWidthCells = this._gameData.metadata.flickscreen.width
+        } else {
+            levelWidthCells = this._engine.currentLevel[0].length
+        }
+
+        let levelHeightCells
+        if (this._gameData.metadata.zoomscreen) {
+            levelHeightCells = this._gameData.metadata.zoomscreen.height
+        } else if (this._gameData.metadata.flickscreen) {
+            levelHeightCells = this._gameData.metadata.flickscreen.height
+        } else {
+            levelHeightCells = this._engine.currentLevel.length
+        }
+
+        const {columns, rows} = process.stdout
+        const windowWidthCells = Math.floor(columns / (2 * 5))
+        const windowHeightCells = rows
+        return windowWidthCells >= levelWidthCells && windowHeightCells >= levelHeightCells
+    }
+    enableZoomScreenBecauseSmallTerminal() {
         this._enabledZoomScreenBecauseSmallTerminal = true
         this._windowOffsetWidth = Math.floor(process.stdout.columns / (5 * 2))
         this._windowOffsetHeight = Math.floor(process.stdout.rows / 5)
-        this.zoomScreenToShowPlayer(cell)
+        // this.zoomScreenToShowPlayer(cell)
     }
 
     setPixel(x: number, y: number, hex: string) {
-        if (process.env['NODE_ENV'] !== 'production') {
-            drawPixelChar(x, y, hex)
-        } else {
+        // if (process.env['NODE_ENV'] !== 'production') {
+        //     drawPixelChar(x, y, hex)
+        // } else {
             if (!this._renderedPixels[y]) {
                 this._renderedPixels[y] = []
             }
@@ -250,7 +281,7 @@ class UI {
                 drawPixelChar(x, y, hex)
                 this._renderedPixels[y][x] = hex
             }
-        }
+        // }
     }
 
     drawCell(cell: Cell, dontRestoreCursor: boolean) {
@@ -267,14 +298,51 @@ class UI {
 
         // Sort of HACKy... If the player is not visible on the screen then we need to
         // move the screen so that they are visible.
-        if (!isOnScreen && this._gameData.getPlayer().matchesCell(cell)) {
-            if (this._gameData.metadata.flickscreen) {
-                // Flick the screen over and re-render the whole screen (hence the `return`)
-                return this.flickScreenToShowPlayer(cell)
-            } else if (this._gameData.metadata.zoomscreen || this._enabledZoomScreenBecauseSmallTerminal) {
-                return this.zoomScreenToShowPlayer(cell)
+        const cellHasPlayer = this._gameData.getPlayer().matchesCell(cell)
+        if (cellHasPlayer) {
+            if (this._gameData.metadata.zoomscreen || this._enabledZoomScreenBecauseSmallTerminal) {
+                // Check if we have a zoomescreen (could be because terminal is too small)
+                // If so, the player must remain in the middle 1/2 of the screen.
+                // We don't do exact center because we would need to redraw a bunch of cells
+                // all the time.
+                const screenColPos = cell.colIndex - this._windowOffsetColStart
+                const screenRowPos = cell.rowIndex - this._windowOffsetRowStart
+                const isPlayerInMiddleHoriz = this._windowOffsetWidth / 4 < screenColPos && screenColPos < (this._windowOffsetWidth * 3 / 4)
+                const isPlayerInMiddleVert = this._windowOffsetHeight / 4 < screenRowPos && screenRowPos < (this._windowOffsetHeight * 3 / 4)
+                if (!(isPlayerInMiddleHoriz && isPlayerInMiddleVert)) {
+                    // Check to see if we need to center the player or not.
+                    // If we are at the edge of the screen then we do not need to recenter
+                    const newColStart = cell.colIndex - Math.floor(this._windowOffsetWidth / 2)
+                    const newRowStart = cell.rowIndex - Math.floor(this._windowOffsetHeight / 2)
+                    if ((newColStart >= 0 || this._windowOffsetColStart > 0) || (newRowStart >= 0 || this._windowOffsetRowStart > 0)) {
+                        if (Math.max(0, newColStart) !== this._windowOffsetColStart || Math.max(0, newRowStart) !== this._windowOffsetRowStart) {
+                            this._windowOffsetColStart = Math.max(0, newColStart)
+                            this._windowOffsetRowStart = Math.max(0, newRowStart)
+                            return this.renderScreen()
+                        }
+                    }
+
+                    if ((newColStart === 0 && this._windowOffsetColStart !== 0) || (newRowStart === 0 && this._windowOffsetRowStart !== 0)) {
+                        return this.renderScreen()
+                    }
+
+                    // return this.zoomScreenToShowPlayer(cell)
+                }
+
+                if (!isOnScreen) {
+                    throw new Error(`BUG: Player should be on screen by now`)
+                }
+
             } else {
-                return this.enableZoomScreenBecauseSmallTerminal(cell)
+                // not onScreen. So move the screen so the player is visible
+                if (this._gameData.metadata.flickscreen) {
+                    // Flick the screen over and re-render the whole screen (hence the `return`)
+                    return this.flickScreenToShowPlayer(cell)
+                } else if (this._gameData.metadata.zoomscreen || this._enabledZoomScreenBecauseSmallTerminal) {
+                    return this.zoomScreenToShowPlayer(cell)
+                } else {
+                    return this.enableZoomScreenBecauseSmallTerminal()
+                }
             }
         }
 
