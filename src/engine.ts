@@ -147,12 +147,12 @@ export default class Engine extends EventEmitter2 {
     gameData: GameData
     currentLevel: Cell[][]
     _pendingPlayerWantsToMove: RULE_DIRECTION_ABSOLUTE
-    _pendingAgainRules: IRule[]
+    _hasAgainThatNeedsToRun: boolean
 
     constructor(gameData: GameData) {
         super()
         this.gameData = gameData
-        this._pendingAgainRules = []
+        this._hasAgainThatNeedsToRun = false
     }
 
     setLevel(levelNum: number) {
@@ -356,7 +356,7 @@ export default class Engine extends EventEmitter2 {
         changedCellMutations = setAddAll(changedCellMutations, changedCellMutations2)
 
         // Save the "AGAIN" rules that ran so they can be re-evaluated at the next tick
-        this._pendingAgainRules = evaluatedRules.filter(r => r.isAgain())
+        this._hasAgainThatNeedsToRun = !!evaluatedRules.filter(r => r.isAgain())[0]
         const movedCells = this.tickMoveSprites(new Set<Cell>(changedCellMutations.keys()))
         const {changedCells: changedCellsLate, evaluatedRules: evaluatedRulesLate, commands: commandsLate} = this.tickUpdateCellsLate()
         return {
@@ -366,29 +366,12 @@ export default class Engine extends EventEmitter2 {
         }
     }
 
-    tickAgain() {
-        const {changedCells, evaluatedRules, commands} = this._tickUpdateCells(this._pendingAgainRules)
-        // Save the "AGAIN" rules that ran so they can be re-evaluated at the next tick
-        const movedCells = this.tickMoveSprites(changedCells)
-        if (movedCells.size === 0) {
-            // done with the again rules. nothing moved
-            this._pendingAgainRules = []
-        } else {
-            this._pendingAgainRules = evaluatedRules.filter(r => r.isAgain())
-        }
-        // const {changedCells: changedCellsLate, evaluatedRules: evaluatedRulesLate} = this.tickUpdateCellsLate()
-        return {
-            changedCells: setAddAll(movedCells, changedCells.keys()),
-            evaluatedRules,
-            commands
-        }
-    }
-
     tick() {
         let ret : { changedCells: Set<Cell>, evaluatedRules: IRule[] , commands: Set<AbstractCommand>}
-        if (this._pendingAgainRules.length > 0) {
+        if (this._hasAgainThatNeedsToRun) {
             // run the AGAIN rules
-            ret = this.tickAgain()
+            this._hasAgainThatNeedsToRun = false // let the .tick() make it true
+            ret = this.tickNormal()
         } else {
             ret = this.tickNormal()
         }
@@ -415,7 +398,7 @@ export default class Engine extends EventEmitter2 {
     }
 
     hasAgain() {
-        return this._pendingAgainRules.length > 0
+        return this._hasAgainThatNeedsToRun
     }
 
     isWinning() {

@@ -142,6 +142,26 @@ Array [
 ]
 `;
 
+exports[`engine removes a sprite when it has NO in the action side (an OR tile) 1`] = `
+Array [
+  Array [
+    Array [
+      "STATIONARY Player",
+    ],
+  ],
+]
+`;
+
+exports[`engine removes a sprite when it has NO in the action side 1`] = `
+Array [
+  Array [
+    Array [
+      "STATIONARY Player",
+    ],
+  ],
+]
+`;
+
 exports[`engine removes the wantsToMove when specified in the rule 1`] = `
 Array [
   Array [

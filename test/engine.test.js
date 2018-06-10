@@ -1577,4 +1577,134 @@ describe('engine', () => {
         expect(engine.currentLevel[0][1].getSpritesAsSet().has(player)).toBe(true)
     })
 
+
+    it('removes a sprite when it has NO in the action side', () => {
+        const { engine, data } = parseEngine(`title foo
+
+        ========
+        OBJECTS
+        ========
+
+        Background
+        gray
+
+        Player
+        transparent
+
+        Hat
+        transparent
+
+        =======
+        LEGEND
+        =======
+
+        . = Background
+        P = Player AND Hat
+
+        =======
+        SOUNDS
+        =======
+
+        ================
+        COLLISIONLAYERS
+        ================
+        Background
+        Player
+        Hat
+
+        ======
+        RULES
+        ======
+
+        [ Player ] -> [ Player NO Hat ]
+
+        ==============
+        WINCONDITIONS
+        ==============
+
+        =======
+        LEVELS
+        =======
+
+        P
+
+    `) // end game definition
+
+        const hat = data._getSpriteByName('hat')
+        engine.tick()
+        expect(engine.toSnapshot()).toMatchSnapshot()
+
+        expect(hat.getCellsThatMatch().size).toBe(0)
+        expect(engine.currentLevel[0][0].getSpritesAsSet().has(hat)).toBe(false)
+    })
+
+
+    it('removes a sprite when it has NO in the action side (an OR tile)', () => {
+        const { engine, data } = parseEngine(`title foo
+
+        ========
+        OBJECTS
+        ========
+
+        Background
+        gray
+
+        Player
+        transparent
+
+        Hat
+        transparent
+
+        Shirt
+        transparent
+
+        =======
+        LEGEND
+        =======
+
+        . = Background
+        P = Player AND Hat
+        Clothing = Shirt OR Hat
+
+        =======
+        SOUNDS
+        =======
+
+        ================
+        COLLISIONLAYERS
+        ================
+        Background
+        Player
+        Hat
+        Shirt
+
+        ======
+        RULES
+        ======
+
+        [ Player ] -> [ Player NO Clothing ]
+
+        ==============
+        WINCONDITIONS
+        ==============
+
+        =======
+        LEVELS
+        =======
+
+        P
+
+    `) // end game definition
+
+        const hat = data._getSpriteByName('hat')
+        const shirt = data._getSpriteByName('shirt')
+        engine.tick()
+        expect(engine.toSnapshot()).toMatchSnapshot()
+
+        expect(hat.getCellsThatMatch().size).toBe(0)
+        expect(shirt.getCellsThatMatch().size).toBe(0)
+        expect(engine.currentLevel[0][0].getSpritesAsSet().has(hat)).toBe(false)
+        expect(engine.currentLevel[0][0].getSpritesAsSet().has(shirt)).toBe(false)
+    })
+
 })

@@ -841,6 +841,7 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
         // [ a ] -> [ NO a ] ???
         // [ MOVING a ] -> [ MOVING a ] ???
         // [ MOVING a MOVING c ] -> [ MOVING c MOVING b ] : c moves but b is stationary
+        // [ ] -> [ NO Thing ] : Remove "Thing"
 
         const conditionSpritesMap = this.getSpriteMap(cell, magicOrTiles, false /*isAction*/)
         const actionSpritesMap = actionNeighbor.getSpriteMap(cell, magicOrTiles, true/*isAction*/)
@@ -877,6 +878,15 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
                     throw new Error(`BUG: Unsupported direction "${actionDir}"`)
             }
             return direction
+        }
+
+        // Any NO tiles in the action side need to be removed
+        for (const t of actionNeighbor._tilesWithModifier) {
+            if (t.isNo()) {
+                for (const sprite of t._tile.getSpritesThatMatch(cell)) {
+                    spritesToRemove.add(sprite)
+                }
+            }
         }
 
         for (const sprite of setDifference(new Set(conditionSpritesMap.keys()), new Set(actionSpritesMap.keys()))) {
