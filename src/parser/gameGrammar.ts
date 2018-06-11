@@ -269,7 +269,7 @@ export function getGameSemantics(lookup: LookupHelper, addValidationMessage) {
             const metadata = new GameMetadata()
             settingsFields.parse().forEach((setting) => {
                 if (Array.isArray(setting)) {
-                    metadata._setValue(setting[0], setting[1])
+                    metadata._setValue(setting[0].toLowerCase(), setting[1])
                 } else {
                     metadata._setValue(setting, true)
                 }

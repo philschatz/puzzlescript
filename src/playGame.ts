@@ -129,8 +129,21 @@ async function run() {
                 if (levelMap.isMap()) {
                     const rows = levelMap.getRows()
                     const cols = rows[0]
-                    const isTooWide = process.stdout.columns < cols.length * 5 * 2
-                    const isTooTall = process.stdout.rows < rows.length * 5
+                    let width = cols.length
+                    let height = rows.length
+                    // If flickscreen or zoomscreen is enabled, then change the level size
+                    // that is reported
+                    const {zoomscreen, flickscreen} = data.metadata
+                    if (flickscreen) {
+                        height = flickscreen.height
+                        width = flickscreen.width
+                    }
+                    if (zoomscreen) {
+                        height = zoomscreen.height
+                        width = zoomscreen.width
+                    }
+                    const isTooWide = process.stdout.columns < width * 5 * 2
+                    const isTooTall = process.stdout.rows < height * 5
                     let message = ''
                     if (isTooWide && isTooTall) {
                         message = `(too tall & wide for your terminal)`
@@ -141,18 +154,18 @@ async function run() {
                     }
                     if (hasSolution) {
                         return {
-                            name: `${chalk.green(`${index}`)} ${chalk.dim(`(${cols.length} x ${rows.length}) ${chalk.green('(SOLVED)')}`)} ${chalk.yellowBright(message)}`,
+                            name: `${chalk.green(`${index}`)} ${chalk.dim(`(${width} x ${height}) ${chalk.green('(SOLVED)')}`)} ${chalk.yellowBright(message)}`,
                             value: index,
                         }
                     } else {
                         if (message) {
                             return {
-                                name: `${chalk.whiteBright(`${index}`)} ${chalk.red(`(${cols.length} x ${rows.length})`)} ${chalk.yellowBright(message)}`,
+                                name: `${chalk.whiteBright(`${index}`)} ${chalk.red(`(${width} x ${height})`)} ${chalk.yellowBright(message)}`,
                                 value: index,
                             }
                         } else {
                             return {
-                                name: `${chalk.whiteBright(`${index}`)} ${chalk.green(`(${cols.length} x ${rows.length})`)}`,
+                                name: `${chalk.whiteBright(`${index}`)} ${chalk.green(`(${width} x ${height})`)}`,
                                 value: index,
                             }
                         }
@@ -361,7 +374,7 @@ async function run() {
             const msg = `Level: ${chosenLevel} Tick: ${tickNum} took ${Date.now() - startTime}ms. Moves: ${[...keypresses].reverse().join('').substring(0, 20)}`
             UI.writeDebug(msg.substring(0, 160))
 
-            await sleep(Math.max(200 - (Date.now() - startTime), 0))
+            await sleep(Math.max(500 - (Date.now() - startTime), 0))
             if (hasAgain) {
                 keypresses.push(',')
             } else {

@@ -149,6 +149,11 @@ class UI {
         }
 
     }
+    debugRenderScreen() {
+        if (this._engine && this._engine.currentLevel) {
+            this.renderScreen()
+        }
+    }
     renderScreen() {
         if (!supportsColor.stdout) {
             console.log('Playing a game in the console requires color support. Unfortunately, color is not supported so not rendering (for now). We could just do an ASCII dump or something, using  ░▒▓█ to denote shades of cells')

@@ -76,7 +76,7 @@ export class SimpleRuleGroup extends BaseForLines implements IRule {
                 // so that we can step through the evaluations.
                 console.error(this.toString())
                 console.error('BUG: Iterated too many times in startloop or + (rule group)')
-                UI.renderScreen(); debugger
+                UI.debugRenderScreen(); debugger
             }
             if (iteration === MAX_ITERATIONS_IN_LOOP - 1) {
                 console.error(this.toString())
@@ -246,7 +246,7 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
             if (process.env['NODE_ENV'] !== 'production' && innerIteration === MAX_ITERATIONS_IN_LOOP - 10) {
                 // Provide a breakpoint just before we run out of MAX_ITERATIONS_IN_LOOP
                 // so that we can step through the evaluations.
-                UI.renderScreen(); debugger
+                UI.debugRenderScreen(); debugger
             }
             if (innerIteration === MAX_ITERATIONS_IN_LOOP - 1) {
                 throw new Error('`BUG: Iterated too many times in rule or rule group')
@@ -277,7 +277,7 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
             if (condition.getFirstCells().size == 0) {
                 if (process.env['NODE_ENV'] !== 'production' && this._debugFlag === DEBUG_FLAG.BREAKPOINT_REMOVE) {
                     // A "DEBUGGER_REMOVE" flag was set in the game so we are pausing here
-                    UI.renderScreen(); debugger
+                    UI.debugRenderScreen(); debugger
                 }
                 return [] // Rule did not match, so nothing ran
             }
@@ -294,7 +294,7 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
                 // Get ready to Evaluate
                 if (process.env['NODE_ENV'] !== 'production' && this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
                     // A "DEBUGGER" flag was set in the game so we are pausing here
-                    UI.renderScreen(); debugger
+                    UI.debugRenderScreen(); debugger
                 }
 
                 const allMutations = []
@@ -387,7 +387,7 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
                 // Get ready to Evaluate
                 if (process.env['NODE_ENV'] !== 'production' && this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
                     // A "DEBUGGER" flag was set in the game so we are pausing here
-                    UI.renderScreen(); debugger
+                    UI.debugRenderScreen(); debugger
                 }
 
                 let hasMoreCells
@@ -528,7 +528,7 @@ class SimpleBracket extends BaseForLines implements ICacheable {
 
     evaluate(actionBracket: SimpleBracket, cell: Cell, magicOrTiles: Map<IGameTile, Set<GameSprite>>) {
         if (process.env['NODE_ENV'] !== 'production' && actionBracket._debugFlag === DEBUG_FLAG.BREAKPOINT) {
-            UI.renderScreen(); debugger // pausing here because it is in the code
+            UI.debugRenderScreen(); debugger // pausing here because it is in the code
         }
         if (this._hasEllipsis) {
             return []
@@ -557,7 +557,7 @@ class SimpleBracket extends BaseForLines implements ICacheable {
     _addFirstCell(firstCell: Cell) {
         if (process.env['NODE_ENV'] !== 'production' && this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
             // Pausing here because it was marked in the code
-            UI.renderScreen(); debugger
+            UI.debugRenderScreen(); debugger
         }
         this._firstCells.add(firstCell)
     }
@@ -566,7 +566,7 @@ class SimpleBracket extends BaseForLines implements ICacheable {
         if (this._firstCells.has(firstCell)) {
             if (process.env['NODE_ENV'] !== 'production' && this._debugFlag === DEBUG_FLAG.BREAKPOINT_REMOVE) {
                 // Pausing here because it was marked in the code
-                UI.renderScreen(); debugger
+                UI.debugRenderScreen(); debugger
             }
             this._firstCells.delete(firstCell)
         }
@@ -705,7 +705,7 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
     evaluate(actionNeighbor: SimpleNeighbor, cell: Cell, magicOrTiles: Map<IGameTile, Set<GameSprite>>) {
         if (process.env['NODE_ENV'] !== 'production' && actionNeighbor._debugFlag === DEBUG_FLAG.BREAKPOINT) {
             // Pausing here because this breakpoint was marked in the game code
-            UI.renderScreen(); debugger
+            UI.debugRenderScreen(); debugger
         }
         // Just remove all tiles for now and then add all of them back
         // TODO: only remove tiles that are matching the collisionLayer but wait, they already need to be exclusive
@@ -1013,7 +1013,7 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
     addCells(t: SimpleTileWithModifier, sprite: GameSprite, cells: Iterable<Cell>, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
         if (process.env['NODE_ENV'] !== 'production' && this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
             // Pausing here because it was marked in the code
-            UI.renderScreen(); debugger
+            UI.debugRenderScreen(); debugger
         }
         for (const cell of cells) {
             const matchesTiles = this.matchesCell(cell, t, wantsToMove)
@@ -1048,7 +1048,7 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
     removeCells(t: SimpleTileWithModifier, sprite: GameSprite, cells: Iterable<Cell>) {
         if (process.env['NODE_ENV'] !== 'production' && this._debugFlag === DEBUG_FLAG.BREAKPOINT_REMOVE) {
             // Pausing here because it was marked in the code
-            UI.renderScreen(); debugger
+            UI.debugRenderScreen(); debugger
         }
         for (const cell of cells) {
             // if (this.hasCell(cell)) {
@@ -1173,7 +1173,7 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
     addCells(sprite: GameSprite, cells: Iterable<Cell>, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
         if (process.env['NODE_ENV'] !== 'production' && this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
             // Pause here because it was marked in the code
-            UI.renderScreen(); debugger
+            UI.debugRenderScreen(); debugger
         }
         // Cells all have the same sprites, so if the 1st matches, they all do
         if (this.matchesFirstCell(cells, wantsToMove)) {
@@ -1195,7 +1195,7 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
     updateCells(sprite: GameSprite, cells: Iterable<Cell>, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
         if (process.env['NODE_ENV'] !== 'production' && this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
             // Pause here because it was marked in the code
-            UI.renderScreen(); debugger
+            UI.debugRenderScreen(); debugger
         }
         // Cells all have the same sprites, so if the 1st matches, they all do
         if (this.matchesFirstCell(cells, wantsToMove)) {
@@ -1207,7 +1207,7 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
     removeCells(sprite: GameSprite, cells: Iterable<Cell>) {
         if (process.env['NODE_ENV'] !== 'production' && this._debugFlag === DEBUG_FLAG.BREAKPOINT_REMOVE) {
             // Pause here because it was marked in the code
-            UI.renderScreen(); debugger
+            UI.debugRenderScreen(); debugger
         }
         // Cells all have the same sprites, so if the 1st matches, they all do
         if (this.matchesFirstCell(cells, null/*STATIONARY*/)) {
@@ -1607,12 +1607,26 @@ export class RuleBracketNeighbor extends BaseForLines implements ICacheable {
 
     constructor(source: IGameCode, tilesWithModifier: TileWithModifier[], isEllipsis: boolean, debugFlag: DEBUG_FLAG) {
         super(source)
-        this._tilesWithModifier = tilesWithModifier
+        // See below: this._tilesWithModifier = tilesWithModifier
         this._isEllipsis = isEllipsis
 
         this._localCellCache = new Set()
         this._brackets = []
         this._debugFlag = debugFlag
+
+        // Collapse duplicate tiles into one.
+        // e.g. Cyber-Lasso has the following rule:
+        // ... -> [ ElectricFloor Powered no ElectricFloor Claimed ]
+        //
+        // ElectricFloor occurs twice (one is negated)
+        // We keep the first and remove the rest
+        const tilesMap = new Map()
+        for (const t of tilesWithModifier) {
+            if (!tilesMap.has(t._tile)) {
+                tilesMap.set(t._tile, t)
+            }
+        }
+        this._tilesWithModifier = [...tilesMap.values()]
     }
 
     toKey() {

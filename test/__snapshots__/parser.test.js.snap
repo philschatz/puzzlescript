@@ -54685,7 +54685,7 @@ GameData {
   "legends": Array [],
   "levels": Array [],
   "metadata": GameMetadata {
-    "COLOR_PALETTE": "gameboycolour",
+    "color_palette": "gameboycolour",
   },
   "objects": Array [
     GameSpriteSingleColor {
@@ -54713,7 +54713,7 @@ GameData {
   "legends": Array [],
   "levels": Array [],
   "metadata": GameMetadata {
-    "COLOR_PALETTE": "2",
+    "color_palette": "2",
   },
   "objects": Array [
     GameSpriteSingleColor {
