@@ -1,6 +1,6 @@
 Games with problems (aka what to work on next):
 
-- [ ] get cyber lasso
+- [x] get cyber lasso
 - [ ] "Singleton Traffic": all the sprites move (probably shouldn't)
 - [x] IceCrates: Player does not slide to the edge
 - [ ] Swapbot (extra level) does not remove the battery, and batteries all fill up on the right side
@@ -13,6 +13,7 @@ Games with problems (aka what to work on next):
 - [ ] "Flower dance": scrolls vertically (big level)
 - [ ] "Vacuum": does not count down
 - [ ] "2D Whale World": beams do not show up
+- [ ] Gobble Rush : enemy does not follow the player
 
 
 - [x] "Count mover": Does not increment the tens location for the "Steps:"
