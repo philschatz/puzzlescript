@@ -74,7 +74,7 @@ export class WinConditionOn extends WinConditionSimple {
             case WIN_QUALIFIER.SOME:
                 return onTileCells.length > 0
             case WIN_QUALIFIER.ALL:
-                return onTileCells.length === tileCells.length && onTileCells.length > 0
+                return onTileCells.length === tileCells.length
             default:
                 throw new Error(`BUG: Invalid qualifier: "${this._qualifier}"`)
         }

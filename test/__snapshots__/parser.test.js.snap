@@ -15,7 +15,13 @@ Object {
   ],
   "_i1": Object {
     "__name": "Title",
-    "_i0": "title",
+    "_i0": Object {
+      "__name": "t_TITLE",
+      "_i0": Object {
+        "__name": "caseInsensitive",
+        "_i0": "TITLE",
+      },
+    },
     "_i1": Object {
       "__name": "words",
       "_i0": Array [
@@ -1497,7 +1503,13 @@ Object {
   ],
   "_i1": Object {
     "__name": "Title",
-    "_i0": "title",
+    "_i0": Object {
+      "__name": "t_TITLE",
+      "_i0": Object {
+        "__name": "caseInsensitive",
+        "_i0": "TITLE",
+      },
+    },
     "_i1": Object {
       "__name": "words",
       "_i0": Array [
@@ -2483,7 +2495,13 @@ Object {
   ],
   "_i1": Object {
     "__name": "Title",
-    "_i0": "title",
+    "_i0": Object {
+      "__name": "t_TITLE",
+      "_i0": Object {
+        "__name": "caseInsensitive",
+        "_i0": "TITLE",
+      },
+    },
     "_i1": Object {
       "__name": "words",
       "_i0": Array [
@@ -4267,7 +4285,13 @@ Object {
   ],
   "_i1": Object {
     "__name": "Title",
-    "_i0": "title",
+    "_i0": Object {
+      "__name": "t_TITLE",
+      "_i0": Object {
+        "__name": "caseInsensitive",
+        "_i0": "TITLE",
+      },
+    },
     "_i1": Object {
       "__name": "words",
       "_i0": Array [
@@ -5256,7 +5280,13 @@ Object {
   ],
   "_i1": Object {
     "__name": "Title",
-    "_i0": "title",
+    "_i0": Object {
+      "__name": "t_TITLE",
+      "_i0": Object {
+        "__name": "caseInsensitive",
+        "_i0": "TITLE",
+      },
+    },
     "_i1": Object {
       "__name": "words",
       "_i0": Array [
@@ -7040,7 +7070,13 @@ Object {
   ],
   "_i1": Object {
     "__name": "Title",
-    "_i0": "title",
+    "_i0": Object {
+      "__name": "t_TITLE",
+      "_i0": Object {
+        "__name": "caseInsensitive",
+        "_i0": "TITLE",
+      },
+    },
     "_i1": Object {
       "__name": "words",
       "_i0": Array [
@@ -8824,7 +8860,13 @@ Object {
   ],
   "_i1": Object {
     "__name": "Title",
-    "_i0": "title",
+    "_i0": Object {
+      "__name": "t_TITLE",
+      "_i0": Object {
+        "__name": "caseInsensitive",
+        "_i0": "TITLE",
+      },
+    },
     "_i1": Object {
       "__name": "words",
       "_i0": Array [
@@ -9810,7 +9852,13 @@ Object {
   ],
   "_i1": Object {
     "__name": "Title",
-    "_i0": "title",
+    "_i0": Object {
+      "__name": "t_TITLE",
+      "_i0": Object {
+        "__name": "caseInsensitive",
+        "_i0": "TITLE",
+      },
+    },
     "_i1": Object {
       "__name": "words",
       "_i0": Array [
@@ -10796,7 +10844,13 @@ Object {
   ],
   "_i1": Object {
     "__name": "Title",
-    "_i0": "title",
+    "_i0": Object {
+      "__name": "t_TITLE",
+      "_i0": Object {
+        "__name": "caseInsensitive",
+        "_i0": "TITLE",
+      },
+    },
     "_i1": Object {
       "__name": "words",
       "_i0": Array [
@@ -11782,7 +11836,13 @@ Object {
   ],
   "_i1": Object {
     "__name": "Title",
-    "_i0": "title",
+    "_i0": Object {
+      "__name": "t_TITLE",
+      "_i0": Object {
+        "__name": "caseInsensitive",
+        "_i0": "TITLE",
+      },
+    },
     "_i1": Object {
       "__name": "words",
       "_i0": Array [
@@ -12768,7 +12828,13 @@ Object {
   ],
   "_i1": Object {
     "__name": "Title",
-    "_i0": "title",
+    "_i0": Object {
+      "__name": "t_TITLE",
+      "_i0": Object {
+        "__name": "caseInsensitive",
+        "_i0": "TITLE",
+      },
+    },
     "_i1": Object {
       "__name": "words",
       "_i0": Array [
@@ -13754,7 +13820,13 @@ Object {
   ],
   "_i1": Object {
     "__name": "Title",
-    "_i0": "title",
+    "_i0": Object {
+      "__name": "t_TITLE",
+      "_i0": Object {
+        "__name": "caseInsensitive",
+        "_i0": "TITLE",
+      },
+    },
     "_i1": Object {
       "__name": "words",
       "_i0": Array [
@@ -28364,7 +28436,13 @@ Object {
   ],
   "_i1": Object {
     "__name": "Title",
-    "_i0": "title",
+    "_i0": Object {
+      "__name": "t_TITLE",
+      "_i0": Object {
+        "__name": "caseInsensitive",
+        "_i0": "TITLE",
+      },
+    },
     "_i1": Object {
       "__name": "words",
       "_i0": Array [
@@ -31148,7 +31226,13 @@ Object {
   ],
   "_i1": Object {
     "__name": "Title",
-    "_i0": "title",
+    "_i0": Object {
+      "__name": "t_TITLE",
+      "_i0": Object {
+        "__name": "caseInsensitive",
+        "_i0": "TITLE",
+      },
+    },
     "_i1": Object {
       "__name": "words",
       "_i0": Array [
@@ -33932,7 +34016,13 @@ Object {
   ],
   "_i1": Object {
     "__name": "Title",
-    "_i0": "title",
+    "_i0": Object {
+      "__name": "t_TITLE",
+      "_i0": Object {
+        "__name": "caseInsensitive",
+        "_i0": "TITLE",
+      },
+    },
     "_i1": Object {
       "__name": "words",
       "_i0": Array [
@@ -34918,7 +35008,13 @@ Object {
   ],
   "_i1": Object {
     "__name": "Title",
-    "_i0": "title",
+    "_i0": Object {
+      "__name": "t_TITLE",
+      "_i0": Object {
+        "__name": "caseInsensitive",
+        "_i0": "TITLE",
+      },
+    },
     "_i1": Object {
       "__name": "words",
       "_i0": Array [
@@ -35904,7 +36000,13 @@ Object {
   ],
   "_i1": Object {
     "__name": "Title",
-    "_i0": "title",
+    "_i0": Object {
+      "__name": "t_TITLE",
+      "_i0": Object {
+        "__name": "caseInsensitive",
+        "_i0": "TITLE",
+      },
+    },
     "_i1": Object {
       "__name": "words",
       "_i0": Array [
@@ -36890,7 +36992,13 @@ Object {
   ],
   "_i1": Object {
     "__name": "Title",
-    "_i0": "title",
+    "_i0": Object {
+      "__name": "t_TITLE",
+      "_i0": Object {
+        "__name": "caseInsensitive",
+        "_i0": "TITLE",
+      },
+    },
     "_i1": Object {
       "__name": "words",
       "_i0": Array [
@@ -37876,7 +37984,13 @@ Object {
   ],
   "_i1": Object {
     "__name": "Title",
-    "_i0": "title",
+    "_i0": Object {
+      "__name": "t_TITLE",
+      "_i0": Object {
+        "__name": "caseInsensitive",
+        "_i0": "TITLE",
+      },
+    },
     "_i1": Object {
       "__name": "words",
       "_i0": Array [
@@ -39574,7 +39688,13 @@ Object {
   ],
   "_i1": Object {
     "__name": "Title",
-    "_i0": "title",
+    "_i0": Object {
+      "__name": "t_TITLE",
+      "_i0": Object {
+        "__name": "caseInsensitive",
+        "_i0": "TITLE",
+      },
+    },
     "_i1": Object {
       "__name": "words",
       "_i0": Array [
@@ -40546,7 +40666,13 @@ Object {
   ],
   "_i1": Object {
     "__name": "Title",
-    "_i0": "title",
+    "_i0": Object {
+      "__name": "t_TITLE",
+      "_i0": Object {
+        "__name": "caseInsensitive",
+        "_i0": "TITLE",
+      },
+    },
     "_i1": Object {
       "__name": "words",
       "_i0": Array [
@@ -41533,7 +41659,13 @@ Object {
   ],
   "_i1": Object {
     "__name": "Title",
-    "_i0": "title",
+    "_i0": Object {
+      "__name": "t_TITLE",
+      "_i0": Object {
+        "__name": "caseInsensitive",
+        "_i0": "TITLE",
+      },
+    },
     "_i1": Object {
       "__name": "words",
       "_i0": Array [
@@ -43110,7 +43242,13 @@ Object {
   ],
   "_i1": Object {
     "__name": "Title",
-    "_i0": "title",
+    "_i0": Object {
+      "__name": "t_TITLE",
+      "_i0": Object {
+        "__name": "caseInsensitive",
+        "_i0": "TITLE",
+      },
+    },
     "_i1": Object {
       "__name": "words",
       "_i0": Array [
@@ -53912,7 +54050,13 @@ Object {
   ],
   "_i1": Object {
     "__name": "Title",
-    "_i0": "title",
+    "_i0": Object {
+      "__name": "t_TITLE",
+      "_i0": Object {
+        "__name": "caseInsensitive",
+        "_i0": "TITLE",
+      },
+    },
     "_i1": Object {
       "__name": "words",
       "_i0": Array [
@@ -54541,7 +54685,7 @@ GameData {
   "legends": Array [],
   "levels": Array [],
   "metadata": GameMetadata {
-    "color_palette": "gameboycolour",
+    "COLOR_PALETTE": "gameboycolour",
   },
   "objects": Array [
     GameSpriteSingleColor {
@@ -54569,7 +54713,7 @@ GameData {
   "legends": Array [],
   "levels": Array [],
   "metadata": GameMetadata {
-    "color_palette": "2",
+    "COLOR_PALETTE": "2",
   },
   "objects": Array [
     GameSpriteSingleColor {
@@ -57257,7 +57401,13 @@ Object {
   ],
   "_i1": Object {
     "__name": "Title",
-    "_i0": "title",
+    "_i0": Object {
+      "__name": "t_TITLE",
+      "_i0": Object {
+        "__name": "caseInsensitive",
+        "_i0": "TITLE",
+      },
+    },
     "_i1": Object {
       "__name": "words",
       "_i0": Array [
@@ -59125,7 +59275,13 @@ Object {
   ],
   "_i1": Object {
     "__name": "Title",
-    "_i0": "title",
+    "_i0": Object {
+      "__name": "t_TITLE",
+      "_i0": Object {
+        "__name": "caseInsensitive",
+        "_i0": "TITLE",
+      },
+    },
     "_i1": Object {
       "__name": "words",
       "_i0": Array [
@@ -60937,7 +61093,13 @@ Object {
   ],
   "_i1": Object {
     "__name": "Title",
-    "_i0": "title",
+    "_i0": Object {
+      "__name": "t_TITLE",
+      "_i0": Object {
+        "__name": "caseInsensitive",
+        "_i0": "TITLE",
+      },
+    },
     "_i1": Object {
       "__name": "words",
       "_i0": Array [
@@ -61913,7 +62075,13 @@ Object {
   ],
   "_i1": Object {
     "__name": "Title",
-    "_i0": "title",
+    "_i0": Object {
+      "__name": "t_TITLE",
+      "_i0": Object {
+        "__name": "caseInsensitive",
+        "_i0": "TITLE",
+      },
+    },
     "_i1": Object {
       "__name": "words",
       "_i0": Array [
@@ -63816,7 +63984,13 @@ Object {
   ],
   "_i1": Object {
     "__name": "Title",
-    "_i0": "title",
+    "_i0": Object {
+      "__name": "t_TITLE",
+      "_i0": Object {
+        "__name": "caseInsensitive",
+        "_i0": "TITLE",
+      },
+    },
     "_i1": Object {
       "__name": "words",
       "_i0": Array [
@@ -64792,7 +64966,13 @@ Object {
   ],
   "_i1": Object {
     "__name": "Title",
-    "_i0": "title",
+    "_i0": Object {
+      "__name": "t_TITLE",
+      "_i0": Object {
+        "__name": "caseInsensitive",
+        "_i0": "TITLE",
+      },
+    },
     "_i1": Object {
       "__name": "words",
       "_i0": Array [
@@ -65754,7 +65934,13 @@ Object {
   ],
   "_i1": Object {
     "__name": "Title",
-    "_i0": "title",
+    "_i0": Object {
+      "__name": "t_TITLE",
+      "_i0": Object {
+        "__name": "caseInsensitive",
+        "_i0": "TITLE",
+      },
+    },
     "_i1": Object {
       "__name": "words",
       "_i0": Array [
@@ -71544,7 +71730,13 @@ Object {
   ],
   "_i1": Object {
     "__name": "Title",
-    "_i0": "title",
+    "_i0": Object {
+      "__name": "t_TITLE",
+      "_i0": Object {
+        "__name": "caseInsensitive",
+        "_i0": "TITLE",
+      },
+    },
     "_i1": Object {
       "__name": "words",
       "_i0": Array [
@@ -73206,7 +73398,13 @@ Object {
   ],
   "_i1": Object {
     "__name": "Title",
-    "_i0": "title",
+    "_i0": Object {
+      "__name": "t_TITLE",
+      "_i0": Object {
+        "__name": "caseInsensitive",
+        "_i0": "TITLE",
+      },
+    },
     "_i1": Object {
       "__name": "words",
       "_i0": Array [
@@ -74368,7 +74566,13 @@ Object {
   ],
   "_i1": Object {
     "__name": "Title",
-    "_i0": "title",
+    "_i0": Object {
+      "__name": "t_TITLE",
+      "_i0": Object {
+        "__name": "caseInsensitive",
+        "_i0": "TITLE",
+      },
+    },
     "_i1": Object {
       "__name": "words",
       "_i0": Array [
@@ -75330,7 +75534,13 @@ Object {
   ],
   "_i1": Object {
     "__name": "Title",
-    "_i0": "title",
+    "_i0": Object {
+      "__name": "t_TITLE",
+      "_i0": Object {
+        "__name": "caseInsensitive",
+        "_i0": "TITLE",
+      },
+    },
     "_i1": Object {
       "__name": "words",
       "_i0": Array [
@@ -76672,7 +76882,13 @@ Object {
   ],
   "_i1": Object {
     "__name": "Title",
-    "_i0": "title",
+    "_i0": Object {
+      "__name": "t_TITLE",
+      "_i0": Object {
+        "__name": "caseInsensitive",
+        "_i0": "TITLE",
+      },
+    },
     "_i1": Object {
       "__name": "words",
       "_i0": Array [

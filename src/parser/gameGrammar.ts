@@ -175,13 +175,26 @@ export const STRINGTOKEN_GRAMMAR = `
         | t_SFX9
 
     // METADATA Tokens
+    t_TITLE = caseInsensitive<"TITLE">
+    t_AUTHOR = caseInsensitive<"AUTHOR">
+    t_HOMEPAGE = caseInsensitive<"HOMEPAGE">
+    t_YOUTUBE = caseInsensitive<"YOUTUBE">
+    t_ZOOMSCREEN = caseInsensitive<"ZOOMSCREEN">
+    t_FLICKSCREEN = caseInsensitive<"FLICKSCREEN">
+    t_REQUIRE_PLAYER_MOVEMENT = caseInsensitive<"REQUIRE_PLAYER_MOVEMENT">
+    t_RUN_RULES_ON_LEVEL_START = caseInsensitive<"RUN_RULES_ON_LEVEL_START">
+    t_COLOR_PALETTE = caseInsensitive<"COLOR_PALETTE">
+    t_BACKGROUND_COLOR = caseInsensitive<"BACKGROUND_COLOR">
+    t_TEXT_COLOR = caseInsensitive<"TEXT_COLOR">
+    t_REALTIME_INTERVAL = caseInsensitive<"REALTIME_INTERVAL">
+    t_KEY_REPEAT_INTERVAL = caseInsensitive<"KEY_REPEAT_INTERVAL">
+    t_AGAIN_INTERVAL = caseInsensitive<"AGAIN_INTERVAL">
+
     t_NOACTION = caseInsensitive<"NOACTION">
     t_NOUNDO = caseInsensitive<"NOUNDO">
-    t_RUN_RULES_ON_LEVEL_START = caseInsensitive<"RUN_RULES_ON_LEVEL_START">
     t_NOREPEAT_ACTION = caseInsensitive<"NOREPEAT_ACTION">
     t_THROTTLE_MOVEMENT = caseInsensitive<"THROTTLE_MOVEMENT">
     t_NORESTART = caseInsensitive<"NORESTART">
-    t_REQUIRE_PLAYER_MOVEMENT = caseInsensitive<"REQUIRE_PLAYER_MOVEMENT">
     t_VERBOSE_LOGGING = caseInsensitive<"VERBOSE_LOGGING">
 
     t_TRANSPARENT = caseInsensitive<"TRANSPARENT">
@@ -231,20 +244,20 @@ export const METADATA_GRAMMAR = `
         | t_NORESTART
         | t_VERBOSE_LOGGING
 
-    Title = "title" words
-    Author = "author" words
-    Homepage = "homepage" words
-    Youtube = "youtube" words
-    Zoomscreen = "zoomscreen" widthAndHeight
-    Flickscreen = "flickscreen" widthAndHeight
+    Title = t_TITLE words
+    Author = t_AUTHOR words
+    Homepage = t_HOMEPAGE words
+    Youtube = t_YOUTUBE words
+    Zoomscreen = t_ZOOMSCREEN widthAndHeight
+    Flickscreen = t_FLICKSCREEN widthAndHeight
     RequirePlayerMovement = t_REQUIRE_PLAYER_MOVEMENT "off"?
     RunRulesOnLevelStart = t_RUN_RULES_ON_LEVEL_START "true"?
-    ColorPalette = "color_palette" words
-    BackgroundColor = "background_color" colorNameOrHex
-    TextColor = "text_color" colorNameOrHex
-    RealtimeInterval = "realtime_interval" decimal
-    KeyRepeatInterval = "key_repeat_interval" decimal
-    AgainInterval = "again_interval" decimal
+    ColorPalette = t_COLOR_PALETTE words
+    BackgroundColor = t_BACKGROUND_COLOR colorNameOrHex
+    TextColor = t_TEXT_COLOR colorNameOrHex
+    RealtimeInterval = t_REALTIME_INTERVAL decimal
+    KeyRepeatInterval = t_KEY_REPEAT_INTERVAL decimal
+    AgainInterval = t_AGAIN_INTERVAL decimal
 
     widthAndHeight = integer "x" integer
 `

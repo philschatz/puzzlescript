@@ -216,9 +216,9 @@ class UI {
     }
 
     setPixel(x: number, y: number, hex: string) {
-        // if (process.env['NODE_ENV'] !== 'production') {
-        //     drawPixelChar(x, y, hex)
-        // } else {
+        if (process.env['NODE_ENV'] !== 'production') {
+            drawPixelChar(x, y, hex)
+        } else {
             if (!this._renderedPixels[y]) {
                 this._renderedPixels[y] = []
             }
@@ -226,7 +226,7 @@ class UI {
                 drawPixelChar(x, y, hex)
                 this._renderedPixels[y][x] = hex
             }
-        // }
+        }
     }
 
     // Returns true if the window was moved (so we can re-render the screen)

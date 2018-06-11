@@ -49,7 +49,7 @@ async function run() {
     for (const filePath of gists) {
         games.push({
             id: path.basename(path.dirname(filePath)),
-            title: (await firstline(filePath)).replace('title ', ''),
+            title: (await firstline(filePath)).replace(/title /i, ''),
             filePath: filePath
         })
     }
