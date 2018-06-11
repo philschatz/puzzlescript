@@ -358,7 +358,7 @@ async function run() {
                 UI.drawCell(cell, false)
             }
 
-            const msg = `Level: ${chosenLevel} Tick: ${tickNum} took ${Date.now() - startTime}ms. Moves: ${keypresses.join('')} Changed: ${[...changedCells].map(cell => cell.rowIndex + ':' + cell.colIndex).join(', ') + '   '}`
+            const msg = `Level: ${chosenLevel} Tick: ${tickNum} took ${Date.now() - startTime}ms. Moves: ${[...keypresses].reverse().join('').substring(0, 20)}`
             UI.writeDebug(msg.substring(0, 160))
 
             await sleep(Math.max(200 - (Date.now() - startTime), 0))

@@ -107,7 +107,7 @@ export function getRuleSemantics(lookup: LookupHelper) {
         },
         Rule: function (debugFlag, modifiers, conditions, _arrow, _unusuedModifer, actions, commands, optionalMessageCommand, _whitespace) {
             const modifiers2: RULE_MODIFIER[] = _.flatten(modifiers.parse())
-            const commands2: AbstractCommand[] = commands.parse()
+            const commands2: AbstractCommand[] = commands.parse().filter(c => !!c) // remove nulls (like an invalid sound effect... e.g. "Fish Friend")
             const optionalMessageCommand2: MessageCommand = optionalMessageCommand.parse()
 
             const isAgain = !!commands2.filter(c => c.getType() === COMMAND_TYPE.AGAIN)[0]
@@ -184,7 +184,13 @@ export function getRuleSemantics(lookup: LookupHelper) {
                 case 'SFX8':
                 case 'SFX9':
                 case 'SFX10':
-                    return new SoundCommand(this.source, lookup.lookupSoundEffect(type2))
+                    const sound = lookup.lookupSoundEffect(type2)
+                    if (!sound) {
+                        console.warn(this.toString())
+                        console.warn(`WARNING: Sound not found`)
+                        return null // this will get filtered out when we create the Rule
+                    }
+                    return new SoundCommand(this.source, sound)
                 default:
                     throw new Error(`BUG: Fallthrough. Did not match "${type2}"`)
             }

@@ -127,7 +127,7 @@ async function run() {
                         maxTickAndRenderTime = Math.max(maxTickAndRenderTime, Date.now() - startTime)
                     }
 
-                    const msg = `Tick ${i} of "${data.title}" (took ${Date.now() - startTime}ms) Changed: ${[...changedCells].map(cell => cell.rowIndex + ':' + cell.colIndex).join(', ') + '   '}`
+                    const msg = `Tick ${i} of "${data.title}" (took ${Date.now() - startTime}ms)`
                     UI.writeDebug(msg.substring(0, 160))
 
                     // if (soundToPlay) {
