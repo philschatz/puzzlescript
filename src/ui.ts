@@ -352,7 +352,6 @@ class UI {
         }
 
         const spritesForDebugging = cell.getSprites()
-        const pixels: IColor[][] = this.getPixelsForCell(cell)
 
         let { isOnScreen, cellStartX, cellStartY } = this.cellPosToXY(cell)
 
@@ -370,6 +369,7 @@ class UI {
         if (!isOnScreen) {
             return // no need to render because it is off-screen
         }
+        const pixels: IColor[][] = this.getPixelsForCell(cell)
         pixels.forEach((spriteRow, spriteRowIndex) => {
             spriteRow.forEach((spriteColor: IColor, spriteColIndex) => {
                 const x = cellStartX + (spriteColIndex * 2) // Use 2 characters for 1 pixel on the X-axis.

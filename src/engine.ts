@@ -256,7 +256,11 @@ export default class Engine extends EventEmitter2 {
         // We may have mutated the same cell 4 times (e.g. [Player]->[>Player]) so consolidate
         const changedCells = new Set<Cell>()
         const commands = new Set<AbstractCommand>()
+        let didSomeSpriteChange = false
         for (const mutation of changedMutations) {
+            if (mutation.getDidSpritesChange()) {
+                didSomeSpriteChange = true
+            }
             if (mutation.hasCell()) {
                 changedCells.add(mutation.getCell())
             } else {
@@ -266,7 +270,7 @@ export default class Engine extends EventEmitter2 {
             //     changedCells.set(mutation.cell, mutation.didSpritesChange)
             // }
         }
-        return {evaluatedRules: evaluatedRules, changedCells: changedCells, commands: commands}
+        return {evaluatedRules: evaluatedRules, changedCells: changedCells, commands: commands, didSomeSpriteChange: didSomeSpriteChange}
     }
 
     tickMoveSprites(changedCells: Set<Cell>) {
@@ -352,11 +356,17 @@ export default class Engine extends EventEmitter2 {
             this._pendingPlayerWantsToMove = null
         }
 
-        const {changedCells: changedCellMutations2, evaluatedRules, commands} = this.tickUpdateCells()
+        const {changedCells: changedCellMutations2, evaluatedRules, commands, didSomeSpriteChange} = this.tickUpdateCells()
         changedCellMutations = setAddAll(changedCellMutations, changedCellMutations2)
 
-        // Save the "AGAIN" rules that ran so they can be re-evaluated at the next tick
-        this._hasAgainThatNeedsToRun = !!evaluatedRules.filter(r => r.isAgain())[0]
+        // Continue evaluating again rules only when some sprites have changed
+        // The didSpritesChange logic is not correct.
+        // a rule might add a sprite, and then another rule might remove a sprite.
+        // We need to compare the set of sprites before and after ALL rules ran.
+        // This will likely be implemented as part of UNDO or CHECKPOINT.
+        if (didSomeSpriteChange) {
+            this._hasAgainThatNeedsToRun = !!evaluatedRules.filter(r => r.isAgain())[0]
+        }
         const movedCells = this.tickMoveSprites(new Set<Cell>(changedCellMutations.keys()))
         const {changedCells: changedCellsLate, evaluatedRules: evaluatedRulesLate, commands: commandsLate} = this.tickUpdateCellsLate()
         return {
@@ -412,7 +422,14 @@ export default class Engine extends EventEmitter2 {
     }
 
     press(direction: RULE_DIRECTION_ABSOLUTE) {
+        // Should disable keypresses if `AGAIN` is running.
+        // It is commented because the didSpritesChange logic is not correct.
+        // a rule might add a sprite, and then another rule might remove a sprite.
+        // We need to compare the set of sprites before and after ALL rules ran.
+        // This will likely be implemented as part of UNDO or CHECKPOINT.
+        // if (!this.hasAgain()) {
         this._pendingPlayerWantsToMove = direction
+        // }
     }
     pressUp() {
         this.press(RULE_DIRECTION_ABSOLUTE.UP)
