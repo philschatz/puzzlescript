@@ -284,6 +284,98 @@ class UI {
         // }
     }
 
+    recenterPlayerIfNeeded(playerCell: Cell, isOnScreen: boolean) {
+        let boundingBoxLeft
+        let boundingBoxTop
+        let boundingBoxWidth
+        let boundingBoxHeight
+
+        const windowLeft = this._windowOffsetColStart
+        const windowTop = this._windowOffsetRowStart
+        let windowWidth
+        let windowHeight
+
+        const flickScreen = this._gameData.metadata.flickscreen
+        const zoomScreen = this._gameData.metadata.zoomscreen
+        const terminalWidth = Math.floor(process.stdout.columns / (5 * 2))
+        const terminalHeight = Math.floor(process.stdout.rows / 5)
+
+        if (flickScreen) {
+            boundingBoxTop = playerCell.rowIndex - (playerCell.rowIndex % flickScreen.height)
+            boundingBoxLeft = playerCell.colIndex - (playerCell.colIndex % flickScreen.width)
+            boundingBoxHeight = flickScreen.height
+            boundingBoxWidth = flickScreen.width
+        } else {
+            boundingBoxLeft = 0
+            boundingBoxTop = 0
+            boundingBoxHeight = this._engine.currentLevel.length
+            boundingBoxWidth = this._engine.currentLevel[0].length
+        }
+
+        if (zoomScreen) {
+            windowHeight = Math.min(zoomScreen.height, terminalHeight)
+            windowWidth = Math.min(zoomScreen.width, terminalWidth)
+        } else {
+            windowHeight = terminalHeight
+            windowWidth = terminalWidth
+        }
+
+
+        // If the boundingbox is larger than the window then we need to apply the zoom
+        // which means we need to pan whenever the player moves out of the middle 1/2 of
+        // the screen.
+        if (boundingBoxHeight > windowHeight || boundingBoxWidth > windowWidth) {
+            if (windowLeft + Math.round(windowWidth / 4) <= playerCell.colIndex &&
+                windowLeft + Math.round(windowWidth * 3 / 4) >= playerCell.colIndex &&
+                windowTop + Math.round(windowHeight / 4) <= playerCell.rowIndex &&
+                windowTop + Math.round(windowHeight * 3 / 4) >= playerCell.rowIndex) {
+                // cell is within the middle of the window.
+                // No need to do anything
+                if (!isOnScreen) {
+                    throw new Error(`BUG: Player should be on-screen. weird that they are not`)
+                }
+            } else {
+                // Move the screen so that the player is centered*
+                // Except when we are at one of the edges of the level/flickscreen
+                let newWindowLeft = playerCell.colIndex - Math.round(windowWidth / 2)
+                let newWindowTop = playerCell.rowIndex - Math.round(windowHeight / 2)
+
+                newWindowLeft = Math.max(newWindowLeft, boundingBoxLeft)
+                newWindowTop = Math.max(newWindowTop, boundingBoxTop)
+
+                // TODO: Check the far sides of the bounding box (right, bottom)
+                if (newWindowLeft + windowWidth > boundingBoxLeft + boundingBoxWidth) {
+                    newWindowLeft = boundingBoxLeft + boundingBoxWidth - windowWidth
+                }
+                if (newWindowTop + windowHeight > boundingBoxTop + boundingBoxHeight) {
+                    newWindowTop = boundingBoxTop + boundingBoxHeight - windowHeight
+                }
+
+                // Only recenter the axis that moved to be out-of-center
+                let didADirectionChange = false
+                if (newWindowLeft !== this._windowOffsetColStart) {
+                    this._windowOffsetColStart = newWindowLeft
+                    didADirectionChange = true
+                }
+                if (newWindowTop !== this._windowOffsetRowStart) {
+                    this._windowOffsetRowStart = newWindowTop
+                    didADirectionChange = true
+                }
+                return didADirectionChange
+            }
+        } else {
+            // just ensure that the player is on the screen
+            if (isOnScreen) {
+            } else {
+                this._windowOffsetColStart = boundingBoxLeft
+                this._windowOffsetRowStart = boundingBoxTop
+                return true
+            }
+        }
+
+        return false
+    }
+
     drawCell(cell: Cell, dontRestoreCursor: boolean) {
         const { rowIndex, colIndex } = cell
         if (!supportsColor.stdout) {
@@ -300,50 +392,10 @@ class UI {
         // move the screen so that they are visible.
         const cellHasPlayer = this._gameData.getPlayer().matchesCell(cell)
         if (cellHasPlayer) {
-            if (this._gameData.metadata.zoomscreen || this._enabledZoomScreenBecauseSmallTerminal) {
-                // Check if we have a zoomescreen (could be because terminal is too small)
-                // If so, the player must remain in the middle 1/2 of the screen.
-                // We don't do exact center because we would need to redraw a bunch of cells
-                // all the time.
-                const screenColPos = cell.colIndex - this._windowOffsetColStart
-                const screenRowPos = cell.rowIndex - this._windowOffsetRowStart
-                const isPlayerInMiddleHoriz = this._windowOffsetWidth / 4 < screenColPos && screenColPos < (this._windowOffsetWidth * 3 / 4)
-                const isPlayerInMiddleVert = this._windowOffsetHeight / 4 < screenRowPos && screenRowPos < (this._windowOffsetHeight * 3 / 4)
-                if (!(isPlayerInMiddleHoriz && isPlayerInMiddleVert)) {
-                    // Check to see if we need to center the player or not.
-                    // If we are at the edge of the screen then we do not need to recenter
-                    const newColStart = cell.colIndex - Math.floor(this._windowOffsetWidth / 2)
-                    const newRowStart = cell.rowIndex - Math.floor(this._windowOffsetHeight / 2)
-                    if ((newColStart >= 0 || this._windowOffsetColStart > 0) || (newRowStart >= 0 || this._windowOffsetRowStart > 0)) {
-                        if (Math.max(0, newColStart) !== this._windowOffsetColStart || Math.max(0, newRowStart) !== this._windowOffsetRowStart) {
-                            this._windowOffsetColStart = Math.max(0, newColStart)
-                            this._windowOffsetRowStart = Math.max(0, newRowStart)
-                            return this.renderScreen()
-                        }
-                    }
-
-                    if ((newColStart === 0 && this._windowOffsetColStart !== 0) || (newRowStart === 0 && this._windowOffsetRowStart !== 0)) {
-                        return this.renderScreen()
-                    }
-
-                    // return this.zoomScreenToShowPlayer(cell)
-                }
-
-                if (!isOnScreen) {
-                    throw new Error(`BUG: Player should be on screen by now`)
-                }
-
-            } else {
-                // not onScreen. So move the screen so the player is visible
-                if (this._gameData.metadata.flickscreen) {
-                    // Flick the screen over and re-render the whole screen (hence the `return`)
-                    return this.flickScreenToShowPlayer(cell)
-                } else if (this._gameData.metadata.zoomscreen || this._enabledZoomScreenBecauseSmallTerminal) {
-                    return this.zoomScreenToShowPlayer(cell)
-                } else {
-                    return this.enableZoomScreenBecauseSmallTerminal()
-                }
+            if (this.recenterPlayerIfNeeded(cell, isOnScreen)) {
+                return this.renderScreen()
             }
+            // otherwise, keep rendering cells like normal
         }
 
         if (!isOnScreen) {
