@@ -7,6 +7,11 @@ import { IColor } from './models/colors'
 import { GameEngine, Cell } from './engine'
 import { RULE_DIRECTION_ABSOLUTE } from './util';
 
+const SPRITE_WIDTH = 5
+const SPRITE_HEIGHT = 5
+const PIXEL_WIDTH = 2 // number of characters in the terminal used to represent a pixel
+const PIXEL_HEIGHT = 1
+
 // Determine if this
 // 'truecolor' if this terminal supports 16m colors. 256 colors otherwise
 const supports16mColors = process.env['COLORTERM'] === 'truecolor'
@@ -206,12 +211,12 @@ class UI {
                 isOnScreen = false
             }
         }
-        cellStartX = (colIndex - this._windowOffsetColStart) * 5 /*pixels*/ * 2 /*characters to make a pixel squareish*/
-        cellStartY = (rowIndex - this._windowOffsetRowStart) * 5 /*pixels*/ + 1 // y is 1-based
+        cellStartX = (colIndex - this._windowOffsetColStart) * SPRITE_WIDTH
+        cellStartY = (rowIndex - this._windowOffsetRowStart) * SPRITE_HEIGHT /*pixels*/ + 1 // y is 1-based
 
         // Check if the cell can be completely drawn on the screen. If not, print ellipses
-        const cellIsTooWide = (cellStartX + 5 * 2) > process.stdout.columns // 10 because we print 2 chars per pixel
-        const cellIsTooHigh = (cellStartY + 5) > process.stdout.rows
+        const cellIsTooWide = (cellStartX + SPRITE_WIDTH) * PIXEL_WIDTH > process.stdout.columns // 10 because we print 2 chars per pixel
+        const cellIsTooHigh = (cellStartY + SPRITE_HEIGHT) * PIXEL_HEIGHT > process.stdout.rows
         if (cellIsTooWide || cellIsTooHigh) {
             // do not draw the cell
             isOnScreen = false
@@ -223,14 +228,15 @@ class UI {
         if (!char) {
             char = ' '
         }
-        if (char.length !== 1) {
-            throw new Error(`BUG: Expected char to be of length 1`)
+        if (char.length > 2) {
+            throw new Error(`BUG: Expected char to be of length 0, 1, or 2`)
         }
         if (!this._renderedPixels[y]) {
             this._renderedPixels[y] = []
         }
         if (this._renderedPixels[y][x] !== hex) {
-            drawPixelChar(x, y, hex, char)
+            drawPixelChar(x * PIXEL_WIDTH, y, hex, char[0] || ' ')
+            drawPixelChar(x * PIXEL_WIDTH + 1, y, hex, char[1] || ' ')
             this._renderedPixels[y][x] = hex
         }
     }
@@ -249,8 +255,8 @@ class UI {
 
         const flickScreen = this._gameData.metadata.flickscreen
         const zoomScreen = this._gameData.metadata.zoomscreen
-        const terminalWidth = Math.floor(process.stdout.columns / (5 * 2))
-        const terminalHeight = Math.floor(process.stdout.rows / 5)
+        const terminalWidth = Math.floor(process.stdout.columns / (SPRITE_WIDTH * PIXEL_WIDTH)) - PIXEL_WIDTH // just in case
+        const terminalHeight = Math.floor(process.stdout.rows / (SPRITE_HEIGHT * PIXEL_HEIGHT))
 
         if (flickScreen) {
             boundingBoxTop = playerCell.rowIndex - (playerCell.rowIndex % flickScreen.height)
@@ -378,7 +384,7 @@ class UI {
         const pixels: IColor[][] = this.getPixelsForCell(cell)
         pixels.forEach((spriteRow, spriteRowIndex) => {
             spriteRow.forEach((spriteColor: IColor, spriteColIndex) => {
-                const x = cellStartX + (spriteColIndex * 2) // Use 2 characters for 1 pixel on the X-axis.
+                const x = cellStartX + spriteColIndex
                 const y = cellStartY + spriteRowIndex
 
                 // Don't draw below the edge of the screen. Otherwise, bad scrolling things will happen
@@ -387,10 +393,6 @@ class UI {
                 }
 
                 let color: IColor
-
-                // Always draw a transparent character so we can see if something is not rendering
-                // this.setPixel(x, y, '#ffffff', '░')
-                // this.setPixel(x + 1, y, '#ffffff', '░') // double-width because the console is narrow
 
                 if (spriteColor) {
                     if (!spriteColor.isTransparent()) {
@@ -406,7 +408,6 @@ class UI {
                     const hex = color.toHex()
 
                     this.setPixel(x, y, hex)
-                    this.setPixel(x + 1, y, hex) // double-width because the console is narrow
 
                     // Print a debug number which contains the number of sprites in this cell
                     // Change the foreground color to be black if the color is light
@@ -446,15 +447,13 @@ class UI {
                                 spriteName = `${spriteName.substring(0, 5)}.${spriteName.substring(spriteName.length - 4)}`
                             }
                             const msg = `${spriteName.substring(spriteColIndex * 2, spriteColIndex * 2 + 2)}`
-                            this.setPixel(x, y, hex, msg[0])
-                            this.setPixel(x + 1, y, hex, msg[1])
+                            this.setPixel(x, y, hex, msg.substring(0, 2))
                         }
                         if (spriteRowIndex === 4 && spriteColIndex === 4) {
                             if (spritesForDebugging.length > 9) {
-                                this.setPixel(x, y, hex, `${spritesForDebugging.length}`[0])
-                                this.setPixel(x + 1, y, hex, `${spritesForDebugging.length}`[1])
+                                this.setPixel(x, y, hex, `${spritesForDebugging.length}`)
                             } else {
-                                this.setPixel(x + 1, y, hex, `${spritesForDebugging.length}`)
+                                this.setPixel(x, y, hex, ` ${spritesForDebugging.length}`)
                             }
                         }
                     }
