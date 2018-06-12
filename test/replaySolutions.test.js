@@ -3,9 +3,10 @@ const fs = require('fs')
 const path = require('path')
 const pify = require('pify')
 const glob = require('glob')
-const { default: Engine } = require('../src/engine')
+const { LevelEngine } = require('../src/engine')
 const { default: Parser } = require('../src/parser/parser')
 const { default: UI } = require('../src/ui')
+const { RULE_DIRECTION_ABSOLUTE } = require('../src/util')
 
 const SOLUTION_ROOT = path.join(__dirname, '../gist-solutions/')
 const solutionFiles = fs.readdirSync(SOLUTION_ROOT)
@@ -18,7 +19,7 @@ function parseEngine(code, levelNum = 0) {
     const { data, error } = Parser.parse(code)
     expect(error && error.message).toBeFalsy() // Use && so the error messages are shorter
 
-    const engine = new Engine(data)
+    const engine = new LevelEngine(data)
     return { engine, data }
 }
 
@@ -52,11 +53,11 @@ describe('replays levels of games', () => {
                 for (let i = 0; i < keypresses.length; i++) {
                     const key = keypresses[i]
                     switch(key) {
-                        case 'W': engine.pressUp(); break
-                        case 'S': engine.pressDown(); break
-                        case 'A': engine.pressLeft(); break
-                        case 'D': engine.pressRight(); break
-                        case 'X': engine.pressAction(); break
+                        case 'W': engine.press(RULE_DIRECTION_ABSOLUTE.UP); break
+                        case 'S': engine.press(RULE_DIRECTION_ABSOLUTE.DOWN); break
+                        case 'A': engine.press(RULE_DIRECTION_ABSOLUTE.LEFT); break
+                        case 'D': engine.press(RULE_DIRECTION_ABSOLUTE.RIGHT); break
+                        case 'X': engine.press(RULE_DIRECTION_ABSOLUTE.ACTION); break
                         case '.':
                         case ',':
                             break

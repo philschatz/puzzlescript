@@ -1,6 +1,6 @@
 /* eslint-env jasmine */
 const { default: Parser } = require('../src/parser/parser')
-const { default: Engine } = require('../src/engine')
+const { GameEngine } = require('../src/engine')
 const { default: UI } = require('../src/ui')
 const { lookupColorPalette } = require('../src/colors')
 
@@ -9,8 +9,8 @@ const C_BLACK = { r: 0, g: 0, b: 0 }
 
 function parseAndReturnFirstSpritePixels(code) {
     const { data } = Parser.parse(code)
-    const engine = new Engine(data)
-    engine.setLevel(0)
+    const engine = new GameEngine()
+    engine.setGame(data, 0)
     const cell = data.levels[0].getRows()[0][0]
     // console.log(cell.getSprites())
     UI.setGame(engine)

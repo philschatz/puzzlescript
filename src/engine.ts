@@ -14,7 +14,7 @@ const MAX_REPEATS = 10
 
 // This Object exists so the UI has something to bind to
 export class Cell {
-    _engine: Engine
+    _engine: LevelEngine
     // In the original implementation, wantsToMove is stored for the collisionLayer,
     // not on the sprite. Since we do not do that, we have to transfer the wantsToMove
     // when a sprite in a collisionLayer is swapped with another sprite in the same layer.
@@ -23,7 +23,7 @@ export class Cell {
     rowIndex: number
     colIndex: number
 
-    constructor(engine: Engine, sprites: Set<GameSprite>, rowIndex: number, colIndex: number) {
+    constructor(engine: LevelEngine, sprites: Set<GameSprite>, rowIndex: number, colIndex: number) {
         this._engine = engine
         this.rowIndex = rowIndex
         this.colIndex = colIndex
@@ -143,7 +143,7 @@ export class Cell {
     }
 }
 
-export default class Engine extends EventEmitter2 {
+export class LevelEngine extends EventEmitter2 {
     gameData: GameData
     currentLevel: Cell[][]
     _pendingPlayerWantsToMove: RULE_DIRECTION_ABSOLUTE
@@ -431,24 +431,81 @@ export default class Engine extends EventEmitter2 {
         this._pendingPlayerWantsToMove = direction
         // }
     }
-    pressUp() {
-        this.press(RULE_DIRECTION_ABSOLUTE.UP)
-    }
-    pressDown() {
-        this.press(RULE_DIRECTION_ABSOLUTE.DOWN)
-    }
-    pressLeft() {
-        this.press(RULE_DIRECTION_ABSOLUTE.LEFT)
-    }
-    pressRight() {
-        this.press(RULE_DIRECTION_ABSOLUTE.RIGHT)
-    }
-    pressAction() {
-        this.press(RULE_DIRECTION_ABSOLUTE.ACTION)
-    }
-
     pressRestart(levelNum) {
         this.setLevel(levelNum)
     }
     pressUndo() { }
+}
+
+export class GameEngine {
+    _levelEngine: LevelEngine
+    _currentLevelNum: number
+    setGame(gameData: GameData, levelNum: number) {
+        this._levelEngine = new LevelEngine(gameData)
+        this.setLevel(levelNum)
+    }
+    getGameData() {
+        return this._levelEngine.gameData
+    }
+    getCurrentLevel() {
+        return this._levelEngine.currentLevel
+    }
+    getCurrentLevelNum() {
+        return this._currentLevelNum
+    }
+    setLevel(levelNum: number) {
+        if (this.getGameData().levels[levelNum].isMap()) {
+            this._levelEngine.setLevel(levelNum)
+        } else {
+            // TODO: no need to set the levelEngine when the current level is a Message
+        }
+        this._currentLevelNum = levelNum
+    }
+    tick() {
+        const hasAgain = this._levelEngine.hasAgain()
+        const {changedCells, soundToPlay, isWinning} = this._levelEngine.tick()
+
+        let didWinGame = false
+        if (isWinning) {
+            if (this._currentLevelNum + 1 === this._levelEngine.gameData.levels.length - 1) {
+                didWinGame = true
+            } else {
+                this.setLevel(this._currentLevelNum + 1)
+            }
+        }
+        return {
+            changedCells,
+            soundToPlay,
+            didWinGame,
+            didLevelChange: isWinning,
+            wasAgainTick: hasAgain
+        }
+    }
+
+    press(direction: RULE_DIRECTION_ABSOLUTE) {
+        return this._levelEngine.press(direction)
+    }
+    pressUp() {
+        this._levelEngine.press(RULE_DIRECTION_ABSOLUTE.UP)
+    }
+    pressDown() {
+        this._levelEngine.press(RULE_DIRECTION_ABSOLUTE.DOWN)
+    }
+    pressLeft() {
+        this._levelEngine.press(RULE_DIRECTION_ABSOLUTE.LEFT)
+    }
+    pressRight() {
+        this._levelEngine.press(RULE_DIRECTION_ABSOLUTE.RIGHT)
+    }
+    pressAction() {
+        this._levelEngine.press(RULE_DIRECTION_ABSOLUTE.ACTION)
+    }
+
+    pressRestart(levelNum) {
+        this._levelEngine.pressRestart(levelNum)
+    }
+    pressUndo() {
+        this._levelEngine.pressUndo()
+    }
+
 }

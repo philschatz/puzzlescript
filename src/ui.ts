@@ -4,7 +4,7 @@ import * as supportsColor from 'supports-color'
 import { GameSprite } from './models/tile'
 import { GameData } from './models/game'
 import { IColor } from './models/colors'
-import Engine, { Cell } from './engine'
+import { GameEngine, Cell } from './engine'
 import { RULE_DIRECTION_ABSOLUTE } from './util';
 
 // Determine if this
@@ -37,14 +37,14 @@ function showCursor() {
 function clearScreen() {
     process.stdout.write(ansiEscapes.clearScreen)
 }
-function drawPixelChar(x, y, hex, char = ' ') {
-    setBgColor(hex)
-    moveTo(x, y)
-    process.stdout.write(char)
-}
 function writeTextAt(x, y, msg) {
     moveTo(x, y)
     process.stdout.write(msg)
+}
+function drawPixelChar(x, y, hex, char) {
+    setBgColor(hex)
+    moveTo(x, y)
+    process.stdout.write(char)
 }
 
 class CellColorCache {
@@ -111,7 +111,7 @@ function collapseSpritesToPixels(spritesToDraw: GameSprite[], backgroundColor: I
 
 class UI {
     _gameData: GameData
-    _engine: Engine
+    _engine: GameEngine
     _cellColorCache: CellColorCache
     _renderedPixels: string[][] // string is the hex code of the pixel
     _resizeHandler?: () => void
@@ -126,9 +126,9 @@ class UI {
         this._windowOffsetColStart = 0
         this._windowOffsetRowStart = 0
     }
-    setGame(engine: Engine) {
+    setGame(engine: GameEngine) {
         this._engine = engine
-        this._gameData = engine.gameData
+        this._gameData = engine.getGameData()
         this._cellColorCache.clear()
         this._renderedPixels = []
 
@@ -147,10 +147,9 @@ class UI {
             this._windowOffsetWidth = width
             this._windowOffsetHeight = height
         }
-
     }
     debugRenderScreen() {
-        if (this._engine && this._engine.currentLevel) {
+        if (this._engine) {
             this.renderScreen()
         }
     }
@@ -159,7 +158,7 @@ class UI {
             console.log('Playing a game in the console requires color support. Unfortunately, color is not supported so not rendering (for now). We could just do an ASCII dump or something, using  ░▒▓█ to denote shades of cells')
             return
         }
-        const levelRows = this._engine.currentLevel
+        const levelRows = this._engine.getCurrentLevel()
 
         this._cellColorCache.clear()
         this._renderedPixels = []
@@ -220,17 +219,19 @@ class UI {
         return { isOnScreen, cellStartX, cellStartY }
     }
 
-    setPixel(x: number, y: number, hex: string) {
-        if (process.env['NODE_ENV'] !== 'production') {
-            drawPixelChar(x, y, hex)
-        } else {
-            if (!this._renderedPixels[y]) {
-                this._renderedPixels[y] = []
-            }
-            if (this._renderedPixels[y][x] !== hex) {
-                drawPixelChar(x, y, hex)
-                this._renderedPixels[y][x] = hex
-            }
+    setPixel(x: number, y: number, hex: string, char?: string) {
+        if (!char) {
+            char = ' '
+        }
+        if (char.length !== 1) {
+            throw new Error(`BUG: Expected char to be of length 1`)
+        }
+        if (!this._renderedPixels[y]) {
+            this._renderedPixels[y] = []
+        }
+        if (this._renderedPixels[y][x] !== hex) {
+            drawPixelChar(x, y, hex, char)
+            this._renderedPixels[y][x] = hex
         }
     }
 
@@ -259,8 +260,8 @@ class UI {
         } else {
             boundingBoxLeft = 0
             boundingBoxTop = 0
-            boundingBoxHeight = this._engine.currentLevel.length
-            boundingBoxWidth = this._engine.currentLevel[0].length
+            boundingBoxHeight = this._engine.getCurrentLevel().length
+            boundingBoxWidth = this._engine.getCurrentLevel()[0].length
         }
 
         if (zoomScreen) {
@@ -444,13 +445,16 @@ class UI {
                             if (spriteName.length > 10) {
                                 spriteName = `${spriteName.substring(0, 5)}.${spriteName.substring(spriteName.length - 4)}`
                             }
-                            writeTextAt(x, y, `${spriteName.substring(spriteColIndex * 2, spriteColIndex * 2 + 2)}`)
+                            const msg = `${spriteName.substring(spriteColIndex * 2, spriteColIndex * 2 + 2)}`
+                            this.setPixel(x, y, hex, msg[0])
+                            this.setPixel(x + 1, y, hex, msg[1])
                         }
                         if (spriteRowIndex === 4 && spriteColIndex === 4) {
                             if (spritesForDebugging.length > 9) {
-                                writeTextAt(x, y, `${spritesForDebugging.length}`)
+                                this.setPixel(x, y, hex, `${spritesForDebugging.length}`[0])
+                                this.setPixel(x + 1, y, hex, `${spritesForDebugging.length}`[1])
                             } else {
-                                writeTextAt(x + 1, y, `${spritesForDebugging.length}`)
+                                this.setPixel(x + 1, y, hex, `${spritesForDebugging.length}`)
                             }
                         }
                     }

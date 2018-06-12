@@ -1,5 +1,5 @@
 /* eslint-env jasmine */
-const { default: Engine } = require('../src/engine')
+const { LevelEngine } = require('../src/engine')
 const { default: Parser } = require('../src/parser/parser')
 const { nextRandom, resetRandomSeed, setRandomValuesForTesting, clearRandomValuesForTesting, getRandomSeed } = require('../src/util')
 
@@ -7,7 +7,7 @@ function parseEngine(code) {
     const { data, error } = Parser.parse(code)
     expect(error && error.message).toBeFalsy() // Use && so the error messages are shorter
 
-    const engine = new Engine(data)
+    const engine = new LevelEngine(data)
     engine.setLevel(0)
     return { engine, data }
 }

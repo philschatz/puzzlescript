@@ -6,7 +6,7 @@ import * as pify from 'pify'
 import Parser from './parser/parser'
 import { IGameNode } from './models/game'
 import UI from './ui'
-import Engine from './engine'
+import { GameEngine } from './engine'
 import { setAddAll, RULE_DIRECTION_ABSOLUTE } from './util';
 import { start } from 'repl';
 import { IRule } from './models/rule';
@@ -70,8 +70,8 @@ async function run() {
 
             if (level) {
                 let startTime = Date.now()
-                const engine = new Engine(data)
-                engine.setLevel(data.levels.indexOf(level))
+                const engine = new GameEngine()
+                engine.setGame(data, data.levels.indexOf(level))
                 console.log(`Loading Cells into the level took ${Date.now() - startTime}ms`)
 
                 // engine.on('cell:updated', cell => {

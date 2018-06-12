@@ -1,14 +1,16 @@
 /* eslint-env jasmine */
 const fs = require('fs')
 const path = require('path')
-const { default: Engine } = require('../src/engine')
+const { LevelEngine } = require('../src/engine')
 const { default: Parser } = require('../src/parser/parser')
+const { RULE_DIRECTION_ABSOLUTE } = require('../src/util')
+
 
 function parseEngine(code, levelNum = 0) {
     const { data, error } = Parser.parse(code)
     expect(error && error.message).toBeFalsy() // Use && so the error messages are shorter
 
-    const engine = new Engine(data)
+    const engine = new LevelEngine(data)
     engine.setLevel(levelNum)
     return { engine, data }
 }
@@ -71,7 +73,7 @@ describe('player movement', () => {
 
         const player = data.getPlayer()
         const playerSprite = data._getSpriteByName('player')
-        engine.pressRight()
+        engine.press(RULE_DIRECTION_ABSOLUTE.RIGHT)
         engine.tick()
 
         expect(engine.currentLevel[0][1].getSpritesAsSet().has(playerSprite)).toBe(true)
@@ -134,7 +136,7 @@ describe('player movement', () => {
 
         const player = data.getPlayer()
         const playerSprite = data._getSpriteByName('player')
-        engine.pressRight()
+        engine.press(RULE_DIRECTION_ABSOLUTE.RIGHT)
         engine.tick()
 
         expect(engine.currentLevel[0][0].getSpritesAsSet().has(playerSprite)).toBe(false)
@@ -142,7 +144,7 @@ describe('player movement', () => {
         expect(engine.currentLevel[0][2].getSpritesAsSet().has(playerSprite)).toBe(true)
         expect(engine.currentLevel[0][3].getSpritesAsSet().has(playerSprite)).toBe(false)
 
-        engine.pressRight()
+        engine.press(RULE_DIRECTION_ABSOLUTE.RIGHT)
         engine.tick()
 
         expect(engine.currentLevel[0][0].getSpritesAsSet().has(playerSprite)).toBe(false)
@@ -217,7 +219,7 @@ describe('player movement', () => {
         const player = data.getPlayer()
         const playerSprite = data._getSpriteByName('player')
         const shadowSprite = data._getSpriteByName('shadow')
-        engine.pressRight()
+        engine.press(RULE_DIRECTION_ABSOLUTE.RIGHT)
         engine.tick()
 
         expect(engine.currentLevel[0][0].getSpritesAsSet().has(playerSprite)).toBe(false)
@@ -285,7 +287,7 @@ describe('player movement', () => {
 
         const player = data.getPlayer()
         const playerSprite = data._getSpriteByName('player')
-        engine.pressRight()
+        engine.press(RULE_DIRECTION_ABSOLUTE.RIGHT)
         engine.tick()
 
         expect(engine.currentLevel[0][0].getSpritesAsSet().has(playerSprite)).toBe(false)
@@ -350,7 +352,7 @@ describe('player movement', () => {
 
         const player = data.getPlayer()
         const playerSprite = data._getSpriteByName('player')
-        engine.pressRight()
+        engine.press(RULE_DIRECTION_ABSOLUTE.RIGHT)
         engine.tick()
 
         expect(engine.currentLevel[0][0].getSpritesAsSet().has(playerSprite)).toBe(true)
@@ -410,7 +412,7 @@ describe('player movement', () => {
 
         const player1 = data._getSpriteByName('player1')
         const player2 = data._getSpriteByName('player2')
-        engine.pressRight()
+        engine.press(RULE_DIRECTION_ABSOLUTE.RIGHT)
         engine.tick()
 
         expect(player1.getCellsThatMatch().size).toBe(1)
@@ -427,11 +429,11 @@ describe('player movement', () => {
         const keypresses = LEVEL_SOLUTION.split('')
         for (const key of keypresses) {
             switch(key) {
-                case 'u': engine.pressUp(); break
-                case 'd': engine.pressDown(); break
-                case 'l': engine.pressLeft(); break
-                case 'r': engine.pressRight(); break
-                case 'x': engine.pressAction(); break
+                case 'u': engine.press(RULE_DIRECTION_ABSOLUTE.UP); break
+                case 'd': engine.press(RULE_DIRECTION_ABSOLUTE.DOWN); break
+                case 'l': engine.press(RULE_DIRECTION_ABSOLUTE.LEFT); break
+                case 'r': engine.press(RULE_DIRECTION_ABSOLUTE.RIGHT); break
+                case 'x': engine.press(RULE_DIRECTION_ABSOLUTE.ACTION); break
             }
             const {isWinning} = engine.tick()
             if (isWinning) {

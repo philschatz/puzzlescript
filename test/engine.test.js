@@ -1,6 +1,7 @@
 /* eslint-env jasmine */
-const { default: Engine } = require('../src/engine')
+const { LevelEngine } = require('../src/engine')
 const { default: Parser } = require('../src/parser/parser')
+const { RULE_DIRECTION_ABSOLUTE } = require('../src/util')
 
 
 const EMPTY_GAME = `
@@ -488,7 +489,7 @@ function parseEngine(code) {
     const { data, error } = Parser.parse(code)
     expect(error && error.message).toBeFalsy() // Use && so the error messages are shorter
 
-    const engine = new Engine(data)
+    const engine = new LevelEngine(data)
     engine.setLevel(0)
     return { engine, data }
 }
@@ -504,7 +505,7 @@ describe('engine', () => {
         engine.tick()
         expect(engine.currentLevel[0][0].getSpritesAsSet().has(player)).toBe(true)
 
-        engine.pressRight()
+        engine.press(RULE_DIRECTION_ABSOLUTE.RIGHT)
         engine.tick()
         expect(player.getCellsThatMatch().size).toBe(1)
         expect(engine.currentLevel[0][1].getSpritesAsSet().has(player)).toBe(true)
@@ -516,7 +517,7 @@ describe('engine', () => {
         engine.tick()
         expect(engine.currentLevel[0][0].getSpritesAsSet().has(player)).toBe(true)
 
-        engine.pressRight()
+        engine.press(RULE_DIRECTION_ABSOLUTE.RIGHT)
         engine.tick()
         expect(player.getCellsThatMatch().size).toBe(1)
         expect(engine.currentLevel[0][1].getSpritesAsSet().has(player)).toBe(true)
@@ -1496,7 +1497,7 @@ describe('engine', () => {
         const player = data._getSpriteByName('player')
         const island = data._getSpriteByName('island')
         const playerIsland = data._getSpriteByName('PlayerIsland')
-        engine.pressLeft()
+        engine.press(RULE_DIRECTION_ABSOLUTE.LEFT)
         engine.tick()
         expect(engine.toSnapshot()).toMatchSnapshot()
 
@@ -1566,7 +1567,7 @@ describe('engine', () => {
     `) // end game definition
 
         const player = data._getSpriteByName('player')
-        engine.pressRight()
+        engine.press(RULE_DIRECTION_ABSOLUTE.RIGHT)
         engine.tick()
         expect(engine.toSnapshot()).toMatchSnapshot()
 

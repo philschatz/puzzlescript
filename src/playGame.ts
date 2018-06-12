@@ -11,7 +11,7 @@ import chalk from 'chalk'
 import Parser from './parser/parser'
 import { IGameNode } from './models/game'
 import UI from './ui'
-import Engine from './engine'
+import { GameEngine } from './engine'
 import { setAddAll, RULE_DIRECTION_ABSOLUTE } from './util';
 import { start } from 'repl';
 import { IRule } from './models/rule';
@@ -202,18 +202,9 @@ async function run() {
         // Draw the "last" level (after the messages)
         const level = levels[chosenLevel]
         let startTime = Date.now()
-        const engine = new Engine(data)
-        engine.setLevel(data.levels.indexOf(level))
+        const engine = new GameEngine()
+        engine.setGame(data, data.levels.indexOf(level))
 
-
-        function doMove(direction: RULE_DIRECTION_ABSOLUTE) {
-            engine.press(direction)
-            // const {changedCells} = engine.tick()
-            // // Draw any cells that moved
-            // for (const cell of changedCells) {
-            //     UI.drawCell(cell, false)
-            // }
-        }
 
         function restartLevel() {
             engine.pressRestart(chosenLevel)
@@ -232,23 +223,23 @@ async function run() {
                 case 'w':
                 case '\u001B\u005B\u0041': // UP-ARROW
                     keypresses.push('W')
-                    return doMove(RULE_DIRECTION_ABSOLUTE.UP)
+                    return engine.pressUp()
                 case 's':
                 case '\u001B\u005B\u0042': // DOWN-ARROW
                     keypresses.push('S')
-                    return doMove(RULE_DIRECTION_ABSOLUTE.DOWN)
+                    return engine.pressDown()
                 case 'a':
                 case '\u001B\u005B\u0044': // LEFT-ARROW
                     keypresses.push('A')
-                    return doMove(RULE_DIRECTION_ABSOLUTE.LEFT)
+                    return engine.pressLeft()
                 case 'd':
                 case '\u001B\u005B\u0043': // RIGHT-ARROW
                     keypresses.push('D')
-                    return doMove(RULE_DIRECTION_ABSOLUTE.RIGHT)
+                    return engine.pressRight()
                 case 'x':
                 case ' ':
                     keypresses.push('X')
-                    return doMove(RULE_DIRECTION_ABSOLUTE.ACTION)
+                    return engine.pressAction()
                 case 'r':
                     return restartLevel()
                 case '\u0003': // Ctrl+C
@@ -282,21 +273,11 @@ async function run() {
         let maxTickAndRenderTime = -1
         for (var keyNum = 0; keyNum < ticksToRunFirst.length; keyNum++) {
             switch (ticksToRunFirst[keyNum]) {
-                case 'W':
-                    engine.press(RULE_DIRECTION_ABSOLUTE.UP)
-                    break
-                case 'S':
-                    engine.press(RULE_DIRECTION_ABSOLUTE.DOWN)
-                    break
-                case 'A':
-                    engine.press(RULE_DIRECTION_ABSOLUTE.LEFT)
-                    break
-                case 'D':
-                    engine.press(RULE_DIRECTION_ABSOLUTE.RIGHT)
-                    break
-                case 'X':
-                    engine.press(RULE_DIRECTION_ABSOLUTE.ACTION)
-                    break
+                case 'W': engine.pressUp(); break
+                case 'S': engine.pressDown(); break
+                case 'A': engine.pressLeft(); break
+                case 'D': engine.pressRight(); break
+                case 'X': engine.pressAction(); break
                 case '.':
                 case ',':
                     // just .tick()
@@ -334,8 +315,7 @@ async function run() {
         while(true) {
 
             const startTime = Date.now()
-            const hasAgain = engine.hasAgain()
-            const {changedCells, isWinning, soundToPlay} = engine.tick()
+            const {changedCells, soundToPlay, didLevelChange, wasAgainTick} = engine.tick()
 
             if (soundToPlay) {
                 if (!currentlyPlayingSoundPromise) {
@@ -343,7 +323,7 @@ async function run() {
                 }
             }
 
-            if (isWinning) {
+            if (didLevelChange) {
                 // Save the solution
                 const newSolution = keypresses.join('')
                 if (!recordings[chosenLevel]) {
@@ -354,13 +334,17 @@ async function run() {
                     writeFileSync(solutionsPath, JSON.stringify(recordings, null, 2))
                 }
                 keypresses = []
-                chosenLevel++
+
                 // Skip the messages since they are not implmented yet
-                while(!data.levels[chosenLevel].isMap()) {
-                    chosenLevel++
+                let newLevel = engine.getCurrentLevelNum()
+                while(!data.levels[newLevel].isMap()) {
+                    newLevel++
+                }
+                if (newLevel !== engine.getCurrentLevelNum()) {
+                    engine.setLevel(newLevel)
                 }
 
-                engine.pressRestart(chosenLevel)
+                UI.clearScreen()
                 UI.renderScreen()
 
                 continue
@@ -375,7 +359,7 @@ async function run() {
             UI.writeDebug(msg.substring(0, 160))
 
             await sleep(Math.max(500 - (Date.now() - startTime), 0))
-            if (hasAgain) {
+            if (wasAgainTick) {
                 keypresses.push(',')
             } else {
                 if (changedCells.size > 0) {
