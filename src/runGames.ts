@@ -80,7 +80,7 @@ async function run() {
 
                 UI.setGame(engine)
                 UI.clearScreen()
-                UI.renderScreen()
+                UI.renderScreen(true)
                 UI.writeDebug(`Game: "${data.title}"`)
 
 

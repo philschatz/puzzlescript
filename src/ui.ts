@@ -176,25 +176,27 @@ class UI {
     }
     debugRenderScreen() {
         if (this._engine) {
-            this.renderScreen()
+            this.renderScreen(true)
         }
     }
-    renderScreen() {
+    renderScreen(clearCaches: boolean) {
         if (!supportsColor.stdout) {
             console.log('Playing a game in the console requires color support. Unfortunately, color is not supported so not rendering (for now). We could just do an ASCII dump or something, using  ░▒▓█ to denote shades of cells')
             return
         }
         const levelRows = this._engine.getCurrentLevel()
 
-        this._cellColorCache.clear()
-        this._renderedPixels = []
+        if (clearCaches) {
+            this._cellColorCache.clear()
+            this._renderedPixels = []
+        }
 
         // Handle resize events by redrawing the game. Ooh, we do not have Cells at this point.
         // TODO Run renderScreen on cells from the engine rather than cells from the Level data
         if (!this._resizeHandler) {
             this._resizeHandler = _.debounce(() => {
                 this.clearScreen()
-                this.renderScreen()
+                this.renderScreen(true)
             })
             process.stdout.on('resize', this._resizeHandler)
         }
@@ -263,7 +265,7 @@ class UI {
             this._renderedPixels[y] = []
         }
         const onScreenPixel = this._renderedPixels[y][x]
-        if (!onScreenPixel || onScreenPixel.hex !== hex) {
+        if (!onScreenPixel || onScreenPixel.hex !== hex || onScreenPixel.chars !== chars) {
             if (this.PIXEL_HEIGHT === 1) {
                 drawPixelChar(x * this.PIXEL_WIDTH, y, null, hex, chars[0] || ' ')
                 drawPixelChar(x * this.PIXEL_WIDTH + 1, y, null, hex, chars[1] || ' ')
@@ -416,7 +418,7 @@ class UI {
         const cellHasPlayer = playerTile.matchesCell(cell)
         if (playerTile.getCellsThatMatch().size === 1 && cellHasPlayer) {
             if (this.recenterPlayerIfNeeded(cell, isOnScreen)) {
-                return this.renderScreen()
+                return this.renderScreen(false)
             }
             // otherwise, keep rendering cells like normal
         }

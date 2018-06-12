@@ -221,7 +221,7 @@ async function run() {
 
         function restartLevel() {
             engine.pressRestart(chosenLevel)
-            UI.renderScreen()
+            UI.renderScreen(false)
             keypresses = [] // clear key history
         }
 
@@ -257,7 +257,7 @@ async function run() {
                     return restartLevel()
                 case 'c':
                     UI.clearScreen()
-                    UI.renderScreen()
+                    UI.renderScreen(false)
                     return
                 case '\u0003': // Ctrl+C
                     closeSounds()
@@ -281,7 +281,7 @@ async function run() {
 
         UI.setGame(engine)
         UI.clearScreen()
-        UI.renderScreen()
+        UI.renderScreen(false)
         UI.writeDebug(`Game: "${data.title}"`)
 
         let currentlyPlayingSoundPromise = null // stack the sounds so we know if one is playing
@@ -362,7 +362,7 @@ async function run() {
                 }
 
                 UI.clearScreen()
-                UI.renderScreen()
+                UI.renderScreen(true)
 
                 continue
             }
