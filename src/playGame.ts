@@ -101,6 +101,7 @@ async function run() {
         console.log(`  ${prettyKey('D')} or ${prettyKey('right')} : Move Right`)
         console.log(`  ${prettyKey('X')} or ${prettyKey('space')} : Perform Action`)
         console.log(`  ${prettyKey('R')}            : Restart the current level`)
+        console.log(`  ${prettyKey('C')}            : Clear and redraw the screen`)
         console.log(`  ${prettyKey('esc')}          : Exit the Game`)
         console.log(`-------------------------------------`)
 
@@ -117,6 +118,18 @@ async function run() {
             .filter((l, index) => !(recordings[index] && recordings[index].solution))
             .filter(l => l.isMap())[0]
         )
+
+        // check to see if the terminal is too small
+        if (!UI.willAllLevelsFitOnScreen(data)) {
+            const {useCompressedCharacters} = await inquirer.prompt<{useCompressedCharacters: boolean}>({
+                type: 'confirm',
+                name: 'useCompressedCharacters',
+                message: 'Some of the levels in this game are too large for your terminal. Would you like to use small characters when rendering the game? There may be some graphical artifacts if you choose this option. Also, you can resize your terminal instead.',
+            })
+            if (useCompressedCharacters) {
+                UI.setSmallTerminal(true)
+            }
+        }
 
         let {chosenLevel} = await inquirer.prompt<{chosenLevel: number}>([{
             type: 'list',
@@ -142,8 +155,8 @@ async function run() {
                         height = zoomscreen.height
                         width = zoomscreen.width
                     }
-                    const isTooWide = process.stdout.columns < width * 5 * 2
-                    const isTooTall = process.stdout.rows < height * 5
+                    const isTooWide = process.stdout.columns < width * 5 * UI.PIXEL_WIDTH
+                    const isTooTall = process.stdout.rows < height * 5 * UI.PIXEL_HEIGHT
                     let message = ''
                     if (isTooWide && isTooTall) {
                         message = `(too tall & wide for your terminal)`
@@ -242,6 +255,10 @@ async function run() {
                     return engine.pressAction()
                 case 'r':
                     return restartLevel()
+                case 'c':
+                    UI.clearScreen()
+                    UI.renderScreen()
+                    return
                 case '\u0003': // Ctrl+C
                     closeSounds()
                     return process.exit(1)

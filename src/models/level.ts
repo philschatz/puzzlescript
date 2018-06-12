@@ -30,6 +30,12 @@ export class LevelMap extends BaseForLines implements ILevel {
     getRows() {
         return this._rows
     }
+    getWidth() {
+        return this._rows[0].length
+    }
+    getHeight() {
+        return this._rows.length
+    }
 }
 
 export class MessageLevel extends BaseForLines implements ILevel {

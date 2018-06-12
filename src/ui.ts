@@ -1,3 +1,4 @@
+import * as _ from 'lodash'
 import * as ansiStyles from 'ansi-styles'
 import * as ansiEscapes from 'ansi-escapes'
 import * as supportsColor from 'supports-color'
@@ -9,8 +10,6 @@ import { RULE_DIRECTION_ABSOLUTE } from './util';
 
 const SPRITE_WIDTH = 5
 const SPRITE_HEIGHT = 5
-const PIXEL_WIDTH = 2 // number of characters in the terminal used to represent a pixel
-const PIXEL_HEIGHT = 1
 
 // Determine if this
 // 'truecolor' if this terminal supports 16m colors. 256 colors otherwise
@@ -46,11 +45,17 @@ function writeTextAt(x, y, msg) {
     moveTo(x, y)
     process.stdout.write(msg)
 }
-function drawPixelChar(x, y, hex, char) {
-    setBgColor(hex)
+function drawPixelChar(x, y, fgHex, bgHex, char) {
+    if (fgHex) {
+        setFgColor(fgHex)
+    }
+    if (bgHex) {
+        setBgColor(bgHex)
+    }
     moveTo(x, y)
     process.stdout.write(char)
 }
+
 
 class CellColorCache {
     _cache: Map<string, IColor[][]>
@@ -118,18 +123,22 @@ class UI {
     _gameData: GameData
     _engine: GameEngine
     _cellColorCache: CellColorCache
-    _renderedPixels: string[][] // string is the hex code of the pixel
+    _renderedPixels: {hex: string, chars: string}[][] // string is the hex code of the pixel
     _resizeHandler?: () => void
     _windowOffsetColStart: number
     _windowOffsetRowStart: number
     _windowOffsetWidth: number
     _windowOffsetHeight: number
+    PIXEL_WIDTH: number // number of characters in the terminal used to represent a pixel
+    PIXEL_HEIGHT: number
+
     constructor() {
         this._cellColorCache = new CellColorCache()
         this._resizeHandler = null
         this._renderedPixels = []
         this._windowOffsetColStart = 0
         this._windowOffsetRowStart = 0
+        this.setSmallTerminal(false) // use really big (but cleaner) characters
     }
     setGame(engine: GameEngine) {
         this._engine = engine
@@ -153,6 +162,18 @@ class UI {
             this._windowOffsetHeight = height
         }
     }
+    setSmallTerminal(yesNo: boolean) {
+        if (yesNo) {
+            this.PIXEL_WIDTH = 1 // number of characters in the terminal used to represent a pixel
+            this.PIXEL_HEIGHT = .5
+        } else {
+            this.PIXEL_WIDTH = 2
+            this.PIXEL_HEIGHT = 1
+        }
+    }
+    isConfiguredForSmallTerminal() {
+        return this.PIXEL_HEIGHT !== 1
+    }
     debugRenderScreen() {
         if (this._engine) {
             this.renderScreen()
@@ -170,14 +191,13 @@ class UI {
 
         // Handle resize events by redrawing the game. Ooh, we do not have Cells at this point.
         // TODO Run renderScreen on cells from the engine rather than cells from the Level data
-        if (this._resizeHandler) {
-            process.stdout.off('resize', this._resizeHandler)
+        if (!this._resizeHandler) {
+            this._resizeHandler = _.debounce(() => {
+                this.clearScreen()
+                this.renderScreen()
+            })
+            process.stdout.on('resize', this._resizeHandler)
         }
-        this._resizeHandler = () => {
-            this.clearScreen()
-            this.renderScreen()
-        }
-        process.stdout.on('resize', this._resizeHandler)
 
         setFgColor('#ffffff')
         setBgColor('#000000')
@@ -215,8 +235,8 @@ class UI {
         cellStartY = (rowIndex - this._windowOffsetRowStart) * SPRITE_HEIGHT /*pixels*/ + 1 // y is 1-based
 
         // Check if the cell can be completely drawn on the screen. If not, print ellipses
-        const cellIsTooWide = (cellStartX + SPRITE_WIDTH) * PIXEL_WIDTH > process.stdout.columns // 10 because we print 2 chars per pixel
-        const cellIsTooHigh = (cellStartY + SPRITE_HEIGHT) * PIXEL_HEIGHT > process.stdout.rows
+        const cellIsTooWide = (cellStartX + SPRITE_WIDTH) * this.PIXEL_WIDTH > process.stdout.columns // 10 because we print 2 chars per pixel
+        const cellIsTooHigh = (cellStartY + SPRITE_HEIGHT) * this.PIXEL_HEIGHT > process.stdout.rows
         if (cellIsTooWide || cellIsTooHigh) {
             // do not draw the cell
             isOnScreen = false
@@ -224,20 +244,42 @@ class UI {
         return { isOnScreen, cellStartX, cellStartY }
     }
 
-    setPixel(x: number, y: number, hex: string, char?: string) {
-        if (!char) {
-            char = ' '
+    setPixel(x: number, y: number, hex: string, chars?: string) {
+        const getColor = (y, x) => {
+            if (this._renderedPixels[y] && this._renderedPixels[y][x]) {
+                return this._renderedPixels[y][x].hex
+            } else {
+                return '#000000'
+            }
         }
-        if (char.length > 2) {
+        if (!chars) {
+            chars = ' '
+        }
+
+        if (chars.length > 2) {
             throw new Error(`BUG: Expected char to be of length 0, 1, or 2`)
         }
         if (!this._renderedPixels[y]) {
             this._renderedPixels[y] = []
         }
-        if (this._renderedPixels[y][x] !== hex) {
-            drawPixelChar(x * PIXEL_WIDTH, y, hex, char[0] || ' ')
-            drawPixelChar(x * PIXEL_WIDTH + 1, y, hex, char[1] || ' ')
-            this._renderedPixels[y][x] = hex
+        const onScreenPixel = this._renderedPixels[y][x]
+        if (!onScreenPixel || onScreenPixel.hex !== hex) {
+            if (this.PIXEL_HEIGHT === 1) {
+                drawPixelChar(x * this.PIXEL_WIDTH, y, null, hex, chars[0] || ' ')
+                drawPixelChar(x * this.PIXEL_WIDTH + 1, y, null, hex, chars[1] || ' ')
+            } else {
+                let upperColor
+                let lowerColor
+                if (y % 2 === 0) {
+                    upperColor = hex
+                    lowerColor = getColor(y + 1, x)
+                } else {
+                    upperColor = getColor(y - 1, x)
+                    lowerColor = hex
+                }
+                drawPixelChar(x * this.PIXEL_WIDTH, Math.floor(y * this.PIXEL_HEIGHT), lowerColor, upperColor, '▄')
+            }
+            this._renderedPixels[y][x] = {hex, chars}
         }
     }
 
@@ -255,8 +297,9 @@ class UI {
 
         const flickScreen = this._gameData.metadata.flickscreen
         const zoomScreen = this._gameData.metadata.zoomscreen
-        const terminalWidth = Math.floor(process.stdout.columns / (SPRITE_WIDTH * PIXEL_WIDTH)) - PIXEL_WIDTH // just in case
-        const terminalHeight = Math.floor(process.stdout.rows / (SPRITE_HEIGHT * PIXEL_HEIGHT))
+        // these are number of sprites that can fit on the terminal
+        const terminalWidth = Math.floor(process.stdout.columns / SPRITE_WIDTH / this.PIXEL_WIDTH)
+        const terminalHeight = Math.floor(process.stdout.rows / SPRITE_HEIGHT / this.PIXEL_HEIGHT)
 
         if (flickScreen) {
             boundingBoxTop = playerCell.rowIndex - (playerCell.rowIndex % flickScreen.height)
@@ -387,11 +430,6 @@ class UI {
                 const x = cellStartX + spriteColIndex
                 const y = cellStartY + spriteRowIndex
 
-                // Don't draw below the edge of the screen. Otherwise, bad scrolling things will happen
-                if (y >= process.stdout.rows) {
-                    return
-                }
-
                 let color: IColor
 
                 if (spriteColor) {
@@ -414,6 +452,8 @@ class UI {
                     if (process.env['NODE_ENV'] !== 'production') {
                         if (r > 192 && g > 192 && b > 192) {
                             setFgColor('#000000')
+                        } else {
+                            setFgColor('#ffffff')
                         }
                         const sprite = spritesForDebugging[spriteRowIndex]
                         if (sprite) {
@@ -485,6 +525,9 @@ class UI {
             return
         }
 
+        // clear the cache of what is rendered
+        this._renderedPixels = []
+
         setFgColor('#ffffff')
         setBgColor('#000000')
         // Output \n for each row that we have. That way any output from before is preserved
@@ -503,6 +546,36 @@ class UI {
         setFgColor('#ffffff')
         setBgColor('#000000')
         writeText(0, 0, `[${text}]`)
+    }
+
+    willAllLevelsFitOnScreen(gameData: GameData) {
+        let maxWidth = 0
+        let maxHeight = 0
+        const {flickscreen, zoomscreen} = gameData.metadata
+        if (flickscreen) {
+            maxWidth = flickscreen.width
+            maxHeight = flickscreen.height
+        } else if (zoomscreen) {
+            maxWidth = zoomscreen.width
+            maxHeight = zoomscreen.height
+        } else {
+            // loop through all the levels and find the largest one
+            for (const level of gameData.levels) {
+                if (level.isMap()) {
+                    maxWidth = Math.max(maxWidth, level.getWidth())
+                    maxHeight = Math.max(maxHeight, level.getHeight())
+                }
+            }
+        }
+        // Check to see if it fits in the terminal
+        const terminalWidth = Math.floor(process.stdout.columns / SPRITE_WIDTH / this.PIXEL_WIDTH)
+        const terminalHeight = Math.floor(process.stdout.rows / SPRITE_HEIGHT / this.PIXEL_HEIGHT)
+
+        if (terminalWidth < maxWidth || terminalHeight < maxHeight) {
+            return false
+        } else {
+            return true
+        }
     }
 }
 
