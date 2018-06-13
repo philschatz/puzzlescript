@@ -19,8 +19,9 @@ export class Cell {
     // not on the sprite. Since we do not do that, we have to transfer the wantsToMove
     // when a sprite in a collisionLayer is swapped with another sprite in the same layer.
     // TODO: Store wantsToMove information using the collisionLayer as a key rather than the sprite.
-    _spriteAndWantsToMoves: Map<GameSprite, string>
-    _cacheSprites: Set<GameSprite>
+    _collisionLayerWantsToMove: RULE_DIRECTION_ABSOLUTE[]
+    _cacheSpritesSet: Set<GameSprite>
+    _cacheSpritesByCollisionLayer: GameSprite[]
     rowIndex: number
     colIndex: number
 
@@ -28,8 +29,9 @@ export class Cell {
         this._engine = engine
         this.rowIndex = rowIndex
         this.colIndex = colIndex
-        this._spriteAndWantsToMoves = new Map()
-        this._cacheSprites = new Set()
+        this._collisionLayerWantsToMove = []
+        this._cacheSpritesSet = new Set()
+        this._cacheSpritesByCollisionLayer = []
 
         for (const sprite of sprites) {
             this._setWantsToMove(sprite, RULE_DIRECTION_ABSOLUTE.STATIONARY)
@@ -37,32 +39,41 @@ export class Cell {
 
     }
     _setWantsToMove(sprite: GameSprite, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
-        if (wantsToMove) {
-            this._spriteAndWantsToMoves.set(sprite, wantsToMove)
-            this._cacheSprites.add(sprite)
-        } else {
-            this._spriteAndWantsToMoves.delete(sprite)
-            this._cacheSprites.delete(sprite)
-        }
+        const collisionLayer = sprite.getCollisionLayerNum()
+        this._collisionLayerWantsToMove[collisionLayer] = wantsToMove
+        this._cacheSpritesByCollisionLayer[collisionLayer] = sprite
+        this._cacheSpritesSet.add(sprite)
+    }
+    _deleteWantsToMove(sprite: GameSprite) {
+        // TODO: this is not quite correct. there may be other sprites in the same ... oh wait, no that's not possible.
+        const collisionLayer = sprite.getCollisionLayerNum()
+        this._collisionLayerWantsToMove[collisionLayer] = null
+        this._cacheSpritesByCollisionLayer[collisionLayer] = null
+        this._cacheSpritesSet.delete(sprite)
     }
     getSprites() {
         // Just pull out the sprite, not the wantsToMoveDir
-        const sprites = [...this._spriteAndWantsToMoves.keys()]
-        return sprites.sort((a, b) => {
-            return a.getCollisionLayerNum() - b.getCollisionLayerNum()
-        }).reverse()
+        return this._cacheSpritesByCollisionLayer
+        .filter(s => !!s)
+        .reverse()
     }
     getSpritesAsSet() {
         // Just pull out the sprite, not the wantsToMoveDir
-        return this._cacheSprites
+        return this._cacheSpritesSet
     }
     getSpriteAndWantsToMoves() {
         // Just pull out the sprite, not the wantsToMoveDir
         // Retur na new set so we can mutate it later
-        return new Map(this._spriteAndWantsToMoves)
+        const map = new Map()
+        for (let i = 0; i < this._cacheSpritesByCollisionLayer.length; i++) {
+            if (this._cacheSpritesByCollisionLayer[i]) {
+                map.set(this._cacheSpritesByCollisionLayer[i], this._collisionLayerWantsToMove[i])
+            }
+        }
+        return map
     }
     hasSprite(sprite: GameSprite) {
-        return this._spriteAndWantsToMoves.has(sprite)
+        return this._cacheSpritesSet.has(sprite)
     }
 
     _getRelativeNeighbor(y: number, x: number) {
@@ -84,7 +95,7 @@ export class Cell {
                 throw new Error(`BUG: Unsupported direction "${direction}"`)
         }
     }
-    wantsToMoveTo(tile: IGameTile, absoluteDirection: RULE_DIRECTION) {
+    wantsToMoveTo(tile: IGameTile, absoluteDirection: RULE_DIRECTION_ABSOLUTE) {
         let wantsToMove = false
         tile.getSprites().forEach(sprite => {
             const directionForSprite = this.directionForSprite(sprite)
@@ -95,7 +106,7 @@ export class Cell {
         return wantsToMove
     }
     getWantsToMove(sprite: GameSprite) {
-        const wantsToMove = this._spriteAndWantsToMoves.get(sprite)
+        const wantsToMove = this._collisionLayerWantsToMove[sprite.getCollisionLayerNum()]
         if (wantsToMove) {
             return RULE_DIRECTION_ABSOLUTE[wantsToMove]
         } else {
@@ -103,20 +114,10 @@ export class Cell {
         }
     }
     directionForSprite(sprite: GameSprite) {
-        const entry = [...this._spriteAndWantsToMoves].filter(([a]) => a.getCollisionLayerNum() === sprite.getCollisionLayerNum())[0]
-        if (entry) {
-            return entry[1]
-        }
-        return null
+        return this._collisionLayerWantsToMove[sprite.getCollisionLayerNum()]
     }
     hasCollisionWithSprite(otherSprite: GameSprite) {
-        let hasCollision = false
-        this._spriteAndWantsToMoves.forEach((wantsToMove, sprite) => {
-            if (sprite.getCollisionLayerNum() === otherSprite.getCollisionLayerNum()) {
-                hasCollision = true
-            }
-        })
-        return hasCollision
+        return !!this._collisionLayerWantsToMove[otherSprite.getCollisionLayerNum()]
     }
     clearWantsToMove(sprite: GameSprite) {
         this._setWantsToMove(sprite, RULE_DIRECTION_ABSOLUTE.STATIONARY)
@@ -126,14 +127,14 @@ export class Cell {
 
         if (wantsToMove) {
             this._setWantsToMove(sprite, wantsToMove)
-        } else if (!this._spriteAndWantsToMoves.has(sprite)) {
+        } else if (!this._cacheSpritesSet.has(sprite)) {
             wantsToMove = RULE_DIRECTION_ABSOLUTE.STATIONARY
             this._setWantsToMove(sprite, wantsToMove)
         }
         sprite.addCell(this, wantsToMove)
     }
     removeSprite(sprite: GameSprite) {
-        this._setWantsToMove(sprite, null)
+        this._deleteWantsToMove(sprite)
         sprite.removeCell(this)
     }
     removeSprites(sprites: Iterable<GameSprite>) {
@@ -143,7 +144,7 @@ export class Cell {
     }
     setWantsToMove(tile: IGameTile, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
         for (const sprite of tile.getSprites()) {
-            if (this._spriteAndWantsToMoves.has(sprite)) {
+            if (this._cacheSpritesSet.has(sprite)) {
                 this.addSprite(sprite, wantsToMove)
             }
         }

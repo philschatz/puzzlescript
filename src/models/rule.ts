@@ -421,6 +421,9 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
                         // }
                         if (cell) {
                             bracket.populateMagicOrTiles(cell, magicOrTiles)
+                        } else {
+                            hasMoreCells = false
+                            break
                         }
                     }
                     // If not all brackets match a cell then break out
@@ -995,11 +998,11 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
     }
     matchesCellWithout(cell: Cell, sprite: GameSprite) {
         // Temporarily remove the sprite from the cell
-        if (cell._spriteAndWantsToMoves.has(sprite)) {
-            const wantsToMove = cell._spriteAndWantsToMoves.get(sprite)
-            cell._spriteAndWantsToMoves.delete(sprite)
+        if (cell.hasSprite(sprite)) {
+            const wantsToMove = cell.getWantsToMove(sprite)
+            cell._deleteWantsToMove(sprite)
             const matches = this.matchesCellSimple(cell)
-            cell._spriteAndWantsToMoves.set(sprite, wantsToMove)
+            cell._setWantsToMove(sprite, wantsToMove)
             return matches
         } else {
             return this.matchesCellSimple(cell)

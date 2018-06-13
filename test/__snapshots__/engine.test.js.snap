@@ -7,9 +7,9 @@ Array [
       "STATIONARY BgNW1",
     ],
     Array [
+      "STATIONARY Island",
       "STATIONARY Player",
       "STATIONARY PlayerIsland",
-      "STATIONARY Island",
     ],
   ],
   Array [
@@ -125,18 +125,18 @@ Array [
   Array [
     Array [
       "STATIONARY Background",
-      "STATIONARY Blue",
       "STATIONARY Red",
+      "STATIONARY Blue",
     ],
     Array [
       "STATIONARY Background",
-      "STATIONARY Blue",
       "STATIONARY Red",
+      "STATIONARY Blue",
     ],
     Array [
       "STATIONARY Background",
-      "STATIONARY Blue",
       "STATIONARY Red",
+      "STATIONARY Blue",
     ],
   ],
 ]

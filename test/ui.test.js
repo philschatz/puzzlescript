@@ -38,6 +38,12 @@ white transparent
 11110
 
 ===
+COLLISIONLAYERS
+===
+
+WaterAnim1
+
+===
 LEVELS
 ===
 
