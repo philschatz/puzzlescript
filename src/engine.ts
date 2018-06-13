@@ -20,6 +20,7 @@ export class Cell {
     // when a sprite in a collisionLayer is swapped with another sprite in the same layer.
     // TODO: Store wantsToMove information using the collisionLayer as a key rather than the sprite.
     _spriteAndWantsToMoves: Map<GameSprite, string>
+    _cacheSprites: Set<GameSprite>
     rowIndex: number
     colIndex: number
 
@@ -28,13 +29,22 @@ export class Cell {
         this.rowIndex = rowIndex
         this.colIndex = colIndex
         this._spriteAndWantsToMoves = new Map()
+        this._cacheSprites = new Set()
 
         for (const sprite of sprites) {
-            this._spriteAndWantsToMoves.set(sprite, RULE_DIRECTION_ABSOLUTE.STATIONARY)
+            this._setWantsToMove(sprite, RULE_DIRECTION_ABSOLUTE.STATIONARY)
         }
 
     }
-
+    _setWantsToMove(sprite: GameSprite, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
+        if (wantsToMove) {
+            this._spriteAndWantsToMoves.set(sprite, wantsToMove)
+            this._cacheSprites.add(sprite)
+        } else {
+            this._spriteAndWantsToMoves.delete(sprite)
+            this._cacheSprites.delete(sprite)
+        }
+    }
     getSprites() {
         // Just pull out the sprite, not the wantsToMoveDir
         const sprites = [...this._spriteAndWantsToMoves.keys()]
@@ -44,7 +54,7 @@ export class Cell {
     }
     getSpritesAsSet() {
         // Just pull out the sprite, not the wantsToMoveDir
-        return new Set(this._spriteAndWantsToMoves.keys())
+        return this._cacheSprites
     }
     getSpriteAndWantsToMoves() {
         // Just pull out the sprite, not the wantsToMoveDir
@@ -109,21 +119,21 @@ export class Cell {
         return hasCollision
     }
     clearWantsToMove(sprite: GameSprite) {
-        this._spriteAndWantsToMoves.set(sprite, RULE_DIRECTION_ABSOLUTE.STATIONARY)
+        this._setWantsToMove(sprite, RULE_DIRECTION_ABSOLUTE.STATIONARY)
         sprite.updateCell(this, RULE_DIRECTION_ABSOLUTE.STATIONARY)
     }
     addSprite(sprite: GameSprite, wantsToMove?: RULE_DIRECTION_ABSOLUTE) {
 
         if (wantsToMove) {
-            this._spriteAndWantsToMoves.set(sprite, wantsToMove)
+            this._setWantsToMove(sprite, wantsToMove)
         } else if (!this._spriteAndWantsToMoves.has(sprite)) {
             wantsToMove = RULE_DIRECTION_ABSOLUTE.STATIONARY
-            this._spriteAndWantsToMoves.set(sprite, wantsToMove)
+            this._setWantsToMove(sprite, wantsToMove)
         }
         sprite.addCell(this, wantsToMove)
     }
     removeSprite(sprite: GameSprite) {
-        this._spriteAndWantsToMoves.delete(sprite)
+        this._setWantsToMove(sprite, null)
         sprite.removeCell(this)
     }
     removeSprites(sprites: Iterable<GameSprite>) {
