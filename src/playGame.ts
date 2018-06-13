@@ -131,9 +131,9 @@ async function run() {
             }
         }
 
-        let {chosenLevel} = await inquirer.prompt<{chosenLevel: number}>([{
+        let {currentLevelNum} = await inquirer.prompt<{currentLevelNum: number}>([{
             type: 'list',
-            name: 'chosenLevel',
+            name: 'currentLevelNum',
             message: 'Which Level would you like to play?',
             default: firstUncompletedLevel, // 1st non-message level
             pageSize: Math.max(15, process.stdout.rows - 15),
@@ -195,14 +195,14 @@ async function run() {
 
         // Allow the user to resume from where they left off
         let ticksToRunFirst = ''
-        if (recordings[chosenLevel] && (recordings[chosenLevel].partial || recordings[chosenLevel].solution)) {
+        if (recordings[currentLevelNum] && (recordings[currentLevelNum].partial || recordings[currentLevelNum].solution)) {
             const {shouldResume} = await inquirer.prompt<{shouldResume: boolean}>({
                 type: 'confirm',
                 name: 'shouldResume',
                 message: 'Would you like to resume where you left off?',
             })
             if (shouldResume) {
-                ticksToRunFirst = recordings[chosenLevel].partial || recordings[chosenLevel].solution
+                ticksToRunFirst = recordings[currentLevelNum].partial || recordings[currentLevelNum].solution
             }
         }
 
@@ -214,7 +214,7 @@ async function run() {
         UI.clearScreen()
 
         // Draw the "last" level (after the messages)
-        const level = levels[chosenLevel]
+        const level = levels[currentLevelNum]
         let startTime = Date.now()
         const engine = new GameEngine()
         engine.on('loading-cells', ({cellStart, cellEnd, cellTotal, key}) => {
@@ -242,7 +242,7 @@ async function run() {
 
 
         function restartLevel() {
-            engine.pressRestart(chosenLevel)
+            engine.pressRestart(currentLevelNum)
             UI.renderScreen(true)
             keypresses = [] // clear key history
         }
@@ -287,8 +287,8 @@ async function run() {
                 case '\u001B': // Escape
                     saveCoverageFile(data, absPath, 'playgame')
                     // Save the partially-completed steps
-                    recordings[chosenLevel] = recordings[chosenLevel] || {}
-                    recordings[chosenLevel].partial = keypresses.join('')
+                    recordings[currentLevelNum] = recordings[currentLevelNum] || {}
+                    recordings[currentLevelNum].partial = keypresses.join('')
                     writeFileSync(solutionsPath, JSON.stringify(recordings, null, 2))
                     closeSounds()
                     return process.exit(0)
@@ -365,11 +365,11 @@ async function run() {
             if (didLevelChange) {
                 // Save the solution
                 const newSolution = keypresses.join('')
-                if (!recordings[chosenLevel]) {
-                    recordings[chosenLevel] = { solution: keypresses.join('')}
+                if (!recordings[currentLevelNum]) {
+                    recordings[currentLevelNum] = { solution: keypresses.join('')}
                     writeFileSync(solutionsPath, JSON.stringify(recordings, null, 2))
-                } else if (!recordings[chosenLevel].solution || recordings[chosenLevel].solution.length > newSolution.length) {
-                    recordings[chosenLevel].solution = keypresses.join('')
+                } else if (!recordings[currentLevelNum].solution || recordings[currentLevelNum].solution.length > newSolution.length) {
+                    recordings[currentLevelNum].solution = keypresses.join('')
                     writeFileSync(solutionsPath, JSON.stringify(recordings, null, 2))
                 }
                 keypresses = []
