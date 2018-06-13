@@ -267,8 +267,8 @@ class UI {
         const onScreenPixel = this._renderedPixels[y][x]
         if (!onScreenPixel || onScreenPixel.hex !== hex || onScreenPixel.chars !== chars) {
             if (this.PIXEL_HEIGHT === 1) {
-                drawPixelChar(x * this.PIXEL_WIDTH, y, null, hex, chars[0] || ' ')
-                drawPixelChar(x * this.PIXEL_WIDTH + 1, y, null, hex, chars[1] || ' ')
+                drawPixelChar(x * this.PIXEL_WIDTH, y + 1/*titlebar*/, null, hex, chars[0] || ' ')
+                drawPixelChar(x * this.PIXEL_WIDTH + 1, y + 1/*titlebar*/, null, hex, chars[1] || ' ')
             } else {
                 let upperColor
                 let lowerColor
@@ -279,7 +279,7 @@ class UI {
                     upperColor = getColor(y - 1, x)
                     lowerColor = hex
                 }
-                drawPixelChar(x * this.PIXEL_WIDTH, Math.floor(y * this.PIXEL_HEIGHT), lowerColor, upperColor, '▄')
+                drawPixelChar(x * this.PIXEL_WIDTH, Math.floor(y * this.PIXEL_HEIGHT) + 1/*titlebar*/, lowerColor, upperColor, '▄')
             }
             this._renderedPixels[y][x] = {hex, chars}
         }
@@ -578,6 +578,10 @@ class UI {
         } else {
             return true
         }
+    }
+
+    _drawPixel(x, y, fgHex, bgHex, chars) {
+        drawPixelChar(x, y, fgHex, bgHex, chars)
     }
 }
 

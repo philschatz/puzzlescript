@@ -134,7 +134,7 @@ async function run() {
                     //     await soundToPlay.play()
                     // }
 
-                    await sleep(Math.max(100 - (Date.now() - startTime), 0))
+                    await sleep(10)
 
                     // if (changedCells.size === 0) {
                     //     break

@@ -195,14 +195,14 @@ async function run() {
 
         // Allow the user to resume from where they left off
         let ticksToRunFirst = ''
-        if (recordings[chosenLevel] && recordings[chosenLevel].partial) {
+        if (recordings[chosenLevel] && (recordings[chosenLevel].partial || recordings[chosenLevel].solution)) {
             const {shouldResume} = await inquirer.prompt<{shouldResume: boolean}>({
                 type: 'confirm',
                 name: 'shouldResume',
                 message: 'Would you like to resume where you left off?',
             })
             if (shouldResume) {
-                ticksToRunFirst = recordings[chosenLevel].partial
+                ticksToRunFirst = recordings[chosenLevel].partial || recordings[chosenLevel].solution
             }
         }
 
@@ -211,17 +211,39 @@ async function run() {
         process.stdin.resume()
         process.stdin.setEncoding('utf8')
 
+        UI.clearScreen()
 
         // Draw the "last" level (after the messages)
         const level = levels[chosenLevel]
         let startTime = Date.now()
         const engine = new GameEngine()
+        engine.on('loading-cells', ({cellStart, cellEnd, cellTotal, key}) => {
+            // UI.writeDebug(`Loading cells ${cellStart}-${cellEnd} of ${cellTotal}. SpriteKey="${key}"`)
+            const loading = `Loading... [`
+            const barChars = '                    '
+            UI.writeDebug(loading + barChars)
+            const offset = loading.length + 1
+            const barLength = barChars.length
+            const percentStartYellow = Math.floor(barLength * cellStart / cellTotal)
+            const percentStartBlack = Math.floor(barLength * (cellStart + cellEnd) / cellTotal)
+            for (let i = 0; i < barLength; i++) {
+                let color = '#000000'
+                let char = ' '
+                if (i <= percentStartYellow) {
+                    color = '#00ff00' // green
+                } else if (i <= percentStartBlack) {
+                    color = '#ffff00' // yellow
+                    char = '▒' // ░▒▓
+                }
+                UI._drawPixel(i + offset, 0, null, color, ' ')
+            }
+        })
         engine.setGame(data, data.levels.indexOf(level))
 
 
         function restartLevel() {
             engine.pressRestart(chosenLevel)
-            UI.renderScreen(false)
+            UI.renderScreen(true)
             keypresses = [] // clear key history
         }
 
@@ -321,7 +343,7 @@ async function run() {
                 maxTickAndRenderTime = Math.max(maxTickAndRenderTime, Date.now() - startTime)
             }
 
-            const msg = `Key ${keyNum} of "${data.title}" (took ${Date.now() - startTime}ms) Changed: ${[...changedCells].map(cell => cell.rowIndex + ':' + cell.colIndex).join(', ') + '   '}`
+            const msg = `Keypress ${keyNum} of "${data.title}" (took ${Date.now() - startTime}ms)`
             UI.writeDebug(msg.substring(0, 160))
 
             await sleep(1) // sleep long enough to play sounds
@@ -372,7 +394,7 @@ async function run() {
                 UI.drawCell(cell, false)
             }
 
-            const msg = `Level: ${chosenLevel} Tick: ${tickNum} took ${Date.now() - startTime}ms. Moves: ${[...keypresses].reverse().join('').substring(0, 20)}`
+            const msg = `Tick: ${tickNum} took ${Date.now() - startTime}ms. Moves: ${[...keypresses].reverse().join('').substring(0, 20)}`
             UI.writeDebug(msg.substring(0, 160))
 
             await sleep(Math.max(500 - (Date.now() - startTime), 0))

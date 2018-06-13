@@ -1,5 +1,5 @@
 import * as _ from 'lodash'
-import { EventEmitter2 } from 'eventemitter2'
+import { EventEmitter2, Listener } from 'eventemitter2'
 import { GameData } from './models/game'
 import { LevelMap } from './models/level';
 import { GameSprite, GameLegendTileSimple, IGameTile } from './models/tile'
@@ -193,7 +193,12 @@ export class LevelEngine extends EventEmitter2 {
         let i = 0
         for (const [key, cells] of batchCells) {
             if ((batchCells.size > 100 && i % 10 === 0) || cells.length > 100) {
-                console.log(`Loading cells ${i}-${i + cells.length} of ${allCells.length}. SpriteKey="${key}"`)
+                this.emit('loading-cells', {
+                    cellStart: i,
+                    cellEnd: i + cells.length,
+                    cellTotal: allCells.length,
+                    key: key
+                })
             }
             // All Cells contain the same set of sprites so just pull out the 1st one
             for (const sprite of this.gameData.objects) {
@@ -437,11 +442,38 @@ export class LevelEngine extends EventEmitter2 {
     pressUndo() { }
 }
 
+export type LoadingCellsEvent = {
+    cellStart: number,
+    cellEnd: number,
+    cellTotal: number,
+    key: string
+}
+export interface LoadingProgressHandler extends Listener {
+    (info: LoadingCellsEvent): void;
+}
+
 export class GameEngine {
     _levelEngine: LevelEngine
     _currentLevelNum: number
+    _events: Map<string, LoadingProgressHandler []>
+    constructor() {
+        this._events = new Map()
+    }
+    on(eventName: string, handler: LoadingProgressHandler) {
+        if (!this._events.has(eventName)) {
+            this._events.set(eventName, [])
+        }
+        this._events.get(eventName).push(handler)
+    }
     setGame(gameData: GameData, levelNum: number) {
         this._levelEngine = new LevelEngine(gameData)
+        // register event handlers (like for the loading progress bar)
+        for (const [eventName, handlers] of this._events.entries()) {
+            for (const handler of handlers) {
+                this._levelEngine.on(eventName, handler)
+            }
+        }
+
         this.setLevel(levelNum)
     }
     getGameData() {
