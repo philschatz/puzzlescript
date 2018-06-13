@@ -22,6 +22,7 @@ async function sleep(ms: number) {
 async function run() {
     const files = await pify(glob)('./gists/*/script.txt')
     console.log(`Looping over ${files.length} games...`)
+    console.log(`Screen size is ${process.stdout.columns} wide and ${process.stdout.rows} high`)
 
     for (let filename of files) {
         console.log(`Parsing and rendering ${filename}`)

@@ -179,7 +179,7 @@ class UI {
             this.renderScreen(true)
         }
     }
-    renderScreen(clearCaches: boolean) {
+    renderScreen(clearCaches: boolean, renderScreenDepth: number = 0) {
         if (!supportsColor.stdout) {
             console.log('Playing a game in the console requires color support. Unfortunately, color is not supported so not rendering (for now). We could just do an ASCII dump or something, using  ░▒▓█ to denote shades of cells')
             return
@@ -206,7 +206,7 @@ class UI {
 
         levelRows.forEach((row, rowIndex) => {
             row.forEach((cell, colIndex) => {
-                this.drawCell(cell, false)
+                this.drawCell(cell, false, renderScreenDepth)
             })
         })
         // Clear back to sane colors
@@ -237,10 +237,14 @@ class UI {
         cellStartY = (rowIndex - this._windowOffsetRowStart) * SPRITE_HEIGHT /*pixels*/ + 1 // y is 1-based
 
         // Check if the cell can be completely drawn on the screen. If not, print ellipses
-        const cellIsTooWide = (cellStartX + SPRITE_WIDTH) * this.PIXEL_WIDTH > process.stdout.columns // 10 because we print 2 chars per pixel
-        const cellIsTooHigh = (cellStartY + SPRITE_HEIGHT) * this.PIXEL_HEIGHT > process.stdout.rows
+        const cellIsTooWide = (cellStartX + SPRITE_WIDTH) * this.PIXEL_WIDTH >= process.stdout.columns // 10 because we print 2 chars per pixel
+        const cellIsTooHigh = (cellStartY + SPRITE_HEIGHT) * this.PIXEL_HEIGHT >= process.stdout.rows
         if (cellIsTooWide || cellIsTooHigh) {
             // do not draw the cell
+            isOnScreen = false
+        }
+
+        if (cellStartX < 0 || cellStartY < 0) {
             isOnScreen = false
         }
         return { isOnScreen, cellStartX, cellStartY }
@@ -377,6 +381,7 @@ class UI {
                     }
 
                     // Only recenter the axis that moved to be out-of-center
+                    // Use Math.abs() because an even number of cells visible (e.g. 4) will cause the screen to clicker back and forth
                     if (newWindowTop !== this._windowOffsetRowStart) {
                         this._windowOffsetRowStart = newWindowTop
                         didADirectionChange = true
@@ -401,7 +406,7 @@ class UI {
         return false
     }
 
-    drawCell(cell: Cell, dontRestoreCursor: boolean) {
+    drawCell(cell: Cell, dontRestoreCursor: boolean, renderScreenDepth: number = 0) {
         const { rowIndex, colIndex } = cell
         if (!supportsColor.stdout) {
             console.log(`Updating cell [${cell.rowIndex}][${cell.colIndex}] to have sprites: [${cell.getSprites().map(sprite => sprite._name)}]`)
@@ -417,8 +422,12 @@ class UI {
         const playerTile = this._gameData.getPlayer()
         const cellHasPlayer = playerTile.matchesCell(cell)
         if (playerTile.getCellsThatMatch().size === 1 && cellHasPlayer) {
-            if (this.recenterPlayerIfNeeded(cell, isOnScreen)) {
-                return this.renderScreen(false)
+            // if the screen can only show an even number of cells (eg 4) then this will oscillate indefinitely
+            // So we limit the recursion to just a couple of recursions
+            if (renderScreenDepth <= 1) {
+                if (this.recenterPlayerIfNeeded(cell, isOnScreen)) {
+                    return this.renderScreen(false, renderScreenDepth + 1)
+                }
             }
             // otherwise, keep rendering cells like normal
         }
@@ -447,7 +456,7 @@ class UI {
                     const { r, g, b } = color.toRgb()
                     const hex = color.toHex()
 
-                    this.setPixel(x, y, hex)
+                    let chars = ' '
 
                     // Print a debug number which contains the number of sprites in this cell
                     // Change the foreground color to be black if the color is light
@@ -489,16 +498,20 @@ class UI {
                                 spriteName = `${spriteName.substring(0, 5)}.${spriteName.substring(spriteName.length - 4)}`
                             }
                             const msg = `${spriteName.substring(spriteColIndex * 2, spriteColIndex * 2 + 2)}`
-                            this.setPixel(x, y, hex, msg.substring(0, 2))
+                            chars = msg.substring(0, 2)
                         }
                         if (spriteRowIndex === 4 && spriteColIndex === 4) {
                             if (spritesForDebugging.length > 9) {
-                                this.setPixel(x, y, hex, `${spritesForDebugging.length}`)
+                                chars = `${spritesForDebugging.length}`
                             } else {
-                                this.setPixel(x, y, hex, ` ${spritesForDebugging.length}`)
+                                chars = ` ${spritesForDebugging.length}`
                             }
                         }
                     }
+
+
+                    this.setPixel(x, y, hex, chars)
+
                 }
             })
         })
