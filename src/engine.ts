@@ -521,6 +521,9 @@ export class GameEngine {
     getCurrentLevelNum() {
         return this._currentLevelNum
     }
+    hasAgain() {
+        return this._levelEngine.hasAgain()
+    }
     setLevel(levelNum: number) {
         if (this.getGameData().levels[levelNum].isMap()) {
             this._levelEngine.setLevel(levelNum)

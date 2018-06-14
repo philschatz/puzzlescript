@@ -12,6 +12,7 @@ import UI from './ui'
 import { GameEngine } from './engine'
 import { saveCoverageFile } from './recordCoverage';
 import { closeSounds } from './models/sound';
+import { RULE_DIRECTION_ABSOLUTE } from './util';
 
 
 async function sleep(ms: number) {
@@ -277,7 +278,7 @@ async function run() {
         }
 
         let keypresses = []
-
+        let pendingKey = null
         // https://stackoverflow.com/a/30687420
         process.stdin.on('data', function(key){
             handleKeyPress(key)
@@ -286,24 +287,19 @@ async function run() {
             switch (key) {
                 case 'w':
                 case '\u001B\u005B\u0041': // UP-ARROW
-                    keypresses.push('W')
-                    return engine.pressUp()
+                    pendingKey = 'W'; break
                 case 's':
                 case '\u001B\u005B\u0042': // DOWN-ARROW
-                    keypresses.push('S')
-                    return engine.pressDown()
+                    pendingKey = 'S'; break
                 case 'a':
                 case '\u001B\u005B\u0044': // LEFT-ARROW
-                    keypresses.push('A')
-                    return engine.pressLeft()
+                    pendingKey = 'A'; break
                 case 'd':
                 case '\u001B\u005B\u0043': // RIGHT-ARROW
-                    keypresses.push('D')
-                    return engine.pressRight()
+                    pendingKey = 'D'; break
                 case 'x':
                 case ' ':
-                    keypresses.push('X')
-                    return engine.pressAction()
+                    pendingKey = 'X'; break
                 case 'r':
                     return restartLevel()
                 case 'c':
@@ -326,6 +322,25 @@ async function run() {
             }
         }
 
+        function doPress(key: string, recordPress: boolean) {
+            switch (key) {
+                case 'W': engine.pressUp(); break
+                case 'S': engine.pressDown(); break
+                case 'A': engine.pressLeft(); break
+                case 'D': engine.pressRight(); break
+                case 'X': engine.pressAction(); break
+                case '.':
+                case ',':
+                    // just .tick()
+                    break
+                default:
+                    throw new Error(`BUG: Invalid keypress character "${ticksToRunFirst[keyNum]}"`)
+            }
+            if (recordPress) {
+                keypresses.push(key)
+            }
+        }
+
         // engine.on('cell:updated', cell => {
         //   UI.drawCellAt(data, cell, cell.rowIndex, cell.colIndex, false)
         // })
@@ -340,19 +355,7 @@ async function run() {
         // Run a bunch of ticks in case the user partially played a level
         let maxTickAndRenderTime = -1
         for (var keyNum = 0; keyNum < ticksToRunFirst.length; keyNum++) {
-            switch (ticksToRunFirst[keyNum]) {
-                case 'W': engine.pressUp(); break
-                case 'S': engine.pressDown(); break
-                case 'A': engine.pressLeft(); break
-                case 'D': engine.pressRight(); break
-                case 'X': engine.pressAction(); break
-                case '.':
-                case ',':
-                    // just .tick()
-                    break
-                default:
-                    throw new Error(`BUG: Invalid keypress character "${ticksToRunFirst[keyNum]}"`)
-            }
+            doPress(ticksToRunFirst[keyNum], false/*record*/)
             startTime = Date.now()
             const { changedCells, soundToPlay, didLevelChange } = engine.tick()
 
@@ -389,6 +392,9 @@ async function run() {
         let tickNum = 0
         while(true) {
 
+            if (pendingKey && !engine.hasAgain()) {
+                doPress(pendingKey, true/*record*/)
+            }
             const startTime = Date.now()
             const {changedCells, soundToPlay, didLevelChange, wasAgainTick} = engine.tick()
 
@@ -409,6 +415,7 @@ async function run() {
                     writeFileSync(solutionsPath, JSON.stringify(recordings, null, 2))
                 }
                 keypresses = []
+                pendingKey = null
 
                 // Skip the messages since they are not implmented yet
                 currentLevelNum = engine.getCurrentLevelNum()
@@ -433,14 +440,17 @@ async function run() {
             const msg = `Tick: ${tickNum} took ${Date.now() - startTime}ms. Moves: ${[...keypresses].reverse().join('').substring(0, 20)}`
             UI.writeDebug(msg.substring(0, 160))
 
-            await sleep(Math.max(500 - (Date.now() - startTime), 0))
             if (wasAgainTick) {
                 keypresses.push(',')
             } else {
-                if (changedCells.size > 0) {
+                if (!pendingKey && changedCells.size > 0) {
                     keypresses.push('.') // Add a "tick"
                 }
+                pendingKey = null
             }
+
+            await sleep(Math.max(50 - (Date.now() - startTime), 0))
+
             tickNum++
         }
 

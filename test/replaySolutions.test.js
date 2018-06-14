@@ -5,6 +5,7 @@ const { GameEngine } = require('../src/engine')
 const { default: Parser } = require('../src/parser/parser')
 const { default: UI } = require('../src/ui')
 const { RULE_DIRECTION_ABSOLUTE } = require('../src/util')
+const { saveCoverageFile } = require('../src/recordCoverage')
 
 const SOLUTION_ROOT = path.join(__dirname, '../gist-solutions/')
 const solutionFiles = fs.readdirSync(SOLUTION_ROOT)
@@ -29,7 +30,8 @@ describe('replays levels of games', () => {
         const GIST_ID = path.basename(solutionFilename).replace('.json', '')
 
         it(`plays the solved levels of ${GIST_ID}`, async () => {
-            const { engine, data } = parseEngine(fs.readFileSync(path.join(__dirname, `../gists/${GIST_ID}/script.txt`), 'utf-8'))
+            const gistFilename = path.join(__dirname, `../gists/${GIST_ID}/script.txt`)
+            const { engine, data } = parseEngine(fs.readFileSync(gistFilename, 'utf-8'))
             const recordings = JSON.parse(fs.readFileSync(path.join(SOLUTION_ROOT, solutionFilename), 'utf-8'))
             for (let index = 0; index < recordings.length; index++) {
                 const recording = recordings[index]
@@ -85,6 +87,7 @@ describe('replays levels of games', () => {
                     UI.renderScreen(false)
                 }
 
+                saveCoverageFile(data, gistFilename, `${GIST_ID}-playgame`)
                 expect({title: data.title, levelNumber: index, wonAtKeyIndex}).toEqual({title: data.title, levelNumber: index, wonAtKeyIndex: keypresses.length - 1})
             }
         })
