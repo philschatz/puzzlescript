@@ -131,6 +131,7 @@ class UI {
     _windowOffsetHeight: number
     PIXEL_WIDTH: number // number of characters in the terminal used to represent a pixel
     PIXEL_HEIGHT: number
+    _dumpingScreen: boolean
 
     constructor() {
         this._cellColorCache = new CellColorCache()
@@ -138,6 +139,7 @@ class UI {
         this._renderedPixels = []
         this._windowOffsetColStart = 0
         this._windowOffsetRowStart = 0
+        this._dumpingScreen = false
         this.setSmallTerminal(false) // use really big (but cleaner) characters
     }
     setGame(engine: GameEngine) {
@@ -178,6 +180,31 @@ class UI {
         if (this._engine) {
             this.renderScreen(true)
         }
+    }
+    dumpScreen() {
+        // Used by unit tests when one of the games fails to complete or completes prematurely
+        this._dumpingScreen = true
+        this.renderScreen(false)
+        this._dumpingScreen = false
+
+        process.stdout.write('\n')
+        for (let y = 0; y < this._renderedPixels.length; y++) {
+            const row = this._renderedPixels[y]
+            if (!row) { continue }
+            for (let x = 0; x < row.length; x++) {
+                let {hex, chars} = row[x]
+
+                setBgColor(hex)
+                if (chars.length === 1) { chars = ' ' + chars }
+                if (chars.length === 0) { chars = '  ' }
+                process.stdout.write(chars)
+            }
+            setBgColor('#000000')
+            process.stdout.write('\n')
+        }
+        process.stdout.write('\n')
+        process.stdout.write('\n')
+        process.stdout.write('\n')
     }
     renderScreen(clearCaches: boolean, renderScreenDepth: number = 0) {
         if (!supportsColor.stdout) {
@@ -270,6 +297,11 @@ class UI {
         }
         const onScreenPixel = this._renderedPixels[y][x]
         if (!onScreenPixel || onScreenPixel.hex !== hex || onScreenPixel.chars !== chars) {
+            this._renderedPixels[y][x] = {hex, chars}
+
+            if (this._dumpingScreen) {
+                return // don't actually render the pixel
+            }
             if (this.PIXEL_HEIGHT === 1) {
                 drawPixelChar(x * this.PIXEL_WIDTH, y + 1/*titlebar*/, null, hex, chars[0] || ' ')
                 drawPixelChar(x * this.PIXEL_WIDTH + 1, y + 1/*titlebar*/, null, hex, chars[1] || ' ')
@@ -285,9 +317,9 @@ class UI {
                 }
                 drawPixelChar(x * this.PIXEL_WIDTH, Math.floor(y * this.PIXEL_HEIGHT) + 1/*titlebar*/, lowerColor, upperColor, '▄')
             }
-            this._renderedPixels[y][x] = {hex, chars}
         }
     }
+
 
     // Returns true if the window was moved (so we can re-render the screen)
     recenterPlayerIfNeeded(playerCell: Cell, isOnScreen: boolean) {
@@ -558,9 +590,11 @@ class UI {
             console.log(`Writing Debug text "${text}"`)
             return
         }
-        setFgColor('#ffffff')
-        setBgColor('#000000')
-        writeText(0, 0, `[${text}]`)
+        if (!this._dumpingScreen) {
+            setFgColor('#ffffff')
+            setBgColor('#000000')
+            writeText(0, 0, `[${text}]`)
+        }
     }
 
     willAllLevelsFitOnScreen(gameData: GameData) {

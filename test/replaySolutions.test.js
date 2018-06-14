@@ -84,7 +84,7 @@ describe('replays levels of games', () => {
                 if (wonAtKeyIndex === DID_NOT_WIN || (wonAtKeyIndex !== keypresses.length - 1)) {
                     console.error('Screendump of level')
                     UI.setGame(engine)
-                    UI.renderScreen(false)
+                    UI.dumpScreen()
                 }
 
                 saveCoverageFile(data, gistFilename, `${GIST_ID}-playgame`)
