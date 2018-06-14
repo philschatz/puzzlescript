@@ -503,7 +503,7 @@ export class GameEngine {
         }
         this._events.get(eventName).push(handler)
     }
-    setGame(gameData: GameData, levelNum: number) {
+    setGame(gameData: GameData) {
         this._levelEngine = new LevelEngine(gameData)
         // register event handlers (like for the loading progress bar)
         for (const [eventName, handlers] of this._events.entries()) {
@@ -511,8 +511,6 @@ export class GameEngine {
                 this._levelEngine.on(eventName, handler)
             }
         }
-
-        this.setLevel(levelNum)
     }
     getGameData() {
         return this._levelEngine.gameData
@@ -537,7 +535,7 @@ export class GameEngine {
 
         let didWinGame = false
         if (isWinning) {
-            if (this._currentLevelNum + 1 === this._levelEngine.gameData.levels.length - 1) {
+            if (this._currentLevelNum === this._levelEngine.gameData.levels.length - 1) {
                 didWinGame = true
             } else {
                 this.setLevel(this._currentLevelNum + 1)

@@ -255,18 +255,19 @@ async function run() {
             const percentStartYellow = Math.floor(barLength * cellStart / cellTotal)
             const percentStartBlack = Math.floor(barLength * (cellStart + cellEnd) / cellTotal)
             for (let i = 0; i < barLength; i++) {
-                let color = '#000000'
-                let char = ' '
+                let fgColor = '#707070'
+                let char = '█'
                 if (i <= percentStartYellow) {
-                    color = '#00ff00' // green
+                    fgColor = '#00ff00' // green
                 } else if (i <= percentStartBlack) {
-                    color = '#ffff00' // yellow
-                    char = '▒' // ░▒▓
+                    fgColor = '#ffff00' // yellow
+                    // char = '▒' // ░▒▓
                 }
-                UI._drawPixel(i + offset, 0, null, color, ' ')
+                UI._drawPixel(i + offset, 0, fgColor, null, char)
             }
         })
-        engine.setGame(data, data.levels.indexOf(level))
+        engine.setGame(data)
+        engine.setLevel(data.levels.indexOf(level))
 
 
         function restartLevel() {
@@ -353,7 +354,7 @@ async function run() {
                     throw new Error(`BUG: Invalid keypress character "${ticksToRunFirst[keyNum]}"`)
             }
             startTime = Date.now()
-            const { changedCells, soundToPlay } = engine.tick()
+            const { changedCells, soundToPlay, didLevelChange } = engine.tick()
 
             if (soundToPlay) {
                 if (!currentlyPlayingSoundPromise) {
@@ -367,11 +368,18 @@ async function run() {
             for (const cell of changedCells) {
                 UI.drawCell(cell, false)
             }
+
+            if (didLevelChange) {
+                currentLevelNum = engine.getCurrentLevelNum()
+                UI.clearScreen()
+                UI.renderScreen(false)
+            }
+
             if (keyNum > 1) { // Skip the 1st couple because they might be cleaning up the level
                 maxTickAndRenderTime = Math.max(maxTickAndRenderTime, Date.now() - startTime)
             }
 
-            const msg = `Keypress ${keyNum} of "${data.title}" (took ${Date.now() - startTime}ms)`
+            const msg = `Playback ${keyNum}/${ticksToRunFirst.length} of "${data.title}" (took ${Date.now() - startTime}ms)`
             UI.writeDebug(msg.substring(0, 160))
 
             await sleep(1) // sleep long enough to play sounds

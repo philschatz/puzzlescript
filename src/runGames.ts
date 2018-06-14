@@ -74,7 +74,8 @@ async function run() {
                 let startTime = Date.now()
                 const engine = new GameEngine()
                 const levelNum = data.levels.indexOf(level)
-                engine.setGame(data, levelNum)
+                engine.setGame(data)
+                engine.setLevel(levelNum)
                 if (process.env['LOG_LEVEL'] === 'debug') {
                     console.error('')
                     console.error('')

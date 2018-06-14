@@ -1,9 +1,7 @@
 /* eslint-env jasmine */
 const fs = require('fs')
 const path = require('path')
-const pify = require('pify')
-const glob = require('glob')
-const { LevelEngine } = require('../src/engine')
+const { GameEngine } = require('../src/engine')
 const { default: Parser } = require('../src/parser/parser')
 const { default: UI } = require('../src/ui')
 const { RULE_DIRECTION_ABSOLUTE } = require('../src/util')
@@ -19,7 +17,8 @@ function parseEngine(code, levelNum = 0) {
     const { data, error } = Parser.parse(code)
     expect(error && error.message).toBeFalsy() // Use && so the error messages are shorter
 
-    const engine = new LevelEngine(data)
+    const engine = new GameEngine()
+    engine.setGame(data)
     return { engine, data }
 }
 
@@ -29,20 +28,19 @@ describe('replays levels of games', () => {
     solutionFiles.forEach(solutionFilename => {
         const GIST_ID = path.basename(solutionFilename).replace('.json', '')
 
-        it(`plays all the solved levels of ${GIST_ID}`, async () => {
+        it(`plays the solved levels of ${GIST_ID}`, async () => {
             const { engine, data } = parseEngine(fs.readFileSync(path.join(__dirname, `../gists/${GIST_ID}/script.txt`), 'utf-8'))
             const recordings = JSON.parse(fs.readFileSync(path.join(SOLUTION_ROOT, solutionFilename), 'utf-8'))
-
             for (let index = 0; index < recordings.length; index++) {
                 const recording = recordings[index]
                 if (!recording || !recording.solution) {
                     continue // skip message-only levels or levels that do not have a solution
                 }
+
+
                 engine.setLevel(index)
 
-                if (SHOW_STEPS) {
-                    UI.setGame(engine)
-                }
+                UI.setGame(engine)
 
                 const DID_NOT_WIN = 'DID_NOT_WIN'
                 let wonAtKeyIndex = DID_NOT_WIN
@@ -67,13 +65,12 @@ describe('replays levels of games', () => {
 
                     let didWin = false
                     // do { // loop until we are done with animations
-                        const {isWinning} = engine.tick()
-                        didWin = didWin || isWinning
+                        const {didLevelChange, didWinGame} = engine.tick()
+                        didWin = didWin || didWinGame || didLevelChange
                     // } while(engine.hasAgain())
 
                     if (SHOW_STEPS) {
-                        UI.clearScreen()
-                        UI.renderScreen(engine.currentLevel)
+                        UI.renderScreen(false)
                     }
 
                     if (didWin) {
@@ -85,12 +82,10 @@ describe('replays levels of games', () => {
                 if (wonAtKeyIndex === DID_NOT_WIN || (wonAtKeyIndex !== keypresses.length - 1)) {
                     console.error('Screendump of level')
                     UI.setGame(engine)
-                    UI.clearScreen()
-                    UI.renderScreen(engine.currentLevel)
+                    UI.renderScreen(false)
                 }
 
                 expect({title: data.title, levelNumber: index, wonAtKeyIndex}).toEqual({title: data.title, levelNumber: index, wonAtKeyIndex: keypresses.length - 1})
-
             }
         })
     })
