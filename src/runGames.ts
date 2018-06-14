@@ -96,9 +96,6 @@ async function run() {
 
 
                 startTime = Date.now()
-                global['max_time_spent_updating'] = 0
-                global['cells_updated_count'] = 0
-                global['rules_updated_count'] = 0
 
                 let maxTickAndRenderTime = -1
                 for (var i = 0; i < keypressesStr.length; i++) {
@@ -152,9 +149,6 @@ async function run() {
                     // }
 
                 }
-                console.log('Max time spent updating:', global['max_time_spent_updating']);
-                console.log('Number of cell update calls:', global['cells_updated_count']);
-                console.log('Number of rules updated:', global['rules_updated_count']);
                 console.log('Max tickAndRender Time (ms):', maxTickAndRenderTime);
 
 

@@ -422,17 +422,16 @@ yellow
     [ Player ] -> [ Player again] (from "Rose")
     `)
 
-        function expector(rule, late, rigid, again) {
+        function expector(rule, late, rigid) {
             expect(rule.isLate()).toBe(late)
             expect(rule.isRigid()).toBe(rigid)
-            expect(rule.isAgain()).toBe(again)
         }
-        expector(data.rules[0].getChildRules()[0], true, false, false)
-        expector(data.rules[1].getChildRules()[0], false, true, false)
-        expector(data.rules[2].getChildRules()[0], false, false, true)
-        expector(data.rules[3].getChildRules()[0], true, true, true)
-        expector(data.rules[4].getChildRules()[0], false, false, false)
-        expector(data.rules[5].getChildRules()[0], false, false, true)
+        expector(data.rules[0].getChildRules()[0], true, false)
+        expector(data.rules[1].getChildRules()[0], false, true)
+        expector(data.rules[2].getChildRules()[0], false, false)
+        expector(data.rules[3].getChildRules()[0], true, true)
+        expector(data.rules[4].getChildRules()[0], false, false)
+        expector(data.rules[5].getChildRules()[0], false, false)
     })
 
     describe('RANDOM keywork propagation', () => {

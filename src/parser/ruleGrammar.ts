@@ -108,14 +108,12 @@ export function getRuleSemantics(lookup: LookupHelper) {
         Rule: function (debugFlag, modifiers, conditions, _arrow, _unusuedModifer, actions, commands, optionalMessageCommand, _whitespace) {
             const modifiers2: RULE_MODIFIER[] = _.flatten(modifiers.parse())
             const commands2: AbstractCommand[] = commands.parse().filter(c => !!c) // remove nulls (like an invalid sound effect... e.g. "Fish Friend")
-            const optionalMessageCommand2: MessageCommand = optionalMessageCommand.parse()
+            const optionalMessageCommand2: MessageCommand = optionalMessageCommand.parse()[0]
 
-            const isAgain = !!commands2.filter(c => c.getType() === COMMAND_TYPE.AGAIN)[0]
-            const commands3 = commands2.filter(c => c.getType() !== COMMAND_TYPE.AGAIN)
             if (optionalMessageCommand2) {
                 commands2.push(optionalMessageCommand2)
             }
-            return new GameRule(this.source, modifiers2, conditions.parse(), actions.parse(), commands3, isAgain, debugFlag.parse()[0])
+            return new GameRule(this.source, modifiers2, conditions.parse(), actions.parse(), commands2, debugFlag.parse()[0])
         },
         RuleBracket: function (_openBracket, neighbors, hackAgain, _closeBracket, debugFlag) {
             const b = new RuleBracket(this.source, neighbors.parse(), hackAgain.parse(), debugFlag.parse()[0])

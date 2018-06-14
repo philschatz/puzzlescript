@@ -142,9 +142,6 @@ export class SimpleRuleGroup extends BaseForLines implements IRule {
         // All rules in a group should be parked as late if any is marked as late
         return this._rules[0].isLate()
     }
-    isAgain() {
-        return this._rules[0].isAgain()
-    }
     isRigid() {
         return this._rules[0].isRigid()
     }
@@ -182,27 +179,25 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
     _actionBrackets: SimpleBracket[]
     _commands: AbstractCommand[]
     _isLate: boolean
-    _isAgain: boolean
     _isRigid: boolean
     _isRandom: boolean
     _isSubscribedToCellChanges: boolean
     _debugFlag: DEBUG_FLAG
     _doesEvaluationOrderMatter: boolean
-    constructor(source: IGameCode, evaluationDirection: RULE_DIRECTION_ABSOLUTE, conditionBrackets: SimpleBracket[], actionBrackets: SimpleBracket[], commands: AbstractCommand[], isLate: boolean, isAgain: boolean, isRigid: boolean, isRandom: boolean, debugFlag: DEBUG_FLAG, doesEvaluationOrderMatter: boolean) {
+    constructor(source: IGameCode, evaluationDirection: RULE_DIRECTION_ABSOLUTE, conditionBrackets: SimpleBracket[], actionBrackets: SimpleBracket[], commands: AbstractCommand[], isLate: boolean, isRigid: boolean, isRandom: boolean, debugFlag: DEBUG_FLAG, doesEvaluationOrderMatter: boolean) {
         super(source)
         this._evaluationDirection = evaluationDirection
         this._conditionBrackets = conditionBrackets
         this._actionBrackets = actionBrackets
         this._commands = commands
         this._isLate = isLate
-        this._isAgain = isAgain
         this._isRigid = isRigid
         this._isRandom = isRandom
         this._debugFlag = debugFlag
         this._doesEvaluationOrderMatter = doesEvaluationOrderMatter
     }
     toKey() {
-        return `{Late?${this._isLate}}{Rigid?${this._isRigid}}{again?${this._isAgain}} ${this._evaluationDirection} ${this._conditionBrackets.map(x => x.toKey())} -> ${this._actionBrackets.map(x => x.toKey())} ${this._commands.join(' ')} {debugger?${this._debugFlag}}`
+        return `{Late?${this._isLate}}{Rigid?${this._isRigid}} ${this._evaluationDirection} ${this._conditionBrackets.map(x => x.toKey())} -> ${this._actionBrackets.map(x => x.toKey())} ${this._commands.join(' ')} {debugger?${this._debugFlag}}`
     }
     getChildRules() {
         return []
@@ -500,7 +495,6 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
         return _.flatten(allMutators)
     }
     isLate() { return this._isLate }
-    isAgain() { return this._isAgain }
     isRigid() { return this._isRigid }
     isRandom() { return this._isRandom }
 
@@ -1312,7 +1306,6 @@ export class GameRule extends BaseForLines implements ICacheable {
     _actionBrackets: RuleBracket[]
     _debugFlag: DEBUG_FLAG // Used for setting a breakpoint when evaluating the rule
     // _conditionCommandPair: RuleConditionCommandPair[]
-    _isAgain: boolean // special since it's not a command and it's not a modifier
 
     toKey() {
         return `${this._modifiers.join(' ')} ${this._brackets.map(x => x.toKey())} -> ${this._actionBrackets.map(x => x.toKey())} ${this._commands.join(' ')} {debugger?${this._debugFlag}}`
@@ -1416,7 +1409,7 @@ export class GameRule extends BaseForLines implements ICacheable {
             }
         }
 
-        return cacheSetAndGet(ruleCache, new SimpleRule(this.__source, directions[0], conditionBrackets, actionBrackets, this._commands, this.isLate(), this.isAgain(), this.isRigid(), this.isRandom(), this._debugFlag, doesEvaluationOrderMatter))
+        return cacheSetAndGet(ruleCache, new SimpleRule(this.__source, directions[0], conditionBrackets, actionBrackets, this._commands, this.isLate(), this.isRigid(), this.isRandom(), this._debugFlag, doesEvaluationOrderMatter))
     }
 
     convertToMultiple() {
@@ -1481,7 +1474,7 @@ export class GameRule extends BaseForLines implements ICacheable {
         const actionBrackets = this._actionBrackets.map(bracket => bracket.clone(direction, nameToExpand, newName))
         // retain LATE and RIGID but discard the rest of the modifiers
         const modifiers = _.intersection(this._modifiers, [RULE_MODIFIER.LATE, RULE_MODIFIER.RIGID, RULE_MODIFIER.RANDOM]).concat([RULE_MODIFIER[direction]])
-        return new GameRule(this.__source, modifiers, conditionBrackets, actionBrackets, this._commands, this._isAgain, this._debugFlag)
+        return new GameRule(this.__source, modifiers, conditionBrackets, actionBrackets, this._commands, this._debugFlag)
     }
 
     hasModifier(modifier: RULE_MODIFIER) {
@@ -1526,7 +1519,7 @@ export class GameRule extends BaseForLines implements ICacheable {
         }
     }
 
-    constructor(source: IGameCode, modifiers: RULE_MODIFIER[], conditions: RuleBracket[], actions: RuleBracket[], commands: AbstractCommand[], isAgain: boolean, debugFlag: DEBUG_FLAG) {
+    constructor(source: IGameCode, modifiers: RULE_MODIFIER[], conditions: RuleBracket[], actions: RuleBracket[], commands: AbstractCommand[], debugFlag: DEBUG_FLAG) {
         super(source)
         this._modifiers = modifiers
         this._commands = commands
@@ -1534,7 +1527,6 @@ export class GameRule extends BaseForLines implements ICacheable {
         this._brackets = conditions
         this._actionBrackets = actions
         this._debugFlag = debugFlag
-        this._isAgain = isAgain
 
         // Set _hasEllipsis value
         for (let i = 0; i < conditions.length; i++) {
@@ -1559,9 +1551,6 @@ export class GameRule extends BaseForLines implements ICacheable {
 
     isLate() {
         return this._modifiers.indexOf(RULE_MODIFIER.LATE) >= 0
-    }
-    isAgain() {
-        return this._isAgain
     }
     isRigid() {
         return this._modifiers.indexOf(RULE_MODIFIER.RIGID) >= 0
@@ -1821,7 +1810,6 @@ export interface IRule extends IGameNode {
     getChildRules: () => IRule[]
     isLate: () => boolean
     isRigid: () => boolean
-    isAgain: () => boolean
     isRandom: () => boolean
     clearCaches: () => void
     clearRandomFlag: () => void

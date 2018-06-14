@@ -312,9 +312,11 @@ async function run() {
                 case '\u001B': // Escape
                     saveCoverageFile(data, absPath, 'playgame')
                     // Save the partially-completed steps
-                    recordings[currentLevelNum] = recordings[currentLevelNum] || {}
-                    recordings[currentLevelNum].partial = keypresses.join('')
-                    writeFileSync(solutionsPath, JSON.stringify(recordings, null, 2))
+                    if (keypresses.join('').replace(/\./g, '').length > 0) { // skip just empty ticks
+                        recordings[currentLevelNum] = recordings[currentLevelNum] || {}
+                        recordings[currentLevelNum].partial = keypresses.join('')
+                        writeFileSync(solutionsPath, JSON.stringify(recordings, null, 2))
+                    }
                     closeSounds()
                     return process.exit(0)
                 default:
@@ -410,7 +412,7 @@ async function run() {
                 if (!recordings[currentLevelNum]) {
                     recordings[currentLevelNum] = { solution: keypresses.join('')}
                     writeFileSync(solutionsPath, JSON.stringify(recordings, null, 2))
-                } else if (!recordings[currentLevelNum].solution || recordings[currentLevelNum].solution.length > newSolution.length) {
+                } else if (!recordings[currentLevelNum].solution) {
                     recordings[currentLevelNum].solution = keypresses.join('')
                     writeFileSync(solutionsPath, JSON.stringify(recordings, null, 2))
                 }

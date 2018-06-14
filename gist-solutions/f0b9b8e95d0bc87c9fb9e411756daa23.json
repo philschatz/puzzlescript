@@ -1,14 +1,18 @@
 [
   null,
   {
-    "solution": ".A.,.W.,,.A.,,.W."
+    "solution": "S,A,W,,,A,,W."
   },
   null,
   {
-    "solution": ".W.,,.A.,,,,,.S.,,,,.D.,,,.W.,,,"
+    "solution": "W,,A,,,,,S,,,,D,,,W,,,,"
   },
   null,
   {
-    "solution": ".A.,,,,.W.,,,.A.,.S.,,.A.,.W.,.D.,,.,.,A.,,,.S.,.D.,,,,.W.,,,.,D.,"
+    "solution": "A,,,,W,,,A,S,,A,W,D,,,,A,,,S,D,,,,W,,,,D,,"
+  },
+  null,
+  {
+    "solution": ".D,,S,,,A,,,,,W,,,,,D,,,,,S,,,,,A,,,,,S,,A,,W,,,A,S,,D,,,,,,,S,A,W,,,A,,S,,D,,W,A,,,,W,,,,,S,,,,,,A,,W,,,A,S,,D,,,,,,,S,A,W,,,A,,,S,,D,,,W,A,,,,W,,,,A,,,"
   }
 ]

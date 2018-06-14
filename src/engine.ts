@@ -393,11 +393,9 @@ export class LevelEngine extends EventEmitter2 {
         // a rule might add a sprite, and then another rule might remove a sprite.
         // We need to compare the set of sprites before and after ALL rules ran.
         // This will likely be implemented as part of UNDO or CHECKPOINT.
-        if (didSomeSpriteChange) {
-            this._hasAgainThatNeedsToRun = !!evaluatedRules.filter(r => r.isAgain())[0]
-        }
         const movedCells = this.tickMoveSprites(new Set<Cell>(changedCellMutations.keys()))
         const {changedCells: changedCellsLate, evaluatedRules: evaluatedRulesLate, commands: commandsLate} = this.tickUpdateCellsLate()
+        this._hasAgainThatNeedsToRun = !![...commands, ...commandsLate].filter(c => c.getType() === COMMAND_TYPE.AGAIN)[0]
         return {
             changedCells: setAddAll(setAddAll(changedCellMutations, changedCellsLate), movedCells),
             evaluatedRules: evaluatedRules.concat(evaluatedRulesLate),
@@ -494,6 +492,7 @@ export class GameEngine {
     _levelEngine: LevelEngine
     _currentLevelNum: number
     _events: Map<string, LoadingProgressHandler []>
+    _isFirstTick: boolean
     constructor() {
         this._events = new Map()
     }
@@ -526,6 +525,7 @@ export class GameEngine {
     }
     setLevel(levelNum: number) {
         if (this.getGameData().levels[levelNum].isMap()) {
+            this._isFirstTick = true
             this._levelEngine.setLevel(levelNum)
         } else {
             // TODO: no need to set the levelEngine when the current level is a Message
@@ -534,7 +534,21 @@ export class GameEngine {
     }
     tick() {
         const hasAgain = this._levelEngine.hasAgain()
+        if (this._levelEngine.gameData.metadata.run_rules_on_level_start && this._isFirstTick) {
+            // don't cancel early
+        } else if (!hasAgain && !(this._levelEngine.gameData.metadata.realtime_interval || this._levelEngine._pendingPlayerWantsToMove)) {
+            // check if the `require_player_movement` flag is set in the game
+            return {
+                changedCells: new Set(),
+                soundToPlay: null,
+                didWinGame: false,
+                didLevelChange: false,
+                wasAgainTick: false
+            }
+        }
+
         const {changedCells, soundToPlay, isWinning} = this._levelEngine.tick()
+        this._isFirstTick = false
 
         let didWinGame = false
         if (isWinning) {
