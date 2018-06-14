@@ -29,9 +29,9 @@
     "eventemitter2": "^5.0.1",
     "firstline": "^2.0.2",
     "glob": "^7.1.2",
-    "inquirer": "^5.2.0",
+    "inquirer": "6.0.0",
     "inquirer-autocomplete-prompt": "^0.12.2",
-    "jest": "^22.4.3",
+    "jest": "23.1.0",
     "lodash": "^4.17.10",
     "ohm-js": "^0.14.0",
     "pify": "^3.0.0",
@@ -50,7 +50,7 @@
     "standard": "^11.0.1",
     "tslint": "^5.10.0",
     "typescript": "^2.8.3",
-    "typescript-eslint-parser": "^15.0.0"
+    "typescript-eslint-parser": "16.0.0"
   },
   "jest": {
     "moduleFileExtensions": [

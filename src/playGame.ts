@@ -355,7 +355,7 @@ async function run() {
         // Run a bunch of ticks in case the user partially played a level
         let maxTickAndRenderTime = -1
         for (var keyNum = 0; keyNum < ticksToRunFirst.length; keyNum++) {
-            doPress(ticksToRunFirst[keyNum], false/*record*/)
+            doPress(ticksToRunFirst[keyNum], true)
             startTime = Date.now()
             const { changedCells, soundToPlay, didLevelChange } = engine.tick()
 
