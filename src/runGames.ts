@@ -70,9 +70,16 @@ async function run() {
             }
 
             if (level) {
+
                 let startTime = Date.now()
                 const engine = new GameEngine()
-                engine.setGame(data, data.levels.indexOf(level))
+                const levelNum = data.levels.indexOf(level)
+                engine.setGame(data, levelNum)
+                if (process.env['LOG_LEVEL'] === 'debug') {
+                    console.error('')
+                    console.error('')
+                    console.error(`Start playing "${data.title}". Level ${levelNum}`)
+                }
                 console.log(`Loading Cells into the level took ${Date.now() - startTime}ms`)
 
                 // engine.on('cell:updated', cell => {

@@ -247,10 +247,16 @@ export class LevelEngine extends EventEmitter2 {
     }
 
     tickUpdateCells() {
+        if (process.env['LOG_LEVEL'] === 'debug') {
+            console.error(`applying rules`)
+        }
         return this._tickUpdateCells(this.gameData.rules.filter(r => !r.isLate()))
     }
 
     tickUpdateCellsLate() {
+        if (process.env['LOG_LEVEL'] === 'debug') {
+            console.error(`applying late rules`)
+        }
         return this._tickUpdateCells(this.gameData.rules.filter(r => r.isLate()))
     }
 
@@ -261,6 +267,9 @@ export class LevelEngine extends EventEmitter2 {
         for (const rule of rules) {
             const cellMutations = rule.evaluate()
             if (cellMutations.length > 0) {
+                if (process.env['LOG_LEVEL'] === 'debug') {
+                    console.error(`Rule ${rule.__getSourceLineAndColumn().lineNum} applied.`)
+                }
                 evaluatedRules.push(rule)
             }
             for (const mutation of cellMutations) {
@@ -362,6 +371,9 @@ export class LevelEngine extends EventEmitter2 {
     tickNormal() {
         let changedCellMutations = new Set()
         if (this._pendingPlayerWantsToMove) {
+            if (process.env['LOG_LEVEL'] === 'debug') {
+                console.error(`Turn starts with input of ${this._pendingPlayerWantsToMove.toLowerCase()}.`)
+            }
             const t = this.gameData.getPlayer()
             for (const cell of t.getCellsThatMatch()) {
                 for (const sprite of t.getSpritesThatMatch(cell)) {
@@ -370,6 +382,10 @@ export class LevelEngine extends EventEmitter2 {
                 }
             }
             this._pendingPlayerWantsToMove = null
+        } else {
+            if (process.env['LOG_LEVEL'] === 'debug') {
+                console.error(`Turn starts with no input.`)
+            }
         }
 
         const {changedCells: changedCellMutations2, evaluatedRules, commands, didSomeSpriteChange} = this.tickUpdateCells()
@@ -393,6 +409,11 @@ export class LevelEngine extends EventEmitter2 {
     }
 
     tick() {
+        if (process.env['LOG_LEVEL'] === 'debug') {
+            console.error(``)
+            console.error(`=======================`)
+        }
+
         let ret : { changedCells: Set<Cell>, evaluatedRules: IRule[] , commands: Set<AbstractCommand>}
         if (this._hasAgainThatNeedsToRun) {
             // run the AGAIN rules
@@ -416,6 +437,15 @@ export class LevelEngine extends EventEmitter2 {
                     // console.error(`BUG: Unsupported command "${command.getType()}"`)
             }
         }
+        if (process.env['LOG_LEVEL'] === 'debug') {
+            console.error(`checking win condition.`)
+        }
+        if (this._hasAgainThatNeedsToRun) {
+            if (process.env['LOG_LEVEL'] === 'debug') {
+                console.error(`AGAIN command executed, with changes detected - will execute another turn.`)
+            }
+        }
+
         return {
             changedCells: new Set(ret.changedCells.keys()),
             soundToPlay,
