@@ -2,20 +2,14 @@ import { readFileSync, writeFileSync, existsSync } from 'fs'
 import * as path from 'path'
 import * as glob from 'glob'
 import * as pify from 'pify'
-import * as keypress from 'keypress'
 import * as inquirer from 'inquirer'
 import * as autocomplete from 'inquirer-autocomplete-prompt'
 import * as firstline from 'firstline'
 import chalk from 'chalk'
 
 import Parser from './parser/parser'
-import { IGameNode } from './models/game'
 import UI from './ui'
 import { GameEngine } from './engine'
-import { setAddAll, RULE_DIRECTION_ABSOLUTE } from './util';
-import { start } from 'repl';
-import { IRule } from './models/rule';
-import { RULE_DIRECTION } from './enums';
 import { saveCoverageFile } from './recordCoverage';
 import { closeSounds } from './models/sound';
 
@@ -153,6 +147,7 @@ async function run() {
             const {useCompressedCharacters} = await inquirer.prompt<{useCompressedCharacters: boolean}>({
                 type: 'confirm',
                 name: 'useCompressedCharacters',
+                default: process.env['NODE_ENV'] === 'production', // dev mode uses large sprites by default
                 message: 'Would you like to use small characters when rendering the game?',
             })
             if (useCompressedCharacters) {
@@ -408,12 +403,12 @@ async function run() {
                 keypresses = []
 
                 // Skip the messages since they are not implmented yet
-                let newLevel = engine.getCurrentLevelNum()
-                while(!data.levels[newLevel].isMap()) {
-                    newLevel++
+                currentLevelNum = engine.getCurrentLevelNum()
+                while(!data.levels[currentLevelNum].isMap()) {
+                    currentLevelNum++
                 }
-                if (newLevel !== engine.getCurrentLevelNum()) {
-                    engine.setLevel(newLevel)
+                if (currentLevelNum !== engine.getCurrentLevelNum()) {
+                    engine.setLevel(currentLevelNum)
                 }
 
                 UI.clearScreen()

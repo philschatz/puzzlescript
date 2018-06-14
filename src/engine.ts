@@ -267,9 +267,6 @@ export class LevelEngine extends EventEmitter2 {
         for (const rule of rules) {
             const cellMutations = rule.evaluate()
             if (cellMutations.length > 0) {
-                if (process.env['LOG_LEVEL'] === 'debug') {
-                    console.error(`Rule ${rule.__getSourceLineAndColumn().lineNum} applied.`)
-                }
                 evaluatedRules.push(rule)
             }
             for (const mutation of cellMutations) {

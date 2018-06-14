@@ -242,7 +242,8 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
         const allMutations: IMutation[][] = []
         // Keep evaluating the rule until nothing changes
         let innerEvaluatedSomething = false
-        for (let innerIteration = 0; innerIteration < MAX_ITERATIONS_IN_LOOP; innerIteration++) {
+        let innerIteration
+        for (innerIteration = 0; innerIteration < MAX_ITERATIONS_IN_LOOP; innerIteration++) {
             if (process.env['NODE_ENV'] !== 'production' && innerIteration === MAX_ITERATIONS_IN_LOOP - 10) {
                 // Provide a breakpoint just before we run out of MAX_ITERATIONS_IN_LOOP
                 // so that we can step through the evaluations.
@@ -264,7 +265,21 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
                 break
             }
         }
-        return _.flatten(allMutations)
+        const flattenedMutations = _.flatten(allMutations)
+        if (flattenedMutations.length > 0) {
+            // Check if direction is important
+            let isDirectionImportant = false
+            for (const bracket of this._conditionBrackets) {
+                if (bracket._neighbors.length > 1) {
+                    isDirectionImportant = true
+                }
+            }
+            if (process.env['LOG_LEVEL'] === 'debug') {
+                console.error(`Rule ${this.__getSourceLineAndColumn().lineNum} ${isDirectionImportant ? this._evaluationDirection.toLowerCase() + ' ' : ''}applied.${innerIteration > 2 ? ` (x${innerIteration-1})` : ''}`)
+            }
+        }
+
+        return flattenedMutations
     }
     _evaluate() {
         if (this._isRigid) {
@@ -552,8 +567,10 @@ class SimpleBracket extends BaseForLines implements ICacheable {
     }
 
     populateMagicOrTiles(cell: Cell, magicOrTiles: Map<IGameTile, Set<GameSprite>>) {
+        let curCell = cell
         for (const neighbor of this._neighbors) {
-            neighbor.populateMagicOrTiles(cell, magicOrTiles)
+            neighbor.populateMagicOrTiles(curCell, magicOrTiles)
+            curCell = curCell.getNeighbor(this._direction)
         }
     }
 
