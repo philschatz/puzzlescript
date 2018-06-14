@@ -121,10 +121,39 @@ async function run() {
 
         // check to see if the terminal is too small
         if (!UI.willAllLevelsFitOnScreen(data)) {
+            // Draw some example sprites
+            console.log('Some of the levels in this game are too large for your terminal.')
+            console.log('You can resize your terminal or use compact sprites.')
+            console.log('There may be some graphical artifacts if you use compact sprites.')
+            console.log('Below are examples of a compact sprite and a non-compacted sprite:')
+            console.log('')
+            const b = chalk.bgBlueBright(' ')
+            const y = chalk.bgYellowBright(' ')
+            const k = chalk.bgBlack(' ')
+            const by = chalk.bgBlueBright.yellowBright('▄')
+            const yb = chalk.bgYellowBright.blueBright('▄')
+            const yk = chalk.black.bgYellowBright('▄')
+            const ky = chalk.bgBlack.yellowBright('▄')
+            const bk = chalk.bgBlueBright.black('▄')
+            console.log(b+b + b+b + b+b + b+b + b+b + b+b + b+b)
+            console.log(b+b + b+b + y+y + y+y + y+y + b+b + b+b)
+            console.log(b+b + y+y + k+k + y+y + k+k + y+y + b+b)
+            console.log(b+b + k+k + y+y + y+y + y+y + k+k + b+b)
+            console.log(b+b + y+y + k+k + k+k + k+k + y+y + b+b)
+            console.log(b+b + b+b + y+y + y+y + y+y + b+b + b+b)
+            console.log(b+b + b+b + b+b + b+b + b+b + b+b + b+b)
+            console.log('')
+            console.log('')
+
+            console.log(b  + b  + by + by + by + b  + b )
+            console.log(b  + yk + ky + y  + ky + yk + b )
+            console.log(b  + yb + ky + ky + ky + yb + b )
+            console.log(bk + bk + bk + bk + bk + bk + bk)
+
             const {useCompressedCharacters} = await inquirer.prompt<{useCompressedCharacters: boolean}>({
                 type: 'confirm',
                 name: 'useCompressedCharacters',
-                message: 'Some of the levels in this game are too large for your terminal. Would you like to use small characters when rendering the game? There may be some graphical artifacts if you choose this option. Also, you can resize your terminal instead.',
+                message: 'Would you like to use small characters when rendering the game?',
             })
             if (useCompressedCharacters) {
                 UI.setSmallTerminal(true)
@@ -212,6 +241,10 @@ async function run() {
         process.stdin.setEncoding('utf8')
 
         UI.clearScreen()
+
+        if (process.env['LOG_LEVEL'] === 'debug') {
+            console.error(`Start playing "${data.title}". Level ${currentLevelNum}`)
+        }
 
         // Draw the "last" level (after the messages)
         const level = levels[currentLevelNum]
