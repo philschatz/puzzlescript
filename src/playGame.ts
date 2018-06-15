@@ -55,6 +55,12 @@ async function run() {
         })
     }
 
+    console.log(``)
+    console.log(``)
+    console.log(`Let's play some ${chalk.bold.redBright('P')}${chalk.bold.greenBright('U')}${chalk.bold.blueBright('Z')}${chalk.bold.yellowBright('Z')}${chalk.bold.cyanBright('L')}${chalk.bold.magentaBright('E')}${chalk.bold.whiteBright('S')}!`)
+    console.log(``)
+    console.log(``)
+
     // loop indefinitely
     let wantsToPlayAgain = false
     do {
@@ -109,9 +115,13 @@ async function run() {
 
     } while (wantsToPlayAgain)
 
+    console.log(``)
+    console.log(``)
     console.log(`Thanks for playing PuzzleScript Games! Check out these links for more:`)
+    console.log(``)
     console.log(`- ${chalk.blueBright('https://puzzlescript.net')} : The PuzzleScript homepage`)
     console.log(`- ${chalk.blueBright('https://github.com/philschatz/puzzlescript-cli')} : Code for this program (${chalk.green('Help improve our code!')})`)
+    console.log(``)
 }
 
 
@@ -158,9 +168,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: any
     let pendingKey = null
     let shouldExitGame: boolean = false
     // https://stackoverflow.com/a/30687420
-    process.stdin.on('data', function (key) {
-        handleKeyPress(key)
-    })
+    process.stdin.on('data', handleKeyPress)
     function handleKeyPress(key) {
         switch (key) {
             case 'w':
@@ -274,7 +282,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: any
     while (true) {
         // Exit the game if the user pressed escape
         if (shouldExitGame) {
-            return
+            break // so we can detach key listeners
         }
 
         if (pendingKey && !engine.hasAgain()) {
@@ -338,6 +346,8 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: any
 
         tickNum++
     }
+
+    process.stdin.off('data', handleKeyPress)
 }
 
 async function promptPlayAnother() {
