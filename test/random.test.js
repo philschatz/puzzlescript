@@ -710,4 +710,68 @@ describe('engine', () => {
 
     })
 
+    it('runs RANDOM exactly once when condition is [ ]', () => {
+        debugger
+        const { engine, data } = parseEngine(`title Random tile
+
+        ========
+        OBJECTS
+        ========
+
+        Background
+        black
+
+        Player
+        White
+
+        RandomTile
+        blue
+
+        =======
+        LEGEND
+        =======
+
+        . = Background
+        P = Player
+
+        =======
+        SOUNDS
+        =======
+
+        ================
+        COLLISIONLAYERS
+        ================
+
+        Background
+        Player
+        RandomTile
+
+        ======
+        RULES
+        ======
+
+        RANDOM [ ] -> [ RandomTile DEBUGGER ]
+
+        ==============
+        WINCONDITIONS
+        ==============
+
+        =======
+        LEVELS
+        =======
+
+        P..
+
+    `) // end game definition
+
+        const randomTile = data._getSpriteByName('RandomTile')
+        engine.tick()
+
+        expect(engine.toSnapshot()).toMatchSnapshot()
+
+        expect(randomTile.getCellsThatMatch().size).toBe(1)
+        // Player should now be in every corner of the level (because of the mirrors)
+        expect(engine.currentLevel[0][0].getSpritesAsSet().has(randomTile)).toBe(true)
+
+    })
 })

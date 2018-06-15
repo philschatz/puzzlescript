@@ -1,5 +1,22 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`engine runs RANDOM exactly once when condition is [ ] 1`] = `
+Array [
+  Array [
+    Array [
+      "STATIONARY Player",
+      "STATIONARY RandomTile",
+    ],
+    Array [
+      "STATIONARY Background",
+    ],
+    Array [
+      "STATIONARY Background",
+    ],
+  ],
+]
+`;
+
 exports[`engine runs RANDOM in groups properly (e.g. Mirror Isles) 1`] = `
 Array [
   Array [

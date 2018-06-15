@@ -192,6 +192,10 @@ export class LevelEngine extends EventEmitter2 {
             return key.join(' ')
         }
         const allCells = this.getCells()
+        // But first, fill up any empty condition brackets with ALL THE CELLS
+        for (const rule of this.gameData.rules) {
+            rule.addCellsToEmptyRules(allCells)
+        }
         for (const cell of allCells) {
             const key = spriteSetToKey(cell.getSpritesAsSet())
             if (!batchCells.has(key)) {
@@ -586,8 +590,9 @@ export class GameEngine {
         this._levelEngine.press(RULE_DIRECTION_ABSOLUTE.ACTION)
     }
 
-    pressRestart(levelNum) {
-        this._levelEngine.pressRestart(levelNum)
+    pressRestart() {
+        this._isFirstTick = true
+        this._levelEngine.pressRestart(this._currentLevelNum)
     }
     pressUndo() {
         this._levelEngine.pressUndo()

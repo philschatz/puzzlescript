@@ -272,7 +272,7 @@ async function run() {
 
 
         function restartLevel() {
-            engine.pressRestart(currentLevelNum)
+            engine.pressRestart()
             UI.renderScreen(true)
             keypresses = [] // clear key history
         }
