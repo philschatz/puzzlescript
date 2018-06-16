@@ -48,8 +48,8 @@ export function saveCoverageFile(data: GameData, absPath: string, coverageFilena
     function addNodeToCoverage(node: IGameNode) {
         codeCoverageTemp.set(coverageKey(node), 0)
     }
-    data.objects.forEach(addNodeToCoverage)
-    data.legends.forEach(addNodeToCoverage)
+    // data.objects.forEach(addNodeToCoverage)
+    // data.legends.forEach(addNodeToCoverage)
     // data.sounds.forEach(addNodeToCoverage)
     // data.collisionLayers.forEach(addNodeToCoverage) // these entries are sometimes (always?) null
     data.rules.forEach(addNodeToCoverage)
@@ -67,7 +67,7 @@ export function saveCoverageFile(data: GameData, absPath: string, coverageFilena
     }
 
     // record the tick coverage
-    for (const node of [].concat(recursivelyGetRules(data.rules)).concat(data.objects).concat(data.legends).concat(data.winConditions)/*.concat(data.levels)*/) {
+    for (const node of [].concat(recursivelyGetRules(data.rules))/*.concat(data.objects).concat(data.legends)*/.concat(data.winConditions)/*.concat(data.levels)*/) {
         const line = coverageKey(node)
         if (codeCoverageTemp.has(line)) {
             codeCoverageTemp.set(line, codeCoverageTemp.get(line) + node.__coverageCount)

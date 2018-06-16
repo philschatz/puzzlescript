@@ -87,9 +87,9 @@ describe('replays levels of games', () => {
                     UI.dumpScreen()
                 }
 
-                saveCoverageFile(data, gistFilename, `${GIST_ID}-playgame`)
                 expect({title: data.title, levelNumber: index, wonAtKeyIndex}).toEqual({title: data.title, levelNumber: index, wonAtKeyIndex: keypresses.length - 1})
             }
+            saveCoverageFile(data, gistFilename, `${GIST_ID}-playgame`)
         })
     })
 
