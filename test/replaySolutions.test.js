@@ -42,7 +42,7 @@ describe('replays levels of games', () => {
 
                 engine.setLevel(index)
 
-                UI.setGame(engine)
+                // UI.setGame(engine)
 
                 const DID_NOT_WIN = 'DID_NOT_WIN'
                 let wonAtKeyIndex = DID_NOT_WIN
@@ -71,9 +71,9 @@ describe('replays levels of games', () => {
                         didWin = didWin || didWinGame || didLevelChange
                     // } while(engine.hasAgain())
 
-                    if (SHOW_STEPS) {
-                        UI.renderScreen(false)
-                    }
+                    // if (SHOW_STEPS) {
+                    //     UI.renderScreen(false)
+                    // }
 
                     if (didWin) {
                         wonAtKeyIndex = i
@@ -83,8 +83,8 @@ describe('replays levels of games', () => {
 
                 if (wonAtKeyIndex === DID_NOT_WIN || (wonAtKeyIndex !== keypresses.length - 1)) {
                     console.error('Screendump of level')
-                    UI.setGame(engine)
-                    UI.dumpScreen()
+                    // UI.setGame(engine)
+                    // UI.dumpScreen()
                 }
 
                 expect({title: data.title, levelNumber: index, wonAtKeyIndex}).toEqual({title: data.title, levelNumber: index, wonAtKeyIndex: keypresses.length - 1})

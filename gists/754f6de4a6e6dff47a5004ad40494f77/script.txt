@@ -9,7 +9,7 @@ run_rules_on_level_start
 OBJECTS
 ========
 
-Background 
+Background
 Grey DarkGrey
 00000
 01110
@@ -102,7 +102,7 @@ Yellow Red
 .0.0.
 .....
 
-Player 
+Player
 Black White Brown Red
 ..2..
 21312
@@ -212,8 +212,8 @@ ChairUpTuckedInOverlay
 
 
 ======
-RULES     
-======     
+RULES
+======
 
 [ >  Player | Pushable ] -> [  >  Player | > Pushable  ] again
 
@@ -251,12 +251,12 @@ Late Down [ ChairUpTuckedIn | ] -> [ ChairUpTuckedIn | ChairUpTuckedInOverlay ]
 WINCONDITIONS
 ==============
 
-All Table on Tidy  
+All Table on Tidy
 All Chair on Tidy
 some Table
 some Chair
 
-=======     
+=======
 LEVELS
 =======
 

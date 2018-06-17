@@ -594,7 +594,7 @@ down [ RemoveLandRD | no WaterHere ] -> [ | ]
 startloop
 random [ Reflectable no DirectionCounter ] -> [ action Reflectable North left 00 ]
 + [ Reflectable North ] -> [ action Reflectable East right 00 ]
-+ [ Reflectable East ] -> [ action Reflectable South up 00 ]
++ [ Reflectable East ] -> [ action Reflectable South up 00 DEBUGGER ]
 + [ Reflectable South ] -> [ action Reflectable West down 00 ]
 
 [ > 00 | no Solid ] -> [ | > 01 LOS ]

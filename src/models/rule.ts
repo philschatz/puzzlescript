@@ -10,6 +10,7 @@ import { Cell } from '../engine'
 import { RULE_DIRECTION } from '../enums';
 import UI from '../ui'
 import { AbstractCommand } from './command';
+import { CollisionLayer } from './collisionLayer';
 
 const MAX_ITERATIONS_IN_LOOP = 350 // Set by the Random World Generation game
 
@@ -254,7 +255,7 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
                 UI.debugRenderScreen(); debugger
             }
             if (innerIteration === MAX_ITERATIONS_IN_LOOP - 1) {
-                throw new Error('`BUG: Iterated too many times in rule or rule group')
+                throw new Error(`BUG: Iterated too many times in rule or rule group\n${this.toString()}`)
             }
             const ret = this._evaluate()
             // Only evaluate once. This is a HACK since it always picks the 1st cell that matched rather than a RANDOM cell
@@ -736,6 +737,79 @@ class SimpleBracketConditionOnly extends SimpleBracket {
     }
 }
 
+class ReplaceTile {
+    collisionLayer: CollisionLayer
+    actionTileWithModifier: SimpleTileWithModifier
+    constructor(collisionLayer: CollisionLayer, actionTileWithModifier: SimpleTileWithModifier) {
+        if (!collisionLayer) {
+            throw new Error('BUG: collisionLayer is not set')
+        }
+        this.collisionLayer = collisionLayer
+        this.actionTileWithModifier = actionTileWithModifier
+    }
+    replace(cell: Cell, magicOrTiles: Map<IGameTile, Set<GameSprite>>) {
+        let oldSprite
+        let didActuallyChange = false
+        // Check if we are adding or removing....
+        if (this.actionTileWithModifier) {
+            // adding
+
+            let sprites: Iterable<GameSprite> = null
+            // if RANDOM is set then pick a random sprite to add
+            if (this.actionTileWithModifier.isRandom()) {
+                sprites = [] // nothing to change
+            } else if (this.actionTileWithModifier._tile.isOr()) {
+                // There is no sprite of this type already in the cell. It's in the magicOrTiles
+                sprites = magicOrTiles.get(this.actionTileWithModifier._tile)
+            } else {
+                sprites = this.actionTileWithModifier._tile.getSprites()
+            }
+            for (const sprite of sprites) {
+                const added = cell.addSprite(sprite)
+                didActuallyChange = didActuallyChange || added
+            }
+        } else {
+            // removing
+            const tile = cell.getSpriteByCollisionLayer(this.collisionLayer)
+            if (!tile) {
+                debugger
+            }
+            for (const sprite of tile.getSprites()) {
+                const removed = cell.removeSprite(sprite)
+                didActuallyChange = didActuallyChange || removed
+            }
+        }
+        // return the oldSprite for UNDO
+        return {
+            didActuallyChange
+        }
+    }
+}
+
+class ReplaceDirection {
+    collisionLayer: CollisionLayer
+    direction: RULE_DIRECTION_ABSOLUTE
+    constructor(collisionLayer: CollisionLayer, direction: RULE_DIRECTION_ABSOLUTE) {
+        if (!collisionLayer) {
+            throw new Error('BUG: collisionLayer is not set')
+        }
+        this.collisionLayer = collisionLayer
+        this.direction = direction
+    }
+    replace(cell: Cell) {
+        let direction = this.direction
+        if (this.direction === RULE_DIRECTION_ABSOLUTE.RANDOMDIR) {
+            console.log('RANDOMDIR not ported yet')
+            return false
+        }
+        if (direction) {
+            return cell.setWantsToMoveCollisionLayer(this.collisionLayer, direction)
+        } else {
+            return cell.deleteWantsToMoveCollisionLayer(this.collisionLayer)
+        }
+    }
+}
+
 class SimpleNeighbor extends BaseForLines implements ICacheable {
     _tilesWithModifier: Set<SimpleTileWithModifier>
     _brackets: Map<SimpleBracket, Set<number>>
@@ -758,41 +832,83 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
             // Pausing here because this breakpoint was marked in the game code
             UI.debugRenderScreen(); debugger
         }
-        // Just remove all tiles for now and then add all of them back
-        // TODO: only remove tiles that are matching the collisionLayer but wait, they already need to be exclusive
 
-        // Remember the set of sprites before (so we can detect if the cell changed)
-        const spritesBefore = new Set(cell.getSpritesAsSet())
-        const newSpritesAndWantsToMoves = [...cell.getSpriteAndWantsToMoves()]
-
-        const { spritesToRemove, spritesToUpdate, spritesToAdd } = this._getConditionAndActionSprites(cell, actionNeighbor, magicOrTiles)
-
-        // Remove any sprites that are in the same collisionLayer as sprites that are being added
-        const collisionLayerOfSpritesToRemove = new Map<number, GameSprite>()
-        for (const sprite of cell.getSpritesAsSet()) {
-            collisionLayerOfSpritesToRemove.set(sprite.getCollisionLayerNum(), sprite)
+        // Compute the Mutators on-the-fly for now....
+        const pairsByCollisionLayer = new Map<CollisionLayer, Pair<SimpleTileWithModifier>>()
+        const orTiles = new Map<IGameTile, SimpleTileWithModifier>()
+        for (const t of this._tilesWithModifier) {
+            if (t._tile.isOr()) {
+                orTiles.set(t._tile, t)
+            }
+            if (!t.isNo()) {
+                const c = t._tile.getCollisionLayer()
+                if (!c) {
+                    console.log(t._tile.toString())
+                    throw new Error(`BUG: Tile is not assigned to a collision layer`)
+                }
+                pairsByCollisionLayer.set(c, new Pair<SimpleTileWithModifier>(t, null/*filled in later if there is an action*/))
+            }
         }
-        for (const sprite of spritesToAdd.keys()) {
-            if (collisionLayerOfSpritesToRemove.has(sprite.getCollisionLayerNum())) {
-                spritesToRemove.add(collisionLayerOfSpritesToRemove.get(sprite.getCollisionLayerNum()))
+        for (const t of actionNeighbor._tilesWithModifier) {
+            if (t._tile.isOr() && !orTiles.has(t._tile)) {
+                // OR tiles may belong to different collisionlayers so... it's complicated
+            } else {
+                const c = t._tile.getCollisionLayer()
+                let actionSide
+                if (!c) {
+                    console.log(t._tile.toString())
+                    throw new Error(`BUG: Tile is not assigned to a collision layer`)
+                }
+                if (t.isNo()) {
+                    // set it to be null (removed)
+                    actionSide = null
+                } else {
+                    actionSide = t
+                }
+                if (pairsByCollisionLayer.has(c)) {
+                    pairsByCollisionLayer.get(c).action = actionSide
+                } else {
+                    pairsByCollisionLayer.set(c, new Pair<SimpleTileWithModifier>(null, actionSide))
+                }
             }
         }
 
-        cell.removeSprites(spritesToRemove)
-
-        // add sprites that are listed on the action side
-        for (let [sprite, direction] of spritesToUpdate) {
-            cell.addSprite(sprite, direction)
+        const replaceTiles = new Set<ReplaceTile>()
+        const replaceDirections = new Set<ReplaceDirection>()
+        for (const [collisionLayer, {condition, action}] of pairsByCollisionLayer.entries()) {
+            if (condition && action) {
+                if (condition._tile !== action._tile || condition.isNo()) {
+                    replaceTiles.add(new ReplaceTile(collisionLayer, action))
+                }
+                if (condition._direction !== action._direction || condition.isNo()) {
+                    replaceDirections.add(new ReplaceDirection(collisionLayer, action._direction || RULE_DIRECTION_ABSOLUTE.STATIONARY))
+                }
+            } else if (condition) {
+                if (!condition.isNo()) {
+                    replaceTiles.add(new ReplaceTile(collisionLayer, null))
+                    // delete the direction. but that _should_ be handled above
+                }
+            } else if (action) {
+                if (!action.isNo()) {
+                    replaceTiles.add(new ReplaceTile(collisionLayer, action))
+                    replaceDirections.add(new ReplaceDirection(collisionLayer, action._direction || RULE_DIRECTION_ABSOLUTE.STATIONARY))
+                }
+            }
         }
-        for (let [sprite, direction] of spritesToAdd) {
-            cell.addSprite(sprite, direction)
+
+        let didChangeSprites = false
+        let didChangeDirection = false
+        for (const replaceTile of replaceTiles) {
+            const {didActuallyChange} = replaceTile.replace(cell, magicOrTiles)
+            didChangeSprites = didChangeSprites || didActuallyChange
+        }
+        for (const replaceDirection of replaceDirections) {
+            didChangeDirection = didChangeDirection || replaceDirection.replace(cell)
         }
 
         // TODO: Be better about recording when the cell actually updated
-        if (spritesToRemove.size + spritesToUpdate.size + spritesToAdd.size > 0) {
-            const spritesNow = cell.getSpritesAsSet()
-            const didSpritesChange = !setEquals(spritesBefore, spritesNow) // TODO: just change this to spritesToRemove + spritesToAdd > 0
-            return new CellMutation(cell, didSpritesChange)
+        if (didChangeSprites || didChangeDirection) {
+            return new CellMutation(cell, didChangeSprites)
         } else {
             return null
         }

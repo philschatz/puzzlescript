@@ -14,6 +14,7 @@ export interface IGameTile extends IGameNode {
     isInvalid: () => string
     hasCollisionLayer: () => boolean
     setCollisionLayer: (collisionLayer: CollisionLayer) => void
+    getCollisionLayer: () => CollisionLayer
     getCollisionLayerNum: () => number
     matchesCell: (cell: Cell) => boolean
     isOr: () => boolean
@@ -61,12 +62,15 @@ export class GameSprite extends BaseForLines implements IGameTile {
     setCollisionLayer(collisionLayer: CollisionLayer) {
         this._collisionLayer = collisionLayer
     }
-    getCollisionLayerNum() {
+    getCollisionLayer() {
         if (!this._collisionLayer) {
             console.error(this.__source.getLineAndColumnMessage())
             throw new Error('ERROR: This sprite was not in a Collision Layer')
         }
-        return this._collisionLayer.id
+        return this._collisionLayer
+    }
+    getCollisionLayerNum() {
+        return this.getCollisionLayer().id
     }
     isInvalid() {
         if (!this._collisionLayer) {
@@ -282,8 +286,22 @@ export class GameLegendTile extends BaseForLines implements IGameTile {
     setCollisionLayer(collisionLayer: CollisionLayer) {
         this._collisionLayer = collisionLayer
     }
+    getCollisionLayer() {
+        // OR tiles and AND tiles don't necessarily have a collisionLayer set so pull it from the sprite (this might not work)
+        if (this._collisionLayer) {
+            return this._collisionLayer
+        }
+        // check that all sprites are in the same collisionlayer... if not, thene our understanding is flawed
+        const firstCollisionLayer = this.getSprites()[0].getCollisionLayer()
+        for (const sprite of this.getSprites()) {
+            if (sprite.getCollisionLayer() !== firstCollisionLayer) {
+                throw new Error(`ooh, sprites in a tile have different collision layers... that's a problem\n${this.toString()}`)
+            }
+        }
+        return firstCollisionLayer
+    }
     getCollisionLayerNum() {
-        return this._collisionLayer.id
+        return this.getCollisionLayer().id
     }
 
     getCellsThatMatch() {

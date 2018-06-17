@@ -465,8 +465,7 @@ COLLISIONLAYERS
 
 Background
 Player
-Sand
-Water
+Sand, Water
 
 ======
 RULES
