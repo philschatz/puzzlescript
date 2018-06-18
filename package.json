@@ -20,7 +20,8 @@
     "debug": "tsc; node --inspect-brk lib/runGames.js"
   },
   "bin": {
-      "puzzle": "NODE_ENV=production ./bin/play.js"
+      "puzzlescript": "NODE_ENV=production ./bin/puzzlescript.js",
+      "puzzlescript-demo": "NODE_ENV=production ./bin/puzzlescript-demo.js"
   },
   "dependencies": {
     "@types/ansi-styles": "^3.2.0",

@@ -54,6 +54,8 @@ function drawPixelChar(x, y, fgHex, bgHex, char) {
     }
     moveTo(x, y)
     process.stdout.write(char)
+    setFgColor('#ffffff')
+    setBgColor('#000000')
 }
 
 
@@ -211,7 +213,7 @@ class UI {
             console.log('Playing a game in the console requires color support. Unfortunately, color is not supported so not rendering (for now). We could just do an ASCII dump or something, using  ░▒▓█ to denote shades of cells')
             return
         }
-        const levelRows = this._engine.getCurrentLevel()
+        const levelRows = this._engine.getCurrentLevelCells()
 
         if (clearCaches) {
             this._cellColorCache.clear()
@@ -347,8 +349,8 @@ class UI {
         } else {
             boundingBoxLeft = 0
             boundingBoxTop = 0
-            boundingBoxHeight = this._engine.getCurrentLevel().length
-            boundingBoxWidth = this._engine.getCurrentLevel()[0].length
+            boundingBoxHeight = this._engine.getCurrentLevelCells().length
+            boundingBoxWidth = this._engine.getCurrentLevelCells()[0].length
         }
 
         if (zoomScreen) {

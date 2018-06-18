@@ -518,7 +518,7 @@ export class GameEngine {
     getGameData() {
         return this._levelEngine.gameData
     }
-    getCurrentLevel() {
+    getCurrentLevelCells() {
         return this._levelEngine.currentLevel
     }
     getCurrentLevelNum() {
