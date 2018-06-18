@@ -394,7 +394,7 @@ Player
 RULES
 ===
 
-[ Player ] -> [ RANDOMDIR Player ]
+RIGHT [ Player ] -> [ RANDOMDIR Player ]
 
 =======
 LEVELS

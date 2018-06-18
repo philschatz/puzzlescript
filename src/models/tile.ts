@@ -13,6 +13,7 @@ export interface IGameTile extends IGameNode {
     getSpritesForRuleAction: () => GameSprite[]
     isInvalid: () => string
     hasCollisionLayer: () => boolean
+    hasSingleCollisionLayer: () => boolean
     setCollisionLayer: (collisionLayer: CollisionLayer) => void
     getCollisionLayer: () => CollisionLayer
     getCollisionLayerNum: () => number
@@ -46,7 +47,7 @@ export class GameSprite extends BaseForLines implements IGameTile {
     getName() {
         return this._name
     }
-    _getDescendantTiles(): GameLegendTile[] {
+    _getDescendantTiles() {
         return []
     }
     getSprites() {
@@ -58,6 +59,10 @@ export class GameSprite extends BaseForLines implements IGameTile {
     }
     hasCollisionLayer() {
         return !!this._collisionLayer
+    }
+    hasSingleCollisionLayer() {
+        // always true. This is only ever false for OR tiles
+        return this.hasCollisionLayer()
     }
     setCollisionLayer(collisionLayer: CollisionLayer) {
         this._collisionLayer = collisionLayer
@@ -254,6 +259,12 @@ export class GameLegendTile extends BaseForLines implements IGameTile {
         }
         return new Set()
     }
+    hasSingleCollisionLayer() {
+        if (!!true) {
+            throw new Error('BUG: This is an abstract method')
+        }
+        return false
+    }
 
     getName() {
         return this._spriteNameOrLevelChar
@@ -295,6 +306,7 @@ export class GameLegendTile extends BaseForLines implements IGameTile {
         const firstCollisionLayer = this.getSprites()[0].getCollisionLayer()
         for (const sprite of this.getSprites()) {
             if (sprite.getCollisionLayer() !== firstCollisionLayer) {
+                debugger
                 throw new Error(`ooh, sprites in a tile have different collision layers... that's a problem\n${this.toString()}`)
             }
         }
@@ -339,6 +351,9 @@ export class GameLegendTileSimple extends GameLegendTile {
         return setIntersection(new Set(this.getSprites()), cell.getSpritesAsSet())
     }
 
+    hasSingleCollisionLayer() {
+        return !!this._collisionLayer
+    }
 }
 
 export class GameLegendTileAnd extends GameLegendTile {
@@ -360,6 +375,12 @@ export class GameLegendTileAnd extends GameLegendTile {
     getSpritesThatMatch(cell: Cell) {
         return setIntersection(new Set(this.getSprites()), cell.getSpritesAsSet())
     }
+
+    hasSingleCollisionLayer() {
+        return !!this._collisionLayer
+    }
+
+
 }
 
 export class GameLegendTileOr extends GameLegendTile {
@@ -389,5 +410,17 @@ export class GameLegendTileOr extends GameLegendTile {
     getSpritesThatMatch(cell: Cell) {
         return setIntersection(new Set(this.getSprites()), cell.getSpritesAsSet())
     }
+
+    hasSingleCollisionLayer() {
+        const sprites = this.getSprites()
+        for (const sprite of sprites) {
+            if (sprite.getCollisionLayer() !== sprites[0].getCollisionLayer()) {
+                return false
+            }
+        }
+        return true
+    }
+
+
 
 }

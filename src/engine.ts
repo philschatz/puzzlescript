@@ -46,10 +46,10 @@ export class Cell {
         return didActuallyChangeSprite || didActuallyChangeDir
     }
     _deleteWantsToMove(sprite: GameSprite) {
-        // TODO: this is not quite correct. there may be other sprites in the same ... oh wait, no that's not possible.
+        // There may be other sprites in the same ... oh wait, no that's not possible.
         const collisionLayer = sprite.getCollisionLayer()
         const collisionLayerNum = sprite.getCollisionLayerNum()
-        const didActuallyChange = !this._cacheSpritesByCollisionLayer[collisionLayerNum]
+        const didActuallyChange = !!this._cacheSpritesByCollisionLayer[collisionLayerNum]
         this._collisionLayerWantsToMove[collisionLayerNum] = null
         this._cacheSpritesByCollisionLayer[collisionLayerNum] = null
         return didActuallyChange
@@ -59,6 +59,7 @@ export class Cell {
         // Check that there is a sprite for this collision layer
         const sprite = this._cacheSpritesByCollisionLayer[c]
         if (!sprite) {
+            debugger
             throw new Error(`BUG: No sprite for collision layer ${c}. Cannot set direction`)
         }
         const didActuallyChange = this._collisionLayerWantsToMove[c] !== wantsToMove
@@ -71,7 +72,8 @@ export class Cell {
         // Check that there is a sprite for this collision layer
         const sprite = this._cacheSpritesByCollisionLayer[c]
         if (!sprite) {
-            throw new Error(`BUG: No sprite for collision layer ${c}. Cannot set direction`)
+            debugger
+            throw new Error(`BUG: No sprite for collision layer ${c}. Cannot delete direction`)
         }
         const didActuallyChange = this._collisionLayerWantsToMove[c] !== null
         this._collisionLayerWantsToMove[c] = null
@@ -123,6 +125,7 @@ export class Cell {
             case RULE_MODIFIER.RIGHT:
                 return this._getRelativeNeighbor(0, 1)
             default:
+                debugger
                 throw new Error(`BUG: Unsupported direction "${direction}"`)
         }
     }
@@ -144,6 +147,9 @@ export class Cell {
             return null
         }
     }
+    getWantsToMoveByCollisionLayer(collisionLayer: CollisionLayer) {
+        return this._collisionLayerWantsToMove[collisionLayer.id]
+    }
     directionForSprite(sprite: GameSprite) {
         return this._collisionLayerWantsToMove[sprite.getCollisionLayerNum()]
     }
@@ -156,10 +162,16 @@ export class Cell {
     }
     addSprite(sprite: GameSprite, wantsToMove?: RULE_DIRECTION_ABSOLUTE) {
         let didActuallyChange = false
+        // If we already have a sprite in that collision layer then we need to remove it
+        const prevSprite = this.getSpriteByCollisionLayer(sprite.getCollisionLayer())
+        const prevWantsToMove = this.getWantsToMoveByCollisionLayer(sprite.getCollisionLayer())
+        if (prevSprite && prevSprite !== sprite) {
+            this.removeSprite(prevSprite)
+        }
         if (wantsToMove) {
             didActuallyChange = this._setWantsToMove(sprite, wantsToMove)
         } else if (!this.hasSprite(sprite)) {
-            wantsToMove = RULE_DIRECTION_ABSOLUTE.STATIONARY
+            wantsToMove = prevWantsToMove || RULE_DIRECTION_ABSOLUTE.STATIONARY // try to preserve the wantsToMove
             didActuallyChange = this._setWantsToMove(sprite, wantsToMove)
         }
         sprite.addCell(this, wantsToMove)

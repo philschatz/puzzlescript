@@ -740,12 +740,14 @@ class SimpleBracketConditionOnly extends SimpleBracket {
 class ReplaceTile {
     collisionLayer: CollisionLayer
     actionTileWithModifier: SimpleTileWithModifier
-    constructor(collisionLayer: CollisionLayer, actionTileWithModifier: SimpleTileWithModifier) {
+    mightNotFindConditionButThatIsOk: boolean
+    constructor(collisionLayer: CollisionLayer, actionTileWithModifier: SimpleTileWithModifier, mightNotFindConditionButThatIsOk: boolean) {
         if (!collisionLayer) {
             throw new Error('BUG: collisionLayer is not set')
         }
         this.collisionLayer = collisionLayer
         this.actionTileWithModifier = actionTileWithModifier
+        this.mightNotFindConditionButThatIsOk = mightNotFindConditionButThatIsOk
     }
     replace(cell: Cell, magicOrTiles: Map<IGameTile, Set<GameSprite>>) {
         let oldSprite
@@ -757,7 +759,9 @@ class ReplaceTile {
             let sprites: Iterable<GameSprite> = null
             // if RANDOM is set then pick a random sprite to add
             if (this.actionTileWithModifier.isRandom()) {
-                sprites = [] // nothing to change
+                const spritesToChoose = this.actionTileWithModifier._tile.getSprites()
+                const rnd = nextRandom(spritesToChoose.length)
+                sprites = [spritesToChoose[rnd]]
             } else if (this.actionTileWithModifier._tile.isOr()) {
                 // There is no sprite of this type already in the cell. It's in the magicOrTiles
                 sprites = magicOrTiles.get(this.actionTileWithModifier._tile)
@@ -771,6 +775,10 @@ class ReplaceTile {
         } else {
             // removing
             const tile = cell.getSpriteByCollisionLayer(this.collisionLayer)
+            if (!tile && this.mightNotFindConditionButThatIsOk) {
+                // this occurs when there is just a -> [ NO Color ] on the action side (remove color if it exists)
+                return {actuallyDidChange: false}
+            }
             if (!tile) {
                 debugger
             }
@@ -789,26 +797,59 @@ class ReplaceTile {
 class ReplaceDirection {
     collisionLayer: CollisionLayer
     direction: RULE_DIRECTION_ABSOLUTE
-    constructor(collisionLayer: CollisionLayer, direction: RULE_DIRECTION_ABSOLUTE) {
+    mightNotFindConditionButThatIsOk: boolean
+    constructor(collisionLayer: CollisionLayer, direction: RULE_DIRECTION_ABSOLUTE, mightNotFindConditionButThatIsOk: boolean) {
         if (!collisionLayer) {
             throw new Error('BUG: collisionLayer is not set')
         }
         this.collisionLayer = collisionLayer
         this.direction = direction
+        this.mightNotFindConditionButThatIsOk = mightNotFindConditionButThatIsOk
     }
     replace(cell: Cell) {
         let direction = this.direction
-        if (this.direction === RULE_DIRECTION_ABSOLUTE.RANDOMDIR) {
-            console.log('RANDOMDIR not ported yet')
+        // It's OK if this sprite is not in the condition. This happens when an OR action tile has sprites that are in multiple collision layers
+        if (this.mightNotFindConditionButThatIsOk && !cell.getSpriteByCollisionLayer(this.collisionLayer)) {
             return false
+        }
+
+        // Pick a random direction
+        if (this.direction === RULE_DIRECTION_ABSOLUTE.RANDOMDIR) {
+            // only set the direction if one has not already been set
+            if (cell.getWantsToMoveByCollisionLayer(this.collisionLayer) === RULE_DIRECTION_ABSOLUTE.STATIONARY) {
+                switch (nextRandom(4)) {
+                    case 0:
+                        direction = RULE_DIRECTION_ABSOLUTE.UP
+                        break
+                    case 1:
+                        direction = RULE_DIRECTION_ABSOLUTE.DOWN
+                        break
+                    case 2:
+                        direction = RULE_DIRECTION_ABSOLUTE.LEFT
+                        break
+                    case 3:
+                        direction = RULE_DIRECTION_ABSOLUTE.RIGHT
+                        break
+                    default:
+                        throw new Error(`BUG: invalid random number chosen`)
+                }
+            } else {
+                // a direction was already set
+                return false
+            }
         }
         if (direction) {
             return cell.setWantsToMoveCollisionLayer(this.collisionLayer, direction)
         } else {
-            return cell.deleteWantsToMoveCollisionLayer(this.collisionLayer)
+            if (cell.getWantsToMoveByCollisionLayer(this.collisionLayer)) {
+                return cell.deleteWantsToMoveCollisionLayer(this.collisionLayer)
+            } else {
+                return false
+            }
         }
     }
 }
+
 
 class SimpleNeighbor extends BaseForLines implements ICacheable {
     _tilesWithModifier: Set<SimpleTileWithModifier>
@@ -834,64 +875,99 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
         }
 
         // Compute the Mutators on-the-fly for now....
-        const pairsByCollisionLayer = new Map<CollisionLayer, Pair<SimpleTileWithModifier>>()
+        const pairsByCollisionLayer = new Map<CollisionLayer, ExtraPair<SimpleTileWithModifier>>()
         const orTiles = new Map<IGameTile, SimpleTileWithModifier>()
         for (const t of this._tilesWithModifier) {
-            if (t._tile.isOr()) {
+            if (t._tile.isOr() && !t._tile.hasSingleCollisionLayer()) {
                 orTiles.set(t._tile, t)
-            }
-            if (!t.isNo()) {
+            } else if (!t.isNo()) {
                 const c = t._tile.getCollisionLayer()
                 if (!c) {
                     console.log(t._tile.toString())
                     throw new Error(`BUG: Tile is not assigned to a collision layer`)
                 }
-                pairsByCollisionLayer.set(c, new Pair<SimpleTileWithModifier>(t, null/*filled in later if there is an action*/))
+                pairsByCollisionLayer.set(c, new ExtraPair<SimpleTileWithModifier>(t, null/*filled in later if there is an action*/, false/*okToIgnoreNonMatches*/))
             }
         }
         for (const t of actionNeighbor._tilesWithModifier) {
-            if (t._tile.isOr() && !orTiles.has(t._tile)) {
+            if (t._tile.isOr() && !t._tile.hasSingleCollisionLayer()) {
                 // OR tiles may belong to different collisionlayers so... it's complicated
+                if (orTiles.has(t._tile)) {
+                    // simple case. at most we just change direction
+                    const conditionT = orTiles.get(t._tile)
+                    if (conditionT._direction !== t._direction) {
+                        for (const sprite of t._tile.getSprites()) {
+                            const c =  sprite.getCollisionLayer()
+                            if (!pairsByCollisionLayer.has(c)) {
+                                pairsByCollisionLayer.set(c, new ExtraPair<SimpleTileWithModifier>(
+                                    new SimpleTileWithModifier(conditionT.__source, conditionT._isNegated /*since the action side is a NO */, conditionT._isRandom/*isRandom*/, conditionT._direction, sprite, conditionT._debugFlag),
+                                    new SimpleTileWithModifier(t.__source, t._isNegated /*since the action side is a NO */, t._isRandom/*isRandom*/, t._direction, sprite, t._debugFlag),
+                                    true/*okToIgnoreNonMatches*/))
+                            }
+                        }
+                    }
+                } else {
+                    if (t.isNo()) {
+                        for (const sprite of t._tile.getSprites()) {
+                            const c =  sprite.getCollisionLayer()
+                            if (!pairsByCollisionLayer.has(c)) {
+                                pairsByCollisionLayer.set(c, new ExtraPair<SimpleTileWithModifier>(new SimpleTileWithModifier(t.__source, false /*since the action side is a NO */, false/*isRandom*/, t._direction, t._tile, t._debugFlag), null, true/*okToIgnoreNonMatches*/))
+                            }
+                        }
+                    }
+                }
             } else {
                 const c = t._tile.getCollisionLayer()
-                let actionSide
                 if (!c) {
                     console.log(t._tile.toString())
                     throw new Error(`BUG: Tile is not assigned to a collision layer`)
                 }
                 if (t.isNo()) {
                     // set it to be null (removed)
-                    actionSide = null
+                    if (pairsByCollisionLayer.has(c)) {
+                        // just leave the action side as null (so it's removed)
+                        if (pairsByCollisionLayer.get(c).condition === t) {
+                            // remove if both the condition and action are the same
+                            pairsByCollisionLayer.delete(c)
+                        }
+                    } else {
+                        // we need to set the condition side to be the tile so that it is removed
+                        // (it might not exist in the cell though but that's an optimization for later)
+                        pairsByCollisionLayer.set(c, new ExtraPair<SimpleTileWithModifier>(new SimpleTileWithModifier(t.__source, false /*since the action side is a NO */, false/*isRandom*/, t._direction, t._tile, t._debugFlag), null, true/*okToIgnoreNonMatches*/))
+                    }
                 } else {
-                    actionSide = t
-                }
-                if (pairsByCollisionLayer.has(c)) {
-                    pairsByCollisionLayer.get(c).action = actionSide
-                } else {
-                    pairsByCollisionLayer.set(c, new Pair<SimpleTileWithModifier>(null, actionSide))
+                    if (pairsByCollisionLayer.has(c)) {
+                        pairsByCollisionLayer.get(c).action = t
+                    } else {
+                        pairsByCollisionLayer.set(c, new ExtraPair<SimpleTileWithModifier>(null, t, false/*okToIgnoreNonMatches*/))
+                    }
                 }
             }
         }
 
         const replaceTiles = new Set<ReplaceTile>()
         const replaceDirections = new Set<ReplaceDirection>()
-        for (const [collisionLayer, {condition, action}] of pairsByCollisionLayer.entries()) {
+        for (const [collisionLayer, {condition, action, extra}] of pairsByCollisionLayer.entries()) {
             if (condition && action) {
-                if (condition._tile !== action._tile || condition.isNo()) {
-                    replaceTiles.add(new ReplaceTile(collisionLayer, action))
-                }
-                if (condition._direction !== action._direction || condition.isNo()) {
-                    replaceDirections.add(new ReplaceDirection(collisionLayer, action._direction || RULE_DIRECTION_ABSOLUTE.STATIONARY))
+                if (condition !== action) { // Could be `[ TrolleyFull no CleanDishes] -> [TrolleyEmpty no CleanDishes ]`
+                    if (condition._tile !== action._tile || condition.isNo()) {
+                        replaceTiles.add(new ReplaceTile(collisionLayer, action, extra))
+                    }
+                    if (condition._direction !== action._direction) {
+                        replaceDirections.add(new ReplaceDirection(collisionLayer, action._direction || RULE_DIRECTION_ABSOLUTE.STATIONARY, extra))
+                    } else if (condition.isNo()) {
+                        replaceDirections.add(new ReplaceDirection(collisionLayer, action._direction || RULE_DIRECTION_ABSOLUTE.STATIONARY, extra))
+                    }
                 }
             } else if (condition) {
                 if (!condition.isNo()) {
-                    replaceTiles.add(new ReplaceTile(collisionLayer, null))
-                    // delete the direction. but that _should_ be handled above
+                    replaceTiles.add(new ReplaceTile(collisionLayer, null, extra))
+                    replaceDirections.add(new ReplaceDirection(collisionLayer, null, extra))
                 }
             } else if (action) {
                 if (!action.isNo()) {
-                    replaceTiles.add(new ReplaceTile(collisionLayer, action))
-                    replaceDirections.add(new ReplaceDirection(collisionLayer, action._direction || RULE_DIRECTION_ABSOLUTE.STATIONARY))
+                    replaceTiles.add(new ReplaceTile(collisionLayer, action, extra))
+                    replaceDirections.add(new ReplaceDirection(collisionLayer, action._direction || RULE_DIRECTION_ABSOLUTE.STATIONARY, extra))
                 }
             }
         }
@@ -903,7 +979,8 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
             didChangeSprites = didChangeSprites || didActuallyChange
         }
         for (const replaceDirection of replaceDirections) {
-            didChangeDirection = didChangeDirection || replaceDirection.replace(cell)
+            const didActuallyChange = replaceDirection.replace(cell)
+            didChangeDirection = didChangeDirection || didActuallyChange
         }
 
         // TODO: Be better about recording when the cell actually updated
@@ -1414,6 +1491,14 @@ class Pair<A> {
     constructor(condition: A, action: A) {
         this.condition = condition
         this.action = action
+    }
+}
+
+class ExtraPair<A> extends Pair<A> {
+    extra: boolean
+    constructor(condition, action, extra) {
+        super(condition, action)
+        this.extra = extra
     }
 }
 

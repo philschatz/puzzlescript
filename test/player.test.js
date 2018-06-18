@@ -201,7 +201,7 @@ describe('player movement', () => {
         RULES
         ====
 
-        [ > player ] [ shadow ] -> [ > player ] [ > shadow DEBUGGER ]
+        [ > player ] [ shadow ] -> [ > player ] [ > shadow ]
 
         ===
         WINCONDITIONS

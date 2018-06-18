@@ -711,7 +711,6 @@ describe('engine', () => {
     })
 
     it('runs RANDOM exactly once when condition is [ ]', () => {
-        debugger
         const { engine, data } = parseEngine(`title Random tile
 
         ========
@@ -750,7 +749,7 @@ describe('engine', () => {
         RULES
         ======
 
-        RANDOM [ ] -> [ RandomTile DEBUGGER ]
+        RANDOM [ ] -> [ RandomTile ]
 
         ==============
         WINCONDITIONS
