@@ -22,60 +22,45 @@ Array [
   Array [
     Array [
       "STATIONARY Background",
-      "STATIONARY HasReflection",
-      "STATIONARY Player",
     ],
     Array [
       "STATIONARY Background",
-      "STATIONARY LOS",
     ],
     Array [
       "STATIONARY MirrorDR",
     ],
     Array [
       "STATIONARY Background",
-      "STATIONARY LOS",
     ],
     Array [
       "STATIONARY Background",
-      "STATIONARY HasReflection",
-      "STATIONARY Player",
     ],
   ],
   Array [
     Array [
       "STATIONARY Background",
-      "STATIONARY LOS",
     ],
     Array [
       "STATIONARY Background",
     ],
     Array [
       "STATIONARY Background",
-      "STATIONARY LOS",
     ],
     Array [
       "STATIONARY Background",
     ],
     Array [
       "STATIONARY Background",
-      "STATIONARY LOS",
     ],
   ],
   Array [
-    Array [
-      "STATIONARY MirrorUR",
-    ],
+    Array [],
     Array [
       "STATIONARY Background",
-      "STATIONARY LOS",
     ],
-    Array [
-      "STATIONARY Reflection",
-    ],
+    Array [],
     Array [
       "STATIONARY Background",
-      "STATIONARY LOS",
     ],
     Array [
       "STATIONARY MirrorDL",
@@ -84,44 +69,35 @@ Array [
   Array [
     Array [
       "STATIONARY Background",
-      "STATIONARY LOS",
     ],
     Array [
       "STATIONARY Background",
     ],
     Array [
       "STATIONARY Background",
-      "STATIONARY LOS",
     ],
     Array [
       "STATIONARY Background",
     ],
     Array [
       "STATIONARY Background",
-      "STATIONARY LOS",
     ],
   ],
   Array [
     Array [
       "STATIONARY Background",
-      "STATIONARY HasReflection",
-      "STATIONARY Player",
     ],
     Array [
       "STATIONARY Background",
-      "STATIONARY LOS",
     ],
     Array [
       "STATIONARY MirrorUL",
     ],
     Array [
       "STATIONARY Background",
-      "STATIONARY LOS",
     ],
     Array [
       "STATIONARY Background",
-      "STATIONARY HasReflection",
-      "STATIONARY Player",
     ],
   ],
 ]

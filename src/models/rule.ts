@@ -880,7 +880,7 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
         for (const t of this._tilesWithModifier) {
             if (t._tile.isOr() && !t._tile.hasSingleCollisionLayer()) {
                 orTiles.set(t._tile, t)
-            } else if (!t.isNo()) {
+            } else {
                 const c = t._tile.getCollisionLayer()
                 if (!c) {
                     console.log(t._tile.toString())
@@ -889,6 +889,10 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
                 pairsByCollisionLayer.set(c, new ExtraPair<SimpleTileWithModifier>(t, null/*filled in later if there is an action*/, false/*okToIgnoreNonMatches*/))
             }
         }
+
+        // First just pair up all the conditions and actions (keep the negations)
+        // Then, remove all negations
+        // Then, build the ReplaceTile and ReplaceDirections
         for (const t of actionNeighbor._tilesWithModifier) {
             if (t._tile.isOr() && !t._tile.hasSingleCollisionLayer()) {
                 // OR tiles may belong to different collisionlayers so... it's complicated
@@ -910,7 +914,8 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
                     if (t.isNo()) {
                         for (const sprite of t._tile.getSprites()) {
                             const c =  sprite.getCollisionLayer()
-                            if (!pairsByCollisionLayer.has(c)) {
+                            if (pairsByCollisionLayer.has(c)) {
+                            } else {
                                 pairsByCollisionLayer.set(c, new ExtraPair<SimpleTileWithModifier>(new SimpleTileWithModifier(t.__source, false /*since the action side is a NO */, false/*isRandom*/, t._direction, t._tile, t._debugFlag), null, true/*okToIgnoreNonMatches*/))
                             }
                         }
@@ -922,24 +927,29 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
                     console.log(t._tile.toString())
                     throw new Error(`BUG: Tile is not assigned to a collision layer`)
                 }
-                if (t.isNo()) {
-                    // set it to be null (removed)
-                    if (pairsByCollisionLayer.has(c)) {
-                        // just leave the action side as null (so it's removed)
-                        if (pairsByCollisionLayer.get(c).condition === t) {
-                            // remove if both the condition and action are the same
-                            pairsByCollisionLayer.delete(c)
+                // if the condition is the same as the action then it's a no-op and we can remove the code
+                if (pairsByCollisionLayer.has(c) && (pairsByCollisionLayer.get(c).condition._tile === t._tile) && (pairsByCollisionLayer.get(c).condition.isNo() === t.isNo())) {
+                    // condition and action are the same. nothing to do
+                } else {
+                    if (t.isNo()) {
+                        // set it to be null (removed)
+                        if (pairsByCollisionLayer.has(c)) {
+                            // just leave the action side as null (so it's removed)
+                            if (pairsByCollisionLayer.get(c).condition === t) {
+                                // remove if both the condition and action are the same
+                                pairsByCollisionLayer.delete(c)
+                            }
+                        } else {
+                            // we need to set the condition side to be the tile so that it is removed
+                            // (it might not exist in the cell though but that's an optimization for later)
+                            pairsByCollisionLayer.set(c, new ExtraPair<SimpleTileWithModifier>(new SimpleTileWithModifier(t.__source, false /*since the action side is a NO */, false/*isRandom*/, t._direction, t._tile, t._debugFlag), null, true/*okToIgnoreNonMatches*/))
                         }
                     } else {
-                        // we need to set the condition side to be the tile so that it is removed
-                        // (it might not exist in the cell though but that's an optimization for later)
-                        pairsByCollisionLayer.set(c, new ExtraPair<SimpleTileWithModifier>(new SimpleTileWithModifier(t.__source, false /*since the action side is a NO */, false/*isRandom*/, t._direction, t._tile, t._debugFlag), null, true/*okToIgnoreNonMatches*/))
-                    }
-                } else {
-                    if (pairsByCollisionLayer.has(c)) {
-                        pairsByCollisionLayer.get(c).action = t
-                    } else {
-                        pairsByCollisionLayer.set(c, new ExtraPair<SimpleTileWithModifier>(null, t, false/*okToIgnoreNonMatches*/))
+                        if (pairsByCollisionLayer.has(c)) {
+                            pairsByCollisionLayer.get(c).action = t
+                        } else {
+                            pairsByCollisionLayer.set(c, new ExtraPair<SimpleTileWithModifier>(null, t, false/*okToIgnoreNonMatches*/))
+                        }
                     }
                 }
             }
