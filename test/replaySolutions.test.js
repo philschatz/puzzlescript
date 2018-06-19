@@ -27,6 +27,10 @@ const SHOW_STEPS = false
 describe('replays levels of games', () => {
 
     solutionFiles.forEach(solutionFilename => {
+        // Skip the README.md file
+        if (!solutionFilename.endsWith('.json')) {
+            return
+        }
         const GIST_ID = path.basename(solutionFilename).replace('.json', '')
 
         it(`plays the solved levels of ${GIST_ID}`, async () => {
