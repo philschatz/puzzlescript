@@ -1,21 +1,24 @@
-[
-  null,
-  null,
-  {
-    "solution": "SS.D.X.A.X.D.X.D.D..XD..DX"
-  },
-  null,
-  null,
-  null,
-  {
-    "solution": "D.SS.D..DW.X.W.X.S.S.X.D.X.D.X"
-  },
-  null,
-  null,
-  null,
-  {
-    "solution": "S.AS.X..SD.D.X.A.A.W.W.D.W.D.D.X.A.A.S.A.S..SD.D.D.D.X.D.X"
-  },
-  null,
-  null
-]
+{
+  "version": 1,
+  "solutions": [
+    null,
+    null,
+    {
+      "solution": "SS.D.X.A.X.D.X.D.D..XD..DX"
+    },
+    null,
+    null,
+    null,
+    {
+      "solution": "D.SS.D..DW.X.W.X.S.S.X.D.X.D.X"
+    },
+    null,
+    null,
+    null,
+    {
+      "solution": "S.AS.X..SD.D.X.A.A.W.W.D.W.D.D.X.A.A.S.A.S..SD.D.D.D.X.D.X"
+    },
+    null,
+    null
+  ]
+}

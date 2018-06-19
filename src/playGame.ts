@@ -84,16 +84,16 @@ async function run() {
 
             // Load the solutions file (if it exists) so we can append to it
             const solutionsPath = path.join(__dirname, `../gist-solutions/${gistId}.json`)
-            let recordings = []
+            let recordings = {version: 1, solutions: []} // default
             if (existsSync(solutionsPath)) {
                 recordings = JSON.parse(readFileSync(solutionsPath, 'utf-8'))
             }
 
-            let currentLevelNum = await promptChooseLevel(recordings, data)
+            let currentLevelNum = await promptChooseLevel(recordings.solutions, data)
 
             // Allow the user to resume from where they left off
             let ticksToRunFirst = ''
-            if (recordings[currentLevelNum] && (recordings[currentLevelNum].partial || recordings[currentLevelNum].solution)) {
+            if (recordings[currentLevelNum] && (recordings.solutions[currentLevelNum].partial || recordings.solutions[currentLevelNum].solution)) {
                 const { shouldResume } = await inquirer.prompt<{ shouldResume: boolean }>({
                     type: 'confirm',
                     name: 'shouldResume',
@@ -128,7 +128,7 @@ async function run() {
 }
 
 
-async function playGame(data: GameData, currentLevelNum: number, recordings: any, ticksToRunFirst: string, absPath: string, solutionsPath: string) {
+async function playGame(data: GameData, currentLevelNum: number, recordings: {version: number, solutions: {solution?: string, partial?:string}[]}, ticksToRunFirst: string, absPath: string, solutionsPath: string) {
     if (process.env['LOG_LEVEL'] === 'debug') {
         console.error(`Start playing "${data.title}". Level ${currentLevelNum}`)
     }
@@ -204,8 +204,8 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: any
                 saveCoverageFile(data, absPath, 'playgame')
                 // Save the partially-completed steps
                 if (keypresses.join('').replace(/\./g, '').length > 0) { // skip just empty ticks
-                    recordings[currentLevelNum] = recordings[currentLevelNum] || {}
-                    recordings[currentLevelNum].partial = keypresses.join('')
+                    recordings.solutions[currentLevelNum] = recordings.solutions[currentLevelNum] || {}
+                    recordings.solutions[currentLevelNum].partial = keypresses.join('')
                     writeFileSync(solutionsPath, JSON.stringify(recordings, null, 2))
                 }
                 closeSounds()

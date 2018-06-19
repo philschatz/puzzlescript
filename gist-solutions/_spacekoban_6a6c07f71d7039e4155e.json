@@ -1,8 +1,11 @@
-[
-  {
-    "solution": "D.,,,,,,,"
-  },
-  {
-    "solution": "W.,,,,"
-  }
-]
+{
+  "version": 1,
+  "solutions": [
+    {
+      "solution": "D.,,,,,,,"
+    },
+    {
+      "solution": "W.,,,,"
+    }
+  ]
+}

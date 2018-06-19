@@ -1,14 +1,17 @@
-[
-  null,
-  {
-    "solution": "WWDW"
-  },
-  null,
-  {
-    "solution": "DDWWAAW"
-  },
-  null,
-  {
-    "solution": "WWDDDDDDDWWAAAAAAAWWWDDDDW"
-  }
-]
+{
+  "version": 1,
+  "solutions": [
+    null,
+    {
+      "solution": "WWDW"
+    },
+    null,
+    {
+      "solution": "DDWWAAW"
+    },
+    null,
+    {
+      "solution": "WWDDDDDDDWWAAAAAAAWWWDDDDW"
+    }
+  ]
+}

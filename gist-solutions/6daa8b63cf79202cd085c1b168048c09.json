@@ -1,6 +1,9 @@
-[
-  null,
-  {
-    "solution": "WWWWDDDSDWDDWDDSAADSSDSSAWASAASAWA"
-  }
-]
+{
+  "version": 1,
+  "solutions": [
+    null,
+    {
+      "solution": "WWWWDDDSDWDDWDDSAADSSDSSAWASAASAWA"
+    }
+  ]
+}

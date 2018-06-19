@@ -1,24 +1,29 @@
-[
-  {
-    "solution": "X"
-  },
-  {
-    "solution": "DDDDDD"
-  },
-  null,
-  {
-    "solution": "SDDDDDSAAAWAAAAAASDWDSASDDWWDDDSSASAW"
-  },
-  null,
-  {
-    "solution": "AAWASAASSDWAWWDDDSSAWWAASDDDDDDWDSAAAAAAASSDWAWDDDDDSDWAWD"
-  },
-  null,
-  {
-    "solution": "DDSWAASDASSDWADDDDDAAAAAWWDDSWAASSDDDDAAWWASASDDD"
-  },
-  null,
-  {
-    "solution": "WWWWDDDDSSSWWWAAAASSSSDDDDDSDWWWSSAAWWWWWDDSAWASAAAASSSSDDDDWWWSSSDDWWW"
-  }
-]
+{
+  "version": 1,
+  "solutions": [
+    {
+        "solution": "X"
+    },
+    {
+        "solution": "DDDDDD"
+    },
+    null,
+    {
+        "solution": "SDDDDDSAAAWAAAAAASDWDSASDDWWDDDSSASAW"
+    },
+    null,
+    {
+        "solution": "AAWASAASSDWAWWDDDSSAWWAASDDDDDDWDSAAAAAAASSDWAWDDDDDSDWAWD"
+    },
+    {
+        "solution": "AAWASAASSDWAWWDDDSSAWWAASDDDDDDWDSAAAAAAASSDWAWDDDDDSDWAWDX"
+    },
+    {
+        "solution": "DDSWAASDASSDWADDDDDAAAAAWWDDSWAASSDDDDAAWWASASDDD"
+    },
+    null,
+    {
+        "solution": "WWWWDDDDSSSWWWAAAASSSSDDDDDSDWWWSSAAWWWWWDDSAWASAAAASSSSDDDDWWWSSSDDWWW"
+    }
+  ]
+}

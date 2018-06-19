@@ -1,11 +1,14 @@
-[
-  null,
-  {
-    "solution": ".W.D.WW.A.AS.SD......"
-  },
-  null,
-  null,
-  {
-    "solution": "..AS.DD.WA...XS.X.S...S......."
-  }
-]
+{
+  "version": 1,
+  "solutions": [
+    null,
+    {
+      "solution": ".W.D.WW.A.AS.SD......"
+    },
+    null,
+    null,
+    {
+      "solution": "..AS.DD.WA...XS.X.S...S......."
+    }
+  ]
+}

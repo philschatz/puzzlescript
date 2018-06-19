@@ -1,7 +1,10 @@
-[
-  null,
-  null,
-  {
-    "solution": "SSSSSSXWDDDDDWWDWD"
-  }
-]
+{
+  "version": 1,
+  "solutions": [
+    null,
+    null,
+    {
+      "solution": "SSSSSSXWDDDDDWWDWD"
+    }
+  ]
+}
