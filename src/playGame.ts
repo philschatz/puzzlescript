@@ -61,6 +61,8 @@ async function run() {
     console.log(`Let's play some ${chalk.bold.redBright('P')}${chalk.bold.greenBright('U')}${chalk.bold.blueBright('Z')}${chalk.bold.yellowBright('Z')}${chalk.bold.cyanBright('L')}${chalk.bold.magentaBright('E')}${chalk.bold.whiteBright('S')}!`)
     console.log(``)
     console.log(``)
+    console.log(`${chalk.dim('Games that are')} ${chalk.bold.whiteBright('white')} ${chalk.dim('are great to start out,')} ${chalk.bold.white('gray')} ${chalk.dim('are fun and run, and')} ${chalk.bold.dim('dark')} ${chalk.dim('may or may not run.')}`)
+    console.log(``)
 
     // loop indefinitely
     let wantsToPlayAgain = false
@@ -478,18 +480,73 @@ async function promptPixelSize(data) {
 }
 
 async function promptGame(games: GameInfo[]) {
+    // Sort games by games that are fun and should be played first
+    const firstGames = [
+        'Pot Wash Panic',
+        'PUSH',
+        'Beam Islands',
+        'Entanglement - Chapter One',
+        // 'SwapBot', BUG: Too many batteries
+        'Mirror Isles',
+        'IceCrates',
+        'Boxes & Balloons',
+        'Boxes Love Bloxing Gloves',
+        // 'Cyber-Lasso', When you fall into a hole you do not die
+        'Pushcat Jr',
+        'Skipping Stones to Lonely Homes',
+        'Hack the Net',
+        'Garten der Medusen',
+        'Separation',
+        'Roll those Sixes',
+        'Spacekoban',
+        'Rock, Paper, Scissors (v0.90 = v1.alpha)',
+        'Spooky Pumpkin Game',
+        'Miss Direction',
+        'Alien Disco',
+        'Some lines were meant to be crossed',
+        'Flying Kick⁣',
+        'Memories Of Castlemouse',
+        "Spider's Hollow",
+        'Coin Counter',
+        'JAM3 Game',
+        // 'It Dies In The Light', BUG: Dead player does not remain dead
+    ]
+    function getGameIndexForSort(gameInfo: GameInfo) {
+        let gameIndex = firstGames.indexOf(gameInfo.title)
+        if (gameIndex < 0) {
+            gameIndex = firstGames.length
+        }
+        return gameIndex
+    }
+    games = games.sort((a, b) => {
+        return getGameIndexForSort(a) - getGameIndexForSort(b)
+    })
+
     const question: inquirer.Question = <inquirer.Question>{
         type: 'autocomplete',
         name: 'gameTitle',
         message: 'Which game would you like to play?',
         pageSize: Math.max(15, process.stdout.rows - 15),
         source: async (answers, input) => {
+            let filteredGames
             if (!input) {
-                return Promise.resolve(games.map(game => game.title))
+                filteredGames = games
+            } else {
+                filteredGames = games.filter(({ id, title, filePath }) => {
+                    return title.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                })
             }
-            return Promise.resolve(games.filter(({ id, title, filePath }) => {
-                return title.toLowerCase().indexOf(input.toLowerCase()) >= 0
-            }).map(game => game.title))
+            return Promise.resolve(filteredGames.map(game => {
+                // dim the games that are not recommended
+                const index = firstGames.indexOf(game.title)
+                if (index < 0) {
+                    return chalk.dim('\u2063' + game.title + '\u2063') // add an invisible unicode character so we can unescape the title later
+                } else if (index <= 10) {
+                    return chalk.bold.whiteBright('\u2063' + game.title + '\u2063')
+                } else {
+                    return chalk.white('\u2063' + game.title + '\u2063') // add an invisible unicode character so we can unescape the title later
+                }
+            }))
         },
         // choices: games.map(({id, title, filePath}) => {
         //     return {
@@ -501,7 +558,22 @@ async function promptGame(games: GameInfo[]) {
     }
     const { gameTitle } = await inquirer.prompt<{ gameTitle: string }>([question])
 
-    return games.filter(game => game.title === gameTitle)[0]
+    // Filter out the DIM escape codes (to give the game titles a color)
+    const firstInvisible = gameTitle.indexOf('\u2063')
+    const lastInvisible = gameTitle.lastIndexOf('\u2063')
+    let uncoloredGameTitle
+    if (firstInvisible >= 0) {
+        uncoloredGameTitle = gameTitle.substring(firstInvisible + 1, lastInvisible)
+    } else {
+        uncoloredGameTitle = gameTitle
+    }
+
+    const chosenGame = games.filter(game => game.title === uncoloredGameTitle)[0]
+
+    if (!chosenGame) {
+        throw new Error(`BUG: Could not find game "${uncoloredGameTitle}"`)
+    }
+    return chosenGame
 }
 
 

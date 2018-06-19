@@ -531,6 +531,7 @@ export class GameEngine {
         return this._levelEngine.hasAgain()
     }
     setLevel(levelNum: number) {
+        this._levelEngine._hasAgainThatNeedsToRun = false // clear this so the user can press "X"
         if (this.getGameData().levels[levelNum].isMap()) {
             this._isFirstTick = true
             this._levelEngine.setLevel(levelNum)

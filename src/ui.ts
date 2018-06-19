@@ -245,7 +245,7 @@ class UI {
             console.log(``)
             console.log(``)
             console.log(``)
-            console.log(chalk.white(`Press Action (${prettyKey('X')}) to Continue`))
+            console.log(chalk.white(`Press Action (${chalk.bold.whiteBright('X')} or ${chalk.bold.whiteBright('space')} or ${chalk.bold.whiteBright('enter')}) to Continue`))
             console.log(``)
             console.log(``)
             console.log(``)
@@ -299,7 +299,7 @@ class UI {
             }
         }
         cellStartX = (colIndex - this._windowOffsetColStart) * SPRITE_WIDTH
-        cellStartY = (rowIndex - this._windowOffsetRowStart) * SPRITE_HEIGHT /*pixels*/ + 1 // y is 1-based
+        cellStartY = (rowIndex - this._windowOffsetRowStart) * SPRITE_HEIGHT /*pixels*/
 
         // Check if the cell can be completely drawn on the screen. If not, print ellipses
         const cellIsTooWide = (cellStartX + SPRITE_WIDTH) * this.PIXEL_WIDTH >= process.stdout.columns // 10 because we print 2 chars per pixel
@@ -315,7 +315,7 @@ class UI {
         return { isOnScreen, cellStartX, cellStartY }
     }
 
-    setPixel(x: number, y: number, hex: string, chars?: string) {
+    setPixel(x: number, y: number, hex: string, fgHex: string, chars: string) {
         const getColor = (y, x) => {
             if (this._renderedPixels[y] && this._renderedPixels[y][x]) {
                 return this._renderedPixels[y][x].hex
@@ -341,8 +341,8 @@ class UI {
                 return // don't actually render the pixel
             }
             if (this.PIXEL_HEIGHT === 1) {
-                drawPixelChar(x * this.PIXEL_WIDTH, y + 1/*titlebar*/, null, hex, chars[0] || ' ')
-                drawPixelChar(x * this.PIXEL_WIDTH + 1, y + 1/*titlebar*/, null, hex, chars[1] || ' ')
+                drawPixelChar(x * this.PIXEL_WIDTH, y + 1/*titlebar*/, fgHex, hex, chars[0] || ' ')
+                drawPixelChar(x * this.PIXEL_WIDTH + 1, y + 1/*titlebar*/, fgHex, hex, chars[1] || ' ')
             } else {
                 let upperColor
                 let lowerColor
@@ -525,6 +525,7 @@ class UI {
                 if (!!color) {
                     const { r, g, b } = color.toRgb()
                     const hex = color.toHex()
+                    let fgHex = null
 
                     let chars = ' '
 
@@ -532,9 +533,9 @@ class UI {
                     // Change the foreground color to be black if the color is light
                     if (process.env['NODE_ENV'] !== 'production') {
                         if (r > 192 && g > 192 && b > 192) {
-                            writeFgColor('#000000')
+                            fgHex = '#000000'
                         } else {
-                            writeFgColor('#ffffff')
+                            fgHex = '#ffffff'
                         }
                         const sprite = spritesForDebugging[spriteRowIndex]
                         if (sprite) {
@@ -580,7 +581,7 @@ class UI {
                     }
 
 
-                    this.setPixel(x, y, hex, chars)
+                    this.setPixel(x, y, hex, fgHex, chars)
 
                 }
             })
