@@ -361,8 +361,7 @@ async function promptChooseLevel(recordings: any[], data: GameData) {
     const levels = data.levels
     const firstUncompletedLevel = levels
     .indexOf(levels
-        .filter((l, index) => !(recordings[index] && recordings[index].solution))
-        .filter(l => l.isMap())[0]
+        .filter((l, index) => !(recordings[index] && recordings[index].solution))[0]
     )
 
     const { currentLevelNum } = await inquirer.prompt<{
@@ -470,7 +469,7 @@ async function promptPixelSize(data) {
         }>({
             type: 'confirm',
             name: 'useCompressedCharacters',
-            default: process.env['NODE_ENV'] === 'production',
+            default: true,
             message: 'Would you like to use small characters when rendering the game?',
         });
         if (useCompressedCharacters) {
