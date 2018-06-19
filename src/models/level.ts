@@ -5,6 +5,7 @@ export interface ILevel {
     isInvalid: () => string
     isMap: () => boolean
     getRows: () => IGameTile[][]
+    getMessage: () => string
 }
 
 export class LevelMap extends BaseForLines implements ILevel {
@@ -36,6 +37,12 @@ export class LevelMap extends BaseForLines implements ILevel {
     getHeight() {
         return this._rows.length
     }
+    getMessage() {
+        if (!!true) {
+            throw new Error(`BUG: Check .isMap() before calling this`)
+        }
+        return null
+    }
 }
 
 export class MessageLevel extends BaseForLines implements ILevel {
@@ -53,5 +60,8 @@ export class MessageLevel extends BaseForLines implements ILevel {
             throw new Error(`BUG: Should have checked isMap first`)
         }
         return null
+    }
+    getMessage() {
+        return this._message
     }
 }

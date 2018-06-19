@@ -521,6 +521,9 @@ export class GameEngine {
     getCurrentLevelCells() {
         return this._levelEngine.currentLevel
     }
+    getCurrentLevel() {
+        return this.getGameData().levels[this.getCurrentLevelNum()]
+    }
     getCurrentLevelNum() {
         return this._currentLevelNum
     }
@@ -537,6 +540,30 @@ export class GameEngine {
         this._currentLevelNum = levelNum
     }
     tick() {
+        // When the current level is a Message, wait until the user presses ACTION
+        if (!this.getCurrentLevel().isMap()) {
+            // Wait until the user presses "X" (ACTION)
+            let didWinGame = false
+            let didLevelChange = false
+            if (this._levelEngine._pendingPlayerWantsToMove === RULE_DIRECTION_ABSOLUTE.ACTION) {
+                didLevelChange = true
+                if (this._currentLevelNum === this._levelEngine.gameData.levels.length - 1) {
+                    didWinGame = true
+                } else {
+                    this.setLevel(this._currentLevelNum + 1)
+                }
+            }
+            // clear any keys that were pressed
+            this._levelEngine._pendingPlayerWantsToMove = null
+
+            return {
+                changedCells: new Set(),
+                soundToPlay: null,
+                didWinGame: didWinGame,
+                didLevelChange: didLevelChange,
+                wasAgainTick: false
+            }
+        }
         const hasAgain = this._levelEngine.hasAgain()
         if (this._levelEngine.gameData.metadata.run_rules_on_level_start && this._isFirstTick) {
             // don't cancel early

@@ -154,6 +154,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: any
             UI._drawPixel(i + offset, 0, fgColor, null, char)
         }
     })
+    UI.clearScreen()
     engine.setGame(data)
     engine.setLevel(data.levels.indexOf(level))
 
@@ -185,6 +186,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: any
                 pendingKey = 'D'; break
             case 'x':
             case ' ':
+            case '\u000D':
                 pendingKey = 'X'; break
             case 'r':
                 return restartLevel()
@@ -309,15 +311,6 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: any
             }
             keypresses = []
             pendingKey = null
-
-            // Skip the messages since they are not implmented yet
-            currentLevelNum = engine.getCurrentLevelNum()
-            while (!data.levels[currentLevelNum].isMap()) {
-                currentLevelNum++
-            }
-            if (currentLevelNum !== engine.getCurrentLevelNum()) {
-                engine.setLevel(currentLevelNum)
-            }
 
             UI.clearScreen()
             UI.renderScreen(true)
