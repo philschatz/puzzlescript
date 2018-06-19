@@ -43,6 +43,7 @@ run()
 
 
 async function run() {
+    inquirer.registerPrompt('autocomplete', autocomplete)
     const gists = await pify(glob)('./gists/*/script.txt')
 
     const games: GameInfo[] = []
@@ -477,7 +478,6 @@ async function promptPixelSize(data) {
 }
 
 async function promptGame(games: GameInfo[]) {
-    inquirer.registerPrompt('autocomplete', autocomplete)
     const question: inquirer.Question = <inquirer.Question>{
         type: 'autocomplete',
         name: 'gameTitle',
