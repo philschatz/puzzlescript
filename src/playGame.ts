@@ -38,6 +38,7 @@ function toUnicode(theString) {
 }
 
 type GameInfo = { id: string, title: string, filePath: string }
+type SaveFile = { version: number, solutions: {solution?: string, partial?: string}[]}
 
 run()
 
@@ -89,18 +90,18 @@ async function run() {
                 recordings = JSON.parse(readFileSync(solutionsPath, 'utf-8'))
             }
 
-            let currentLevelNum = await promptChooseLevel(recordings.solutions, data)
+            let currentLevelNum = await promptChooseLevel(recordings, data)
 
             // Allow the user to resume from where they left off
             let ticksToRunFirst = ''
-            if (recordings[currentLevelNum] && (recordings.solutions[currentLevelNum].partial || recordings.solutions[currentLevelNum].solution)) {
+            if (recordings.solutions[currentLevelNum] && (recordings.solutions[currentLevelNum].partial || recordings.solutions[currentLevelNum].solution)) {
                 const { shouldResume } = await inquirer.prompt<{ shouldResume: boolean }>({
                     type: 'confirm',
                     name: 'shouldResume',
                     message: 'Would you like to resume where you left off?',
                 })
                 if (shouldResume) {
-                    ticksToRunFirst = recordings[currentLevelNum].partial || recordings[currentLevelNum].solution
+                    ticksToRunFirst = recordings.solutions[currentLevelNum].partial || recordings.solutions[currentLevelNum].solution
                 }
             }
 
@@ -305,11 +306,11 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: {ve
         if (didLevelChange) {
             // Save the solution
             const newSolution = keypresses.join('')
-            if (!recordings[currentLevelNum]) {
-                recordings[currentLevelNum] = { solution: keypresses.join('') }
+            if (!recordings.solutions[currentLevelNum]) {
+                recordings.solutions[currentLevelNum] = { solution: keypresses.join('') }
                 writeFileSync(solutionsPath, JSON.stringify(recordings, null, 2))
-            } else if (!recordings[currentLevelNum].solution) {
-                recordings[currentLevelNum].solution = keypresses.join('')
+            } else if (!recordings.solutions[currentLevelNum].solution) {
+                recordings.solutions[currentLevelNum].solution = keypresses.join('')
                 writeFileSync(solutionsPath, JSON.stringify(recordings, null, 2))
             }
             keypresses = []
@@ -357,11 +358,11 @@ async function promptPlayAnother() {
     return playAnotherGame
 }
 
-async function promptChooseLevel(recordings: any[], data: GameData) {
+async function promptChooseLevel(recordings: SaveFile, data: GameData) {
     const levels = data.levels
     const firstUncompletedLevel = levels
     .indexOf(levels
-        .filter((l, index) => !(recordings[index] && recordings[index].solution))[0]
+        .filter((l, index) => !(recordings.solutions[index] && recordings.solutions[index].solution))[0]
     )
 
     const { currentLevelNum } = await inquirer.prompt<{
@@ -373,7 +374,7 @@ async function promptChooseLevel(recordings: any[], data: GameData) {
         default: firstUncompletedLevel,
         pageSize: Math.max(15, process.stdout.rows - 15),
         choices: levels.map((levelMap, index) => {
-            const hasSolution = recordings[index] && recordings[index].solution;
+            const hasSolution = recordings.solutions[index] && recordings.solutions[index].solution;
             if (levelMap.isMap()) {
                 const rows = levelMap.getRows();
                 const cols = rows[0];
