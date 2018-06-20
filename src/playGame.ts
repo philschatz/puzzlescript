@@ -45,7 +45,7 @@ run()
 
 async function run() {
     inquirer.registerPrompt('autocomplete', autocomplete)
-    const gists = await pify(glob)('./gists/*/script.txt')
+    const gists = await pify(glob)(path.join(__dirname, '../gists/*/script.txt'))
 
     const games: GameInfo[] = []
 
