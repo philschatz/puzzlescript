@@ -2,10 +2,21 @@
 
 This is a program that you can run in your terminal to play [PuzzleScript](https://puzzlescript.net) games.
 
+[![asciicast](https://asciinema.org/a/md0Zep9LOBhdB4nx00OyA0NNH.png)](https://asciinema.org/a/md0Zep9LOBhdB4nx00OyA0NNH)
+
+
 ## Install
 
 1. Run `npm install -g puzzlescript-cli`
 1. Run `puzzlescript` to start playing
+
+
+# Screencaps
+
+### Hack the Net ([original](http://www.draknek.org/games/puzzlescript/hack-the-net.php))
+
+[![asciicast](https://asciinema.org/a/TG6K5iinlW7cnrRjtJ1vz6nJl.png)](https://asciinema.org/a/TG6K5iinlW7cnrRjtJ1vz6nJl)
+
 
 
 # About
