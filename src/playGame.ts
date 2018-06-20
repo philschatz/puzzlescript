@@ -315,6 +315,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: {ve
             }
             keypresses = []
             pendingKey = null
+            currentLevelNum = engine.getCurrentLevelNum()
 
             UI.clearScreen()
             UI.renderScreen(true)
