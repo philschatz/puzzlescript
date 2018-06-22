@@ -10,12 +10,12 @@ This is a program that you can run in your terminal to play [PuzzleScript](https
 
 # Screencaps
 
-[![video of install and a couple games](https://asciinema.org/a/md0Zep9LOBhdB4nx00OyA0NNH.png)](https://asciinema.org/a/md0Zep9LOBhdB4nx00OyA0NNH?t=25)
+<a href="https://asciinema.org/a/md0Zep9LOBhdB4nx00OyA0NNH?t=25"><img width="300" alt="video of install and a couple games" src="https://asciinema.org/a/md0Zep9LOBhdB4nx00OyA0NNH.png"/></a>
 
 
 ### Hack the Net ([original](http://www.draknek.org/games/puzzlescript/hack-the-net.php))
 
-[![video of a couple levels of Hack-the-Net](https://asciinema.org/a/TG6K5iinlW7cnrRjtJ1vz6nJl.png)](https://asciinema.org/a/TG6K5iinlW7cnrRjtJ1vz6nJl)
+<a href="https://asciinema.org/a/TG6K5iinlW7cnrRjtJ1vz6nJl"><img width="300" alt="video of a couple levels of Hack-the-Net" src="https://asciinema.org/a/TG6K5iinlW7cnrRjtJ1vz6nJl.png"/></a>
 
 
 # About
