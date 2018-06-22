@@ -2,9 +2,6 @@
 
 This is a program that you can run in your terminal to play [PuzzleScript](https://puzzlescript.net) games.
 
-[![video of install and a couple games](https://asciinema.org/a/md0Zep9LOBhdB4nx00OyA0NNH.png)](https://asciinema.org/a/md0Zep9LOBhdB4nx00OyA0NNH?t=25)
-
-
 ## Install
 
 1. Run `npm install -g puzzlescript-cli`
@@ -13,10 +10,21 @@ This is a program that you can run in your terminal to play [PuzzleScript](https
 
 # Screencaps
 
+[![video of install and a couple games](https://asciinema.org/a/md0Zep9LOBhdB4nx00OyA0NNH.png)](https://asciinema.org/a/md0Zep9LOBhdB4nx00OyA0NNH?t=25)
+
+
 ### Hack the Net ([original](http://www.draknek.org/games/puzzlescript/hack-the-net.php))
 
 [![video of a couple levels of Hack-the-Net](https://asciinema.org/a/TG6K5iinlW7cnrRjtJ1vz6nJl.png)](https://asciinema.org/a/TG6K5iinlW7cnrRjtJ1vz6nJl)
 
+
+# Motivation
+
+The goal of this project is to do 3 things:
+
+1. make PuzzleScript easier to embed (like in 404 pages, easter eggs, etc)
+1. allow **blind people to play video games**
+1. use the terminal as a GUI for playing games
 
 
 # About
