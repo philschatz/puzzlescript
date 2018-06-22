@@ -18,7 +18,7 @@ This is a program that you can run in your terminal to play [PuzzleScript](https
 [![video of a couple levels of Hack-the-Net](https://asciinema.org/a/TG6K5iinlW7cnrRjtJ1vz6nJl.png)](https://asciinema.org/a/TG6K5iinlW7cnrRjtJ1vz6nJl)
 
 
-# Motivation
+# About
 
 The goal of this project is to do 3 things:
 
@@ -26,8 +26,18 @@ The goal of this project is to do 3 things:
 1. allow **blind people to play video games**
 1. use the terminal as a GUI for playing games
 
+### Blind video games?
 
-# About
+PuzzleScript lends itself nicely to be playable by people with low or no vision:
+
+1. each level is small (~10x10)
+1. each sprite has a human-readable name (since the whole game is in 1 text file and the logic refers to the sprites)
+1. a blind person has 2 sets of directions (one to move the player and one to move the “eye” which reads off which sprite is in that spot)
+1. the games do not require quick reflexes and have Undo built-in so it is easy to think and try different options
+1. we can just print to the terminal whenever something needs to be read (presumably the terminal is read aloud to the person)
+
+
+# Dev Notes
 
 This is a remake of PuzzleScript that has the following features:
 
@@ -38,8 +48,6 @@ This is a remake of PuzzleScript that has the following features:
   - Inspired by https://askubuntu.com/questions/699159/ascii-animations-that-are-viewed-in-the-command-line#699161
 - The input code is abstracted out so gamepads, buttons, etc can easily be provided
   - This also allows computers to play the games!
-
-# Dev Notes
 
 ## Commands
 
