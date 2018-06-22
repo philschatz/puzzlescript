@@ -1,18 +1,29 @@
 {
   "version": 1,
   "solutions": [
-    null,
-    null,
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "X"
+    },
     {
       "solution": "DWWWWD.D..D..A..DA.D.D.DD"
     },
-    null,
+    {
+      "solution": "X"
+    },
     {
       "solution": "DD...AAAA..A.SA.DD.AWWDDWWWDD.D..AAAA..ASA.DDD.AAWWDDWWWDD..D.AAAA..A.SA.DDDD.DD"
     },
-    null,
+    {
+      "solution": "X"
+    },
     {
       "solution": "AWWWWWD.D....D.AA.A.SA.DDDDDAAAAWWWWWWWSD.AS.D.A.SSSD.DA.AWWWDD..DDD..D"
+    },
+    {
+      "solution": "X"
     }
   ]
 }

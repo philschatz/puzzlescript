@@ -1,17 +1,62 @@
 {
   "version": 1,
   "solutions": [
-    null,
+    {
+      "solution": "X"
+    },
     {
       "solution": "WWDW"
     },
-    null,
+    {
+      "solution": "X"
+    },
     {
       "solution": "DDWWAAW"
     },
-    null,
+    {
+      "solution": "X"
+    },
     {
       "solution": "WWDDDDDDDWWAAAAAAAWWWDDDDW"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "SAA,,,,,,,DDWWWWWW"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "AAAADDDW,,,,AAAAWWWWDW"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "DWWWWWAAAWW,,,,,,,SSSSDWWDDDDDDW"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "DWWWWWWSDDWAAW,,,,,SSSSA,,,,,,DDDSDDDD"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "AAWA,,SSDSSD,,DWDDDWWWDDS,,AAAAWWWWWAAASAS"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "DDDDDWWWWWWA,,,DSSDDS,,,,WAAWWAA,,,,DDSSDDSS,,,,,,,SAAAAAAAWWWW"
+    },
+    {
+      "solution": "X"
     }
   ]
 }

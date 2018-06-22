@@ -2,28 +2,73 @@
   "version": 1,
   "solutions": [
     {
-        "solution": "X"
+      "solution": "X"
     },
     {
-        "solution": "DDDDDD"
-    },
-    null,
-    {
-        "solution": "SDDDDDSAAAWAAAAAASDWDSASDDWWDDDSSASAW"
-    },
-    null,
-    {
-        "solution": "AAWASAASSDWAWWDDDSSAWWAASDDDDDDWDSAAAAAAASSDWAWDDDDDSDWAWD"
+      "solution": "DDDDDD"
     },
     {
-        "solution": "AAWASAASSDWAWWDDDSSAWWAASDDDDDDWDSAAAAAAASSDWAWDDDDDSDWAWDX"
+      "solution": "X"
     },
     {
-        "solution": "DDSWAASDASSDWADDDDDAAAAAWWDDSWAASSDDDDAAWWASASDDD"
+      "solution": "SDDDDDSAAAWAAAAAASDWDSASDDWWDDDSSASAW"
     },
-    null,
     {
-        "solution": "WWWWDDDDSSSWWWAAAASSSSDDDDDSDWWWSSAAWWWWWDDSAWASAAAASSSSDDDDWWWSSSDDWWW"
+      "solution": "X"
+    },
+    {
+      "solution": "AAWASAASSDWAWWDDDSSAWWAASDDDDDDWDSAAAAAAASSDWAWDDDDDSDWAWD"
+    },
+    {
+      "solution": "AAWASAASSDWAWWDDDSSAWWAASDDDDDDWDSAAAAAAASSDWAWDDDDDSDWAWDX"
+    },
+    {
+      "solution": "DDSWAASDASSDWADDDDDAAAAAWWDDSWAASSDDDDAAWWASASDDD"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "WWWWDDDDSSSWWWAAAASSSSDDDDDSDWWWSSAAWWWWWDDSAWASAAAASSSSDDDDWWWSSSDDWWW"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "WWDWDDSSWWAASASSDDDDDWDSASDDDAAAWWWAAWAASDDDDDDDSSDDDWWWAASSWWDDSSSAAWAAAAAASAWSAAWWDDDDDDDDSDSDDWWWAASAAAAAAAAASDDDDDDSDWAWDDASSD"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "WDDSADDDWDDSAAAAWASWAASDDDDDD"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "SDDWDDDDSSAWDWAAAASSDWAWDDDWDSSSWAAAASAAWDDDDD"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "WDDDDSDDWDSAAAWAASDDDDDWDSDSSAAWSDDDWWAAAAAWAASDDDDDSSDDWADWWAAASAAAAWAASDDDDDDWDDSWAASDWDDSSSAAWSDDWADWWASAAAAAADDDDDDDSSAWDWAAAAAWAASDDDDDWDSSSWAAAAAAWAASDDDDDDD"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "DDWDWDDSSDDSSAAAADDDDWWAASSAASSDDWSAAWWDDDDAAWWWWAASSDDSSDDWWAAWWAASSDAWWDDSSSWDDSSAASSAAWWDDDAWWDDSSS"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "WDDSDDDDWDDDDSSDDWDWASAAWDSDDWWASSSSAAAAAAAWAAAWAASDDDDDSDWAWDDDDDDDWDS"
+    },
+    {
+      "solution": "X"
     }
   ]
 }

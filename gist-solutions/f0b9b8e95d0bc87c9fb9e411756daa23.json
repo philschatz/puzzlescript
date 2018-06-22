@@ -1,21 +1,38 @@
 {
   "version": 1,
   "solutions": [
-    null,
+    {
+      "solution": "X"
+    },
     {
       "solution": "S,A,W,,,A,,W."
     },
-    null,
+    {
+      "solution": "X"
+    },
     {
       "solution": "W,,A,,,,,S,,,,D,,,W,,,,"
     },
-    null,
+    {
+      "solution": "X"
+    },
     {
       "solution": "A,,,,W,,,A,S,,A,W,D,,,,A,,,S,D,,,,W,,,,D,,"
     },
-    null,
+    {
+      "solution": "X"
+    },
     {
       "solution": ".D,,S,,,A,,,,,W,,,,,D,,,,,S,,,,,A,,,,,S,,A,,W,,,A,S,,D,,,,,,,S,A,W,,,A,,S,,D,,W,A,,,,W,,,,,S,,,,,,A,,W,,,A,S,,D,,,,,,,S,A,W,,,A,,,S,,D,,,W,A,,,,W,,,,A,,,"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": ".S,,,,,,,D,,W,,,A,,,,,,,,,,S,,,D,,W,,,,,,,,,D,,,,,,,W,A,,,S,,,,,,,,,A,,W,,,,,"
+    },
+    {
+      "solution": "X"
     }
   ]
 }
