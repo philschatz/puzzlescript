@@ -3,16 +3,36 @@
 exports[`Rule simplifier converts VERTICAL and HORIZONTAL at the beginning of a rule into 2 rules 1`] = `
 Array [
   Array [
-    Array [],
+    Array [
+      "STATIONARY SimpleWall",
+    ],
     Array [
       "STATIONARY PrettyHorizWall",
     ],
-    Array [],
-    Array [],
+    Array [
+      "STATIONARY PrettyHorizWall",
+    ],
+    Array [
+      "STATIONARY SimpleWall",
+    ],
   ],
   Array [
     Array [
-      "STATIONARY SimpleWall",
+      "STATIONARY PrettyVertWall",
+    ],
+    Array [
+      "STATIONARY Background",
+    ],
+    Array [
+      "STATIONARY Background",
+    ],
+    Array [
+      "STATIONARY PrettyVertWall",
+    ],
+  ],
+  Array [
+    Array [
+      "STATIONARY PrettyVertWall",
     ],
     Array [
       "STATIONARY Background",
@@ -29,19 +49,11 @@ Array [
       "STATIONARY SimpleWall",
     ],
     Array [
-      "STATIONARY Background",
+      "STATIONARY PrettyHorizWall",
     ],
-    Array [
-      "STATIONARY Background",
-    ],
-    Array [],
-  ],
-  Array [
-    Array [],
     Array [
       "STATIONARY PrettyHorizWall",
     ],
-    Array [],
     Array [
       "STATIONARY SimpleWall",
     ],
@@ -55,17 +67,17 @@ Array [
     Array [],
     Array [
       "STATIONARY Background",
+      "STATIONARY Player",
     ],
     Array [
       "STATIONARY Background",
     ],
   ],
   Array [
-    Array [
-      "STATIONARY Shadow",
-    ],
+    Array [],
     Array [
       "STATIONARY Background",
+      "STATIONARY Shadow",
     ],
     Array [
       "STATIONARY Background",
@@ -80,17 +92,17 @@ Array [
     Array [],
     Array [
       "STATIONARY Background",
+      "STATIONARY Player",
     ],
     Array [
       "STATIONARY Background",
     ],
   ],
   Array [
-    Array [
-      "STATIONARY Shadow",
-    ],
+    Array [],
     Array [
       "STATIONARY Background",
+      "STATIONARY Shadow",
     ],
     Array [
       "STATIONARY Background",

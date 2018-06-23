@@ -420,6 +420,67 @@ describe('player movement', () => {
         expect(engine.currentLevel[0][1].getSpritesAsSet().has(player1)).toBe(true)
     })
 
+    it('preserves wantsToMove when sprite changes', () => {
+        const { engine, data } = parseEngine(`title foo
+
+        ===
+        OBJECTS
+        ===
+
+        background
+        green
+
+        player1
+        Yellow
+
+        player2
+        blue
+
+        ===
+        LEGEND
+        ===
+
+        . = background
+        P = Player1 AND Background
+        Player = player1 OR player2
+
+        ====
+        SOUNDS
+        ====
+
+        ====
+        COLLISIONLAYERS
+        ====
+
+        background
+        player
+
+        ====
+        RULES
+        ====
+
+        [ Player ] -> [ Player1 ]
+
+        ===
+        WINCONDITIONS
+        ===
+
+        ===
+        LEVELS
+        ===
+
+        P.
+
+        `) // end game
+
+        const player1 = data._getSpriteByName('player1')
+        engine.press(RULE_DIRECTION_ABSOLUTE.RIGHT)
+        engine.tick()
+
+        expect(player1.getCellsThatMatch().size).toBe(1)
+        expect(engine.currentLevel[0][1].getSpritesAsSet().has(player1)).toBe(true)
+    })
+
     it('plays a level of Beam Islands', () => {
         const LEVEL_NUM = 3
         const LEVEL_SOLUTION = 'lluuuxlduruuxddddd'
@@ -442,4 +503,5 @@ describe('player movement', () => {
         }
         expect(didWin).toBe(true)
     })
+
 })

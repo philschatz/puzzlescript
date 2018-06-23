@@ -6,13 +6,18 @@ Array [
     Array [
       "STATIONARY BgNW1",
     ],
-    Array [],
+    Array [
+      "STATIONARY Island",
+      "STATIONARY Player",
+      "STATIONARY PlayerIsland",
+    ],
   ],
   Array [
     Array [
       "STATIONARY Bridge",
     ],
     Array [
+      "STATIONARY Island",
       "STATIONARY PlayerIsland",
     ],
   ],
@@ -26,7 +31,9 @@ Array [
       "STATIONARY Background",
       "STATIONARY RemoveLandRUD",
     ],
-    Array [],
+    Array [
+      "STATIONARY Hole",
+    ],
   ],
 ]
 `;
@@ -35,6 +42,7 @@ exports[`engine draws corner sprites correctly (according to skipping stones) 1`
 Array [
   Array [
     Array [
+      "STATIONARY Sand",
       "STATIONARY RemoveLandRUD",
     ],
     Array [
@@ -51,6 +59,7 @@ exports[`engine draws corner sprites correctly (according to skipping stones) 2`
 Array [
   Array [
     Array [
+      "STATIONARY Sand",
       "STATIONARY RemoveLandRUD",
     ],
     Array [
@@ -105,26 +114,57 @@ Array [
   Array [
     Array [
       "STATIONARY Green",
-      "STATIONARY Blue",
     ],
     Array [
       "STATIONARY Green",
-      "STATIONARY Blue",
     ],
     Array [
       "STATIONARY Green",
-      "STATIONARY Blue",
     ],
   ],
   Array [
     Array [
       "STATIONARY Background",
+      "STATIONARY Red",
+      "STATIONARY Blue",
     ],
     Array [
       "STATIONARY Background",
+      "STATIONARY Red",
+      "STATIONARY Blue",
     ],
     Array [
       "STATIONARY Background",
+      "STATIONARY Red",
+      "STATIONARY Blue",
+    ],
+  ],
+]
+`;
+
+exports[`engine moves a tile from one bracket to another (OR tile is in DIFFERENT collisionlayer 1`] = `
+Array [
+  Array [
+    Array [
+      "STATIONARY Player",
+    ],
+    Array [
+      "STATIONARY Hat",
+      "STATIONARY Clipboard",
+    ],
+  ],
+]
+`;
+
+exports[`engine moves a tile from one bracket to another (OR tile is in same collisionlayer 1`] = `
+Array [
+  Array [
+    Array [
+      "STATIONARY Player",
+    ],
+    Array [
+      "STATIONARY Hat",
+      "STATIONARY Clipboard",
     ],
   ],
 ]
@@ -133,7 +173,9 @@ Array [
 exports[`engine removes a sprite when it has NO in the action side (an OR tile) 1`] = `
 Array [
   Array [
-    Array [],
+    Array [
+      "STATIONARY Player",
+    ],
   ],
 ]
 `;
@@ -141,7 +183,9 @@ Array [
 exports[`engine removes a sprite when it has NO in the action side 1`] = `
 Array [
   Array [
-    Array [],
+    Array [
+      "STATIONARY Player",
+    ],
   ],
 ]
 `;
@@ -156,6 +200,24 @@ Array [
     ],
     Array [
       "STATIONARY Background",
+    ],
+  ],
+]
+`;
+
+exports[`engine swaps 2 OR tiles (OR tile has sprites in DIFFERENT collisionlayer 1`] = `
+Array [
+  Array [
+    Array [
+      "STATIONARY Player",
+      "STATIONARY Shirt",
+    ],
+    Array [
+      "STATIONARY Hat",
+      "STATIONARY Target",
+    ],
+    Array [
+      "STATIONARY Clipboard",
     ],
   ],
 ]

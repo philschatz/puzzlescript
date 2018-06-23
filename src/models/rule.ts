@@ -741,13 +741,15 @@ class ReplaceTile {
     collisionLayer: CollisionLayer
     actionTileWithModifier: SimpleTileWithModifier
     mightNotFindConditionButThatIsOk: boolean
-    constructor(collisionLayer: CollisionLayer, actionTileWithModifier: SimpleTileWithModifier, mightNotFindConditionButThatIsOk: boolean) {
+    conditionSpritesToRemove: SimpleTileWithModifier
+    constructor(collisionLayer: CollisionLayer, actionTileWithModifier: SimpleTileWithModifier, mightNotFindConditionButThatIsOk: boolean, conditionSpritesToRemove?: SimpleTileWithModifier) {
         if (!collisionLayer) {
             throw new Error('BUG: collisionLayer is not set')
         }
         this.collisionLayer = collisionLayer
         this.actionTileWithModifier = actionTileWithModifier
         this.mightNotFindConditionButThatIsOk = mightNotFindConditionButThatIsOk
+        this.conditionSpritesToRemove = conditionSpritesToRemove
     }
     replace(cell: Cell, magicOrTiles: Map<IGameTile, Set<GameSprite>>) {
         let oldSprite
@@ -764,12 +766,18 @@ class ReplaceTile {
                 sprites = [spritesToChoose[rnd]]
             } else if (this.actionTileWithModifier._tile.isOr()) {
                 // There is no sprite of this type already in the cell. It's in the magicOrTiles
+                if (!magicOrTiles.has(this.actionTileWithModifier._tile)) {
+                    debugger
+                    console.log(this.actionTileWithModifier.toString())
+                    throw new Error(`BUG: Magic OR tile not found`)
+                }
                 sprites = magicOrTiles.get(this.actionTileWithModifier._tile)
             } else {
                 sprites = this.actionTileWithModifier._tile.getSprites()
             }
             for (const sprite of sprites) {
-                const added = cell.addSprite(sprite)
+                const c = sprite.getCollisionLayer()
+                const added = cell.addSprite(sprite, cell.getWantsToMoveByCollisionLayer(c)) // preserve the wantsToMove if the sprite is in the same collision layer
                 didActuallyChange = didActuallyChange || added
             }
         } else {
@@ -782,9 +790,22 @@ class ReplaceTile {
             if (!tile) {
                 debugger
             }
-            for (const sprite of tile.getSprites()) {
-                const removed = cell.removeSprite(sprite)
-                didActuallyChange = didActuallyChange || removed
+            if (this.conditionSpritesToRemove) {
+                // only remove the sprites in the cell that match the condition... not all the sprites in a collisionLayer
+                const conditionSpritesToRemove = new Set(this.conditionSpritesToRemove._tile.getSprites())
+                for (const sprite of tile.getSprites()) {
+                    if (conditionSpritesToRemove.has(sprite)) {
+                        const removed = cell.removeSprite(sprite)
+                        didActuallyChange = didActuallyChange || removed
+                    }
+                }
+
+            } else {
+                // remove all sprites
+                for (const sprite of tile.getSprites()) {
+                    const removed = cell.removeSprite(sprite)
+                    didActuallyChange = didActuallyChange || removed
+                }
             }
         }
         // return the oldSprite for UNDO
@@ -841,7 +862,7 @@ class ReplaceDirection {
         if (direction) {
             return cell.setWantsToMoveCollisionLayer(this.collisionLayer, direction)
         } else {
-            if (cell.getWantsToMoveByCollisionLayer(this.collisionLayer)) {
+            if (cell.getWantsToMoveByCollisionLayer(this.collisionLayer) && !cell.getSpriteByCollisionLayer(this.collisionLayer)) {
                 return cell.deleteWantsToMoveCollisionLayer(this.collisionLayer)
             } else {
                 return false
@@ -879,24 +900,38 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
         const orTiles = new Map<IGameTile, SimpleTileWithModifier>()
         for (const t of this._tilesWithModifier) {
             if (t._tile.isOr() && !t._tile.hasSingleCollisionLayer()) {
-                orTiles.set(t._tile, t)
+                if (!t.isNo()) {
+                    orTiles.set(t._tile, t)
+                }
             } else {
                 const c = t._tile.getCollisionLayer()
                 if (!c) {
                     console.log(t._tile.toString())
                     throw new Error(`BUG: Tile is not assigned to a collision layer`)
                 }
-                pairsByCollisionLayer.set(c, new ExtraPair<SimpleTileWithModifier>(t, null/*filled in later if there is an action*/, false/*okToIgnoreNonMatches*/))
+                // If we have something like `[Player NO PlayerHold] -> ...` then keep the Player, not the PlayerHold
+                if (pairsByCollisionLayer.has(c)) {
+                    // Determine whether to keep the 1st match or the current one.
+                    // If the current one is a NO tile then definitely do not replace it.
+                    // Maybe the correct thing to do is to always keep the 1st thing put in
+                    // if (!t.isNo()) {
+                    //     pairsByCollisionLayer.set(c, new ExtraPair<SimpleTileWithModifier>(t, null/*filled in later if there is an action*/, false/*okToIgnoreNonMatches*/))
+                    // }
+                } else {
+                    pairsByCollisionLayer.set(c, new ExtraPair<SimpleTileWithModifier>(t, null/*filled in later if there is an action*/, false/*okToIgnoreNonMatches*/))
+                }
             }
         }
 
         // First just pair up all the conditions and actions (keep the negations)
         // Then, remove all negations
         // Then, build the ReplaceTile and ReplaceDirections
+        const unmatchedOrTiles = new Map(orTiles.entries())
         for (const t of actionNeighbor._tilesWithModifier) {
             if (t._tile.isOr() && !t._tile.hasSingleCollisionLayer()) {
                 // OR tiles may belong to different collisionlayers so... it's complicated
                 if (orTiles.has(t._tile)) {
+                    unmatchedOrTiles.delete(t._tile)
                     // simple case. at most we just change direction
                     const conditionT = orTiles.get(t._tile)
                     if (conditionT._direction !== t._direction) {
@@ -919,6 +954,14 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
                                 pairsByCollisionLayer.set(c, new ExtraPair<SimpleTileWithModifier>(new SimpleTileWithModifier(t.__source, false /*since the action side is a NO */, false/*isRandom*/, t._direction, t._tile, t._debugFlag), null, true/*okToIgnoreNonMatches*/))
                             }
                         }
+                    } else {
+                        for (const sprite of t._tile.getSprites()) {
+                            const c =  sprite.getCollisionLayer()
+                            if (pairsByCollisionLayer.has(c)) {
+                            } else {
+                                pairsByCollisionLayer.set(c, new ExtraPair<SimpleTileWithModifier>(null, new SimpleTileWithModifier(t.__source, false /*since the action side is NOT? NO */, false/*isRandom*/, t._direction, t._tile, t._debugFlag), true/*okToIgnoreNonMatches*/))
+                            }
+                        }
                     }
                 }
             } else {
@@ -928,8 +971,10 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
                     throw new Error(`BUG: Tile is not assigned to a collision layer`)
                 }
                 // if the condition is the same as the action then it's a no-op and we can remove the code
-                if (pairsByCollisionLayer.has(c) && (pairsByCollisionLayer.get(c).condition._tile === t._tile) && (pairsByCollisionLayer.get(c).condition.isNo() === t.isNo())) {
-                    // condition and action are the same. nothing to do
+                const conditionVersion = (pairsByCollisionLayer.has(c) && pairsByCollisionLayer.get(c).condition) || null
+                if (conditionVersion && conditionVersion.equals(t)) {
+                    // condition and action are the same. No need to add a Pair
+                    pairsByCollisionLayer.delete(c)
                 } else {
                     if (t.isNo()) {
                         // set it to be null (removed)
@@ -955,12 +1000,24 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
             }
         }
 
+        // Any unmatched OR tiles need to be removed from the Cell
+        if (unmatchedOrTiles.size > 0) {
+            for (const [_, t] of unmatchedOrTiles) {
+                for (const sprite of t._tile.getSprites()) {
+                    const c = sprite.getCollisionLayer()
+                    if (!pairsByCollisionLayer.has(c)) {
+                        pairsByCollisionLayer.set(c, new ExtraPair<SimpleTileWithModifier>(new SimpleTileWithModifier(t.__source, false /*since the action side is a NO */, false/*isRandom*/, t._direction, t._tile, t._debugFlag), null, true/*okToIgnoreNonMatches*/))
+                    }
+                }
+            }
+        }
+
         const replaceTiles = new Set<ReplaceTile>()
         const replaceDirections = new Set<ReplaceDirection>()
         for (const [collisionLayer, {condition, action, extra}] of pairsByCollisionLayer.entries()) {
             if (condition && action) {
                 if (condition !== action) { // Could be `[ TrolleyFull no CleanDishes] -> [TrolleyEmpty no CleanDishes ]`
-                    if (condition._tile !== action._tile || condition.isNo()) {
+                    if (!condition._tile.equals(action._tile) || condition.isNo()) {
                         replaceTiles.add(new ReplaceTile(collisionLayer, action, extra))
                     }
                     if (condition._direction !== action._direction) {
@@ -971,7 +1028,7 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
                 }
             } else if (condition) {
                 if (!condition.isNo()) {
-                    replaceTiles.add(new ReplaceTile(collisionLayer, null, extra))
+                    replaceTiles.add(new ReplaceTile(collisionLayer, null, extra, condition))
                     replaceDirections.add(new ReplaceDirection(collisionLayer, null, extra))
                 }
             } else if (action) {
@@ -1365,6 +1422,10 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
 
     toKey() {
         return `{-?${this._isNegated}} {#?${this._isRandom}} dir="${this._direction}" [${this._tile.getSprites().map(sprite => sprite.getName()).sort().join(' ')}]{debugging?${this._debugFlag}}`
+    }
+
+    equals(t: SimpleEllipsisTileWithModifier) {
+        return this._isNegated === t._isNegated && this._tile.equals(t._tile) && this._direction === t._direction && this._isRandom === t._isRandom
     }
 
     clearCaches() {

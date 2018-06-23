@@ -1707,4 +1707,309 @@ describe('engine', () => {
         expect(engine.currentLevel[0][0].getSpritesAsSet().has(shirt)).toBe(false)
     })
 
+
+    it('moves a tile from one bracket to another (OR tile is in same collisionlayer', () => {
+        const { engine, data } = parseEngine(`title foo
+
+        ========
+        OBJECTS
+        ========
+
+        Background
+        gray
+
+        Player
+        transparent
+
+        Hat
+        brown
+
+        Shirt
+        red
+
+        Clipboard
+        transparent
+
+        =======
+        LEGEND
+        =======
+
+        . = Background
+        P = Player AND Hat
+        C = Clipboard
+        Clothing = Hat OR Shirt
+
+        =======
+        SOUNDS
+        =======
+
+        ================
+        COLLISIONLAYERS
+        ================
+        Background
+        Player
+        Hat, Shirt
+        Clipboard
+
+        ======
+        RULES
+        ======
+
+        [ Player Clothing ] [ Clipboard ] -> [ Player ] [ Clipboard Clothing ]
+
+        ==============
+        WINCONDITIONS
+        ==============
+
+        =======
+        LEVELS
+        =======
+
+        PC
+
+    `) // end game definition
+
+        const hat = data._getSpriteByName('hat')
+        const shirt = data._getSpriteByName('shirt')
+        engine.tick()
+        expect(engine.toSnapshot()).toMatchSnapshot()
+
+        expect(hat.getCellsThatMatch().size).toBe(1)
+        expect(shirt.getCellsThatMatch().size).toBe(0)
+        expect(engine.currentLevel[0][0].getSpritesAsSet().has(hat)).toBe(false)
+        expect(engine.currentLevel[0][1].getSpritesAsSet().has(hat)).toBe(true)
+    })
+
+    it('moves a tile from one bracket to another (OR tile is in DIFFERENT collisionlayer', () => {
+        const { engine, data } = parseEngine(`title foo
+
+        ========
+        OBJECTS
+        ========
+
+        Background
+        gray
+
+        Player
+        transparent
+
+        Hat
+        brown
+
+        Shirt
+        red
+
+        Clipboard
+        transparent
+
+        =======
+        LEGEND
+        =======
+
+        . = Background
+        P = Player AND Hat
+        C = Clipboard
+        Clothing = Hat OR Shirt
+
+        =======
+        SOUNDS
+        =======
+
+        ================
+        COLLISIONLAYERS
+        ================
+        Background
+        Player
+        Hat
+        Shirt
+        Clipboard
+
+        ======
+        RULES
+        ======
+
+        [ Player Clothing ] [ Clipboard ] -> [ Player ] [ Clipboard Clothing ]
+
+        ==============
+        WINCONDITIONS
+        ==============
+
+        =======
+        LEVELS
+        =======
+
+        PC
+
+    `) // end game definition
+
+        const hat = data._getSpriteByName('hat')
+        const shirt = data._getSpriteByName('shirt')
+        engine.tick()
+        expect(engine.toSnapshot()).toMatchSnapshot()
+
+        expect(hat.getCellsThatMatch().size).toBe(1)
+        expect(shirt.getCellsThatMatch().size).toBe(0)
+        expect(engine.currentLevel[0][0].getSpritesAsSet().has(hat)).toBe(false)
+        expect(engine.currentLevel[0][1].getSpritesAsSet().has(hat)).toBe(true)
+    })
+
+    it('swaps 2 OR tiles (OR tile has sprites in DIFFERENT collisionlayer', () => {
+        const { engine, data } = parseEngine(`title foo
+
+        ========
+        OBJECTS
+        ========
+
+        Background
+        gray
+
+        Player
+        transparent
+
+        Hat
+        brown
+
+        Shirt
+        red
+
+        Clipboard
+        transparent
+
+        Target
+        transparent
+
+        =======
+        LEGEND
+        =======
+
+        . = Background
+        P = Player AND Hat
+        C = Clipboard
+        T = Target AND Shirt
+        Clothing = Hat OR Shirt
+
+        =======
+        SOUNDS
+        =======
+
+        ================
+        COLLISIONLAYERS
+        ================
+        Background
+        Player
+        Hat
+        Shirt
+        Clipboard
+        Target
+
+        ======
+        RULES
+        ======
+
+        [ Player Clothing ] [ Clipboard ] -> [ Player ] [ Clipboard Clothing ]
+        [ Target Clothing ] [ Player ] -> [ Target ] [ Player Clothing ]
+        [ Clipboard Clothing ] [ Target ] -> [ Clipboard ] [ Target Clothing ]
+
+        ==============
+        WINCONDITIONS
+        ==============
+
+        =======
+        LEVELS
+        =======
+
+        PTC
+
+    `) // end game definition
+
+        const hat = data._getSpriteByName('hat')
+        const shirt = data._getSpriteByName('shirt')
+        engine.tick()
+        expect(engine.toSnapshot()).toMatchSnapshot()
+
+        expect(hat.getCellsThatMatch().size).toBe(1)
+        expect(shirt.getCellsThatMatch().size).toBe(1)
+        expect(engine.currentLevel[0][0].getSpritesAsSet().has(hat)).toBe(false)
+        expect(engine.currentLevel[0][1].getSpritesAsSet().has(hat)).toBe(true)
+        expect(engine.currentLevel[0][0].getSpritesAsSet().has(shirt)).toBe(true)
+        expect(engine.currentLevel[0][1].getSpritesAsSet().has(shirt)).toBe(false)
+    })
+
+    it('ignores negated OR tiles in the condition', () => {
+        const { engine, data } = parseEngine(`title foo
+
+        ========
+        OBJECTS
+        ========
+
+        Background
+        gray
+
+        Player
+        transparent
+
+        Red R
+        red
+
+        Green G
+        green
+
+        Blue B
+        blue
+
+        Hat
+        transparent
+
+        Shirt
+        transparent
+
+        =======
+        LEGEND
+        =======
+
+        . = Background
+        P = Player AND Hat
+
+        Color = Red OR Green OR Blue
+        Clothing = Hat OR Shirt
+
+        =======
+        SOUNDS
+        =======
+
+        ================
+        COLLISIONLAYERS
+        ================
+        Background
+        Player
+        Red, Shirt
+        Green, Hat
+        Blue
+
+        ======
+        RULES
+        ======
+
+        (make sure we do not remove the hat which is in the same collision layer as a color)
+        RIGHT [ Player  NO Color ] -> [ ]
+
+        ==============
+        WINCONDITIONS
+        ==============
+
+        =======
+        LEVELS
+        =======
+
+        P.
+
+    `) // end game definition
+
+        const hat = data._getSpriteByName('hat')
+        engine.tick()
+
+        expect(hat.getCellsThatMatch().size).toBe(1)
+    })
+
+
 })

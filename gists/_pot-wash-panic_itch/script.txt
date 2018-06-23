@@ -301,7 +301,7 @@ RULES
 [ > BucketFull | DirtyWater ] -> [ > BucketEmpty | CleanWater ] sfx2
 
 late [ TrolleyEmpty CleanDishes] -> [TrolleyFull CleanDishes ] sfx1
-late [ TrolleyFull no CleanDishes] -> [TrolleyEmpty no CleanDishes DEBUGGER ]
+late [ TrolleyFull no CleanDishes] -> [TrolleyEmpty no CleanDishes ]
 
 
 ==============

@@ -22,6 +22,7 @@ export interface IGameTile extends IGameNode {
     getCellsThatMatch: () => Set<Cell>
     getSpritesThatMatch: (cell: Cell) => Set<GameSprite>
     getName: () => string
+    equals: (t: IGameTile) => boolean
 }
 
 export class GameSprite extends BaseForLines implements IGameTile {
@@ -40,6 +41,9 @@ export class GameSprite extends BaseForLines implements IGameTile {
     }
     isOr() {
         return false
+    }
+    equals(t: IGameTile) {
+        return this === t // sprites MUST be exact
     }
     getPixels(): IColor[][] {
         throw new Error('BUG: Subclasses should implement this')
@@ -237,6 +241,17 @@ export class GameLegendTile extends BaseForLines implements IGameTile {
         super(source)
         this._spriteNameOrLevelChar = spriteNameOrLevelChar
         this._tiles = tiles
+    }
+    equals(t: IGameTile) {
+        if (this.isOr() !== t.isOr()) {
+            return false
+        }
+        for (const [a, b] of _.zip(this.getSprites(), t.getSprites())) {
+            if (a !== b) {
+                return false
+            }
+        }
+        return true
     }
     isOr() {
         return false
