@@ -69,6 +69,12 @@ LEGEND
 
 ${legendItems.join('\n')}
 
+===
+COLLISIONLAYERS
+===
+
+testObject
+
 ====
 RULES
 ====
@@ -274,6 +280,7 @@ COLLISIONLAYERS
 =======
 
 hello,hello2
+hello3
 
 =======
 RULES

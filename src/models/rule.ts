@@ -205,6 +205,12 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
         this._debugFlag = debugFlag
         this._doesEvaluationOrderMatter = doesEvaluationOrderMatter
         this._isOnlyEvaluatingFirstRandomMatch = isRandom && this._conditionBrackets[0]._neighbors[0]._tilesWithModifier.size === 0 // Special-case this to only be rules that have an empty condition (Garten de Medusen) // false //this._isRandom (sometimes turning it on causes )
+
+        if (actionBrackets.length > 0) {
+            for (let index = 0; index < conditionBrackets.length; index++) {
+                conditionBrackets[index].prepareAction(actionBrackets[index])
+            }
+        }
     }
     toKey() {
         return `{Late?${this._isLate}}{Rigid?${this._isRigid}} ${this._evaluationDirection} ${this._conditionBrackets.map(x => x.toKey())} -> ${this._actionBrackets.map(x => x.toKey())} ${this._commands.join(' ')} {debugger?${this._debugFlag}}`
@@ -546,6 +552,7 @@ class SimpleBracket extends BaseForLines implements ICacheable {
     _neighbors: SimpleNeighbor[]
     _firstCells: Set<Cell>
     _debugFlag: DEBUG_FLAG
+    _actionDebugFlag: DEBUG_FLAG
     _hasEllipsis: boolean
     constructor(source: IGameCode, direction: RULE_DIRECTION_ABSOLUTE, neighbors: SimpleNeighbor[], hasEllipsis: boolean, debugFlag: DEBUG_FLAG) {
         super(source)
@@ -576,8 +583,17 @@ class SimpleBracket extends BaseForLines implements ICacheable {
         return this._firstCells
     }
 
+    prepareAction(actionBracket: SimpleBracket) {
+        this._actionDebugFlag = actionBracket._debugFlag
+        for (let index = 0; index < this._neighbors.length; index++) {
+            const condition = this._neighbors[index]
+            const action = actionBracket._neighbors[index]
+            condition.prepareAction(action)
+        }
+    }
+
     evaluate(actionBracket: SimpleBracket, cell: Cell, magicOrTiles: Map<IGameTile, Set<GameSprite>>) {
-        if (process.env['NODE_ENV'] !== 'production' && actionBracket._debugFlag === DEBUG_FLAG.BREAKPOINT) {
+        if (process.env['NODE_ENV'] !== 'production' && this._actionDebugFlag === DEBUG_FLAG.BREAKPOINT) {
             UI.debugRenderScreen(); debugger // pausing here because it is in the code
         }
         if (this._hasEllipsis) {
@@ -877,6 +893,11 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
     _brackets: Map<SimpleBracket, Set<number>>
     // _localCellCache: Map<Cell, Set<GameSprite>>
     _debugFlag: DEBUG_FLAG
+    _actionDebugFlag: DEBUG_FLAG
+
+    _replaceTiles: Set<ReplaceTile>
+    _replaceDirections: Set<ReplaceDirection>
+
 
     constructor(source: IGameCode, tilesWithModifier: Set<SimpleTileWithModifier>, debugFlag: DEBUG_FLAG) {
         super(source)
@@ -887,6 +908,154 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
     }
     toKey() {
         return `{${[...this._tilesWithModifier].map(t => t.toKey()).sort().join(' ')} debugging?${this._debugFlag}}`
+    }
+
+    prepareAction(actionNeighbor: SimpleNeighbor) {
+        this._actionDebugFlag = actionNeighbor._debugFlag
+
+        // Compute the Mutators on-the-fly for now....
+        const pairsByCollisionLayer = new Map<CollisionLayer, ExtraPair<SimpleTileWithModifier>>()
+        const orTiles = new Map<IGameTile, SimpleTileWithModifier>()
+        for (const t of this._tilesWithModifier) {
+            if (t._tile.isOr() && !t._tile.hasSingleCollisionLayer()) {
+                if (!t.isNo()) {
+                    orTiles.set(t._tile, t)
+                }
+            } else {
+                const c = t._tile.getCollisionLayer()
+                if (!c) {
+                    console.log(t._tile.toString())
+                    throw new Error(`BUG: Tile is not assigned to a collision layer`)
+                }
+                // If we have something like `[Player NO PlayerHold] -> ...` then keep the Player, not the PlayerHold
+                if (pairsByCollisionLayer.has(c)) {
+                    // Determine whether to keep the 1st match or the current one.
+                    // If the current one is a NO tile then definitely do not replace it.
+                    // Maybe the correct thing to do is to always keep the 1st thing put in
+                    // if (!t.isNo()) {
+                    //     pairsByCollisionLayer.set(c, new ExtraPair<SimpleTileWithModifier>(t, null/*filled in later if there is an action*/, false/*okToIgnoreNonMatches*/))
+                    // }
+                } else {
+                    pairsByCollisionLayer.set(c, new ExtraPair<SimpleTileWithModifier>(t, null/*filled in later if there is an action*/, false/*okToIgnoreNonMatches*/))
+                }
+            }
+        }
+
+        // First just pair up all the conditions and actions (keep the negations)
+        // Then, remove all negations
+        // Then, build the ReplaceTile and ReplaceDirections
+        const unmatchedOrTiles = new Map(orTiles.entries())
+        for (const t of actionNeighbor._tilesWithModifier) {
+            if (t._tile.isOr() && !t._tile.hasSingleCollisionLayer()) {
+                // OR tiles may belong to different collisionlayers so... it's complicated
+                if (orTiles.has(t._tile)) {
+                    unmatchedOrTiles.delete(t._tile)
+                    // simple case. at most we just change direction
+                    const conditionT = orTiles.get(t._tile)
+                    if (conditionT._direction !== t._direction) {
+                        for (const sprite of t._tile.getSprites()) {
+                            const c =  sprite.getCollisionLayer()
+                            if (!pairsByCollisionLayer.has(c)) {
+                                pairsByCollisionLayer.set(c, new ExtraPair<SimpleTileWithModifier>(
+                                    new SimpleTileWithModifier(conditionT.__source, conditionT._isNegated /*since the action side is a NO */, conditionT._isRandom/*isRandom*/, conditionT._direction, sprite, conditionT._debugFlag),
+                                    new SimpleTileWithModifier(t.__source, t._isNegated /*since the action side is a NO */, t._isRandom/*isRandom*/, t._direction, sprite, t._debugFlag),
+                                    true/*okToIgnoreNonMatches*/))
+                            }
+                        }
+                    }
+                } else {
+                    if (t.isNo()) {
+                        for (const sprite of t._tile.getSprites()) {
+                            const c =  sprite.getCollisionLayer()
+                            if (pairsByCollisionLayer.has(c)) {
+                            } else {
+                                pairsByCollisionLayer.set(c, new ExtraPair<SimpleTileWithModifier>(new SimpleTileWithModifier(t.__source, false /*since the action side is a NO */, false/*isRandom*/, t._direction, t._tile, t._debugFlag), null, true/*okToIgnoreNonMatches*/))
+                            }
+                        }
+                    } else {
+                        for (const sprite of t._tile.getSprites()) {
+                            const c =  sprite.getCollisionLayer()
+                            if (pairsByCollisionLayer.has(c)) {
+                            } else {
+                                pairsByCollisionLayer.set(c, new ExtraPair<SimpleTileWithModifier>(null, new SimpleTileWithModifier(t.__source, false /*since the action side is NOT? NO */, false/*isRandom*/, t._direction, t._tile, t._debugFlag), true/*okToIgnoreNonMatches*/))
+                            }
+                        }
+                    }
+                }
+            } else {
+                const c = t._tile.getCollisionLayer()
+                if (!c) {
+                    console.log(t._tile.toString())
+                    throw new Error(`BUG: Tile is not assigned to a collision layer`)
+                }
+                // if the condition is the same as the action then it's a no-op and we can remove the code
+                const conditionVersion = (pairsByCollisionLayer.has(c) && pairsByCollisionLayer.get(c).condition) || null
+                if (conditionVersion && conditionVersion.equals(t)) {
+                    // condition and action are the same. No need to add a Pair
+                    pairsByCollisionLayer.delete(c)
+                } else {
+                    if (t.isNo()) {
+                        // set it to be null (removed)
+                        if (pairsByCollisionLayer.has(c)) {
+                            // just leave the action side as null (so it's removed)
+                            if (pairsByCollisionLayer.get(c).condition === t) {
+                                // remove if both the condition and action are the same
+                                pairsByCollisionLayer.delete(c)
+                            }
+                        } else {
+                            // we need to set the condition side to be the tile so that it is removed
+                            // (it might not exist in the cell though but that's an optimization for later)
+                            pairsByCollisionLayer.set(c, new ExtraPair<SimpleTileWithModifier>(new SimpleTileWithModifier(t.__source, false /*since the action side is a NO */, false/*isRandom*/, t._direction, t._tile, t._debugFlag), null, true/*okToIgnoreNonMatches*/))
+                        }
+                    } else {
+                        if (pairsByCollisionLayer.has(c)) {
+                            pairsByCollisionLayer.get(c).action = t
+                        } else {
+                            pairsByCollisionLayer.set(c, new ExtraPair<SimpleTileWithModifier>(null, t, false/*okToIgnoreNonMatches*/))
+                        }
+                    }
+                }
+            }
+        }
+
+        // Any unmatched OR tiles need to be removed from the Cell
+        if (unmatchedOrTiles.size > 0) {
+            for (const [_, t] of unmatchedOrTiles) {
+                for (const sprite of t._tile.getSprites()) {
+                    const c = sprite.getCollisionLayer()
+                    if (!pairsByCollisionLayer.has(c)) {
+                        pairsByCollisionLayer.set(c, new ExtraPair<SimpleTileWithModifier>(new SimpleTileWithModifier(t.__source, false /*since the action side is a NO */, false/*isRandom*/, t._direction, t._tile, t._debugFlag), null, true/*okToIgnoreNonMatches*/))
+                    }
+                }
+            }
+        }
+
+        this._replaceTiles = new Set<ReplaceTile>()
+        this._replaceDirections = new Set<ReplaceDirection>()
+        for (const [collisionLayer, {condition, action, extra}] of pairsByCollisionLayer.entries()) {
+            if (condition && action) {
+                if (condition !== action) { // Could be `[ TrolleyFull no CleanDishes] -> [TrolleyEmpty no CleanDishes ]`
+                    if (!condition._tile.equals(action._tile) || condition.isNo()) {
+                        this._replaceTiles.add(new ReplaceTile(collisionLayer, action, extra))
+                    }
+                    if (condition._direction !== action._direction) {
+                        this._replaceDirections.add(new ReplaceDirection(collisionLayer, action._direction || RULE_DIRECTION_ABSOLUTE.STATIONARY, extra))
+                    } else if (condition.isNo()) {
+                        this._replaceDirections.add(new ReplaceDirection(collisionLayer, action._direction || RULE_DIRECTION_ABSOLUTE.STATIONARY, extra))
+                    }
+                }
+            } else if (condition) {
+                if (!condition.isNo()) {
+                    this._replaceTiles.add(new ReplaceTile(collisionLayer, null, extra, condition))
+                    this._replaceDirections.add(new ReplaceDirection(collisionLayer, null, extra))
+                }
+            } else if (action) {
+                if (!action.isNo()) {
+                    this._replaceTiles.add(new ReplaceTile(collisionLayer, action, extra))
+                    this._replaceDirections.add(new ReplaceDirection(collisionLayer, action._direction || RULE_DIRECTION_ABSOLUTE.STATIONARY, extra))
+                }
+            }
+        }
     }
 
     evaluate(actionNeighbor: SimpleNeighbor, cell: Cell, magicOrTiles: Map<IGameTile, Set<GameSprite>>) {
@@ -1398,6 +1567,9 @@ class SimpleEllipsisNeighbor extends SimpleNeighbor {
     // Define a stub because SimpleBracket calls this
     matchesCellSimple() {
         return false
+    }
+    prepareAction(actionNeighbor: SimpleNeighbor) {
+        // do nothing since this is not implemented
     }
 }
 
