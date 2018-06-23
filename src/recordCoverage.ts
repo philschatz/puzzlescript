@@ -1,5 +1,5 @@
 import { GameData, IGameNode } from "./models/game";
-import { writeFileSync } from "fs";
+import { writeFileSync, existsSync } from "fs";
 import { IRule } from "./models/rule";
 
 // These types are just so that the Code Coverage JSON objects are strongly-typed
@@ -112,5 +112,7 @@ export function saveCoverageFile(data: GameData, absPath: string, coverageFilena
     }
     const codeCoverageObj: { [path: string]: CoverageEntry } = {}
     codeCoverageObj[absPath] = codeCoverageEntry
-    writeFileSync(`coverage/coverage-${coverageFilenameSuffix}.json`, JSON.stringify(codeCoverageObj, null, 2)) // indent by 2 chars
+    if (existsSync(`coverage`)) {
+        writeFileSync(`coverage/coverage-${coverageFilenameSuffix}.json`, JSON.stringify(codeCoverageObj, null, 2)) // indent by 2 chars
+    }
 }

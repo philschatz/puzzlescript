@@ -1,0 +1,4 @@
+/node_modules/
+/coverage/
+/gist-solutions/*.json
+*.log

@@ -1,9 +1,12 @@
-[
-  null,
-  null,
-  null,
-  null,
-  {
-    "partial": "SSSSSSS,,,,,,SSSS"
-  }
-]
+{
+  "version": 1,
+  "solutions": [
+    null,
+    null,
+    null,
+    null,
+    {
+      "partial": "SSSSSSS,,,,,,SSSS"
+    }
+  ]
+}

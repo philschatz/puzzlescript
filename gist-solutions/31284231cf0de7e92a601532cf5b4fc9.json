@@ -1,8 +1,11 @@
-[
-  {
-    "solution": ".DD.D.DD.D.DD,D.D.D.D.D.D.D.X"
-  },
-  {
-    "solution": ".S.S.S..A,X"
-  }
-]
+{
+  "version": 1,
+  "solutions": [
+    {
+      "solution": ".DD.D.DD.D.DD,D.D.D.D.D.D.D.X"
+    },
+    {
+      "solution": ".S.S.S..A,X"
+    }
+  ]
+}

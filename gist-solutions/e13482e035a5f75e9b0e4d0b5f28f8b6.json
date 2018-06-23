@@ -1,6 +1,9 @@
-[
-  null,
-  {
-    "solution": "D.D.DD.D.D.DD..D.SS.S.SS.SS.SA.A.AW.AA.A..SA.A.A.W.WW..WW.WD.D.DD.D.S.SD.D.WW.A.D.SS.AA.A..SA.DD"
-  }
-]
+{
+  "version": 1,
+  "solutions": [
+    null,
+    {
+      "solution": "D.D.DD.D.D.DD..D.SS.S.SS.SS.SA.A.AW.AA.A..SA.A.A.W.WW..WW.WD.D.DD.D.S.SD.D.WW.A.D.SS.AA.A..SA.DD"
+    }
+  ]
+}

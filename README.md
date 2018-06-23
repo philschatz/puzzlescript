@@ -1,5 +1,43 @@
-# Typed PuzzleScript
+# Terminal PuzzleScript
 
+This is a program that you can run in your terminal to play [PuzzleScript](https://puzzlescript.net) games.
+
+## Install
+
+1. Run `npm install -g puzzlescript-cli`
+1. Run `puzzlescript` to start playing
+
+
+# Screencaps
+
+<a href="https://asciinema.org/a/md0Zep9LOBhdB4nx00OyA0NNH?t=25"><img width="300" alt="video of install and a couple games" src="https://asciinema.org/a/md0Zep9LOBhdB4nx00OyA0NNH.png"/></a>
+
+
+### Hack the Net ([original](http://www.draknek.org/games/puzzlescript/hack-the-net.php))
+
+<a href="https://asciinema.org/a/TG6K5iinlW7cnrRjtJ1vz6nJl"><img width="300" alt="video of a couple levels of Hack-the-Net" src="https://asciinema.org/a/TG6K5iinlW7cnrRjtJ1vz6nJl.png"/></a>
+
+
+# About
+
+The goal of this project is to do 3 things:
+
+1. make PuzzleScript easier to embed (like in 404 pages, easter eggs, etc)
+1. allow **blind people to play video games**
+1. use the terminal as a GUI for playing games
+
+### Blind video games?
+
+PuzzleScript lends itself nicely to be playable by people with low or no vision:
+
+1. each level is small (~10x10)
+1. each sprite has a human-readable name (since the whole game is in 1 text file and the logic refers to the sprites)
+1. a blind person has 2 sets of directions (one to move the player and one to move the “eye” which reads off which sprite is in that spot)
+1. the games do not require quick reflexes and have Undo built-in so it is easy to think and try different options
+1. we can just print to the terminal whenever something needs to be read (presumably the terminal is read aloud to the person)
+
+
+# Dev Notes
 
 This is a remake of PuzzleScript that has the following features:
 
@@ -11,28 +49,19 @@ This is a remake of PuzzleScript that has the following features:
 - The input code is abstracted out so gamepads, buttons, etc can easily be provided
   - This also allows computers to play the games!
 
-# Dev Commands
+## Commands
 
-- `npm run play` runs the first game in the gists directory without debugging info (10x faster) (uses `NODE_ENV=production`)
-- `npm run play-dev` runs the first game in the gists directory with sprite info (useful for debugging)
-- `npm run play-debug` runs the first game with a Chrome Debugger open so you can set breakpoints
-- `npm install`
-- `npm test`
+- `npm run play` runs the games in the [./gists/](./gists/) directory without debugging info (10x faster) (uses `NODE_ENV=production`)
+- `npm run play-dev` runs the games in the [./gists/](./gists/) directory with sprite info (useful for debugging)
+- `npm run play-debug` runs the games in the [./gists/](./gists/) directory with a Chrome Debugger open so you can set breakpoints
+- `npm start` runs all of the games in the [./gists/](./gists/) directory with a few sample moves (up/down/left/right/action)
+- `npm test` runs all of the unit tests (including solutions in the [./gist-solutions/](./gist-solutions/) directory)
 - `npm run watch` Run the tests and when you update the source, it re-runs the tests
-- `npm run test-debug` Run the tests but open a debugger (remember to add a `debugger` line into the JavaScript)
-- `node lib/runGame.js"` Run all the games (change the `glob(...)` line to load just one file)
-- `node --inspect-brk index.js` Run all the games with the Debugger open
+- `npm run test-debug` Run the tests but opens a debugger (remember to add a `debugger` line into the JavaScript)
 - `npm test; open coverage/lcov-report/index.html` to see test coverage
+- `npm run coverage` generates a coverage report which includes the JS code as well as any games that you ran in dev mode (using `npm run dev`)
 
-
-# File Layout
-
-- `parser.js` contains the Grammar as well as the Abstract Syntax Tree nodes that represent the game
-  - Many of those nodes also contain evaluation logic (like finding out if a Rule matches a Cell)
-- `engine.js` evaluates all the Rules when `tick()` is called. `tick()` returns a list of Cells to re-render
-- `ui.js` renders the Level (and individual Cells) on the screen
-
-# Objects
+## Objects
 
 - **Level** contains a table of Cells which contain a set of Sprites that should be rendered
 - **Rule** contains the conditions and actions to be executed.

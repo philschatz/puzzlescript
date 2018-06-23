@@ -1,23 +1,26 @@
-[
-  null,
-  {
-    "solution": "DDD"
-  },
-  null,
-  null,
-  {
-    "solution": "SSASD"
-  },
-  null,
-  {
-    "solution": "DDAASWDDDSSWAAWASDASWDSWDASDWDSASA"
-  },
-  null,
-  {
-    "solution": "SSDAWWDSASDDSDWWAAWDAASS"
-  },
-  null,
-  {
-    "solution": "SSDSDDWWWASSASDAWAWDSDDWWASDSAAWAS"
-  }
-]
+{
+  "version": 1,
+  "solutions": [
+    null,
+    {
+      "solution": "DDD"
+    },
+    null,
+    null,
+    {
+      "solution": "SSASD"
+    },
+    null,
+    {
+      "solution": "DDAASWDDDSSWAAWASDASWDSWDASDWDSASA"
+    },
+    null,
+    {
+      "solution": "SSDAWWDSASDDSDWWAAWDAASS"
+    },
+    null,
+    {
+      "solution": "SSDSDDWWWASSASDAWAWDSDDWWASDSAAWAS"
+    }
+  ]
+}

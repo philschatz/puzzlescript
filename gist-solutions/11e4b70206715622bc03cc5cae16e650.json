@@ -1,8 +1,26 @@
-[
-  null,
-  null,
-  null,
-  {
-    "solution": "SSDXAAXWWWWAAAWXDSSSSSAX,,,,,,,,,,,,,,,,,,,,,,,"
-  }
-]
+{
+  "version": 1,
+  "solutions": [
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "SSDXAAXWWWWAAAWXDSSSSSAX,,,,,,,,,,,,,,,,,,,,,,,"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "X"
+    }
+  ]
+}

@@ -1,12 +1,13 @@
 {
   "scripts": {
     "lint": "standard --fix preprocessor.js ./test/**/*.js",
+    "prepublish": "NODE_ENV=production npm run-script tsc",
     "tsc": "tsc",
     "play": "tsc && NODE_ENV=production node -r source-map-support/register lib/playGame.js",
     "play-only": "NODE_ENV=production node -r source-map-support/register lib/playGame.js",
     "play-debug": "tsc && LOG_LEVEL=debug node --inspect -r source-map-support/register ./lib/playGame.js 2> ./play.log",
     "play-dev": "tsc && LOG_LEVEL=debug node -r source-map-support/register ./lib/playGame.js 2> ./play.log",
-    "prestart": "rm -rf ./lib/; rm ./coverage/coverage-gist*.json; rm -rf ./coverage/lcov-report/; tsc",
+    "prestart": "rm -rf ./lib/; rm ./coverage/coverage-*.json; rm -rf ./coverage/lcov-report/; tsc",
     "start": "NODE_ENV=production node -r source-map-support/register ./lib/runGames.js",
     "start-dev": "tsc && LOG_LEVEL=debug node -r source-map-support/register ./lib/runGames.js 2> ./start.log",
     "start-coverage": "tsc && LOG_LEVEL=debug istanbul cover -x '**/node_modules/**' ./lib/runGames.js 2> ./start.log",
@@ -20,7 +21,8 @@
     "debug": "tsc; node --inspect-brk lib/runGames.js"
   },
   "bin": {
-      "puzzle": "NODE_ENV=production ./bin/play.js"
+    "puzzlescript": "./bin/puzzlescript.js",
+    "puzzlescript-demo": "./bin/puzzlescript-demo.js"
   },
   "dependencies": {
     "@types/ansi-styles": "^3.2.0",
@@ -41,6 +43,7 @@
     "source-map-support": "^0.5.6",
     "speaker": "github:philschatz/node-speaker#cac7c5b7c434b52619bfbbd9530ab0871156e815",
     "supports-color": "^5.4.0",
+    "update-notifier": "^2.5.0",
     "web-audio-api": "^0.2.2"
   },
   "devDependencies": {
@@ -72,5 +75,29 @@
     "plugins": [
       "typescript"
     ]
-  }
+  },
+  "name": "puzzlescript-cli",
+  "description": "Play PuzzleScript games in your terminal!",
+  "version": "1.0.7",
+  "main": "lib/playGame.js",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/philschatz/puzzlescript-cli.git"
+  },
+  "keywords": [
+    "puzzlescript",
+    "game",
+    "console",
+    "terminal"
+  ],
+  "author": "Philip Schatz",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/philschatz/puzzlescript-cli/issues"
+  },
+  "homepage": "https://github.com/philschatz/puzzlescript-cli#readme"
 }

@@ -1,13 +1,16 @@
-[
-  null,
-  null,
-  {
-    "solution": "AASDDD"
-  },
-  null,
-  null,
-  null,
-  {
-    "solution": "WDWASAAWDSDWAWD"
-  }
-]
+{
+  "version": 1,
+  "solutions": [
+    null,
+    null,
+    {
+      "solution": "AASDDD"
+    },
+    null,
+    null,
+    null,
+    {
+      "solution": "WDWASAAWDSDWAWD"
+    }
+  ]
+}

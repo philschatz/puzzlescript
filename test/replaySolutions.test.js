@@ -27,12 +27,16 @@ const SHOW_STEPS = false
 describe('replays levels of games', () => {
 
     solutionFiles.forEach(solutionFilename => {
+        // Skip the README.md file
+        if (!solutionFilename.endsWith('.json')) {
+            return
+        }
         const GIST_ID = path.basename(solutionFilename).replace('.json', '')
 
         it(`plays the solved levels of ${GIST_ID}`, async () => {
             const gistFilename = path.join(__dirname, `../gists/${GIST_ID}/script.txt`)
             const { engine, data } = parseEngine(fs.readFileSync(gistFilename, 'utf-8'))
-            const recordings = JSON.parse(fs.readFileSync(path.join(SOLUTION_ROOT, solutionFilename), 'utf-8'))
+            const recordings = JSON.parse(fs.readFileSync(path.join(SOLUTION_ROOT, solutionFilename), 'utf-8')).solutions
             for (let index = 0; index < recordings.length; index++) {
                 const recording = recordings[index]
                 if (!recording || !recording.solution) {

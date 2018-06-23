@@ -1,8 +1,11 @@
-[
-  {
-    "solution": ".W..A.A..W.W..D.D..D..W...D..D..D..S.D...S.D"
-  },
-  {
-    "solution": "..W.D..D.W.D..D..S.S.A..A..A..A..W..D..D..D.W..W.A..A.W..W.D..D.W"
-  }
-]
+{
+  "version": 1,
+  "solutions": [
+    {
+      "solution": ".W..A.A..W.W..D.D..D..W...D..D..D..S.D...S.D"
+    },
+    {
+      "solution": "..W.D..D.W.D..D..S.S.A..A..A..A..W..D..D..D.W..W.A..A.W..W.D..D.W"
+    }
+  ]
+}

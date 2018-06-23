@@ -38,12 +38,14 @@ function toUnicode(theString) {
 }
 
 type GameInfo = { id: string, title: string, filePath: string }
+type SaveFile = { version: number, solutions: {solution?: string, partial?: string}[]}
 
 run()
 
 
 async function run() {
-    const gists = await pify(glob)('./gists/*/script.txt')
+    inquirer.registerPrompt('autocomplete', autocomplete)
+    const gists = await pify(glob)(path.join(__dirname, '../gists/*/script.txt'))
 
     const games: GameInfo[] = []
 
@@ -59,6 +61,8 @@ async function run() {
     console.log(``)
     console.log(`Let's play some ${chalk.bold.redBright('P')}${chalk.bold.greenBright('U')}${chalk.bold.blueBright('Z')}${chalk.bold.yellowBright('Z')}${chalk.bold.cyanBright('L')}${chalk.bold.magentaBright('E')}${chalk.bold.whiteBright('S')}!`)
     console.log(``)
+    console.log(``)
+    console.log(`${chalk.dim('Games that are')} ${chalk.bold.whiteBright('white')} ${chalk.dim('are great to start out,')} ${chalk.bold.white('gray')} ${chalk.dim('are fun and run, and')} ${chalk.bold.dim('dark')} ${chalk.dim('may or may not run.')}`)
     console.log(``)
 
     // loop indefinitely
@@ -81,7 +85,7 @@ async function run() {
 
             // Load the solutions file (if it exists) so we can append to it
             const solutionsPath = path.join(__dirname, `../gist-solutions/${gistId}.json`)
-            let recordings = []
+            let recordings = {version: 1, solutions: []} // default
             if (existsSync(solutionsPath)) {
                 recordings = JSON.parse(readFileSync(solutionsPath, 'utf-8'))
             }
@@ -90,14 +94,14 @@ async function run() {
 
             // Allow the user to resume from where they left off
             let ticksToRunFirst = ''
-            if (recordings[currentLevelNum] && (recordings[currentLevelNum].partial || recordings[currentLevelNum].solution)) {
+            if (recordings.solutions[currentLevelNum] && (recordings.solutions[currentLevelNum].partial || recordings.solutions[currentLevelNum].solution)) {
                 const { shouldResume } = await inquirer.prompt<{ shouldResume: boolean }>({
                     type: 'confirm',
                     name: 'shouldResume',
                     message: 'Would you like to resume where you left off?',
                 })
                 if (shouldResume) {
-                    ticksToRunFirst = recordings[currentLevelNum].partial || recordings[currentLevelNum].solution
+                    ticksToRunFirst = recordings.solutions[currentLevelNum].partial || recordings.solutions[currentLevelNum].solution
                 }
             }
 
@@ -125,7 +129,7 @@ async function run() {
 }
 
 
-async function playGame(data: GameData, currentLevelNum: number, recordings: any, ticksToRunFirst: string, absPath: string, solutionsPath: string) {
+async function playGame(data: GameData, currentLevelNum: number, recordings: {version: number, solutions: {solution?: string, partial?:string}[]}, ticksToRunFirst: string, absPath: string, solutionsPath: string) {
     if (process.env['LOG_LEVEL'] === 'debug') {
         console.error(`Start playing "${data.title}". Level ${currentLevelNum}`)
     }
@@ -154,6 +158,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: any
             UI._drawPixel(i + offset, 0, fgColor, null, char)
         }
     })
+    UI.clearScreen()
     engine.setGame(data)
     engine.setLevel(data.levels.indexOf(level))
 
@@ -185,6 +190,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: any
                 pendingKey = 'D'; break
             case 'x':
             case ' ':
+            case '\u000D':
                 pendingKey = 'X'; break
             case 'r':
                 return restartLevel()
@@ -199,8 +205,8 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: any
                 saveCoverageFile(data, absPath, 'playgame')
                 // Save the partially-completed steps
                 if (keypresses.join('').replace(/\./g, '').length > 0) { // skip just empty ticks
-                    recordings[currentLevelNum] = recordings[currentLevelNum] || {}
-                    recordings[currentLevelNum].partial = keypresses.join('')
+                    recordings.solutions[currentLevelNum] = recordings.solutions[currentLevelNum] || {}
+                    recordings.solutions[currentLevelNum].partial = keypresses.join('')
                     writeFileSync(solutionsPath, JSON.stringify(recordings, null, 2))
                 }
                 closeSounds()
@@ -300,24 +306,16 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: any
         if (didLevelChange) {
             // Save the solution
             const newSolution = keypresses.join('')
-            if (!recordings[currentLevelNum]) {
-                recordings[currentLevelNum] = { solution: keypresses.join('') }
+            if (!recordings.solutions[currentLevelNum]) {
+                recordings.solutions[currentLevelNum] = { solution: keypresses.join('') }
                 writeFileSync(solutionsPath, JSON.stringify(recordings, null, 2))
-            } else if (!recordings[currentLevelNum].solution) {
-                recordings[currentLevelNum].solution = keypresses.join('')
+            } else if (!recordings.solutions[currentLevelNum].solution) {
+                recordings.solutions[currentLevelNum].solution = keypresses.join('')
                 writeFileSync(solutionsPath, JSON.stringify(recordings, null, 2))
             }
             keypresses = []
             pendingKey = null
-
-            // Skip the messages since they are not implmented yet
             currentLevelNum = engine.getCurrentLevelNum()
-            while (!data.levels[currentLevelNum].isMap()) {
-                currentLevelNum++
-            }
-            if (currentLevelNum !== engine.getCurrentLevelNum()) {
-                engine.setLevel(currentLevelNum)
-            }
 
             UI.clearScreen()
             UI.renderScreen(true)
@@ -361,12 +359,11 @@ async function promptPlayAnother() {
     return playAnotherGame
 }
 
-async function promptChooseLevel(recordings: any[], data: GameData) {
+async function promptChooseLevel(recordings: SaveFile, data: GameData) {
     const levels = data.levels
     const firstUncompletedLevel = levels
     .indexOf(levels
-        .filter((l, index) => !(recordings[index] && recordings[index].solution))
-        .filter(l => l.isMap())[0]
+        .filter((l, index) => !(recordings.solutions[index] && recordings.solutions[index].solution))[0]
     )
 
     const { currentLevelNum } = await inquirer.prompt<{
@@ -378,7 +375,7 @@ async function promptChooseLevel(recordings: any[], data: GameData) {
         default: firstUncompletedLevel,
         pageSize: Math.max(15, process.stdout.rows - 15),
         choices: levels.map((levelMap, index) => {
-            const hasSolution = recordings[index] && recordings[index].solution;
+            const hasSolution = recordings.solutions[index] && recordings.solutions[index].solution;
             if (levelMap.isMap()) {
                 const rows = levelMap.getRows();
                 const cols = rows[0];
@@ -474,7 +471,7 @@ async function promptPixelSize(data) {
         }>({
             type: 'confirm',
             name: 'useCompressedCharacters',
-            default: process.env['NODE_ENV'] === 'production',
+            default: true,
             message: 'Would you like to use small characters when rendering the game?',
         });
         if (useCompressedCharacters) {
@@ -484,19 +481,73 @@ async function promptPixelSize(data) {
 }
 
 async function promptGame(games: GameInfo[]) {
-    inquirer.registerPrompt('autocomplete', autocomplete)
+    // Sort games by games that are fun and should be played first
+    const firstGames = [
+        'Pot Wash Panic',
+        'PUSH',
+        'Beam Islands',
+        'Entanglement - Chapter One',
+        // 'SwapBot', BUG: Too many batteries
+        'Mirror Isles',
+        'IceCrates',
+        'Boxes & Balloons',
+        'Boxes Love Bloxing Gloves',
+        // 'Cyber-Lasso', When you fall into a hole you do not die
+        'Pushcat Jr',
+        'Skipping Stones to Lonely Homes',
+        'Hack the Net',
+        'Garten der Medusen',
+        'Separation',
+        'Roll those Sixes',
+        'Spacekoban',
+        'Rock, Paper, Scissors (v0.90 = v1.alpha)',
+        'Spooky Pumpkin Game',
+        'Miss Direction',
+        'Alien Disco',
+        'Some lines were meant to be crossed',
+        'Flying Kick⁣',
+        'Memories Of Castlemouse',
+        "Spider's Hollow",
+        'Coin Counter',
+        'JAM3 Game',
+        // 'It Dies In The Light', BUG: Dead player does not remain dead
+    ]
+    function getGameIndexForSort(gameInfo: GameInfo) {
+        let gameIndex = firstGames.indexOf(gameInfo.title)
+        if (gameIndex < 0) {
+            gameIndex = firstGames.length
+        }
+        return gameIndex
+    }
+    games = games.sort((a, b) => {
+        return getGameIndexForSort(a) - getGameIndexForSort(b)
+    })
+
     const question: inquirer.Question = <inquirer.Question>{
         type: 'autocomplete',
         name: 'gameTitle',
         message: 'Which game would you like to play?',
         pageSize: Math.max(15, process.stdout.rows - 15),
         source: async (answers, input) => {
+            let filteredGames
             if (!input) {
-                return Promise.resolve(games.map(game => game.title))
+                filteredGames = games
+            } else {
+                filteredGames = games.filter(({ id, title, filePath }) => {
+                    return title.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                })
             }
-            return Promise.resolve(games.filter(({ id, title, filePath }) => {
-                return title.toLowerCase().indexOf(input.toLowerCase()) >= 0
-            }).map(game => game.title))
+            return Promise.resolve(filteredGames.map(game => {
+                // dim the games that are not recommended
+                const index = firstGames.indexOf(game.title)
+                if (index < 0) {
+                    return chalk.dim('\u2063' + game.title + '\u2063') // add an invisible unicode character so we can unescape the title later
+                } else if (index <= 10) {
+                    return chalk.bold.whiteBright('\u2063' + game.title + '\u2063')
+                } else {
+                    return chalk.white('\u2063' + game.title + '\u2063') // add an invisible unicode character so we can unescape the title later
+                }
+            }))
         },
         // choices: games.map(({id, title, filePath}) => {
         //     return {
@@ -508,7 +559,22 @@ async function promptGame(games: GameInfo[]) {
     }
     const { gameTitle } = await inquirer.prompt<{ gameTitle: string }>([question])
 
-    return games.filter(game => game.title === gameTitle)[0]
+    // Filter out the DIM escape codes (to give the game titles a color)
+    const firstInvisible = gameTitle.indexOf('\u2063')
+    const lastInvisible = gameTitle.lastIndexOf('\u2063')
+    let uncoloredGameTitle
+    if (firstInvisible >= 0) {
+        uncoloredGameTitle = gameTitle.substring(firstInvisible + 1, lastInvisible)
+    } else {
+        uncoloredGameTitle = gameTitle
+    }
+
+    const chosenGame = games.filter(game => game.title === uncoloredGameTitle)[0]
+
+    if (!chosenGame) {
+        throw new Error(`BUG: Could not find game "${uncoloredGameTitle}"`)
+    }
+    return chosenGame
 }
 
 

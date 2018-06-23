@@ -7,6 +7,7 @@ import { GameData } from './models/game'
 import { IColor } from './models/colors'
 import { GameEngine, Cell } from './engine'
 import { RULE_DIRECTION_ABSOLUTE } from './util';
+import chalk from 'chalk';
 
 const SPRITE_WIDTH = 5
 const SPRITE_HEIGHT = 5
@@ -17,43 +18,55 @@ const supports16mColors = process.env['COLORTERM'] === 'truecolor'
 
 function setBgColor(hex) {
     if (supports16mColors) {
-        process.stdout.write(ansiStyles.bgColor.ansi16m.hex(hex))
+        return ansiStyles.bgColor.ansi16m.hex(hex)
     } else {
-        process.stdout.write(ansiStyles.bgColor.ansi256.hex(hex))
+        return ansiStyles.bgColor.ansi256.hex(hex)
     }
 }
+
 function setFgColor(hex) {
     if (supports16mColors) {
-        process.stdout.write(ansiStyles.color.ansi16m.hex(hex))
+        return ansiStyles.color.ansi16m.hex(hex)
     } else {
-        process.stdout.write(ansiStyles.color.ansi256.hex(hex))
+        return ansiStyles.color.ansi256.hex(hex)
     }
 }
-function moveTo(x, y) {
-    process.stdout.write(ansiEscapes.cursorTo(x, y))
+function writeBgColor(hex) {
+    process.stdout.write(setBgColor(hex))
 }
-function hideCursor() {
-    process.stdout.write(ansiEscapes.cursorHide)
+function writeFgColor(hex) {
+    process.stdout.write(setFgColor(hex))
 }
-function showCursor() {
-    process.stdout.write(ansiEscapes.cursorShow)
+function setMoveTo(x, y) {
+    return ansiEscapes.cursorTo(x, y)
+}
+function setHideCursor() {
+    return ansiEscapes.cursorHide
+}
+function setShowCursor() {
+    return ansiEscapes.cursorShow
 }
 function clearScreen() {
     process.stdout.write(ansiEscapes.clearScreen)
 }
 function writeTextAt(x, y, msg) {
-    moveTo(x, y)
-    process.stdout.write(msg)
+    process.stdout.write(`${setMoveTo(x, y)}${msg}`)
 }
 function drawPixelChar(x, y, fgHex, bgHex, char) {
+    const out = []
     if (fgHex) {
-        setFgColor(fgHex)
+        out.push(writeFgColor(fgHex))
     }
     if (bgHex) {
-        setBgColor(bgHex)
+        out.push(writeBgColor(bgHex))
     }
-    moveTo(x, y)
-    process.stdout.write(char)
+    out.push(setMoveTo(x, y))
+    out.push(char)
+    // In case the user presses Ctrl+C, always set the colors back to white on black
+    out.push(setBgColor('#000000'))
+    out.push(setFgColor('#ffffff'))
+    out.push(setShowCursor())
+    process.stdout.write(out.join(''))
 }
 
 
@@ -194,12 +207,12 @@ class UI {
             for (let x = 0; x < row.length; x++) {
                 let {hex, chars} = row[x]
 
-                setBgColor(hex)
+                writeBgColor(hex)
                 if (chars.length === 1) { chars = ' ' + chars }
                 if (chars.length === 0) { chars = '  ' }
                 process.stdout.write(chars)
             }
-            setBgColor('#000000')
+            writeBgColor('#000000')
             process.stdout.write('\n')
         }
         process.stdout.write('\n')
@@ -211,7 +224,39 @@ class UI {
             console.log('Playing a game in the console requires color support. Unfortunately, color is not supported so not rendering (for now). We could just do an ASCII dump or something, using  ░▒▓█ to denote shades of cells')
             return
         }
-        const levelRows = this._engine.getCurrentLevel()
+
+        const level = this._engine.getCurrentLevel()
+        if (!level.isMap()) {
+            function prettyKey(keyCode) {
+                return chalk.whiteBright.bgWhite(`[${chalk.black(keyCode)}]`);
+            }
+
+            this.clearScreen()
+            console.log(``)
+            console.log(``)
+            console.log(``)
+            console.log(``)
+            console.log(``)
+            console.log(``)
+            console.log(chalk.bold.whiteBright(level.getMessage()))
+            console.log(``)
+            console.log(``)
+            console.log(``)
+            console.log(``)
+            console.log(``)
+            console.log(``)
+            console.log(chalk.white(`Press Action (${chalk.bold.whiteBright('X')} or ${chalk.bold.whiteBright('space')} or ${chalk.bold.whiteBright('enter')}) to Continue`))
+            console.log(``)
+            console.log(``)
+            console.log(``)
+            console.log(``)
+            console.log(chalk.dim(`NOTE: these messages will be bigger. Submit a Pull Request!)`))
+
+            return
+        }
+
+        // Otherwise, the level is a Map so render the cells
+        const levelRows = this._engine.getCurrentLevelCells()
 
         if (clearCaches) {
             this._cellColorCache.clear()
@@ -228,18 +273,11 @@ class UI {
             process.stdout.on('resize', this._resizeHandler)
         }
 
-        setFgColor('#ffffff')
-        setBgColor('#000000')
-
         levelRows.forEach((row, rowIndex) => {
             row.forEach((cell, colIndex) => {
                 this.drawCell(cell, false, renderScreenDepth)
             })
         })
-        // Clear back to sane colors
-        setFgColor('#ffffff')
-        setBgColor('#000000')
-        // restoreCursor()
 
         // Just for debugging, print the game title (doing it here helps with Jest rendering correctly)
         this.writeDebug(`"${this._gameData.title}"`)
@@ -261,7 +299,7 @@ class UI {
             }
         }
         cellStartX = (colIndex - this._windowOffsetColStart) * SPRITE_WIDTH
-        cellStartY = (rowIndex - this._windowOffsetRowStart) * SPRITE_HEIGHT /*pixels*/ + 1 // y is 1-based
+        cellStartY = (rowIndex - this._windowOffsetRowStart) * SPRITE_HEIGHT /*pixels*/
 
         // Check if the cell can be completely drawn on the screen. If not, print ellipses
         const cellIsTooWide = (cellStartX + SPRITE_WIDTH) * this.PIXEL_WIDTH >= process.stdout.columns // 10 because we print 2 chars per pixel
@@ -277,7 +315,7 @@ class UI {
         return { isOnScreen, cellStartX, cellStartY }
     }
 
-    setPixel(x: number, y: number, hex: string, chars?: string) {
+    setPixel(x: number, y: number, hex: string, fgHex: string, chars: string) {
         const getColor = (y, x) => {
             if (this._renderedPixels[y] && this._renderedPixels[y][x]) {
                 return this._renderedPixels[y][x].hex
@@ -303,8 +341,8 @@ class UI {
                 return // don't actually render the pixel
             }
             if (this.PIXEL_HEIGHT === 1) {
-                drawPixelChar(x * this.PIXEL_WIDTH, y + 1/*titlebar*/, null, hex, chars[0] || ' ')
-                drawPixelChar(x * this.PIXEL_WIDTH + 1, y + 1/*titlebar*/, null, hex, chars[1] || ' ')
+                drawPixelChar(x * this.PIXEL_WIDTH, y + 1/*titlebar*/, fgHex, hex, chars[0] || ' ')
+                drawPixelChar(x * this.PIXEL_WIDTH + 1, y + 1/*titlebar*/, fgHex, hex, chars[1] || ' ')
             } else {
                 let upperColor
                 let lowerColor
@@ -347,8 +385,8 @@ class UI {
         } else {
             boundingBoxLeft = 0
             boundingBoxTop = 0
-            boundingBoxHeight = this._engine.getCurrentLevel().length
-            boundingBoxWidth = this._engine.getCurrentLevel()[0].length
+            boundingBoxHeight = this._engine.getCurrentLevelCells().length
+            boundingBoxWidth = this._engine.getCurrentLevelCells()[0].length
         }
 
         if (zoomScreen) {
@@ -487,6 +525,7 @@ class UI {
                 if (!!color) {
                     const { r, g, b } = color.toRgb()
                     const hex = color.toHex()
+                    let fgHex = null
 
                     let chars = ' '
 
@@ -494,9 +533,9 @@ class UI {
                     // Change the foreground color to be black if the color is light
                     if (process.env['NODE_ENV'] !== 'production') {
                         if (r > 192 && g > 192 && b > 192) {
-                            setFgColor('#000000')
+                            fgHex = '#000000'
                         } else {
-                            setFgColor('#ffffff')
+                            fgHex = '#ffffff'
                         }
                         const sprite = spritesForDebugging[spriteRowIndex]
                         if (sprite) {
@@ -542,7 +581,7 @@ class UI {
                     }
 
 
-                    this.setPixel(x, y, hex, chars)
+                    this.setPixel(x, y, hex, fgHex, chars)
 
                 }
             })
@@ -575,8 +614,8 @@ class UI {
         // clear the cache of what is rendered
         this._renderedPixels = []
 
-        setFgColor('#ffffff')
-        setBgColor('#000000')
+        writeFgColor('#ffffff')
+        writeBgColor('#000000')
         // Output \n for each row that we have. That way any output from before is preserved
         // const rows = process.stdout.rows || 0
         // for (let i = 0; i < rows; i++) {
@@ -591,8 +630,8 @@ class UI {
             return
         }
         if (!this._dumpingScreen) {
-            setFgColor('#ffffff')
-            setBgColor('#000000')
+            writeFgColor('#ffffff')
+            writeBgColor('#000000')
             writeText(0, 0, `[${text}]`)
         }
     }
@@ -636,9 +675,11 @@ function restoreCursor() {
     if (!supportsColor.stdout) {
         return
     }
-    setFgColor('#ffffff')
-    setBgColor('#000000')
-    moveTo(process.stdout.columns, process.stdout.rows)
+    process.stdout.write([
+        setFgColor('#ffffff'),
+        setBgColor('#000000'),
+        setMoveTo(process.stdout.columns, process.stdout.rows)
+    ].join(''))
 }
 
 function writeText(x: number, y: number, text: string) {
