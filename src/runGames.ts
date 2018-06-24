@@ -63,11 +63,13 @@ async function run() {
             const recordingsPath = path.join(__dirname, `../gist-solutions/${gistId}.json`)
             if (existsSync(recordingsPath)) {
                 const recordings = JSON.parse(readFileSync(recordingsPath, 'utf-8')).solutions
-                const x = recordings.filter(r => !!r)
-                const recording = x[x.length - 1]
-                if (recording) {
-                    keypressesStr = recording.partial || recording.solution
-                    level = data.levels[recordings.indexOf(recording)]
+                if (recordings) {
+                    const x = recordings.filter(r => !!r)
+                    const recording = x[x.length - 1]
+                    if (recording) {
+                        keypressesStr = recording.partial || recording.solution
+                        level = data.levels[recordings.indexOf(recording)]
+                    }
                 }
             }
 
