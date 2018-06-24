@@ -928,22 +928,33 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
                     orTiles.set(t._tile, t)
                 }
             } else {
-                //PHIL: AND Tiles can have multiple collisionLayers too...
-                const c = t._tile.getCollisionLayer()
-                if (!c) {
-                    console.log(t._tile.toString())
-                    throw new Error(`BUG: Tile is not assigned to a collision layer`)
-                }
-                // If we have something like `[Player NO PlayerHold] -> ...` then keep the Player, not the PlayerHold
-                if (pairsByCollisionLayer.has(c)) {
-                    // Determine whether to keep the 1st match or the current one.
-                    // If the current one is a NO tile then definitely do not replace it.
-                    // Maybe the correct thing to do is to always keep the 1st thing put in
-                    // if (!t.isNo()) {
-                    //     pairsByCollisionLayer.set(c, new ExtraPair<SimpleTileWithModifier>(t, null/*filled in later if there is an action*/, false/*okToIgnoreNonMatches*/))
-                    // }
+                // AND Tiles can have multiple collisionLayers too...
+                if (t._tile.hasSingleCollisionLayer()) {
+                    const c = t._tile.getCollisionLayer()
+                    if (!c) {
+                        console.log(t._tile.toString())
+                        throw new Error(`BUG: Tile is not assigned to a collision layer`)
+                    }
+                    // If we have something like `[Player NO PlayerHold] -> ...` then keep the Player, not the PlayerHold
+                    if (pairsByCollisionLayer.has(c)) {
+                        // Determine whether to keep the 1st match or the current one.
+                        // If the current one is a NO tile then definitely do not replace it.
+                        // Maybe the correct thing to do is to always keep the 1st thing put in
+                        // if (!t.isNo()) {
+                        //     pairsByCollisionLayer.set(c, new ExtraPair<SimpleTileWithModifier>(t, null/*filled in later if there is an action*/, false/*okToIgnoreNonMatches*/))
+                        // }
+                    } else {
+                        pairsByCollisionLayer.set(c, new ExtraPair<SimpleTileWithModifier>(t, null/*filled in later if there is an action*/, false/*okToIgnoreNonMatches*/))
+                    }
                 } else {
-                    pairsByCollisionLayer.set(c, new ExtraPair<SimpleTileWithModifier>(t, null/*filled in later if there is an action*/, false/*okToIgnoreNonMatches*/))
+                    // loop over each collisionLayer
+                    for (const sprite of t._tile.getSprites()) {
+                        const c = sprite.getCollisionLayer()
+                        if (!pairsByCollisionLayer.has(c)) {
+                            // TODO: Should we ues the whole tileWithModifier or create a new one out of the sprite?
+                            pairsByCollisionLayer.set(c, new ExtraPair<SimpleTileWithModifier>(t, null/*filled in later if there is an action*/, false/*okToIgnoreNonMatches*/))
+                        }
+                    }
                 }
             }
         }
@@ -976,7 +987,7 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
                             const c =  sprite.getCollisionLayer()
                             if (pairsByCollisionLayer.has(c)) {
                             } else {
-                                pairsByCollisionLayer.set(c, new ExtraPair<SimpleTileWithModifier>(new SimpleTileWithModifier(t.__source, false /*since the action side is a NO */, false/*isRandom*/, t._direction, t._tile, t._debugFlag), null, true/*okToIgnoreNonMatches*/))
+                                pairsByCollisionLayer.set(c, new ExtraPair<SimpleTileWithModifier>(new SimpleTileWithModifier(t.__source, false /*since the action side is a NO */, t._isRandom/*isRandom*/, t._direction, t._tile, t._debugFlag), null, true/*okToIgnoreNonMatches*/))
                             }
                         }
                     } else {
@@ -984,43 +995,45 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
                             const c =  sprite.getCollisionLayer()
                             if (pairsByCollisionLayer.has(c)) {
                             } else {
-                                pairsByCollisionLayer.set(c, new ExtraPair<SimpleTileWithModifier>(null, new SimpleTileWithModifier(t.__source, false /*since the action side is NOT? NO */, false/*isRandom*/, t._direction, t._tile, t._debugFlag), true/*okToIgnoreNonMatches*/))
+                                pairsByCollisionLayer.set(c, new ExtraPair<SimpleTileWithModifier>(null, new SimpleTileWithModifier(t.__source, false /*since the action side is NOT? NO */, t._isRandom/*isRandom*/, t._direction, t._tile, t._debugFlag), true/*okToIgnoreNonMatches*/))
                             }
                         }
                     }
                 }
             } else {
-                const c = t._tile.getCollisionLayer()
-                if (!c) {
-                    console.log(t._tile.toString())
-                    throw new Error(`BUG: Tile is not assigned to a collision layer`)
-                }
-                // if the condition is the same as the action then it's a no-op and we can remove the code
-                const conditionVersion = (pairsByCollisionLayer.has(c) && pairsByCollisionLayer.get(c).condition) || null
-                if (conditionVersion && conditionVersion.equals(t)) {
-                    // condition and action are the same. No need to add a Pair
-                    pairsByCollisionLayer.delete(c)
-                } else {
-                    if (t.isNo()) {
-                        // set it to be null (removed)
-                        if (pairsByCollisionLayer.has(c)) {
-                            // just leave the action side as null (so it's removed)
-                            if (pairsByCollisionLayer.get(c).condition === t) {
-                                // remove if both the condition and action are the same
-                                pairsByCollisionLayer.delete(c)
+                for (const c of t.getCollisionLayers()) {
+                    if (!c) {
+                        console.log(t._tile.toString())
+                        throw new Error(`BUG: Tile is not assigned to a collision layer`)
+                    }
+                    // if the condition is the same as the action then it's a no-op and we can remove the code
+                    const conditionVersion = (pairsByCollisionLayer.has(c) && pairsByCollisionLayer.get(c).condition) || null
+                    if (conditionVersion && conditionVersion.equals(t)) {
+                        // condition and action are the same. No need to add a Pair
+                        pairsByCollisionLayer.delete(c)
+                    } else {
+                        if (t.isNo()) {
+                            // set it to be null (removed)
+                            if (pairsByCollisionLayer.has(c)) {
+                                // just leave the action side as null (so it's removed)
+                                if (pairsByCollisionLayer.get(c).condition === t) {
+                                    // remove if both the condition and action are the same
+                                    pairsByCollisionLayer.delete(c)
+                                }
+                            } else {
+                                // we need to set the condition side to be the tile so that it is removed
+                                // (it might not exist in the cell though but that's an optimization for later)
+                                pairsByCollisionLayer.set(c, new ExtraPair<SimpleTileWithModifier>(new SimpleTileWithModifier(t.__source, false /*since the action side is a NO */, false/*isRandom*/, t._direction, t._tile, t._debugFlag), null, true/*okToIgnoreNonMatches*/))
                             }
                         } else {
-                            // we need to set the condition side to be the tile so that it is removed
-                            // (it might not exist in the cell though but that's an optimization for later)
-                            pairsByCollisionLayer.set(c, new ExtraPair<SimpleTileWithModifier>(new SimpleTileWithModifier(t.__source, false /*since the action side is a NO */, false/*isRandom*/, t._direction, t._tile, t._debugFlag), null, true/*okToIgnoreNonMatches*/))
-                        }
-                    } else {
-                        if (pairsByCollisionLayer.has(c)) {
-                            pairsByCollisionLayer.get(c).action = t
-                        } else {
-                            pairsByCollisionLayer.set(c, new ExtraPair<SimpleTileWithModifier>(null, t, false/*okToIgnoreNonMatches*/))
+                            if (pairsByCollisionLayer.has(c)) {
+                                pairsByCollisionLayer.get(c).action = t
+                            } else {
+                                pairsByCollisionLayer.set(c, new ExtraPair<SimpleTileWithModifier>(null, t, false/*okToIgnoreNonMatches*/))
+                            }
                         }
                     }
+
                 }
             }
         }
@@ -1666,6 +1679,14 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
     }
     isRandom() {
         return this._isRandom
+    }
+
+    getCollisionLayers() {
+        const collisionLayers = new Set<CollisionLayer>()
+        for (const sprite of this._tile.getSprites()) {
+            collisionLayers.add(sprite.getCollisionLayer())
+        }
+        return collisionLayers
     }
 
     addRuleBracketNeighbor(neighbor: SimpleNeighbor) {

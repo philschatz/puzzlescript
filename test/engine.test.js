@@ -2011,5 +2011,82 @@ describe('engine', () => {
         expect(hat.getCellsThatMatch().size).toBe(1)
     })
 
+    it('supports AND tiles (in DIFFERENT collisionLayers) in the condition', () => {
+        const { engine, data } = parseEngine(`title foo
+
+        ========
+        OBJECTS
+        ========
+
+        Background
+        gray
+
+        Player
+        transparent
+
+        Red R
+        red
+
+        Green G
+        green
+
+        Blue B
+        blue
+
+        Hat
+        transparent
+
+        Shirt
+        transparent
+
+        =======
+        LEGEND
+        =======
+
+        . = Background
+        P = Player AND Hat AND Shirt
+
+        Color = Red OR Green OR Blue
+        Clothing = Hat OR Shirt
+
+        =======
+        SOUNDS
+        =======
+
+        ================
+        COLLISIONLAYERS
+        ================
+        Background
+        Player
+        Red, Shirt
+        Green, Hat
+        Blue
+
+        ======
+        RULES
+        ======
+
+        (make sure we do not remove the hat which is in the same collision layer as a color)
+        RIGHT [ Player Clothing ] -> [ ]
+
+        ==============
+        WINCONDITIONS
+        ==============
+
+        =======
+        LEVELS
+        =======
+
+        P.
+
+    `) // end game definition
+
+        const hat = data._getSpriteByName('hat')
+        const shirt = data._getSpriteByName('shirt')
+        engine.tick()
+
+        expect(hat.getCellsThatMatch().size).toBe(0)
+        expect(shirt.getCellsThatMatch().size).toBe(0)
+    })
 
 })
