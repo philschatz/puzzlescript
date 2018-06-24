@@ -33,9 +33,9 @@ export const SOUND_GRAMMAR = `
 
     SoundItemEnum = soundItemSimpleOptions integer
     SoundItemSfx = t_SFX integer
-    SoundItemMoveDirection = ruleVariableName t_MOVE soundItemActionMoveArg integer
-    SoundItemMoveSimple = ruleVariableName t_MOVE integer
-    SoundItemNormal = ruleVariableName SoundItemAction integer
+    SoundItemMoveDirection = lookupRuleVariableName t_MOVE soundItemActionMoveArg integer
+    SoundItemMoveSimple = lookupRuleVariableName t_MOVE integer
+    SoundItemNormal = lookupRuleVariableName SoundItemAction integer
 
     SoundItemAction
         = t_CREATE
@@ -65,14 +65,14 @@ export function getSoundSemantics(lookup: LookupHelper) {
             lookup.addSoundEffect(soundEffect, sound)
             return sound
         },
-        SoundItemMoveSimple: function (spriteName, _2, soundCode) {
-            return new GameSoundMoveSimple(this.source, lookup.lookupObjectOrLegendTile(this.source, spriteName.parse()), soundCode.parse())
+        SoundItemMoveSimple: function (sprite, _2, soundCode) {
+            return new GameSoundMoveSimple(this.source, sprite.parse(), soundCode.parse())
         },
-        SoundItemMoveDirection: function (spriteName, _move, directionEnum, soundCode) {
-            return new GameSoundMoveDirection(this.source, lookup.lookupObjectOrLegendTile(this.source, spriteName.parse()), directionEnum.parse(), soundCode.parse())
+        SoundItemMoveDirection: function (sprite, _move, directionEnum, soundCode) {
+            return new GameSoundMoveDirection(this.source, sprite.parse(), directionEnum.parse(), soundCode.parse())
         },
-        SoundItemNormal: function (spriteName, eventEnum, soundCode) {
-            return new GameSoundNormal(this.source, lookup.lookupObjectOrLegendTile(this.source, spriteName.parse()), eventEnum.parse(), soundCode.parse())
+        SoundItemNormal: function (sprite, eventEnum, soundCode) {
+            return new GameSoundNormal(this.source, sprite.parse(), eventEnum.parse(), soundCode.parse())
         }
     }
 }
