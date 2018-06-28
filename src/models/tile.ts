@@ -4,8 +4,7 @@ import { BaseForLines, IGameCode, IGameNode } from './game'
 import { IColor, HexColor, TransparentColor } from './colors'
 import { CollisionLayer } from './collisionLayer'
 import { Cell } from '../engine'
-import { TileWithModifier, SimpleTileWithModifier } from './rule';
-import { RULE_DIRECTION } from '../enums';
+import { SimpleTileWithModifier } from './rule';
 import { RULE_DIRECTION_ABSOLUTE, setIntersection } from '../util';
 
 export interface IGameTile extends IGameNode {

@@ -1,16 +1,7 @@
 import * as _ from 'lodash'
-import {
-    GameRuleLoop,
-    GameRuleGroup,
-    GameRule,
-    HackNode,
-    RuleBracket,
-    RuleBracketNeighbor,
-    TileWithModifier
-} from '../models/rule'
 import { AbstractCommand, COMMAND_TYPE, MessageCommand, AgainCommand, CancelCommand, CheckpointCommand, RestartCommand, WinCommand, SoundCommand } from '../models/command';
-import { RULE_MODIFIER } from '../util';
 import { LookupHelper } from './lookup';
+import { ASTTileWithModifier, ASTRuleBracketNeighbor, ASTRuleBracket, ASTGameRuleLoop, ASTGameRuleGroup, ASTGameRule, ASTHackNode, AST_RULE_MODIFIER } from './rule';
 
 export const RULE_GRAMMAR = `
     RuleItem
@@ -92,31 +83,31 @@ export const RULE_GRAMMAR = `
 `
 
 export function getRuleSemantics(lookup: LookupHelper) {
-    const cacheTilesWithModifiers: Map<string, TileWithModifier> = new Map()
-    const cacheNeighbors: Map<string, RuleBracketNeighbor> = new Map()
-    const cacheBrackets: Map<string, RuleBracket> = new Map()
+    const cacheTilesWithModifiers: Map<string, ASTTileWithModifier> = new Map()
+    const cacheNeighbors: Map<string, ASTRuleBracketNeighbor> = new Map()
+    const cacheBrackets: Map<string, ASTRuleBracket> = new Map()
     return {
         RuleItem: function (_1) {
             return _1.parse()
         },
         RuleLoop: function (debugFlag, _startloop, _whitespace1, rules, _endloop, _whitespace2) {
-            return new GameRuleLoop(this.source, rules.parse(), debugFlag.parse()[0])
+            return new ASTGameRuleLoop(this.source, rules.parse(), debugFlag.parse()[0])
         },
         RuleGroup: function (debugFlag, firstRule, _plusses, followingRules) {
-            return new GameRuleGroup(this.source, [firstRule.parse()].concat(followingRules.parse()), debugFlag.parse()[0])
+            return new ASTGameRuleGroup(this.source, [firstRule.parse()].concat(followingRules.parse()), debugFlag.parse()[0])
         },
         Rule: function (debugFlag, modifiers, conditions, _arrow, _unusuedModifer, actions, commands, optionalMessageCommand, _whitespace) {
-            const modifiers2: RULE_MODIFIER[] = _.flatten(modifiers.parse())
+            const modifiers2: AST_RULE_MODIFIER[] = _.flatten(modifiers.parse())
             const commands2: AbstractCommand[] = commands.parse().filter(c => !!c) // remove nulls (like an invalid sound effect... e.g. "Fish Friend")
             const optionalMessageCommand2: MessageCommand = optionalMessageCommand.parse()[0]
 
             if (optionalMessageCommand2) {
                 commands2.push(optionalMessageCommand2)
             }
-            return new GameRule(this.source, modifiers2, conditions.parse(), actions.parse(), commands2, debugFlag.parse()[0])
+            return new ASTGameRule(this.source, modifiers2, conditions.parse(), actions.parse(), commands2, debugFlag.parse()[0])
         },
         RuleBracket: function (_openBracket, neighbors, hackAgain, _closeBracket, debugFlag) {
-            const b = new RuleBracket(this.source, neighbors.parse(), hackAgain.parse(), debugFlag.parse()[0])
+            const b = new ASTRuleBracket(this.source, neighbors.parse(), hackAgain.parse(), debugFlag.parse()[0])
             const key = b.toKey()
             if (!cacheBrackets.has(key)) {
                 cacheBrackets.set(key, b)
@@ -129,11 +120,11 @@ export function getRuleSemantics(lookup: LookupHelper) {
             return _1.parse()
         },
         RuleBracketEllipsisNeighbor: function (_1, debugFlag) {
-            const tileWithModifier = new TileWithModifier(this.source, "...", null, debugFlag.parse()[0])
-            return new RuleBracketNeighbor(this.source, [tileWithModifier], true, debugFlag.parse()[0])
+            const tileWithModifier = new ASTTileWithModifier(this.source, "...", null, debugFlag.parse()[0])
+            return new ASTRuleBracketNeighbor(this.source, [tileWithModifier], true, debugFlag.parse()[0])
         },
         RuleBracketNoEllipsisNeighbor: function (tileWithModifier, debugFlag) {
-            const n = new RuleBracketNeighbor(this.source, tileWithModifier.parse(), false, debugFlag.parse()[0])
+            const n = new ASTRuleBracketNeighbor(this.source, tileWithModifier.parse(), false, debugFlag.parse()[0])
             const key = n.toKey()
             if (!cacheNeighbors.has(key)) {
                 cacheNeighbors.set(key, n)
@@ -143,7 +134,7 @@ export function getRuleSemantics(lookup: LookupHelper) {
             return cacheNeighbors.get(key)
         },
         TileWithModifier: function (debugFlag, optionalModifier, tile) {
-            const t = new TileWithModifier(this.source, optionalModifier.parse()[0], tile.parse(), debugFlag.parse()[0])
+            const t = new ASTTileWithModifier(this.source, optionalModifier.parse()[0], tile.parse(), debugFlag.parse()[0])
             const key = t.toKey()
             if (!cacheTilesWithModifiers.has(key)) {
                 cacheTilesWithModifiers.set(key, t)
@@ -194,10 +185,10 @@ export function getRuleSemantics(lookup: LookupHelper) {
             }
         },
         HackTileNameIsSFX1: function (sfx, debugFlag) {
-            return new HackNode(this.source, sfx.parse(), debugFlag.parse()[0])
+            return new ASTHackNode(this.source, sfx.parse(), debugFlag.parse()[0])
         },
         HackTileNameIsSFX2: function (tile, sfx, debugFlag) {
-            return new HackNode(this.source, { tile: tile.parse(), sfx: sfx.parse() }, debugFlag.parse()[0])
+            return new ASTHackNode(this.source, { tile: tile.parse(), sfx: sfx.parse() }, debugFlag.parse()[0])
         },
     }
 }

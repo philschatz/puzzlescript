@@ -1,12 +1,13 @@
 import * as _ from 'lodash'
 import { GameMetadata } from './metadata'
 import { GameSprite, GameLegendTileSimple, IGameTile } from './tile'
-import { GameRule, SimpleRule, IRule } from './rule'
+import { IRule } from './rule'
 import { GameSound } from './sound'
 import { LevelMap } from './level'
 import { CollisionLayer } from './collisionLayer'
 import { WinConditionSimple } from './winCondition'
 import { Cell } from '../engine'
+import { ASTGameRule } from '../parser/rule';
 
 export interface IGameNode {
     __getSourceLineAndColumn: () => { lineNum: number, colNum: number }
@@ -130,7 +131,7 @@ export class GameData {
         legends: GameLegendTileSimple[],
         sounds: GameSound[],
         collisionLayers: CollisionLayer[],
-        rules: GameRule[],
+        rules: ASTGameRule[],
         winConditions: WinConditionSimple[],
         levels: LevelMap[]
     ) {

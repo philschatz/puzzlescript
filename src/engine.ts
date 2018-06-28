@@ -1,11 +1,9 @@
 import * as _ from 'lodash'
-import * as BitSet from 'bitset'
 import { EventEmitter2, Listener } from 'eventemitter2'
 import { GameData } from './models/game'
-import { LevelMap } from './models/level';
-import { GameSprite, GameLegendTileSimple, IGameTile } from './models/tile'
-import { GameRule, CellMutation, IRule, IMutation } from './models/rule'
-import { RULE_MODIFIER, nextRandom, setAddAll, RULE_DIRECTION_ABSOLUTE } from './util'
+import { GameSprite, IGameTile } from './models/tile'
+import { IRule, IMutation } from './models/rule'
+import { nextRandom, setAddAll, RULE_DIRECTION_ABSOLUTE } from './util'
 import { RULE_DIRECTION } from './enums';
 import { AbstractCommand, COMMAND_TYPE } from './models/command';
 import { GameSound } from './models/sound';
@@ -159,13 +157,13 @@ export class Cell {
     }
     getNeighbor(direction: string) {
         switch (direction) {
-            case RULE_MODIFIER.UP:
+            case RULE_DIRECTION_ABSOLUTE.UP:
                 return this._getRelativeNeighbor(-1, 0)
-            case RULE_MODIFIER.DOWN:
+            case RULE_DIRECTION_ABSOLUTE.DOWN:
                 return this._getRelativeNeighbor(1, 0)
-            case RULE_MODIFIER.LEFT:
+            case RULE_DIRECTION_ABSOLUTE.LEFT:
                 return this._getRelativeNeighbor(0, -1)
-            case RULE_MODIFIER.RIGHT:
+            case RULE_DIRECTION_ABSOLUTE.RIGHT:
                 return this._getRelativeNeighbor(0, 1)
             default:
                 debugger

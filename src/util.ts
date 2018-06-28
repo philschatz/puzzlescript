@@ -91,21 +91,11 @@ export const RULE_DIRECTION_ABSOLUTE_LIST = [
 export const RULE_DIRECTION_ABSOLUTE_SET: Set<string> = new Set(RULE_DIRECTION_ABSOLUTE_LIST)
 
 
-export enum RULE_MODIFIER {
-    RANDOM = 'RANDOM',
-    UP = 'UP',
-    DOWN = 'DOWN',
-    LEFT = 'LEFT',
-    RIGHT = 'RIGHT',
-    VERTICAL = 'VERTICAL',
-    HORIZONTAL = 'HORIZONTAL',
-    ORTHOGONAL = 'ORTHOGONAL',
-    MOVING = 'MOVING',
-    LATE = 'LATE',
-    RIGID = 'RIGID',
-}
-
 export enum DEBUG_FLAG {
     BREAKPOINT = 'DEBUGGER', // only when the rule matches elements
     BREAKPOINT_REMOVE = 'DEBUGGER_REMOVE', // only when a cell causes an entry to be removed from the matched set
+}
+
+export interface ICacheable {
+    toKey: () => string
 }
