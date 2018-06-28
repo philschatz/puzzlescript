@@ -46,15 +46,6 @@ export class LookupHelper {
         }
         return value
     }
-    lookupObjectOrLegendTileOrSoundEffect(source: IGameCode, key: string) {
-        key = key.toLowerCase()
-        const value = this._allObjects.get(key) || this._allLegendTiles.get(key) || this._allSoundEffects.get(key)
-        if (!value) {
-            console.error(source.getLineAndColumnMessage())
-            throw new Error(`ERROR: Could not look up "${key}". Has it been defined in the Objects section or the Legend section?`)
-        }
-        return value
-    }
     lookupByLevelChar(key: string) {
         const value = this._allLevelChars.get(key.toLowerCase())
         if (!value) {

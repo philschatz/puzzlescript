@@ -879,11 +879,7 @@ class ReplaceDirection {
         if (direction) {
             return cell.setWantsToMoveCollisionLayer(this.collisionLayer, direction)
         } else {
-            if (cell.getWantsToMoveByCollisionLayer(this.collisionLayer) && !cell.getSpriteByCollisionLayer(this.collisionLayer)) {
-                return cell.deleteWantsToMoveCollisionLayer(this.collisionLayer)
-            } else {
-                return false
-            }
+            return false
         }
     }
 }
@@ -955,7 +951,7 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
             }
         }
 
-        // BitSets can be empty. Especially when checking that a Cell does NOT contain a sprite
+        // NOTE: BitSets can be empty. Especially when checking that a Cell does NOT contain a sprite
         // for (const [collisionLayer, bitSet] of this._cacheBitSets) {
         //     if (bitSet.isEmpty()) {
         //         throw new Error(`BUG: BitSets should never be empty. "${bitSet.toString()}"`)
@@ -1149,149 +1145,6 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
             throw new Error('BUG: Missing actionNeighbor. Should have been prepared before')
         }
         const {replaceTiles, replaceDirections} = this._staticCache.get(actionNeighbor)
-        // // Compute the Mutators on-the-fly for now....
-        // const pairsByCollisionLayer = new Map<CollisionLayer, ExtraPair<SimpleTileWithModifier>>()
-        // const orTiles = new Map<IGameTile, SimpleTileWithModifier>()
-        // for (const t of this._tilesWithModifier) {
-        //     if (t._tile.isOr() && !t._tile.hasSingleCollisionLayer()) {
-        //         if (!t.isNo()) {
-        //             orTiles.set(t._tile, t)
-        //         }
-        //     } else {
-        //         const c = t._tile.getCollisionLayer()
-        //         if (!c) {
-        //             console.log(t._tile.toString())
-        //             throw new Error(`BUG: Tile is not assigned to a collision layer`)
-        //         }
-        //         // If we have something like `[Player NO PlayerHold] -> ...` then keep the Player, not the PlayerHold
-        //         if (pairsByCollisionLayer.has(c)) {
-        //             // Determine whether to keep the 1st match or the current one.
-        //             // If the current one is a NO tile then definitely do not replace it.
-        //             // Maybe the correct thing to do is to always keep the 1st thing put in
-        //             // if (!t.isNo()) {
-        //             //     pairsByCollisionLayer.set(c, new ExtraPair<SimpleTileWithModifier>(t, null/*filled in later if there is an action*/, false/*okToIgnoreNonMatches*/))
-        //             // }
-        //         } else {
-        //             pairsByCollisionLayer.set(c, new ExtraPair<SimpleTileWithModifier>(t, null/*filled in later if there is an action*/, false/*okToIgnoreNonMatches*/))
-        //         }
-        //     }
-        // }
-
-        // // First just pair up all the conditions and actions (keep the negations)
-        // // Then, remove all negations
-        // // Then, build the ReplaceTile and ReplaceDirections
-        // const unmatchedOrTiles = new Map(orTiles.entries())
-        // for (const t of actionNeighbor._tilesWithModifier) {
-        //     if (t._tile.isOr() && !t._tile.hasSingleCollisionLayer()) {
-        //         // OR tiles may belong to different collisionlayers so... it's complicated
-        //         if (orTiles.has(t._tile)) {
-        //             unmatchedOrTiles.delete(t._tile)
-        //             // simple case. at most we just change direction
-        //             const conditionT = orTiles.get(t._tile)
-        //             if (conditionT._direction !== t._direction) {
-        //                 for (const sprite of t._tile.getSprites()) {
-        //                     const c =  sprite.getCollisionLayer()
-        //                     if (!pairsByCollisionLayer.has(c)) {
-        //                         pairsByCollisionLayer.set(c, new ExtraPair<SimpleTileWithModifier>(
-        //                             new SimpleTileWithModifier(conditionT.__source, conditionT._isNegated /*since the action side is a NO */, conditionT._isRandom/*isRandom*/, conditionT._direction, sprite, conditionT._debugFlag),
-        //                             new SimpleTileWithModifier(t.__source, t._isNegated /*since the action side is a NO */, t._isRandom/*isRandom*/, t._direction, sprite, t._debugFlag),
-        //                             true/*okToIgnoreNonMatches*/))
-        //                     }
-        //                 }
-        //             }
-        //         } else {
-        //             if (t.isNo()) {
-        //                 for (const sprite of t._tile.getSprites()) {
-        //                     const c =  sprite.getCollisionLayer()
-        //                     if (pairsByCollisionLayer.has(c)) {
-        //                     } else {
-        //                         pairsByCollisionLayer.set(c, new ExtraPair<SimpleTileWithModifier>(new SimpleTileWithModifier(t.__source, false /*since the action side is a NO */, false/*isRandom*/, t._direction, t._tile, t._debugFlag), null, true/*okToIgnoreNonMatches*/))
-        //                     }
-        //                 }
-        //             } else {
-        //                 for (const sprite of t._tile.getSprites()) {
-        //                     const c =  sprite.getCollisionLayer()
-        //                     if (pairsByCollisionLayer.has(c)) {
-        //                     } else {
-        //                         pairsByCollisionLayer.set(c, new ExtraPair<SimpleTileWithModifier>(null, new SimpleTileWithModifier(t.__source, false /*since the action side is NOT? NO */, false/*isRandom*/, t._direction, t._tile, t._debugFlag), true/*okToIgnoreNonMatches*/))
-        //                     }
-        //                 }
-        //             }
-        //         }
-        //     } else {
-        //         const c = t._tile.getCollisionLayer()
-        //         if (!c) {
-        //             console.log(t._tile.toString())
-        //             throw new Error(`BUG: Tile is not assigned to a collision layer`)
-        //         }
-        //         // if the condition is the same as the action then it's a no-op and we can remove the code
-        //         const conditionVersion = (pairsByCollisionLayer.has(c) && pairsByCollisionLayer.get(c).condition) || null
-        //         if (conditionVersion && conditionVersion.equals(t)) {
-        //             // condition and action are the same. No need to add a Pair
-        //             pairsByCollisionLayer.delete(c)
-        //         } else {
-        //             if (t.isNo()) {
-        //                 // set it to be null (removed)
-        //                 if (pairsByCollisionLayer.has(c)) {
-        //                     // just leave the action side as null (so it's removed)
-        //                     if (pairsByCollisionLayer.get(c).condition === t) {
-        //                         // remove if both the condition and action are the same
-        //                         pairsByCollisionLayer.delete(c)
-        //                     }
-        //                 } else {
-        //                     // we need to set the condition side to be the tile so that it is removed
-        //                     // (it might not exist in the cell though but that's an optimization for later)
-        //                     pairsByCollisionLayer.set(c, new ExtraPair<SimpleTileWithModifier>(new SimpleTileWithModifier(t.__source, false /*since the action side is a NO */, false/*isRandom*/, t._direction, t._tile, t._debugFlag), null, true/*okToIgnoreNonMatches*/))
-        //                 }
-        //             } else {
-        //                 if (pairsByCollisionLayer.has(c)) {
-        //                     pairsByCollisionLayer.get(c).action = t
-        //                 } else {
-        //                     pairsByCollisionLayer.set(c, new ExtraPair<SimpleTileWithModifier>(null, t, false/*okToIgnoreNonMatches*/))
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
-
-        // // Any unmatched OR tiles need to be removed from the Cell
-        // if (unmatchedOrTiles.size > 0) {
-        //     for (const [_, t] of unmatchedOrTiles) {
-        //         for (const sprite of t._tile.getSprites()) {
-        //             const c = sprite.getCollisionLayer()
-        //             if (!pairsByCollisionLayer.has(c)) {
-        //                 pairsByCollisionLayer.set(c, new ExtraPair<SimpleTileWithModifier>(new SimpleTileWithModifier(t.__source, false /*since the action side is a NO */, false/*isRandom*/, t._direction, t._tile, t._debugFlag), null, true/*okToIgnoreNonMatches*/))
-        //             }
-        //         }
-        //     }
-        // }
-
-        // const replaceTiles = new Set<ReplaceTile>()
-        // const replaceDirections = new Set<ReplaceDirection>()
-        // for (const [collisionLayer, {condition, action, extra}] of pairsByCollisionLayer.entries()) {
-        //     if (condition && action) {
-        //         if (condition !== action) { // Could be `[ TrolleyFull no CleanDishes] -> [TrolleyEmpty no CleanDishes ]`
-        //             if (!condition._tile.equals(action._tile) || condition.isNo()) {
-        //                 replaceTiles.add(new ReplaceTile(collisionLayer, action, extra))
-        //             }
-        //             if (condition._direction !== action._direction) {
-        //                 replaceDirections.add(new ReplaceDirection(collisionLayer, action._direction || RULE_DIRECTION_ABSOLUTE.STATIONARY, extra))
-        //             } else if (condition.isNo()) {
-        //                 replaceDirections.add(new ReplaceDirection(collisionLayer, action._direction || RULE_DIRECTION_ABSOLUTE.STATIONARY, extra))
-        //             }
-        //         }
-        //     } else if (condition) {
-        //         if (!condition.isNo()) {
-        //             replaceTiles.add(new ReplaceTile(collisionLayer, null, extra, condition))
-        //             replaceDirections.add(new ReplaceDirection(collisionLayer, null, extra))
-        //         }
-        //     } else if (action) {
-        //         if (!action.isNo()) {
-        //             replaceTiles.add(new ReplaceTile(collisionLayer, action, extra))
-        //             replaceDirections.add(new ReplaceDirection(collisionLayer, action._direction || RULE_DIRECTION_ABSOLUTE.STATIONARY, extra))
-        //         }
-        //     }
-        // }
 
         let didChangeSprites = false
         let didChangeDirection = false
@@ -1330,206 +1183,6 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
         }
     }
 
-    getSpriteMap(cell: Cell, magicOrTiles: Map<IGameTile, Set<GameSprite>>, isAction: boolean) {
-        const spriteMap = new Map<GameSprite, RULE_DIRECTION_ABSOLUTE>()
-        for (const t of this._tilesWithModifier) {
-            if (t.isRandom()) {
-                const sprites = t._tile.getSprites()
-                if (sprites.length === 1) {
-                    // Decide whether or not to include the sprite
-                    if (nextRandom(2)) {
-                        spriteMap.set(sprites[0], RULE_DIRECTION_ABSOLUTE.STATIONARY)
-                    }
-                } else {
-                    const index = nextRandom(sprites.length)
-                    const sprite = sprites[index]
-                    // It seems like `[ RANDOM > tree ]` does not exist anywhere
-                    // (RANDOM flag and a direction)
-                    spriteMap.set(sprite, RULE_DIRECTION_ABSOLUTE.STATIONARY)
-                }
-            } else if (!t.isNo()) {
-                let sprites
-                if (t._tile.isOr()) {
-                    // only update sprites that are in the cell
-                    // If we are on the action side then we need to look up the sprites that were in the OR tile on the condition side
-                    if (isAction) {
-                        // Check if the Cell contains the OrTile, otherwise check the magicOrTiles.
-                        // The reason is that the following are 2 valid rules with different ways of pulling their values:
-                        // [ Wall | SimpleWall | Wall ] -> [ Wall | VertWall | Wall ]
-                        // [ Color | ] -> [ | Color ]
-                        //
-                        // If this doesn't work then we'll need to be given a set of Tiles that are in the condition side and decide that way
-                        if (t._tile.matchesCell(cell)) {
-                            sprites = setIntersection(new Set(t._tile.getSprites()), cell.getSpritesAsSet())
-                        } else if (magicOrTiles.has(t._tile)) {
-                            sprites = magicOrTiles.get(t._tile)
-                        } else {
-                            console.log([...magicOrTiles.keys()])
-                            console.error(this.toString())
-                            throw new Error(`ERROR: Invalid OR tile on the action side of a Rule. The same OR tile needs to be on the condition side: "${t._tile.getName()}"`)
-                        }
-                    } else {
-                        sprites = setIntersection(new Set(t._tile.getSprites()), cell.getSpritesAsSet())
-                    }
-                } else {
-                    sprites = t._tile.getSprites()
-                }
-                for (const sprite of sprites) {
-                    spriteMap.set(sprite, t._direction)
-                }
-            }
-        }
-        return spriteMap
-    }
-
-    _getConditionAndActionSprites(cell: Cell, actionNeighbor: SimpleNeighbor, magicOrTiles: Map<IGameTile, Set<GameSprite>>) {
-        // Return:
-        // - sprites to remove
-        // - sprites to update (with wantsToMove)
-        // - sprites to add (with wantsToMove)
-        //
-        // Notes:
-        // If the action has an OR tile then the condition has the same OR tile
-        // If the action has a MOVING direction then the condition has a MOVING direction
-
-
-        // [   player ] -> [   player ]
-        // [ > player ] -> [   player ]
-        // [   Thing  ] -> [   Thing  ]
-        // [ > Thing  ] -> [   Thing  ]
-        // [   Thing  ] -> [ > Thing  ]
-        // [ mvng Thing ] -> [ mvng Thing ]
-        // [ Thing ] -> [ ]
-        // [ Thing ] -> [ tree ]
-        // [ a ] -> [ b ]
-        // [ NO a ] -> [ b ]
-        // [ a ] -> [ NO a ] ???
-        // [ MOVING a ] -> [ MOVING a ] ???
-        // [ MOVING a MOVING c ] -> [ MOVING c MOVING b ] : c moves but b is stationary
-        // [ ] -> [ NO Thing ] : Remove "Thing"
-
-        const conditionSpritesMap = this.getSpriteMap(cell, magicOrTiles, false /*isAction*/)
-        const actionSpritesMap = actionNeighbor.getSpriteMap(cell, magicOrTiles, true/*isAction*/)
-
-        const spritesToRemove = new Set<GameSprite>()
-        const spritesToUpdate = new Map<GameSprite, RULE_DIRECTION_ABSOLUTE>()
-        const spritesToAdd = new Map<GameSprite, RULE_DIRECTION_ABSOLUTE>()
-
-        // Determine the direction should have based on what was specified in the condition
-        function getActionDir(sprite: GameSprite) {
-            const conditionDir = conditionSpritesMap.get(sprite)
-            const actionDir = actionSpritesMap.get(sprite)
-            let direction
-            switch (actionDir) {
-                case RULE_DIRECTION_ABSOLUTE.UP:
-                case RULE_DIRECTION_ABSOLUTE.DOWN:
-                case RULE_DIRECTION_ABSOLUTE.LEFT:
-                case RULE_DIRECTION_ABSOLUTE.RIGHT:
-                case RULE_DIRECTION_ABSOLUTE.ACTION:
-                case RULE_DIRECTION_ABSOLUTE.RANDOMDIR:
-                case RULE_DIRECTION_ABSOLUTE.STATIONARY:
-                    direction = actionDir
-                    break
-                case null:
-                    if (conditionDir) {
-                        // Stop moving because the condition was moving
-                        direction = RULE_DIRECTION_ABSOLUTE.STATIONARY
-                    } else {
-                        // Don't change the direction
-                        direction = null
-                    }
-                    break
-                default:
-                    throw new Error(`BUG: Unsupported direction "${actionDir}"`)
-            }
-            return direction
-        }
-
-        // Any NO tiles in the action side need to be removed
-        for (const t of actionNeighbor._tilesWithModifier) {
-            if (t.isNo()) {
-                for (const sprite of t._tile.getSpritesThatMatch(cell)) {
-                    spritesToRemove.add(sprite)
-                }
-            }
-        }
-
-        for (const sprite of setDifference(new Set(conditionSpritesMap.keys()), new Set(actionSpritesMap.keys()))) {
-            // In the original implementation, wantsToMove is stored for the collisionLayer,
-            // not on the sprite. Since we do not do that, we have to transfer the wantsToMove
-            // when a sprite in a collisionLayer is swapped with another sprite in the same layer.
-            //
-            // Check if the removed sprite is in the same collisionLayer as an action Sprite.
-            // If so, preserve the wantsToMove direction
-            for (const [actionSprite, actionSpriteDirection] of actionSpritesMap) {
-                if (conditionSpritesMap.get(sprite) === null
-                    && sprite.getCollisionLayerNum() === actionSprite.getCollisionLayerNum()
-                    && actionSpriteDirection === null) {
-
-                    if (cell.hasSprite(actionSprite)) {
-                        spritesToUpdate.set(actionSprite, cell.getWantsToMove(sprite))
-                    } else {
-                        spritesToAdd.set(actionSprite, cell.getWantsToMove(sprite))
-                    }
-
-                }
-            }
-            spritesToRemove.add(sprite)
-        }
-
-        for (const sprite of setIntersection(new Set(conditionSpritesMap.keys()), new Set(actionSpritesMap.keys()))) {
-            const desiredDirection = getActionDir(sprite)
-            const currentDirection = cell.getWantsToMove(sprite)
-            const conditionDirection = conditionSpritesMap.get(sprite)
-            // Only update if the direction changed.
-            // That way things like `[ > Player ] -> [ > Player ]` are not marked as modified
-
-            if (cell.hasSprite(sprite)) {
-                // Cases for directions:
-                // [    Player ] -> [    Player ]  : no change in direction
-                // [ UP Player ] -> [ UP Player ]  : no change in direction
-                // [    Player ] -> [ UP Player ]  : possible change in direction
-                // [ UP Player ] -> [    Player ]  : definite change in direction (to STATIONARY)
-                // [ <  Player ] -> [ UP Player ]  : definite change in direction
-                if (currentDirection === desiredDirection) {
-                    // Do nothing
-                } else if (conditionDirection == desiredDirection) {
-                    // Do nothing
-                } else {
-                    spritesToUpdate.set(sprite, desiredDirection || RULE_DIRECTION_ABSOLUTE.STATIONARY)
-                }
-            } else {
-                spritesToAdd.set(sprite, desiredDirection || RULE_DIRECTION_ABSOLUTE.STATIONARY)
-            }
-        }
-
-        for (const sprite of setDifference(new Set(actionSpritesMap.keys()), new Set(conditionSpritesMap.keys()))) {
-            const desiredDirection = getActionDir(sprite)
-            const conditionDirection = conditionSpritesMap.get(sprite)
-            const currentDirection = cell.getWantsToMove(sprite)
-            if (!spritesToAdd.has(sprite)) { // could have been added earlier via the transferDirectionWhenCollisionLayerMatches code above
-                if (cell.hasSprite(sprite)) {
-                    // See the table above for the various cases
-                    if (currentDirection === desiredDirection) {
-                        // Do nothing
-                    } else if (conditionDirection == desiredDirection) {
-                        // Do nothing
-                    } else {
-                        if (cell.getSpritesAsSet().has(sprite)) {
-                            spritesToUpdate.set(sprite, desiredDirection || RULE_DIRECTION_ABSOLUTE.STATIONARY)
-                        } else {
-                            spritesToAdd.set(sprite, desiredDirection || RULE_DIRECTION_ABSOLUTE.STATIONARY)
-                        }
-                    }
-                } else {
-                    spritesToAdd.set(sprite, desiredDirection || RULE_DIRECTION_ABSOLUTE.STATIONARY)
-                }
-            }
-        }
-
-        return { spritesToRemove, spritesToUpdate, spritesToAdd }
-    }
-
     addBracket(bracket: SimpleBracket, index: number) {
         if (!this._brackets.has(bracket)) {
             this._brackets.set(bracket, new Set())
@@ -1547,163 +1200,95 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
         return this.matchesCell(cell, null, null)
     }
     matchesCell(cell: Cell, tileWithModifier: SimpleTileWithModifier, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
-        // for (const t of this._tilesWithModifier) {
-        //     if (t === tileWithModifier) {
-        //         if (!t.matchesCellWantsToMove(cell, wantsToMove)) {
-        //             return false
-        //         }
-        //     } else if (!t.matchesCellExistingWantsToMove(cell)) {
-        //         return false
-        //     }
-        // }
-        // return true
-
-        const NS_PER_SEC = 1e9
-        // if (this._debugFlag && cell.toString().endsWith('ell [16][3] STATIONARY Background ACTION Crate DOWN LassoCaught')) {
-        //     debugger
-        // }
-
-        // // Compare 2 methods of determining if a tile matches a cell.
-        // // Check both the correctness and the running time
-        // let timeA_NS
-        // let doesMatchA = true
-        // {
-        //     // traditional method
-
-        //     let timeA = process.hrtime()
-
-        //     for (const t of this._tilesWithModifier) {
-        //         if (t === tileWithModifier) {
-        //             if (!t.matchesCellWantsToMove(cell, wantsToMove)) {
-        //                 doesMatchA = false
-        //                 break
-        //             }
-        //         } else if (!t.matchesCellExistingWantsToMove(cell)) {
-        //             doesMatchA = false
-        //             break
-        //         }
-        //     }
-
-        //     timeA = process.hrtime(timeA)
-        //     timeA_NS = timeA[0] * NS_PER_SEC + timeA[1]
-        // }
-
-        let timeB_NS
-        let doesMatchB = false
+        let doesMatch = false
         // Prepare the bit vectors (does not count against us in the timing)
-        const cellVectors = new Map<CollisionLayer, BitSet>()
         const collisionLayersToCheck = new Set<CollisionLayer>()
-        {
-            // Compare using bit vectors
+        // Compare using bit vectors
+        const cellVectors = cell._cacheBitSets
 
+        doesMatch = true
 
-            // populate the Cell bitSets
-            const cellVectors = cell._cacheBitSets
-            let timeB = process.hrtime()
-
-            doesMatchB = true
-
-            for (const t of this._cacheMultiCollisionLayerTiles) {
-                if (!t.matchesCellWithoutDirection(cell)) {
-                    doesMatchB = false
-                    break
-                }
-                // check the direction as well
-                let matchesDirection = false
-                if (t.isNo()) {
-                    // no games have "NO" and a Direction. Let's make sure
-                    if (t._direction) {
-                        throw new Error(`BUG: Invariant vfailed. Assumed NO tiles should never have a direction associated with them`)
-                    }
-                    matchesDirection = true
-
-                } else {
-                    for (const sprite of t._tile.getSprites()) {
-                        const c = sprite.getCollisionLayer()
-                        let cellDirection = cell.getWantsToMoveByCollisionLayer(c) || RULE_DIRECTION_ABSOLUTE.STATIONARY
-                        if (cell.hasSprite(sprite)) {
-                            if (!t._direction || cellDirection === t._direction) {
-                                matchesDirection = true
-                                break
-                            }
-                        }
-                    }
-                }
-                if (!matchesDirection) {
-                    doesMatchB = false
-                    break
-                }
+        for (const t of this._cacheMultiCollisionLayerTiles) {
+            if (!t.matchesCellWithoutDirection(cell)) {
+                doesMatch = false
+                break
             }
+            // check the direction as well
+            let matchesDirection = false
+            if (t.isNo()) {
+                // no games have "NO" and a Direction. Let's make sure
+                if (t._direction) {
+                    throw new Error(`BUG: Invariant vfailed. Assumed NO tiles should never have a direction associated with them`)
+                }
+                matchesDirection = true
 
-            if (doesMatchB) {
-                for (const [collisionLayer, tileBitSet] of this._cacheYesBitSets) {
-                    if (cellVectors.has(collisionLayer)) {
-                        const cellBitSet = cellVectors.get(collisionLayer)
-                        if (cellBitSet && !cellBitSet.and(tileBitSet).isEmpty()) {
-                        } else {
-                            doesMatchB = false
+            } else {
+                for (const sprite of t._tile.getSprites()) {
+                    const c = sprite.getCollisionLayer()
+                    let cellDirection = cell.getWantsToMoveByCollisionLayer(c) || RULE_DIRECTION_ABSOLUTE.STATIONARY
+                    if (cell.hasSprite(sprite)) {
+                        if (!t._direction || cellDirection === t._direction) {
+                            matchesDirection = true
                             break
                         }
-                    } else {
-                        doesMatchB = false
-                        break
-                    }
-                    collisionLayersToCheck.add(collisionLayer)
-                }
-            }
-
-            if (doesMatchB) {
-                for (const [collisionLayer, tileBitSet] of this._cacheNoBitSets) {
-                    if (cellVectors.has(collisionLayer)) {
-                        const cellBitSet = cellVectors.get(collisionLayer)
-                        if (cellBitSet.and(tileBitSet).isEmpty()) {
-                        } else {
-                            doesMatchB = false
-                            break
-                        }
-                    } else {
-                        // Still ok, nothing to change since the Cell clearly does not have the NO tile
-                    }
-                    collisionLayersToCheck.add(collisionLayer)
-                }
-            }
-
-            if (doesMatchB) {
-                const ary = [...this._cacheDirections.keys()]
-                for (let index = 0; index < ary.length; index++) {
-                    const collisionLayer = ary[index]
-                    // Check directions too (only if the rule has one set)
-                    const ruleDirection = this._cacheDirections.get(collisionLayer)
-                    const cellDirection = cell.getWantsToMoveByCollisionLayer(collisionLayer)
-                    if (ruleDirection === RULE_DIRECTION_ABSOLUTE.STATIONARY && !cellDirection) {
-                        // This is OK
-                    } else if (ruleDirection !== cellDirection) {
-                        doesMatchB = false
-                        break
                     }
                 }
             }
-
-            timeB = process.hrtime(timeB)
-            timeB_NS = timeB[0] * NS_PER_SEC + timeB[1]
+            if (!matchesDirection) {
+                doesMatch = false
+                break
+            }
         }
 
-        // if (doesMatchA !== doesMatchB) {
-        //     MATCH_BIT_TOTAL += 0 // debugger
-        //     MATCH_ORIGINAL_TOTAL += 0
-        //     MATCH_ORIGINAL_TOTAL += 0
-        //     cellVectors.size // just to keep the object alive
-        //     console.log(`Method A is ${doesMatchA}`)
-        //     console.log(`Method B is ${doesMatchB}`)
-        //     console.log(this.toString())
-        //     console.log(cell.toString())
-        //     throw new Error(`BUG: Mismatch`)
-        // } else {
-        // }
-        // MATCH_ORIGINAL_TOTAL += timeA_NS
-        // MATCH_BIT_TOTAL += timeB_NS
+        if (doesMatch) {
+            for (const [collisionLayer, tileBitSet] of this._cacheYesBitSets) {
+                if (cellVectors.has(collisionLayer)) {
+                    const cellBitSet = cellVectors.get(collisionLayer)
+                    if (cellBitSet && !cellBitSet.and(tileBitSet).isEmpty()) {
+                    } else {
+                        doesMatch = false
+                        break
+                    }
+                } else {
+                    doesMatch = false
+                    break
+                }
+                collisionLayersToCheck.add(collisionLayer)
+            }
+        }
 
-        return doesMatchB
+        if (doesMatch) {
+            for (const [collisionLayer, tileBitSet] of this._cacheNoBitSets) {
+                if (cellVectors.has(collisionLayer)) {
+                    const cellBitSet = cellVectors.get(collisionLayer)
+                    if (cellBitSet.and(tileBitSet).isEmpty()) {
+                    } else {
+                        doesMatch = false
+                        break
+                    }
+                } else {
+                    // Still ok, nothing to change since the Cell clearly does not have the NO tile
+                }
+                collisionLayersToCheck.add(collisionLayer)
+            }
+        }
+
+        if (doesMatch) {
+            const ary = [...this._cacheDirections.keys()]
+            for (let index = 0; index < ary.length; index++) {
+                const collisionLayer = ary[index]
+                // Check directions too (only if the rule has one set)
+                const ruleDirection = this._cacheDirections.get(collisionLayer)
+                const cellDirection = cell.getWantsToMoveByCollisionLayer(collisionLayer)
+                if (ruleDirection === RULE_DIRECTION_ABSOLUTE.STATIONARY && !cellDirection) {
+                    // This is OK
+                } else if (ruleDirection !== cellDirection) {
+                    doesMatch = false
+                    break
+                }
+            }
+        }
+        return doesMatch
     }
     matchesCellWithout(cell: Cell, sprite: GameSprite) {
         // Temporarily remove the sprite from the cell
@@ -1718,39 +1303,28 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
         }
     }
 
-    matchesFirstCell(cells: Iterable<Cell>, t: SimpleTileWithModifier, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
-        return this.matchesCell(cells[0], t, wantsToMove)
-    }
-
     addCells(t: SimpleTileWithModifier, sprite: GameSprite, cells: Iterable<Cell>, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
-        // if (process.env['NODE_ENV'] !== 'production' && this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
-        //     // Pausing here because it was marked in the code
-        //     UI.debugRenderScreen(); debugger
-        // }
+        if (process.env['NODE_ENV'] !== 'production' && this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
+            // Pausing here because it was marked in the code
+            UI.debugRenderScreen(); debugger
+        }
         for (const cell of cells) {
             const matchesTiles = this.matchesCell(cell, t, wantsToMove)
             if (matchesTiles) {
-                // Commented because updates could cause the cell to already be in the cache
-                //if (!this.hasCell(cell)) {
                 for (const [bracket, indexes] of this._brackets.entries()) {
                     for (const index of indexes) {
                         bracket.addCell(index, this, t, sprite, cell, wantsToMove)
                     }
                 }
-                // this._localCellCache.add(cell)
-                //}
             } else {
                 // adding the Cell causes the set of Tiles to no longer match.
                 // If it previously matched, notify the bracket that it no longer matches
                 // (and delete it from our cache)
-                // if (this.hasCell(cell)) {
                 for (const [bracket, indexes] of this._brackets.entries()) {
                     for (const index of indexes) {
                         bracket.removeCell(index, this, t, sprite, cell)
                     }
                 }
-                // this._localCellCache.delete(cell)
-                // }
             }
         }
     }
@@ -1763,7 +1337,6 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
             UI.debugRenderScreen(); debugger
         }
         for (const cell of cells) {
-            // if (this.hasCell(cell)) {
             // Check if the cell still matches. If not, remove it from upstream
             // It's a little funky if we have a NO tile. I _think_ we need to negate the
             // result of matchesCellWithout in that case but not completely sure
@@ -1775,59 +1348,10 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
                     }
                 }
             }
-            //     this._localCellCache.delete(cell)
-            // }
         }
     }
 
-    // hasCell(cell: Cell, sprite: GameSprite) {
-    //     return this._localCellCache.get(cell).has(sprite)
-    // }
-
 }
-
-// class SimpleNeighborBoundWithAction extends BaseForLines {
-//     debugFlag: DEBUG_FLAG
-//     actionDebugFlag: DEBUG_FLAG
-
-//     replaceTiles: Set<ReplaceTile>
-//     replaceDirections: Set<ReplaceDirection>
-
-//     constructor(source: IGameCode, debugFlag: DEBUG_FLAG, actionDebugFlag: DEBUG_FLAG, replaceTiles: Set<ReplaceTile>, replaceDirections: Set<ReplaceDirection>) {
-//         super(source)
-//         this.debugFlag = debugFlag
-//         this.actionDebugFlag = actionDebugFlag
-//         this.replaceTiles = replaceTiles
-//         this.replaceDirections = replaceDirections
-//     }
-
-//     evaluate(cell: Cell, magicOrTiles: Map<IGameTile, Set<GameSprite>>) {
-//         if (process.env['NODE_ENV'] !== 'production' && this.actionDebugFlag === DEBUG_FLAG.BREAKPOINT) {
-//             // Pausing here because this breakpoint was marked in the game code
-//             UI.debugRenderScreen(); debugger
-//         }
-
-//         let didChangeSprites = false
-//         let didChangeDirection = false
-//         for (const replaceTile of this.replaceTiles) {
-//             const {didActuallyChange} = replaceTile.replace(cell, magicOrTiles)
-//             didChangeSprites = didChangeSprites || didActuallyChange
-//         }
-//         for (const replaceDirection of this.replaceDirections) {
-//             const didActuallyChange = replaceDirection.replace(cell)
-//             didChangeDirection = didChangeDirection || didActuallyChange
-//         }
-
-//         // TODO: Be better about recording when the cell actually updated
-//         if (didChangeSprites || didChangeDirection) {
-//             return new CellMutation(cell, didChangeSprites)
-//         } else {
-//             return null
-//         }
-
-//     }
-
-// }
 
 class SimpleEllipsisNeighbor extends SimpleNeighbor {
     constructor(source: IGameCode, tilesWithModifier: Set<SimpleTileWithModifier>, debugFlag: DEBUG_FLAG) {
@@ -1906,29 +1430,6 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
                 sprite.addTileWithModifier(this)
             }
         }
-    }
-
-    // _addCellToCache(cell: Cell, sprites: Set<GameSprite>) {
-    //     this._localCache.set(cell, sprites)
-    // }
-
-    // _removeCellsFromCache(cells: Iterable<Cell>) {
-    //     for (const cell of cells) {
-    //         this._localCache.delete(cell)
-    //     }
-    // }
-
-    matchesCellExistingWantsToMove(cell: Cell) {
-        const hasTile = this._tile && this._tile.matchesCell(cell)
-        const tileSprites = this._tile.getSprites()
-        let wantsToMove = RULE_DIRECTION_ABSOLUTE.STATIONARY
-        for (const sprite of tileSprites) {
-            if (cell.getWantsToMove(sprite)) {
-                wantsToMove = cell.getWantsToMove(sprite)
-                break
-            }
-        }
-        return this._isNegated != (hasTile && (this._direction === wantsToMove || this._direction === null))
     }
 
     matchesCellWithoutDirection(cell: Cell) {
@@ -2194,20 +1695,6 @@ export class GameRule extends BaseForLines implements ICacheable {
         expandModifiers.set(RULE_MODIFIER.HORIZONTAL, [RULE_DIRECTION.LEFT, RULE_DIRECTION.RIGHT])
         expandModifiers.set(RULE_MODIFIER.VERTICAL, [RULE_DIRECTION.UP, RULE_DIRECTION.DOWN])
         expandModifiers.set(RULE_MODIFIER.MOVING, [RULE_DIRECTION.UP, RULE_DIRECTION.DOWN, RULE_DIRECTION.LEFT, RULE_DIRECTION.RIGHT, RULE_DIRECTION.ACTION])
-        // switch (direction) {
-        //     case RULE_DIRECTION_ABSOLUTE.UP:
-        //     case RULE_DIRECTION_ABSOLUTE.DOWN:
-        //         expandModifiers.set(RULE_MODIFIER.PARALLEL, [RULE_DIRECTION.UP, RULE_DIRECTION.DOWN])
-        //         expandModifiers.set(RULE_MODIFIER.PERPENDICULAR, [RULE_DIRECTION.LEFT, RULE_DIRECTION.RIGHT])
-        //         break
-        //     case RULE_DIRECTION_ABSOLUTE.LEFT:
-        //     case RULE_DIRECTION_ABSOLUTE.RIGHT:
-        //         expandModifiers.set(RULE_MODIFIER.PARALLEL, [RULE_DIRECTION.LEFT, RULE_DIRECTION.RIGHT])
-        //         expandModifiers.set(RULE_MODIFIER.PERPENDICULAR, [RULE_DIRECTION.UP, RULE_DIRECTION.DOWN])
-        //         break
-        //     default:
-        //         throw new Error(`BUG: Invalid direction`)
-        // }
 
         let didExpand
         do {
@@ -2460,12 +1947,7 @@ export class TileWithModifier extends BaseForLines implements ICacheable {
                 let modifier = relativeDirectionToAbsolute(direction, this._modifier)
                 return new TileWithModifier(this.__source, modifier, this._tile, this._debugFlag)
             case nameToExpand:
-                // the special `null` nameToExpand means to just copy the tile
-                if (nameToExpand === null) {
-                    return this
-                } else {
-                    return new TileWithModifier(this.__source, newName, this._tile, this._debugFlag)
-                }
+                return new TileWithModifier(this.__source, newName, this._tile, this._debugFlag)
             default:
                 return this
         }
@@ -2507,56 +1989,6 @@ export class TileWithModifier extends BaseForLines implements ICacheable {
     isRandomDir() {
         return this._modifier === RULE_DIRECTION.RANDOMDIR
     }
-    getDirectionActionOrStationary(): RULE_DIRECTION {
-        let direction
-        switch (this._modifier) {
-            case RULE_DIRECTION.RANDOMDIR:
-                switch (nextRandom(4)) {
-                    case 0:
-                        direction = RULE_DIRECTION.UP
-                        break
-                    case 1:
-                        direction = RULE_DIRECTION.DOWN
-                        break
-                    case 2:
-                        direction = RULE_DIRECTION.LEFT
-                        break
-                    case 3:
-                        direction = RULE_DIRECTION.RIGHT
-                        break
-                    default:
-                        throw new Error(`BUG: invalid random number chosen`)
-                }
-                break
-            case RULE_DIRECTION.UP:
-                direction = RULE_DIRECTION.UP
-                break
-            case RULE_DIRECTION.DOWN:
-                direction = RULE_DIRECTION.DOWN
-                break
-            case RULE_DIRECTION.LEFT:
-                direction = RULE_DIRECTION.LEFT
-                break
-            case RULE_DIRECTION.RIGHT:
-                direction = RULE_DIRECTION.RIGHT
-                break
-            case RULE_DIRECTION.ACTION:
-                direction = RULE_DIRECTION.ACTION
-                break
-            case RULE_DIRECTION.STATIONARY:
-                // if the cell had a wantsToMove, then clear it
-                direction = RULE_DIRECTION.STATIONARY
-                break
-            case undefined:
-                direction = null
-                break
-            default:
-                // throw new Error(`BUG: unsupported rule direction modifier "${this._modifier}"`)
-                direction = null
-        }
-        return direction
-    }
-
 }
 
 // Extend RuleBracketNeighbor so that NeighborPair doesn't break
@@ -2598,30 +2030,6 @@ export class GameRuleLoop extends BaseForLines {
 
     simplify(ruleCache: Map<string, SimpleRule>, bracketCache: Map<string, SimpleBracket>, neighborCache: Map<string, SimpleNeighbor>, tileCache: Map<string, SimpleTileWithModifier>) {
         return new SimpleRuleLoop(this.__source, this.isRandom(), this._rules.map(rule => rule.simplify(ruleCache, bracketCache, neighborCache, tileCache)))
-    }
-    evaluate() {
-        // Keep looping as long as once of the rules evaluated something
-        // const allMutations = []
-        // for (let iteration = 0; iteration < MAX_ITERATIONS_IN_LOOP; iteration++) {
-        //     if (iteration === MAX_ITERATIONS_IN_LOOP - 1) {
-        //         console.error(this.toString())
-        //         throw new Error(`BUG: Iterated too many times in startloop`)
-        //     }
-        //     let evaluatedSomething = false
-        //     for (const rule of this._rules) {
-        //         const ret = rule.evaluate()
-        //         if (ret.length > 0) {
-        //             evaluatedSomething = true
-        //             allMutations.push(ret)
-        //             break
-        //         }
-        //     }
-        //     if (!evaluatedSomething) {
-        //         break
-        //     }
-        // }
-        // return _.flatten(allMutations)
-        return []
     }
     isRandom() {
         return !!this._rules.filter(r => r.isRandom())[0]

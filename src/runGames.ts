@@ -147,7 +147,7 @@ async function run() {
                     //     await soundToPlay.play()
                     // }
 
-                    await sleep(10)
+                    await sleep(1)
 
                     // if (changedCells.size === 0) {
                     //     break
