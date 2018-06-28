@@ -1,4 +1,5 @@
 import * as _ from 'lodash'
+import * as BitSet from 'bitset'
 import { EventEmitter2, Listener } from 'eventemitter2'
 import { GameData } from './models/game'
 import { LevelMap } from './models/level';
@@ -22,6 +23,7 @@ export class Cell {
     // TODO: Store wantsToMove information using the collisionLayer as a key rather than the sprite.
     _collisionLayerWantsToMove: RULE_DIRECTION_ABSOLUTE[]
     _cacheSpritesByCollisionLayer: GameSprite[]
+    _cacheBitSets: Map<CollisionLayer, BitSet>
     rowIndex: number
     colIndex: number
 
@@ -31,6 +33,7 @@ export class Cell {
         this.colIndex = colIndex
         this._collisionLayerWantsToMove = []
         this._cacheSpritesByCollisionLayer = []
+        this._cacheBitSets = new Map()
 
         for (const sprite of sprites) {
             this._setWantsToMove(sprite, RULE_DIRECTION_ABSOLUTE.STATIONARY)
@@ -38,11 +41,18 @@ export class Cell {
 
     }
     _setWantsToMove(sprite: GameSprite, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
-        const collisionLayer = sprite.getCollisionLayerNum()
-        const didActuallyChangeDir = this._collisionLayerWantsToMove[collisionLayer] !== wantsToMove
-        const didActuallyChangeSprite = this._cacheSpritesByCollisionLayer[collisionLayer] !== sprite
-        this._collisionLayerWantsToMove[collisionLayer] = wantsToMove
-        this._cacheSpritesByCollisionLayer[collisionLayer] = sprite
+        const collisionLayer = sprite.getCollisionLayer()
+        const collisionLayerNum = sprite.getCollisionLayerNum()
+        const didActuallyChangeDir = this._collisionLayerWantsToMove[collisionLayerNum] !== wantsToMove
+        const didActuallyChangeSprite = this._cacheSpritesByCollisionLayer[collisionLayerNum] !== sprite
+        this._collisionLayerWantsToMove[collisionLayerNum] = wantsToMove
+        this._cacheSpritesByCollisionLayer[collisionLayerNum] = sprite
+        // Update the BitSet for the sprite
+        if (!this._cacheBitSets.has(collisionLayer)) {
+            this._cacheBitSets.set(collisionLayer, new BitSet())
+        }
+        this._cacheBitSets.get(collisionLayer).set(collisionLayer.getBitSetIndexOf(sprite))
+
         return didActuallyChangeSprite || didActuallyChangeDir
     }
     _deleteWantsToMove(sprite: GameSprite) {
@@ -52,6 +62,14 @@ export class Cell {
         const didActuallyChange = !!this._cacheSpritesByCollisionLayer[collisionLayerNum]
         this._collisionLayerWantsToMove[collisionLayerNum] = null
         this._cacheSpritesByCollisionLayer[collisionLayerNum] = null
+
+        // Update the BitSet for the sprite
+        const bitset = this._cacheBitSets.get(collisionLayer)
+        bitset.clear(collisionLayer.getBitSetIndexOf(sprite))
+        if (bitset.isEmpty()) {
+            this._cacheBitSets.delete(collisionLayer)
+        }
+
         return didActuallyChange
     }
     setWantsToMoveCollisionLayer(collisionLayer: CollisionLayer, wantsToMove: RULE_DIRECTION_ABSOLUTE) {

@@ -29,6 +29,7 @@ export class GameSprite extends BaseForLines implements IGameTile {
     _name: string
     _optionalLegendChar?: string
     _collisionLayer: CollisionLayer
+    _collisionLayerIndex: number
     _cellSet: Set<Cell>
     _tileWithModifierSet: Set<SimpleTileWithModifier>
 
@@ -70,6 +71,13 @@ export class GameSprite extends BaseForLines implements IGameTile {
     }
     setCollisionLayer(collisionLayer: CollisionLayer) {
         this._collisionLayer = collisionLayer
+    }
+    setCollisionLayerAndIndex(collisionLayer: CollisionLayer, bitSetIndex: number) {
+        this._collisionLayer = collisionLayer
+        this._collisionLayerIndex = bitSetIndex
+    }
+    getBitSetIndex() {
+        return this._collisionLayerIndex
     }
     getCollisionLayer() {
         if (!this._collisionLayer) {

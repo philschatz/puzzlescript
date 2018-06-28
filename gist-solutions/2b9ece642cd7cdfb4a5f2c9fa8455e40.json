@@ -1,19 +1,27 @@
 {
   "version": 1,
   "solutions": [
-    null,
+    {
+      "solution": "X"
+    },
     {
       "solution": "DDDDWW"
     },
-    null,
+    {
+      "solution": "X"
+    },
     {
       "solution": "DWWXSSSSS"
     },
-    null,
+    {
+      "solution": "X"
+    },
     {
       "solution": "ASDSDDWAXWW"
     },
-    null,
+    {
+      "solution": "X"
+    },
     {
       "solution": "AWAAWDDDAAWDDWDDDSSSSAAAXAAXDDDD"
     },

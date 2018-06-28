@@ -1,4 +1,5 @@
 import * as _ from 'lodash'
+import * as BitSet from 'bitset'
 import {
     BaseForLines,
     IGameCode,
@@ -895,6 +896,10 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
     _debugFlag: DEBUG_FLAG
 
     _staticCache: Map<SimpleNeighbor, {replaceTiles: Set<ReplaceTile>, replaceDirections: Set<ReplaceDirection>}>
+    _cacheYesBitSets: Map<CollisionLayer, BitSet>
+    _cacheNoBitSets: Map<CollisionLayer, BitSet>
+    _cacheDirections: Map<CollisionLayer, RULE_DIRECTION_ABSOLUTE>
+    _cacheMultiCollisionLayerTiles: Set<SimpleTileWithModifier>
 
     constructor(source: IGameCode, tilesWithModifier: Set<SimpleTileWithModifier>, debugFlag: DEBUG_FLAG) {
         super(source)
@@ -904,6 +909,59 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
         this._debugFlag = debugFlag
 
         this._staticCache = new Map()
+
+        // Build up the cache BitSet for each collisionLayer
+        this._cacheYesBitSets = new Map()
+        this._cacheNoBitSets = new Map()
+        this._cacheDirections = new Map()
+        this._cacheMultiCollisionLayerTiles = new Set()
+        const allTiles = [...tilesWithModifier]
+        const noTiles = allTiles.filter(t => t.isNo())
+        const yesTiles = allTiles.filter(t => !t.isNo())
+
+        for (const t of yesTiles) {
+            if (!t._tile) {
+                continue // ellipsis
+            } else if (t._tile.hasSingleCollisionLayer()) {
+                for (const sprite of t._tile.getSprites()) {
+                    const c = sprite.getCollisionLayer()
+                    if (t._direction) {
+                        this._cacheDirections.set(c, t._direction)
+                    }
+                    if (!this._cacheYesBitSets.has(c)) {
+                        this._cacheYesBitSets.set(c, new BitSet())
+                    }
+                    this._cacheYesBitSets.get(c).set(c.getBitSetIndexOf(sprite))
+                }
+            } else {
+                this._cacheMultiCollisionLayerTiles.add(t)
+            }
+        }
+
+        for (const t of noTiles) {
+            if (t._tile.hasSingleCollisionLayer()) {
+                for (const sprite of t._tile.getSprites()) {
+                    const c = sprite.getCollisionLayer()
+                    if (t._direction) {
+                        this._cacheDirections.set(c, t._direction)
+                    }
+                    if (!this._cacheNoBitSets.has(c)) {
+                        this._cacheNoBitSets.set(c, new BitSet())
+                    }
+                    this._cacheNoBitSets.get(c).set(c.getBitSetIndexOf(sprite))
+                }
+            } else {
+                this._cacheMultiCollisionLayerTiles.add(t)
+            }
+        }
+
+        // BitSets can be empty. Especially when checking that a Cell does NOT contain a sprite
+        // for (const [collisionLayer, bitSet] of this._cacheBitSets) {
+        //     if (bitSet.isEmpty()) {
+        //         throw new Error(`BUG: BitSets should never be empty. "${bitSet.toString()}"`)
+        //     }
+        // }
+
     }
     toKey() {
         return `{${[...this._tilesWithModifier].map(t => t.toKey()).sort().join(' ')} debugging?${this._debugFlag}}`
@@ -1489,16 +1547,163 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
         return this.matchesCell(cell, null, null)
     }
     matchesCell(cell: Cell, tileWithModifier: SimpleTileWithModifier, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
-        for (const t of this._tilesWithModifier) {
-            if (t === tileWithModifier) {
-                if (!t.matchesCellWantsToMove(cell, wantsToMove)) {
-                    return false
+        // for (const t of this._tilesWithModifier) {
+        //     if (t === tileWithModifier) {
+        //         if (!t.matchesCellWantsToMove(cell, wantsToMove)) {
+        //             return false
+        //         }
+        //     } else if (!t.matchesCellExistingWantsToMove(cell)) {
+        //         return false
+        //     }
+        // }
+        // return true
+
+        const NS_PER_SEC = 1e9
+        // if (this._debugFlag && cell.toString().endsWith('ell [16][3] STATIONARY Background ACTION Crate DOWN LassoCaught')) {
+        //     debugger
+        // }
+
+        // // Compare 2 methods of determining if a tile matches a cell.
+        // // Check both the correctness and the running time
+        // let timeA_NS
+        // let doesMatchA = true
+        // {
+        //     // traditional method
+
+        //     let timeA = process.hrtime()
+
+        //     for (const t of this._tilesWithModifier) {
+        //         if (t === tileWithModifier) {
+        //             if (!t.matchesCellWantsToMove(cell, wantsToMove)) {
+        //                 doesMatchA = false
+        //                 break
+        //             }
+        //         } else if (!t.matchesCellExistingWantsToMove(cell)) {
+        //             doesMatchA = false
+        //             break
+        //         }
+        //     }
+
+        //     timeA = process.hrtime(timeA)
+        //     timeA_NS = timeA[0] * NS_PER_SEC + timeA[1]
+        // }
+
+        let timeB_NS
+        let doesMatchB = false
+        // Prepare the bit vectors (does not count against us in the timing)
+        const cellVectors = new Map<CollisionLayer, BitSet>()
+        const collisionLayersToCheck = new Set<CollisionLayer>()
+        {
+            // Compare using bit vectors
+
+
+            // populate the Cell bitSets
+            const cellVectors = cell._cacheBitSets
+            let timeB = process.hrtime()
+
+            doesMatchB = true
+
+            for (const t of this._cacheMultiCollisionLayerTiles) {
+                if (!t.matchesCellWithoutDirection(cell)) {
+                    doesMatchB = false
+                    break
                 }
-            } else if (!t.matchesCellExistingWantsToMove(cell)) {
-                return false
+                // check the direction as well
+                let matchesDirection = false
+                if (t.isNo()) {
+                    // no games have "NO" and a Direction. Let's make sure
+                    if (t._direction) {
+                        throw new Error(`BUG: Invariant vfailed. Assumed NO tiles should never have a direction associated with them`)
+                    }
+                    matchesDirection = true
+
+                } else {
+                    for (const sprite of t._tile.getSprites()) {
+                        const c = sprite.getCollisionLayer()
+                        let cellDirection = cell.getWantsToMoveByCollisionLayer(c) || RULE_DIRECTION_ABSOLUTE.STATIONARY
+                        if (cell.hasSprite(sprite)) {
+                            if (!t._direction || cellDirection === t._direction) {
+                                matchesDirection = true
+                                break
+                            }
+                        }
+                    }
+                }
+                if (!matchesDirection) {
+                    doesMatchB = false
+                    break
+                }
             }
+
+            if (doesMatchB) {
+                for (const [collisionLayer, tileBitSet] of this._cacheYesBitSets) {
+                    if (cellVectors.has(collisionLayer)) {
+                        const cellBitSet = cellVectors.get(collisionLayer)
+                        if (cellBitSet && !cellBitSet.and(tileBitSet).isEmpty()) {
+                        } else {
+                            doesMatchB = false
+                            break
+                        }
+                    } else {
+                        doesMatchB = false
+                        break
+                    }
+                    collisionLayersToCheck.add(collisionLayer)
+                }
+            }
+
+            if (doesMatchB) {
+                for (const [collisionLayer, tileBitSet] of this._cacheNoBitSets) {
+                    if (cellVectors.has(collisionLayer)) {
+                        const cellBitSet = cellVectors.get(collisionLayer)
+                        if (cellBitSet.and(tileBitSet).isEmpty()) {
+                        } else {
+                            doesMatchB = false
+                            break
+                        }
+                    } else {
+                        // Still ok, nothing to change since the Cell clearly does not have the NO tile
+                    }
+                    collisionLayersToCheck.add(collisionLayer)
+                }
+            }
+
+            if (doesMatchB) {
+                const ary = [...this._cacheDirections.keys()]
+                for (let index = 0; index < ary.length; index++) {
+                    const collisionLayer = ary[index]
+                    // Check directions too (only if the rule has one set)
+                    const ruleDirection = this._cacheDirections.get(collisionLayer)
+                    const cellDirection = cell.getWantsToMoveByCollisionLayer(collisionLayer)
+                    if (ruleDirection === RULE_DIRECTION_ABSOLUTE.STATIONARY && !cellDirection) {
+                        // This is OK
+                    } else if (ruleDirection !== cellDirection) {
+                        doesMatchB = false
+                        break
+                    }
+                }
+            }
+
+            timeB = process.hrtime(timeB)
+            timeB_NS = timeB[0] * NS_PER_SEC + timeB[1]
         }
-        return true
+
+        // if (doesMatchA !== doesMatchB) {
+        //     MATCH_BIT_TOTAL += 0 // debugger
+        //     MATCH_ORIGINAL_TOTAL += 0
+        //     MATCH_ORIGINAL_TOTAL += 0
+        //     cellVectors.size // just to keep the object alive
+        //     console.log(`Method A is ${doesMatchA}`)
+        //     console.log(`Method B is ${doesMatchB}`)
+        //     console.log(this.toString())
+        //     console.log(cell.toString())
+        //     throw new Error(`BUG: Mismatch`)
+        // } else {
+        // }
+        // MATCH_ORIGINAL_TOTAL += timeA_NS
+        // MATCH_BIT_TOTAL += timeB_NS
+
+        return doesMatchB
     }
     matchesCellWithout(cell: Cell, sprite: GameSprite) {
         // Temporarily remove the sprite from the cell
@@ -1518,10 +1723,10 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
     }
 
     addCells(t: SimpleTileWithModifier, sprite: GameSprite, cells: Iterable<Cell>, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
-        if (process.env['NODE_ENV'] !== 'production' && this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
-            // Pausing here because it was marked in the code
-            UI.debugRenderScreen(); debugger
-        }
+        // if (process.env['NODE_ENV'] !== 'production' && this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
+        //     // Pausing here because it was marked in the code
+        //     UI.debugRenderScreen(); debugger
+        // }
         for (const cell of cells) {
             const matchesTiles = this.matchesCell(cell, t, wantsToMove)
             if (matchesTiles) {
@@ -1724,6 +1929,11 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
             }
         }
         return this._isNegated != (hasTile && (this._direction === wantsToMove || this._direction === null))
+    }
+
+    matchesCellWithoutDirection(cell: Cell) {
+        const hasTile = this._tile && this._tile.matchesCell(cell)
+        return this._isNegated != hasTile
     }
 
     matchesCellWantsToMove(cell: Cell, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
