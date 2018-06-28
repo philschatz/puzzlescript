@@ -118,7 +118,7 @@ export class Cell {
     }
     getSprites() {
         // Just pull out the sprite, not the wantsToMoveDir
-        const sprites = []
+        const sprites: GameSprite[] = []
         const collisionLayers = this.getCollisionLayers()
         for (const collisionLayer of collisionLayers) {
             const sprite = this.getSpriteByCollisionLayer(collisionLayer)

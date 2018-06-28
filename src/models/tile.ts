@@ -55,6 +55,9 @@ export class GameSprite extends BaseForLines implements IGameTile {
     getName() {
         return this._name
     }
+    isBackground() {
+        return this._name.toLowerCase() === 'background'
+    }
     _getDescendantTiles() {
         return []
     }

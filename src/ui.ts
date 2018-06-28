@@ -496,7 +496,7 @@ class UI {
             return
         }
 
-        const spritesForDebugging = cell.getSprites()
+        const spritesForDebugging = cell.getSprites().filter(s => !s.isBackground())
 
         let { isOnScreen, cellStartX, cellStartY } = this.cellPosToXY(cell)
 
