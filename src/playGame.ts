@@ -194,6 +194,10 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: {ve
                 pendingKey = 'X'; break
             case 'r':
                 return restartLevel()
+            case 'z':
+                engine.pressUndo()
+                UI.renderScreen(false)
+                return
             case 'c':
                 UI.clearScreen()
                 UI.renderScreen(false)
@@ -589,6 +593,7 @@ function showControls() {
     console.log(`  ${prettyKey('A')} or ${prettyKey('left')}  : Move Left`);
     console.log(`  ${prettyKey('D')} or ${prettyKey('right')} : Move Right`);
     console.log(`  ${prettyKey('X')} or ${prettyKey('space')} : Perform Action`);
+    console.log(`  ${prettyKey('Z')}            : Undo`);
     console.log(`  ${prettyKey('R')}            : Restart the current level`);
     console.log(`  ${prettyKey('C')}            : Clear and redraw the screen`);
     console.log(`  ${prettyKey('esc')}          : Exit the Game`);

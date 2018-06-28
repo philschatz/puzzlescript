@@ -3,7 +3,7 @@ import { EventEmitter2, Listener } from 'eventemitter2'
 import { GameData } from './models/game'
 import { GameSprite, IGameTile } from './models/tile'
 import { IRule, IMutation } from './models/rule'
-import { nextRandom, setAddAll, RULE_DIRECTION_ABSOLUTE } from './util'
+import { nextRandom, setAddAll, RULE_DIRECTION_ABSOLUTE, setIntersection, setDifference } from './util'
 import { RULE_DIRECTION } from './enums';
 import { AbstractCommand, COMMAND_TYPE } from './models/command';
 import { GameSound } from './models/sound';
@@ -130,7 +130,11 @@ export class Cell {
     }
     getSpritesAsSet() {
         // Just pull out the sprite, not the wantsToMoveDir
-        return new Set(this.getSprites())
+        const sprites = new Set<GameSprite>()
+        for (const [c, {sprite}] of this._state) {
+            sprites.add(sprite)
+        }
+        return sprites
     }
     getSpriteAndWantsToMoves() {
         // Just pull out the sprite, not the wantsToMoveDir
@@ -217,6 +221,11 @@ export class Cell {
             this.removeSprite(sprite)
         }
     }
+    addSprites(sprites: Iterable<GameSprite>) {
+        for (const sprite of sprites) {
+            this.addSprite(sprite)
+        }
+    }
     setWantsToMove(tile: IGameTile, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
         for (const sprite of tile.getSprites()) {
             if (this.hasSprite(sprite)) {
@@ -227,6 +236,18 @@ export class Cell {
     toString() {
         return `Cell [${this.rowIndex}][${this.colIndex}] ${[...this.getSpriteAndWantsToMoves().entries()].map(([sprite, wantsToMove]) => `${wantsToMove} ${sprite.getName()}`).join(' ')}`
     }
+    toSnapshot() {
+        return this.getSpritesAsSet()
+    }
+    fromSnapshot(newSprites: Set<GameSprite>) {
+        const currentSprites = this.getSpritesAsSet()
+        const spritesToRemove = setDifference(currentSprites, newSprites)
+        const spritesToAdd = setDifference(newSprites, currentSprites)
+        // Remove Sprites
+        this.removeSprites(spritesToRemove)
+        // Add Sprites
+        this.addSprites(spritesToAdd)
+    }
 }
 
 export class LevelEngine extends EventEmitter2 {
@@ -234,14 +255,17 @@ export class LevelEngine extends EventEmitter2 {
     currentLevel: Cell[][]
     _pendingPlayerWantsToMove: RULE_DIRECTION_ABSOLUTE
     _hasAgainThatNeedsToRun: boolean
+    private _undoStack: Set<GameSprite>[][][]
 
     constructor(gameData: GameData) {
         super()
         this.gameData = gameData
         this._hasAgainThatNeedsToRun = false
+        this._undoStack = []
     }
 
     setLevel(levelNum: number) {
+        this._undoStack = []
         this.gameData.clearCaches()
 
         const level = this.gameData.levels[levelNum]
@@ -447,6 +471,8 @@ export class LevelEngine extends EventEmitter2 {
     tickNormal() {
         let changedCellMutations = new Set()
         if (this._pendingPlayerWantsToMove) {
+            this.takeSnapshot()
+
             if (process.env['LOG_LEVEL'] === 'debug') {
                 console.error(`Turn starts with input of ${this._pendingPlayerWantsToMove.toLowerCase()}.`)
             }
@@ -541,6 +567,23 @@ export class LevelEngine extends EventEmitter2 {
         return conditionsSatisfied
     }
 
+    // Used for UNDO and RESTART
+    takeSnapshot() {
+        const snapshot = this.currentLevel.map(row => row.map(cell => cell.toSnapshot()))
+        this._undoStack.push(snapshot)
+    }
+    applySnapshot(snpashot: Set<GameSprite>[][]) {
+        for (let rowIndex = 0; rowIndex < this.currentLevel.length; rowIndex++) {
+            const row = this.currentLevel[rowIndex]
+            const snapshotRow = snpashot[rowIndex]
+            for (let colIndex = 0; colIndex < row.length; colIndex++) {
+                const cell = row[colIndex]
+                const state = snapshotRow[colIndex]
+                cell.fromSnapshot(state)
+            }
+        }
+    }
+
     press(direction: RULE_DIRECTION_ABSOLUTE) {
         // Should disable keypresses if `AGAIN` is running.
         // It is commented because the didSpritesChange logic is not correct.
@@ -554,7 +597,12 @@ export class LevelEngine extends EventEmitter2 {
     pressRestart(levelNum) {
         this.setLevel(levelNum)
     }
-    pressUndo() { }
+    pressUndo() {
+        if (this._undoStack.length > 0) {
+            const snapshot = this._undoStack.pop()
+            this.applySnapshot(snapshot)
+        }
+    }
 }
 
 export type LoadingCellsEvent = {
