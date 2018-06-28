@@ -1,4 +1,5 @@
 import * as _ from 'lodash'
+import * as BitSet from 'bitset'
 import { BaseForLines, IGameCode, IGameNode } from './game'
 import { IColor, HexColor, TransparentColor } from './colors'
 import { CollisionLayer } from './collisionLayer'
@@ -16,7 +17,6 @@ export interface IGameTile extends IGameNode {
     hasSingleCollisionLayer: () => boolean
     setCollisionLayer: (collisionLayer: CollisionLayer) => void
     getCollisionLayer: () => CollisionLayer
-    getCollisionLayerNum: () => number
     matchesCell: (cell: Cell) => boolean
     isOr: () => boolean
     getCellsThatMatch: () => Set<Cell>
@@ -32,6 +32,7 @@ export class GameSprite extends BaseForLines implements IGameTile {
     _collisionLayerIndex: number
     _cellSet: Set<Cell>
     _tileWithModifierSet: Set<SimpleTileWithModifier>
+    _bitSet: BitSet
 
     constructor(source: IGameCode, name: string, optionalLegendChar?: string) {
         super(source)
@@ -78,6 +79,11 @@ export class GameSprite extends BaseForLines implements IGameTile {
     setCollisionLayerAndIndex(collisionLayer: CollisionLayer, bitSetIndex: number) {
         this._collisionLayer = collisionLayer
         this._collisionLayerIndex = bitSetIndex
+        this._bitSet = new BitSet()
+        this._bitSet.set(bitSetIndex)
+    }
+    getBitSet() {
+        return this._bitSet
     }
     getBitSetIndex() {
         return this._collisionLayerIndex
@@ -88,9 +94,6 @@ export class GameSprite extends BaseForLines implements IGameTile {
             throw new Error('ERROR: This sprite was not in a Collision Layer')
         }
         return this._collisionLayer
-    }
-    getCollisionLayerNum() {
-        return this.getCollisionLayer().id
     }
     isInvalid() {
         if (!this._collisionLayer) {
@@ -318,7 +321,7 @@ export class GameLegendTile extends BaseForLines implements IGameTile {
                     return tile.getSprites()
                 })
             ).sort((a, b) => {
-                return a.getCollisionLayerNum() - b.getCollisionLayerNum()
+                return a.getCollisionLayer().id - b.getCollisionLayer().id
             }).reverse()
         }
         return this._spritesCache
@@ -343,9 +346,6 @@ export class GameLegendTile extends BaseForLines implements IGameTile {
             }
         }
         return firstCollisionLayer
-    }
-    getCollisionLayerNum() {
-        return this.getCollisionLayer().id
     }
 
     getCellsThatMatch() {

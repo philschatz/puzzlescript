@@ -396,7 +396,7 @@ yellow
     `)
 
         // just make sure it doesn't throw an exception
-        expect(data._getSpriteByName('player').getCollisionLayerNum()).toBeGreaterThan(0)
+        expect(data._getSpriteByName('player').getCollisionLayer().id).toBeGreaterThan(0)
     })
 
     it('Denotes if a rule is late, rigid, or again', () => {

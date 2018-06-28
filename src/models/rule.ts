@@ -794,7 +794,7 @@ class ReplaceTile {
             }
             for (const sprite of sprites) {
                 const c = sprite.getCollisionLayer()
-                const added = cell.addSprite(sprite, cell.getWantsToMoveByCollisionLayer(c)) // preserve the wantsToMove if the sprite is in the same collision layer
+                const added = cell.addSprite(sprite, cell.getCollisionLayerWantsToMove(c)) // preserve the wantsToMove if the sprite is in the same collision layer
                 didActuallyChange = didActuallyChange || added
             }
         } else {
@@ -854,7 +854,7 @@ class ReplaceDirection {
         // Pick a random direction
         if (this.direction === RULE_DIRECTION_ABSOLUTE.RANDOMDIR) {
             // only set the direction if one has not already been set
-            if (cell.getWantsToMoveByCollisionLayer(this.collisionLayer) === RULE_DIRECTION_ABSOLUTE.STATIONARY) {
+            if (cell.getCollisionLayerWantsToMove(this.collisionLayer) === RULE_DIRECTION_ABSOLUTE.STATIONARY) {
                 switch (nextRandom(4)) {
                     case 0:
                         direction = RULE_DIRECTION_ABSOLUTE.UP
@@ -1204,7 +1204,14 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
         // Prepare the bit vectors (does not count against us in the timing)
         const collisionLayersToCheck = new Set<CollisionLayer>()
         // Compare using bit vectors
-        const cellVectors = cell._cacheBitSets
+        const cellVectors = new Map()
+        for (const c of cell.getCollisionLayers()) {
+            const sprite = cell.getSpriteByCollisionLayer(c)
+            if (sprite) {
+                const bitSet = sprite.getBitSet()
+                cellVectors.set(c, bitSet)
+            }
+        }
 
         doesMatch = true
 
@@ -1225,7 +1232,7 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
             } else {
                 for (const sprite of t._tile.getSprites()) {
                     const c = sprite.getCollisionLayer()
-                    let cellDirection = cell.getWantsToMoveByCollisionLayer(c) || RULE_DIRECTION_ABSOLUTE.STATIONARY
+                    let cellDirection = cell.getCollisionLayerWantsToMove(c) || RULE_DIRECTION_ABSOLUTE.STATIONARY
                     if (cell.hasSprite(sprite)) {
                         if (!t._direction || cellDirection === t._direction) {
                             matchesDirection = true
@@ -1279,7 +1286,7 @@ class SimpleNeighbor extends BaseForLines implements ICacheable {
                 const collisionLayer = ary[index]
                 // Check directions too (only if the rule has one set)
                 const ruleDirection = this._cacheDirections.get(collisionLayer)
-                const cellDirection = cell.getWantsToMoveByCollisionLayer(collisionLayer)
+                const cellDirection = cell.getCollisionLayerWantsToMove(collisionLayer)
                 if (ruleDirection === RULE_DIRECTION_ABSOLUTE.STATIONARY && !cellDirection) {
                     // This is OK
                 } else if (ruleDirection !== cellDirection) {

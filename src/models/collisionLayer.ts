@@ -9,7 +9,6 @@ export class CollisionLayer extends BaseForLines {
     _tiles: IGameTile[]
     _sprites: GameSprite[]
     id: number // Used for sorting collision layers for rendering
-    _fullBitSet: BitSet
 
     constructor(source: IGameCode, tiles: IGameTile[], addValidationMessage) {
         super(source)
@@ -34,9 +33,6 @@ export class CollisionLayer extends BaseForLines {
         this._sprites = [...new Set(_.flatten(tiles.map(t => t.getSprites())))]
 
         this._sprites.forEach((sprite, index) => sprite.setCollisionLayerAndIndex(this, index))
-
-        this._fullBitSet = new BitSet()
-        this._fullBitSet.setRange(0, this._sprites.length - 1)
     }
 
     isInvalid(): string {
@@ -49,14 +45,6 @@ export class CollisionLayer extends BaseForLines {
             throw new Error(`BUG: Sprite is not in this CollisionLayer`)
         }
         return index
-    }
-
-    getEmptyBitVec() {
-
-    }
-
-    getFullBitVec() {
-        return this._fullBitSet.slice() // clone it
     }
 
     bitSetToSprites(bitSet: BitSet) {

@@ -13,16 +13,16 @@ import { CollisionLayer } from './models/collisionLayer';
 
 const MAX_REPEATS = 10
 
+type CollisionLayerState = {
+    wantsToMove?: RULE_DIRECTION_ABSOLUTE
+    sprite: GameSprite
+}
+
 
 // This Object exists so the UI has something to bind to
 export class Cell {
     _engine: LevelEngine
-    // In the original implementation, wantsToMove is stored for the collisionLayer,
-    // not on the sprite. Since we do not do that, we have to transfer the wantsToMove
-    // when a sprite in a collisionLayer is swapped with another sprite in the same layer.
-    // TODO: Store wantsToMove information using the collisionLayer as a key rather than the sprite.
-    _collisionLayerWantsToMove: RULE_DIRECTION_ABSOLUTE[]
-    _cacheBitSets: Map<CollisionLayer, BitSet>
+    _state: Map<CollisionLayer, CollisionLayerState>
     rowIndex: number
     colIndex: number
 
@@ -30,8 +30,7 @@ export class Cell {
         this._engine = engine
         this.rowIndex = rowIndex
         this.colIndex = colIndex
-        this._collisionLayerWantsToMove = []
-        this._cacheBitSets = new Map()
+        this._state = new Map()
 
         for (const sprite of sprites) {
             this._setWantsToMove(sprite, RULE_DIRECTION_ABSOLUTE.STATIONARY)
@@ -40,73 +39,63 @@ export class Cell {
     }
     _setWantsToMove(sprite: GameSprite, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
         const collisionLayer = sprite.getCollisionLayer()
-        const collisionLayerNum = sprite.getCollisionLayerNum()
-        const didActuallyChangeDir = this._collisionLayerWantsToMove[collisionLayerNum] !== wantsToMove
-        const didActuallyChangeSprite = !this.hasSprite(sprite)
-        this._collisionLayerWantsToMove[collisionLayerNum] = wantsToMove
-        // Update the BitSet for the sprite
-        if (!this._cacheBitSets.has(collisionLayer)) {
-            this._cacheBitSets.set(collisionLayer, new BitSet())
-        }
-        this._cacheBitSets.get(collisionLayer).set(collisionLayer.getBitSetIndexOf(sprite))
-
+        const {wantsToMove: cellWantsToMove, sprite: cellSprite} = this.getStateForCollisionLayer(collisionLayer)
+        const didActuallyChangeDir = cellWantsToMove !== wantsToMove
+        const didActuallyChangeSprite = cellSprite !== sprite
+        this._state.set(collisionLayer, {wantsToMove, sprite})
         return didActuallyChangeSprite || didActuallyChangeDir
     }
     _deleteWantsToMove(sprite: GameSprite) {
         // There may be other sprites in the same ... oh wait, no that's not possible.
         const collisionLayer = sprite.getCollisionLayer()
-        const collisionLayerNum = sprite.getCollisionLayerNum()
         const didActuallyChange = !!this.getSpriteByCollisionLayer(collisionLayer)
-        this._collisionLayerWantsToMove[collisionLayerNum] = null
-
-        // Update the BitSet for the sprite
-        const bitset = this._cacheBitSets.get(collisionLayer)
-        bitset.clear(collisionLayer.getBitSetIndexOf(sprite))
-        if (bitset.isEmpty()) {
-            this._cacheBitSets.delete(collisionLayer)
-        }
+        this._state.delete(collisionLayer)
 
         return didActuallyChange
     }
+    getStateForCollisionLayer(collisionLayer: CollisionLayer) {
+        const state = this._state.get(collisionLayer)
+        if (!state) {
+            return {wantsToMove: null, sprite: null}
+        }
+        return state
+    }
     setWantsToMoveCollisionLayer(collisionLayer: CollisionLayer, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
-        const c = collisionLayer.id
         // Check that there is a sprite for this collision layer
-        const sprite = this.getSpriteByCollisionLayer(collisionLayer)
+        const {sprite, wantsToMove: cellWantsToMove} = this.getStateForCollisionLayer(collisionLayer)
         if (!sprite) {
             debugger
-            throw new Error(`BUG: No sprite for collision layer ${c}. Cannot set direction`)
+            console.error(collisionLayer.toString())
+            throw new Error(`BUG: No sprite for collision layer. Cannot set direction`)
         }
-        const didActuallyChange = this._collisionLayerWantsToMove[c] !== wantsToMove
-        this._collisionLayerWantsToMove[c] = wantsToMove
+        const didActuallyChange = cellWantsToMove !== wantsToMove
+
+        this._state.set(collisionLayer, {wantsToMove, sprite})
+
         sprite.addCell(this, wantsToMove)
         return didActuallyChange
     }
     deleteWantsToMoveCollisionLayer(collisionLayer: CollisionLayer) {
-        const c = collisionLayer.id
         // Check that there is a sprite for this collision layer
-        const sprite = this.getSpriteByCollisionLayer(collisionLayer)
+        const {sprite, wantsToMove: cellWantsToMove} = this.getStateForCollisionLayer(collisionLayer)
         if (!sprite) {
             debugger
-            throw new Error(`BUG: No sprite for collision layer ${c}. Cannot delete direction`)
+            console.error(collisionLayer.toString())
+            throw new Error(`BUG: No sprite for collision layer. Cannot delete direction`)
         }
-        const didActuallyChange = this._collisionLayerWantsToMove[c] !== null
-        this._collisionLayerWantsToMove[c] = null
+        const didActuallyChange = cellWantsToMove !== null
+
+        this._state.set(collisionLayer, {sprite, wantsToMove: null})
+
         sprite.removeCell(this)
         return didActuallyChange
     }
     getSpriteByCollisionLayer(collisionLayer: CollisionLayer) {
-        const bitSet = this._cacheBitSets.get(collisionLayer)
-        if (!bitSet) {
-            return null
-        }
-        const sprites = collisionLayer.bitSetToSprites(bitSet)
-        if (sprites.length > 1) {
-            throw new Error(`BUG: Should only have one sprite but found ${sprites.length}`)
-        }
-        return sprites[0] || null
+        const {sprite} = this.getStateForCollisionLayer(collisionLayer)
+        return sprite || null
     }
     getCollisionLayers() {
-        return [...this._cacheBitSets.keys()]
+        return [...this._state.keys()]
         .sort((c1, c2) => c1.id - c2.id)
     }
     getSprites() {
@@ -135,7 +124,8 @@ export class Cell {
         return map
     }
     getCollisionLayerWantsToMove(collisionLayer: CollisionLayer) {
-        return this._collisionLayerWantsToMove[collisionLayer.id]
+        const {wantsToMove} = this.getStateForCollisionLayer(collisionLayer)
+        return wantsToMove || null
     }
     hasSprite(sprite: GameSprite) {
         const cellSprite = this.getSpriteByCollisionLayer(sprite.getCollisionLayer())
@@ -165,7 +155,7 @@ export class Cell {
     wantsToMoveTo(tile: IGameTile, absoluteDirection: RULE_DIRECTION_ABSOLUTE) {
         let wantsToMove = false
         tile.getSprites().forEach(sprite => {
-            const directionForSprite = this.directionForSprite(sprite)
+            const directionForSprite = this.getWantsToMove(sprite)
             if (directionForSprite && directionForSprite === absoluteDirection) {
                 wantsToMove = true
             }
@@ -173,21 +163,10 @@ export class Cell {
         return wantsToMove
     }
     getWantsToMove(sprite: GameSprite) {
-        const wantsToMove = this._collisionLayerWantsToMove[sprite.getCollisionLayerNum()]
-        if (wantsToMove) {
-            return RULE_DIRECTION_ABSOLUTE[wantsToMove]
-        } else {
-            return null
-        }
-    }
-    getWantsToMoveByCollisionLayer(collisionLayer: CollisionLayer) {
-        return this._collisionLayerWantsToMove[collisionLayer.id]
-    }
-    directionForSprite(sprite: GameSprite) {
-        return this._collisionLayerWantsToMove[sprite.getCollisionLayerNum()]
+        return this.getCollisionLayerWantsToMove(sprite.getCollisionLayer())
     }
     hasCollisionWithSprite(otherSprite: GameSprite) {
-        return !!this._collisionLayerWantsToMove[otherSprite.getCollisionLayerNum()]
+        return !!this.getCollisionLayerWantsToMove(otherSprite.getCollisionLayer())
     }
     clearWantsToMove(sprite: GameSprite) {
         this._setWantsToMove(sprite, RULE_DIRECTION_ABSOLUTE.STATIONARY)
@@ -197,7 +176,7 @@ export class Cell {
         let didActuallyChange = false
         // If we already have a sprite in that collision layer then we need to remove it
         const prevSprite = this.getSpriteByCollisionLayer(sprite.getCollisionLayer())
-        const prevWantsToMove = this.getWantsToMoveByCollisionLayer(sprite.getCollisionLayer())
+        const prevWantsToMove = this.getCollisionLayerWantsToMove(sprite.getCollisionLayer())
         if (prevSprite && prevSprite !== sprite) {
             this.removeSprite(prevSprite)
         }
