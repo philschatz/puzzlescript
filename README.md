@@ -41,7 +41,7 @@ PuzzleScript lends itself nicely to be playable by people with low or no vision:
 
 This screencap shows that there is enough information to be able to make the games playable by visually impaired players.
 
-<a href="https://asciinema.org/a/TcD9pYKhCpUcO1y3KtD96hU9p?t=15"><img width="300" alt="dev view of a level" src="https://asciinema.org/a/TcD9pYKhCpUcO1y3KtD96hU9p.png"/></a>
+<a href="https://asciinema.org/a/TcD9pYKhCpUcO1y3KtD96hU9p?t=15"><img width="600" alt="dev view of a level" src="https://asciinema.org/a/TcD9pYKhCpUcO1y3KtD96hU9p.png"/></a>
 
 
 
