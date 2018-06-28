@@ -179,16 +179,9 @@ class UI {
 
         // Set the sprite width/height based on the 1st sprite (default is 5x5)
         // TODO: Loop until we find an actual sprite, not a single-color sprite
-        const firstSpriteWithPixels = this._gameData.objects.filter(sprite => sprite.hasPixels())[0]
-        if (firstSpriteWithPixels) {
-            const firstSpritePixels = firstSpriteWithPixels.getPixels(this.SPRITE_HEIGHT, this.SPRITE_WIDTH)
-            this.SPRITE_HEIGHT = firstSpritePixels.length
-            this.SPRITE_WIDTH = firstSpritePixels[0].length
-        } else {
-            // All the sprites are just a single color, so set the size to be 5x5
-            this.SPRITE_HEIGHT = 1
-            this.SPRITE_WIDTH = 1
-        }
+        const {spriteHeight, spriteWidth} = this.getSpriteSize(this._gameData)
+        this.SPRITE_HEIGHT = spriteHeight
+        this.SPRITE_WIDTH = spriteWidth
     }
     setSmallTerminal(yesNo: boolean) {
         if (yesNo) {
@@ -201,6 +194,22 @@ class UI {
     }
     isConfiguredForSmallTerminal() {
         return this.PIXEL_HEIGHT !== 1
+    }
+    getSpriteSize(gameData: GameData) {
+        const firstSpriteWithPixels = gameData.objects.filter(sprite => sprite.hasPixels())[0]
+        if (firstSpriteWithPixels) {
+            const firstSpritePixels = firstSpriteWithPixels.getPixels(1, 1) // We don't care about these args
+            return {
+                spriteHeight: firstSpritePixels.length,
+                spriteWidth: firstSpritePixels[0].length
+            }
+        } else {
+            // All the sprites are just a single color, so set the size to be 5x5
+            return {
+                spriteHeight: 1,
+                spriteWidth: 1
+            }
+        }
     }
     debugRenderScreen() {
         if (this._engine) {
@@ -669,8 +678,9 @@ class UI {
             }
         }
         // Check to see if it fits in the terminal
-        const terminalWidth = Math.floor(process.stdout.columns / this.SPRITE_WIDTH / this.PIXEL_WIDTH)
-        const terminalHeight = Math.floor(process.stdout.rows / this.SPRITE_HEIGHT / this.PIXEL_HEIGHT)
+        const {spriteHeight, spriteWidth} = this.getSpriteSize(gameData)
+        const terminalWidth = Math.floor(process.stdout.columns / spriteWidth / this.PIXEL_WIDTH)
+        const terminalHeight = Math.floor(process.stdout.rows / spriteHeight / this.PIXEL_HEIGHT)
 
         if (terminalWidth < maxWidth || terminalHeight < maxHeight) {
             return false

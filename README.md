@@ -17,6 +17,14 @@ This is a program that you can run in your terminal to play [PuzzleScript](https
 
 <a href="https://asciinema.org/a/TG6K5iinlW7cnrRjtJ1vz6nJl"><img width="300" alt="video of a couple levels of Hack-the-Net" src="https://asciinema.org/a/TG6K5iinlW7cnrRjtJ1vz6nJl.png"/></a>
 
+### Skipping Stones to Lonely Homes ([original](http://www.draknek.org/games/puzzlescript/skipping-stones.php))
+
+<a href="https://asciinema.org/a/mvHT4Btkpj49GzN8fawsUgCTX?t=20"><img width="300" alt="video of the beginning of Skipping Stones (BIG)" src="https://asciinema.org/a/mvHT4Btkpj49GzN8fawsUgCTX.png"/></a>
+
+### Entanglement ([original]())
+
+<a href="https://asciinema.org/a/B6QBhxI4iarolk5k3x4cIRewc?t=23"><img width="300" alt="video of the beginning of Entanglement" src="https://asciinema.org/a/B6QBhxI4iarolk5k3x4cIRewc.png"/></a>
+
 
 # About
 
