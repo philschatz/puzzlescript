@@ -64,6 +64,9 @@ async function run() {
             if (existsSync(recordingsPath)) {
                 const recordings = JSON.parse(readFileSync(recordingsPath, 'utf-8')).solutions
                 if (recordings) {
+                    // TODO: Use the following rules for finding which recording to play:
+                    // - find the last partially (or) completed Map
+                    // - pick the first Map
                     const x = recordings.filter(r => !!r)
                     const recording = x[x.length - 1]
                     if (recording) {

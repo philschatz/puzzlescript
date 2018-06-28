@@ -150,8 +150,7 @@ LEVELS
 P
 
 `)
-
-        expect(data.getMagicBackgroundSprite().getPixels()[0][0].toRgb()).toEqual(C_WHITE)
+        expect(data.getMagicBackgroundSprite().getPixels(5, 5)[0][0].toRgb()).toEqual(C_WHITE)
         expect(pixels[0][0].toRgb()).toEqual(C_WHITE)
         expect(pixels[0][2].toRgb()).toEqual(C_BLACK)
     })

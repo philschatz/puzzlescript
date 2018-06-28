@@ -9,9 +9,6 @@ import { GameEngine, Cell } from './engine'
 import { RULE_DIRECTION_ABSOLUTE } from './util';
 import chalk from 'chalk';
 
-const SPRITE_WIDTH = 5
-const SPRITE_HEIGHT = 5
-
 // Determine if this
 // 'truecolor' if this terminal supports 16m colors. 256 colors otherwise
 const supports16mColors = process.env['COLORTERM'] === 'truecolor'
@@ -77,10 +74,10 @@ class CellColorCache {
         this._cache = new Map()
     }
 
-    get(spritesToDraw: GameSprite[], backgroundColor: IColor) {
+    get(spritesToDraw: GameSprite[], backgroundColor: IColor, spriteHeight: number, spriteWidth: number) {
         const key = spritesToDraw.map(s => s._name).join(' ')
         if (!this._cache.has(key)) {
-            this._cache.set(key, collapseSpritesToPixels(spritesToDraw, backgroundColor))
+            this._cache.set(key, collapseSpritesToPixels(spritesToDraw, backgroundColor, spriteHeight, spriteWidth))
         }
         return this._cache.get(key)
     }
@@ -92,13 +89,13 @@ class CellColorCache {
 
 // First Sprite one is on top.
 // This caused a 2x speedup while rendering.
-function collapseSpritesToPixels(spritesToDraw: GameSprite[], backgroundColor: IColor) {
+function collapseSpritesToPixels(spritesToDraw: GameSprite[], backgroundColor: IColor, spriteHeight: number, spriteWidth: number) {
     if (spritesToDraw.length === 0) {
         // Just draw the background
         const sprite: IColor[][] = []
-        for (let y = 0; y < 5; y++) {
+        for (let y = 0; y < spriteHeight; y++) {
             sprite[y] = sprite[y] || []
-            for (let x = 0; x < 5; x++) {
+            for (let x = 0; x < spriteWidth; x++) {
                 // If this is the last sprite and nothing was found then use the game background color
                 sprite[y][x] = backgroundColor
             }
@@ -110,17 +107,17 @@ function collapseSpritesToPixels(spritesToDraw: GameSprite[], backgroundColor: I
         spritesToDraw[0].__coverageCount++
     }
     if (spritesToDraw.length === 1) {
-        return spritesToDraw[0].getPixels()
+        return spritesToDraw[0].getPixels(spriteHeight, spriteWidth)
     }
-    const sprite = spritesToDraw[0].getPixels()
+    const sprite = spritesToDraw[0].getPixels(spriteHeight, spriteWidth)
     spritesToDraw.slice(1).forEach((objectToDraw, spriteIndex) => {
         if (process.env['NODE_ENV'] !== 'production') {
             objectToDraw.__coverageCount++
         }
-        const pixels = objectToDraw.getPixels()
-        for (let y = 0; y < 5; y++) {
+        const pixels = objectToDraw.getPixels(spriteHeight, spriteWidth)
+        for (let y = 0; y < spriteHeight; y++) {
             sprite[y] = sprite[y] || []
-            for (let x = 0; x < 5; x++) {
+            for (let x = 0; x < spriteWidth; x++) {
                 const pixel = pixels[y][x]
                 // try to pull it out of the current sprite
                 if ((!sprite[y][x] || sprite[y][x].isTransparent()) && pixel && !pixel.isTransparent()) {
@@ -144,6 +141,9 @@ class UI {
     _windowOffsetHeight: number
     PIXEL_WIDTH: number // number of characters in the terminal used to represent a pixel
     PIXEL_HEIGHT: number
+    SPRITE_WIDTH: number
+    SPRITE_HEIGHT: number
+
     _dumpingScreen: boolean
 
     constructor() {
@@ -175,6 +175,19 @@ class UI {
             const { width, height } = this._gameData.metadata.zoomscreen
             this._windowOffsetWidth = width
             this._windowOffsetHeight = height
+        }
+
+        // Set the sprite width/height based on the 1st sprite (default is 5x5)
+        // TODO: Loop until we find an actual sprite, not a single-color sprite
+        const firstSpriteWithPixels = this._gameData.objects.filter(sprite => sprite.hasPixels())[0]
+        if (firstSpriteWithPixels) {
+            const firstSpritePixels = firstSpriteWithPixels.getPixels(this.SPRITE_HEIGHT, this.SPRITE_WIDTH)
+            this.SPRITE_HEIGHT = firstSpritePixels.length
+            this.SPRITE_WIDTH = firstSpritePixels[0].length
+        } else {
+            // All the sprites are just a single color, so set the size to be 5x5
+            this.SPRITE_HEIGHT = 1
+            this.SPRITE_WIDTH = 1
         }
     }
     setSmallTerminal(yesNo: boolean) {
@@ -298,12 +311,12 @@ class UI {
                 isOnScreen = false
             }
         }
-        cellStartX = (colIndex - this._windowOffsetColStart) * SPRITE_WIDTH
-        cellStartY = (rowIndex - this._windowOffsetRowStart) * SPRITE_HEIGHT /*pixels*/
+        cellStartX = (colIndex - this._windowOffsetColStart) * this.SPRITE_WIDTH
+        cellStartY = (rowIndex - this._windowOffsetRowStart) * this.SPRITE_HEIGHT /*pixels*/
 
         // Check if the cell can be completely drawn on the screen. If not, print ellipses
-        const cellIsTooWide = (cellStartX + SPRITE_WIDTH) * this.PIXEL_WIDTH >= process.stdout.columns // 10 because we print 2 chars per pixel
-        const cellIsTooHigh = (cellStartY + SPRITE_HEIGHT) * this.PIXEL_HEIGHT >= process.stdout.rows
+        const cellIsTooWide = (cellStartX + this.SPRITE_WIDTH) * this.PIXEL_WIDTH >= process.stdout.columns // 10 because we print 2 chars per pixel
+        const cellIsTooHigh = (cellStartY + this.SPRITE_HEIGHT) * this.PIXEL_HEIGHT >= process.stdout.rows
         if (cellIsTooWide || cellIsTooHigh) {
             // do not draw the cell
             isOnScreen = false
@@ -374,8 +387,8 @@ class UI {
         const flickScreen = this._gameData.metadata.flickscreen
         const zoomScreen = this._gameData.metadata.zoomscreen
         // these are number of sprites that can fit on the terminal
-        const terminalWidth = Math.floor(process.stdout.columns / SPRITE_WIDTH / this.PIXEL_WIDTH)
-        const terminalHeight = Math.floor(process.stdout.rows / SPRITE_HEIGHT / this.PIXEL_HEIGHT)
+        const terminalWidth = Math.floor(process.stdout.columns / this.SPRITE_WIDTH / this.PIXEL_WIDTH)
+        const terminalHeight = Math.floor(process.stdout.rows / this.SPRITE_HEIGHT / this.PIXEL_HEIGHT)
 
         if (flickScreen) {
             boundingBoxTop = playerCell.rowIndex - (playerCell.rowIndex % flickScreen.height)
@@ -601,7 +614,7 @@ class UI {
             spritesToDraw.push(magicBackgroundSprite)
         }
 
-        const pixels = this._cellColorCache.get(spritesToDraw, this._gameData.metadata.background_color)
+        const pixels = this._cellColorCache.get(spritesToDraw, this._gameData.metadata.background_color, this.SPRITE_HEIGHT, this.SPRITE_WIDTH)
         return pixels
     }
 
@@ -656,8 +669,8 @@ class UI {
             }
         }
         // Check to see if it fits in the terminal
-        const terminalWidth = Math.floor(process.stdout.columns / SPRITE_WIDTH / this.PIXEL_WIDTH)
-        const terminalHeight = Math.floor(process.stdout.rows / SPRITE_HEIGHT / this.PIXEL_HEIGHT)
+        const terminalWidth = Math.floor(process.stdout.columns / this.SPRITE_WIDTH / this.PIXEL_WIDTH)
+        const terminalHeight = Math.floor(process.stdout.rows / this.SPRITE_HEIGHT / this.PIXEL_HEIGHT)
 
         if (terminalWidth < maxWidth || terminalHeight < maxHeight) {
             return false

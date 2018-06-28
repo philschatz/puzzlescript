@@ -29,7 +29,8 @@ export const SPRITE_GRAMMAR = `
     pixelDigit = digit | "."
     legendShortcutChar = (~lineTerminator any)
 
-    PixelRows = pixelRow pixelRow pixelRow pixelRow pixelRow
+    // Support at least 5x5 sprites (so we can disambiguate from single-color definitions)
+    PixelRows = pixelRow pixelRow pixelRow pixelRow pixelRow+
 `
 
 export const LEGEND_GRAMMAR = `
@@ -65,15 +66,13 @@ export function getTileSemantics(lookup: LookupHelper) {
         SpriteNoPixels: function (name, optionalLegendChar, _3, colors, _5) {
             return new GameSpriteSingleColor(this.source, name.parse(), optionalLegendChar.parse()[0], colors.parse())
         },
-        PixelRows: function (row1, row2, row3, row4, row5) {
-            // Exactly 5 rows. We do this because some games contain vertical whitespace after, but not all
+        PixelRows: function (row1, row2, row3, row4, rows) {
             return [
                 row1.parse(),
                 row2.parse(),
                 row3.parse(),
-                row4.parse(),
-                row5.parse()
-            ]
+                row4.parse()
+            ].concat(rows.parse())
         },
         LookupLegendVarName: function (tile) {
             // Replace all the Sprite Names with the actual objects

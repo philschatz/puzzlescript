@@ -46,7 +46,10 @@ export class GameSprite extends BaseForLines implements IGameTile {
     equals(t: IGameTile) {
         return this === t // sprites MUST be exact
     }
-    getPixels(): IColor[][] {
+    hasPixels() {
+        throw new Error('BUG: Subclasses should implement this')
+    }
+    getPixels(spriteHeight, spriteWidth): IColor[][] {
         throw new Error('BUG: Subclasses should implement this')
     }
     getName() {
@@ -174,12 +177,15 @@ export class GameSpriteSingleColor extends GameSprite {
         super(source, name, optionalLegendChar)
         this._color = colors[0] // Ignore if the user added multiple colors (like `transparent yellow`)
     }
-    getPixels() {
+    hasPixels() {
+        return false
+    }
+    getPixels(spriteHeight, spriteWidth) {
         // When there are no pixels then it means "color the whole thing in the same color"
         const rows: HexColor[][] = []
-        for (let row = 0; row < 5; row++) {
+        for (let row = 0; row < spriteHeight; row++) {
             rows.push([])
-            for (let col = 0; col < 5; col++) {
+            for (let col = 0; col < spriteWidth; col++) {
                 rows[row].push(this._color)
             }
         }
@@ -230,7 +236,10 @@ export class GameSpritePixels extends GameSprite {
         // to match the signature of LegendTile
         return [this]
     }
-    getPixels() {
+    hasPixels() {
+        return true
+    }
+    getPixels(spriteHeight, spriteWidth) {
         // Make a copy because others may edit it
         return this._pixels.map(row => {
             return row.map(col => col)
