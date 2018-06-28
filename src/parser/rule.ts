@@ -16,6 +16,7 @@ export enum AST_RULE_MODIFIER {
     VERTICAL = 'VERTICAL',
     HORIZONTAL = 'HORIZONTAL',
     ORTHOGONAL = 'ORTHOGONAL',
+    PARALLEL = 'PARALLEL',
     MOVING = 'MOVING',
     LATE = 'LATE',
     RIGID = 'RIGID',
@@ -193,6 +194,35 @@ export class ASTGameRule extends BaseForLines implements ICacheable {
                             didExpand = true
                         }
                     }
+                }
+                if (!didExpand) {
+                    // Try expanding PARALLEL and ORTHOGONAL (since they depend on the rule direction)
+                    let orthogonals
+                    let parallels
+                    switch(direction) {
+                        case RULE_DIRECTION.UP:
+                        case RULE_DIRECTION.DOWN:
+                            orthogonals = [RULE_DIRECTION.LEFT, RULE_DIRECTION.RIGHT]
+                            parallels = [RULE_DIRECTION.UP, RULE_DIRECTION.DOWN]
+                            break
+                        case RULE_DIRECTION.LEFT:
+                        case RULE_DIRECTION.RIGHT:
+                            orthogonals = [RULE_DIRECTION.UP, RULE_DIRECTION.DOWN]
+                            parallels = [RULE_DIRECTION.LEFT, RULE_DIRECTION.RIGHT]
+                            break
+                        default:
+                    }
+                    if (orthogonals) {
+                        for (const [nameToExpand, variations] of [[AST_RULE_MODIFIER.ORTHOGONAL, orthogonals], [AST_RULE_MODIFIER.PARALLEL, parallels]]) {
+                            if (rule.hasModifier(nameToExpand)) {
+                                for (const variation of variations) {
+                                    convertedRules.push(rule.clone(direction, nameToExpand, variation))
+                                    didExpand = true
+                                }
+                            }
+                        }
+                    }
+
                 }
                 // If nothing was expanded and this is the current rule
                 // then just keep it

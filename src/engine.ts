@@ -329,6 +329,8 @@ export class LevelEngine extends EventEmitter2 {
             i += cells.length
         }
 
+        this.takeSnapshot()
+
         // Return the cells so the UI can listen to when they change
         return this.getCells()
     }
@@ -499,7 +501,20 @@ export class LevelEngine extends EventEmitter2 {
         // We need to compare the set of sprites before and after ALL rules ran.
         // This will likely be implemented as part of UNDO or CHECKPOINT.
         const movedCells = this.tickMoveSprites(new Set<Cell>(changedCellMutations.keys()))
+        const didCancel = !![...commands].filter(c => c.getType() === COMMAND_TYPE.CANCEL)[0]
+        if (didCancel) {
+            this._hasAgainThatNeedsToRun = false
+            if (this._undoStack.length > 0) {
+                this.applySnapshot(this._undoStack[this._undoStack.length - 1])
+            }
+            return {
+                changedCells: new Set(),
+                commands: new Set(),
+                evaluatedRules: evaluatedRules,
+            }
+        }
         const {changedCells: changedCellsLate, evaluatedRules: evaluatedRulesLate, commands: commandsLate} = this.tickUpdateCellsLate()
+        // set this only if we did not CANCEL
         this._hasAgainThatNeedsToRun = !![...commands, ...commandsLate].filter(c => c.getType() === COMMAND_TYPE.AGAIN)[0]
         return {
             changedCells: setAddAll(setAddAll(changedCellMutations, changedCellsLate), movedCells),
@@ -598,7 +613,7 @@ export class LevelEngine extends EventEmitter2 {
         this.setLevel(levelNum)
     }
     pressUndo() {
-        if (this._undoStack.length > 0) {
+        if (this._undoStack.length > 1) { // the 0th entry is the initial load of the level
             const snapshot = this._undoStack.pop()
             this.applySnapshot(snapshot)
         }

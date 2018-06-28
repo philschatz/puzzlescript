@@ -310,13 +310,8 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: {ve
         if (didLevelChange) {
             // Save the solution
             const newSolution = keypresses.join('')
-            if (!recordings.solutions[currentLevelNum]) {
-                recordings.solutions[currentLevelNum] = { solution: keypresses.join('') }
-                writeFileSync(solutionsPath, JSON.stringify(recordings, null, 2))
-            } else if (!recordings.solutions[currentLevelNum].solution) {
-                recordings.solutions[currentLevelNum].solution = keypresses.join('')
-                writeFileSync(solutionsPath, JSON.stringify(recordings, null, 2))
-            }
+            recordings.solutions[currentLevelNum] = { solution: keypresses.join('') }
+            writeFileSync(solutionsPath, JSON.stringify(recordings, null, 2))
             keypresses = []
             pendingKey = null
             currentLevelNum = engine.getCurrentLevelNum()
@@ -344,7 +339,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: {ve
             pendingKey = null
         }
 
-        await sleep(Math.max(50 - (Date.now() - startTime), 0))
+        await sleep(Math.max(500 - (Date.now() - startTime), 0))
 
         tickNum++
     }
