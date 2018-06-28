@@ -1,9 +1,9 @@
 /* eslint-env jasmine */
 const fs = require('fs')
 const path = require('path')
-const { LevelEngine } = require('../src/engine')
-const { default: Parser } = require('../src/parser/parser')
-const { RULE_DIRECTION_ABSOLUTE } = require('../src/util')
+const { LevelEngine } = require('../lib/engine')
+const { default: Parser } = require('../lib/parser/parser')
+const { RULE_DIRECTION_ABSOLUTE } = require('../lib/util')
 
 
 function parseEngine(code, levelNum = 0) {

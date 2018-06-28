@@ -1,0 +1,13 @@
+sudo: false
+language: node_js
+node_js:
+  - "8"
+
+cache: yarn
+
+install:
+  - npm install -g codecov
+  - npm install
+script:
+  - npm run-script test
+  - codecov

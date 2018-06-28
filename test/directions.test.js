@@ -1,7 +1,7 @@
 /* eslint-env jasmine */
-const { LevelEngine } = require('../src/engine')
-const { default: Parser } = require('../src/parser/parser')
-const { nextRandom, resetRandomSeed, setRandomValuesForTesting, clearRandomValuesForTesting, getRandomSeed } = require('../src/util')
+const { LevelEngine } = require('../lib/engine')
+const { default: Parser } = require('../lib/parser/parser')
+const { nextRandom, resetRandomSeed, setRandomValuesForTesting, clearRandomValuesForTesting, getRandomSeed } = require('../lib/util')
 
 function parseEngine(code) {
     const { data, error } = Parser.parse(code)

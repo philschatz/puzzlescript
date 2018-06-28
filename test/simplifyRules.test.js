@@ -1,6 +1,6 @@
 /* eslint-env jasmine */
-const { LevelEngine } = require('../src/engine')
-const { default: Parser } = require('../src/parser/parser')
+const { LevelEngine } = require('../lib/engine')
+const { default: Parser } = require('../lib/parser/parser')
 
 const HORIZONTAL_GAME = `title check that Horizontal Expands
 

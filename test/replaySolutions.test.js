@@ -1,11 +1,11 @@
 /* eslint-env jasmine */
 const fs = require('fs')
 const path = require('path')
-const { GameEngine } = require('../src/engine')
-const { default: Parser } = require('../src/parser/parser')
-const { default: UI } = require('../src/ui')
-const { RULE_DIRECTION_ABSOLUTE } = require('../src/util')
-const { saveCoverageFile } = require('../src/recordCoverage')
+const { GameEngine } = require('../lib/engine')
+const { default: Parser } = require('../lib/parser/parser')
+const { default: UI } = require('../lib/ui')
+const { RULE_DIRECTION_ABSOLUTE } = require('../lib/util')
+const { saveCoverageFile } = require('../lib/recordCoverage')
 
 const SOLUTION_ROOT = path.join(__dirname, '../gist-solutions/')
 const solutionFiles = fs.readdirSync(SOLUTION_ROOT)
