@@ -681,11 +681,14 @@ generateFromSeed = function(seed) {
     this._decodedBuffer = Buffer.from(b64string, 'base64')
   }
 
-  AUDIO_CONTEXT.outStream = new Speaker({
-    channels: AUDIO_CONTEXT.format.numberOfChannels,
-    bitDepth: AUDIO_CONTEXT.format.bitDepth,
-    sampleRate: AUDIO_CONTEXT.sampleRate
-})
+  // Disable speaker for Travis
+  if (process.env.CI !== 'true') {
+    AUDIO_CONTEXT.outStream = new Speaker({
+        channels: AUDIO_CONTEXT.format.numberOfChannels,
+        bitDepth: AUDIO_CONTEXT.format.bitDepth,
+        sampleRate: AUDIO_CONTEXT.sampleRate
+    })
+  }
 
   SoundEffect.prototype.play = async function() {
 
@@ -1098,6 +1101,11 @@ function cacheSeed(seed){
 }
 
 function playSound(seed) {
+  // Disable speaker for Travis
+  if (process.env.CI === 'true') {
+    return Promise.resolve('SOUND_EFFECT_DID_NOT_PLAY_BECAUSE_CI')
+  }
+
   checkAudioContextExists();
 //   if (unitTesting) return;
   var sound = cacheSeed(seed);
