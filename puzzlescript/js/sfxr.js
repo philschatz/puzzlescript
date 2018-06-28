@@ -1,7 +1,11 @@
 const RNG = require('./rng')
 const {MakeRiff, FastBase64_Encode} = require('./riffwave')
-const Speaker = require('speaker')
 const {AudioContext} = require('web-audio-api')
+
+let Speaker
+if (!process.env.CONTINUOUS_INTEGRATION && !process.env.CI) {
+    Speaker = require('speaker')
+}
 
 async function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms))
@@ -682,7 +686,7 @@ generateFromSeed = function(seed) {
   }
 
   // Disable speaker for Travis
-  if (process.env.CI !== 'true') {
+  if (!process.env.CONTINUOUS_INTEGRATION && !process.env.CI) {
     AUDIO_CONTEXT.outStream = new Speaker({
         channels: AUDIO_CONTEXT.format.numberOfChannels,
         bitDepth: AUDIO_CONTEXT.format.bitDepth,
@@ -1102,7 +1106,7 @@ function cacheSeed(seed){
 
 function playSound(seed) {
   // Disable speaker for Travis
-  if (process.env.CI === 'true') {
+  if (process.env.CONTINUOUS_INTEGRATION || process.env.CI) {
     return Promise.resolve('SOUND_EFFECT_DID_NOT_PLAY_BECAUSE_CI')
   }
 
@@ -1113,6 +1117,11 @@ function playSound(seed) {
 }
 
 function closeSounds() {
+    // Disable speaker for Travis
+    if (process.env.CONTINUOUS_INTEGRATION || process.env.CI) {
+        return
+    }
+
     AUDIO_CONTEXT.outStream._flush() // End the speaker
     AUDIO_CONTEXT._playing = false // So we do not continue outputing sound (since onended did not actually work) ... maybe we should do bufferNode.on('kill', ...)
     AUDIO_CONTEXT._kill()
