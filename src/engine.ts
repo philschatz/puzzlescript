@@ -14,42 +14,61 @@ import { CollisionLayer } from './models/collisionLayer';
 const MAX_REPEATS = 10
 
 type CollisionLayerState = {
-    wantsToMove?: RULE_DIRECTION_ABSOLUTE
-    sprite: GameSprite
+    readonly wantsToMove?: RULE_DIRECTION_ABSOLUTE
+    readonly sprite: GameSprite
 }
 
 
 // This Object exists so the UI has something to bind to
 export class Cell {
-    _engine: LevelEngine
-    _state: Map<CollisionLayer, CollisionLayerState>
-    rowIndex: number
-    colIndex: number
+    private _engine: LevelEngine
+    private _state: Map<CollisionLayer, CollisionLayerState>
+    private _cacheCollisionLayers: CollisionLayer[]
+    public readonly rowIndex: number
+    public readonly colIndex: number
 
     constructor(engine: LevelEngine, sprites: Set<GameSprite>, rowIndex: number, colIndex: number) {
         this._engine = engine
         this.rowIndex = rowIndex
         this.colIndex = colIndex
         this._state = new Map()
+        this._cacheCollisionLayers = []
 
         for (const sprite of sprites) {
             this._setWantsToMove(sprite, RULE_DIRECTION_ABSOLUTE.STATIONARY)
         }
 
     }
+    _setState(collisionLayer: CollisionLayer, sprite: GameSprite, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
+        let needsToUpdateCache
+        if (sprite || wantsToMove) {
+            needsToUpdateCache = this._cacheCollisionLayers.indexOf(collisionLayer) < 0
+            this._state.set(collisionLayer, {wantsToMove, sprite})
+        } else {
+            this._state.delete(collisionLayer)
+            needsToUpdateCache = true
+        }
+
+        if (needsToUpdateCache) {
+            // Update the collisionLayer Cache
+            this._cacheCollisionLayers = [...this._state.keys()]
+            .sort((c1, c2) => c1.id - c2.id)
+        }
+    }
     _setWantsToMove(sprite: GameSprite, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
         const collisionLayer = sprite.getCollisionLayer()
         const {wantsToMove: cellWantsToMove, sprite: cellSprite} = this.getStateForCollisionLayer(collisionLayer)
         const didActuallyChangeDir = cellWantsToMove !== wantsToMove
         const didActuallyChangeSprite = cellSprite !== sprite
-        this._state.set(collisionLayer, {wantsToMove, sprite})
+        this._setState(collisionLayer, sprite, wantsToMove)
         return didActuallyChangeSprite || didActuallyChangeDir
     }
     _deleteWantsToMove(sprite: GameSprite) {
         // There may be other sprites in the same ... oh wait, no that's not possible.
         const collisionLayer = sprite.getCollisionLayer()
         const didActuallyChange = !!this.getSpriteByCollisionLayer(collisionLayer)
-        this._state.delete(collisionLayer)
+
+        this._setState(collisionLayer, null, null) // delete the entry
 
         return didActuallyChange
     }
@@ -70,7 +89,7 @@ export class Cell {
         }
         const didActuallyChange = cellWantsToMove !== wantsToMove
 
-        this._state.set(collisionLayer, {wantsToMove, sprite})
+        this._setState(collisionLayer, sprite, wantsToMove)
 
         sprite.addCell(this, wantsToMove)
         return didActuallyChange
@@ -85,7 +104,7 @@ export class Cell {
         }
         const didActuallyChange = cellWantsToMove !== null
 
-        this._state.set(collisionLayer, {sprite, wantsToMove: null})
+        this._setState(collisionLayer, sprite, null)
 
         sprite.removeCell(this)
         return didActuallyChange
@@ -95,20 +114,21 @@ export class Cell {
         return sprite || null
     }
     getCollisionLayers() {
-        return [...this._state.keys()]
-        .sort((c1, c2) => c1.id - c2.id)
+        // return [...this._state.keys()]
+        //     .sort((c1, c2) => c1.id - c2.id)
+        return this._cacheCollisionLayers
     }
     getSprites() {
         // Just pull out the sprite, not the wantsToMoveDir
         const sprites = []
-        const collisionLayers = this.getCollisionLayers().reverse() // reversed so we render sprites properly
+        const collisionLayers = this.getCollisionLayers()
         for (const collisionLayer of collisionLayers) {
             const sprite = this.getSpriteByCollisionLayer(collisionLayer)
             if (sprite) {
                 sprites.push(sprite)
             }
         }
-        return sprites
+        return sprites.reverse() // reversed so we render sprites properly
     }
     getSpritesAsSet() {
         // Just pull out the sprite, not the wantsToMoveDir
@@ -212,7 +232,7 @@ export class Cell {
 }
 
 export class LevelEngine extends EventEmitter2 {
-    gameData: GameData
+    public readonly gameData: GameData
     currentLevel: Cell[][]
     _pendingPlayerWantsToMove: RULE_DIRECTION_ABSOLUTE
     _hasAgainThatNeedsToRun: boolean
@@ -550,10 +570,10 @@ export interface LoadingProgressHandler extends Listener {
 }
 
 export class GameEngine {
-    _levelEngine: LevelEngine
-    _currentLevelNum: number
-    _events: Map<string, LoadingProgressHandler []>
-    _isFirstTick: boolean
+    private _levelEngine: LevelEngine
+    private _currentLevelNum: number
+    private _events: Map<string, LoadingProgressHandler []>
+    private _isFirstTick: boolean
     constructor() {
         this._events = new Map()
     }
