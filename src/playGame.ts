@@ -3,7 +3,7 @@ import * as path from 'path'
 import * as glob from 'glob'
 import * as pify from 'pify'
 import * as inquirer from 'inquirer'
-import * as autocomplete from 'inquirer-autocomplete-prompt'
+import PromptModule, * as autocomplete from 'inquirer-autocomplete-prompt'
 import * as firstline from 'firstline'
 import chalk from 'chalk'
 
@@ -53,7 +53,7 @@ run()
 
 
 async function run() {
-    inquirer.registerPrompt('autocomplete', autocomplete)
+    inquirer.registerPrompt('autocomplete', <PromptModule> autocomplete)
     const gists = await pify(glob)(path.join(__dirname, '../gists/*/script.txt'))
 
     const games: GameInfo[] = []

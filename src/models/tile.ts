@@ -1,5 +1,5 @@
 import * as _ from 'lodash'
-import * as BitSet from 'bitset'
+import BitSet from 'bitset'
 import { BaseForLines, IGameCode, IGameNode } from './game'
 import { IColor, HexColor, TransparentColor } from './colors'
 import { CollisionLayer } from './collisionLayer'

@@ -1,5 +1,5 @@
 import * as _ from 'lodash'
-import * as BitSet from 'bitset'
+import BitSet from 'bitset'
 import { BaseForLines, IGameCode } from './game'
 import { GameSprite, IGameTile } from './tile'
 import { ValidationLevel, AddValidationFunc } from '../parser/parser';
