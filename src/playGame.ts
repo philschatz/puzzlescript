@@ -345,7 +345,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: {ve
         } else {
             if (!pendingKey && changedCells.size > 0) {
                 keypresses.push('.') // Add a "tick"
-                if (process.env.NODE_ENV !== 'production') {
+                if (process.env.NODE_ENV === 'development') {
                     maxSleepTime = 500 // Slow down when every "." matters (for recording)
                 }
             }
