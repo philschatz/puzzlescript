@@ -289,6 +289,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: {ve
     }
 
     let tickNum = 0
+    let maxSleepTime = 50
     while (true) {
         // Exit the game if the user pressed escape
         if (shouldExitGame) {
@@ -335,11 +336,14 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: {ve
         } else {
             if (!pendingKey && changedCells.size > 0) {
                 keypresses.push('.') // Add a "tick"
+                if (process.env.NODE_ENV !== 'production') {
+                    maxSleepTime = 500 // Slow down when every "." matters (for recording)
+                }
             }
             pendingKey = null
         }
 
-        await sleep(Math.max(500 - (Date.now() - startTime), 0))
+        await sleep(Math.max(maxSleepTime - (Date.now() - startTime), 0))
 
         tickNum++
     }

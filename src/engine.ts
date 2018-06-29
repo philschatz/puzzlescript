@@ -609,8 +609,10 @@ export class LevelEngine extends EventEmitter2 {
         this._pendingPlayerWantsToMove = direction
         // }
     }
-    pressRestart(levelNum) {
-        this.setLevel(levelNum)
+    pressRestart() {
+        const snapshot = this._undoStack[0]
+        this._undoStack = [snapshot]
+        this.applySnapshot(snapshot)
     }
     pressUndo() {
         if (this._undoStack.length > 1) { // the 0th entry is the initial load of the level
@@ -758,7 +760,7 @@ export class GameEngine {
 
     pressRestart() {
         this._isFirstTick = true
-        this._levelEngine.pressRestart(this._currentLevelNum)
+        this._levelEngine.pressRestart()
     }
     pressUndo() {
         this._levelEngine.pressUndo()
