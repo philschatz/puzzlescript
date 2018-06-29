@@ -13,7 +13,7 @@ import chalk from 'chalk';
 // 'truecolor' if this terminal supports 16m colors. 256 colors otherwise
 const supports16mColors = process.env['COLORTERM'] === 'truecolor'
 
-function setBgColor(hex) {
+function setBgColor(hex: string) {
     if (supports16mColors) {
         return ansiStyles.bgColor.ansi16m.hex(hex)
     } else {
@@ -21,20 +21,20 @@ function setBgColor(hex) {
     }
 }
 
-function setFgColor(hex) {
+function setFgColor(hex: string) {
     if (supports16mColors) {
         return ansiStyles.color.ansi16m.hex(hex)
     } else {
         return ansiStyles.color.ansi256.hex(hex)
     }
 }
-function writeBgColor(hex) {
+function writeBgColor(hex: string) {
     process.stdout.write(setBgColor(hex))
 }
-function writeFgColor(hex) {
+function writeFgColor(hex: string) {
     process.stdout.write(setFgColor(hex))
 }
-function setMoveTo(x, y) {
+function setMoveTo(x: number, y: number) {
     return ansiEscapes.cursorTo(x, y)
 }
 function setHideCursor() {
@@ -46,10 +46,10 @@ function setShowCursor() {
 function clearScreen() {
     process.stdout.write(ansiEscapes.clearScreen)
 }
-function writeTextAt(x, y, msg) {
+function writeTextAt(x: number, y: number, msg: string) {
     process.stdout.write(`${setMoveTo(x, y)}${msg}`)
 }
-function drawPixelChar(x, y, fgHex, bgHex, char) {
+function drawPixelChar(x: number, y: number, fgHex: string, bgHex: string, char: string) {
     const out = []
     if (fgHex) {
         out.push(writeFgColor(fgHex))
@@ -249,7 +249,7 @@ class TerminalUI {
 
         const level = this._engine.getCurrentLevel()
         if (!level.isMap()) {
-            function prettyKey(keyCode) {
+            function prettyKey(keyCode: string) {
                 return chalk.whiteBright.bgWhite(`[${chalk.black(keyCode)}]`);
             }
 
@@ -338,7 +338,7 @@ class TerminalUI {
     }
 
     private setPixel(x: number, y: number, hex: string, fgHex: string, chars: string) {
-        const getColor = (y, x) => {
+        const getColor = (y: number, x: number) => {
             if (this._renderedPixels[y] && this._renderedPixels[y][x]) {
                 return this._renderedPixels[y][x].hex
             } else {
@@ -689,7 +689,7 @@ class TerminalUI {
         }
     }
 
-    _drawPixel(x, y, fgHex, bgHex, chars) {
+    _drawPixel(x: number, y: number, fgHex: string, bgHex: string, chars: string) {
         drawPixelChar(x, y, fgHex, bgHex, chars)
     }
 }

@@ -4,16 +4,12 @@ import * as glob from 'glob'
 import * as pify from 'pify'
 
 import Parser from './parser/parser'
-import { IGameNode } from './models/game'
 import TerminalUI from './ui'
 import { GameEngine } from './engine'
-import { setAddAll, RULE_DIRECTION_ABSOLUTE } from './util';
-import { start } from 'repl';
-import { IRule } from './models/rule';
-import { RULE_DIRECTION } from './enums';
+import { RULE_DIRECTION_ABSOLUTE } from './util';
 import { saveCoverageFile } from './recordCoverage';
-import {playSound} from './sounds';
 import { closeSounds } from './models/sound';
+import { LevelRecording } from './playGame';
 
 async function sleep(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms))
@@ -62,7 +58,7 @@ async function run() {
             ].join('').split('').join('.')
             const recordingsPath = path.join(__dirname, `../gist-solutions/${gistId}.json`)
             if (existsSync(recordingsPath)) {
-                const recordings = JSON.parse(readFileSync(recordingsPath, 'utf-8')).solutions
+                const recordings: LevelRecording[] = JSON.parse(readFileSync(recordingsPath, 'utf-8')).solutions
                 if (recordings) {
                     // TODO: Use the following rules for finding which recording to play:
                     // - find the last partially (or) completed Map

@@ -8,8 +8,18 @@ import { GameMetadata } from '../models/metadata'
 import { HexColor, TransparentColor } from '../models/colors'
 import { lookupColorPalette } from '../colors'
 import { LookupHelper } from './lookup'
-import { ValidationLevel } from './parser'
-import { MessageLevel } from '../models/level';
+import { ValidationLevel, AddValidationFunc } from './parser'
+import { MessageLevel, LevelMap } from '../models/level';
+import { WinConditionSimple } from '../models/winCondition';
+import { ASTGameRule } from '../parser/rule';
+import { CollisionLayer } from '../models/collisionLayer';
+import { GameSound } from '../models/sound';
+import { GameLegendTileSimple, GameSprite } from '../models/tile';
+
+export type Parseable<T> = {
+    parse: () => T
+    primitiveValue: string
+}
 
 export const COMMON_GRAMMAR = `
     GameData =
@@ -262,12 +272,12 @@ export const METADATA_GRAMMAR = `
     widthAndHeight = integer "x" integer
 `
 
-export function getGameSemantics(lookup: LookupHelper, addValidationMessage) {
+export function getGameSemantics(lookup: LookupHelper, addValidationMessage: AddValidationFunc) {
     let currentColorPalette = 'arnecolors' // default
     return {
-        GameData: function (_whitespace1, title, _whitespace2, settingsFields, _whitespace3, objects, legends, sounds, collisionLayers, rules, winConditions, levels) {
+        GameData: function (_whitespace1: Parseable<string>, title: Parseable<string>, _whitespace2: Parseable<string>, settingsFields, _whitespace3: Parseable<string>, sprites: Parseable<GameSprite[][]>, legends: Parseable<GameLegendTileSimple[][]>, sounds: Parseable<GameSound[][]>, collisionLayers: Parseable<CollisionLayer[][]>, rules: Parseable<ASTGameRule[][]>, winConditions: Parseable<WinConditionSimple[][]>, levels: Parseable<LevelMap[][]>) {
             const metadata = new GameMetadata()
-            settingsFields.parse().forEach((setting) => {
+            settingsFields.parse().forEach((setting: string[]) => {
                 if (Array.isArray(setting)) {
                     metadata._setValue(setting[0].toLowerCase(), setting[1])
                 } else {
@@ -277,7 +287,7 @@ export function getGameSemantics(lookup: LookupHelper, addValidationMessage) {
             return new GameData(
                 title.parse(),
                 metadata,
-                objects.parse()[0] || [],
+                sprites.parse()[0] || [],
                 legends.parse()[0] || [],
                 sounds.parse()[0] || [],
                 collisionLayers.parse()[0] || [],
@@ -286,7 +296,7 @@ export function getGameSemantics(lookup: LookupHelper, addValidationMessage) {
                 levels.parse()[0] || []
             )
         },
-        Title: function (_1, value) {
+        Title: function (_1: Parseable<string>, value: Parseable<string>) {
             return value.parse()
         },
         Author: getConfigField,
@@ -300,33 +310,33 @@ export function getGameSemantics(lookup: LookupHelper, addValidationMessage) {
         Youtube: getConfigField,
         Zoomscreen: getConfigField,
         Flickscreen: getConfigField,
-        ColorPalette: function (_1, colorPaletteName) {
+        ColorPalette: function (_1: Parseable<string>, colorPaletteName: Parseable<string>) {
             // Set the color palette so we only need to use hex color codes
             currentColorPalette = colorPaletteName.parse()
             return getConfigField(_1, colorPaletteName)
         },
         RequirePlayerMovement: getConfigField,
 
-        Section: function (_threeDashes1, _lineTerminator1, _sectionName, _lineTerminator2, _threeDashes2, _8, _9, _10, _11) {
+        Section: function (_threeDashes1: Parseable<string>, _lineTerminator1: Parseable<string>, _sectionName: Parseable<string>, _lineTerminator2: Parseable<string>, _threeDashes2: Parseable<string>, _8: Parseable<string>, _9: Parseable<string>, _10: Parseable<string>, _11: Parseable<string>) {
             return _10.parse()
         },
-        widthAndHeight: function (_1, _2, _3) {
+        widthAndHeight: function (_1: Parseable<string>, _2: Parseable<string>, _3: Parseable<string>) {
             return {
                 __type: 'widthAndHeight',
                 width: _1.parse(),
                 height: _3.parse()
             }
         },
-        pixelRow: function (_1, _2) {
+        pixelRow: function (_1: Parseable<string>, _2: Parseable<string>) {
             return _1.parse()
         },
-        colorHex3: function (_1, _2, _3, _4) {
+        colorHex3: function (_1: Parseable<string>, _2: Parseable<string>, _3: Parseable<string>, _4: Parseable<string>) {
             return new HexColor(this.source, this.sourceString)
         },
-        colorHex6: function (_1, _2, _3, _4, _5, _6, _7) {
+        colorHex6: function (_1: Parseable<string>, _2: Parseable<string>, _3: Parseable<string>, _4: Parseable<string>, _5: Parseable<string>, _6: Parseable<string>, _7: Parseable<string>) {
             return new HexColor(this.source, this.sourceString)
         },
-        colorName: function (_1) {
+        colorName: function (_1: Parseable<string>) {
             const colorName = this.sourceString.toLowerCase()
             const hex = lookupColorPalette(currentColorPalette, colorName)
             if (hex) {
@@ -337,13 +347,13 @@ export function getGameSemantics(lookup: LookupHelper, addValidationMessage) {
                 return transparent
             }
         },
-        colorTransparent: function (_1) {
+        colorTransparent: function (_1: Parseable<string>) {
             return new TransparentColor(this.source)
         },
-        NonemptyListOf: function (_1, _2, _3) {
+        NonemptyListOf: function (_1: Parseable<string>, _2: Parseable<string>, _3: Parseable<string>) {
             return [_1.parse()].concat(_3.parse())
         },
-        nonemptyListOf: function (_1, _2, _3) {
+        nonemptyListOf: function (_1: Parseable<string>, _2: Parseable<string>, _3: Parseable<string>) {
             // Do this special because LegendTile contains things like `X = A or B or C` and we need to know if they are `and` or `or`
             return {
                 __type: 'nonemptyListOf',
@@ -351,27 +361,27 @@ export function getGameSemantics(lookup: LookupHelper, addValidationMessage) {
                 separators: [_2.parse()]
             }
         },
-        integer: function (_1) {
+        integer: function (_1: Parseable<string>) {
             return parseInt(this.sourceString)
         },
-        decimalWithLeadingNumber: function (_1, _2, _3) {
+        decimalWithLeadingNumber: function (_1: Parseable<string>, _2: Parseable<string>, _3: Parseable<string>) {
             return parseFloat(this.sourceString)
         },
-        decimalWithLeadingPeriod: function (_1, _2) {
+        decimalWithLeadingPeriod: function (_1: Parseable<string>, _2: Parseable<string>) {
             return parseFloat(this.sourceString)
         },
-        lookupRuleVariableName: function (_1) {
+        lookupRuleVariableName: function (_1: Parseable<string>) {
             return lookup.lookupObjectOrLegendTile(this.source, _1.parse())
         },
-        ruleVariableName: function (_1) {
+        ruleVariableName: function (_1: Parseable<string>) {
             return this.sourceString
         },
-        words: function (_1) {
+        words: function (_1: Parseable<string>) {
             return this.sourceString
         },
         _terminal: function () { return this.primitiveValue },
-        lineTerminator: (_1, _2, _3, _4) => { },
-        digit: (x) => {
+        lineTerminator: (_1: Parseable<string>, _2: Parseable<string>, _3: Parseable<string>, _4: Parseable<string>) => { },
+        digit: (x: Parseable<string>) => {
             return x.primitiveValue.charCodeAt(0) - '0'.charCodeAt(0)
         }
         // _default: function (exp1) {

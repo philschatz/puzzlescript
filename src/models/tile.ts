@@ -43,13 +43,13 @@ export class GameSprite extends BaseForLines implements IGameTile {
     isOr() {
         return false
     }
-    equals(t: IGameTile) {
+    equals(t: IGameTile): boolean {
         return this === t // sprites MUST be exact
     }
     hasPixels() {
         throw new Error('BUG: Subclasses should implement this')
     }
-    getPixels(spriteHeight, spriteWidth): IColor[][] {
+    getPixels(spriteHeight: number, spriteWidth: number): IColor[][] {
         throw new Error('BUG: Subclasses should implement this')
     }
     getName() {
@@ -58,7 +58,7 @@ export class GameSprite extends BaseForLines implements IGameTile {
     isBackground() {
         return this._name.toLowerCase() === 'background'
     }
-    _getDescendantTiles() {
+    _getDescendantTiles(): IGameTile[] {
         return []
     }
     getSprites() {
@@ -139,7 +139,7 @@ export class GameSprite extends BaseForLines implements IGameTile {
             t.updateCells(this, [cell], wantsToMove)
         }
     }
-    addCells(cells: Iterable<Cell>, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
+    addCells(cells: Cell[], wantsToMove: RULE_DIRECTION_ABSOLUTE) {
         for (const cell of cells) {
             this._cellSet.add(cell)
         }
@@ -148,7 +148,7 @@ export class GameSprite extends BaseForLines implements IGameTile {
             t.addCells(this, cells, wantsToMove)
         }
     }
-    removeCells(cells: Iterable<Cell>) {
+    removeCells(cells: Cell[]) {
         for (const cell of cells) {
             this._cellSet.delete(cell)
         }
@@ -185,7 +185,7 @@ export class GameSpriteSingleColor extends GameSprite {
     hasPixels() {
         return false
     }
-    getPixels(spriteHeight, spriteWidth) {
+    getPixels(spriteHeight: number, spriteWidth: number) {
         // When there are no pixels then it means "color the whole thing in the same color"
         const rows: HexColor[][] = []
         for (let row = 0; row < spriteHeight; row++) {
@@ -244,7 +244,7 @@ export class GameSpritePixels extends GameSprite {
     hasPixels() {
         return true
     }
-    getPixels(spriteHeight, spriteWidth) {
+    getPixels(spriteHeight: number, spriteWidth: number) {
         // Make a copy because others may edit it
         return this._pixels.map(row => {
             return row.map(col => col)

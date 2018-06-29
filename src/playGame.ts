@@ -12,8 +12,17 @@ import TerminalUI from './ui'
 import { GameEngine } from './engine'
 import { saveCoverageFile } from './recordCoverage';
 import { closeSounds } from './models/sound';
-import { RULE_DIRECTION_ABSOLUTE } from './util';
 import { GameData } from './models/game';
+import { LoadingCellsEvent } from './engine';
+
+export type GameRecording = {
+    version: number,
+    solutions: LevelRecording[]
+}
+export type LevelRecording = {
+    partial?: string,
+    solution?: string
+}
 
 
 async function sleep(ms: number) {
@@ -24,7 +33,7 @@ async function sleep(ms: number) {
 // keypress.enableMouse(process.stdout)
 
 
-function toUnicode(theString) {
+function toUnicode(theString: string) {
     var unicodeString = '';
     for (var i = 0; i < theString.length; i++) {
         var theUnicode = theString.charCodeAt(i).toString(16).toUpperCase();
@@ -85,7 +94,7 @@ async function run() {
 
             // Load the solutions file (if it exists) so we can append to it
             const solutionsPath = path.join(__dirname, `../gist-solutions/${gistId}.json`)
-            let recordings = {version: 1, solutions: []} // default
+            let recordings: {version: number, solutions: LevelRecording[]} = {version: 1, solutions: []} // default
             if (existsSync(solutionsPath)) {
                 recordings = JSON.parse(readFileSync(solutionsPath, 'utf-8'))
             }
@@ -137,7 +146,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: {ve
     const level = data.levels[currentLevelNum]
     let startTime = Date.now()
     const engine = new GameEngine()
-    engine.on('loading-cells', ({ cellStart, cellEnd, cellTotal, key }) => {
+    engine.on('loading-cells', ({ cellStart, cellEnd, cellTotal }: LoadingCellsEvent) => {
         // UI.writeDebug(`Loading cells ${cellStart}-${cellEnd} of ${cellTotal}. SpriteKey="${key}"`)
         const loading = `Loading... [`
         const barChars = '                    '
@@ -169,12 +178,12 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: {ve
         keypresses = [] // clear key history
     }
 
-    let keypresses = []
+    let keypresses: string[] = []
     let pendingKey = null
     let shouldExitGame: boolean = false
     // https://stackoverflow.com/a/30687420
     process.stdin.on('data', handleKeyPress)
-    function handleKeyPress(key) {
+    function handleKeyPress(key: string) {
         switch (key) {
             case 'w':
             case '\u001B\u005B\u0041': // UP-ARROW
@@ -269,7 +278,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: {ve
 
         if (soundToPlay) {
             if (!currentlyPlayingSoundPromise) {
-                currentlyPlayingSoundPromise = soundToPlay.play().then(() => currentlyPlayingSoundPromise = null)
+                currentlyPlayingSoundPromise = soundToPlay.play().then((): void => currentlyPlayingSoundPromise = null)
             }
         }
 
@@ -313,7 +322,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: {ve
 
         if (soundToPlay) {
             if (!currentlyPlayingSoundPromise) {
-                currentlyPlayingSoundPromise = soundToPlay.play().then(() => currentlyPlayingSoundPromise = null)
+                currentlyPlayingSoundPromise = soundToPlay.play().then((): void => currentlyPlayingSoundPromise = null)
             }
         }
 
@@ -449,7 +458,7 @@ async function promptChooseLevel(recordings: SaveFile, data: GameData) {
     return currentLevelNum
 }
 
-async function promptPixelSize(data) {
+async function promptPixelSize(data: GameData) {
     if (!TerminalUI.willAllLevelsFitOnScreen(data)) {
         // Draw some example sprites
         console.log('Some of the levels in this game are too large for your terminal.');
@@ -540,7 +549,7 @@ async function promptGame(games: GameInfo[]) {
         name: 'gameTitle',
         message: 'Which game would you like to play?',
         pageSize: Math.max(15, process.stdout.rows - 15),
-        source: async (answers, input) => {
+        source: async (answers: void, input: string) => {
             let filteredGames
             if (!input) {
                 filteredGames = games
@@ -574,7 +583,7 @@ async function promptGame(games: GameInfo[]) {
     // Filter out the DIM escape codes (to give the game titles a color)
     const firstInvisible = gameTitle.indexOf('\u2063')
     const lastInvisible = gameTitle.lastIndexOf('\u2063')
-    let uncoloredGameTitle
+    let uncoloredGameTitle: string
     if (firstInvisible >= 0) {
         uncoloredGameTitle = gameTitle.substring(firstInvisible + 1, lastInvisible)
     } else {
@@ -591,7 +600,7 @@ async function promptGame(games: GameInfo[]) {
 
 
 function showControls() {
-    function prettyKey(keyCode) {
+    function prettyKey(keyCode: string) {
         return chalk.whiteBright.bgWhite(`[${chalk.black(keyCode)}]`);
     }
     console.log(`-------------------------------------`);

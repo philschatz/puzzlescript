@@ -36,8 +36,8 @@ export function setDifference<T>(setA: Set<T>, setB: Set<T>) {
 
 // From https://stackoverflow.com/a/19303725
 let seed = 1
-let randomValuesForTesting = null
-export function nextRandom(maxNonInclusive) {
+let randomValuesForTesting: number[] = null
+export function nextRandom(maxNonInclusive: number) {
     if (randomValuesForTesting) {
         if (randomValuesForTesting.length <= seed - 1) {
             throw new Error(`BUG: the list of random values for testing was too short. See calls to setRandomValuesForTesting([...]). The list was [${randomValuesForTesting}]. Index being requested is ${seed - 1}`)

@@ -8,6 +8,8 @@ import {
     IGameTile
 } from '../models/tile'
 import { LookupHelper } from './lookup'
+import { Parseable } from './gameGrammar';
+import { HexColor } from '../models/colors';
 
 export const SPRITE_GRAMMAR = `
     Sprite
@@ -49,8 +51,8 @@ export const LEGEND_GRAMMAR = `
 
 export function getTileSemantics(lookup: LookupHelper) {
     return {
-        Sprite: function (_1) {
-            const gameObject: GameSprite = _1.parse()
+        Sprite: function (_1: Parseable<GameSprite>) {
+            const gameObject = _1.parse()
             lookup.addToAllObjects(gameObject)
             if (gameObject._optionalLegendChar) {
                 // addObjectToAllLegendTiles(gameObject)
@@ -60,13 +62,13 @@ export function getTileSemantics(lookup: LookupHelper) {
             }
             return gameObject
         },
-        SpritePixels: function (name, optionalLegendChar, _3, colors, _5, pixels, _7) {
+        SpritePixels: function (name: Parseable<string>, optionalLegendChar: Parseable<string[]>, _3: Parseable<string>, colors: Parseable<HexColor[]>, _5: Parseable<string>, pixels: Parseable<(number | ".")[][]>, _7: Parseable<string>) {
             return new GameSpritePixels(this.source, name.parse(), optionalLegendChar.parse()[0], colors.parse(), pixels.parse())
         },
-        SpriteNoPixels: function (name, optionalLegendChar, _3, colors, _5) {
+        SpriteNoPixels: function (name: Parseable<string>, optionalLegendChar: Parseable<string[]>, _3: Parseable<string>, colors: Parseable<HexColor[]>, _5: Parseable<string>) {
             return new GameSpriteSingleColor(this.source, name.parse(), optionalLegendChar.parse()[0], colors.parse())
         },
-        PixelRows: function (row1, row2, row3, row4, rows) {
+        PixelRows: function (row1: Parseable<string>, row2: Parseable<string>, row3: Parseable<string>, row4: Parseable<string>, rows: Parseable<string>) {
             return [
                 row1.parse(),
                 row2.parse(),
@@ -74,26 +76,26 @@ export function getTileSemantics(lookup: LookupHelper) {
                 row4.parse()
             ].concat(rows.parse())
         },
-        LookupLegendVarName: function (tile) {
+        LookupLegendVarName: function (tileName: Parseable<string>) {
             // Replace all the Sprite Names with the actual objects
-            return lookup.lookupObjectOrLegendTile(this.source, tile.parse())
+            return lookup.lookupObjectOrLegendTile(this.source, tileName.parse())
         },
-        LegendTile: function (_1) {
-            const legendTile: GameLegendTileSimple = _1.parse()
+        LegendTile: function (tile: Parseable<GameLegendTileSimple>) {
+            const legendTile = tile.parse()
             lookup.addToAllLegendTiles(legendTile)
             if (legendTile._spriteNameOrLevelChar.length === 1) {
                 lookup.addLegendToAllLevelChars(legendTile)
             }
             return legendTile
         },
-        LegendTileSimple: function (spriteNameOrLevelChar, _equals, tile, _whitespace) {
+        LegendTileSimple: function (spriteNameOrLevelChar: Parseable<string>, _equals: Parseable<string>, tile: Parseable<GameSprite>, _whitespace: Parseable<string>) {
             // TODO: Do the lookup and adding to sets here rather than rewiring in LegendTile
             return new GameLegendTileSimple(this.source, spriteNameOrLevelChar.parse(), tile.parse())
         },
-        LegendTileAnd: function (spriteNameOrLevelChar, _equals, tiles, _whitespace) {
+        LegendTileAnd: function (spriteNameOrLevelChar: Parseable<string>, _equals: Parseable<string>, tiles: Parseable<IGameTile[]>, _whitespace: Parseable<string>) {
             return new GameLegendTileAnd(this.source, spriteNameOrLevelChar.parse(), tiles.parse())
         },
-        LegendTileOr: function (spriteNameOrLevelChar, _equals, tiles, _whitespace) {
+        LegendTileOr: function (spriteNameOrLevelChar: Parseable<string>, _equals: Parseable<string>, tiles: Parseable<IGameTile[]>, _whitespace: Parseable<string>) {
             return new GameLegendTileOr(this.source, spriteNameOrLevelChar.parse(), tiles.parse())
         }
     }

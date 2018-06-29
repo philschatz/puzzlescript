@@ -37,11 +37,8 @@ export class LevelMap extends BaseForLines implements ILevel {
     getHeight() {
         return this._rows.length
     }
-    getMessage() {
-        if (!!true) {
-            throw new Error(`BUG: Check .isMap() before calling this`)
-        }
-        return null
+    getMessage(): string {
+        throw new Error(`BUG: Check .isMap() before calling this`)
     }
 }
 
@@ -51,15 +48,12 @@ export class MessageLevel extends BaseForLines implements ILevel {
         super(source)
         this._message = message
     }
-    isInvalid() { return null }
+    isInvalid(): string { return null }
     isMap() {
         return false
     }
-    getRows() {
-        if (!!true) {
-            throw new Error(`BUG: Should have checked isMap first`)
-        }
-        return null
+    getRows(): IGameTile[][] {
+        throw new Error(`BUG: Should have checked isMap first`)
     }
     getMessage() {
         return this._message

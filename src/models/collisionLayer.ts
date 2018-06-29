@@ -2,7 +2,7 @@ import * as _ from 'lodash'
 import * as BitSet from 'bitset'
 import { BaseForLines, IGameCode } from './game'
 import { GameSprite, IGameTile } from './tile'
-import { ValidationLevel } from '../parser/parser';
+import { ValidationLevel, AddValidationFunc } from '../parser/parser';
 
 let _collisionId = 0
 export class CollisionLayer extends BaseForLines {
@@ -10,7 +10,7 @@ export class CollisionLayer extends BaseForLines {
     _sprites: GameSprite[]
     id: number // Used for sorting collision layers for rendering
 
-    constructor(source: IGameCode, tiles: IGameTile[], addValidationMessage) {
+    constructor(source: IGameCode, tiles: IGameTile[], addValidationMessage: AddValidationFunc) {
         super(source)
         this._tiles = tiles
         this.id = _collisionId++

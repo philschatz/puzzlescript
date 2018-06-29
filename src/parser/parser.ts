@@ -13,6 +13,8 @@ import { GameData, IGameNode } from '../models/game'
 
 let _GRAMMAR: ohm.Grammar = null
 
+export type AddValidationFunc = (source: IGameNode, level: ValidationLevel, message: string) => void
+
 export enum ValidationLevel {
     ERROR,
     WARNING,

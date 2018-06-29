@@ -16,6 +16,14 @@ type CollisionLayerState = {
     readonly sprite: GameSprite
 }
 
+type TickResult = {
+    changedCells: Set<Cell>,
+    soundToPlay?: GameSound,
+    didWinGame: boolean,
+    didLevelChange: boolean,
+    wasAgainTick: boolean
+}
+
 
 // This Object exists so the UI has something to bind to
 export class Cell {
@@ -342,7 +350,7 @@ export class LevelEngine extends EventEmitter2 {
     toSnapshot() {
         return this.currentLevel.map(row => {
             return row.map(cell => {
-                const ret = []
+                const ret: string[] = []
                 cell.getSpriteAndWantsToMoves().forEach((wantsToMove, sprite) => {
                     ret.push(`${wantsToMove} ${sprite._name}`)
                 })
@@ -685,7 +693,7 @@ export class GameEngine {
         }
         this._currentLevelNum = levelNum
     }
-    tick() {
+    tick(): TickResult {
         // When the current level is a Message, wait until the user presses ACTION
         if (!this.getCurrentLevel().isMap()) {
             // Wait until the user presses "X" (ACTION)
@@ -735,6 +743,7 @@ export class GameEngine {
                 this.setLevel(this._currentLevelNum + 1)
             }
         }
+
         return {
             changedCells,
             soundToPlay,
@@ -743,6 +752,7 @@ export class GameEngine {
             wasAgainTick: hasAgain
         }
     }
+
 
     press(direction: RULE_DIRECTION_ABSOLUTE) {
         return this._levelEngine.press(direction)

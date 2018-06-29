@@ -58,7 +58,7 @@ export function saveCoverageFile(data: GameData, absPath: string, coverageFilena
 
 
     function recursivelyGetRules(rules: IRule[]) {
-        let ret = []
+        let ret: IRule[] = []
         for (const rule of rules) {
             ret.push(rule)
             ret = ret.concat(recursivelyGetRules(rule.getChildRules()))

@@ -167,7 +167,7 @@ export class ASTGameRule extends BaseForLines implements ICacheable {
 
     convertToMultiple() {
         let rulesToConvert = []
-        let convertedRules = []
+        let convertedRules: ASTGameRule[] = []
 
         for (const direction of this.getDirectionModifiers()) {
             const expandedDirection = this.clone(direction, null, null)
@@ -200,20 +200,20 @@ export class ASTGameRule extends BaseForLines implements ICacheable {
                     let orthogonals
                     let parallels
                     switch(direction) {
-                        case RULE_DIRECTION.UP:
-                        case RULE_DIRECTION.DOWN:
+                        case RULE_DIRECTION_ABSOLUTE.UP:
+                        case RULE_DIRECTION_ABSOLUTE.DOWN:
                             orthogonals = [RULE_DIRECTION.LEFT, RULE_DIRECTION.RIGHT]
                             parallels = [RULE_DIRECTION.UP, RULE_DIRECTION.DOWN]
                             break
-                        case RULE_DIRECTION.LEFT:
-                        case RULE_DIRECTION.RIGHT:
+                        case RULE_DIRECTION_ABSOLUTE.LEFT:
+                        case RULE_DIRECTION_ABSOLUTE.RIGHT:
                             orthogonals = [RULE_DIRECTION.UP, RULE_DIRECTION.DOWN]
                             parallels = [RULE_DIRECTION.LEFT, RULE_DIRECTION.RIGHT]
                             break
                         default:
                     }
                     if (orthogonals) {
-                        for (const [nameToExpand, variations] of [[AST_RULE_MODIFIER.ORTHOGONAL, orthogonals], [AST_RULE_MODIFIER.PARALLEL, parallels]]) {
+                        for (const {nameToExpand, variations} of [{nameToExpand: AST_RULE_MODIFIER.ORTHOGONAL, variations: orthogonals}, {nameToExpand: AST_RULE_MODIFIER.PARALLEL, variations: parallels}]) {
                             if (rule.hasModifier(nameToExpand)) {
                                 for (const variation of variations) {
                                     convertedRules.push(rule.clone(direction, nameToExpand, variation))
@@ -241,7 +241,24 @@ export class ASTGameRule extends BaseForLines implements ICacheable {
         const conditionBrackets = this._brackets.map(bracket => bracket.clone(direction, nameToExpand, newName))
         const actionBrackets = this._actionBrackets.map(bracket => bracket.clone(direction, nameToExpand, newName))
         // retain LATE and RIGID but discard the rest of the modifiers
-        const modifiers = _.intersection(this._modifiers, [AST_RULE_MODIFIER.LATE, AST_RULE_MODIFIER.RIGID, AST_RULE_MODIFIER.RANDOM]).concat([AST_RULE_MODIFIER[direction]])
+        let directionModifier
+        switch (direction) {
+            case RULE_DIRECTION_ABSOLUTE.UP:
+                directionModifier = AST_RULE_MODIFIER.UP
+                break
+            case RULE_DIRECTION_ABSOLUTE.DOWN:
+                directionModifier = AST_RULE_MODIFIER.DOWN
+                break
+            case RULE_DIRECTION_ABSOLUTE.LEFT:
+                directionModifier = AST_RULE_MODIFIER.LEFT
+                break
+            case RULE_DIRECTION_ABSOLUTE.RIGHT:
+                directionModifier = AST_RULE_MODIFIER.RIGHT
+                break
+            default:
+                throw new Error(`BUG: Invalid direction "${direction}"`)
+        }
+        const modifiers = _.intersection(this._modifiers, [AST_RULE_MODIFIER.LATE, AST_RULE_MODIFIER.RIGID, AST_RULE_MODIFIER.RANDOM]).concat([directionModifier])
         return new ASTGameRule(this.__source, modifiers, conditionBrackets, actionBrackets, this._commands, this._debugFlag)
     }
 

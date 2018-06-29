@@ -216,7 +216,7 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
     toKey() {
         return `{Late?${this._isLate}}{Rigid?${this._isRigid}} ${this._evaluationDirection} ${this._conditionBrackets.map(x => x.toKey())} -> ${this._actionBrackets.map(x => x.toKey())} ${this._commands.join(' ')} {debugger?${this._debugFlag}}`
     }
-    getChildRules() {
+    getChildRules(): IRule[] {
         return []
     }
     subscribeToCellChanges() {
@@ -749,7 +749,7 @@ export class SimpleBracket extends BaseForLines implements ICacheable {
 }
 
 export class SimpleBracketConditionOnly extends SimpleBracket {
-    evaluate() {
+    evaluate(): IMutation[] {
         return []
     }
 }
@@ -1449,11 +1449,11 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
         return this._isNegated != (hasTile && (this._direction === wantsToMove || this._direction === null))
     }
 
-    matchesFirstCell(cells: Iterable<Cell>, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
+    matchesFirstCell(cells: Cell[], wantsToMove: RULE_DIRECTION_ABSOLUTE) {
         return this.matchesCellWantsToMove(cells[0], wantsToMove)
     }
 
-    addCells(sprite: GameSprite, cells: Iterable<Cell>, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
+    addCells(sprite: GameSprite, cells: Cell[], wantsToMove: RULE_DIRECTION_ABSOLUTE) {
         if (process.env['NODE_ENV'] === 'development' && this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
             // Pause here because it was marked in the code
             TerminalUI.debugRenderScreen(); debugger
@@ -1475,7 +1475,7 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
             // this._removeCellsFromCache(cellsInCache)
         }
     }
-    updateCells(sprite: GameSprite, cells: Iterable<Cell>, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
+    updateCells(sprite: GameSprite, cells: Cell[], wantsToMove: RULE_DIRECTION_ABSOLUTE) {
         if (process.env['NODE_ENV'] === 'development' && this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
             // Pause here because it was marked in the code
             TerminalUI.debugRenderScreen(); debugger
@@ -1487,7 +1487,7 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
             }
         }
     }
-    removeCells(sprite: GameSprite, cells: Iterable<Cell>) {
+    removeCells(sprite: GameSprite, cells: Cell[]) {
         if (process.env['NODE_ENV'] === 'development' && this._debugFlag === DEBUG_FLAG.BREAKPOINT_REMOVE) {
             // Pause here because it was marked in the code
             TerminalUI.debugRenderScreen(); debugger
@@ -1535,7 +1535,7 @@ class Pair<A> {
 
 class ExtraPair<A> extends Pair<A> {
     extra: boolean
-    constructor(condition, action, extra) {
+    constructor(condition: A, action: A, extra: boolean) {
         super(condition, action)
         this.extra = extra
     }
@@ -1573,11 +1573,8 @@ class CellMutation implements IMutation {
     getCell() { return this.cell }
     getDidSpritesChange() { return this.didSpritesChange }
     hasCommand() { return false }
-    getCommand() {
-        if (!!true) {
-            throw new Error(`BUG: check hasCommand first`)
-        }
-        return null
+    getCommand(): AbstractCommand {
+        throw new Error(`BUG: check hasCommand first`)
     }
 }
 
@@ -1590,10 +1587,7 @@ class CommandMutation implements IMutation {
     getCommand() { return this.command }
     getDidSpritesChange() { return false }
     hasCell() { return false }
-    getCell() {
-        if (!!true) {
-            throw new Error(`BUG: check hasCell first`)
-        }
-        return null
+    getCell(): Cell {
+        throw new Error(`BUG: check hasCell first`)
     }
 }
