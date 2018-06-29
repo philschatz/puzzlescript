@@ -8,7 +8,7 @@ import * as firstline from 'firstline'
 import chalk from 'chalk'
 
 import Parser from './parser/parser'
-import UI from './ui'
+import TerminalUI from './ui'
 import { GameEngine } from './engine'
 import { saveCoverageFile } from './recordCoverage';
 import { closeSounds } from './models/sound';
@@ -110,7 +110,7 @@ async function run() {
             process.stdin.resume()
             process.stdin.setEncoding('utf8')
 
-            UI.clearScreen()
+            TerminalUI.clearScreen()
 
             await playGame(data, currentLevelNum, recordings, ticksToRunFirst, absPath, solutionsPath)
 
@@ -141,7 +141,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: {ve
         // UI.writeDebug(`Loading cells ${cellStart}-${cellEnd} of ${cellTotal}. SpriteKey="${key}"`)
         const loading = `Loading... [`
         const barChars = '                    '
-        UI.writeDebug(loading + barChars)
+        TerminalUI.writeDebug(loading + barChars)
         const offset = loading.length + 1
         const barLength = barChars.length
         const percentStartYellow = Math.floor(barLength * cellStart / cellTotal)
@@ -155,17 +155,17 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: {ve
                 fgColor = '#ffff00' // yellow
                 // char = '▒' // ░▒▓
             }
-            UI._drawPixel(i + offset, 0, fgColor, null, char)
+            TerminalUI._drawPixel(i + offset, 0, fgColor, null, char)
         }
     })
-    UI.clearScreen()
+    TerminalUI.clearScreen()
     engine.setGame(data)
     engine.setLevel(data.levels.indexOf(level))
 
 
     function restartLevel() {
         engine.pressRestart()
-        UI.renderScreen(true)
+        TerminalUI.renderScreen(true)
         keypresses = [] // clear key history
     }
 
@@ -205,11 +205,11 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: {ve
                     }
                 }
                 engine.pressUndo()
-                UI.renderScreen(false)
+                TerminalUI.renderScreen(false)
                 return
             case 'c':
-                UI.clearScreen()
-                UI.renderScreen(false)
+                TerminalUI.clearScreen()
+                TerminalUI.renderScreen(false)
                 return
             case '\u0003': // Ctrl+C
                 closeSounds()
@@ -226,7 +226,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: {ve
                 shouldExitGame = true
                 return
             default:
-                UI.writeDebug(`pressed....: "${toUnicode(key)}"`)
+                TerminalUI.writeDebug(`pressed....: "${toUnicode(key)}"`)
         }
     }
 
@@ -253,10 +253,10 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: {ve
     //   UI.drawCellAt(data, cell, cell.rowIndex, cell.colIndex, false)
     // })
 
-    UI.setGame(engine)
-    UI.clearScreen()
-    UI.renderScreen(false)
-    UI.writeDebug(`Game: "${data.title}"`)
+    TerminalUI.setGame(engine)
+    TerminalUI.clearScreen()
+    TerminalUI.renderScreen(false)
+    TerminalUI.writeDebug(`Game: "${data.title}"`)
 
     let currentlyPlayingSoundPromise = null // stack the sounds so we know if one is playing
 
@@ -277,13 +277,13 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: {ve
 
         // Draw any cells that moved
         for (const cell of changedCells) {
-            UI.drawCell(cell, false)
+            TerminalUI.drawCell(cell, false)
         }
 
         if (didLevelChange) {
             currentLevelNum = engine.getCurrentLevelNum()
-            UI.clearScreen()
-            UI.renderScreen(false)
+            TerminalUI.clearScreen()
+            TerminalUI.renderScreen(false)
         }
 
         if (keyNum > 1) { // Skip the 1st couple because they might be cleaning up the level
@@ -291,7 +291,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: {ve
         }
 
         const msg = `Playback ${keyNum}/${ticksToRunFirst.length} of "${data.title}" (took ${Date.now() - startTime}ms)`
-        UI.writeDebug(msg.substring(0, 160))
+        TerminalUI.writeDebug(msg.substring(0, 160))
 
         await sleep(1) // sleep long enough to play sounds
         // await sleep(Math.max(100 - (Date.now() - startTime), 0))
@@ -326,19 +326,19 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: {ve
             pendingKey = null
             currentLevelNum = engine.getCurrentLevelNum()
 
-            UI.clearScreen()
-            UI.renderScreen(true)
+            TerminalUI.clearScreen()
+            TerminalUI.renderScreen(true)
 
             continue
         }
 
         // Draw any cells that moved
         for (const cell of changedCells) {
-            UI.drawCell(cell, false)
+            TerminalUI.drawCell(cell, false)
         }
 
         const msg = `Tick: ${tickNum} took ${Date.now() - startTime}ms. Moves: ${[...keypresses].reverse().join('').substring(0, 20)}`
-        UI.writeDebug(msg.substring(0, 160))
+        TerminalUI.writeDebug(msg.substring(0, 160))
 
         if (wasAgainTick) {
             keypresses.push(',')
@@ -404,8 +404,8 @@ async function promptChooseLevel(recordings: SaveFile, data: GameData) {
                     height = zoomscreen.height;
                     width = zoomscreen.width;
                 }
-                const isTooWide = process.stdout.columns < width * 5 * UI.PIXEL_WIDTH;
-                const isTooTall = process.stdout.rows < height * 5 * UI.PIXEL_HEIGHT;
+                const isTooWide = process.stdout.columns < width * 5 * TerminalUI.PIXEL_WIDTH;
+                const isTooTall = process.stdout.rows < height * 5 * TerminalUI.PIXEL_HEIGHT;
                 let message = '';
                 if (isTooWide && isTooTall) {
                     message = `(too tall & wide for your terminal)`;
@@ -450,7 +450,7 @@ async function promptChooseLevel(recordings: SaveFile, data: GameData) {
 }
 
 async function promptPixelSize(data) {
-    if (!UI.willAllLevelsFitOnScreen(data)) {
+    if (!TerminalUI.willAllLevelsFitOnScreen(data)) {
         // Draw some example sprites
         console.log('Some of the levels in this game are too large for your terminal.');
         console.log('You can resize your terminal or use compact sprites.');
@@ -487,7 +487,7 @@ async function promptPixelSize(data) {
             message: 'Would you like to use small characters when rendering the game?',
         });
         if (useCompressedCharacters) {
-            UI.setSmallTerminal(true);
+            TerminalUI.setSmallTerminal(true);
         }
     }
 }

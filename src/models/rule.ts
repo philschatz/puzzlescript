@@ -9,7 +9,7 @@ import { IGameTile, GameSprite } from './tile'
 import { setIntersection, nextRandom, RULE_DIRECTION_ABSOLUTE, RULE_DIRECTION_ABSOLUTE_SET, RULE_DIRECTION_ABSOLUTE_LIST, setEquals, DEBUG_FLAG, nextRandomFloat, ICacheable } from '../util'
 import { Cell } from '../engine'
 import { RULE_DIRECTION } from '../enums';
-import UI from '../ui'
+import TerminalUI from '../ui'
 import { AbstractCommand } from './command';
 import { CollisionLayer } from './collisionLayer';
 
@@ -78,7 +78,7 @@ export class SimpleRuleGroup extends BaseForLines implements IRule {
                 // so that we can step through the evaluations.
                 console.error(this.toString())
                 console.error('BUG: Iterated too many times in startloop or + (rule group)')
-                UI.debugRenderScreen(); debugger
+                TerminalUI.debugRenderScreen(); debugger
             }
             if (iteration === MAX_ITERATIONS_IN_LOOP - 1) {
                 console.error(this.toString())
@@ -259,7 +259,7 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
             if (process.env['NODE_ENV'] === 'development' && innerIteration === MAX_ITERATIONS_IN_LOOP - 10) {
                 // Provide a breakpoint just before we run out of MAX_ITERATIONS_IN_LOOP
                 // so that we can step through the evaluations.
-                UI.debugRenderScreen(); debugger
+                TerminalUI.debugRenderScreen(); debugger
             }
             if (innerIteration === MAX_ITERATIONS_IN_LOOP - 1) {
                 throw new Error(`BUG: Iterated too many times in rule or rule group\n${this.toString()}`)
@@ -308,7 +308,7 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
             if (condition.getFirstCells().size == 0) {
                 if (process.env['NODE_ENV'] === 'development' && this._debugFlag === DEBUG_FLAG.BREAKPOINT_REMOVE) {
                     // A "DEBUGGER_REMOVE" flag was set in the game so we are pausing here
-                    UI.debugRenderScreen(); debugger
+                    TerminalUI.debugRenderScreen(); debugger
                 }
                 return [] // Rule did not match, so nothing ran
             }
@@ -325,7 +325,7 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
                 // Get ready to Evaluate
                 if (process.env['NODE_ENV'] === 'development' && this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
                     // A "DEBUGGER" flag was set in the game so we are pausing here
-                    UI.debugRenderScreen(); debugger
+                    TerminalUI.debugRenderScreen(); debugger
                 }
 
                 const allMutations: IMutation[][] = []
@@ -423,7 +423,7 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
                 // Get ready to Evaluate
                 if (process.env['NODE_ENV'] === 'development' && this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
                     // A "DEBUGGER" flag was set in the game so we are pausing here
-                    UI.debugRenderScreen(); debugger
+                    TerminalUI.debugRenderScreen(); debugger
                 }
 
                 let hasMoreCells
@@ -595,7 +595,7 @@ export class SimpleBracket extends BaseForLines implements ICacheable {
 
     evaluate(actionBracket: SimpleBracket, cell: Cell, magicOrTiles: Map<IGameTile, Set<GameSprite>>) {
         if (process.env['NODE_ENV'] === 'development' && this._actionDebugFlag === DEBUG_FLAG.BREAKPOINT) {
-            UI.debugRenderScreen(); debugger // pausing here because it is in the code
+            TerminalUI.debugRenderScreen(); debugger // pausing here because it is in the code
         }
         if (this._hasEllipsis) {
             return []
@@ -626,7 +626,7 @@ export class SimpleBracket extends BaseForLines implements ICacheable {
     _addFirstCell(firstCell: Cell) {
         if (process.env['NODE_ENV'] === 'development' && this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
             // Pausing here because it was marked in the code
-            UI.debugRenderScreen(); debugger
+            TerminalUI.debugRenderScreen(); debugger
         }
         this._firstCells.add(firstCell)
     }
@@ -635,7 +635,7 @@ export class SimpleBracket extends BaseForLines implements ICacheable {
         if (this._firstCells.has(firstCell)) {
             if (process.env['NODE_ENV'] === 'development' && this._debugFlag === DEBUG_FLAG.BREAKPOINT_REMOVE) {
                 // Pausing here because it was marked in the code
-                UI.debugRenderScreen(); debugger
+                TerminalUI.debugRenderScreen(); debugger
             }
             this._firstCells.delete(firstCell)
         }
@@ -1138,7 +1138,7 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
     evaluate(actionNeighbor: SimpleNeighbor, cell: Cell, magicOrTiles: Map<IGameTile, Set<GameSprite>>) {
         if (process.env['NODE_ENV'] === 'development' && actionNeighbor._debugFlag === DEBUG_FLAG.BREAKPOINT) {
             // Pausing here because this breakpoint was marked in the game code
-            UI.debugRenderScreen(); debugger
+            TerminalUI.debugRenderScreen(); debugger
         }
 
         if (!this._staticCache.has(actionNeighbor)) {
@@ -1313,7 +1313,7 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
     addCells(t: SimpleTileWithModifier, sprite: GameSprite, cells: Iterable<Cell>, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
         if (process.env['NODE_ENV'] === 'development' && this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
             // Pausing here because it was marked in the code
-            UI.debugRenderScreen(); debugger
+            TerminalUI.debugRenderScreen(); debugger
         }
         for (const cell of cells) {
             const matchesTiles = this.matchesCell(cell, t, wantsToMove)
@@ -1341,7 +1341,7 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
     removeCells(t: SimpleTileWithModifier, sprite: GameSprite, cells: Iterable<Cell>) {
         if (process.env['NODE_ENV'] === 'development' && this._debugFlag === DEBUG_FLAG.BREAKPOINT_REMOVE) {
             // Pausing here because it was marked in the code
-            UI.debugRenderScreen(); debugger
+            TerminalUI.debugRenderScreen(); debugger
         }
         for (const cell of cells) {
             // Check if the cell still matches. If not, remove it from upstream
@@ -1456,7 +1456,7 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
     addCells(sprite: GameSprite, cells: Iterable<Cell>, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
         if (process.env['NODE_ENV'] === 'development' && this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
             // Pause here because it was marked in the code
-            UI.debugRenderScreen(); debugger
+            TerminalUI.debugRenderScreen(); debugger
         }
         // Cells all have the same sprites, so if the 1st matches, they all do
         if (this.matchesFirstCell(cells, wantsToMove)) {
@@ -1478,7 +1478,7 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
     updateCells(sprite: GameSprite, cells: Iterable<Cell>, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
         if (process.env['NODE_ENV'] === 'development' && this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
             // Pause here because it was marked in the code
-            UI.debugRenderScreen(); debugger
+            TerminalUI.debugRenderScreen(); debugger
         }
         // Cells all have the same sprites, so if the 1st matches, they all do
         if (this.matchesFirstCell(cells, wantsToMove)) {
@@ -1490,7 +1490,7 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
     removeCells(sprite: GameSprite, cells: Iterable<Cell>) {
         if (process.env['NODE_ENV'] === 'development' && this._debugFlag === DEBUG_FLAG.BREAKPOINT_REMOVE) {
             // Pause here because it was marked in the code
-            UI.debugRenderScreen(); debugger
+            TerminalUI.debugRenderScreen(); debugger
         }
         // Cells all have the same sprites, so if the 1st matches, they all do
         if (this.matchesFirstCell(cells, null/*STATIONARY*/)) {

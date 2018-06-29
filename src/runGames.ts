@@ -5,7 +5,7 @@ import * as pify from 'pify'
 
 import Parser from './parser/parser'
 import { IGameNode } from './models/game'
-import UI from './ui'
+import TerminalUI from './ui'
 import { GameEngine } from './engine'
 import { setAddAll, RULE_DIRECTION_ABSOLUTE } from './util';
 import { start } from 'repl';
@@ -20,7 +20,7 @@ async function sleep(ms: number) {
 }
 
 async function run() {
-    UI.setSmallTerminal(true)
+    TerminalUI.setSmallTerminal(true)
 
     const files = await pify(glob)('./gists/*/script.txt')
     console.log(`Looping over ${files.length} games...`)
@@ -94,10 +94,10 @@ async function run() {
                 //   UI.drawCellAt(cell, cell.rowIndex, cell.colIndex, false)
                 // })
 
-                UI.setGame(engine)
-                UI.clearScreen()
-                UI.renderScreen(true)
-                UI.writeDebug(`Game: "${data.title}"`)
+                TerminalUI.setGame(engine)
+                TerminalUI.clearScreen()
+                TerminalUI.renderScreen(true)
+                TerminalUI.writeDebug(`Game: "${data.title}"`)
 
 
                 startTime = Date.now()
@@ -134,14 +134,14 @@ async function run() {
 
                     // Draw any cells that moved
                     for (const cell of changedCells) {
-                        UI.drawCell(cell, false)
+                        TerminalUI.drawCell(cell, false)
                     }
                     if (i > 1) { // Skip the 1st couple because they might be cleaning up the level
                         maxTickAndRenderTime = Math.max(maxTickAndRenderTime, Date.now() - startTime)
                     }
 
                     const msg = `Tick ${i} of "${data.title}" (took ${Date.now() - startTime}ms)`
-                    UI.writeDebug(msg.substring(0, 160))
+                    TerminalUI.writeDebug(msg.substring(0, 160))
 
                     // if (soundToPlay) {
                     //     await soundToPlay.play()

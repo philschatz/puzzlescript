@@ -129,22 +129,22 @@ function collapseSpritesToPixels(spritesToDraw: GameSprite[], backgroundColor: I
     return sprite
 }
 
-class UI {
-    _gameData: GameData
-    _engine: GameEngine
-    _cellColorCache: CellColorCache
-    _renderedPixels: {hex: string, chars: string}[][] // string is the hex code of the pixel
-    _resizeHandler?: () => void
-    _windowOffsetColStart: number
-    _windowOffsetRowStart: number
-    _windowOffsetWidth: number
-    _windowOffsetHeight: number
+class TerminalUI {
+    private _gameData: GameData
+    private _engine: GameEngine
+    private _cellColorCache: CellColorCache
+    private _renderedPixels: {hex: string, chars: string}[][] // string is the hex code of the pixel
+    private _resizeHandler?: () => void
+    private _windowOffsetColStart: number
+    private _windowOffsetRowStart: number
+    private _windowOffsetWidth: number
+    private _windowOffsetHeight: number
     PIXEL_WIDTH: number // number of characters in the terminal used to represent a pixel
     PIXEL_HEIGHT: number
-    SPRITE_WIDTH: number
-    SPRITE_HEIGHT: number
+    private SPRITE_WIDTH: number
+    private SPRITE_HEIGHT: number
 
-    _dumpingScreen: boolean
+    private _dumpingScreen: boolean
 
     constructor() {
         this._cellColorCache = new CellColorCache()
@@ -192,10 +192,10 @@ class UI {
             this.PIXEL_HEIGHT = 1
         }
     }
-    isConfiguredForSmallTerminal() {
+    private isConfiguredForSmallTerminal() {
         return this.PIXEL_HEIGHT !== 1
     }
-    getSpriteSize(gameData: GameData) {
+    private getSpriteSize(gameData: GameData) {
         const firstSpriteWithPixels = gameData.objects.filter(sprite => sprite.hasPixels())[0]
         if (firstSpriteWithPixels) {
             const firstSpritePixels = firstSpriteWithPixels.getPixels(1, 1) // We don't care about these args
@@ -305,7 +305,7 @@ class UI {
         this.writeDebug(`"${this._gameData.title}"`)
     }
 
-    cellPosToXY(cell: Cell) {
+    private cellPosToXY(cell: Cell) {
         const { colIndex, rowIndex } = cell
         let isOnScreen = true // can be set to false for many reasons
         let cellStartX = -1
@@ -337,7 +337,7 @@ class UI {
         return { isOnScreen, cellStartX, cellStartY }
     }
 
-    setPixel(x: number, y: number, hex: string, fgHex: string, chars: string) {
+    private setPixel(x: number, y: number, hex: string, fgHex: string, chars: string) {
         const getColor = (y, x) => {
             if (this._renderedPixels[y] && this._renderedPixels[y][x]) {
                 return this._renderedPixels[y][x].hex
@@ -382,7 +382,7 @@ class UI {
 
 
     // Returns true if the window was moved (so we can re-render the screen)
-    recenterPlayerIfNeeded(playerCell: Cell, isOnScreen: boolean) {
+    private recenterPlayerIfNeeded(playerCell: Cell, isOnScreen: boolean) {
         let boundingBoxLeft
         let boundingBoxTop
         let boundingBoxWidth
@@ -614,7 +614,7 @@ class UI {
         }
     }
 
-    getPixelsForCell(cell: Cell) {
+    private getPixelsForCell(cell: Cell) {
         const spritesToDraw = cell.getSprites() // Not sure why, but entanglement renders properly when reversed
 
         // If there is a magic background object then rely on it last
@@ -714,7 +714,7 @@ function writeText(x: number, y: number, text: string) {
     restoreCursor()
 }
 
-export default new UI()
+export default new TerminalUI()
 
 // Mac terminal does not render all the colors so some pixels do not look different.
 // See 391852197b1aef15558342df2670d635 (the grid)
