@@ -35,7 +35,7 @@ export class BaseForLines {
             get: function () { return source }
         })
         // This is only used for code coverage
-        if (process.env['NODE_ENV'] !== 'production') {
+        if (process.env['NODE_ENV'] === 'development') {
             this.__coverageCount = 0
         }
     }

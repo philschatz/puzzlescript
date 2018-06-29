@@ -272,7 +272,7 @@ export class LevelEngine extends EventEmitter2 {
         if (!level) {
             throw new Error(`Invalid levelNum: ${levelNum}`)
         }
-        if (process.env['NODE_ENV'] !== 'production') {
+        if (process.env['NODE_ENV'] === 'development') {
             level.__coverageCount++
         }
         // Clone the board because we will be modifying it

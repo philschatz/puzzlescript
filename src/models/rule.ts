@@ -73,7 +73,7 @@ export class SimpleRuleGroup extends BaseForLines implements IRule {
         // Keep looping as long as one of the rules evaluated something
         const allMutations: IMutation[][] = []
         for (let iteration = 0; iteration < MAX_ITERATIONS_IN_LOOP; iteration++) {
-            if (process.env['NODE_ENV'] !== 'production' && iteration === MAX_ITERATIONS_IN_LOOP - 10) {
+            if (process.env['NODE_ENV'] === 'development' && iteration === MAX_ITERATIONS_IN_LOOP - 10) {
                 // Provide a breakpoint just before we run out of MAX_ITERATIONS_IN_LOOP
                 // so that we can step through the evaluations.
                 console.error(this.toString())
@@ -256,7 +256,7 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
         let innerEvaluatedSomething = false
         let innerIteration
         for (innerIteration = 0; innerIteration < MAX_ITERATIONS_IN_LOOP; innerIteration++) {
-            if (process.env['NODE_ENV'] !== 'production' && innerIteration === MAX_ITERATIONS_IN_LOOP - 10) {
+            if (process.env['NODE_ENV'] === 'development' && innerIteration === MAX_ITERATIONS_IN_LOOP - 10) {
                 // Provide a breakpoint just before we run out of MAX_ITERATIONS_IN_LOOP
                 // so that we can step through the evaluations.
                 UI.debugRenderScreen(); debugger
@@ -306,7 +306,7 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
         // Verify that each condition bracket has matches
         for (const condition of this._conditionBrackets) {
             if (condition.getFirstCells().size == 0) {
-                if (process.env['NODE_ENV'] !== 'production' && this._debugFlag === DEBUG_FLAG.BREAKPOINT_REMOVE) {
+                if (process.env['NODE_ENV'] === 'development' && this._debugFlag === DEBUG_FLAG.BREAKPOINT_REMOVE) {
                     // A "DEBUGGER_REMOVE" flag was set in the game so we are pausing here
                     UI.debugRenderScreen(); debugger
                 }
@@ -323,7 +323,7 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
             if (!this._doesEvaluationOrderMatter/*this._conditionBrackets.length === 1 && this._conditionBrackets[0]._neighbors.length === 1*/) {
 
                 // Get ready to Evaluate
-                if (process.env['NODE_ENV'] !== 'production' && this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
+                if (process.env['NODE_ENV'] === 'development' && this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
                     // A "DEBUGGER" flag was set in the game so we are pausing here
                     UI.debugRenderScreen(); debugger
                 }
@@ -342,7 +342,7 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
                         }
                     }
 
-                    if (process.env['NODE_ENV'] !== 'production') {
+                    if (process.env['NODE_ENV'] === 'development') {
                         this.__coverageCount++
                     }
 
@@ -421,7 +421,7 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
                 }
 
                 // Get ready to Evaluate
-                if (process.env['NODE_ENV'] !== 'production' && this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
+                if (process.env['NODE_ENV'] === 'development' && this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
                     // A "DEBUGGER" flag was set in the game so we are pausing here
                     UI.debugRenderScreen(); debugger
                 }
@@ -484,7 +484,7 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
                         }
                         const mutations = bracket.evaluate(actionBracket, cell, magicOrTiles)
 
-                        if (process.env['NODE_ENV'] !== 'production') {
+                        if (process.env['NODE_ENV'] === 'development') {
                             this.__coverageCount++
                         }
 
@@ -594,7 +594,7 @@ export class SimpleBracket extends BaseForLines implements ICacheable {
     }
 
     evaluate(actionBracket: SimpleBracket, cell: Cell, magicOrTiles: Map<IGameTile, Set<GameSprite>>) {
-        if (process.env['NODE_ENV'] !== 'production' && this._actionDebugFlag === DEBUG_FLAG.BREAKPOINT) {
+        if (process.env['NODE_ENV'] === 'development' && this._actionDebugFlag === DEBUG_FLAG.BREAKPOINT) {
             UI.debugRenderScreen(); debugger // pausing here because it is in the code
         }
         if (this._hasEllipsis) {
@@ -624,7 +624,7 @@ export class SimpleBracket extends BaseForLines implements ICacheable {
     }
 
     _addFirstCell(firstCell: Cell) {
-        if (process.env['NODE_ENV'] !== 'production' && this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
+        if (process.env['NODE_ENV'] === 'development' && this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
             // Pausing here because it was marked in the code
             UI.debugRenderScreen(); debugger
         }
@@ -633,7 +633,7 @@ export class SimpleBracket extends BaseForLines implements ICacheable {
 
     _removeFirstCell(firstCell: Cell) {
         if (this._firstCells.has(firstCell)) {
-            if (process.env['NODE_ENV'] !== 'production' && this._debugFlag === DEBUG_FLAG.BREAKPOINT_REMOVE) {
+            if (process.env['NODE_ENV'] === 'development' && this._debugFlag === DEBUG_FLAG.BREAKPOINT_REMOVE) {
                 // Pausing here because it was marked in the code
                 UI.debugRenderScreen(); debugger
             }
@@ -964,7 +964,7 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
     }
 
     prepareAction(actionNeighbor: SimpleNeighbor) {
-        if (process.env['NODE_ENV'] !== 'production' && actionNeighbor._debugFlag === DEBUG_FLAG.BREAKPOINT) {
+        if (process.env['NODE_ENV'] === 'development' && actionNeighbor._debugFlag === DEBUG_FLAG.BREAKPOINT) {
             // Pausing here because this breakpoint was marked in the game code
             debugger
         }
@@ -1136,7 +1136,7 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
     }
 
     evaluate(actionNeighbor: SimpleNeighbor, cell: Cell, magicOrTiles: Map<IGameTile, Set<GameSprite>>) {
-        if (process.env['NODE_ENV'] !== 'production' && actionNeighbor._debugFlag === DEBUG_FLAG.BREAKPOINT) {
+        if (process.env['NODE_ENV'] === 'development' && actionNeighbor._debugFlag === DEBUG_FLAG.BREAKPOINT) {
             // Pausing here because this breakpoint was marked in the game code
             UI.debugRenderScreen(); debugger
         }
@@ -1311,7 +1311,7 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
     }
 
     addCells(t: SimpleTileWithModifier, sprite: GameSprite, cells: Iterable<Cell>, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
-        if (process.env['NODE_ENV'] !== 'production' && this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
+        if (process.env['NODE_ENV'] === 'development' && this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
             // Pausing here because it was marked in the code
             UI.debugRenderScreen(); debugger
         }
@@ -1339,7 +1339,7 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
         this.addCells(t, sprite, cells, wantsToMove)
     }
     removeCells(t: SimpleTileWithModifier, sprite: GameSprite, cells: Iterable<Cell>) {
-        if (process.env['NODE_ENV'] !== 'production' && this._debugFlag === DEBUG_FLAG.BREAKPOINT_REMOVE) {
+        if (process.env['NODE_ENV'] === 'development' && this._debugFlag === DEBUG_FLAG.BREAKPOINT_REMOVE) {
             // Pausing here because it was marked in the code
             UI.debugRenderScreen(); debugger
         }
@@ -1454,7 +1454,7 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
     }
 
     addCells(sprite: GameSprite, cells: Iterable<Cell>, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
-        if (process.env['NODE_ENV'] !== 'production' && this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
+        if (process.env['NODE_ENV'] === 'development' && this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
             // Pause here because it was marked in the code
             UI.debugRenderScreen(); debugger
         }
@@ -1476,7 +1476,7 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
         }
     }
     updateCells(sprite: GameSprite, cells: Iterable<Cell>, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
-        if (process.env['NODE_ENV'] !== 'production' && this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
+        if (process.env['NODE_ENV'] === 'development' && this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
             // Pause here because it was marked in the code
             UI.debugRenderScreen(); debugger
         }
@@ -1488,7 +1488,7 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
         }
     }
     removeCells(sprite: GameSprite, cells: Iterable<Cell>) {
-        if (process.env['NODE_ENV'] !== 'production' && this._debugFlag === DEBUG_FLAG.BREAKPOINT_REMOVE) {
+        if (process.env['NODE_ENV'] === 'development' && this._debugFlag === DEBUG_FLAG.BREAKPOINT_REMOVE) {
             // Pause here because it was marked in the code
             UI.debugRenderScreen(); debugger
         }

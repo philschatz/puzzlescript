@@ -103,7 +103,7 @@ function collapseSpritesToPixels(spritesToDraw: GameSprite[], backgroundColor: I
         return sprite
     }
     // Record Code coverage
-    if (process.env['NODE_ENV'] !== 'production') {
+    if (process.env['NODE_ENV'] === 'development') {
         spritesToDraw[0].__coverageCount++
     }
     if (spritesToDraw.length === 1) {
@@ -111,7 +111,7 @@ function collapseSpritesToPixels(spritesToDraw: GameSprite[], backgroundColor: I
     }
     const sprite = spritesToDraw[0].getPixels(spriteHeight, spriteWidth)
     spritesToDraw.slice(1).forEach((objectToDraw, spriteIndex) => {
-        if (process.env['NODE_ENV'] !== 'production') {
+        if (process.env['NODE_ENV'] === 'development') {
             objectToDraw.__coverageCount++
         }
         const pixels = objectToDraw.getPixels(spriteHeight, spriteWidth)
@@ -553,7 +553,7 @@ class UI {
 
                     // Print a debug number which contains the number of sprites in this cell
                     // Change the foreground color to be black if the color is light
-                    if (process.env['NODE_ENV'] !== 'production') {
+                    if (process.env['NODE_ENV'] === 'development') {
                         if (r > 192 && g > 192 && b > 192) {
                             fgHex = '#000000'
                         } else {

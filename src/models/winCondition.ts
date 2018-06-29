@@ -30,7 +30,7 @@ export class WinConditionSimple extends BaseForLines {
     isSatisfied(cells: Iterable<Cell>) {
         const ret = this._isSatisfied(cells)
         if (ret) {
-            if (process.env['NODE_ENV'] !== 'production') {
+            if (process.env['NODE_ENV'] === 'development') {
                 this.__coverageCount++
             }
         }

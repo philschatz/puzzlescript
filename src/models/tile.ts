@@ -127,7 +127,7 @@ export class GameSprite extends BaseForLines implements IGameTile {
         this.removeCells([cell])
     }
     updateCell(cell: Cell, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
-        if (process.env['NODE_ENV'] !== 'production') {
+        if (process.env['NODE_ENV'] === 'development') {
             // check that the cell is already in the sprite cell set
             if (!this.has(cell)) {
                 throw new Error(`BUG: Expected cell to already be in the sprite set`)
@@ -367,7 +367,7 @@ export class GameLegendTileSimple extends GameLegendTile {
     }
     matchesCell(cell: Cell) {
         // Update code coverage (Maybe only count the number of times it was true?)
-        if (process.env['NODE_ENV'] !== 'production') {
+        if (process.env['NODE_ENV'] === 'development') {
             this.__coverageCount++
         }
 
@@ -393,7 +393,7 @@ export class GameLegendTileSimple extends GameLegendTile {
 export class GameLegendTileAnd extends GameLegendTile {
     matchesCell(cell: Cell) {
         // Update code coverage (Maybe only count the number of times it was true?)
-        if (process.env['NODE_ENV'] !== 'production') {
+        if (process.env['NODE_ENV'] === 'development') {
             this.__coverageCount++
         }
 
@@ -423,7 +423,7 @@ export class GameLegendTileOr extends GameLegendTile {
     }
     matchesCell(cell: Cell) {
         // Update code coverage (Maybe only count the number of times it was true?)
-        if (process.env['NODE_ENV'] !== 'production') {
+        if (process.env['NODE_ENV'] === 'development') {
             this.__coverageCount++
         }
 
