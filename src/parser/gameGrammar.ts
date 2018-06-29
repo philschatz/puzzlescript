@@ -1,15 +1,10 @@
-import {
-    BaseForLines,
-    IGameCode,
-    IGameNode,
-    GameData
-} from '../models/game'
-import { GameMetadata } from '../models/metadata'
-import { HexColor, TransparentColor } from '../models/colors'
+import { GameData } from '../models/game'
+import { GameMetadata, Dimension } from '../models/metadata'
+import { HexColor, TransparentColor, IColor } from '../models/colors'
 import { lookupColorPalette } from '../colors'
 import { LookupHelper } from './lookup'
 import { ValidationLevel, AddValidationFunc } from './parser'
-import { MessageLevel, LevelMap } from '../models/level';
+import { LevelMap } from '../models/level';
 import { WinConditionSimple } from '../models/winCondition';
 import { ASTGameRule } from '../parser/rule';
 import { CollisionLayer } from '../models/collisionLayer';
@@ -200,12 +195,14 @@ export const STRINGTOKEN_GRAMMAR = `
     t_KEY_REPEAT_INTERVAL = caseInsensitive<"KEY_REPEAT_INTERVAL">
     t_AGAIN_INTERVAL = caseInsensitive<"AGAIN_INTERVAL">
 
+    // These settings do not have a value so they need to be parsed slightly differently
     t_NOACTION = caseInsensitive<"NOACTION">
     t_NOUNDO = caseInsensitive<"NOUNDO">
-    t_NOREPEAT_ACTION = caseInsensitive<"NOREPEAT_ACTION">
-    t_THROTTLE_MOVEMENT = caseInsensitive<"THROTTLE_MOVEMENT">
     t_NORESTART = caseInsensitive<"NORESTART">
+    t_THROTTLE_MOVEMENT = caseInsensitive<"THROTTLE_MOVEMENT">
+    t_NOREPEAT_ACTION = caseInsensitive<"NOREPEAT_ACTION">
     t_VERBOSE_LOGGING = caseInsensitive<"VERBOSE_LOGGING">
+
 
     t_TRANSPARENT = caseInsensitive<"TRANSPARENT">
 
@@ -275,15 +272,14 @@ export const METADATA_GRAMMAR = `
 export function getGameSemantics(lookup: LookupHelper, addValidationMessage: AddValidationFunc) {
     let currentColorPalette = 'arnecolors' // default
     return {
-        GameData: function (_whitespace1: Parseable<string>, title: Parseable<string>, _whitespace2: Parseable<string>, settingsFields, _whitespace3: Parseable<string>, sprites: Parseable<GameSprite[][]>, legends: Parseable<GameLegendTileSimple[][]>, sounds: Parseable<GameSound[][]>, collisionLayers: Parseable<CollisionLayer[][]>, rules: Parseable<ASTGameRule[][]>, winConditions: Parseable<WinConditionSimple[][]>, levels: Parseable<LevelMap[][]>) {
+        GameData: function (_whitespace1: Parseable<string>, title: Parseable<string>, _whitespace2: Parseable<string>, settingsFields: Parseable<{key: string, value: boolean | string | Dimension}[]>, _whitespace3: Parseable<string>, sprites: Parseable<GameSprite[][]>, legends: Parseable<GameLegendTileSimple[][]>, sounds: Parseable<GameSound[][]>, collisionLayers: Parseable<CollisionLayer[][]>, rules: Parseable<ASTGameRule[][]>, winConditions: Parseable<WinConditionSimple[][]>, levels: Parseable<LevelMap[][]>) {
             const metadata = new GameMetadata()
-            settingsFields.parse().forEach((setting: string[]) => {
-                if (Array.isArray(setting)) {
-                    metadata._setValue(setting[0].toLowerCase(), setting[1])
-                } else {
-                    metadata._setValue(setting, true)
+            for (const {key, value} of settingsFields.parse()) {
+                if (!key) {
+                    debugger
                 }
-            })
+                metadata._setValue(key.toLowerCase(), value)
+            }
             return new GameData(
                 title.parse(),
                 metadata,
@@ -299,6 +295,8 @@ export function getGameSemantics(lookup: LookupHelper, addValidationMessage: Add
         Title: function (_1: Parseable<string>, value: Parseable<string>) {
             return value.parse()
         },
+
+        // Metadata fields
         Author: getConfigField,
         Homepage: getConfigField,
         KeyRepeatInterval: getConfigField,
@@ -310,6 +308,13 @@ export function getGameSemantics(lookup: LookupHelper, addValidationMessage: Add
         Youtube: getConfigField,
         Zoomscreen: getConfigField,
         Flickscreen: getConfigField,
+        t_NOACTION: getConfigFieldSimple,
+        t_NOUNDO: getConfigFieldSimple,
+        t_NORESTART: getConfigFieldSimple,
+        t_THROTTLE_MOVEMENT: getConfigFieldSimple,
+        t_NOREPEAT_ACTION: getConfigFieldSimple,
+        t_VERBOSE_LOGGING: getConfigFieldSimple,
+
         ColorPalette: function (_1: Parseable<string>, colorPaletteName: Parseable<string>) {
             // Set the color palette so we only need to use hex color codes
             currentColorPalette = colorPaletteName.parse()
@@ -391,6 +396,29 @@ export function getGameSemantics(lookup: LookupHelper, addValidationMessage: Add
 }
 
 // Helper for setting a config field
-function getConfigField(key, value) {
-    return [key.parse(), value.parse()]
+function getConfigField(key: Parseable<string>, value: Parseable<boolean | string | Dimension | IColor>) {
+    let v = value.parse()
+    if (!v) {
+        // settings that do not have a value means they are `true`
+        v = true
+    } else if (typeof v === 'string') {
+        switch (v.toLowerCase()) {
+            case 'on':
+            case 'true':
+                v = true
+                break
+            case 'off':
+            case 'false':
+                v = false
+                break
+            default:
+                // leave it as-is
+        }
+    }
+    return {key: key.parse(), value: value.parse()}
+}
+
+// This just sets the value to be true for fields that do not have a value (e.g. VERBOSE_LOGGING or NOUNDO)
+function getConfigFieldSimple (key: Parseable<string>) {
+    return {key: key.parse(), value: true}
 }
