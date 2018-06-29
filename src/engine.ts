@@ -513,6 +513,11 @@ export class LevelEngine extends EventEmitter2 {
                 evaluatedRules: evaluatedRules,
             }
         }
+        const didCheckpoint = !![...commands].filter(c => c.getType() === COMMAND_TYPE.CHECKPOINT)[0]
+        if (didCheckpoint) {
+            this._undoStack = []
+            this.takeSnapshot()
+        }
         const {changedCells: changedCellsLate, evaluatedRules: evaluatedRulesLate, commands: commandsLate} = this.tickUpdateCellsLate()
         // set this only if we did not CANCEL
         this._hasAgainThatNeedsToRun = !![...commands, ...commandsLate].filter(c => c.getType() === COMMAND_TYPE.AGAIN)[0]
