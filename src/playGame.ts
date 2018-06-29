@@ -495,7 +495,7 @@ async function promptGame(games: GameInfo[]) {
         'IceCrates',
         'Boxes & Balloons',
         'Boxes Love Bloxing Gloves',
-        // 'Cyber-Lasso', When you fall into a hole you do not die
+        'Cyber-Lasso',
         'Pushcat Jr',
         'Skipping Stones to Lonely Homes',
         'Hack the Net',
