@@ -195,6 +195,15 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: {ve
             case 'r':
                 return restartLevel()
             case 'z':
+                // update keypresses so that it does not contain the most-recent key
+                let lastKey = null
+                while ((lastKey = keypresses[keypresses.length - 1]) !== null) {
+                    keypresses.pop()
+                    if (lastKey === '.' || lastKey === ',') {
+                    } else {
+                        break
+                    }
+                }
                 engine.pressUndo()
                 UI.renderScreen(false)
                 return
