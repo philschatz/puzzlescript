@@ -94,14 +94,14 @@ export class ASTGameRule extends BaseForLines implements ICacheable {
 
             // Optimization. Brackets that are only used for testing conditions
             // can be optimized out so they do not need to be evaluated.
-            if (condition === action) {
-                conditionBrackets[index] = new SimpleBracketConditionOnly(condition)
+            if (condition === action || condition.toKey(true/*ignoreDebugFlag*/) === action.toKey(true)) {
+                conditionBrackets[index] = new SimpleBracketConditionOnly(condition, action)
                 // actionBrackets[index] = null
             }
 
             // If there is only 1 bracket with only 1 neighbor then order does not matter
             // So we can skip the introspection loops below
-            if (conditionBrackets.length === 1 && conditionBrackets[0].getNeighbors().length === 1) {
+            if (conditionBrackets.length === 1 && conditionBrackets[0]._getAllNeighbors().length === 1) {
                 continue
             }
             // Brackets that only involve adding/removing Tiles (or directions) that are not on the condition side can be evaluated easier
@@ -109,21 +109,21 @@ export class ASTGameRule extends BaseForLines implements ICacheable {
             const conditionTilesWithModifiers = new Set()
             const conditionTilesMap = new Map()
             const actionTilesWithModifiers = new Set()
-            for (let index = 0; index < condition.getNeighbors().length; index++) {
-                const neighbor = condition.getNeighbors()[index]
+            for (let index = 0; index < condition._getAllNeighbors().length; index++) {
+                const neighbor = condition._getAllNeighbors()[index]
                 for (const t of neighbor._tilesWithModifier) {
                     conditionTilesWithModifiers.add(t)
                     conditionTilesMap.set(t._tile, { direction: t._direction, neighborIndex: index })
                 }
             }
-            for (let index = 0; index < action.getNeighbors().length; index++) {
-                const neighbor = action.getNeighbors()[index]
+            for (let index = 0; index < action._getAllNeighbors().length; index++) {
+                const neighbor = action._getAllNeighbors()[index]
                 for (const t of neighbor._tilesWithModifier) {
                     actionTilesWithModifiers.add(t)
                     if (t._tile /* because of ellipsis*/ && t._tile.isOr()) {
                         // check if the condition contains the OR tile and maybe is more specific
                         let orTileOnConditionSide
-                        for (const conditionTile of condition.getNeighbors()[index]._tilesWithModifier) {
+                        for (const conditionTile of condition._getAllNeighbors()[index]._tilesWithModifier) {
                             if (t._tile === conditionTile._tile && !conditionTile.isNo()) {
                                 orTileOnConditionSide = conditionTile
                             }

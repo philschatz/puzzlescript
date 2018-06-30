@@ -215,12 +215,6 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
             // Subscribe the bracket and neighbors to cell Changes (only the condition side)
             for (const bracket of this.conditionBrackets) {
                 bracket.subscribeToNeighborChanges()
-                for (const neighbor of bracket.getNeighbors()) {
-                    neighbor.subscribeToTileChanges()
-                    for (const t of neighbor._tilesWithModifier) {
-                        t.subscribeToCellChanges()
-                    }
-                }
             }
             this.isSubscribedToCellChanges = true
         }
@@ -524,76 +518,74 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
 
     addCellsToEmptyRules(cells: Iterable<Cell>) {
         for (const bracket of this.conditionBrackets) {
-            if (bracket.getNeighbors().length === 1) {
-                if (bracket.getNeighbors()[0]._tilesWithModifier.size === 0) {
-                    for (const cell of cells) {
-                        bracket._addFirstCell(cell)
-                    }
-                }
-            }
+            bracket.addCellsToEmptyRules(cells)
         }
     }
 
 }
 
 export abstract class ISimpleBracket extends BaseForLines implements ICacheable {
-    readonly _debugFlag: DEBUG_FLAG
-    readonly _direction: RULE_DIRECTION_ABSOLUTE
-    protected _firstCells: Set<Cell>
-    private _allNeighbors: SimpleNeighbor[]
+    readonly debugFlag: DEBUG_FLAG
+    readonly direction: RULE_DIRECTION_ABSOLUTE
+    protected firstCells: Set<Cell>
+    private allNeighbors: SimpleNeighbor[]
     constructor(source: IGameCode, direction: RULE_DIRECTION_ABSOLUTE, allNeighbors: SimpleNeighbor[], debugFlag: DEBUG_FLAG) {
         super(source)
-        this._direction = direction
-        this._debugFlag = debugFlag
-        this._allNeighbors = allNeighbors
-        this._firstCells = new Set()
+        this.direction = direction
+        this.debugFlag = debugFlag
+        this.allNeighbors = allNeighbors
+        this.firstCells = new Set()
     }
 
     abstract subscribeToNeighborChanges(): void
     abstract evaluate(actionBracket: ISimpleBracket, cell: Cell, magicOrTiles: Map<IGameTile, Set<GameSprite>>): IMutation[]
-    abstract toKey(): string
+    abstract toKey(ignoreDebugFlag?: boolean): string
     abstract populateMagicOrTiles(cell: Cell, magicOrTiles: Map<IGameTile, Set<GameSprite>>): void
     abstract clearCaches(): void
     abstract prepareAction(action: ISimpleBracket): void
     abstract getNeighbors(): SimpleNeighbor[]
     abstract addCell(index: number, neighbor: SimpleNeighbor, t: SimpleTileWithModifier, sprite: GameSprite, cell: Cell, wantsToMove: Optional<RULE_DIRECTION_ABSOLUTE>): void
     abstract removeCell(index: number, neighbor: SimpleNeighbor, t: SimpleTileWithModifier, sprite: GameSprite, cell: Cell): void
+    abstract addCellsToEmptyRules(cells: Iterable<Cell>): void
 
     _getAllNeighbors() {
-        return this._allNeighbors
-    }
-    _addFirstCell(firstCell: Cell) {
-        if (process.env['NODE_ENV'] === 'development' && this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
-            // Pausing here because it was marked in the code
-            TerminalUI.debugRenderScreen(); debugger
-        }
-        this._firstCells.add(firstCell)
+        return this.allNeighbors
     }
     getFirstCells() {
-        return this._firstCells
+        return this.firstCells
     }
 }
 
 export class SimpleBracket extends ISimpleBracket {
     private neighbors: SimpleNeighbor[]
-    private actionDebugFlag: Optional<DEBUG_FLAG>
+    protected actionDebugFlag: Optional<DEBUG_FLAG>
+    private ellipsisBracketListeners: Map<SimpleEllipsisBracket, BEFORE_OR_AFTER>
     constructor(source: IGameCode, direction: RULE_DIRECTION_ABSOLUTE, neighbors: SimpleNeighbor[], debugFlag: DEBUG_FLAG) {
         super(source, direction, neighbors, debugFlag)
         this.neighbors = neighbors
-        this._firstCells = new Set()
+        this.firstCells = new Set()
+        this.ellipsisBracketListeners = new Map()
     }
-    toKey() {
-        return `{${this._direction}[${this.neighbors.map(n => n.toKey()).join('|')}]{debugging?${this._debugFlag}}}`
+    toKey(ignoreDebugFlag?: boolean) {
+        if (ignoreDebugFlag) {
+            return `{${this.direction}[${this.neighbors.map(n => n.toKey(ignoreDebugFlag)).join('|')}]}`
+        } else {
+            return `{${this.direction}[${this.neighbors.map(n => n.toKey(ignoreDebugFlag)).join('|')}]{debugging?${this.debugFlag}}}`
+        }
     }
 
     subscribeToNeighborChanges() {
         this.neighbors.forEach((neighbor, index) => {
-            neighbor.addBracket(this, index)
+            neighbor.subscribeToTileChanges(this, index)
         })
     }
 
+    addEllipsisBracket(bracket: SimpleEllipsisBracket, token: BEFORE_OR_AFTER) {
+        this.ellipsisBracketListeners.set(bracket, token)
+    }
+
     clearCaches() {
-        this._firstCells.clear()
+        this.firstCells.clear()
         for (const neighbor of this.neighbors) {
             neighbor.clearCaches()
         }
@@ -602,16 +594,26 @@ export class SimpleBracket extends ISimpleBracket {
     getNeighbors() { return this.neighbors }
 
     getFirstCells() {
-        return this._firstCells
+        return this.firstCells
     }
 
     prepareAction(action: ISimpleBracket) {
         const actionBracket = <SimpleBracket> action // since we know the condition and action side need to match
-        this.actionDebugFlag = actionBracket._debugFlag
+        this.actionDebugFlag = actionBracket.debugFlag
         for (let index = 0; index < this.neighbors.length; index++) {
             const condition = this.neighbors[index]
             const action = actionBracket.neighbors[index]
             condition.prepareAction(action)
+        }
+    }
+
+    addCellsToEmptyRules(cells: Iterable<Cell>) {
+        if (this.neighbors.length === 1) {
+            if (this.neighbors[0]._tilesWithModifier.size === 0) {
+                for (const cell of cells) {
+                    this._addFirstCell(cell)
+                }
+            }
         }
     }
 
@@ -631,7 +633,7 @@ export class SimpleBracket extends ISimpleBracket {
             if (mutation) {
                 ret.push(mutation)
             }
-            curCell = curCell.getNeighbor(this._direction)
+            curCell = curCell.getNeighbor(this.direction)
             index++
         }
         return ret
@@ -642,18 +644,32 @@ export class SimpleBracket extends ISimpleBracket {
         for (const neighbor of this.neighbors) {
             if (curCell) {
                 neighbor.populateMagicOrTiles(curCell, magicOrTiles)
-                curCell = curCell.getNeighbor(this._direction)
+                curCell = curCell.getNeighbor(this.direction)
             }
         }
     }
 
+    _addFirstCell(firstCell: Cell) {
+        if (process.env['NODE_ENV'] === 'development' && this.debugFlag === DEBUG_FLAG.BREAKPOINT) {
+            // Pausing here because it was marked in the code
+            TerminalUI.debugRenderScreen(); debugger
+        }
+        this.firstCells.add(firstCell)
+        for (const [ellipsisBracket, token] of this.ellipsisBracketListeners) {
+            ellipsisBracket.addFirstCell(this, firstCell, token)
+        }
+    }
+
     protected _removeFirstCell(firstCell: Cell) {
-        if (this._firstCells.has(firstCell)) {
-            if (process.env['NODE_ENV'] === 'development' && this._debugFlag === DEBUG_FLAG.BREAKPOINT_REMOVE) {
+        if (this.firstCells.has(firstCell)) {
+            if (process.env['NODE_ENV'] === 'development' && this.debugFlag === DEBUG_FLAG.BREAKPOINT_REMOVE) {
                 // Pausing here because it was marked in the code
                 TerminalUI.debugRenderScreen(); debugger
             }
-            this._firstCells.delete(firstCell)
+            this.firstCells.delete(firstCell)
+            for (const [ellipsisBracket, token] of this.ellipsisBracketListeners) {
+                ellipsisBracket.removeFirstCell(this, firstCell, token)
+            }
         }
     }
 
@@ -692,7 +708,7 @@ export class SimpleBracket extends ISimpleBracket {
         const firstCell = this.getFirstCellToRemove(cell, index)
         // Bracket might not match for all directions (likely not), so we might not find a firstCell to remove
         // But that's OK.
-        if (firstCell && this._firstCells.has(firstCell)) {
+        if (firstCell && this.firstCells.has(firstCell)) {
             this._removeFirstCell(firstCell)
         }
     }
@@ -704,7 +720,7 @@ export class SimpleBracket extends ISimpleBracket {
         // Loop Downstream
         // check the neighbors downstream of curCell
         for (let x = index + 1; x < this.neighbors.length; x++) {
-            curCell = curCell.getNeighbor(this._direction)
+            curCell = curCell.getNeighbor(this.direction)
             // TODO: Convert the neighbor check into a method
             if (curCell && (this.neighbors[x]._tilesWithModifier.size === 0 || this.neighbors[x].matchesCellSimple(curCell))) {
                 // keep going
@@ -719,7 +735,7 @@ export class SimpleBracket extends ISimpleBracket {
     private getUpstream(cell: Cell, index: number) {
         let curCell: Optional<Cell> = cell
         for (let x = index - 1; x >= 0; x--) {
-            curCell = curCell.getNeighbor(opposite(this._direction))
+            curCell = curCell.getNeighbor(opposite(this.direction))
             if (curCell) {
                 // keep going
             } else {
@@ -734,7 +750,7 @@ export class SimpleBracket extends ISimpleBracket {
         let curCell: Optional<Cell> = cell
         // check the neighbors upstream of curCell
         for (let x = index - 1; x >= 0; x--) {
-            curCell = curCell.getNeighbor(opposite(this._direction))
+            curCell = curCell.getNeighbor(opposite(this.direction))
             if (curCell && (this.neighbors[x]._tilesWithModifier.size === 0 || this.neighbors[x].matchesCellSimple(curCell))) {
                 // keep going
             } else {
@@ -752,7 +768,7 @@ export class SimpleBracket extends ISimpleBracket {
         let curCell: Optional<Cell> = cell
         // check the neighbors upstream of curCell
         for (let x = index - 1; x >= 0; x--) {
-            curCell = curCell.getNeighbor(opposite(this._direction))
+            curCell = curCell.getNeighbor(opposite(this.direction))
             if (curCell) {
                 // keep going
             } else {
@@ -765,37 +781,47 @@ export class SimpleBracket extends ISimpleBracket {
 }
 
 export class SimpleBracketConditionOnly extends SimpleBracket {
-    constructor(bracket: ISimpleBracket) {
-        super(bracket.__source, bracket._direction, bracket._getAllNeighbors(), bracket._debugFlag)
+    constructor(bracket: ISimpleBracket, actionBracket: ISimpleBracket) {
+        super(bracket.__source, bracket.direction, bracket._getAllNeighbors(), bracket.debugFlag)
+        this.actionDebugFlag = actionBracket.debugFlag
     }
     prepareAction() {
         // nothing to do since it is only a Condition
     }
     evaluate(): IMutation[] {
+        if (process.env['NODE_ENV'] === 'development' && this.actionDebugFlag === DEBUG_FLAG.BREAKPOINT) {
+            TerminalUI.debugRenderScreen(); debugger // pausing here because it is in the code
+        }
         return []
     }
 }
 
+enum BEFORE_OR_AFTER {
+    BEFORE,
+    AFTER
+}
+
 export class SimpleEllipsisBracket extends ISimpleBracket {
-    private beforeEllipsisNeighbors: SimpleNeighbor[]
-    private afterEllipsisNeighbors: SimpleNeighbor[]
+    private beforeEllipsisBracket: SimpleBracket
+    private afterEllipsisBracket: SimpleBracket
+    private firstBeforeCells: Map<Cell, Cell>
     private firstAfterCells: Map<Cell, Cell>
+    private actionDebugFlag: Optional<DEBUG_FLAG>
     constructor(source: IGameCode, direction: RULE_DIRECTION_ABSOLUTE, beforeEllipsisNeighbors: SimpleNeighbor[], afterEllipsisNeighbors: SimpleNeighbor[], debugFlag: DEBUG_FLAG) {
         super(source, direction, [...beforeEllipsisNeighbors, ...afterEllipsisNeighbors], debugFlag)
-        this.beforeEllipsisNeighbors = beforeEllipsisNeighbors
-        this.afterEllipsisNeighbors = afterEllipsisNeighbors
+        this.beforeEllipsisBracket = new SimpleBracket(source, direction, beforeEllipsisNeighbors, debugFlag)
+        this.afterEllipsisBracket = new SimpleBracket(source, direction, afterEllipsisNeighbors, debugFlag)
+        this.firstBeforeCells = new Map()
         this.firstAfterCells = new Map()
     }
     subscribeToNeighborChanges() {
-        this.beforeEllipsisNeighbors.forEach((neighbor, index) => {
-            neighbor.addBracket(this, index)
-        })
-        this.afterEllipsisNeighbors.forEach((neighbor, index) => {
-            neighbor.addBracket(this, -index)
-        })
+        this.beforeEllipsisBracket.subscribeToNeighborChanges()
+        this.afterEllipsisBracket.subscribeToNeighborChanges()
+        this.beforeEllipsisBracket.addEllipsisBracket(this, BEFORE_OR_AFTER.BEFORE)
+        this.afterEllipsisBracket.addEllipsisBracket(this, BEFORE_OR_AFTER.AFTER)
     }
-    toKey() {
-        return 'NOT IMPLEMENTED'
+    toKey(ignoreDebugFlag?: boolean) {
+        return `[${this.beforeEllipsisBracket.toKey(ignoreDebugFlag)} ... ${this.afterEllipsisBracket.toKey(ignoreDebugFlag)}]}`
     }
     getNeighbors() {
         // throw new Error(`BUG: Should not be calling this method`)
@@ -803,26 +829,132 @@ export class SimpleEllipsisBracket extends ISimpleBracket {
     }
 
     clearCaches() {
-        this._firstCells.clear()
+        this.firstCells.clear()
+        this.firstBeforeCells.clear()
         this.firstAfterCells.clear()
+        this.beforeEllipsisBracket.clearCaches()
+        this.afterEllipsisBracket.clearCaches()
     }
     populateMagicOrTiles(cell: Cell, magicOrTiles: Map<IGameTile, Set<GameSprite>>) {
+        const firstAfter = this.firstBeforeCells.get(cell)
+        if (!firstAfter) {
+            throw new Error(`BUG: Should have a match at this point since the rule is evaluating`)
+        }
+        this.beforeEllipsisBracket.populateMagicOrTiles(cell, magicOrTiles)
+        this.afterEllipsisBracket.populateMagicOrTiles(firstAfter, magicOrTiles)
     }
     prepareAction(action: ISimpleBracket) {
+        const actionBracket = <SimpleEllipsisBracket> action // since we know the condition and action side need to match
+        this.beforeEllipsisBracket.prepareAction(actionBracket.beforeEllipsisBracket)
+        this.afterEllipsisBracket.prepareAction(actionBracket.afterEllipsisBracket)
+        this.actionDebugFlag = actionBracket.debugFlag
+    }
+    addCellsToEmptyRules(cells: Iterable<Cell>) {
+        this.beforeEllipsisBracket.addCellsToEmptyRules(cells)
+        this.afterEllipsisBracket.addCellsToEmptyRules(cells)
     }
     evaluate(actionBracket: ISimpleBracket, cell: Cell, magicOrTiles: Map<IGameTile, Set<GameSprite>>) {
-        if (process.env['NODE_ENV'] === 'development' && this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
+        if (process.env['NODE_ENV'] === 'development' && this.actionDebugFlag === DEBUG_FLAG.BREAKPOINT) {
             TerminalUI.debugRenderScreen(); debugger // pausing here because it is in the code
         }
-        return []
+        const action = <SimpleEllipsisBracket> actionBracket
+        const firstBeforeCell = cell
+        const firstAfterCell = this.firstBeforeCells.get(firstBeforeCell)
+        if (!firstAfterCell) {
+            throw new Error(`BUG: Could not find matching afterCell`)
+        }
+
+        const beforeMutations = this.beforeEllipsisBracket.evaluate(action.beforeEllipsisBracket, firstBeforeCell, magicOrTiles)
+        const afterMutations = this.afterEllipsisBracket.evaluate(action.afterEllipsisBracket, firstAfterCell, magicOrTiles)
+        return beforeMutations.concat(afterMutations)
     }
 
 
     addCell(index: number, neighbor: SimpleNeighbor, t: SimpleTileWithModifier, sprite: GameSprite, cell: Cell, wantsToMove: Optional<RULE_DIRECTION_ABSOLUTE>) {
-
+        throw new Error(`BUG: We should not be subscribed to these events`)
     }
     removeCell(index: number, neighbor: SimpleNeighbor, t: SimpleTileWithModifier, sprite: GameSprite, cell: Cell) {
+        throw new Error(`BUG: We should not be subscribed to these events`)
+    }
 
+    addFirstCell(bracket: SimpleBracket, firstCell: Cell, token: BEFORE_OR_AFTER) {
+        // check to see if the new cell is in line with any firstCells in the other bracket. If so, we have a match!
+        let firstBeforeCell
+        let firstAfterCell
+        if (bracket == this.beforeEllipsisBracket) {
+            firstBeforeCell = firstCell
+            // search for a matching afterCell
+            firstAfterCell = this.findMatching(firstCell, this.direction, this.afterEllipsisBracket)
+        } else if (bracket === this.afterEllipsisBracket) {
+            firstAfterCell = firstCell
+            // search for a matching beforeCell
+            firstBeforeCell = this.findMatching(firstCell, opposite(this.direction), this.beforeEllipsisBracket)
+        } else {
+            throw new Error(`BUG: Bracket should only ever be the before-ellipsis or after-ellipsis one`)
+        }
+        if (firstBeforeCell && firstAfterCell) {
+            this.firstCells.add(firstBeforeCell)
+            this.firstBeforeCells.set(firstBeforeCell, firstAfterCell)
+            this.firstAfterCells.set(firstAfterCell, firstBeforeCell)
+        }
+    }
+    removeFirstCell(bracket: SimpleBracket, firstCell: Cell, token: BEFORE_OR_AFTER) {
+        // Figure out the 1st cell for us and remove it (by maybe looking at the matching bracket)
+        let firstBeforeCell
+        let firstAfterCell
+        if (bracket == this.beforeEllipsisBracket) {
+            // search for a matching afterCell
+            firstAfterCell = this.firstBeforeCells.get(firstCell)
+            if (firstAfterCell) {
+                firstBeforeCell = this.firstAfterCells.get(firstAfterCell)
+            }
+        } else if (bracket === this.afterEllipsisBracket) {
+            // search for a matching beforeCell
+            firstBeforeCell = this.firstAfterCells.get(firstCell)
+            if (firstBeforeCell) {
+                firstAfterCell = this.firstBeforeCells.get(firstBeforeCell)
+            }
+        } else {
+            throw new Error(`BUG: Bracket should only ever be the before-ellipsis or after-ellipsis one`)
+        }
+        if (firstBeforeCell && firstAfterCell) {
+            this.firstCells.delete(firstBeforeCell)
+            this.firstBeforeCells.delete(firstBeforeCell)
+            this.firstAfterCells.delete(firstAfterCell)
+        } else if (!firstBeforeCell && !firstAfterCell) {
+            // That's ok, nothing to remove
+        } else {
+            throw new Error(`BUG: Should always find a matching pair of before-ellipsis and after-ellipsis... oh wait maybe not`)
+        }
+    }
+
+    private findMatching(cell: Cell, direction: RULE_DIRECTION_ABSOLUTE, inBracket: SimpleBracket) {
+        for (const inBracketCell of inBracket.getFirstCells()) {
+            switch (direction) {
+                case RULE_DIRECTION_ABSOLUTE.UP:
+                    if (cell.colIndex === inBracketCell.colIndex && cell.rowIndex > inBracketCell.rowIndex) {
+                        return inBracketCell
+                    }
+                    break
+                case RULE_DIRECTION_ABSOLUTE.DOWN:
+                    if (cell.colIndex === inBracketCell.colIndex && cell.rowIndex < inBracketCell.rowIndex) {
+                        return inBracketCell
+                    }
+                    break
+                case RULE_DIRECTION_ABSOLUTE.LEFT:
+                    if (cell.colIndex > inBracketCell.colIndex && cell.rowIndex === inBracketCell.rowIndex) {
+                        return inBracketCell
+                    }
+                    break
+                case RULE_DIRECTION_ABSOLUTE.RIGHT:
+                    if (cell.colIndex < inBracketCell.colIndex && cell.rowIndex === inBracketCell.rowIndex) {
+                        return inBracketCell
+                    }
+                    break
+                default:
+                    throw new Error(`BUG: Invalid direction`)
+            }
+        }
     }
 
 }
@@ -1035,8 +1167,12 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
         // }
 
     }
-    toKey() {
-        return `{${[...this._tilesWithModifier].map(t => t.toKey()).sort().join(' ')} debugging?${this.debugFlag}}`
+    toKey(ignoreDebugFlag?: boolean) {
+        if (ignoreDebugFlag) {
+            return `{${[...this._tilesWithModifier].map(t => t.toKey(ignoreDebugFlag)).sort().join(' ')}}`
+        } else {
+            return `{${[...this._tilesWithModifier].map(t => t.toKey(ignoreDebugFlag)).sort().join(' ')} debugging?${this.debugFlag}}`
+        }
     }
 
     prepareAction(actionNeighbor: SimpleNeighbor) {
@@ -1264,18 +1400,17 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
         }
     }
 
-    addBracket(bracket: ISimpleBracket, index: number) {
+    subscribeToTileChanges(bracket: ISimpleBracket, index: number) {
+        // add the bracket and then subscribe the tiles
         let b = this.brackets.get(bracket)
         if (!b) {
             b = new Set()
             this.brackets.set(bracket, b)
         }
         b.add(index)
-    }
 
-    subscribeToTileChanges() {
         this._tilesWithModifier.forEach(t => {
-            t.addRuleBracketNeighbor(this)
+            t.subscribeToCellChanges(this)
         })
     }
 
@@ -1461,8 +1596,12 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
         // this._localCache = new Map()
     }
 
-    toKey() {
-        return `{-?${this._isNegated}} {#?${this._isRandom}} dir="${this._direction}" [${this._tile.getSprites().map(sprite => sprite.getName()).sort().join(' ')}]{debugging?${this._debugFlag}}`
+    toKey(ignoreDebugFlag?: boolean) {
+        if (ignoreDebugFlag) {
+            return `{-?${this._isNegated}} {#?${this._isRandom}} dir="${this._direction}" [${this._tile.getSprites().map(sprite => sprite.getName()).sort().join(' ')}]`
+        } else {
+            return `{-?${this._isNegated}} {#?${this._isRandom}} dir="${this._direction}" [${this._tile.getSprites().map(sprite => sprite.getName()).sort().join(' ')}]{debugging?${this._debugFlag}}`
+        }
     }
 
     equals(t: SimpleTileWithModifier) {
@@ -1488,17 +1627,13 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
         return collisionLayers
     }
 
-    addRuleBracketNeighbor(neighbor: SimpleNeighbor) {
-        this.neighbors.add(neighbor)
-    }
-
     // This should only be called on Condition Brackets
-    subscribeToCellChanges() {
+    subscribeToCellChanges(neighbor: SimpleNeighbor) {
+        this.neighbors.add(neighbor)
+
         // subscribe this to be notified of all Sprite changes of Cells
-        if (this._tile) { // grr, ellipsis hack....
-            for (const sprite of this._tile.getSprites()) {
-                sprite.addTileWithModifier(this)
-            }
+        for (const sprite of this._tile.getSprites()) {
+            sprite.addTileWithModifier(this)
         }
     }
 

@@ -125,7 +125,15 @@ export function getRuleSemantics(lookup: LookupHelper) {
             return cacheBrackets.get(key)
         },
         EllipsisRuleBracket: function (this: ohm.Node, _openBracket: Parseable<string>, beforeEllipsisNeighbors: Parseable<ASTRuleBracketNeighbor[]>, _ellipsis: Parseable<string>, _pipe: Parseable<string>, afterEllipsisNeighbors: Parseable<ASTRuleBracketNeighbor[]>, _closeBracket: Parseable<string>, debugFlag: Parseable<DEBUG_FLAG[]>) {
-            const b = new ASTEllipsisRuleBracket(this.source, beforeEllipsisNeighbors.parse(), afterEllipsisNeighbors.parse(), debugFlag.parse()[0])
+            // The before ellipsis neightbor contains an additional empty neighbor that we need to remove
+            const before = beforeEllipsisNeighbors.parse()
+            const extraEmptyNeighbor = before.pop()
+            if (extraEmptyNeighbor && extraEmptyNeighbor.tilesWithModifier.length === 0) {
+                // yep, that's the extra one we should remove
+            } else {
+                throw new Error(`BUG: Invariant broken`)
+            }
+            const b = new ASTEllipsisRuleBracket(this.source, before, afterEllipsisNeighbors.parse(), debugFlag.parse()[0])
             const key = b.toKey()
             if (!cacheBrackets.has(key)) {
                 cacheBrackets.set(key, b)

@@ -2085,4 +2085,71 @@ describe('engine', () => {
         expect(shirt.getCellsThatMatch().size).toBe(0)
     })
 
+
+    it('supports ellipsis rules', () => {
+        const { engine, data } = parseEngine(`title foo
+
+        ========
+        OBJECTS
+        ========
+
+        Background
+        gray
+
+        Player
+        transparent
+
+        Cat C
+        black
+
+        =======
+        LEGEND
+        =======
+
+        . = Background
+        P = Player
+
+        =======
+        SOUNDS
+        =======
+
+        ================
+        COLLISIONLAYERS
+        ================
+        Background
+        Player
+        Cat
+
+        ======
+        RULES
+        ======
+
+        RIGHT [ Player | ... | Cat ] -> [ Player | ... | > Cat ]
+
+        ==============
+        WINCONDITIONS
+        ==============
+
+        =======
+        LEVELS
+        =======
+
+        P.C..
+
+    `) // end game definition
+
+        const cat = data._getSpriteByName('cat')
+        engine.tick()
+
+        expect(cat.getCellsThatMatch().size).toBe(1)
+        expect(engine.currentLevel[0][2].getSpritesAsSet().has(cat)).toBe(false) // the Cat moved
+        expect(engine.currentLevel[0][3].getSpritesAsSet().has(cat)).toBe(true)
+
+        engine.tick()
+
+        expect(cat.getCellsThatMatch().size).toBe(1)
+        expect(engine.currentLevel[0][3].getSpritesAsSet().has(cat)).toBe(false) // the Cat moved
+        expect(engine.currentLevel[0][4].getSpritesAsSet().has(cat)).toBe(true)
+    })
+
 })

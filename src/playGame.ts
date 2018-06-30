@@ -460,8 +460,13 @@ async function promptChooseLevel(recordings: SaveFile, data: GameData) {
                 }
             }
             else {
+                const message = levelMap.getMessage()
+                let snippet = message.split('\n')[0] // just use the 1st line
+                if (snippet.length > 40) {
+                    snippet = `${snippet.substring(0, 40)}...`
+                }
                 return {
-                    name: chalk.dim('... just a message (not playable)'),
+                    name: chalk.dim(`... "${snippet}"`),
                     value: index
                 };
             }
@@ -531,6 +536,7 @@ async function promptGame(games: GameInfo[]) {
         'Skipping Stones to Lonely Homes',
         'Hack the Net',
         'Garten der Medusen',
+        'Pants, Shirt, Cap',
         'Separation',
         'Roll those Sixes',
         'Spacekoban',
