@@ -497,7 +497,9 @@ export class LevelEngine extends EventEmitter2 {
         // We need to compare the set of sprites before and after ALL rules ran.
         // This will likely be implemented as part of UNDO or CHECKPOINT.
         const movedCells = this.tickMoveSprites(new Set<Cell>(changedCellMutations.keys()))
-        const didCancel = !![...commands].filter(c => c.getType() === COMMAND_TYPE.CANCEL)[0]
+        const {changedCells: changedCellsLate, evaluatedRules: evaluatedRulesLate, commands: commandsLate} = this.tickUpdateCellsLate()
+        const allCommands = [...commands, ...commandsLate]
+        const didCancel = !!allCommands.filter(c => c.getType() === COMMAND_TYPE.CANCEL)[0]
         if (didCancel) {
             this.hasAgainThatNeedsToRun = false
             if (this.undoStack.length > 0) {
@@ -509,14 +511,13 @@ export class LevelEngine extends EventEmitter2 {
                 evaluatedRules: evaluatedRules,
             }
         }
-        const didCheckpoint = !![...commands].filter(c => c.getType() === COMMAND_TYPE.CHECKPOINT)[0]
+        const didCheckpoint = !!allCommands.filter(c => c.getType() === COMMAND_TYPE.CHECKPOINT)[0]
         if (didCheckpoint) {
             this.undoStack = []
             this.takeSnapshot()
         }
-        const {changedCells: changedCellsLate, evaluatedRules: evaluatedRulesLate, commands: commandsLate} = this.tickUpdateCellsLate()
         // set this only if we did not CANCEL
-        this.hasAgainThatNeedsToRun = !![...commands, ...commandsLate].filter(c => c.getType() === COMMAND_TYPE.AGAIN)[0]
+        this.hasAgainThatNeedsToRun = !!allCommands.filter(c => c.getType() === COMMAND_TYPE.AGAIN)[0]
         return {
             changedCells: setAddAll(setAddAll(changedCellMutations, changedCellsLate), movedCells),
             evaluatedRules: evaluatedRules.concat(evaluatedRulesLate),

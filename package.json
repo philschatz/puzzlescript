@@ -4,6 +4,7 @@
     "prepublish": "NODE_ENV=production npm run-script tsc",
     "ci-codecov": "codecov",
     "tsc": "tsc",
+    "tsc-watch": "tsc --watch",
     "play": "tsc && NODE_ENV=production node -r source-map-support/register lib/playGame.js",
     "play-only": "NODE_ENV=production node -r source-map-support/register lib/playGame.js",
     "play-debug": "tsc && LOG_LEVEL=debug NODE_ENV=development node --inspect -r source-map-support/register ./lib/playGame.js 2> ./play.log",
@@ -18,7 +19,7 @@
     "coverage": "istanbul report --root ./coverage/ lcov",
     "test": "tsc && NODE_ENV=development jest --coverage --updateSnapshot @*",
     "test-debug": "tsc && NODE_ENV=development node --inspect-brk -r source-map-support/register $(npm bin)/jest -i --updateSnapshot $@",
-    "watch": "tsc && concurrently --raw 'jest --updateSnapshot --watch' 'tsc --watch --noEmit'",
+    "watch": "jest --updateSnapshot --watch",
     "debug": "tsc && NODE_ENV=development node --inspect-brk lib/runGames.js"
   },
   "bin": {
