@@ -16,7 +16,7 @@
     "start-debug-cli": "tsc && LOG_LEVEL=debug NODE_ENV=development node inspect lib/runGames.js 2> ./start.log",
     "poststart": "npm run-script coverage && echo 'Generated coverage. Type open ./coverage/lcov-html/index.html to see it'",
     "coverage": "istanbul report --root ./coverage/ lcov",
-    "test": "tsc && jest --coverage --updateSnapshot @*",
+    "test": "tsc && NODE_ENV=development jest --coverage --updateSnapshot @*",
     "test-debug": "tsc && NODE_ENV=development node --inspect-brk -r source-map-support/register $(npm bin)/jest -i --updateSnapshot $@",
     "watch": "tsc && concurrently --raw 'jest --updateSnapshot --watch' 'tsc --watch --noEmit'",
     "debug": "tsc && NODE_ENV=development node --inspect-brk lib/runGames.js"
@@ -72,7 +72,7 @@
       ".ts": "<rootDir>/preprocessor.js"
     },
     "testMatch": [
-      "**/test/*.+(ts|js)"
+      "**/test/**/*.test.+(ts|js)"
     ]
   },
   "standard": {
