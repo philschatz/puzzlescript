@@ -828,6 +828,12 @@ export class SimpleEllipsisBracket extends ISimpleBracket {
         return [] // TODO: Implement me
     }
 
+    private checkInvariants() {
+        if (this.firstCells.size !== this.firstBeforeCells.size || this.firstCells.size !== this.firstAfterCells.size) {
+            debugger; throw new Error(`BUG: Invariant violation`)
+        }
+    }
+
     clearCaches() {
         this.firstCells.clear()
         this.firstBeforeCells.clear()
@@ -893,9 +899,31 @@ export class SimpleEllipsisBracket extends ISimpleBracket {
             throw new Error(`BUG: Bracket should only ever be the before-ellipsis or after-ellipsis one`)
         }
         if (firstBeforeCell && firstAfterCell) {
+            this.checkInvariants()
+
+            // Check if we need to actually change anything first. Becauase the !doesEvaluationOrderMatter case
+            // keeps iterating on the set of firstCells but if they keep flipping then it's a problem because it
+            // runs in an infinite loop
+
+            // Delete any mapping that may have existed before
+            const oldAfter = this.firstBeforeCells.get(firstBeforeCell)
+            if (oldAfter) {
+                // this.firstCells.delete(firstBeforeCell)
+                this.firstBeforeCells.delete(firstBeforeCell)
+                this.firstAfterCells.delete(oldAfter)
+            }
+            const oldBefore = this.firstAfterCells.get(firstAfterCell)
+            if (oldBefore) {
+                // this.firstCells.delete(oldBefore)
+                this.firstBeforeCells.delete(oldBefore)
+                this.firstAfterCells.delete(firstAfterCell)
+            }
+
+            // now we can safely add a new mapping
             this.firstCells.add(firstBeforeCell)
             this.firstBeforeCells.set(firstBeforeCell, firstAfterCell)
             this.firstAfterCells.set(firstAfterCell, firstBeforeCell)
+            this.checkInvariants()
         }
     }
     removeFirstCell(bracket: SimpleBracket, firstCell: Cell, token: BEFORE_OR_AFTER) {
@@ -918,9 +946,11 @@ export class SimpleEllipsisBracket extends ISimpleBracket {
             throw new Error(`BUG: Bracket should only ever be the before-ellipsis or after-ellipsis one`)
         }
         if (firstBeforeCell && firstAfterCell) {
+            this.checkInvariants()
             this.firstCells.delete(firstBeforeCell)
             this.firstBeforeCells.delete(firstBeforeCell)
             this.firstAfterCells.delete(firstAfterCell)
+            this.checkInvariants()
         } else if (!firstBeforeCell && !firstAfterCell) {
             // That's ok, nothing to remove
         } else {
