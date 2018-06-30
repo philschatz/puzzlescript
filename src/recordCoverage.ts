@@ -1,4 +1,4 @@
-import { GameData, IGameNode } from "./models/game";
+import { GameData, IGameNode, BaseForLines } from "./models/game";
 import { writeFileSync, existsSync } from "fs";
 import { IRule } from "./models/rule";
 
@@ -67,7 +67,9 @@ export function saveCoverageFile(data: GameData, absPath: string, coverageFilena
     }
 
     // record the tick coverage
-    for (const node of [].concat(recursivelyGetRules(data.rules))/*.concat(data.objects).concat(data.legends)*/.concat(data.winConditions)/*.concat(data.levels)*/) {
+    const ary = new Array<IGameNode>()
+    const nodesToCover = ary.concat(recursivelyGetRules(data.rules))/*.concat(data.objects).concat(data.legends)*/.concat(data.winConditions)/*.concat(data.levels)*/
+    for (const node of nodesToCover) {
         const line = coverageKey(node)
         if (codeCoverageTemp.has(line)) {
             codeCoverageTemp.set(line, codeCoverageTemp.get(line) + node.__coverageCount)

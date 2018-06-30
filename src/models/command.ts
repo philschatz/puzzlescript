@@ -1,5 +1,6 @@
 import { BaseForLines, IGameCode } from "./game";
 import { GameSound } from "./sound";
+import { Optional } from "../util";
 
 export enum COMMAND_TYPE {
     SFX = 'SFX',
@@ -31,7 +32,7 @@ export class MessageCommand extends AbstractCommand {
     getType() { return COMMAND_TYPE.MESSAGE }
 
     // THese are used by message levels. Maybe we should split this into 2 classes
-    isInvalid(): string {
+    isInvalid(): Optional<string> {
         return null
     }
     isMap() {

@@ -8,10 +8,7 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "removeComments": false,
-    "noImplicitAny": true,
-    // "_strict": true,
-    // "declaration": true,
-    // "_downlevelIteration": true,
+    "strict": true,
     "outDir": "lib",
     "rootDir": "src"
   },

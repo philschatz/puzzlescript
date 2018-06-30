@@ -1,8 +1,9 @@
 import { BaseForLines, IGameCode } from './game'
 import { IGameTile } from './tile'
+import { Optional } from '../util';
 
 export interface ILevel {
-    isInvalid: () => string
+    isInvalid: () => Optional<string>
     isMap: () => boolean
     getRows: () => IGameTile[][]
     getMessage: () => string
@@ -15,7 +16,7 @@ export class LevelMap extends BaseForLines implements ILevel {
         super(source)
         this._rows = rows
     }
-    isInvalid(): string {
+    isInvalid(): Optional<string> {
         const firstRowLength = this._rows[0].length
         let isInvalid = null
         this._rows.forEach((row, index) => {
@@ -48,7 +49,7 @@ export class MessageLevel extends BaseForLines implements ILevel {
         super(source)
         this._message = message
     }
-    isInvalid(): string { return null }
+    isInvalid(): Optional<string> { return null }
     isMap() {
         return false
     }

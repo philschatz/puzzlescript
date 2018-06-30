@@ -1,7 +1,8 @@
 import * as _ from 'lodash'
+import * as ohm from 'ohm-js'
 import { AbstractCommand, COMMAND_TYPE, MessageCommand, AgainCommand, CancelCommand, CheckpointCommand, RestartCommand, WinCommand, SoundCommand } from '../models/command';
 import { LookupHelper } from './lookup';
-import { ASTTileWithModifier, ASTRuleBracketNeighbor, ASTRuleBracket, ASTGameRuleLoop, ASTGameRuleGroup, ASTGameRule, ASTHackNode, AST_RULE_MODIFIER } from './rule';
+import { ASTTileWithModifier, ASTRuleBracketNeighbor, ASTRuleBracket, ASTGameRuleLoop, ASTGameRuleGroup, ASTGameRule, ASTHackNode, AST_RULE_MODIFIER, ASTEllipsisRuleBracket, IASTRuleBracket } from './rule';
 import { DEBUG_FLAG } from '../util';
 import { Parseable } from './gameGrammar';
 import { IGameTile } from '../models/tile';
@@ -14,14 +15,18 @@ export const RULE_GRAMMAR = `
 
     Rule = t_DEBUGGER? (RuleModifierLeft* RuleBracket)+ "->" (RuleModifier? RuleBracket)* RuleCommand* MessageCommand? lineTerminator+
 
-    RuleBracket = "[" NonemptyListOf<RuleBracketNeighbor, "|"> t_AGAIN? "]" t_DEBUGGER? // t_AGAIN is a HACK. It should be in the list of commands but it's not.
+    RuleBracket
+        = EllipsisRuleBracket
+        | NormalRuleBracket
+
+    NormalRuleBracket = "[" NonemptyListOf<RuleBracketNeighbor, "|"> t_AGAIN? "]" t_DEBUGGER? // t_AGAIN is a HACK. It should be in the list of commands but it's not.
+    EllipsisRuleBracket = "[" NonemptyListOf<RuleBracketNeighbor, "|"> t_ELLIPSIS "|" NonemptyListOf<RuleBracketNeighbor, "|"> "]" t_DEBUGGER?
+
     RuleBracketNeighbor
         = HackTileNameIsSFX1 // to parse '... -> [ SFX1 ]' (they should be commands)
         | HackTileNameIsSFX2 // to parse '... -> [ tilename SFX1 ]'
-        | RuleBracketEllipsisNeighbor
         | RuleBracketNoEllipsisNeighbor
 
-    RuleBracketEllipsisNeighbor = t_ELLIPSIS t_DEBUGGER?
     RuleBracketNoEllipsisNeighbor = TileWithModifier* t_DEBUGGER?
 
     TileWithModifier = t_DEBUGGER? tileModifier* lookupRuleVariableName
@@ -88,18 +93,18 @@ export const RULE_GRAMMAR = `
 export function getRuleSemantics(lookup: LookupHelper) {
     const cacheTilesWithModifiers: Map<string, ASTTileWithModifier> = new Map()
     const cacheNeighbors: Map<string, ASTRuleBracketNeighbor> = new Map()
-    const cacheBrackets: Map<string, ASTRuleBracket> = new Map()
+    const cacheBrackets: Map<string, IASTRuleBracket> = new Map()
     return {
-        RuleItem: function (_1: Parseable<ASTGameRule>) {
+        RuleItem: function (this: ohm.Node, _1: Parseable<ASTGameRule>) {
             return _1.parse()
         },
-        RuleLoop: function (debugFlag: Parseable<DEBUG_FLAG[]>, _startloop: Parseable<string>, _whitespace1: Parseable<string>, rules: Parseable<ASTGameRule[]>, _endloop: Parseable<string>, _whitespace2: Parseable<string>) {
+        RuleLoop: function (this: ohm.Node, debugFlag: Parseable<DEBUG_FLAG[]>, _startloop: Parseable<string>, _whitespace1: Parseable<string>, rules: Parseable<ASTGameRule[]>, _endloop: Parseable<string>, _whitespace2: Parseable<string>) {
             return new ASTGameRuleLoop(this.source, rules.parse(), debugFlag.parse()[0])
         },
-        RuleGroup: function (debugFlag: Parseable<DEBUG_FLAG[]>, firstRule: Parseable<ASTGameRule>, _plusses: Parseable<string>, followingRules: Parseable<ASTGameRule[]>) {
+        RuleGroup: function (this: ohm.Node, debugFlag: Parseable<DEBUG_FLAG[]>, firstRule: Parseable<ASTGameRule>, _plusses: Parseable<string>, followingRules: Parseable<ASTGameRule[]>) {
             return new ASTGameRuleGroup(this.source, [firstRule.parse()].concat(followingRules.parse()), debugFlag.parse()[0])
         },
-        Rule: function (debugFlag: Parseable<DEBUG_FLAG[]>, modifiers: Parseable<AST_RULE_MODIFIER[]>, conditions: Parseable<ASTRuleBracket[]>, _arrow: Parseable<string>, _unusuedModifer: Parseable<string>, actions: Parseable<ASTRuleBracket[]>, commands: Parseable<AbstractCommand[]>, optionalMessageCommand: Parseable<MessageCommand[]>, _whitespace: Parseable<string>) {
+        Rule: function (this: ohm.Node, debugFlag: Parseable<DEBUG_FLAG[]>, modifiers: Parseable<AST_RULE_MODIFIER[]>, conditions: Parseable<ASTRuleBracket[]>, _arrow: Parseable<string>, _unusuedModifer: Parseable<string>, actions: Parseable<ASTRuleBracket[]>, commands: Parseable<AbstractCommand[]>, optionalMessageCommand: Parseable<MessageCommand[]>, _whitespace: Parseable<string>) {
             const modifiers2 = _.flatten(modifiers.parse())
             const commands2 = commands.parse().filter(c => !!c) // remove nulls (like an invalid sound effect... e.g. "Fish Friend")
             const optionalMessageCommand2 = optionalMessageCommand.parse()[0]
@@ -109,7 +114,7 @@ export function getRuleSemantics(lookup: LookupHelper) {
             }
             return new ASTGameRule(this.source, modifiers2, conditions.parse(), actions.parse(), commands2, debugFlag.parse()[0])
         },
-        RuleBracket: function (_openBracket: Parseable<string>, neighbors: Parseable<ASTRuleBracketNeighbor[]>, hackAgain: Parseable<string>, _closeBracket: Parseable<string>, debugFlag: Parseable<DEBUG_FLAG[]>) {
+        NormalRuleBracket: function (this: ohm.Node, _openBracket: Parseable<string>, neighbors: Parseable<ASTRuleBracketNeighbor[]>, hackAgain: Parseable<string>, _closeBracket: Parseable<string>, debugFlag: Parseable<DEBUG_FLAG[]>) {
             const b = new ASTRuleBracket(this.source, neighbors.parse(), hackAgain.parse(), debugFlag.parse()[0])
             const key = b.toKey()
             if (!cacheBrackets.has(key)) {
@@ -119,14 +124,20 @@ export function getRuleSemantics(lookup: LookupHelper) {
             }
             return cacheBrackets.get(key)
         },
-        RuleBracketNeighbor: function (_1: Parseable<ASTRuleBracketNeighbor>) {
+        EllipsisRuleBracket: function (this: ohm.Node, _openBracket: Parseable<string>, beforeEllipsisNeighbors: Parseable<ASTRuleBracketNeighbor[]>, _ellipsis: Parseable<string>, _pipe: Parseable<string>, afterEllipsisNeighbors: Parseable<ASTRuleBracketNeighbor[]>, _closeBracket: Parseable<string>, debugFlag: Parseable<DEBUG_FLAG[]>) {
+            const b = new ASTEllipsisRuleBracket(this.source, beforeEllipsisNeighbors.parse(), afterEllipsisNeighbors.parse(), debugFlag.parse()[0])
+            const key = b.toKey()
+            if (!cacheBrackets.has(key)) {
+                cacheBrackets.set(key, b)
+            } else {
+                // console.log(`Prevented creating a duplicate bracket: ${key}`)
+            }
+            return cacheBrackets.get(key)
+        },
+        RuleBracketNeighbor: function (this: ohm.Node, _1: Parseable<ASTRuleBracketNeighbor>) {
             return _1.parse()
         },
-        RuleBracketEllipsisNeighbor: function (_1: Parseable<string>, debugFlag: Parseable<DEBUG_FLAG[]>) {
-            const tileWithModifier = new ASTTileWithModifier(this.source, "...", null, debugFlag.parse()[0])
-            return new ASTRuleBracketNeighbor(this.source, [tileWithModifier], true, debugFlag.parse()[0])
-        },
-        RuleBracketNoEllipsisNeighbor: function (tileWithModifiers: Parseable<ASTTileWithModifier[]>, debugFlag: Parseable<DEBUG_FLAG[]>) {
+        RuleBracketNoEllipsisNeighbor: function (this: ohm.Node, tileWithModifiers: Parseable<ASTTileWithModifier[]>, debugFlag: Parseable<DEBUG_FLAG[]>) {
             const n = new ASTRuleBracketNeighbor(this.source, tileWithModifiers.parse(), false, debugFlag.parse()[0])
             const key = n.toKey()
             if (!cacheNeighbors.has(key)) {
@@ -136,7 +147,7 @@ export function getRuleSemantics(lookup: LookupHelper) {
             }
             return cacheNeighbors.get(key)
         },
-        TileWithModifier: function (debugFlag: Parseable<DEBUG_FLAG[]>, optionalModifier: Parseable<string[]>, tile: Parseable<IGameTile>) {
+        TileWithModifier: function (this: ohm.Node, debugFlag: Parseable<DEBUG_FLAG[]>, optionalModifier: Parseable<string[]>, tile: Parseable<IGameTile>) {
             const t = new ASTTileWithModifier(this.source, optionalModifier.parse()[0], tile.parse(), debugFlag.parse()[0])
             const key = t.toKey()
             if (!cacheTilesWithModifiers.has(key)) {
@@ -146,13 +157,13 @@ export function getRuleSemantics(lookup: LookupHelper) {
             }
             return cacheTilesWithModifiers.get(key)
         },
-        tileModifier: function (_whitespace1: Parseable<string>, tileModifier: Parseable<string>, _whitespace2: Parseable<string>) {
+        tileModifier: function (this: ohm.Node, _whitespace1: Parseable<string>, tileModifier: Parseable<string>, _whitespace2: Parseable<string>) {
             return tileModifier.parse()
         },
-        MessageCommand: function (_message: Parseable<string>, message: Parseable<string>) {
+        MessageCommand: function (this: ohm.Node, _message: Parseable<string>, message: Parseable<string>) {
             return new MessageCommand(this.source, message.parse())
         },
-        RuleCommand: function (type: Parseable<string>) {
+        RuleCommand: function (this: ohm.Node, type: Parseable<string>) {
             const type2 = type.parse()
             switch (type2) {
                 case COMMAND_TYPE.AGAIN:
@@ -187,10 +198,10 @@ export function getRuleSemantics(lookup: LookupHelper) {
                     throw new Error(`BUG: Fallthrough. Did not match "${type2}"`)
             }
         },
-        HackTileNameIsSFX1: function (sfx: Parseable<string>, debugFlag: Parseable<DEBUG_FLAG[]>) {
+        HackTileNameIsSFX1: function (this: ohm.Node, sfx: Parseable<string>, debugFlag: Parseable<DEBUG_FLAG[]>) {
             return new ASTHackNode(this.source, {sfx: sfx.parse()}, debugFlag.parse()[0])
         },
-        HackTileNameIsSFX2: function (tile: Parseable<string>, sfx: Parseable<string>, debugFlag: Parseable<DEBUG_FLAG[]>) {
+        HackTileNameIsSFX2: function (this: ohm.Node, tile: Parseable<string>, sfx: Parseable<string>, debugFlag: Parseable<DEBUG_FLAG[]>) {
             return new ASTHackNode(this.source, { tile: tile.parse(), sfx: sfx.parse() }, debugFlag.parse()[0])
         },
     }

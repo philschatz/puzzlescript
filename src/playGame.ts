@@ -8,12 +8,13 @@ import * as firstline from 'firstline'
 import chalk from 'chalk'
 
 import Parser from './parser/parser'
-import TerminalUI from './ui'
+import TerminalUI, { getTerminalSize } from './ui'
 import { GameEngine } from './engine'
 import { saveCoverageFile } from './recordCoverage';
 import { closeSounds } from './models/sound';
 import { GameData } from './models/game';
 import { LoadingCellsEvent } from './engine';
+import { Optional } from './util';
 
 export type GameRecording = {
     version: number,
@@ -81,13 +82,16 @@ async function run() {
         const absPath = path.resolve(gamePath)
         const code = readFileSync(absPath, 'utf-8')
         const startTime = Date.now()
-        const { data, error, trace, validationMessages } = Parser.parse(code)
+        const { data, error, trace } = Parser.parse(code)
 
-        if (error) {
+        if (error && trace) {
             console.log(trace.toString())
             console.log(error.message)
             throw new Error(error.message)
         } else {
+            if (!data) {
+                throw new Error(`BUG: did not load gameData`)
+            }
             showControls();
             // check to see if the terminal is too small
             await promptPixelSize(data);
@@ -110,12 +114,16 @@ async function run() {
                     message: 'Would you like to resume where you left off?',
                 })
                 if (shouldResume) {
-                    ticksToRunFirst = recordings.solutions[currentLevelNum].partial || recordings.solutions[currentLevelNum].solution
+                    ticksToRunFirst = recordings.solutions[currentLevelNum].partial || recordings.solutions[currentLevelNum].solution || ''
                 }
             }
 
             // Prepare the keyboard handler
-            process.stdin.setRawMode(true)
+            if (process.stdin.setRawMode) {
+                process.stdin.setRawMode(true)
+            } else {
+                throw new Error(`ERROR: stdin does not allow setting setRawMode (we need that for keyboard input`)
+            }
             process.stdin.resume()
             process.stdin.setEncoding('utf8')
 
@@ -267,7 +275,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: {ve
     TerminalUI.renderScreen(false)
     TerminalUI.writeDebug(`Game: "${data.title}"`)
 
-    let currentlyPlayingSoundPromise = null // stack the sounds so we know if one is playing
+    let currentlyPlayingSoundPromise: Optional<Promise<void>> = null // stack the sounds so we know if one is playing
 
     // Run a bunch of ticks in case the user partially played a level
     let maxTickAndRenderTime = -1
@@ -278,7 +286,10 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: {ve
 
         if (soundToPlay) {
             if (!currentlyPlayingSoundPromise) {
-                currentlyPlayingSoundPromise = soundToPlay.play().then((): void => currentlyPlayingSoundPromise = null)
+                currentlyPlayingSoundPromise = soundToPlay.play().then(() => {
+                    currentlyPlayingSoundPromise = null
+                    return
+                })
             }
         }
 
@@ -322,7 +333,10 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: {ve
 
         if (soundToPlay) {
             if (!currentlyPlayingSoundPromise) {
-                currentlyPlayingSoundPromise = soundToPlay.play().then((): void => currentlyPlayingSoundPromise = null)
+                currentlyPlayingSoundPromise = soundToPlay.play().then(() => {
+                    currentlyPlayingSoundPromise = null
+                    return
+                })
             }
         }
 
@@ -394,14 +408,14 @@ async function promptChooseLevel(recordings: SaveFile, data: GameData) {
         name: 'currentLevelNum',
         message: 'Which Level would you like to play?',
         default: firstUncompletedLevel,
-        pageSize: Math.max(15, process.stdout.rows - 15),
+        pageSize: Math.max(15, getTerminalSize().rows - 15),
         choices: levels.map((levelMap, index) => {
             const hasSolution = recordings.solutions[index] && recordings.solutions[index].solution;
             if (levelMap.isMap()) {
-                const rows = levelMap.getRows();
-                const cols = rows[0];
+                const levelRows = levelMap.getRows();
+                const cols = levelRows[0];
                 let width = cols.length;
-                let height = rows.length;
+                let height = levelRows.length;
                 // If flickscreen or zoomscreen is enabled, then change the level size
                 // that is reported
                 const { zoomscreen, flickscreen } = data.metadata;
@@ -413,8 +427,9 @@ async function promptChooseLevel(recordings: SaveFile, data: GameData) {
                     height = zoomscreen.height;
                     width = zoomscreen.width;
                 }
-                const isTooWide = process.stdout.columns < width * 5 * TerminalUI.PIXEL_WIDTH;
-                const isTooTall = process.stdout.rows < height * 5 * TerminalUI.PIXEL_HEIGHT;
+                const {columns, rows} = getTerminalSize()
+                const isTooWide = columns < width * 5 * TerminalUI.PIXEL_WIDTH;
+                const isTooTall = rows < height * 5 * TerminalUI.PIXEL_HEIGHT;
                 let message = '';
                 if (isTooWide && isTooTall) {
                     message = `(too tall & wide for your terminal)`;
@@ -548,7 +563,7 @@ async function promptGame(games: GameInfo[]) {
         type: 'autocomplete',
         name: 'gameTitle',
         message: 'Which game would you like to play?',
-        pageSize: Math.max(15, process.stdout.rows - 15),
+        pageSize: Math.max(15, getTerminalSize().rows - 15),
         source: async (answers: void, input: string) => {
             let filteredGames
             if (!input) {

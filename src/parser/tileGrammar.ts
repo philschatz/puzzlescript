@@ -1,3 +1,4 @@
+import * as ohm from 'ohm-js'
 import {
     GameSprite,
     GameSpritePixels,
@@ -51,7 +52,7 @@ export const LEGEND_GRAMMAR = `
 
 export function getTileSemantics(lookup: LookupHelper) {
     return {
-        Sprite: function (_1: Parseable<GameSprite>) {
+        Sprite: function (this: ohm.Node, _1: Parseable<GameSprite>) {
             const gameObject = _1.parse()
             lookup.addToAllObjects(gameObject)
             if (gameObject._optionalLegendChar) {
@@ -62,13 +63,13 @@ export function getTileSemantics(lookup: LookupHelper) {
             }
             return gameObject
         },
-        SpritePixels: function (name: Parseable<string>, optionalLegendChar: Parseable<string[]>, _3: Parseable<string>, colors: Parseable<HexColor[]>, _5: Parseable<string>, pixels: Parseable<(number | ".")[][]>, _7: Parseable<string>) {
+        SpritePixels: function (this: ohm.Node, name: Parseable<string>, optionalLegendChar: Parseable<string[]>, _3: Parseable<string>, colors: Parseable<HexColor[]>, _5: Parseable<string>, pixels: Parseable<(number | ".")[][]>, _7: Parseable<string>) {
             return new GameSpritePixels(this.source, name.parse(), optionalLegendChar.parse()[0], colors.parse(), pixels.parse())
         },
-        SpriteNoPixels: function (name: Parseable<string>, optionalLegendChar: Parseable<string[]>, _3: Parseable<string>, colors: Parseable<HexColor[]>, _5: Parseable<string>) {
+        SpriteNoPixels: function (this: ohm.Node, name: Parseable<string>, optionalLegendChar: Parseable<string[]>, _3: Parseable<string>, colors: Parseable<HexColor[]>, _5: Parseable<string>) {
             return new GameSpriteSingleColor(this.source, name.parse(), optionalLegendChar.parse()[0], colors.parse())
         },
-        PixelRows: function (row1: Parseable<string>, row2: Parseable<string>, row3: Parseable<string>, row4: Parseable<string>, rows: Parseable<string>) {
+        PixelRows: function (this: ohm.Node, row1: Parseable<string>, row2: Parseable<string>, row3: Parseable<string>, row4: Parseable<string>, rows: Parseable<string>) {
             return [
                 row1.parse(),
                 row2.parse(),
@@ -76,11 +77,11 @@ export function getTileSemantics(lookup: LookupHelper) {
                 row4.parse()
             ].concat(rows.parse())
         },
-        LookupLegendVarName: function (tileName: Parseable<string>) {
+        LookupLegendVarName: function (this: ohm.Node, tileName: Parseable<string>) {
             // Replace all the Sprite Names with the actual objects
             return lookup.lookupObjectOrLegendTile(this.source, tileName.parse())
         },
-        LegendTile: function (tile: Parseable<GameLegendTileSimple>) {
+        LegendTile: function (this: ohm.Node, tile: Parseable<GameLegendTileSimple>) {
             const legendTile = tile.parse()
             lookup.addToAllLegendTiles(legendTile)
             if (legendTile._spriteNameOrLevelChar.length === 1) {
@@ -88,14 +89,14 @@ export function getTileSemantics(lookup: LookupHelper) {
             }
             return legendTile
         },
-        LegendTileSimple: function (spriteNameOrLevelChar: Parseable<string>, _equals: Parseable<string>, tile: Parseable<GameSprite>, _whitespace: Parseable<string>) {
+        LegendTileSimple: function (this: ohm.Node, spriteNameOrLevelChar: Parseable<string>, _equals: Parseable<string>, tile: Parseable<GameSprite>, _whitespace: Parseable<string>) {
             // TODO: Do the lookup and adding to sets here rather than rewiring in LegendTile
             return new GameLegendTileSimple(this.source, spriteNameOrLevelChar.parse(), tile.parse())
         },
-        LegendTileAnd: function (spriteNameOrLevelChar: Parseable<string>, _equals: Parseable<string>, tiles: Parseable<IGameTile[]>, _whitespace: Parseable<string>) {
+        LegendTileAnd: function (this: ohm.Node, spriteNameOrLevelChar: Parseable<string>, _equals: Parseable<string>, tiles: Parseable<IGameTile[]>, _whitespace: Parseable<string>) {
             return new GameLegendTileAnd(this.source, spriteNameOrLevelChar.parse(), tiles.parse())
         },
-        LegendTileOr: function (spriteNameOrLevelChar: Parseable<string>, _equals: Parseable<string>, tiles: Parseable<IGameTile[]>, _whitespace: Parseable<string>) {
+        LegendTileOr: function (this: ohm.Node, spriteNameOrLevelChar: Parseable<string>, _equals: Parseable<string>, tiles: Parseable<IGameTile[]>, _whitespace: Parseable<string>) {
             return new GameLegendTileOr(this.source, spriteNameOrLevelChar.parse(), tiles.parse())
         }
     }

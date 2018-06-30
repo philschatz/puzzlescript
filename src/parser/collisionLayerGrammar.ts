@@ -1,7 +1,8 @@
+import * as ohm from 'ohm-js'
 import { CollisionLayer } from '../models/collisionLayer'
 import { LookupHelper } from './lookup'
 import { IGameTile } from '../models/tile'
-import { ValidationLevel, AddValidationFunc } from './parser'
+import { AddValidationFunc } from './parser'
 import { Parseable } from './gameGrammar';
 
 export const COLLISIONLAYERS_GRAMMAR = `
@@ -10,7 +11,7 @@ export const COLLISIONLAYERS_GRAMMAR = `
 
 export function getCollisionLayerSemantics(lookup: LookupHelper, addValidationMessage: AddValidationFunc) {
     return {
-        CollisionLayerItem: function (tiles: Parseable<IGameTile[]>, _2: Parseable<string>, _3: Parseable<string>) {
+        CollisionLayerItem: function (this: ohm.Node, tiles: Parseable<IGameTile[]>, _2: Parseable<string>, _3: Parseable<string>) {
             return new CollisionLayer(this.source, tiles.parse(), addValidationMessage)
         }
     }

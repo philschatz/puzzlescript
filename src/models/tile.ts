@@ -1,17 +1,17 @@
 import * as _ from 'lodash'
 import BitSet from 'bitset'
-import { BaseForLines, IGameCode, IGameNode } from './game'
+import { BaseForLines, IGameNode, IGameCode } from './game'
 import { IColor, HexColor, TransparentColor } from './colors'
 import { CollisionLayer } from './collisionLayer'
 import { Cell } from '../engine'
 import { SimpleTileWithModifier } from './rule';
-import { RULE_DIRECTION_ABSOLUTE, setIntersection } from '../util';
+import { RULE_DIRECTION_ABSOLUTE, setIntersection, Optional } from '../util';
 
 export interface IGameTile extends IGameNode {
     _getDescendantTiles: () => IGameTile[]
     getSprites: () => GameSprite[]
     getSpritesForRuleAction: () => GameSprite[]
-    isInvalid: () => string
+    isInvalid: () => Optional<string>
     hasCollisionLayer: () => boolean
     hasSingleCollisionLayer: () => boolean
     setCollisionLayer: (collisionLayer: CollisionLayer) => void
@@ -27,11 +27,11 @@ export interface IGameTile extends IGameNode {
 export class GameSprite extends BaseForLines implements IGameTile {
     _name: string
     _optionalLegendChar?: string
-    _collisionLayer: CollisionLayer
-    _collisionLayerIndex: number
+    _collisionLayer: Optional<CollisionLayer>
+    _collisionLayerIndex: Optional<number>
     _cellSet: Set<Cell>
     _tileWithModifierSet: Set<SimpleTileWithModifier>
-    _bitSet: BitSet
+    _bitSet: Optional<BitSet>
 
     constructor(source: IGameCode, name: string, optionalLegendChar?: string) {
         super(source)
@@ -120,7 +120,7 @@ export class GameSprite extends BaseForLines implements IGameTile {
     addTileWithModifier(t: SimpleTileWithModifier) {
         this._tileWithModifierSet.add(t)
     }
-    addCell(cell: Cell, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
+    addCell(cell: Cell, wantsToMove: Optional<RULE_DIRECTION_ABSOLUTE>) {
         this.addCells([cell], wantsToMove)
     }
     removeCell(cell: Cell) {
@@ -139,7 +139,7 @@ export class GameSprite extends BaseForLines implements IGameTile {
             t.updateCells(this, [cell], wantsToMove)
         }
     }
-    addCells(cells: Cell[], wantsToMove: RULE_DIRECTION_ABSOLUTE) {
+    addCells(cells: Cell[], wantsToMove: Optional<RULE_DIRECTION_ABSOLUTE>) {
         for (const cell of cells) {
             this._cellSet.add(cell)
         }
@@ -254,8 +254,8 @@ export class GameSpritePixels extends GameSprite {
 }
 
 export class GameLegendTile extends BaseForLines implements IGameTile {
-    _spritesCache: GameSprite[]
-    _collisionLayer: CollisionLayer
+    _spritesCache: Optional<GameSprite[]>
+    _collisionLayer: Optional<CollisionLayer>
     _spriteNameOrLevelChar: string
     _tiles: IGameTile[]
 
@@ -284,23 +284,14 @@ export class GameLegendTile extends BaseForLines implements IGameTile {
         }
         return null
     }
-    matchesCell(cell: Cell) {
-        if (!!true) {
-            throw new Error('BUG: This is an abstract method')
-        }
-        return false
+    matchesCell(cell: Cell): boolean {
+        throw new Error('BUG: This is an abstract method')
     }
-    getSpritesThatMatch(cell: Cell) {
-        if (!!true) {
-            throw new Error('BUG: This is an abstract method')
-        }
-        return new Set()
+    getSpritesThatMatch(cell: Cell): Set<GameSprite> {
+        throw new Error('BUG: This is an abstract method')
     }
-    hasSingleCollisionLayer() {
-        if (!!true) {
-            throw new Error('BUG: This is an abstract method')
-        }
-        return false
+    hasSingleCollisionLayer(): boolean {
+        throw new Error('BUG: This is an abstract method')
     }
 
     getName() {
@@ -368,7 +359,7 @@ export class GameLegendTileSimple extends GameLegendTile {
     matchesCell(cell: Cell) {
         // Update code coverage (Maybe only count the number of times it was true?)
         if (process.env['NODE_ENV'] === 'development') {
-            this.__coverageCount++
+            this.__incrementCoverage()
         }
 
         // Check that the cell contains all of the tiles (ANDED)
@@ -394,7 +385,7 @@ export class GameLegendTileAnd extends GameLegendTile {
     matchesCell(cell: Cell) {
         // Update code coverage (Maybe only count the number of times it was true?)
         if (process.env['NODE_ENV'] === 'development') {
-            this.__coverageCount++
+            this.__incrementCoverage()
         }
 
         // Check that the cell contains any of the tiles (AND)
@@ -424,7 +415,7 @@ export class GameLegendTileOr extends GameLegendTile {
     matchesCell(cell: Cell) {
         // Update code coverage (Maybe only count the number of times it was true?)
         if (process.env['NODE_ENV'] === 'development') {
-            this.__coverageCount++
+            this.__incrementCoverage()
         }
 
         // Check that the cell contains any of the tiles (OR)

@@ -1,4 +1,4 @@
-import { GameSprite } from "./models/tile";
+export type Optional<T> = T | null | undefined
 
 export function setEquals<T>(set1: Set<T>, set2: Set<T>) {
     if (set1.size !== set2.size) return false
@@ -36,7 +36,7 @@ export function setDifference<T>(setA: Set<T>, setB: Set<T>) {
 
 // From https://stackoverflow.com/a/19303725
 let seed = 1
-let randomValuesForTesting: number[] = null
+let randomValuesForTesting: Optional<number[]> = null
 export function nextRandom(maxNonInclusive: number) {
     if (randomValuesForTesting) {
         if (randomValuesForTesting.length <= seed - 1) {

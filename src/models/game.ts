@@ -1,4 +1,5 @@
 import * as _ from 'lodash'
+import * as ohm from 'ohm-js'
 import { GameMetadata } from './metadata'
 import { GameSprite, GameLegendTileSimple, IGameTile } from './tile'
 import { IRule } from './rule'
@@ -6,53 +7,66 @@ import { GameSound } from './sound'
 import { LevelMap } from './level'
 import { CollisionLayer } from './collisionLayer'
 import { WinConditionSimple } from './winCondition'
-import { Cell } from '../engine'
 import { ASTGameRule } from '../parser/rule';
+import { Optional } from '../util';
 
-export interface IGameNode {
+export type IGameNode = {
     __getSourceLineAndColumn: () => { lineNum: number, colNum: number }
     __getLineAndColumnRange: () => { start: { line: number, col: number }, end: { line: number, col: number } }
-    __coverageCount: number
+    __coverageCount: Optional<number>
     toString: () => string
 }
 
-export interface IGameCode {
+export type IGameCode = ohm.Interval
+interface IGameCodeWithSource extends ohm.Interval {
     sourceString: string
-    startIdx: number
-    endIdx: number
-    getLineAndColumnMessage: () => string
 }
+// export interface IGameCode extends IGameCode {
+//     sourceString: string
+//     startIdx: number
+//     endIdx: number
+//     getLineAndColumnMessage: () => string
+// }
 
 export class BaseForLines {
     __source: IGameCode
-    __coverageCount: number
+    __coverageCount: Optional<number>
 
     constructor(source: IGameCode) {
         if (!source || !source.getLineAndColumnMessage) {
             throw new Error(`BUG: failed to provide the source when constructing this object`)
         }
-        Object.defineProperty(this, '__source', {
-            get: function () { return source }
-        })
+        this.__source = source
         // This is only used for code coverage
         if (process.env['NODE_ENV'] === 'development') {
             this.__coverageCount = 0
         }
     }
     __getSourceLineAndColumn() {
-        return getLineAndColumn(this.__source.sourceString, this.__source.startIdx)
+        const s = <IGameCodeWithSource> this.__source
+        return getLineAndColumn(s.sourceString, this.__source.startIdx)
     }
     toString() {
-        return this.__source.getLineAndColumnMessage()
+        const s = <IGameCodeWithSource> this.__source
+        return s.getLineAndColumnMessage()
     }
 
     // This is mostly used for creating code coverage for the games. So we know which Rules (or objects) are not being matched
     __getLineAndColumnRange() {
-        const start = getLineAndColumn(this.__source.sourceString, this.__source.startIdx)
-        const end = getLineAndColumn(this.__source.sourceString, this.__source.endIdx - 1) // subtract one to hopefully get the previous line
+        const s = <IGameCodeWithSource> this.__source
+        const start = getLineAndColumn(s.sourceString, this.__source.startIdx)
+        const end = getLineAndColumn(s.sourceString, this.__source.endIdx - 1) // subtract one to hopefully get the previous line
         return {
             start: { line: start.lineNum, col: start.colNum },
             end: { line: end.lineNum, col: end.colNum },
+        }
+    }
+    __incrementCoverage() {
+        if (process.env['NODE_ENV'] === 'development') {
+            if (!this.__coverageCount) {
+                this.__coverageCount = 0
+            }
+            this.__coverageCount++
         }
     }
 }
@@ -156,7 +170,17 @@ export class GameData {
     }
 
     getMagicBackgroundSprite() {
-        return this._getSpriteByName('background') || this.legends.find(tile => tile._spriteNameOrLevelChar.toLocaleLowerCase() === 'background').getSprites()[0]
+        let background: Optional<GameSprite> = this._getSpriteByName('background')
+        if (!background) {
+            const legendBackgrounds = this.legends.find(tile => tile._spriteNameOrLevelChar.toLocaleLowerCase() === 'background')
+            if (legendBackgrounds) {
+                background = legendBackgrounds.getSprites()[0]
+            }
+        }
+        if (!background) {
+            throw new Error(`ERROR: Game does not have a Background Sprite or Tile`)
+        }
+        return background
     }
     getPlayer(): IGameTile {
         return this._getSpriteByName('player') || this.legends.find(tile => tile._spriteNameOrLevelChar.toLocaleLowerCase() === 'player')

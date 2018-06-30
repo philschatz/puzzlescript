@@ -3,6 +3,7 @@ import BitSet from 'bitset'
 import { BaseForLines, IGameCode } from './game'
 import { GameSprite, IGameTile } from './tile'
 import { ValidationLevel, AddValidationFunc } from '../parser/parser';
+import { Optional } from '../util';
 
 let _collisionId = 0
 export class CollisionLayer extends BaseForLines {
@@ -35,7 +36,7 @@ export class CollisionLayer extends BaseForLines {
         this._sprites.forEach((sprite, index) => sprite.setCollisionLayerAndIndex(this, index))
     }
 
-    isInvalid(): string {
+    isInvalid(): Optional<string> {
         return null
     }
 

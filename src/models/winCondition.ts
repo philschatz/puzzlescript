@@ -1,7 +1,6 @@
 import { BaseForLines, IGameCode } from './game'
 import { Cell } from '../engine';
-import { GameSprite, IGameTile, GameLegendTileAnd } from './tile';
-import { setIntersection } from '../util';
+import { IGameTile } from './tile';
 
 export enum WIN_QUALIFIER {
     NO = 'NO',
@@ -31,7 +30,7 @@ export class WinConditionSimple extends BaseForLines {
         const ret = this._isSatisfied(cells)
         if (ret) {
             if (process.env['NODE_ENV'] === 'development') {
-                this.__coverageCount++
+                this.__incrementCoverage()
             }
         }
         return ret

@@ -1,3 +1,4 @@
+import * as ohm from 'ohm-js'
 import { GameData } from '../models/game'
 import { GameMetadata, Dimension } from '../models/metadata'
 import { HexColor, TransparentColor, IColor } from '../models/colors'
@@ -272,7 +273,7 @@ export const METADATA_GRAMMAR = `
 export function getGameSemantics(lookup: LookupHelper, addValidationMessage: AddValidationFunc) {
     let currentColorPalette = 'arnecolors' // default
     return {
-        GameData: function (_whitespace1: Parseable<string>, title: Parseable<string>, _whitespace2: Parseable<string>, settingsFields: Parseable<{key: string, value: boolean | string | Dimension}[]>, _whitespace3: Parseable<string>, sprites: Parseable<GameSprite[][]>, legends: Parseable<GameLegendTileSimple[][]>, sounds: Parseable<GameSound[][]>, collisionLayers: Parseable<CollisionLayer[][]>, rules: Parseable<ASTGameRule[][]>, winConditions: Parseable<WinConditionSimple[][]>, levels: Parseable<LevelMap[][]>) {
+        GameData: function (this: ohm.Node, _whitespace1: Parseable<string>, title: Parseable<string>, _whitespace2: Parseable<string>, settingsFields: Parseable<{key: string, value: boolean | string | Dimension}[]>, _whitespace3: Parseable<string>, sprites: Parseable<GameSprite[][]>, legends: Parseable<GameLegendTileSimple[][]>, sounds: Parseable<GameSound[][]>, collisionLayers: Parseable<CollisionLayer[][]>, rules: Parseable<ASTGameRule[][]>, winConditions: Parseable<WinConditionSimple[][]>, levels: Parseable<LevelMap[][]>) {
             const metadata = new GameMetadata()
             for (const {key, value} of settingsFields.parse()) {
                 if (!key) {
@@ -292,7 +293,7 @@ export function getGameSemantics(lookup: LookupHelper, addValidationMessage: Add
                 levels.parse()[0] || []
             )
         },
-        Title: function (_1: Parseable<string>, value: Parseable<string>) {
+        Title: function (this: ohm.Node, _1: Parseable<string>, value: Parseable<string>) {
             return value.parse()
         },
 
@@ -315,33 +316,33 @@ export function getGameSemantics(lookup: LookupHelper, addValidationMessage: Add
         t_NOREPEAT_ACTION: getConfigFieldSimple,
         t_VERBOSE_LOGGING: getConfigFieldSimple,
 
-        ColorPalette: function (_1: Parseable<string>, colorPaletteName: Parseable<string>) {
+        ColorPalette: function (this: ohm.Node, _1: Parseable<string>, colorPaletteName: Parseable<string>) {
             // Set the color palette so we only need to use hex color codes
             currentColorPalette = colorPaletteName.parse()
             return getConfigField(_1, colorPaletteName)
         },
         RequirePlayerMovement: getConfigField,
 
-        Section: function (_threeDashes1: Parseable<string>, _lineTerminator1: Parseable<string>, _sectionName: Parseable<string>, _lineTerminator2: Parseable<string>, _threeDashes2: Parseable<string>, _8: Parseable<string>, _9: Parseable<string>, _10: Parseable<string>, _11: Parseable<string>) {
+        Section: function (this: ohm.Node, _threeDashes1: Parseable<string>, _lineTerminator1: Parseable<string>, _sectionName: Parseable<string>, _lineTerminator2: Parseable<string>, _threeDashes2: Parseable<string>, _8: Parseable<string>, _9: Parseable<string>, _10: Parseable<string>, _11: Parseable<string>) {
             return _10.parse()
         },
-        widthAndHeight: function (_1: Parseable<string>, _2: Parseable<string>, _3: Parseable<string>) {
+        widthAndHeight: function (this: ohm.Node, _1: Parseable<string>, _2: Parseable<string>, _3: Parseable<string>) {
             return {
                 __type: 'widthAndHeight',
                 width: _1.parse(),
                 height: _3.parse()
             }
         },
-        pixelRow: function (_1: Parseable<string>, _2: Parseable<string>) {
+        pixelRow: function (this: ohm.Node, _1: Parseable<string>, _2: Parseable<string>) {
             return _1.parse()
         },
-        colorHex3: function (_1: Parseable<string>, _2: Parseable<string>, _3: Parseable<string>, _4: Parseable<string>) {
+        colorHex3: function (this: ohm.Node, _1: Parseable<string>, _2: Parseable<string>, _3: Parseable<string>, _4: Parseable<string>) {
             return new HexColor(this.source, this.sourceString)
         },
-        colorHex6: function (_1: Parseable<string>, _2: Parseable<string>, _3: Parseable<string>, _4: Parseable<string>, _5: Parseable<string>, _6: Parseable<string>, _7: Parseable<string>) {
+        colorHex6: function (this: ohm.Node, _1: Parseable<string>, _2: Parseable<string>, _3: Parseable<string>, _4: Parseable<string>, _5: Parseable<string>, _6: Parseable<string>, _7: Parseable<string>) {
             return new HexColor(this.source, this.sourceString)
         },
-        colorName: function (_1: Parseable<string>) {
+        colorName: function (this: ohm.Node, _1: Parseable<string>) {
             const colorName = this.sourceString.toLowerCase()
             const hex = lookupColorPalette(currentColorPalette, colorName)
             if (hex) {
@@ -352,13 +353,13 @@ export function getGameSemantics(lookup: LookupHelper, addValidationMessage: Add
                 return transparent
             }
         },
-        colorTransparent: function (_1: Parseable<string>) {
+        colorTransparent: function (this: ohm.Node, _1: Parseable<string>) {
             return new TransparentColor(this.source)
         },
-        NonemptyListOf: function (_1: Parseable<string>, _2: Parseable<string>, _3: Parseable<string>) {
+        NonemptyListOf: function (this: ohm.Node, _1: Parseable<string>, _2: Parseable<string>, _3: Parseable<string>) {
             return [_1.parse()].concat(_3.parse())
         },
-        nonemptyListOf: function (_1: Parseable<string>, _2: Parseable<string>, _3: Parseable<string>) {
+        nonemptyListOf: function (this: ohm.Node, _1: Parseable<string>, _2: Parseable<string>, _3: Parseable<string>) {
             // Do this special because LegendTile contains things like `X = A or B or C` and we need to know if they are `and` or `or`
             return {
                 __type: 'nonemptyListOf',
@@ -366,30 +367,30 @@ export function getGameSemantics(lookup: LookupHelper, addValidationMessage: Add
                 separators: [_2.parse()]
             }
         },
-        integer: function (_1: Parseable<string>) {
+        integer: function (this: ohm.Node, _1: Parseable<string>) {
             return parseInt(this.sourceString)
         },
-        decimalWithLeadingNumber: function (_1: Parseable<string>, _2: Parseable<string>, _3: Parseable<string>) {
+        decimalWithLeadingNumber: function (this: ohm.Node, _1: Parseable<string>, _2: Parseable<string>, _3: Parseable<string>) {
             return parseFloat(this.sourceString)
         },
-        decimalWithLeadingPeriod: function (_1: Parseable<string>, _2: Parseable<string>) {
+        decimalWithLeadingPeriod: function (this: ohm.Node, _1: Parseable<string>, _2: Parseable<string>) {
             return parseFloat(this.sourceString)
         },
-        lookupRuleVariableName: function (_1: Parseable<string>) {
+        lookupRuleVariableName: function (this: ohm.Node, _1: Parseable<string>) {
             return lookup.lookupObjectOrLegendTile(this.source, _1.parse())
         },
-        ruleVariableName: function (_1: Parseable<string>) {
+        ruleVariableName: function (this: ohm.Node, _1: Parseable<string>) {
             return this.sourceString
         },
-        words: function (_1: Parseable<string>) {
+        words: function (this: ohm.Node, _1: Parseable<string>) {
             return this.sourceString
         },
-        _terminal: function () { return this.primitiveValue },
+        _terminal: function (this: ohm.Node, ) { return this.primitiveValue },
         lineTerminator: (_1: Parseable<string>, _2: Parseable<string>, _3: Parseable<string>, _4: Parseable<string>) => { },
         digit: (x: Parseable<string>) => {
             return x.primitiveValue.charCodeAt(0) - '0'.charCodeAt(0)
         }
-        // _default: function (exp1) {
+        // _default: function (this: ohm.Node, exp1) {
         //   return this.sourceString
         // }
     }

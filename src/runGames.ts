@@ -31,12 +31,15 @@ async function run() {
         const { data, error, trace, validationMessages } = Parser.parse(code)
         console.log(`Parsing took ${Date.now() - startTime}ms`)
 
-        if (error) {
+        if (error && trace) {
             console.log(trace.toString())
             console.log(error.message)
             throw new Error(filename)
         } else {
-            // console.log(data.title)
+            if (!data) {
+                throw new Error(`BUG: gameData was not set yet`)
+            }
+                // console.log(data.title)
             // return
 
             if (validationMessages) {
@@ -66,7 +69,7 @@ async function run() {
                     const x = recordings.filter(r => !!r)
                     const recording = x[x.length - 1]
                     if (recording) {
-                        keypressesStr = recording.partial || recording.solution
+                        keypressesStr = recording.partial || recording.solution || ''
                         level = data.levels[recordings.indexOf(recording)]
                     }
                 }

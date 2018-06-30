@@ -1,5 +1,5 @@
 import { BaseForLines, IGameCode } from './game'
-import { IGameTile, GameSprite } from './tile'
+import { IGameTile } from './tile'
 import {playSound, closeSounds as closeSounds2} from '../sounds';
 
 export function closeSounds() {
@@ -40,32 +40,32 @@ export class GameSoundSimpleEnum extends GameSound {
 
 // TODO: Link this up to the Object, rather than just storing the spriteName
 export class GameSoundNormal extends GameSound {
-    _sprite: GameSprite
+    _tile: IGameTile
     _conditionEnum: string
 
-    constructor(source: IGameCode, sprite: GameSprite, conditionEnum: string, soundCode: number) {
+    constructor(source: IGameCode, sprite: IGameTile, conditionEnum: string, soundCode: number) {
         super(source, soundCode)
-        this._sprite = sprite
+        this._tile = sprite
         this._conditionEnum = conditionEnum
     }
 }
 
 export class GameSoundMoveSimple extends GameSound {
-    _sprite: IGameTile
+    _tile: IGameTile
 
     constructor(source: IGameCode, sprite: IGameTile, soundCode: number) {
         super(source, soundCode)
-        this._sprite = sprite
+        this._tile = sprite
     }
 }
 
 export class GameSoundMoveDirection extends GameSound {
-    _sprite: GameSprite
+    _tile: IGameTile
     _directionEnum: string
 
-    constructor(source: IGameCode, sprite: GameSprite, directionEnum: string, soundCode: number) {
+    constructor(source: IGameCode, sprite: IGameTile, directionEnum: string, soundCode: number) {
         super(source, soundCode)
-        this._sprite = sprite
+        this._tile = sprite
         this._directionEnum = directionEnum
     }
 }

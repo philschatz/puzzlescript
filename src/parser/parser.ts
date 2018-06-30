@@ -10,8 +10,9 @@ import { getLevelSemantics } from './levelGrammar'
 import { getCollisionLayerSemantics } from './collisionLayerGrammar'
 import { getWinConditionSemantics } from './winConditionGrammar'
 import { GameData, IGameNode } from '../models/game'
+import { Optional } from '../util';
 
-let _GRAMMAR: ohm.Grammar = null
+let _GRAMMAR: Optional<ohm.Grammar> = null
 
 export type AddValidationFunc = (source: IGameNode, level: ValidationLevel, message: string) => void
 
