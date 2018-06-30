@@ -10,16 +10,16 @@ export interface ILevel {
 }
 
 export class LevelMap extends BaseForLines implements ILevel {
-    _rows: IGameTile[][]
+    private rows: IGameTile[][]
 
     constructor(source: IGameCode, rows: any[][]) {
         super(source)
-        this._rows = rows
+        this.rows = rows
     }
     isInvalid(): Optional<string> {
-        const firstRowLength = this._rows[0].length
+        const firstRowLength = this.rows[0].length
         let isInvalid = null
-        this._rows.forEach((row, index) => {
+        this.rows.forEach((row, index) => {
             if (firstRowLength !== row.length) {
                 isInvalid = `Row ${index + 1} does not have the same column count as the first row. Expected ${firstRowLength} columns but found ${row.length}.`
             }
@@ -30,13 +30,13 @@ export class LevelMap extends BaseForLines implements ILevel {
         return true
     }
     getRows() {
-        return this._rows
+        return this.rows
     }
     getWidth() {
-        return this._rows[0].length
+        return this.rows[0].length
     }
     getHeight() {
-        return this._rows.length
+        return this.rows.length
     }
     getMessage(): string {
         throw new Error(`BUG: Check .isMap() before calling this`)
@@ -44,10 +44,10 @@ export class LevelMap extends BaseForLines implements ILevel {
 }
 
 export class MessageLevel extends BaseForLines implements ILevel {
-    _message: string
+    private message: string
     constructor(source: IGameCode, message: string) {
         super(source)
-        this._message = message
+        this.message = message
     }
     isInvalid(): Optional<string> { return null }
     isMap() {
@@ -57,6 +57,6 @@ export class MessageLevel extends BaseForLines implements ILevel {
         throw new Error(`BUG: Should have checked isMap first`)
     }
     getMessage() {
-        return this._message
+        return this.message
     }
 }

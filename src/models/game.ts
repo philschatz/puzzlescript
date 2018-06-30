@@ -29,7 +29,7 @@ interface IGameCodeWithSource extends ohm.Interval {
 // }
 
 export class BaseForLines {
-    __source: IGameCode
+    readonly __source: IGameCode
     __coverageCount: Optional<number>
 
     constructor(source: IGameCode) {
@@ -128,15 +128,15 @@ function getLineAndColumn(str: string, offset: number) {
 }
 
 export class GameData {
-    title: string
-    metadata: GameMetadata
-    objects: GameSprite[]
-    legends: GameLegendTileSimple[]
-    sounds: GameSound[]
-    collisionLayers: CollisionLayer[]
-    rules: IRule[]
-    winConditions: WinConditionSimple[]
-    levels: LevelMap[]
+    readonly title: string
+    readonly metadata: GameMetadata
+    readonly objects: GameSprite[]
+    readonly legends: GameLegendTileSimple[]
+    readonly sounds: GameSound[]
+    readonly collisionLayers: CollisionLayer[]
+    readonly rules: IRule[]
+    readonly winConditions: WinConditionSimple[]
+    readonly levels: LevelMap[]
 
     constructor(
         title: string,
@@ -172,7 +172,7 @@ export class GameData {
     getMagicBackgroundSprite() {
         let background: Optional<GameSprite> = this._getSpriteByName('background')
         if (!background) {
-            const legendBackgrounds = this.legends.find(tile => tile._spriteNameOrLevelChar.toLocaleLowerCase() === 'background')
+            const legendBackgrounds = this.legends.find(tile => tile.spriteNameOrLevelChar.toLocaleLowerCase() === 'background')
             if (legendBackgrounds) {
                 background = legendBackgrounds.getSprites()[0]
             }
@@ -183,7 +183,7 @@ export class GameData {
         return background
     }
     getPlayer(): IGameTile {
-        return this._getSpriteByName('player') || this.legends.find(tile => tile._spriteNameOrLevelChar.toLocaleLowerCase() === 'player')
+        return this._getSpriteByName('player') || this.legends.find(tile => tile.spriteNameOrLevelChar.toLocaleLowerCase() === 'player')
     }
 
     clearCaches() {

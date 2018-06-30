@@ -12,26 +12,28 @@ export enum COMMAND_TYPE {
     AGAIN = 'AGAIN' // This acts more as a RULE_MODIFIER but is included here for parsing and then is moved into the modifier section
 }
 
-export class AbstractCommand extends BaseForLines {
-    getType(): COMMAND_TYPE {
-        throw new Error(`BUG: Concrete class must implement this method`)
-    }
+export abstract class AbstractCommand extends BaseForLines {
+    abstract getType(): COMMAND_TYPE
     getSound(): GameSound {
-        throw new Error(`BUG: Concrete class must implement this method`)
+        throw new Error(`BUG: Check getType() first`)
     }
-}
+    getMessage(): string {
+        throw new Error(`BUG: Check getType() first`)
+    }
+ }
 
 export class MessageCommand extends AbstractCommand {
-    _message: string
+    private readonly message: string
 
     constructor(source: IGameCode, message: string) {
         super(source)
-        this._message = message
+        this.message = message
     }
 
     getType() { return COMMAND_TYPE.MESSAGE }
+    getMessage() { return this.message }
 
-    // THese are used by message levels. Maybe we should split this into 2 classes
+    // These are used by message levels. Maybe we should split this into 2 classes
     isInvalid(): Optional<string> {
         return null
     }
@@ -41,10 +43,10 @@ export class MessageCommand extends AbstractCommand {
 }
 
 export class SoundCommand extends AbstractCommand {
-    _sound: GameSound
+    private readonly sound: GameSound
     constructor(source: IGameCode, sound: GameSound) {
         super(source)
-        this._sound = sound
+        this.sound = sound
         if (!sound) {
             debugger
             console.error(this.toString())
@@ -54,7 +56,7 @@ export class SoundCommand extends AbstractCommand {
 
     getType() { return COMMAND_TYPE.SFX }
     getSound() {
-        return this._sound
+        return this.sound
     }
 }
 

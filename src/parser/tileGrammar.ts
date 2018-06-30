@@ -58,8 +58,8 @@ export function getTileSemantics(lookup: LookupHelper) {
             if (gameObject._optionalLegendChar) {
                 // addObjectToAllLegendTiles(gameObject)
                 lookup.addObjectToAllLevelChars(gameObject._optionalLegendChar, gameObject)
-            } else if (gameObject._name.length === 1) {
-                lookup.addObjectToAllLevelChars(gameObject._name, gameObject)
+            } else if (gameObject.getName().length === 1) {
+                lookup.addObjectToAllLevelChars(gameObject.getName(), gameObject)
             }
             return gameObject
         },
@@ -84,7 +84,7 @@ export function getTileSemantics(lookup: LookupHelper) {
         LegendTile: function (this: ohm.Node, tile: Parseable<GameLegendTileSimple>) {
             const legendTile = tile.parse()
             lookup.addToAllLegendTiles(legendTile)
-            if (legendTile._spriteNameOrLevelChar.length === 1) {
+            if (legendTile.spriteNameOrLevelChar.length === 1) {
                 lookup.addLegendToAllLevelChars(legendTile)
             }
             return legendTile

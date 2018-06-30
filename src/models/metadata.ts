@@ -1,8 +1,8 @@
 import { IColor } from './colors'
 
 export class Dimension {
-    width: number
-    height: number
+    readonly width: number
+    readonly height: number
 
     constructor(width: number, height: number) {
         this.width = width

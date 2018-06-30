@@ -7,19 +7,19 @@ export interface IColor extends IGameNode {
 }
 
 export class HexColor extends BaseForLines implements IColor {
-    _hex: string
+    private hex: string
 
     constructor(source: IGameCode, hex: string) {
         super(source)
-        this._hex = hex
+        this.hex = hex
     }
 
     isTransparent() { return false }
     toRgb() {
-        return hexToRgb(this._hex)
+        return hexToRgb(this.hex)
     }
     toHex() {
-        return this._hex
+        return this.hex
     }
 }
 
@@ -58,9 +58,9 @@ function hexToRgb(hex: string) {
 }
 
 class RGB {
-    r: number
-    g: number
-    b: number
+    readonly r: number
+    readonly g: number
+    readonly b: number
 
     constructor(r: number, g: number, b: number) {
         this.r = r

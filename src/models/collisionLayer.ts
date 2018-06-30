@@ -5,16 +5,14 @@ import { GameSprite, IGameTile } from './tile'
 import { ValidationLevel, AddValidationFunc } from '../parser/parser';
 import { Optional } from '../util';
 
-let _collisionId = 0
+let collisionIdCounter = 0
 export class CollisionLayer extends BaseForLines {
-    _tiles: IGameTile[]
-    _sprites: GameSprite[]
-    id: number // Used for sorting collision layers for rendering
+    private sprites: GameSprite[]
+    readonly id: number // Used for sorting collision layers for rendering
 
     constructor(source: IGameCode, tiles: IGameTile[], addValidationMessage: AddValidationFunc) {
         super(source)
-        this._tiles = tiles
-        this.id = _collisionId++
+        this.id = collisionIdCounter++
 
         // Map all the Objects to the layer
         tiles.forEach((tile: IGameTile) => {
@@ -31,9 +29,9 @@ export class CollisionLayer extends BaseForLines {
         })
 
         // build an array of Sprites so we can index to them in a BitSet
-        this._sprites = [...new Set(_.flatten(tiles.map(t => t.getSprites())))]
+        this.sprites = [...new Set(_.flatten(tiles.map(t => t.getSprites())))]
 
-        this._sprites.forEach((sprite, index) => sprite.setCollisionLayerAndIndex(this, index))
+        this.sprites.forEach((sprite, index) => sprite.setCollisionLayerAndIndex(this, index))
     }
 
     isInvalid(): Optional<string> {
@@ -41,7 +39,7 @@ export class CollisionLayer extends BaseForLines {
     }
 
     getBitSetIndexOf(sprite: GameSprite) {
-        const index = this._sprites.indexOf(sprite)
+        const index = this.sprites.indexOf(sprite)
         if (index < 0) {
             throw new Error(`BUG: Sprite is not in this CollisionLayer`)
         }
@@ -51,7 +49,7 @@ export class CollisionLayer extends BaseForLines {
     bitSetToSprites(bitSet: BitSet) {
         const ret = []
         let index = 0
-        for (const sprite of this._sprites) {
+        for (const sprite of this.sprites) {
             if (bitSet.get(index)) {
                 ret.push(sprite)
             }

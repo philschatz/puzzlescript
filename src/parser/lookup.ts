@@ -25,17 +25,17 @@ export class LookupHelper {
         this._addToHelper(this._allSoundEffects, key.toLowerCase(), soundEffect)
     }
     addToAllObjects(gameObject: GameSprite) {
-        this._addToHelper(this._allObjects, gameObject._name.toLowerCase(), gameObject)
+        this._addToHelper(this._allObjects, gameObject.getName().toLowerCase(), gameObject)
     }
     addToAllLegendTiles(legendTile: GameLegendTileSimple) {
-        this._addToHelper(this._allLegendTiles, legendTile._spriteNameOrLevelChar.toLowerCase(), legendTile)
+        this._addToHelper(this._allLegendTiles, legendTile.spriteNameOrLevelChar.toLowerCase(), legendTile)
     }
     addObjectToAllLevelChars(levelChar: string, gameObject: GameSprite) {
         this._addToHelper(this._allLegendTiles, levelChar.toLowerCase(), gameObject)
         this._addToHelper(this._allLevelChars, levelChar.toLowerCase(), gameObject)
     }
     addLegendToAllLevelChars(legendTile: GameLegendTileSimple) {
-        this._addToHelper(this._allLevelChars, legendTile._spriteNameOrLevelChar.toLowerCase(), legendTile)
+        this._addToHelper(this._allLevelChars, legendTile.spriteNameOrLevelChar.toLowerCase(), legendTile)
     }
     lookupObjectOrLegendTile(source: IGameCode, key: string) {
         key = key.toLowerCase()

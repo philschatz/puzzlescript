@@ -10,13 +10,13 @@ export enum WIN_QUALIFIER {
 }
 
 export class WinConditionSimple extends BaseForLines {
-    _qualifier: WIN_QUALIFIER
-    _tile: IGameTile
+    protected readonly qualifier: WIN_QUALIFIER
+    protected readonly tile: IGameTile
 
     constructor(source: IGameCode, qualifierEnum: WIN_QUALIFIER, tile: IGameTile) {
         super(source)
-        this._qualifier = qualifierEnum
-        this._tile = tile
+        this.qualifier = qualifierEnum
+        this.tile = tile
         if (!tile) {
             throw new Error('BUG: Could not find win condition tile')
         }
@@ -36,9 +36,9 @@ export class WinConditionSimple extends BaseForLines {
         return ret
     }
 
-    _isSatisfied(cells: Iterable<Cell>) {
-        const tileCells = this.cellsThatMatchTile(cells, this._tile)
-        switch (this._qualifier) {
+    protected _isSatisfied(cells: Iterable<Cell>) {
+        const tileCells = this.cellsThatMatchTile(cells, this.tile)
+        switch (this.qualifier) {
             case WIN_QUALIFIER.NO:
                 return tileCells.length === 0
             case WIN_QUALIFIER.ANY:
@@ -47,26 +47,26 @@ export class WinConditionSimple extends BaseForLines {
             // case WIN_QUALIFIER.ALL:
             //     return ![...cells].filter(cell => !this.matchesTile(cell, this._tile))[0]
             default:
-                throw new Error(`BUG: Invalid qualifier: "${this._qualifier}"`)
+                throw new Error(`BUG: Invalid qualifier: "${this.qualifier}"`)
         }
     }
 }
 
 export class WinConditionOn extends WinConditionSimple {
-    _onTile: IGameTile
+    private readonly onTile: IGameTile
 
     constructor(source: IGameCode, qualifierEnum: WIN_QUALIFIER, tile: IGameTile, onTile: IGameTile) {
         super(source, qualifierEnum, tile)
-        this._onTile = onTile
+        this.onTile = onTile
     }
 
 
-    _isSatisfied(cells: Iterable<Cell>) {
+    protected _isSatisfied(cells: Iterable<Cell>) {
         // ALL Target ON CleanDishes
-        const tileCells = this.cellsThatMatchTile(cells, this._tile)
-        const onTileCells = this.cellsThatMatchTile(tileCells, this._onTile)
+        const tileCells = this.cellsThatMatchTile(cells, this.tile)
+        const onTileCells = this.cellsThatMatchTile(tileCells, this.onTile)
 
-        switch (this._qualifier) {
+        switch (this.qualifier) {
             case WIN_QUALIFIER.NO:
                 return onTileCells.length === 0
             case WIN_QUALIFIER.ANY:
@@ -75,7 +75,7 @@ export class WinConditionOn extends WinConditionSimple {
             case WIN_QUALIFIER.ALL:
                 return onTileCells.length === tileCells.length
             default:
-                throw new Error(`BUG: Invalid qualifier: "${this._qualifier}"`)
+                throw new Error(`BUG: Invalid qualifier: "${this.qualifier}"`)
         }
     }
 }

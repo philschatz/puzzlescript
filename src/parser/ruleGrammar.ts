@@ -138,7 +138,7 @@ export function getRuleSemantics(lookup: LookupHelper) {
             return _1.parse()
         },
         RuleBracketNoEllipsisNeighbor: function (this: ohm.Node, tileWithModifiers: Parseable<ASTTileWithModifier[]>, debugFlag: Parseable<DEBUG_FLAG[]>) {
-            const n = new ASTRuleBracketNeighbor(this.source, tileWithModifiers.parse(), false, debugFlag.parse()[0])
+            const n = new ASTRuleBracketNeighbor(this.source, tileWithModifiers.parse(), debugFlag.parse()[0])
             const key = n.toKey()
             if (!cacheNeighbors.has(key)) {
                 cacheNeighbors.set(key, n)

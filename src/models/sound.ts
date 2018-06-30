@@ -8,64 +8,64 @@ export function closeSounds() {
 
 // Abstract class
 export class GameSound extends BaseForLines {
-    _soundCode: number
+    private readonly soundCode: number
 
     constructor(source: IGameCode, soundCode: number) {
         super(source)
-        this._soundCode = soundCode
+        this.soundCode = soundCode
     }
 
     async play() {
-        return playSound(this._soundCode)
+        return playSound(this.soundCode)
     }
 }
 
 export class GameSoundSfx extends GameSound {
-    _sfxName: string
+    readonly sfxName: string
 
     constructor(source: IGameCode, sfxName: string, soundCode: number) {
         super(source, soundCode)
-        this._sfxName = sfxName
+        this.sfxName = sfxName
     }
 }
 
 export class GameSoundSimpleEnum extends GameSound {
-    _simpleEventName: number
+    readonly simpleEventName: number
 
     constructor(source: IGameCode, simpleEventName: number, soundCode: number) {
         super(source, soundCode)
-        this._simpleEventName = simpleEventName
+        this.simpleEventName = simpleEventName
     }
 }
 
 // TODO: Link this up to the Object, rather than just storing the spriteName
 export class GameSoundNormal extends GameSound {
-    _tile: IGameTile
-    _conditionEnum: string
+    readonly tile: IGameTile
+    readonly conditionEnum: string
 
     constructor(source: IGameCode, sprite: IGameTile, conditionEnum: string, soundCode: number) {
         super(source, soundCode)
-        this._tile = sprite
-        this._conditionEnum = conditionEnum
+        this.tile = sprite
+        this.conditionEnum = conditionEnum
     }
 }
 
 export class GameSoundMoveSimple extends GameSound {
-    _tile: IGameTile
+    readonly tile: IGameTile
 
     constructor(source: IGameCode, sprite: IGameTile, soundCode: number) {
         super(source, soundCode)
-        this._tile = sprite
+        this.tile = sprite
     }
 }
 
 export class GameSoundMoveDirection extends GameSound {
-    _tile: IGameTile
-    _directionEnum: string
+    readonly tile: IGameTile
+    readonly directionEnum: string
 
     constructor(source: IGameCode, sprite: IGameTile, directionEnum: string, soundCode: number) {
         super(source, soundCode)
-        this._tile = sprite
-        this._directionEnum = directionEnum
+        this.tile = sprite
+        this.directionEnum = directionEnum
     }
 }

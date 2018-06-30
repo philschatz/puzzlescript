@@ -65,22 +65,22 @@ function drawPixelChar(x: number, y: number, fgHex: Optional<string>, bgHex: Opt
 
 
 class CellColorCache {
-    _cache: Map<string, IColor[][]>
+    private readonly cache: Map<string, IColor[][]>
 
     constructor() {
-        this._cache = new Map()
+        this.cache = new Map()
     }
 
     get(spritesToDraw: GameSprite[], backgroundColor: Optional<IColor>, spriteHeight: number, spriteWidth: number) {
-        const key = spritesToDraw.map(s => s._name).join(' ')
-        if (!this._cache.has(key)) {
-            this._cache.set(key, collapseSpritesToPixels(spritesToDraw, backgroundColor, spriteHeight, spriteWidth))
+        const key = spritesToDraw.map(s => s.getName()).join(' ')
+        if (!this.cache.has(key)) {
+            this.cache.set(key, collapseSpritesToPixels(spritesToDraw, backgroundColor, spriteHeight, spriteWidth))
         }
-        return <IColor[][]> this._cache.get(key)
+        return <IColor[][]> this.cache.get(key)
     }
 
     clear() {
-        this._cache.clear()
+        this.cache.clear()
     }
 }
 
@@ -129,29 +129,28 @@ function collapseSpritesToPixels(spritesToDraw: GameSprite[], backgroundColor: O
 }
 
 class TerminalUI {
-    private _gameData: Optional<GameData>
-    private _engine: Optional<GameEngine>
-    private _cellColorCache: CellColorCache
-    private _renderedPixels: {hex: string, chars: string}[][] // string is the hex code of the pixel
-    private _resizeHandler: Optional<() => void>
-    private _windowOffsetColStart: number
-    private _windowOffsetRowStart: number
-    private _windowOffsetWidth: Optional<number>
-    private _windowOffsetHeight: Optional<number>
-    PIXEL_WIDTH: number // number of characters in the terminal used to represent a pixel
-    PIXEL_HEIGHT: number
+    private readonly cellColorCache: CellColorCache
+    private gameData: Optional<GameData>
+    private engine: Optional<GameEngine>
+    private renderedPixels: {hex: string, chars: string}[][] // string is the hex code of the pixel
+    private resizeHandler: Optional<() => void>
+    private windowOffsetColStart: number
+    private windowOffsetRowStart: number
+    private windowOffsetWidth: Optional<number>
+    private windowOffsetHeight: Optional<number>
+    private isDumpingScreen: boolean
     private SPRITE_WIDTH: number
     private SPRITE_HEIGHT: number
-
-    private _dumpingScreen: boolean
+    PIXEL_WIDTH: number // number of characters in the terminal used to represent a pixel
+    PIXEL_HEIGHT: number
 
     constructor() {
-        this._cellColorCache = new CellColorCache()
-        this._resizeHandler = null
-        this._renderedPixels = []
-        this._windowOffsetColStart = 0
-        this._windowOffsetRowStart = 0
-        this._dumpingScreen = false
+        this.cellColorCache = new CellColorCache()
+        this.resizeHandler = null
+        this.renderedPixels = []
+        this.windowOffsetColStart = 0
+        this.windowOffsetRowStart = 0
+        this.isDumpingScreen = false
         this.setSmallTerminal(false) // use really big (but cleaner) characters
         // defaults that get overridden later
         this.PIXEL_HEIGHT = 1
@@ -160,30 +159,30 @@ class TerminalUI {
         this.SPRITE_WIDTH = 5
     }
     setGame(engine: GameEngine) {
-        this._engine = engine
-        this._gameData = engine.getGameData()
-        this._cellColorCache.clear()
-        this._renderedPixels = []
+        this.engine = engine
+        this.gameData = engine.getGameData()
+        this.cellColorCache.clear()
+        this.renderedPixels = []
 
         // reset flickscreen and zoomscreen settings
-        this._windowOffsetColStart = 0
-        this._windowOffsetRowStart = 0
+        this.windowOffsetColStart = 0
+        this.windowOffsetRowStart = 0
 
-        this._windowOffsetWidth = null
-        this._windowOffsetHeight = null
-        if (this._gameData.metadata.flickscreen) {
-            const { width, height } = this._gameData.metadata.flickscreen
-            this._windowOffsetWidth = width
-            this._windowOffsetHeight = height
-        } else if (this._gameData.metadata.zoomscreen) {
-            const { width, height } = this._gameData.metadata.zoomscreen
-            this._windowOffsetWidth = width
-            this._windowOffsetHeight = height
+        this.windowOffsetWidth = null
+        this.windowOffsetHeight = null
+        if (this.gameData.metadata.flickscreen) {
+            const { width, height } = this.gameData.metadata.flickscreen
+            this.windowOffsetWidth = width
+            this.windowOffsetHeight = height
+        } else if (this.gameData.metadata.zoomscreen) {
+            const { width, height } = this.gameData.metadata.zoomscreen
+            this.windowOffsetWidth = width
+            this.windowOffsetHeight = height
         }
 
         // Set the sprite width/height based on the 1st sprite (default is 5x5)
         // TODO: Loop until we find an actual sprite, not a single-color sprite
-        const {spriteHeight, spriteWidth} = this.getSpriteSize(this._gameData)
+        const {spriteHeight, spriteWidth} = this.getSpriteSize(this.gameData)
         this.SPRITE_HEIGHT = spriteHeight
         this.SPRITE_WIDTH = spriteWidth
     }
@@ -213,19 +212,19 @@ class TerminalUI {
         }
     }
     debugRenderScreen() {
-        if (this._engine) {
+        if (this.engine) {
             this.renderScreen(true)
         }
     }
     dumpScreen() {
         // Used by unit tests when one of the games fails to complete or completes prematurely
-        this._dumpingScreen = true
+        this.isDumpingScreen = true
         this.renderScreen(false)
-        this._dumpingScreen = false
+        this.isDumpingScreen = false
 
         process.stdout.write('\n')
-        for (let y = 0; y < this._renderedPixels.length; y++) {
-            const row = this._renderedPixels[y]
+        for (let y = 0; y < this.renderedPixels.length; y++) {
+            const row = this.renderedPixels[y]
             if (!row) { continue }
             for (let x = 0; x < row.length; x++) {
                 let {hex, chars} = row[x]
@@ -243,10 +242,10 @@ class TerminalUI {
         process.stdout.write('\n')
     }
     renderScreen(clearCaches: boolean, renderScreenDepth: number = 0) {
-        if (!this._gameData) {
+        if (!this.gameData) {
             throw new Error(`BUG: gameData was not set yet`)
         }
-        if (!this._engine) {
+        if (!this.engine) {
             throw new Error(`BUG: gameEngine was not set yet`)
         }
         if (!supportsColor.stdout) {
@@ -254,7 +253,7 @@ class TerminalUI {
             return
         }
 
-        const level = this._engine.getCurrentLevel()
+        const level = this.engine.getCurrentLevel()
         if (!level.isMap()) {
             this.clearScreen()
             console.log(``)
@@ -281,21 +280,21 @@ class TerminalUI {
         }
 
         // Otherwise, the level is a Map so render the cells
-        const levelRows = this._engine.getCurrentLevelCells()
+        const levelRows = this.engine.getCurrentLevelCells()
 
         if (clearCaches) {
-            this._cellColorCache.clear()
-            this._renderedPixels = []
+            this.cellColorCache.clear()
+            this.renderedPixels = []
         }
 
         // Handle resize events by redrawing the game. Ooh, we do not have Cells at this point.
         // TODO Run renderScreen on cells from the engine rather than cells from the Level data
-        if (!this._resizeHandler) {
-            this._resizeHandler = _.debounce(() => {
+        if (!this.resizeHandler) {
+            this.resizeHandler = _.debounce(() => {
                 this.clearScreen()
                 this.renderScreen(true)
             })
-            process.stdout.on('resize', this._resizeHandler)
+            process.stdout.on('resize', this.resizeHandler)
         }
 
         levelRows.forEach((row, rowIndex) => {
@@ -305,7 +304,7 @@ class TerminalUI {
         })
 
         // Just for debugging, print the game title (doing it here helps with Jest rendering correctly)
-        this.writeDebug(`"${this._gameData.title}"`)
+        this.writeDebug(`"${this.gameData.title}"`)
     }
 
     private cellPosToXY(cell: Cell) {
@@ -313,18 +312,18 @@ class TerminalUI {
         let isOnScreen = true // can be set to false for many reasons
         let cellStartX = -1
         let cellStartY = -1
-        if (this._windowOffsetHeight && this._windowOffsetWidth) {
-            if (this._windowOffsetColStart > colIndex ||
-                this._windowOffsetRowStart > rowIndex ||
-                this._windowOffsetColStart + this._windowOffsetWidth <= colIndex ||
-                this._windowOffsetRowStart + this._windowOffsetHeight <= rowIndex) {
+        if (this.windowOffsetHeight && this.windowOffsetWidth) {
+            if (this.windowOffsetColStart > colIndex ||
+                this.windowOffsetRowStart > rowIndex ||
+                this.windowOffsetColStart + this.windowOffsetWidth <= colIndex ||
+                this.windowOffsetRowStart + this.windowOffsetHeight <= rowIndex) {
 
                 // cell is off-screen
                 isOnScreen = false
             }
         }
-        cellStartX = (colIndex - this._windowOffsetColStart) * this.SPRITE_WIDTH
-        cellStartY = (rowIndex - this._windowOffsetRowStart) * this.SPRITE_HEIGHT /*pixels*/
+        cellStartX = (colIndex - this.windowOffsetColStart) * this.SPRITE_WIDTH
+        cellStartY = (rowIndex - this.windowOffsetRowStart) * this.SPRITE_HEIGHT /*pixels*/
 
         // Check if the cell can be completely drawn on the screen. If not, print ellipses
         const {columns, rows} = getTerminalSize()
@@ -343,8 +342,8 @@ class TerminalUI {
 
     private setPixel(x: number, y: number, hex: string, fgHex: Optional<string>, chars: string) {
         const getColor = (y: number, x: number) => {
-            if (this._renderedPixels[y] && this._renderedPixels[y][x]) {
-                return this._renderedPixels[y][x].hex
+            if (this.renderedPixels[y] && this.renderedPixels[y][x]) {
+                return this.renderedPixels[y][x].hex
             } else {
                 return '#000000'
             }
@@ -356,14 +355,14 @@ class TerminalUI {
         if (chars.length > 2) {
             throw new Error(`BUG: Expected char to be of length 0, 1, or 2`)
         }
-        if (!this._renderedPixels[y]) {
-            this._renderedPixels[y] = []
+        if (!this.renderedPixels[y]) {
+            this.renderedPixels[y] = []
         }
-        const onScreenPixel = this._renderedPixels[y][x]
+        const onScreenPixel = this.renderedPixels[y][x]
         if (!onScreenPixel || onScreenPixel.hex !== hex || onScreenPixel.chars !== chars) {
-            this._renderedPixels[y][x] = {hex, chars}
+            this.renderedPixels[y][x] = {hex, chars}
 
-            if (this._dumpingScreen) {
+            if (this.isDumpingScreen) {
                 return // don't actually render the pixel
             }
             if (this.PIXEL_HEIGHT === 1) {
@@ -387,10 +386,10 @@ class TerminalUI {
 
     // Returns true if the window was moved (so we can re-render the screen)
     private recenterPlayerIfNeeded(playerCell: Cell, isOnScreen: boolean) {
-        if (!this._gameData) {
+        if (!this.gameData) {
             throw new Error(`BUG: gameData was not set yet`)
         }
-        if (!this._engine) {
+        if (!this.engine) {
             throw new Error(`BUG: gameEngine was not set yet`)
         }
         let boundingBoxLeft
@@ -398,13 +397,13 @@ class TerminalUI {
         let boundingBoxWidth
         let boundingBoxHeight
 
-        const windowLeft = this._windowOffsetColStart
-        const windowTop = this._windowOffsetRowStart
+        const windowLeft = this.windowOffsetColStart
+        const windowTop = this.windowOffsetRowStart
         let windowWidth
         let windowHeight
 
-        const flickScreen = this._gameData.metadata.flickscreen
-        const zoomScreen = this._gameData.metadata.zoomscreen
+        const flickScreen = this.gameData.metadata.flickscreen
+        const zoomScreen = this.gameData.metadata.zoomscreen
         // these are number of sprites that can fit on the terminal
         const {columns, rows} = getTerminalSize()
         const terminalWidth = Math.floor(columns / this.SPRITE_WIDTH / this.PIXEL_WIDTH)
@@ -418,8 +417,8 @@ class TerminalUI {
         } else {
             boundingBoxLeft = 0
             boundingBoxTop = 0
-            boundingBoxHeight = this._engine.getCurrentLevelCells().length
-            boundingBoxWidth = this._engine.getCurrentLevelCells()[0].length
+            boundingBoxHeight = this.engine.getCurrentLevelCells().length
+            boundingBoxWidth = this.engine.getCurrentLevelCells()[0].length
         }
 
         if (zoomScreen) {
@@ -438,8 +437,8 @@ class TerminalUI {
             // just ensure that the player is on the screen
             if (isOnScreen) {
             } else {
-                this._windowOffsetColStart = boundingBoxLeft
-                this._windowOffsetRowStart = boundingBoxTop
+                this.windowOffsetColStart = boundingBoxLeft
+                this.windowOffsetRowStart = boundingBoxTop
                 return true
             }
         } else {
@@ -461,8 +460,8 @@ class TerminalUI {
                         newWindowLeft = boundingBoxLeft + boundingBoxWidth - windowWidth
                     }
 
-                    if (newWindowLeft !== this._windowOffsetColStart) {
-                        this._windowOffsetColStart = newWindowLeft
+                    if (newWindowLeft !== this.windowOffsetColStart) {
+                        this.windowOffsetColStart = newWindowLeft
                         didADirectionChange = true
                     }
                 }
@@ -485,8 +484,8 @@ class TerminalUI {
 
                     // Only recenter the axis that moved to be out-of-center
                     // Use Math.abs() because an even number of cells visible (e.g. 4) will cause the screen to clicker back and forth
-                    if (newWindowTop !== this._windowOffsetRowStart) {
-                        this._windowOffsetRowStart = newWindowTop
+                    if (newWindowTop !== this.windowOffsetRowStart) {
+                        this.windowOffsetRowStart = newWindowTop
                         didADirectionChange = true
                     }
                 }
@@ -497,8 +496,8 @@ class TerminalUI {
                 // just ensure that the player is on the screen
                 if (isOnScreen) {
                 } else {
-                    this._windowOffsetColStart = boundingBoxLeft
-                    this._windowOffsetRowStart = boundingBoxTop
+                    this.windowOffsetColStart = boundingBoxLeft
+                    this.windowOffsetRowStart = boundingBoxTop
                     return true
                 }
 
@@ -510,11 +509,11 @@ class TerminalUI {
     }
 
     drawCell(cell: Cell, dontRestoreCursor: boolean, renderScreenDepth: number = 0) {
-        if (!this._gameData) {
+        if (!this.gameData) {
             throw new Error(`BUG: gameData was not set yet`)
         }
         if (!supportsColor.stdout) {
-            console.log(`Updating cell [${cell.rowIndex}][${cell.colIndex}] to have sprites: [${cell.getSprites().map(sprite => sprite._name)}]`)
+            console.log(`Updating cell [${cell.rowIndex}][${cell.colIndex}] to have sprites: [${cell.getSprites().map(sprite => sprite.getName())}]`)
             return
         }
 
@@ -524,7 +523,7 @@ class TerminalUI {
 
         // Sort of HACKy... If the player is not visible on the screen then we need to
         // move the screen so that they are visible.
-        const playerTile = this._gameData.getPlayer()
+        const playerTile = this.gameData.getPlayer()
         const cellHasPlayer = playerTile.matchesCell(cell)
         if (playerTile.getCellsThatMatch().size === 1 && cellHasPlayer) {
             // if the screen can only show an even number of cells (eg 4) then this will oscillate indefinitely
@@ -543,7 +542,7 @@ class TerminalUI {
         const pixels: IColor[][] = this.getPixelsForCell(cell)
         pixels.forEach((spriteRow, spriteRowIndex) => {
             spriteRow.forEach((spriteColor: IColor, spriteColIndex) => {
-                if (!this._gameData) {
+                if (!this.gameData) {
                     throw new Error(`BUG: gameData was not set yet`)
                 }
                 const x = cellStartX + spriteColIndex
@@ -555,8 +554,8 @@ class TerminalUI {
                     if (!spriteColor.isTransparent()) {
                         color = spriteColor
                     }
-                    else if (this._gameData.metadata.background_color) {
-                        color = this._gameData.metadata.background_color
+                    else if (this.gameData.metadata.background_color) {
+                        color = this.gameData.metadata.background_color
                     } else {
                         color = null
                     }
@@ -579,7 +578,7 @@ class TerminalUI {
                         }
                         const sprite = spritesForDebugging[spriteRowIndex]
                         if (sprite) {
-                            let spriteName = sprite._name
+                            let spriteName = sprite.getName()
                             let wantsToMove
 
                             switch (cell.getWantsToMove(sprite)) {
@@ -633,18 +632,18 @@ class TerminalUI {
     }
 
     private getPixelsForCell(cell: Cell) {
-        if (!this._gameData) {
+        if (!this.gameData) {
             throw new Error(`BUG: gameData was not set yet`)
         }
         const spritesToDraw = cell.getSprites() // Not sure why, but entanglement renders properly when reversed
 
         // If there is a magic background object then rely on it last
-        let magicBackgroundSprite = this._gameData.getMagicBackgroundSprite()
+        let magicBackgroundSprite = this.gameData.getMagicBackgroundSprite()
         if (magicBackgroundSprite) {
             spritesToDraw.push(magicBackgroundSprite)
         }
 
-        const pixels = this._cellColorCache.get(spritesToDraw, this._gameData.metadata.background_color, this.SPRITE_HEIGHT, this.SPRITE_WIDTH)
+        const pixels = this.cellColorCache.get(spritesToDraw, this.gameData.metadata.background_color, this.SPRITE_HEIGHT, this.SPRITE_WIDTH)
         return pixels
     }
 
@@ -655,7 +654,7 @@ class TerminalUI {
         }
 
         // clear the cache of what is rendered
-        this._renderedPixels = []
+        this.renderedPixels = []
 
         writeFgColor('#ffffff')
         writeBgColor('#000000')
@@ -672,7 +671,7 @@ class TerminalUI {
             console.log(`Writing Debug text "${text}"`)
             return
         }
-        if (!this._dumpingScreen) {
+        if (!this.isDumpingScreen) {
             writeFgColor('#ffffff')
             writeBgColor('#000000')
             writeText(0, 0, `[${text}]`)

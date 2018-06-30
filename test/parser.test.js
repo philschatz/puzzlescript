@@ -234,7 +234,7 @@ OBJECTS
 player
 yellow
 `)
-            expect(data1.objects[0]._color.toHex().toLowerCase()).toBe(lookupColorPalette('gameboycolour', 'yellow').toLowerCase())
+            expect(data1.objects[0].color.toHex().toLowerCase()).toBe(lookupColorPalette('gameboycolour', 'yellow').toLowerCase())
 
             const { data: data2 } = checkParse(`
 title foo
@@ -246,7 +246,7 @@ OBJECTS
 player
 yellow
 `)
-            expect(data2.objects[0]._color.toHex().toLowerCase()).toBe(lookupColorPalette('gameboycolour', 'yellow').toLowerCase())
+            expect(data2.objects[0].color.toHex().toLowerCase()).toBe(lookupColorPalette('gameboycolour', 'yellow').toLowerCase())
         })
 
         it('Supports characters that would be invalid in one scope but are valid in another scope', () => {
@@ -453,7 +453,7 @@ RANDOM [.] -> []
 + [Player] -> []`, ['.', 'Player'])
             expect(data.rules[0].isRandom()).toBe(true)
             // But make sure the actual rule is not marked as being random
-            expect(data.rules[0]._rules[0].isRandom()).toBe(false)
+            expect(data.rules[0].rules[0].isRandom()).toBe(false)
         })
 
         it('does not mark a rule Loop as being RANDOM', () => {
@@ -487,11 +487,11 @@ RIGHT [ ] -> [ ]
     `, ['.', 'Player'])
             expect(data.rules.length).toBe(3)
             // startloop
-            expect(data.rules[1]._rules.length).toBe(3)
+            expect(data.rules[1].rules.length).toBe(3)
             // 1st rulegroup
-            expect(data.rules[1]._rules[0]._rules.length).toBe(4)
+            expect(data.rules[1].rules[0].rules.length).toBe(4)
             // 2nd rulegroup
-            expect(data.rules[1]._rules[1]._rules.length).toBe(2)
+            expect(data.rules[1].rules[1].rules.length).toBe(2)
 
         })
 

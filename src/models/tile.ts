@@ -25,20 +25,20 @@ export interface IGameTile extends IGameNode {
 }
 
 export class GameSprite extends BaseForLines implements IGameTile {
-    _name: string
-    _optionalLegendChar?: string
-    _collisionLayer: Optional<CollisionLayer>
-    _collisionLayerIndex: Optional<number>
-    _cellSet: Set<Cell>
-    _tileWithModifierSet: Set<SimpleTileWithModifier>
-    _bitSet: Optional<BitSet>
+    private readonly name: string
+    readonly _optionalLegendChar: Optional<string>
+    private collisionLayer: Optional<CollisionLayer>
+    private collisionLayerIndex: Optional<number>
+    private readonly cellSet: Set<Cell>
+    private readonly tileWithModifierSet: Set<SimpleTileWithModifier>
+    private bitSet: Optional<BitSet>
 
-    constructor(source: IGameCode, name: string, optionalLegendChar?: string) {
+    constructor(source: IGameCode, name: string, optionalLegendChar: Optional<string>) {
         super(source)
-        this._name = name
+        this.name = name
         this._optionalLegendChar = optionalLegendChar
-        this._cellSet = new Set()
-        this._tileWithModifierSet = new Set()
+        this.cellSet = new Set()
+        this.tileWithModifierSet = new Set()
     }
     isOr() {
         return false
@@ -53,10 +53,10 @@ export class GameSprite extends BaseForLines implements IGameTile {
         throw new Error('BUG: Subclasses should implement this')
     }
     getName() {
-        return this._name
+        return this.name
     }
     isBackground() {
-        return this._name.toLowerCase() === 'background'
+        return this.name.toLowerCase() === 'background'
     }
     _getDescendantTiles(): IGameTile[] {
         return []
@@ -69,42 +69,42 @@ export class GameSprite extends BaseForLines implements IGameTile {
         return this.getSprites()
     }
     hasCollisionLayer() {
-        return !!this._collisionLayer
+        return !!this.collisionLayer
     }
     hasSingleCollisionLayer() {
         // always true. This is only ever false for OR tiles
         return this.hasCollisionLayer()
     }
     setCollisionLayer(collisionLayer: CollisionLayer) {
-        this._collisionLayer = collisionLayer
+        this.collisionLayer = collisionLayer
     }
     setCollisionLayerAndIndex(collisionLayer: CollisionLayer, bitSetIndex: number) {
-        this._collisionLayer = collisionLayer
-        this._collisionLayerIndex = bitSetIndex
-        this._bitSet = new BitSet()
-        this._bitSet.set(bitSetIndex)
+        this.collisionLayer = collisionLayer
+        this.collisionLayerIndex = bitSetIndex
+        this.bitSet = new BitSet()
+        this.bitSet.set(bitSetIndex)
     }
     getBitSet() {
-        return this._bitSet
+        return this.bitSet
     }
     getBitSetIndex() {
-        return this._collisionLayerIndex
+        return this.collisionLayerIndex
     }
     getCollisionLayer() {
-        if (!this._collisionLayer) {
+        if (!this.collisionLayer) {
             console.error(this.__source.getLineAndColumnMessage())
             throw new Error('ERROR: This sprite was not in a Collision Layer')
         }
-        return this._collisionLayer
+        return this.collisionLayer
     }
     isInvalid() {
-        if (!this._collisionLayer) {
+        if (!this.collisionLayer) {
             return 'This object does not have an entry in the COLLISIONLAYERS section.'
         }
         return null
     }
     clearCaches() {
-        this._cellSet.clear()
+        this.cellSet.clear()
     }
     matchesCell(cell: Cell): any {
         return cell.getSpritesAsSet().has(this)
@@ -118,7 +118,7 @@ export class GameSprite extends BaseForLines implements IGameTile {
     }
 
     addTileWithModifier(t: SimpleTileWithModifier) {
-        this._tileWithModifierSet.add(t)
+        this.tileWithModifierSet.add(t)
     }
     addCell(cell: Cell, wantsToMove: Optional<RULE_DIRECTION_ABSOLUTE>) {
         this.addCells([cell], wantsToMove)
@@ -135,34 +135,34 @@ export class GameSprite extends BaseForLines implements IGameTile {
         }
 
         // propagate up
-        for (const t of this._tileWithModifierSet) {
+        for (const t of this.tileWithModifierSet) {
             t.updateCells(this, [cell], wantsToMove)
         }
     }
     addCells(cells: Cell[], wantsToMove: Optional<RULE_DIRECTION_ABSOLUTE>) {
         for (const cell of cells) {
-            this._cellSet.add(cell)
+            this.cellSet.add(cell)
         }
         // propagate up
-        for (const t of this._tileWithModifierSet) {
+        for (const t of this.tileWithModifierSet) {
             t.addCells(this, cells, wantsToMove)
         }
     }
     removeCells(cells: Cell[]) {
         for (const cell of cells) {
-            this._cellSet.delete(cell)
+            this.cellSet.delete(cell)
         }
         // propagate up
-        for (const t of this._tileWithModifierSet) {
+        for (const t of this.tileWithModifierSet) {
             t.removeCells(this, cells)
         }
     }
     has(cell: Cell) {
-        return this._cellSet.has(cell)
+        return this.cellSet.has(cell)
     }
     hasNegationTile() {
         let hasNegationTile = false
-        for (const t of this._tileWithModifierSet) {
+        for (const t of this.tileWithModifierSet) {
             if (t.isNo()) {
                 hasNegationTile = true
                 break
@@ -171,16 +171,16 @@ export class GameSprite extends BaseForLines implements IGameTile {
         return hasNegationTile
     }
     getCellsThatMatch() {
-        return this._cellSet
+        return this.cellSet
     }
 }
 
 export class GameSpriteSingleColor extends GameSprite {
-    _color: HexColor
+    private readonly color: HexColor
 
     constructor(source: IGameCode, name: string, optionalLegendChar: string, colors: HexColor[]) {
         super(source, name, optionalLegendChar)
-        this._color = colors[0] // Ignore if the user added multiple colors (like `transparent yellow`)
+        this.color = colors[0] // Ignore if the user added multiple colors (like `transparent yellow`)
     }
     hasPixels() {
         return false
@@ -191,7 +191,7 @@ export class GameSpriteSingleColor extends GameSprite {
         for (let row = 0; row < spriteHeight; row++) {
             rows.push([])
             for (let col = 0; col < spriteWidth; col++) {
-                rows[row].push(this._color)
+                rows[row].push(this.color)
             }
         }
         return rows
@@ -199,18 +199,18 @@ export class GameSpriteSingleColor extends GameSprite {
 }
 
 export class GameSpritePixels extends GameSprite {
-    _colors: IColor[]
-    _pixels: IColor[][]
+    private readonly colors: IColor[]
+    private readonly pixels: IColor[][]
 
     constructor(source: IGameCode, name: string, optionalLegendChar: string, colors: HexColor[], pixels: ('.' | number)[][]) {
         super(source, name, optionalLegendChar)
-        this._colors = colors
-        this._pixels = pixels.map(row => {
+        this.colors = colors
+        this.pixels = pixels.map(row => {
             return row.map(col => {
                 if (col === '.') {
                     return new TransparentColor(this.__source)
                 } else {
-                    return this._colors[col]
+                    return this.colors[col]
                 }
             })
         }) // Pixel colors are 0-indexed.
@@ -220,9 +220,9 @@ export class GameSpritePixels extends GameSprite {
             return super.isInvalid()
         }
         let isInvalid = null
-        const colorLen = this._colors.length
-        const rowLen = this._pixels[0].length
-        this._pixels.forEach((row: any[]) => {
+        const colorLen = this.colors.length
+        const rowLen = this.pixels[0].length
+        this.pixels.forEach((row: any[]) => {
             if (row.length !== rowLen) {
                 isInvalid = `Row lengths do not match. Expected ${rowLen} but got ${row.length}. Row: ${row}`
             }
@@ -246,7 +246,7 @@ export class GameSpritePixels extends GameSprite {
     }
     getPixels(spriteHeight: number, spriteWidth: number) {
         // Make a copy because others may edit it
-        return this._pixels.map(row => {
+        return this.pixels.map(row => {
             return row.map(col => col)
         })
     }
@@ -254,15 +254,15 @@ export class GameSpritePixels extends GameSprite {
 }
 
 export class GameLegendTile extends BaseForLines implements IGameTile {
-    _spritesCache: Optional<GameSprite[]>
-    _collisionLayer: Optional<CollisionLayer>
-    _spriteNameOrLevelChar: string
-    _tiles: IGameTile[]
+    private spritesCache: Optional<GameSprite[]>
+    protected collisionLayer: Optional<CollisionLayer>
+    readonly spriteNameOrLevelChar: string
+    readonly tiles: IGameTile[]
 
     constructor(source: IGameCode, spriteNameOrLevelChar: string, tiles: IGameTile[]) {
         super(source)
-        this._spriteNameOrLevelChar = spriteNameOrLevelChar
-        this._tiles = tiles
+        this.spriteNameOrLevelChar = spriteNameOrLevelChar
+        this.tiles = tiles
     }
     equals(t: IGameTile) {
         if (this.isOr() !== t.isOr()) {
@@ -295,40 +295,40 @@ export class GameLegendTile extends BaseForLines implements IGameTile {
     }
 
     getName() {
-        return this._spriteNameOrLevelChar
+        return this.spriteNameOrLevelChar
     }
     getSpritesForRuleAction() {
         return this.getSprites()
     }
     _getDescendantTiles(): IGameTile[] {
         // recursively pull all the tiles out
-        return this._tiles.concat(_.flatten(this._tiles.map(tile => tile._getDescendantTiles())))
+        return this.tiles.concat(_.flatten(this.tiles.map(tile => tile._getDescendantTiles())))
     }
     getSprites() {
         // Use a cache because all the collision layers have not been loaded in time
-        if (!this._spritesCache) {
+        if (!this.spritesCache) {
             // 2 levels of indirection should be safe
             // Sort by collisionLayer so that the most-important sprite is first
-            this._spritesCache = _.flatten(
-                this._tiles.map(tile => {
+            this.spritesCache = _.flatten(
+                this.tiles.map(tile => {
                     return tile.getSprites()
                 })
             ).sort((a, b) => {
                 return a.getCollisionLayer().id - b.getCollisionLayer().id
             }).reverse()
         }
-        return this._spritesCache
+        return this.spritesCache
     }
     hasCollisionLayer() {
-        return !!this._collisionLayer
+        return !!this.collisionLayer
     }
     setCollisionLayer(collisionLayer: CollisionLayer) {
-        this._collisionLayer = collisionLayer
+        this.collisionLayer = collisionLayer
     }
     getCollisionLayer() {
         // OR tiles and AND tiles don't necessarily have a collisionLayer set so pull it from the sprite (this might not work)
-        if (this._collisionLayer) {
-            return this._collisionLayer
+        if (this.collisionLayer) {
+            return this.collisionLayer
         }
         // check that all sprites are in the same collisionlayer... if not, thene our understanding is flawed
         const firstCollisionLayer = this.getSprites()[0].getCollisionLayer()
@@ -364,7 +364,7 @@ export class GameLegendTileSimple extends GameLegendTile {
 
         // Check that the cell contains all of the tiles (ANDED)
         // Since this is a Simple Tile it should only contain 1 tile so anding is the right way to go.
-        for (const tile of this._tiles) {
+        for (const tile of this.tiles) {
             if (!tile.matchesCell(cell)) {
                 return false
             }
@@ -377,7 +377,7 @@ export class GameLegendTileSimple extends GameLegendTile {
     }
 
     hasSingleCollisionLayer() {
-        return !!this._collisionLayer
+        return !!this.collisionLayer
     }
 }
 
@@ -389,7 +389,7 @@ export class GameLegendTileAnd extends GameLegendTile {
         }
 
         // Check that the cell contains any of the tiles (AND)
-        for (const tile of this._tiles) {
+        for (const tile of this.tiles) {
             if (!tile.matchesCell(cell)) {
                 return false
             }
@@ -402,7 +402,7 @@ export class GameLegendTileAnd extends GameLegendTile {
     }
 
     hasSingleCollisionLayer() {
-        return !!this._collisionLayer
+        return !!this.collisionLayer
     }
 
 
@@ -419,7 +419,7 @@ export class GameLegendTileOr extends GameLegendTile {
         }
 
         // Check that the cell contains any of the tiles (OR)
-        for (const tile of this._tiles) {
+        for (const tile of this.tiles) {
             if (tile.matchesCell(cell)) {
                 return true
             }
@@ -428,7 +428,7 @@ export class GameLegendTileOr extends GameLegendTile {
     }
     getSpritesForRuleAction() {
         // When assigning an OR, just use the 1st tile, not all of them
-        return [this._tiles[0].getSprites()[0]]
+        return [this.tiles[0].getSprites()[0]]
         // return [this.getSprites()[0]] <-- this one is sorted by collisionLayer
     }
 
@@ -445,7 +445,4 @@ export class GameLegendTileOr extends GameLegendTile {
         }
         return true
     }
-
-
-
 }

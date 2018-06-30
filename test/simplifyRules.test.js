@@ -64,7 +64,7 @@ describe('Rule simplifier', () => {
         const { engine, data } = parseEngine(HORIZONTAL_GAME)
         const foo = data.rules
         expect(foo.length).toBe(1)
-        expect(foo[0]._rules.length).toBe(2)
+        expect(foo[0].rules.length).toBe(2)
     })
 
     it('treats adjacent neighbors that are the same as distinct (e.g. [ Wall | Wall ]', () => {
@@ -200,8 +200,8 @@ describe('Rule simplifier', () => {
         expect(engine.toSnapshot()).toMatchSnapshot()
 
         expect(data.rules.length).toBe(2)
-        expect(data.rules[0]._rules.length).toBe(2) // just LEFT RIGHT
-        expect(data.rules[1]._rules.length).toBe(2) // just UP DOWN
+        expect(data.rules[0].rules.length).toBe(2) // just LEFT RIGHT
+        expect(data.rules[1].rules.length).toBe(2) // just UP DOWN
 
         expect(engine.currentLevel[0][1].getSpritesAsSet().has(horiz)).toBe(true)
         expect(engine.currentLevel[0][2].getSpritesAsSet().has(horiz)).toBe(true)
@@ -270,8 +270,8 @@ describe('Rule simplifier', () => {
         engine.tick()
 
         expect(data.rules.length).toBe(2)
-        expect(data.rules[0]._rules.length).toBe(1) // Not interesting
-        expect(data.rules[1]._rules.length).toBe(4 * 5) // UP DOWN LEFT RIGHT ACTION
+        expect(data.rules[0].rules.length).toBe(1) // Not interesting
+        expect(data.rules[1].rules.length).toBe(4 * 5) // UP DOWN LEFT RIGHT ACTION
 
         expect(engine.toSnapshot()).toMatchSnapshot()
 
@@ -334,8 +334,8 @@ describe('Rule simplifier', () => {
         engine.tick()
 
         expect(data.rules.length).toBe(2)
-        expect(data.rules[0]._rules.length).toBe(1) // Not interesting
-        expect(data.rules[1]._rules.length).toBe(5) // UP DOWN LEFT RIGHT ACTION
+        expect(data.rules[0].rules.length).toBe(1) // Not interesting
+        expect(data.rules[1].rules.length).toBe(5) // UP DOWN LEFT RIGHT ACTION
 
         expect(engine.toSnapshot()).toMatchSnapshot()
 

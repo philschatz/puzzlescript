@@ -493,10 +493,6 @@ function parseEngine(code) {
     return { engine, data }
 }
 
-function getSpriteByName(data, name) {
-    return data.objects.filter((sprite) => sprite._name === name)[0]
-}
-
 describe('engine', () => {
     it('evaluates an empty game', () => {
         const { engine, data } = parseEngine(EMPTY_GAME)
@@ -536,7 +532,7 @@ describe('engine', () => {
         const { engine, data } = parseEngine(MIRROR_ISLES_CORNERS)
         engine.tick()
         expect(engine.toSnapshot()).toMatchSnapshot()
-        const expectedSprite = getSpriteByName(data, 'RemoveLandRUD')
+        const expectedSprite = data._getSpriteByName('RemoveLandRUD')
         const interestingCell = engine.currentLevel[0][0]
         const sprites = interestingCell.getSpritesAsSet()
         expect(sprites.has(expectedSprite)).toBe(true)
@@ -550,7 +546,7 @@ describe('engine', () => {
         const { engine, data } = parseEngine(SKIPPING_STONES_CORNERS)
         engine.tick()
         expect(engine.toSnapshot()).toMatchSnapshot()
-        const expectedSprite = getSpriteByName(data, 'RemoveLandRUD')
+        const expectedSprite = data._getSpriteByName('RemoveLandRUD')
         const interestingCell = engine.currentLevel[0][0]
         const sprites = interestingCell.getSpritesAsSet()
         expect(sprites.has(expectedSprite)).toBe(true)
@@ -567,8 +563,8 @@ describe('engine', () => {
     it('draws corner sprites correctly according to mirror isles (just the RightUp corner should be blue)', () => {
         const { engine, data } = parseEngine(MIRROR_ISLES_CORNERS2)
         engine.tick()
-        const expectedSprite = getSpriteByName(data, 'RemoveLandRU')
-        const expectedSprite2 = getSpriteByName(data, 'RemoveLandRD')
+        const expectedSprite = data._getSpriteByName('RemoveLandRU')
+        const expectedSprite2 = data._getSpriteByName('RemoveLandRD')
         const interestingCell = engine.currentLevel[0][0]
         let sprites = interestingCell.getSpritesAsSet()
         expect(sprites.has(expectedSprite)).toBe(true)
