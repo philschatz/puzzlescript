@@ -1,5 +1,4 @@
 import * as _ from 'lodash'
-import * as ohm from 'ohm-js'
 import { ICacheable, DEBUG_FLAG, setDifference, RULE_DIRECTION_ABSOLUTE, RULE_DIRECTION_ABSOLUTE_SET, RULE_DIRECTION_ABSOLUTE_LIST, Optional } from "../util";
 import { BaseForLines, IGameCode } from "../models/game";
 import { AbstractCommand } from "../models/command";
@@ -598,18 +597,7 @@ export class ASTGameRuleGroup extends ASTGameRuleLoop {
 
 }
 
-const M_STATIONARY = 'STATIONARY'
 const M_NO = 'NO'
-const SUPPORTED_CELL_MODIFIERS = new Set([M_STATIONARY, M_NO])
-const SUPPORTED_RULE_MODIFIERS = new Set([
-    AST_RULE_MODIFIER.UP,
-    AST_RULE_MODIFIER.DOWN,
-    AST_RULE_MODIFIER.LEFT,
-    AST_RULE_MODIFIER.RIGHT,
-    AST_RULE_MODIFIER.HORIZONTAL,
-    AST_RULE_MODIFIER.VERTICAL,
-    AST_RULE_MODIFIER.ORTHOGONAL
-])
 
 export function relativeDirectionToAbsolute(currentDirection: RULE_DIRECTION_ABSOLUTE, relativeModifier: string) {
     let currentDir

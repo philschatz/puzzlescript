@@ -37,9 +37,6 @@ function writeFgColor(hex: string) {
 function setMoveTo(x: number, y: number) {
     return ansiEscapes.cursorTo(x, y)
 }
-function setHideCursor() {
-    return ansiEscapes.cursorHide
-}
 function setShowCursor() {
     return ansiEscapes.cursorShow
 }
@@ -199,9 +196,6 @@ class TerminalUI {
             this.PIXEL_HEIGHT = 1
         }
     }
-    private isConfiguredForSmallTerminal() {
-        return this.PIXEL_HEIGHT !== 1
-    }
     private getSpriteSize(gameData: GameData) {
         const firstSpriteWithPixels = gameData.objects.filter(sprite => sprite.hasPixels())[0]
         if (firstSpriteWithPixels) {
@@ -262,10 +256,6 @@ class TerminalUI {
 
         const level = this._engine.getCurrentLevel()
         if (!level.isMap()) {
-            function prettyKey(keyCode: string) {
-                return chalk.whiteBright.bgWhite(`[${chalk.black(keyCode)}]`);
-            }
-
             this.clearScreen()
             console.log(``)
             console.log(``)
@@ -523,7 +513,6 @@ class TerminalUI {
         if (!this._gameData) {
             throw new Error(`BUG: gameData was not set yet`)
         }
-        const { rowIndex, colIndex } = cell
         if (!supportsColor.stdout) {
             console.log(`Updating cell [${cell.rowIndex}][${cell.colIndex}] to have sprites: [${cell.getSprites().map(sprite => sprite._name)}]`)
             return

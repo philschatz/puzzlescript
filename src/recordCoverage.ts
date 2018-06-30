@@ -1,4 +1,4 @@
-import { GameData, IGameNode, BaseForLines } from "./models/game";
+import { GameData, IGameNode } from "./models/game";
 import { writeFileSync, existsSync } from "fs";
 import { IRule } from "./models/rule";
 

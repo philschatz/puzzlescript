@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync, existsSync } from 'fs'
+import { readFileSync, existsSync } from 'fs'
 import * as path from 'path'
 import * as glob from 'glob'
 import * as pify from 'pify'
@@ -127,7 +127,7 @@ async function run() {
                             throw new Error(`BUG: Invalid keypress character "${keypressesStr[i]}"`)
                     }
                     startTime = Date.now()
-                    const { changedCells, soundToPlay } = engine.tick()
+                    const { changedCells } = engine.tick()
 
                     // UI.renderScreen(data, engine.currentLevel)
 

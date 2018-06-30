@@ -3,13 +3,11 @@ import { EventEmitter2, Listener } from 'eventemitter2'
 import { GameData } from './models/game'
 import { GameSprite, IGameTile } from './models/tile'
 import { IRule, IMutation } from './models/rule'
-import { nextRandom, setAddAll, RULE_DIRECTION_ABSOLUTE, setIntersection, setDifference, Optional } from './util'
+import { nextRandom, setAddAll, RULE_DIRECTION_ABSOLUTE, setDifference, Optional } from './util'
 import { RULE_DIRECTION } from './enums';
 import { AbstractCommand, COMMAND_TYPE } from './models/command';
 import { GameSound } from './models/sound';
 import { CollisionLayer } from './models/collisionLayer';
-
-const MAX_REPEATS = 10
 
 type CollisionLayerState = {
     readonly wantsToMove: Optional<RULE_DIRECTION_ABSOLUTE>
@@ -139,7 +137,7 @@ export class Cell {
     getSpritesAsSet() {
         // Just pull out the sprite, not the wantsToMoveDir
         const sprites = new Set<GameSprite>()
-        for (const [c, {sprite}] of this._state) {
+        for (const {sprite} of this._state.values()) {
             sprites.add(sprite)
         }
         return sprites
@@ -385,7 +383,6 @@ export class LevelEngine extends EventEmitter2 {
     _tickUpdateCells(rules: Iterable<IRule>) {
         const changedMutations: Set<IMutation> = new Set()
         const evaluatedRules: IRule[] = []
-        let ruleIndex = 0
         for (const rule of rules) {
             const cellMutations = rule.evaluate()
             if (cellMutations.length > 0) {
@@ -394,7 +391,6 @@ export class LevelEngine extends EventEmitter2 {
             for (const mutation of cellMutations) {
                 changedMutations.add(mutation)
             }
-            ruleIndex++ // Just for debugging
         }
 
         // We may have mutated the same cell 4 times (e.g. [Player]->[>Player]) so consolidate
@@ -480,7 +476,7 @@ export class LevelEngine extends EventEmitter2 {
 
         // Clear the wantsToMove from all remaining cells
         for (const cell of changedCells) {
-            for (const [sprite, wantsToMove] of cell.getSpriteAndWantsToMoves()) {
+            for (const [sprite] of cell.getSpriteAndWantsToMoves()) {
                 cell.clearWantsToMove(sprite)
             }
         }
@@ -509,7 +505,7 @@ export class LevelEngine extends EventEmitter2 {
             }
         }
 
-        const {changedCells: changedCellMutations2, evaluatedRules, commands, didSomeSpriteChange} = this.tickUpdateCells()
+        const {changedCells: changedCellMutations2, evaluatedRules, commands} = this.tickUpdateCells()
         changedCellMutations = setAddAll(changedCellMutations, changedCellMutations2)
 
         // Continue evaluating again rules only when some sprites have changed

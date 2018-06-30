@@ -6,19 +6,14 @@ import {
     IGameNode
 } from '../models/game'
 import { IGameTile, GameSprite } from './tile'
-import { setIntersection, nextRandom, RULE_DIRECTION_ABSOLUTE, RULE_DIRECTION_ABSOLUTE_SET, RULE_DIRECTION_ABSOLUTE_LIST, setEquals, DEBUG_FLAG, nextRandomFloat, ICacheable, Optional } from '../util'
+import { setIntersection, nextRandom, RULE_DIRECTION_ABSOLUTE, DEBUG_FLAG, ICacheable, Optional } from '../util'
 import { Cell } from '../engine'
 import { RULE_DIRECTION } from '../enums';
 import TerminalUI from '../ui'
 import { AbstractCommand } from './command';
 import { CollisionLayer } from './collisionLayer';
-import { debug } from 'util';
 
 const MAX_ITERATIONS_IN_LOOP = 350 // Set by the Random World Generation game
-
-enum RULE_COMMAND {
-    AGAIN = 'AGAIN'
-}
 
 export const SIMPLE_DIRECTION_DIRECTIONS = [
     RULE_DIRECTION.RIGHT,
@@ -66,11 +61,6 @@ export class SimpleRuleGroup extends BaseForLines implements IRule {
         return false
     }
     evaluate() {
-        let randomFloat
-        if (this.isRandom()) {
-            randomFloat = nextRandomFloat()
-        }
-
         // Keep looping as long as one of the rules evaluated something
         const allMutations: IMutation[][] = []
         for (let iteration = 0; iteration < MAX_ITERATIONS_IN_LOOP; iteration++) {
@@ -85,7 +75,6 @@ export class SimpleRuleGroup extends BaseForLines implements IRule {
                 console.error(this.toString())
                 throw new Error(`BUG: Iterated too many times in startloop or + (rule group)`)
             }
-            let rulesToEvaluate
             if (this.isRandom()) {
                 // Randomly pick one of the rules. I wonder if it needs to be smart
                 // It is important that it only be evaluated once (hence the returns)
@@ -255,7 +244,6 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
     evaluate() {
         const allMutations: IMutation[][] = []
         // Keep evaluating the rule until nothing changes
-        let innerEvaluatedSomething = false
         let innerIteration
         for (innerIteration = 0; innerIteration < MAX_ITERATIONS_IN_LOOP; innerIteration++) {
             if (process.env['NODE_ENV'] === 'development' && innerIteration === MAX_ITERATIONS_IN_LOOP - 10) {
@@ -275,7 +263,6 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
                 allMutations.push(ret)
                 // filter because a Rule may have caused only command mutations
                 if (ret.filter(m => m.hasCell()).length > 0) {
-                    innerEvaluatedSomething = true
                 } else {
                     break
                 }
@@ -351,7 +338,6 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
                 }
                 ret = _.flatten(allMutations)
             } else {
-                const startTime = Date.now()
                 ret = this.evaluateInOrder()
                 // console.log('SLLLLLOOOOOOWWWWW EVALUATION.........');
                 // console.log(this.toString())
@@ -840,7 +826,6 @@ class ReplaceTile {
         this.conditionSpritesToRemove = conditionSpritesToRemove
     }
     replace(cell: Cell, magicOrTiles: Map<IGameTile, Set<GameSprite>>) {
-        let oldSprite
         let didActuallyChange = false
         // Check if we are adding or removing....
         if (this.actionTileWithModifier) {
@@ -1174,7 +1159,7 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
 
         // Any unmatched OR tiles need to be removed from the Cell
         if (unmatchedOrTiles.size > 0) {
-            for (const [_, t] of unmatchedOrTiles) {
+            for (const t of unmatchedOrTiles.values()) {
                 for (const sprite of t._tile.getSprites()) {
                     const c = sprite.getCollisionLayer()
                     if (!pairsByCollisionLayer.has(c)) {

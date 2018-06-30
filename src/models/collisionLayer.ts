@@ -60,9 +60,3 @@ export class CollisionLayer extends BaseForLines {
         return ret
     }
 }
-
-export class SpriteSet {
-    constructor(collisionLayer: CollisionLayer, sprites: Iterable<GameSprite>) {
-
-    }
-}

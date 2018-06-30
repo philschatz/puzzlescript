@@ -9,7 +9,7 @@ import {
 } from '../models/sound'
 import { LookupHelper } from './lookup'
 import { Parseable } from './gameGrammar';
-import { GameSprite, IGameTile } from '../models/tile';
+import { IGameTile } from '../models/tile';
 
 export const SOUND_GRAMMAR = `
     // TODO: Handle tokens like sfx0 and explicit args instead of just varName (like "Player CantMove up")

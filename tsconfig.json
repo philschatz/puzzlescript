@@ -9,6 +9,7 @@
     "experimentalDecorators": true,
     "removeComments": false,
     "strict": true,
+    "noUnusedLocals": true,
     "outDir": "lib",
     "rootDir": "src"
   },

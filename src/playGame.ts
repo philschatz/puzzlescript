@@ -81,7 +81,6 @@ async function run() {
         const { filePath: gamePath, id: gistId } = await promptGame(games)
         const absPath = path.resolve(gamePath)
         const code = readFileSync(absPath, 'utf-8')
-        const startTime = Date.now()
         const { data, error, trace } = Parser.parse(code)
 
         if (error && trace) {
@@ -342,7 +341,6 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: {ve
 
         if (didLevelChange) {
             // Save the solution
-            const newSolution = keypresses.join('')
             recordings.solutions[currentLevelNum] = { solution: keypresses.join('') }
             writeFileSync(solutionsPath, JSON.stringify(recordings, null, 2))
             keypresses = []
