@@ -316,7 +316,15 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
                     const condition = this.conditionBrackets[index]
                     const action = this.actionBrackets[index]
                     const magicOrTiles = new Map()
-                    for (const cell of condition.getFirstCells()) {
+                    let firstCells
+                    if (this.conditionBrackets.length > 1) {
+                        // get these because firstCells might update which causes us to keep itereating even though another bracket might no longer apply. Another reason to use ImmutableJS.
+                        firstCells = [...condition.getFirstCells()]
+                    } else {
+                        // Beam islands background does this (keep applying the rule as long as it applies)
+                        firstCells = condition.getFirstCells()
+                    }
+                    for (const cell of firstCells) {
                         allMutations.push(condition.evaluate(action, cell, magicOrTiles))
 
                         // Only evaluate once. This is a HACK since it always picks the 1st cell that matched rather than a RANDOM cell
@@ -914,7 +922,7 @@ export class SimpleEllipsisBracket extends ISimpleBracket {
             }
             const oldBefore = this.firstAfterCells.get(firstAfterCell)
             if (oldBefore) {
-                // this.firstCells.delete(oldBefore)
+                this.firstCells.delete(oldBefore)
                 this.firstBeforeCells.delete(oldBefore)
                 this.firstAfterCells.delete(firstAfterCell)
             }

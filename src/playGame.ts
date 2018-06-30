@@ -525,8 +525,8 @@ async function promptGame(games: GameInfo[]) {
         'Pot Wash Panic',
         'PUSH',
         'Beam Islands',
+        'Pants, Shirt, Cap',
         'Entanglement - Chapter One',
-        // 'SwapBot', BUG: Too many batteries
         'Mirror Isles',
         'IceCrates',
         'Boxes & Balloons',
@@ -536,7 +536,7 @@ async function promptGame(games: GameInfo[]) {
         'Skipping Stones to Lonely Homes',
         'Hack the Net',
         'Garten der Medusen',
-        'Pants, Shirt, Cap',
+        'SwapBot',
         'Separation',
         'Roll those Sixes',
         'Spacekoban',

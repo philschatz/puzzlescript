@@ -1,17 +1,29 @@
 {
   "version": 1,
   "solutions": [
-    null,
+    {
+      "solution": "X"
+    },
     {
       "solution": ".W.D.WW.A.AS.SD......"
     },
-    null,
-    null,
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "X"
+    },
     {
       "solution": "..AS.DD.WA...XS.X.S...S......."
     },
     {
       "solution": "X"
+    },
+    {
+      "solution": "DWXAAWX,,,,,,SSDXAWWWX,,,,,,SSDXWAWWX,,,,,,SSSXWWWWX,,,,,,SSSXWWWWAX,,,,,,AXAWSDDDX,,,,,,AXDDX,,,,,,DXDWSAAAASSSSDSSX,,,,,,SS,,,,,,,,,,,,,"
+    },
+    {
+      "solution": ".SADXSX,,,,,,SXWWWX,,,,,,SXWWX,,,,,,SXASDWDAWWX,,,,,,SXWWWAX,,,,,,SSXWWAX,,,,,,AXADDDX,,,,,,AXDDX,,,,,,DDA,,,,"
     }
   ]
 }
