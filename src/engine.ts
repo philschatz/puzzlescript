@@ -545,8 +545,12 @@ export class LevelEngine extends EventEmitter2 {
         // TODO: Handle the commands like RESTART, CANCEL, WIN at this point
         let soundToPlay: Optional<GameSound> = null
         let hasWinCommand = false
+        let hasRestart = false
         for (const command of ret.commands) {
             switch (command.getType()) {
+                case COMMAND_TYPE.RESTART:
+                    hasRestart = true
+                    break
                 case COMMAND_TYPE.SFX:
                     soundToPlay = command.getSound()
                     break
@@ -569,6 +573,7 @@ export class LevelEngine extends EventEmitter2 {
         return {
             changedCells: new Set(ret.changedCells.keys()),
             soundToPlay,
+            hasRestart,
             isWinning: hasWinCommand || this.isWinning()
         }
     }
@@ -738,8 +743,19 @@ export class GameEngine {
             }
         }
 
-        const {changedCells, soundToPlay, isWinning} = this._getEngine().tick()
+        const {changedCells, soundToPlay, isWinning, hasRestart} = this._getEngine().tick()
         this.isFirstTick = false
+
+        if (hasRestart) {
+            this.pressRestart()
+            return {
+                changedCells: new Set(_.flatten(this.getCurrentLevelCells())),
+                soundToPlay: null,
+                didWinGame: false,
+                didLevelChange: false,
+                wasAgainTick: false
+            }
+        }
 
         let didWinGame = false
         if (isWinning) {

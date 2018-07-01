@@ -594,10 +594,10 @@ async function promptGame(games: GameInfo[]) {
         'Coin Counter',
         'MazezaM',
         'pretender to the crown',
+        'It Dies In The Light',
         'JAM3 Game',
         'Element Walkers',
         'ESL Puzzle Game -- CHALLENGE MODE アダムのパズルゲーム'
-        // 'It Dies In The Light', BUG: Dead player does not remain dead
     ]
     function getGameIndexForSort(gameInfo: GameInfo) {
         let gameIndex = firstGames.indexOf(gameInfo.title)
