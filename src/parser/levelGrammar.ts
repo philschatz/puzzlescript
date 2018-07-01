@@ -17,8 +17,11 @@ export function getLevelSemantics(lookup: LookupHelper) {
             return _1.parse()
         },
         GameMessageLevel: function (this: ohm.Node, _1: Parseable<string>, optionalMessage: Parseable<string[]>) {
-            // TODO: Maybe discard empty messages?
-            return new MessageLevel(this.source, optionalMessage.parse()[0] /* Since the message is optional */)
+            const msg = optionalMessage.parse()[0] /* Since the message is optional */
+            if (msg) {
+                return new MessageLevel(this.source, msg)
+            }
+            return null
         },
         LevelMap: function (this: ohm.Node, rows: Parseable<string[][]>) {
             const levelRows = rows.parse().map((row: string[]) => {

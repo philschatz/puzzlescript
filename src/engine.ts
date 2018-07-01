@@ -516,10 +516,13 @@ export class LevelEngine extends EventEmitter2 {
             this.undoStack = []
             this.takeSnapshot()
         }
-        // set this only if we did not CANCEL
-        this.hasAgainThatNeedsToRun = !!allCommands.filter(c => c.getType() === COMMAND_TYPE.AGAIN)[0]
+        // set this only if we did not CANCEL and if some cell changed
+        const changedCells = setAddAll(setAddAll(changedCellMutations, changedCellsLate), movedCells)
+        if (!!allCommands.filter(c => c.getType() === COMMAND_TYPE.AGAIN)[0]) {
+            this.hasAgainThatNeedsToRun = changedCells.size > 0
+        }
         return {
-            changedCells: setAddAll(setAddAll(changedCellMutations, changedCellsLate), movedCells),
+            changedCells: changedCells,
             evaluatedRules: evaluatedRules.concat(evaluatedRulesLate),
             commands: commands
         }

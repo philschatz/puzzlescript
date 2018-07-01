@@ -273,7 +273,7 @@ export const METADATA_GRAMMAR = `
 export function getGameSemantics(lookup: LookupHelper, addValidationMessage: AddValidationFunc) {
     let currentColorPalette = 'arnecolors' // default
     return {
-        GameData: function (this: ohm.Node, _whitespace1: Parseable<string>, title: Parseable<string>, _whitespace2: Parseable<string>, settingsFields: Parseable<{key: string, value: boolean | string | Dimension}[]>, _whitespace3: Parseable<string>, sprites: Parseable<GameSprite[][]>, legends: Parseable<GameLegendTileSimple[][]>, sounds: Parseable<GameSound[][]>, collisionLayers: Parseable<CollisionLayer[][]>, rules: Parseable<ASTGameRule[][]>, winConditions: Parseable<WinConditionSimple[][]>, levels: Parseable<LevelMap[][]>) {
+        GameData: function (this: ohm.Node, _whitespace1: Parseable<string>, title: Parseable<string>, _whitespace2: Parseable<string>, settingsFields: Parseable<{key: string, value: boolean | string | Dimension}[]>, _whitespace3: Parseable<string>, spritesSection: Parseable<GameSprite[][]>, legendsSection: Parseable<GameLegendTileSimple[][]>, soundsSection: Parseable<GameSound[][]>, collisionLayersSection: Parseable<CollisionLayer[][]>, rulesSection: Parseable<ASTGameRule[][]>, winConditionsSection: Parseable<WinConditionSimple[][]>, levelsSection: Parseable<LevelMap[][]>) {
             const metadata = new GameMetadata()
             for (const {key, value} of settingsFields.parse()) {
                 if (!key) {
@@ -281,16 +281,26 @@ export function getGameSemantics(lookup: LookupHelper, addValidationMessage: Add
                 }
                 metadata._setValue(key.toLowerCase(), value)
             }
+            // The order in which these are parsed is important because they populate the lookup object
+            const sprites = spritesSection.parse()[0] || []
+            const legends = legendsSection.parse()[0] || []
+            const sounds = soundsSection.parse()[0] || []
+            const collisionLayers = collisionLayersSection.parse()[0] || []
+            const rules = rulesSection.parse()[0] || []
+            const winConditions = winConditionsSection.parse()[0] || []
+            const levels = levelsSection.parse()[0] || []
+            const levelsWithoutNullMessages = levels.filter(l => !!l)
+
             return new GameData(
                 title.parse(),
                 metadata,
-                sprites.parse()[0] || [],
-                legends.parse()[0] || [],
-                sounds.parse()[0] || [],
-                collisionLayers.parse()[0] || [],
-                rules.parse()[0] || [],
-                winConditions.parse()[0] || [],
-                levels.parse()[0] || []
+                sprites,
+                legends,
+                sounds,
+                collisionLayers,
+                rules,
+                winConditions,
+                levelsWithoutNullMessages
             )
         },
         Title: function (this: ohm.Node, _1: Parseable<string>, value: Parseable<string>) {

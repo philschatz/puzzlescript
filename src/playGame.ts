@@ -1,10 +1,9 @@
-import { readFileSync, writeFileSync, existsSync } from 'fs'
+import { readFileSync, writeFileSync, existsSync, createReadStream } from 'fs'
 import * as path from 'path'
 import * as glob from 'glob'
 import * as pify from 'pify'
 import * as inquirer from 'inquirer'
 import PromptModule, * as autocomplete from 'inquirer-autocomplete-prompt'
-import * as firstline from 'firstline'
 import chalk from 'chalk'
 
 import Parser from './parser/parser'
@@ -30,6 +29,38 @@ async function sleep(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms))
 }
 
+function first2Lines(filePath: string) {
+
+    const opts = {
+        encoding: 'utf8',
+        lineEnding: '\n'
+    }
+    return new Promise<string>((resolve, reject) => {
+        const rs = createReadStream(filePath, { encoding: opts.encoding });
+        let acc = ''
+        let pos = 0
+        let index
+        rs
+            .on('data', (chunk: string) => {
+                index = chunk.indexOf(opts.lineEnding)
+                acc += chunk
+                if (index === -1) {
+                    pos += chunk.length
+                } else {
+                    index = chunk.indexOf(opts.lineEnding, index + 1)
+                    if (index >= 0) {
+                        pos += index
+                        rs.close()
+                    } else {
+                        pos+= chunk.length
+                    }
+                }
+            })
+            .on('close', () => resolve(acc.slice(acc.charCodeAt(0) === 0xFEFF ? 1 : 0, pos)))
+            .on('error', err => reject(err))
+    })
+}
+
 // keypress(process.stdin)
 // keypress.enableMouse(process.stdout)
 
@@ -48,21 +79,33 @@ function toUnicode(theString: string) {
 }
 
 type GameInfo = { id: string, title: string, filePath: string }
-type SaveFile = { version: number, solutions: {solution?: string, partial?: string}[]}
+type SaveFile = { version: number, solutions: { solution?: string, partial?: string }[] }
 
 run()
 
 
 async function run() {
-    inquirer.registerPrompt('autocomplete', <PromptModule> autocomplete)
+    inquirer.registerPrompt('autocomplete', <PromptModule>autocomplete)
     const gists = await pify(glob)(path.join(__dirname, '../gists/*/script.txt'))
 
     const games: GameInfo[] = []
 
+    const titleRegexp = /title/i
     for (const filePath of gists) {
+        const lines = await first2Lines(filePath)
+        const linesAry = lines.split('\n')
+        let title
+        if (titleRegexp.test(linesAry[0])) {
+            title = linesAry[0].replace(/title /i, '')
+        } else if (titleRegexp.test(linesAry[1])) {
+            title = linesAry[1].replace(/title /i, '')
+        } else {
+            throw new Error(`BUG: Game does not have a title section in the 1st 2 lines`)
+        }
+
         games.push({
             id: path.basename(path.dirname(filePath)),
-            title: (await firstline(filePath)).replace(/title /i, ''),
+            title: title,
             filePath: filePath
         })
     }
@@ -97,7 +140,7 @@ async function run() {
 
             // Load the solutions file (if it exists) so we can append to it
             const solutionsPath = path.join(__dirname, `../gist-solutions/${gistId}.json`)
-            let recordings: {version: number, solutions: LevelRecording[]} = {version: 1, solutions: []} // default
+            let recordings: { version: number, solutions: LevelRecording[] } = { version: 1, solutions: [] } // default
             if (existsSync(solutionsPath)) {
                 recordings = JSON.parse(readFileSync(solutionsPath, 'utf-8'))
             }
@@ -145,7 +188,7 @@ async function run() {
 }
 
 
-async function playGame(data: GameData, currentLevelNum: number, recordings: {version: number, solutions: {solution?: string, partial?:string}[]}, ticksToRunFirst: string, absPath: string, solutionsPath: string) {
+async function playGame(data: GameData, currentLevelNum: number, recordings: { version: number, solutions: { solution?: string, partial?: string }[] }, ticksToRunFirst: string, absPath: string, solutionsPath: string) {
     if (process.env['LOG_LEVEL'] === 'debug') {
         console.error(`Start playing "${data.title}". Level ${currentLevelNum}`)
     }
@@ -383,21 +426,21 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: {ve
 
 async function promptPlayAnother() {
     const { playAnotherGame } = await inquirer.prompt<{
-            playAnotherGame: boolean;
-        }>({
-            type: 'confirm',
-            name: 'playAnotherGame',
-            message: 'Would you like to play another game?',
-        })
+        playAnotherGame: boolean;
+    }>({
+        type: 'confirm',
+        name: 'playAnotherGame',
+        message: 'Would you like to play another game?',
+    })
     return playAnotherGame
 }
 
 async function promptChooseLevel(recordings: SaveFile, data: GameData) {
     const levels = data.levels
     const firstUncompletedLevel = levels
-    .indexOf(levels
-        .filter((l, index) => !(recordings.solutions[index] && recordings.solutions[index].solution))[0]
-    )
+        .indexOf(levels
+            .filter((l, index) => !(recordings.solutions[index] && recordings.solutions[index].solution))[0]
+        )
 
     const { currentLevelNum } = await inquirer.prompt<{
         currentLevelNum: number;
@@ -425,7 +468,7 @@ async function promptChooseLevel(recordings: SaveFile, data: GameData) {
                     height = zoomscreen.height;
                     width = zoomscreen.width;
                 }
-                const {columns, rows} = getTerminalSize()
+                const { columns, rows } = getTerminalSize()
                 const isTooWide = columns < width * 5 * TerminalUI.PIXEL_WIDTH;
                 const isTooTall = rows < height * 5 * TerminalUI.PIXEL_HEIGHT;
                 let message = '';
@@ -549,8 +592,11 @@ async function promptGame(games: GameInfo[]) {
         'Memories Of Castlemouse',
         "Spider's Hollow",
         'Coin Counter',
+        'MazezaM',
+        'pretender to the crown',
         'JAM3 Game',
-        'Element Walkers'
+        'Element Walkers',
+        'ESL Puzzle Game -- CHALLENGE MODE アダムのパズルゲーム'
         // 'It Dies In The Light', BUG: Dead player does not remain dead
     ]
     function getGameIndexForSort(gameInfo: GameInfo) {
