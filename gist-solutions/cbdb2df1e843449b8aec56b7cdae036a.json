@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "solutions": [
+    null,
+    null,
+    {
+      "solution": ".W,,W,,D,,D,,S,,S,,S,,A,,S,,D,,D,,D,,W,,W,,A,,W,,D,,W"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "S,,S,,D,,A,,D,,"
+    },
+    {
+      "solution": ".D,,D,,A,,A,,W,,S,,D,,D,,W,,A,,"
+    }
+  ]
+}
