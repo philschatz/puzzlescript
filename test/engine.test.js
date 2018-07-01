@@ -2152,4 +2152,169 @@ describe('engine', () => {
         expect(engine.currentLevel[0][4].getSpritesAsSet().has(cat)).toBe(true)
     })
 
+    it('supports ellipsis rules (all matches move, not just the 1st match)', () => {
+        const { engine, data } = parseEngine(`title foo
+
+        ========
+        OBJECTS
+        ========
+
+        Background
+        gray
+
+        Player
+        transparent
+
+        Cat C
+        black
+
+        =======
+        LEGEND
+        =======
+
+        . = Background
+        P = Player
+
+        =======
+        SOUNDS
+        =======
+
+        ================
+        COLLISIONLAYERS
+        ================
+        Background
+        Player
+        Cat
+
+        ======
+        RULES
+        ======
+
+        RIGHT [ Player | ... | Cat ] -> [ Player | ... | > Cat ]
+
+        ==============
+        WINCONDITIONS
+        ==============
+
+        =======
+        LEVELS
+        =======
+
+        P.C.C..
+
+    `) // end game definition
+
+        const cat = data._getSpriteByName('cat')
+        engine.tick()
+
+        expect(cat.getCellsThatMatch().size).toBe(2)
+        expect(engine.currentLevel[0][4].getSpritesAsSet().has(cat)).toBe(false) // the further cat moved
+        expect(engine.currentLevel[0][5].getSpritesAsSet().has(cat)).toBe(true)
+        expect(engine.currentLevel[0][2].getSpritesAsSet().has(cat)).toBe(false) // the closer Cat moved too
+        expect(engine.currentLevel[0][3].getSpritesAsSet().has(cat)).toBe(true)
+    })
+
+
+    it('undo correctly clears bracket matches (not really because of UNDO, that is just how it manifested)', () => {
+        const { engine, data } = parseEngine(`title MazezaM Test
+
+        ========
+        OBJECTS
+        ========
+
+        Background
+        DarkBlue Black
+        11111
+        01111
+        11101
+        11111
+        10111
+
+        Player
+        Red DarkGreen Green
+        ..0..
+        22222
+        02220
+        01110
+        .1.1.
+
+        Dot
+        blue
+        ..0..
+        .....
+        0.0.0
+        .....
+        ..0..
+
+        ACrate
+        Orange Brown DarkBrown
+        00001
+        01102
+        01012
+        00112
+        12222
+
+        =======
+        LEGEND
+        =======
+
+        . = Background
+        P = Player
+        C = ACrate
+
+        =======
+        SOUNDS
+        =======
+
+        ================
+        COLLISIONLAYERS
+        ================
+
+        Background
+        Player, ACrate
+        dot
+
+        ======
+        RULES
+        ======
+
+        RIGHT [ > Player | ACrate] -> [ > Player| > ACrate]
+        RIGHT [ > ACrate ] -> [ > ACrate Dot ]
+
+        ==============
+        WINCONDITIONS
+        ==============
+
+        =======
+        LEVELS
+        =======
+
+        .PCC
+
+    `) // end game definition
+
+        const dot = data._getSpriteByName('dot')
+        engine.press('RIGHT')
+        engine.tick()
+
+        expect(dot.getCellsThatMatch().size).toBe(1)
+        expect(engine.currentLevel[0][2].getSpritesAsSet().has(dot)).toBe(true) // the dot appeared
+
+        // Verify that the bracket no longer has any matches (since things are no longer moving bc the tick is done)
+        expect(engine.gameData.rules[1].rules[0].conditionBrackets[0].firstCells.size).toBe(0)
+
+        engine.pressUndo()
+        engine.tick()
+
+        expect(dot.getCellsThatMatch().size).toBe(0)
+        expect(engine.currentLevel[0][2].getSpritesAsSet().has(dot)).toBe(false) // the dot disappeared
+
+        engine.press('LEFT')
+        engine.tick()
+
+        expect(dot.getCellsThatMatch().size).toBe(0)
+        expect(engine.currentLevel[0][2].getSpritesAsSet().has(dot)).toBe(false) // the dot did not appear
+
+    })
+
 })

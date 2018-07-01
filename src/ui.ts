@@ -523,6 +523,7 @@ class TerminalUI {
             return
         }
 
+        // TODO: Also eventually filter out the Background ones when Background is an OR Tile
         const spritesForDebugging = cell.getSprites().filter(s => !s.isBackground())
 
         let { isOnScreen, cellStartX, cellStartY } = this.cellPosToXY(cell)

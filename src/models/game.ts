@@ -172,9 +172,13 @@ export class GameData {
     getMagicBackgroundSprite() {
         let background: Optional<GameSprite> = this._getSpriteByName('background')
         if (!background) {
-            const legendBackgrounds = this.legends.find(tile => tile.spriteNameOrLevelChar.toLocaleLowerCase() === 'background')
-            if (legendBackgrounds) {
-                background = legendBackgrounds.getSprites()[0]
+            const legendBackground = this.legends.find(tile => tile.spriteNameOrLevelChar.toLocaleLowerCase() === 'background')
+            if (legendBackground) {
+                if (legendBackground.isOr()) {
+                    return null
+                } else {
+                    return legendBackground.getSprites()[0]
+                }
             }
         }
         if (!background) {

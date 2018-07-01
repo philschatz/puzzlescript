@@ -809,18 +809,101 @@ enum BEFORE_OR_AFTER {
     AFTER
 }
 
+class MultiMap<A, B> {
+    private map: Map<A, Set<B>>
+    constructor() {
+        this.map = new Map()
+    }
+    clear() {
+        this.map.clear()
+    }
+    has(a: A, b: B) {
+        const set = this.map.get(a)
+        if (set) {
+            return set.has(b)
+        }
+        return false
+    }
+    protected /*unused*/ hasA(a: A) {
+        return this.map.has(a)
+    }
+    protected /*unused*/ hasB(b: B) {
+        return !!this.getA(b)
+    }
+    protected /*unused*/ getA(b: B) {
+        const ret = new Set()
+        for (const [a, set] of this.map) {
+            if (set.has(b)) {
+                ret.add(a)
+            }
+        }
+        if (ret.size > 0) {
+            return ret
+        }
+        return undefined
+    }
+    getB(a: A) {
+        return this.map.get(a)
+    }
+    add(a: A, b: B) {
+        let set = this.map.get(a)
+        if (!set) {
+            set = new Set()
+            this.map.set(a, set)
+        }
+        if (!set.has(b)) {
+            set.add(b)
+            return true
+        }
+        return false
+    }
+    deleteAllA(a: A) {
+        this.map.delete(a)
+    }
+    deleteAllB(b: B) {
+        const asRemoved = new Set()
+        for (const [a, set] of this.map) {
+            if (set.has(b)) {
+                set.delete(b)
+                if (set.size === 0) {
+                    this.map.delete(a)
+                    asRemoved.add(a)
+                }
+            }
+        }
+        return asRemoved
+    }
+    protected /*unused*/ delete(a: A, b: B) {
+        const set = this.map.get(a)
+        if (set) {
+            if (!set.has(b)) {
+                throw new Error(`BUG: Invariant error. Link did not exist so nothing to remove`)
+            }
+            set.delete(b)
+        }
+    }
+    protected /*unused*/ size() {
+        let size = 0
+        for (const set of this.map.values()) {
+            size += set.size
+        }
+        return size
+    }
+    sizeA() {
+        return this.map.size
+    }
+}
+
 export class SimpleEllipsisBracket extends ISimpleBracket {
     private beforeEllipsisBracket: SimpleBracket
     private afterEllipsisBracket: SimpleBracket
-    private firstBeforeCells: Map<Cell, Cell>
-    private firstAfterCells: Map<Cell, Cell>
+    private linkages: MultiMap<Cell, Cell> // 1 before may have many afters
     private actionDebugFlag: Optional<DEBUG_FLAG>
     constructor(source: IGameCode, direction: RULE_DIRECTION_ABSOLUTE, beforeEllipsisNeighbors: SimpleNeighbor[], afterEllipsisNeighbors: SimpleNeighbor[], debugFlag: DEBUG_FLAG) {
         super(source, direction, [...beforeEllipsisNeighbors, ...afterEllipsisNeighbors], debugFlag)
         this.beforeEllipsisBracket = new SimpleBracket(source, direction, beforeEllipsisNeighbors, debugFlag)
         this.afterEllipsisBracket = new SimpleBracket(source, direction, afterEllipsisNeighbors, debugFlag)
-        this.firstBeforeCells = new Map()
-        this.firstAfterCells = new Map()
+        this.linkages = new MultiMap()
     }
     subscribeToNeighborChanges() {
         this.beforeEllipsisBracket.subscribeToNeighborChanges()
@@ -837,25 +920,26 @@ export class SimpleEllipsisBracket extends ISimpleBracket {
     }
 
     private checkInvariants() {
-        if (this.firstCells.size !== this.firstBeforeCells.size || this.firstCells.size !== this.firstAfterCells.size) {
+        if (this.firstCells.size !== this.linkages.sizeA()) {
             debugger; throw new Error(`BUG: Invariant violation`)
         }
     }
 
     clearCaches() {
         this.firstCells.clear()
-        this.firstBeforeCells.clear()
-        this.firstAfterCells.clear()
+        this.linkages.clear()
         this.beforeEllipsisBracket.clearCaches()
         this.afterEllipsisBracket.clearCaches()
     }
     populateMagicOrTiles(cell: Cell, magicOrTiles: Map<IGameTile, Set<GameSprite>>) {
-        const firstAfter = this.firstBeforeCells.get(cell)
-        if (!firstAfter) {
+        const firstAfters = this.linkages.getB(cell)
+        if (!firstAfters) {
             throw new Error(`BUG: Should have a match at this point since the rule is evaluating`)
         }
         this.beforeEllipsisBracket.populateMagicOrTiles(cell, magicOrTiles)
-        this.afterEllipsisBracket.populateMagicOrTiles(firstAfter, magicOrTiles)
+        for (const firstAfter of firstAfters) {
+            this.afterEllipsisBracket.populateMagicOrTiles(firstAfter, magicOrTiles)
+        }
     }
     prepareAction(action: ISimpleBracket) {
         const actionBracket = <SimpleEllipsisBracket> action // since we know the condition and action side need to match
@@ -873,14 +957,19 @@ export class SimpleEllipsisBracket extends ISimpleBracket {
         }
         const action = <SimpleEllipsisBracket> actionBracket
         const firstBeforeCell = cell
-        const firstAfterCell = this.firstBeforeCells.get(firstBeforeCell)
-        if (!firstAfterCell) {
+        const firstAfterCells = this.linkages.getB(firstBeforeCell)
+        if (!firstAfterCells) {
             throw new Error(`BUG: Could not find matching afterCell`)
         }
 
+        let allMutations: IMutation[] = []
         const beforeMutations = this.beforeEllipsisBracket.evaluate(action.beforeEllipsisBracket, firstBeforeCell, magicOrTiles)
-        const afterMutations = this.afterEllipsisBracket.evaluate(action.afterEllipsisBracket, firstAfterCell, magicOrTiles)
-        return beforeMutations.concat(afterMutations)
+        allMutations = allMutations.concat(beforeMutations)
+        for (const firstAfterCell of firstAfterCells) {
+            const afterMutations = this.afterEllipsisBracket.evaluate(action.afterEllipsisBracket, firstAfterCell, magicOrTiles)
+            allMutations = allMutations.concat(afterMutations)
+        }
+        return allMutations
     }
 
 
@@ -893,106 +982,85 @@ export class SimpleEllipsisBracket extends ISimpleBracket {
 
     addFirstCell(bracket: SimpleBracket, firstCell: Cell, token: BEFORE_OR_AFTER) {
         // check to see if the new cell is in line with any firstCells in the other bracket. If so, we have a match!
-        let firstBeforeCell
-        let firstAfterCell
+        let firstBeforeCells
+        let firstAfterCells
         if (bracket == this.beforeEllipsisBracket) {
-            firstBeforeCell = firstCell
+            firstBeforeCells = new Set([firstCell])
             // search for a matching afterCell
-            firstAfterCell = this.findMatching(firstCell, this.direction, this.afterEllipsisBracket)
+            firstAfterCells = this.findMatching(firstCell, this.direction, this.afterEllipsisBracket)
         } else if (bracket === this.afterEllipsisBracket) {
-            firstAfterCell = firstCell
+            firstAfterCells = new Set([firstCell])
             // search for a matching beforeCell
-            firstBeforeCell = this.findMatching(firstCell, opposite(this.direction), this.beforeEllipsisBracket)
+            firstBeforeCells = this.findMatching(firstCell, opposite(this.direction), this.beforeEllipsisBracket)
         } else {
             throw new Error(`BUG: Bracket should only ever be the before-ellipsis or after-ellipsis one`)
         }
-        if (firstBeforeCell && firstAfterCell) {
-            this.checkInvariants()
 
-            // Check if we need to actually change anything first. Becauase the !doesEvaluationOrderMatter case
-            // keeps iterating on the set of firstCells but if they keep flipping then it's a problem because it
-            // runs in an infinite loop
+        for (const firstBeforeCell of firstBeforeCells) {
+            for (const firstAfterCell of firstAfterCells) {
+                this.checkInvariants()
+                // Check if we need to actually change anything first. Becauase the !doesEvaluationOrderMatter case
+                // keeps iterating on the set of firstCells but if they keep flipping then it's a problem because it
+                // runs in an infinite loop
 
-            // Delete any mapping that may have existed before
-            const oldAfter = this.firstBeforeCells.get(firstBeforeCell)
-            if (oldAfter) {
-                // this.firstCells.delete(firstBeforeCell)
-                this.firstBeforeCells.delete(firstBeforeCell)
-                this.firstAfterCells.delete(oldAfter)
+                // Delete any mapping that may have existed before
+                if (this.linkages.has(firstBeforeCell, firstAfterCell)) {
+                    // nothing to do. we already have those entries
+                } else {
+                    this.linkages.add(firstBeforeCell, firstAfterCell)
+                    this.firstCells.add(firstBeforeCell)
+                }
+                this.checkInvariants()
+
             }
-            const oldBefore = this.firstAfterCells.get(firstAfterCell)
-            if (oldBefore) {
-                this.firstCells.delete(oldBefore)
-                this.firstBeforeCells.delete(oldBefore)
-                this.firstAfterCells.delete(firstAfterCell)
-            }
-
-            // now we can safely add a new mapping
-            this.firstCells.add(firstBeforeCell)
-            this.firstBeforeCells.set(firstBeforeCell, firstAfterCell)
-            this.firstAfterCells.set(firstAfterCell, firstBeforeCell)
-            this.checkInvariants()
         }
     }
     removeFirstCell(bracket: SimpleBracket, firstCell: Cell, token: BEFORE_OR_AFTER) {
         // Figure out the 1st cell for us and remove it (by maybe looking at the matching bracket)
-        let firstBeforeCell
-        let firstAfterCell
+        this.checkInvariants()
         if (bracket == this.beforeEllipsisBracket) {
-            // search for a matching afterCell
-            firstAfterCell = this.firstBeforeCells.get(firstCell)
-            if (firstAfterCell) {
-                firstBeforeCell = this.firstAfterCells.get(firstAfterCell)
-            }
+            this.linkages.deleteAllA(firstCell)
+            this.firstCells.delete(firstCell)
         } else if (bracket === this.afterEllipsisBracket) {
-            // search for a matching beforeCell
-            firstBeforeCell = this.firstAfterCells.get(firstCell)
-            if (firstBeforeCell) {
-                firstAfterCell = this.firstBeforeCells.get(firstBeforeCell)
+            const beforeCellsRemoved = this.linkages.deleteAllB(firstCell)
+            for (const b of beforeCellsRemoved) {
+                this.firstCells.delete(b)
             }
         } else {
             throw new Error(`BUG: Bracket should only ever be the before-ellipsis or after-ellipsis one`)
         }
-        if (firstBeforeCell && firstAfterCell) {
-            this.checkInvariants()
-            this.firstCells.delete(firstBeforeCell)
-            this.firstBeforeCells.delete(firstBeforeCell)
-            this.firstAfterCells.delete(firstAfterCell)
-            this.checkInvariants()
-        } else if (!firstBeforeCell && !firstAfterCell) {
-            // That's ok, nothing to remove
-        } else {
-            throw new Error(`BUG: Should always find a matching pair of before-ellipsis and after-ellipsis... oh wait maybe not`)
-        }
+        this.checkInvariants()
     }
 
     private findMatching(cell: Cell, direction: RULE_DIRECTION_ABSOLUTE, inBracket: SimpleBracket) {
+        const matches = new Set()
         for (const inBracketCell of inBracket.getFirstCells()) {
             switch (direction) {
                 case RULE_DIRECTION_ABSOLUTE.UP:
                     if (cell.colIndex === inBracketCell.colIndex && cell.rowIndex > inBracketCell.rowIndex) {
-                        return inBracketCell
+                        matches.add(inBracketCell)
                     }
                     break
                 case RULE_DIRECTION_ABSOLUTE.DOWN:
                     if (cell.colIndex === inBracketCell.colIndex && cell.rowIndex < inBracketCell.rowIndex) {
-                        return inBracketCell
+                        matches.add(inBracketCell)
                     }
                     break
                 case RULE_DIRECTION_ABSOLUTE.LEFT:
                     if (cell.colIndex > inBracketCell.colIndex && cell.rowIndex === inBracketCell.rowIndex) {
-                        return inBracketCell
+                        matches.add(inBracketCell)
                     }
                     break
                 case RULE_DIRECTION_ABSOLUTE.RIGHT:
                     if (cell.colIndex < inBracketCell.colIndex && cell.rowIndex === inBracketCell.rowIndex) {
-                        return inBracketCell
+                        matches.add(inBracketCell)
                     }
                     break
                 default:
                     throw new Error(`BUG: Invalid direction`)
             }
         }
+        return matches
     }
 
 }
@@ -1720,6 +1788,10 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
         if (this.matchesFirstCell(cells, wantsToMove)) {
             for (const neighbor of this.neighbors) {
                 neighbor.updateCells(this, sprite, cells, wantsToMove)
+            }
+        } else {
+            for (const neighbor of this.neighbors) {
+                neighbor.removeCells(this, sprite, cells)
             }
         }
     }
