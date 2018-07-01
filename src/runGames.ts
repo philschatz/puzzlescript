@@ -62,16 +62,18 @@ async function run() {
             const recordingsPath = path.join(__dirname, `../gist-solutions/${gistId}.json`)
             if (existsSync(recordingsPath)) {
                 const recordings: LevelRecording[] = JSON.parse(readFileSync(recordingsPath, 'utf-8')).solutions
+                // TODO: Use the following rules for finding which recording to play:
+                // - find the last partially (or) completed Map
+                // - pick the first Map
                 if (recordings) {
-                    // TODO: Use the following rules for finding which recording to play:
-                    // - find the last partially (or) completed Map
-                    // - pick the first Map
-                    const x = recordings.filter(r => !!r)
-                    const recording = x[x.length - 1]
-                    if (recording) {
-                        keypressesStr = recording.partial || recording.solution || ''
-                        level = data.levels[recordings.indexOf(recording)]
-                    }
+                    recordings.forEach((recording, index) => {
+                        if (recording && data.levels[index].isMap()) {
+                            keypressesStr = recording.partial || recording.solution || ''
+                            level = data.levels[index]
+                        }
+                    })
+                } else {
+                    level = data.levels.filter(l => l.isMap())[0]
                 }
             }
 

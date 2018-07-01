@@ -37,14 +37,12 @@ function checkGrammar(code) {
         }
     })
     const tree = s(match).toJSON2()
-    expect(tree).toMatchSnapshot()
     return tree
 }
 
 function checkParse(code) {
     const { data, error, validationMessages } = Parser.parse(code)
     expect(error && error.message).toBeFalsy() // Use && so the error messages are shorter
-    expect(data).toMatchSnapshot()
     return { data, validationMessages }
 }
 

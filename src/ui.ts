@@ -71,12 +71,18 @@ class CellColorCache {
         this.cache = new Map()
     }
 
-    get(spritesToDraw: GameSprite[], backgroundColor: Optional<IColor>, spriteHeight: number, spriteWidth: number) {
+    get(spritesToDrawSet: Set<GameSprite>, backgroundColor: Optional<IColor>, spriteHeight: number, spriteWidth: number) {
+        const spritesToDraw = [...spritesToDrawSet]
+        .sort((s1, s2) => s1.getCollisionLayer().id - s2.getCollisionLayer().id)
+        .reverse()
+
         const key = spritesToDraw.map(s => s.getName()).join(' ')
-        if (!this.cache.has(key)) {
-            this.cache.set(key, collapseSpritesToPixels(spritesToDraw, backgroundColor, spriteHeight, spriteWidth))
+        let ret = this.cache.get(key)
+        if (!ret) {
+            ret = collapseSpritesToPixels(spritesToDraw, backgroundColor, spriteHeight, spriteWidth)
+            this.cache.set(key, ret)
         }
-        return <IColor[][]> this.cache.get(key)
+        return ret
     }
 
     clear() {
@@ -635,15 +641,15 @@ class TerminalUI {
         if (!this.gameData) {
             throw new Error(`BUG: gameData was not set yet`)
         }
-        const spritesToDraw = cell.getSprites() // Not sure why, but entanglement renders properly when reversed
+        const spritesToDrawSet = cell.getSpritesAsSet() // Not sure why, but entanglement renders properly when reversed
 
         // If there is a magic background object then rely on it last
         let magicBackgroundSprite = this.gameData.getMagicBackgroundSprite()
         if (magicBackgroundSprite) {
-            spritesToDraw.push(magicBackgroundSprite)
+            spritesToDrawSet.add(magicBackgroundSprite)
         }
 
-        const pixels = this.cellColorCache.get(spritesToDraw, this.gameData.metadata.background_color, this.SPRITE_HEIGHT, this.SPRITE_WIDTH)
+        const pixels = this.cellColorCache.get(spritesToDrawSet, this.gameData.metadata.background_color, this.SPRITE_HEIGHT, this.SPRITE_WIDTH)
         return pixels
     }
 

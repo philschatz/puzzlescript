@@ -1,8 +1,12 @@
 {
   "version": 1,
   "solutions": [
-    null,
-    null,
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "X"
+    },
     {
       "solution": "DDDSASAAAASWWDSSASAAWWDWDDWDDDWSSAASSSS"
     }

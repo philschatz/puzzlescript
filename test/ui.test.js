@@ -10,8 +10,9 @@ const C_BLACK = { r: 0, g: 0, b: 0 }
 function parseAndReturnFirstSpritePixels(code) {
     const { data } = Parser.parse(code)
     const engine = new GameEngine()
-    engine.setGame(data, 0)
-    const cell = data.levels[0].getRows()[0][0]
+    engine.setGame(data)
+    engine.setLevel(0)
+    const cell = engine.getCurrentLevelCells()[0][0]
     // console.log(cell.getSprites())
     UI.setGame(engine)
     return { pixels: UI.getPixelsForCell(cell), data }
@@ -41,6 +42,7 @@ white transparent
 COLLISIONLAYERS
 ===
 
+Background
 WaterAnim1
 
 ===
@@ -90,6 +92,7 @@ W = WaterAnim1 AND Hole
 COLLISIONLAYERS
 ===
 
+background
 Hole
 WaterAnim1
 

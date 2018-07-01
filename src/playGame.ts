@@ -550,6 +550,7 @@ async function promptGame(games: GameInfo[]) {
         "Spider's Hollow",
         'Coin Counter',
         'JAM3 Game',
+        'Element Walkers'
         // 'It Dies In The Light', BUG: Dead player does not remain dead
     ]
     function getGameIndexForSort(gameInfo: GameInfo) {
