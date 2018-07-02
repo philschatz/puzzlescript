@@ -25,13 +25,13 @@ type TickResult = {
 
 // This Object exists so the UI has something to bind to
 export class Cell {
-    private readonly engine: LevelEngine
+    private readonly engine: Optional<LevelEngine>
     private readonly state: Map<CollisionLayer, CollisionLayerState>
     private cacheCollisionLayers: CollisionLayer[]
     public readonly rowIndex: number
     public readonly colIndex: number
 
-    constructor(engine: LevelEngine, sprites: Set<GameSprite>, rowIndex: number, colIndex: number) {
+    constructor(engine: Optional<LevelEngine>, sprites: Set<GameSprite>, rowIndex: number, colIndex: number) {
         this.engine = engine
         this.rowIndex = rowIndex
         this.colIndex = colIndex
@@ -161,6 +161,9 @@ export class Cell {
     }
 
     private _getRelativeNeighbor(y: number, x: number) {
+        if (!this.engine) {
+            throw new Error(`BUG: we need an engine in order to find neighbors. It is optional for letters in messages`)
+        }
         const row = this.engine.getCurrentLevel()[this.rowIndex + y]
         if (!row) return null
         return row[this.colIndex + x]

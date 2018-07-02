@@ -8,6 +8,7 @@ import { IColor } from './models/colors'
 import { GameEngine, Cell } from './engine'
 import { RULE_DIRECTION_ABSOLUTE, Optional } from './util';
 import chalk from 'chalk';
+import { makeLetterCell } from './letters';
 
 // Determine if this
 // 'truecolor' if this terminal supports 16m colors. 256 colors otherwise
@@ -247,6 +248,104 @@ class TerminalUI {
         process.stdout.write('\n')
         process.stdout.write('\n')
     }
+    private createMessageTextScreen(messageStr: string) {
+        const titleImage = [
+            "                                  ",
+            "                                  ",
+            "                                  ",
+            "                                  ",
+            "                                  ",
+            "                                  ",
+            "                                  ",
+            "                                  ",
+            "                                  ",
+            "                                  ",
+            "          X to continue           ",
+            "                                  ",
+            "                                  "
+        ]
+
+        function wordwrap(str: string, width: number) {
+            width = width || 75;
+            var cut = true;
+            if (!str) { return str; }
+            var regex = '.{1,' +width+ '}(\\s|$)' + (cut ? '|.{' +width+ '}|.+$' : '|\\S+?(\\s|$)');
+            const ret = str.match( RegExp(regex, 'g') );
+            if (ret) {
+                return ret
+            }
+            throw new Error(`BUG: Match did not work`)
+        }
+
+        var emptyLineStr = titleImage[9];
+        var xToContinueStr = titleImage[10];
+
+        titleImage[10]=emptyLineStr;
+
+        var width = titleImage[0].length;
+
+        const splitMessage = wordwrap(messageStr, titleImage[0].length)
+
+
+        var offset = 5 - ((splitMessage.length / 2) | 0);
+        if (offset < 0){
+            offset = 0;
+        }
+
+        var count = Math.min(splitMessage.length, 12);
+        for (var i = 0; i < count; i++) {
+            var m = splitMessage[i];
+            var row = offset+i;
+            var messageLength=m.length;
+            var lmargin = ((width-messageLength)/2)|0;
+            // var rmargin = width-messageLength-lmargin;
+            var rowtext = titleImage[row];
+            titleImage[row]=rowtext.slice(0,lmargin)+m+rowtext.slice(lmargin+m.length);
+        }
+
+        var endPos = 10;
+        if (count>=10) {
+            if (count<12){
+                endPos = count + 1;
+            } else {
+                endPos = 12;
+            }
+            }
+        // if (quittingMessageScreen) {
+        //     titleImage[endPos]=emptyLineStr;
+        // } else {
+            titleImage[endPos]=xToContinueStr;
+        // }
+
+        return titleImage
+    }
+    private createMessageCells(messageStr: string) {
+        if (!this.gameData) {
+            throw new Error(`BUG: gameData was not set yet`)
+        }
+        if (!this.engine) {
+            throw new Error(`BUG: gameEngine was not set yet`)
+        }
+
+        const titleImage = this.createMessageTextScreen(messageStr)
+
+        // Now, convert the string array into cells
+        const cells: Cell[][] = []
+        const level = this.engine.getCurrentLevel()
+        const topCollisionLayer = this.gameData.collisionLayers[this.gameData.collisionLayers.length - 1] // so the sprite appears above the background
+        for (let rowIndex = 0; rowIndex < titleImage.length; rowIndex++) {
+            const row = titleImage[rowIndex]
+            const cellsRow: Cell[] = []
+            cells.push(cellsRow)
+            for (let colIndex = 0; colIndex < row.length; colIndex++) {
+                const char = row[colIndex]
+
+                const letterCell = makeLetterCell(level.__source, topCollisionLayer, char, rowIndex, colIndex)
+                cellsRow.push(letterCell)
+            }
+        }
+        return cells
+    }
     renderScreen(clearCaches: boolean, renderScreenDepth: number = 0) {
         if (!this.gameData) {
             throw new Error(`BUG: gameData was not set yet`)
@@ -261,27 +360,39 @@ class TerminalUI {
 
         const level = this.engine.getCurrentLevel()
         if (!level.isMap()) {
-            this.clearScreen()
-            console.log(``)
-            console.log(``)
-            console.log(``)
-            console.log(``)
-            console.log(``)
-            console.log(``)
-            console.log(chalk.bold.whiteBright(level.getMessage()))
-            console.log(``)
-            console.log(``)
-            console.log(``)
-            console.log(``)
-            console.log(``)
-            console.log(``)
-            console.log(chalk.white(`Press Action (${chalk.bold.whiteBright('X')} or ${chalk.bold.whiteBright('space')} or ${chalk.bold.whiteBright('enter')}) to Continue`))
-            console.log(``)
-            console.log(``)
-            console.log(``)
-            console.log(``)
-            console.log(chalk.dim(`NOTE: these messages will be bigger. Submit a Pull Request!)`))
 
+            const screenWidth = 34
+            const screenHeight = 13
+
+            const {columns, rows} = getTerminalSize()
+            if (columns >= screenWidth * 5 * this.PIXEL_WIDTH && rows >= screenHeight * 5 * this.PIXEL_HEIGHT) {
+                // re-center the screen so we can show the message
+                this.windowOffsetColStart = 0
+                this.windowOffsetRowStart = 0
+                this.windowOffsetHeight = screenHeight
+                this.windowOffsetWidth = screenWidth
+                this.clearScreen()
+
+                let message = level.getMessage()
+                const cells = this.createMessageCells(message)
+                for (const row of cells) {
+                    for (const letterCell of row) {
+                        this.drawCell(letterCell, false)
+                    }
+                }
+            } else {
+                this.clearScreen()
+                const messageScreen = this.createMessageTextScreen(level.getMessage())
+                for (const messageRow of messageScreen) {
+                    const line = chalk.bold.whiteBright(messageRow)
+                    // add some horizontal space if the terminal is wide
+                    let padding = ''
+                    if (columns > screenWidth) {
+                        padding = ' '.repeat(Math.floor((columns - screenWidth) / 2))
+                    }
+                    console.log(`${padding}${line}`)
+                }
+            }
             return
         }
 
