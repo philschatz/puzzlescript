@@ -346,6 +346,47 @@ class TerminalUI {
         }
         return cells
     }
+    renderMessageScreen(message: string) {
+        const screenWidth = 34
+        const screenHeight = 13
+
+        const {columns, rows} = getTerminalSize()
+        if (columns >= screenWidth * 5 * this.PIXEL_WIDTH && rows >= screenHeight * 5 * this.PIXEL_HEIGHT) {
+            // re-center the screen so we can show the message
+            // remember these values so we can restore them right after rendering the message
+            const {windowOffsetColStart, windowOffsetRowStart, windowOffsetHeight, windowOffsetWidth} = this
+            this.windowOffsetColStart = 0
+            this.windowOffsetRowStart = 0
+            this.windowOffsetHeight = screenHeight
+            this.windowOffsetWidth = screenWidth
+            this.clearScreen()
+
+            const cells = this.createMessageCells(message)
+            for (const row of cells) {
+                for (const letterCell of row) {
+                    this.drawCell(letterCell, false)
+                }
+            }
+
+            this.windowOffsetColStart = windowOffsetColStart
+            this.windowOffsetRowStart = windowOffsetRowStart
+            this.windowOffsetHeight = windowOffsetHeight
+            this.windowOffsetWidth = windowOffsetWidth
+
+        } else {
+            this.clearScreen()
+            const messageScreen = this.createMessageTextScreen(message)
+            for (const messageRow of messageScreen) {
+                const line = chalk.bold.whiteBright(messageRow)
+                // add some horizontal space if the terminal is wide
+                let padding = ''
+                if (columns > screenWidth) {
+                    padding = ' '.repeat(Math.floor((columns - screenWidth) / 2))
+                }
+                console.log(`${padding}${line}`)
+            }
+        }
+    }
     renderScreen(clearCaches: boolean, renderScreenDepth: number = 0) {
         if (!this.gameData) {
             throw new Error(`BUG: gameData was not set yet`)
@@ -360,39 +401,7 @@ class TerminalUI {
 
         const level = this.engine.getCurrentLevel()
         if (!level.isMap()) {
-
-            const screenWidth = 34
-            const screenHeight = 13
-
-            const {columns, rows} = getTerminalSize()
-            if (columns >= screenWidth * 5 * this.PIXEL_WIDTH && rows >= screenHeight * 5 * this.PIXEL_HEIGHT) {
-                // re-center the screen so we can show the message
-                this.windowOffsetColStart = 0
-                this.windowOffsetRowStart = 0
-                this.windowOffsetHeight = screenHeight
-                this.windowOffsetWidth = screenWidth
-                this.clearScreen()
-
-                let message = level.getMessage()
-                const cells = this.createMessageCells(message)
-                for (const row of cells) {
-                    for (const letterCell of row) {
-                        this.drawCell(letterCell, false)
-                    }
-                }
-            } else {
-                this.clearScreen()
-                const messageScreen = this.createMessageTextScreen(level.getMessage())
-                for (const messageRow of messageScreen) {
-                    const line = chalk.bold.whiteBright(messageRow)
-                    // add some horizontal space if the terminal is wide
-                    let padding = ''
-                    if (columns > screenWidth) {
-                        padding = ' '.repeat(Math.floor((columns - screenWidth) / 2))
-                    }
-                    console.log(`${padding}${line}`)
-                }
-            }
+            this.renderMessageScreen(level.getMessage())
             return
         }
 

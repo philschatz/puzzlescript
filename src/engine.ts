@@ -17,6 +17,7 @@ type CollisionLayerState = {
 type TickResult = {
     changedCells: Set<Cell>,
     soundToPlay: Optional<GameSound>,
+    messageToShow: Optional<string>,
     didWinGame: boolean,
     didLevelChange: boolean,
     wasAgainTick: boolean
@@ -527,7 +528,7 @@ export class LevelEngine extends EventEmitter2 {
         return {
             changedCells: changedCells,
             evaluatedRules: evaluatedRules.concat(evaluatedRulesLate),
-            commands: commands
+            commands: allCommands
         }
     }
 
@@ -537,16 +538,14 @@ export class LevelEngine extends EventEmitter2 {
             console.error(`=======================`)
         }
 
-        let ret : { changedCells: Set<Cell>, evaluatedRules: IRule[] , commands: Set<AbstractCommand>}
         if (this.hasAgainThatNeedsToRun) {
             // run the AGAIN rules
             this.hasAgainThatNeedsToRun = false // let the .tick() make it true
-            ret = this.tickNormal()
-        } else {
-            ret = this.tickNormal()
         }
+        const ret = this.tickNormal()
         // TODO: Handle the commands like RESTART, CANCEL, WIN at this point
         let soundToPlay: Optional<GameSound> = null
+        let messageToShow: Optional<string> = null
         let hasWinCommand = false
         let hasRestart = false
         for (const command of ret.commands) {
@@ -556,6 +555,9 @@ export class LevelEngine extends EventEmitter2 {
                     break
                 case COMMAND_TYPE.SFX:
                     soundToPlay = command.getSound()
+                    break
+                case COMMAND_TYPE.MESSAGE:
+                    messageToShow = command.getMessage()
                     break
                 case COMMAND_TYPE.WIN:
                     hasWinCommand = true
@@ -576,6 +578,7 @@ export class LevelEngine extends EventEmitter2 {
         return {
             changedCells: new Set(ret.changedCells.keys()),
             soundToPlay,
+            messageToShow,
             hasRestart,
             isWinning: hasWinCommand || this.isWinning()
         }
@@ -653,10 +656,12 @@ export class GameEngine {
     private levelEngine: Optional<LevelEngine>
     private currentLevelNum: number
     private isFirstTick: boolean
+    private messageShownAndWaitingForActionPress: boolean
     constructor() {
         this.events = new Map()
         this.isFirstTick = true
         this.currentLevelNum = -1234567
+        this.messageShownAndWaitingForActionPress = false
     }
     on(eventName: string, handler: LoadingProgressHandler) {
         let events = this.events.get(eventName)
@@ -674,6 +679,7 @@ export class GameEngine {
                 this.levelEngine.on(eventName, handler)
             }
         }
+        this.messageShownAndWaitingForActionPress = false
     }
     _getEngine() {
         if (this.levelEngine) {
@@ -698,6 +704,7 @@ export class GameEngine {
         return this._getEngine().hasAgain()
     }
     setLevel(levelNum: number) {
+        this.messageShownAndWaitingForActionPress = false
         this._getEngine().hasAgainThatNeedsToRun = false // clear this so the user can press "X"
         if (this.getGameData().levels[levelNum].isMap()) {
             this.isFirstTick = true
@@ -727,6 +734,7 @@ export class GameEngine {
             return {
                 changedCells: new Set(),
                 soundToPlay: null,
+                messageToShow: null,
                 didWinGame: didWinGame,
                 didLevelChange: didLevelChange,
                 wasAgainTick: false
@@ -740,13 +748,41 @@ export class GameEngine {
             return {
                 changedCells: new Set(),
                 soundToPlay: null,
+                messageToShow: null,
                 didWinGame: false,
                 didLevelChange: false,
                 wasAgainTick: false
             }
         }
 
-        const {changedCells, soundToPlay, isWinning, hasRestart} = this._getEngine().tick()
+        // If we are showing a message then wait until ACTION is pressed
+        if (this.messageShownAndWaitingForActionPress) {
+            if (this._getEngine().pendingPlayerWantsToMove === RULE_DIRECTION_ABSOLUTE.ACTION) {
+                // render all the cells because we are currently rendering a Message
+                this.messageShownAndWaitingForActionPress = false
+                return {
+                    changedCells: new Set(_.flatten(this.getCurrentLevelCells())),
+                    soundToPlay: null,
+                    messageToShow: null,
+                    didWinGame: false,
+                    didLevelChange: false,
+                    wasAgainTick: false
+                }
+            } else {
+                // Keep waiting until ACTION is pressed
+                return {
+                    changedCells: new Set(),
+                    soundToPlay: null,
+                    messageToShow: null,
+                    didWinGame: false,
+                    didLevelChange: false,
+                    wasAgainTick: false
+                }
+
+            }
+        }
+
+        const {changedCells, soundToPlay, messageToShow, isWinning, hasRestart} = this._getEngine().tick()
         this.isFirstTick = false
 
         if (hasRestart) {
@@ -754,6 +790,7 @@ export class GameEngine {
             return {
                 changedCells: new Set(_.flatten(this.getCurrentLevelCells())),
                 soundToPlay: null,
+                messageToShow: null,
                 didWinGame: false,
                 didLevelChange: false,
                 wasAgainTick: false
@@ -769,9 +806,14 @@ export class GameEngine {
             }
         }
 
+        if (messageToShow) {
+            this.messageShownAndWaitingForActionPress = true
+        }
+
         return {
             changedCells,
             soundToPlay,
+            messageToShow,
             didWinGame,
             didLevelChange: isWinning,
             wasAgainTick: hasAgain
@@ -803,6 +845,7 @@ export class GameEngine {
         this._getEngine().pressRestart()
     }
     pressUndo() {
+        this.messageShownAndWaitingForActionPress = false
         this._getEngine().pressUndo()
     }
 

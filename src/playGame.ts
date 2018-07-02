@@ -324,7 +324,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: { v
     for (var keyNum = 0; keyNum < ticksToRunFirst.length; keyNum++) {
         doPress(ticksToRunFirst[keyNum], true)
         startTime = Date.now()
-        const { changedCells, soundToPlay, didLevelChange } = engine.tick()
+        const { changedCells, soundToPlay, didLevelChange, messageToShow } = engine.tick()
 
         if (soundToPlay) {
             if (!currentlyPlayingSoundPromise) {
@@ -333,6 +333,10 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: { v
                     return
                 })
             }
+        }
+
+        if (messageToShow) {
+            TerminalUI.renderMessageScreen(messageToShow)
         }
 
         // UI.renderScreen(data, engine.currentLevel)
@@ -371,7 +375,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: { v
             doPress(pendingKey, true/*record*/)
         }
         const startTime = Date.now()
-        const { changedCells, soundToPlay, didLevelChange, wasAgainTick } = engine.tick()
+        const { changedCells, soundToPlay, messageToShow, didLevelChange, wasAgainTick } = engine.tick()
 
         if (soundToPlay) {
             if (!currentlyPlayingSoundPromise) {
@@ -396,9 +400,14 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: { v
             continue
         }
 
-        // Draw any cells that moved
-        for (const cell of changedCells) {
-            TerminalUI.drawCell(cell, false)
+        // do this after cells are rendered (so they don't cover the message)
+        if (messageToShow) {
+            TerminalUI.renderMessageScreen(messageToShow)
+        } else {
+            // Draw any cells that moved
+            for (const cell of changedCells) {
+                TerminalUI.drawCell(cell, false)
+            }
         }
 
         const msg = `Tick: ${tickNum} took ${Date.now() - startTime}ms. Moves: ${[...keypresses].reverse().join('').substring(0, 20)}`
@@ -592,6 +601,7 @@ async function promptGame(games: GameInfo[]) {
         'Some lines were meant to be crossed',
         'Flying Kick⁣',
         'Memories Of Castlemouse',
+        'Bubble Butler: CMD REORGANIZE',
         'Airport Aggression',
         'Coin Counter',
         'Dangerous Dungeon',

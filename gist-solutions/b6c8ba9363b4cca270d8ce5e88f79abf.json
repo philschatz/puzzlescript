@@ -1,12 +1,20 @@
 {
   "version": 1,
   "solutions": [
-    null,
-    null,
-    null,
-    null,
     {
-      "partial": "SSSSSSS,,,,,,SSSS"
+      "solution": "X"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "partial": "SSSSSSS,,,,,,SSSX.SSDDDSSDDX.DWDDDDDD"
     }
   ]
 }

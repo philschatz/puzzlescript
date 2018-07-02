@@ -168,8 +168,8 @@ export function getRuleSemantics(lookup: LookupHelper) {
         tileModifier: function (this: ohm.Node, _whitespace1: Parseable<string>, tileModifier: Parseable<string>, _whitespace2: Parseable<string>) {
             return tileModifier.parse()
         },
-        MessageCommand: function (this: ohm.Node, _message: Parseable<string>, message: Parseable<string>) {
-            return new MessageCommand(this.source, message.parse())
+        MessageCommand: function (this: ohm.Node, _message: Parseable<string>, message: Parseable<string[]>) {
+            return new MessageCommand(this.source, message.parse()[0])
         },
         RuleCommand: function (this: ohm.Node, type: Parseable<string>) {
             const type2 = type.parse()
