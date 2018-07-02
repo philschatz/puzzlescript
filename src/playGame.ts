@@ -605,6 +605,7 @@ async function promptGame(games: GameInfo[]) {
         'Airport Aggression',
         'Coin Counter',
         'Dangerous Dungeon',
+        'Easy Enigma',
         "Spider's Hollow",
         'MazezaM',
         'pretender to the crown',
