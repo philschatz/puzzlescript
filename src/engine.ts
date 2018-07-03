@@ -626,8 +626,10 @@ export class LevelEngine extends EventEmitter2 {
         // }
     }
     pressRestart() {
+        // Add the initial checkpoint to the top (rather than clearing the stack)
+        // so the player can still "UNDO" after pressing "RESTART"
         const snapshot = this.undoStack[0]
-        this.undoStack = [snapshot]
+        this.undoStack.push(snapshot)
         this.applySnapshot(snapshot)
     }
     pressUndo() {
