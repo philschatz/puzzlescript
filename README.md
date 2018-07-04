@@ -72,6 +72,7 @@ This is a remake of PuzzleScript that has the following features:
 
 ## Commands
 
+- `npm run docs` generates docs in the `./docs/` directory
 - `npm run play` runs the games in the [./gists/](./gists/) directory without debugging info (10x faster) (uses `NODE_ENV=production`)
 - `npm run play-dev` runs the games in the [./gists/](./gists/) directory with sprite info (useful for debugging)
 - `npm run play-debug` runs the games in the [./gists/](./gists/) directory with a Chrome Debugger open so you can set breakpoints
