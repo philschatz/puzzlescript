@@ -651,7 +651,8 @@ class TerminalUI {
             throw new Error(`BUG: gameData was not set yet`)
         }
         if (!supportsColor.stdout) {
-            console.log(`Updating cell [${cell.rowIndex}][${cell.colIndex}] to have sprites: [${cell.getSprites().map(sprite => sprite.getName())}]`)
+            // Commented just to reduce noise. Maybe it shoud be brought back
+            // console.log(`Updating cell [${cell.rowIndex}][${cell.colIndex}] to have sprites: [${cell.getSprites().map(sprite => sprite.getName())}]`)
             return
         }
 
@@ -811,7 +812,7 @@ class TerminalUI {
 
     writeDebug(text: string) {
         if (!supportsColor.stdout) {
-            console.log(`Writing Debug text "${text}"`)
+            // console.log(`Writing Debug text "${text}"`)
             return
         }
         if (!this.isDumpingScreen) {
@@ -884,13 +885,22 @@ class TerminalUI {
             this.inspectorCol = newCol
             this.inspectorRow = newRow
             // draw the old cell (to remove the graphic artfact)
-            if (this.isLargeTerminal()) {
+            if (supportsColor.stdout && this.isLargeTerminal()) {
                 if (oldInspectorCell) {
                     this.drawCell(oldInspectorCell, false)
                 }
                 // draw the new cell
                 this.drawCell(newInspectorCell, false)
             }
+
+            if (!supportsColor.stdout) {
+                const spriteNames = cell.getSprites()
+                .filter(s => !s.isBackground())
+                .map(s => s.getName())
+                console.log(`${spriteNames.join(', ')}`)
+                return
+            }
+
         }
 
     }

@@ -42,7 +42,6 @@
     "ohm-js": "^0.14.0",
     "pify": "^3.0.0",
     "source-map-support": "^0.5.6",
-    "speaker": "github:philschatz/node-speaker#cac7c5b7c434b52619bfbbd9530ab0871156e815",
     "supports-color": "^5.4.0",
     "update-notifier": "^2.5.0",
     "web-audio-api": "^0.2.2"
@@ -65,6 +64,9 @@
     "typedoc": "^0.11.1",
     "typescript": "^2.8.3",
     "typescript-eslint-parser": "16.0.0"
+  },
+  "optionalDependencies": {
+    "speaker": "github:philschatz/node-speaker#cac7c5b7c434b52619bfbbd9530ab0871156e815"
   },
   "jest": {
     "moduleFileExtensions": [

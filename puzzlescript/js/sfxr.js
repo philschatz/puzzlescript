@@ -2,9 +2,13 @@ const RNG = require('./rng')
 const {MakeRiff, FastBase64_Encode} = require('./riffwave')
 const {AudioContext} = require('web-audio-api')
 
-let Speaker
+let Speaker = null
 if (!process.env.CONTINUOUS_INTEGRATION && !process.env.CI) {
-    Speaker = require('speaker')
+    try {
+        Speaker = require('speaker')
+    } catch (err) {
+        // it's ok, we just won't use the speaker
+    }
 }
 
 async function sleep(ms) {
@@ -686,7 +690,7 @@ generateFromSeed = function(seed) {
   }
 
   // Disable speaker for Travis
-  if (!process.env.CONTINUOUS_INTEGRATION && !process.env.CI) {
+  if (Speaker) {
     AUDIO_CONTEXT.outStream = new Speaker({
         channels: AUDIO_CONTEXT.format.numberOfChannels,
         bitDepth: AUDIO_CONTEXT.format.bitDepth,
@@ -1106,7 +1110,7 @@ function cacheSeed(seed){
 
 function playSound(seed) {
   // Disable speaker for Travis
-  if (process.env.CONTINUOUS_INTEGRATION || process.env.CI) {
+  if (!Speaker) {
     return Promise.resolve('SOUND_EFFECT_DID_NOT_PLAY_BECAUSE_CI')
   }
 
@@ -1118,7 +1122,7 @@ function playSound(seed) {
 
 function closeSounds() {
     // Disable speaker for Travis
-    if (process.env.CONTINUOUS_INTEGRATION || process.env.CI) {
+    if (!Speaker) {
         return
     }
 
