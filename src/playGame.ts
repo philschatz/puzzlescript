@@ -253,6 +253,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: { v
                 pendingKey = 'X'; break
             case 'r':
                 return restartLevel()
+            case 'u':
             case 'z':
                 // update keypresses so that it does not contain the most-recent key
                 let lastKey = null
@@ -720,7 +721,7 @@ function showControls() {
     console.log(`  ${prettyKey('A')} or ${prettyKey('left')}  : Move Left`);
     console.log(`  ${prettyKey('D')} or ${prettyKey('right')} : Move Right`);
     console.log(`  ${prettyKey('X')} or ${prettyKey('space')} : Perform Action`);
-    console.log(`  ${prettyKey('Z')}            : Undo`);
+    console.log(`  ${prettyKey('Z')} or ${prettyKey('U')}     : Undo`);
     console.log(`  ${prettyKey('R')}            : Restart the current level`);
     console.log(`  ${prettyKey('C')}            : Clear and redraw the screen`);
     console.log(`  ${prettyKey('esc')}          : Exit the Game`);
