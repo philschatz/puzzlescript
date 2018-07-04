@@ -16,33 +16,7 @@ const ALIASES = [
     'whitingjp'
 ]
 
-export const COLOR_PALETTES = new Map()
-COLOR_PALETTES.set('__default', {
-    black: '#555555',
-    white: '#FFFFFF',
-    grey: '#9D9D9D',
-    darkgrey: '#6D6D6D',
-    lightgrey: '#c1c1c1',
-    gray: '#9D9D9D',
-    darkgray: '#6D6D6D',
-    lightgray: '#c1c1c1',
-    red: '#BE2633',
-    darkred: '#732930',
-    lightred: '#e06f8b',
-    brown: '#A46422',
-    darkbrown: '#493C2B',
-    lightbrown: '#EEB62F',
-    orange: '#EB8931',
-    yellow: '#F7E26B',
-    green: '#44891A',
-    darkgreen: '#2F484E',
-    lightgreen: '#A3CE27',
-    blue: '#31A2F2',
-    darkblue: '#005784',
-    lightblue: '#B2DCEF',
-    purple: '#580780',
-    pink: '#E06F8B'
-})
+const COLOR_PALETTES = new Map()
 
 COLOR_PALETTES.set('mastersystem', {
     black: '#000000',

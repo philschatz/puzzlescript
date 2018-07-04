@@ -9,8 +9,7 @@ const C_BLACK = { r: 0, g: 0, b: 0 }
 
 function parseAndReturnFirstSpritePixels(code) {
     const { data } = Parser.parse(code)
-    const engine = new GameEngine()
-    engine.setGame(data)
+    const engine = new GameEngine(data)
     engine.setLevel(0)
     const cell = engine.getCurrentLevelCells()[0][0]
     // console.log(cell.getSprites())

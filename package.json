@@ -5,7 +5,7 @@
     "ci-codecov": "codecov",
     "tsc": "tsc",
     "tsc-watch": "tsc --watch",
-    "docs": "typedoc --ignoreCompilerErrors --mode modules --theme minimal --readme ./README.md --out docs/ src/",
+    "docs": "typedoc --ignoreCompilerErrors --mode modules --theme minimal --readme ./README.md --out ./docs/ ./src/",
     "play": "NODE_ENV=production node -r source-map-support/register lib/playGame.js",
     "play-only": "NODE_ENV=production node -r source-map-support/register lib/playGame.js",
     "play-debug": "LOG_LEVEL=debug NODE_ENV=development node --inspect -r source-map-support/register ./lib/playGame.js 2> ./play.log",

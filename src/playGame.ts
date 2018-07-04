@@ -195,7 +195,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: { v
 
     const level = data.levels[currentLevelNum]
     let startTime = Date.now()
-    const engine = new GameEngine()
+    const engine = new GameEngine(data)
     engine.on('loading-cells', ({ cellStart, cellEnd, cellTotal }: LoadingCellsEvent) => {
         // UI.writeDebug(`Loading cells ${cellStart}-${cellEnd} of ${cellTotal}. SpriteKey="${key}"`)
         const loading = `Loading... [`
@@ -218,7 +218,6 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: { v
         }
     })
     TerminalUI.clearScreen()
-    engine.setGame(data)
     engine.setLevel(data.levels.indexOf(level))
 
 

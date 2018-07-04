@@ -13,8 +13,7 @@ function parseEngine(code, levelNum = 0) {
     const { data, error } = Parser.parse(code)
     expect(error && error.message).toBeFalsy() // Use && so the error messages are shorter
 
-    const engine = new GameEngine()
-    engine.setGame(data)
+    const engine = new GameEngine(data)
     return { engine, data }
 }
 
