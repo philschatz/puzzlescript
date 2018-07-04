@@ -2,6 +2,9 @@
 
 This is a program that you can run in your terminal to play [PuzzleScript](https://puzzlescript.net) games.
 
+Also, it is **accessible**, meaning that [blind or visually impaired people can play these games](#video-games-that-blind-people-can-play) too!
+
+
 ## Install
 
 1. Run `npm install -g puzzlescript-cli`
@@ -9,6 +12,8 @@ This is a program that you can run in your terminal to play [PuzzleScript](https
 
 
 # Screencaps
+
+Here are some screencaps of games being played.
 
 <a href="https://asciinema.org/a/md0Zep9LOBhdB4nx00OyA0NNH?t=25"><img width="300" alt="video of install and a couple games" src="https://asciinema.org/a/md0Zep9LOBhdB4nx00OyA0NNH.png"/></a>
 
@@ -26,15 +31,7 @@ This is a program that you can run in your terminal to play [PuzzleScript](https
 <a href="https://asciinema.org/a/B6QBhxI4iarolk5k3x4cIRewc?t=23"><img width="300" alt="video of the beginning of Entanglement" src="https://asciinema.org/a/B6QBhxI4iarolk5k3x4cIRewc.png"/></a>
 
 
-# About
-
-The goal of this project is to do 3 things:
-
-1. make PuzzleScript easier to embed (like in 404 pages, easter eggs, etc)
-1. allow **blind people to play video games**
-1. use the terminal as a GUI for playing games
-
-### Blind video games?
+# Video games that blind people can play?
 
 PuzzleScript lends itself nicely to be playable by people with low or no vision:
 
@@ -47,10 +44,18 @@ PuzzleScript lends itself nicely to be playable by people with low or no vision:
 
 ### Screencap
 
-This screencap shows that there is enough information to be able to make the games playable by visually impaired players.
+This screencap is a visual demonstration of exploring and then playing a level.
 
-<a href="https://asciinema.org/a/TcD9pYKhCpUcO1y3KtD96hU9p?t=15"><img width="600" alt="dev view of a level" src="https://asciinema.org/a/TcD9pYKhCpUcO1y3KtD96hU9p.png"/></a>
+<a href="https://asciinema.org/a/ORa64VAH4hran37CaOBRWEWmw?t=4"><img width="600" alt="exploring and playing a level without sight" src="https://asciinema.org/a/ORa64VAH4hran37CaOBRWEWmw.png"/></a>
 
+
+# About
+
+The goal of this project is to do 3 things:
+
+1. make PuzzleScript easier to embed (like in 404 pages, easter eggs, etc)
+1. allow **blind people to play video games**
+1. use the terminal as a GUI for playing games
 
 
 # Dev Notes

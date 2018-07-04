@@ -13,7 +13,7 @@ import { saveCoverageFile } from './recordCoverage';
 import { closeSounds } from './models/sound';
 import { GameData } from './models/game';
 import { LoadingCellsEvent } from './engine';
-import { Optional } from './util';
+import { Optional, RULE_DIRECTION_ABSOLUTE } from './util';
 
 export type GameRecording = {
     version: number,
@@ -269,6 +269,26 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: { v
             case 'c':
                 TerminalUI.clearScreen()
                 TerminalUI.renderScreen(false)
+                return
+            case 'i':
+                TerminalUI.moveInspector(RULE_DIRECTION_ABSOLUTE.UP)
+                return
+            case 'j':
+                TerminalUI.moveInspector(RULE_DIRECTION_ABSOLUTE.LEFT)
+                return
+            case 'k':
+                TerminalUI.moveInspector(RULE_DIRECTION_ABSOLUTE.DOWN)
+                return
+            case 'l':
+                TerminalUI.moveInspector(RULE_DIRECTION_ABSOLUTE.RIGHT)
+                return
+            case 'p':
+                const players = data.getPlayer().getCellsThatMatch()
+                if (players.size === 1) {
+                    TerminalUI.moveInspectorTo([...players][0])
+                } else {
+                    console.log(`There are ${players.size} players. Use tab to select which one`)
+                }
                 return
             case '\u0003': // Ctrl+C
                 closeSounds()
@@ -697,6 +717,13 @@ function showControls() {
     console.log(`  ${prettyKey('R')}            : Restart the current level`);
     console.log(`  ${prettyKey('C')}            : Clear and redraw the screen`);
     console.log(`  ${prettyKey('esc')}          : Exit the Game`);
+    console.log(`-------------------------------------`);
+    console.log(`Accessibility Controls: (for inspecting which sprites are in the puzzle)`);
+    console.log(`  ${prettyKey('I')}            : Move Inspector Up`);
+    console.log(`  ${prettyKey('K')}            : Move Inspector Down`);
+    console.log(`  ${prettyKey('J')}            : Move Inspector Left`);
+    console.log(`  ${prettyKey('L')}            : Move Inspector Right`);
+    console.log(`  ${prettyKey('P')}            : Move Inspector onto the Player`);
     console.log(`-------------------------------------`);
 }
 

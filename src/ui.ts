@@ -150,6 +150,8 @@ class TerminalUI {
     private SPRITE_HEIGHT: number
     PIXEL_WIDTH: number // number of characters in the terminal used to represent a pixel
     PIXEL_HEIGHT: number
+    private inspectorCol: number
+    private inspectorRow: number
 
     constructor() {
         this.cellColorCache = new CellColorCache()
@@ -164,6 +166,10 @@ class TerminalUI {
         this.PIXEL_WIDTH = 2
         this.SPRITE_HEIGHT = 5
         this.SPRITE_WIDTH = 5
+
+        // This is the "inspector" cursor that allows a11y
+        this.inspectorCol = 0
+        this.inspectorRow = 0
     }
     setGame(engine: GameEngine) {
         this.engine = engine
@@ -192,6 +198,9 @@ class TerminalUI {
         const {spriteHeight, spriteWidth} = this.getSpriteSize(this.gameData)
         this.SPRITE_HEIGHT = spriteHeight
         this.SPRITE_WIDTH = spriteWidth
+
+        this.inspectorCol = 0
+        this.inspectorRow = 0
     }
     setSmallTerminal(yesNo: boolean) {
         if (yesNo) {
@@ -201,6 +210,9 @@ class TerminalUI {
             this.PIXEL_WIDTH = 2
             this.PIXEL_HEIGHT = 1
         }
+    }
+    private isLargeTerminal() {
+        return this.PIXEL_HEIGHT === 1
     }
     private getSpriteSize(gameData: GameData) {
         const firstSpriteWithPixels = gameData.objects.filter(sprite => sprite.hasPixels())[0]
@@ -695,6 +707,10 @@ class TerminalUI {
 
                     let chars = ' '
 
+                    if (this.inspectorRow === cell.rowIndex && this.inspectorCol === cell.colIndex) {
+                        chars = '░'
+                    }
+
                     // Print a debug number which contains the number of sprites in this cell
                     // Change the foreground color to be black if the color is light
                     if (process.env['NODE_ENV'] === 'development') {
@@ -839,6 +855,56 @@ class TerminalUI {
 
     _drawPixel(x: number, y: number, fgHex: string, bgHex: Optional<string>, chars: string) {
         drawPixelChar(x, y, fgHex, bgHex, chars)
+    }
+
+    moveInspectorTo(cell: Cell) {
+        if (!this.engine) {
+            throw new Error(`BUG: engine has not been assigned yet`)
+        }
+        const {rowIndex: newRow, colIndex: newCol} = cell
+        let canMove = false
+        if (newCol >= this.windowOffsetColStart && newRow >= this.windowOffsetRowStart) {
+            if (this.windowOffsetWidth && this.windowOffsetHeight) {
+                if (newCol <= this.windowOffsetColStart + this.windowOffsetWidth && newRow <= this.windowOffsetRowStart + this.windowOffsetHeight) {
+                    canMove = true
+                }
+            } else {
+                canMove = true
+            }
+        }
+
+        if (canMove) {
+            let oldInspectorCell = null
+            const currentLevel = this.engine.getCurrentLevelCells()
+            if (currentLevel[this.inspectorRow] && currentLevel[this.inspectorRow][this.inspectorCol]) {
+                oldInspectorCell = this.engine.getCurrentLevelCells()[this.inspectorRow][this.inspectorCol]
+            }
+            const newInspectorCell = cell
+            // move
+            this.inspectorCol = newCol
+            this.inspectorRow = newRow
+            // draw the old cell (to remove the graphic artfact)
+            if (this.isLargeTerminal()) {
+                if (oldInspectorCell) {
+                    this.drawCell(oldInspectorCell, false)
+                }
+                // draw the new cell
+                this.drawCell(newInspectorCell, false)
+            }
+        }
+
+    }
+    moveInspector(direction: RULE_DIRECTION_ABSOLUTE) {
+        if (!this.engine) {
+            throw new Error(`BUG: engine has not been assigned yet`)
+        }
+        if (this.inspectorRow >= 0 && this.inspectorCol >= 0) {
+            const cell = this.engine.getCurrentLevelCells()[this.inspectorRow][this.inspectorCol]
+            const newCell = cell.getNeighbor(direction)
+            if (newCell) {
+                return this.moveInspectorTo(newCell)
+            }
+        }
     }
 }
 
