@@ -363,7 +363,7 @@ class TerminalUI {
         const screenHeight = 13
 
         const {columns, rows} = getTerminalSize()
-        if (columns >= screenWidth * 5 * this.PIXEL_WIDTH && rows >= screenHeight * 5 * this.PIXEL_HEIGHT) {
+        if (supportsColor.stdout && columns >= screenWidth * 5 * this.PIXEL_WIDTH && rows >= screenHeight * 5 * this.PIXEL_HEIGHT) {
             // re-center the screen so we can show the message
             // remember these values so we can restore them right after rendering the message
             const {windowOffsetColStart, windowOffsetRowStart, windowOffsetHeight, windowOffsetWidth} = this
@@ -406,14 +406,16 @@ class TerminalUI {
         if (!this.engine) {
             throw new Error(`BUG: gameEngine was not set yet`)
         }
-        if (!supportsColor.stdout) {
-            console.log('Playing a game in the console requires color support. Unfortunately, color is not supported so not rendering (for now). We could just do an ASCII dump or something, using  ░▒▓█ to denote shades of cells')
-            return
-        }
 
         const level = this.engine.getCurrentLevel()
         if (!level.isMap()) {
             this.renderMessageScreen(level.getMessage())
+            return
+        }
+
+        // Perform this AFTER the renderMessageScreen so that messages are always rendered (but puzzle levels are not)
+        if (!supportsColor.stdout) {
+            console.log('Playing a game in the console requires color support. Unfortunately, color is not supported so not rendering (for now). We could just do an ASCII dump or something, using  ░▒▓█ to denote shades of cells')
             return
         }
 
@@ -897,7 +899,7 @@ class TerminalUI {
                 const spriteNames = cell.getSprites()
                 .filter(s => !s.isBackground())
                 .map(s => s.getName())
-                console.log(`${spriteNames.join(', ')}`)
+                console.log(`${spriteNames.join(', ')} (${cell.rowIndex}, ${cell.colIndex})`)
                 return
             }
 

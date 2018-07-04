@@ -2,6 +2,7 @@ import { readFileSync, writeFileSync, existsSync, createReadStream } from 'fs'
 import * as path from 'path'
 import * as glob from 'glob'
 import * as pify from 'pify'
+import * as supportsColor from 'supports-color'
 import * as inquirer from 'inquirer'
 import PromptModule, * as autocomplete from 'inquirer-autocomplete-prompt'
 import chalk from 'chalk'
@@ -406,6 +407,10 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: { v
         }
 
         if (didLevelChange) {
+            if (!supportsColor.stdout) {
+                console.log('You beat the level!')
+            }
+
             // Save the solution
             recordings.solutions[currentLevelNum] = { solution: keypresses.join('') }
             writeFileSync(solutionsPath, JSON.stringify(recordings, null, 2))
@@ -449,7 +454,10 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: { v
         tickNum++
     }
 
-    process.stdin.off('data', handleKeyPress)
+    // Some versions of node do not offer this method (e.g. maybe v8.11.1)
+    if (process.stdin.off) {
+        process.stdin.off('data', handleKeyPress)
+    }
 }
 
 async function promptPlayAnother() {
