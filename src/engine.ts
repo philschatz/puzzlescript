@@ -3,14 +3,13 @@ import { EventEmitter2, Listener } from 'eventemitter2'
 import { GameData } from './models/game'
 import { GameSprite } from './models/tile'
 import { IRule, IMutation } from './models/rule'
-import { nextRandom, setAddAll, RULE_DIRECTION_ABSOLUTE, setDifference, Optional } from './util'
-import { RULE_DIRECTION } from './enums';
+import { nextRandom, setAddAll, RULE_DIRECTION, setDifference, Optional } from './util'
 import { AbstractCommand, COMMAND_TYPE } from './models/command';
 import { GameSound } from './models/sound';
 import { CollisionLayer } from './models/collisionLayer';
 
 type CollisionLayerState = {
-    readonly wantsToMove: Optional<RULE_DIRECTION_ABSOLUTE>
+    readonly wantsToMove: Optional<RULE_DIRECTION>
     readonly sprite: GameSprite
 }
 
@@ -40,11 +39,11 @@ export class Cell {
         this.cacheCollisionLayers = []
 
         for (const sprite of sprites) {
-            this._setWantsToMove(sprite, RULE_DIRECTION_ABSOLUTE.STATIONARY)
+            this._setWantsToMove(sprite, RULE_DIRECTION.STATIONARY)
         }
 
     }
-    private _setState(collisionLayer: CollisionLayer, sprite: Optional<GameSprite>, wantsToMove: Optional<RULE_DIRECTION_ABSOLUTE>) {
+    private _setState(collisionLayer: CollisionLayer, sprite: Optional<GameSprite>, wantsToMove: Optional<RULE_DIRECTION>) {
         let needsToUpdateCache
         if (sprite) {
             needsToUpdateCache = this.cacheCollisionLayers.indexOf(collisionLayer) < 0
@@ -60,7 +59,7 @@ export class Cell {
             .sort((c1, c2) => c1.id - c2.id)
         }
     }
-    _setWantsToMove(sprite: GameSprite, wantsToMove: Optional<RULE_DIRECTION_ABSOLUTE>) {
+    _setWantsToMove(sprite: GameSprite, wantsToMove: Optional<RULE_DIRECTION>) {
         const collisionLayer = sprite.getCollisionLayer()
         const {wantsToMove: cellWantsToMove, sprite: cellSprite} = this.getStateForCollisionLayer(collisionLayer)
         const didActuallyChangeDir = cellWantsToMove !== wantsToMove
@@ -84,7 +83,7 @@ export class Cell {
         }
         return state
     }
-    setWantsToMoveCollisionLayer(collisionLayer: CollisionLayer, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
+    setWantsToMoveCollisionLayer(collisionLayer: CollisionLayer, wantsToMove: RULE_DIRECTION) {
         // Check that there is a sprite for this collision layer
         const {sprite, wantsToMove: cellWantsToMove} = this.getStateForCollisionLayer(collisionLayer)
         if (!sprite) {
@@ -171,13 +170,13 @@ export class Cell {
     }
     getNeighbor(direction: string) {
         switch (direction) {
-            case RULE_DIRECTION_ABSOLUTE.UP:
+            case RULE_DIRECTION.UP:
                 return this._getRelativeNeighbor(-1, 0)
-            case RULE_DIRECTION_ABSOLUTE.DOWN:
+            case RULE_DIRECTION.DOWN:
                 return this._getRelativeNeighbor(1, 0)
-            case RULE_DIRECTION_ABSOLUTE.LEFT:
+            case RULE_DIRECTION.LEFT:
                 return this._getRelativeNeighbor(0, -1)
-            case RULE_DIRECTION_ABSOLUTE.RIGHT:
+            case RULE_DIRECTION.RIGHT:
                 return this._getRelativeNeighbor(0, 1)
             default:
                 debugger
@@ -191,10 +190,10 @@ export class Cell {
         return !!this.getCollisionLayerWantsToMove(otherSprite.getCollisionLayer())
     }
     clearWantsToMove(sprite: GameSprite) {
-        this._setWantsToMove(sprite, RULE_DIRECTION_ABSOLUTE.STATIONARY)
-        sprite.updateCell(this, RULE_DIRECTION_ABSOLUTE.STATIONARY)
+        this._setWantsToMove(sprite, RULE_DIRECTION.STATIONARY)
+        sprite.updateCell(this, RULE_DIRECTION.STATIONARY)
     }
-    addSprite(sprite: GameSprite, wantsToMove: Optional<RULE_DIRECTION_ABSOLUTE>) {
+    addSprite(sprite: GameSprite, wantsToMove: Optional<RULE_DIRECTION>) {
         let didActuallyChange = false
         // If we already have a sprite in that collision layer then we need to remove it
         const prevSprite = this.getSpriteByCollisionLayer(sprite.getCollisionLayer())
@@ -205,7 +204,7 @@ export class Cell {
         if (wantsToMove) {
             didActuallyChange = this._setWantsToMove(sprite, wantsToMove)
         } else if (!this.hasSprite(sprite)) {
-            wantsToMove = prevWantsToMove || RULE_DIRECTION_ABSOLUTE.STATIONARY // try to preserve the wantsToMove
+            wantsToMove = prevWantsToMove || RULE_DIRECTION.STATIONARY // try to preserve the wantsToMove
             didActuallyChange = this._setWantsToMove(sprite, wantsToMove)
         }
         sprite.addCell(this, wantsToMove)
@@ -246,7 +245,7 @@ export class Cell {
 export class LevelEngine extends EventEmitter2 {
     public readonly gameData: GameData
     private currentLevel: Optional<Cell[][]>
-    pendingPlayerWantsToMove: Optional<RULE_DIRECTION_ABSOLUTE>
+    pendingPlayerWantsToMove: Optional<RULE_DIRECTION>
     hasAgainThatNeedsToRun: boolean
     private undoStack: Set<GameSprite>[][][]
 
@@ -315,7 +314,7 @@ export class LevelEngine extends EventEmitter2 {
                 const hasSprite = cellSprites.has(sprite)
                 if (hasSprite || sprite.hasNegationTile()) {
                     if (hasSprite) {
-                        sprite.addCells(cells, RULE_DIRECTION_ABSOLUTE.STATIONARY)
+                        sprite.addCells(cells, RULE_DIRECTION.STATIONARY)
                     } else {
                         sprite.removeCells(cells)
                     }
@@ -409,7 +408,7 @@ export class LevelEngine extends EventEmitter2 {
             for (const cell of changedCells) {
                 for (let [sprite, wantsToMove] of cell.getSpriteAndWantsToMoves()) {
 
-                    if (wantsToMove !== RULE_DIRECTION_ABSOLUTE.STATIONARY) {
+                    if (wantsToMove !== RULE_DIRECTION.STATIONARY) {
                         if (wantsToMove === RULE_DIRECTION.ACTION) {
                             // just clear the wantsToMove flag
                             somethingChanged = true
@@ -437,14 +436,11 @@ export class LevelEngine extends EventEmitter2 {
                                         throw new Error(`BUG: Random number generator yielded something other than 0-3. "${rand}"`)
                                 }
                             }
-                            if (wantsToMove === RULE_DIRECTION.RANDOM) {
-                                throw new Error('BUG: should have converted RANDOM to something else earlier')
-                            }
                             const neighbor = cell.getNeighbor(wantsToMove)
                             // Make sure
                             if (neighbor && !neighbor.hasCollisionWithSprite(sprite)) {
                                 cell.removeSprite(sprite)
-                                neighbor.addSprite(sprite, RULE_DIRECTION_ABSOLUTE.STATIONARY)
+                                neighbor.addSprite(sprite, RULE_DIRECTION.STATIONARY)
                                 movedCells.add(neighbor)
                                 movedCells.add(cell)
                                 somethingChanged = true
@@ -615,7 +611,7 @@ export class LevelEngine extends EventEmitter2 {
         }
     }
 
-    press(direction: RULE_DIRECTION_ABSOLUTE) {
+    press(direction: RULE_DIRECTION) {
         // Should disable keypresses if `AGAIN` is running.
         // It is commented because the didSpritesChange logic is not correct.
         // a rule might add a sprite, and then another rule might remove a sprite.
@@ -722,7 +718,7 @@ export class GameEngine {
             // Wait until the user presses "X" (ACTION)
             let didWinGame = false
             let didLevelChange = false
-            if (this._getEngine().pendingPlayerWantsToMove === RULE_DIRECTION_ABSOLUTE.ACTION) {
+            if (this._getEngine().pendingPlayerWantsToMove === RULE_DIRECTION.ACTION) {
                 didLevelChange = true
                 if (this.currentLevelNum === this._getEngine().gameData.levels.length - 1) {
                     didWinGame = true
@@ -759,7 +755,7 @@ export class GameEngine {
 
         // If we are showing a message then wait until ACTION is pressed
         if (this.messageShownAndWaitingForActionPress) {
-            if (this._getEngine().pendingPlayerWantsToMove === RULE_DIRECTION_ABSOLUTE.ACTION) {
+            if (this._getEngine().pendingPlayerWantsToMove === RULE_DIRECTION.ACTION) {
                 // render all the cells because we are currently rendering a Message
                 this.messageShownAndWaitingForActionPress = false
                 return {
@@ -823,23 +819,23 @@ export class GameEngine {
     }
 
 
-    press(direction: RULE_DIRECTION_ABSOLUTE) {
+    press(direction: RULE_DIRECTION) {
         return this._getEngine().press(direction)
     }
     pressUp() {
-        this._getEngine().press(RULE_DIRECTION_ABSOLUTE.UP)
+        this._getEngine().press(RULE_DIRECTION.UP)
     }
     pressDown() {
-        this._getEngine().press(RULE_DIRECTION_ABSOLUTE.DOWN)
+        this._getEngine().press(RULE_DIRECTION.DOWN)
     }
     pressLeft() {
-        this._getEngine().press(RULE_DIRECTION_ABSOLUTE.LEFT)
+        this._getEngine().press(RULE_DIRECTION.LEFT)
     }
     pressRight() {
-        this._getEngine().press(RULE_DIRECTION_ABSOLUTE.RIGHT)
+        this._getEngine().press(RULE_DIRECTION.RIGHT)
     }
     pressAction() {
-        this._getEngine().press(RULE_DIRECTION_ABSOLUTE.ACTION)
+        this._getEngine().press(RULE_DIRECTION.ACTION)
     }
 
     pressRestart() {

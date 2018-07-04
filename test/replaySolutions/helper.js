@@ -3,7 +3,7 @@ const fs = require('fs')
 const path = require('path')
 const { GameEngine } = require('../../lib/engine')
 const { default: Parser } = require('../../lib/parser/parser')
-const { RULE_DIRECTION_ABSOLUTE } = require('../../lib/util')
+const { RULE_DIRECTION } = require('../../lib/util')
 const { saveCoverageFile } = require('../../lib/recordCoverage')
 
 const SOLUTION_ROOT = path.join(__dirname, '../../gist-solutions/')
@@ -58,11 +58,11 @@ function createTests(moduloNumber, moduloTotal) {
                     for (let i = 0; i < keypresses.length; i++) {
                         const key = keypresses[i]
                         switch(key) {
-                            case 'W': engine.press(RULE_DIRECTION_ABSOLUTE.UP); break
-                            case 'S': engine.press(RULE_DIRECTION_ABSOLUTE.DOWN); break
-                            case 'A': engine.press(RULE_DIRECTION_ABSOLUTE.LEFT); break
-                            case 'D': engine.press(RULE_DIRECTION_ABSOLUTE.RIGHT); break
-                            case 'X': engine.press(RULE_DIRECTION_ABSOLUTE.ACTION); break
+                            case 'W': engine.press(RULE_DIRECTION.UP); break
+                            case 'S': engine.press(RULE_DIRECTION.DOWN); break
+                            case 'A': engine.press(RULE_DIRECTION.LEFT); break
+                            case 'D': engine.press(RULE_DIRECTION.RIGHT); break
+                            case 'X': engine.press(RULE_DIRECTION.ACTION); break
                             case '.':
                             case ',':
                                 break

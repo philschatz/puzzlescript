@@ -1,9 +1,8 @@
 import * as _ from 'lodash'
-import { ICacheable, DEBUG_FLAG, setDifference, RULE_DIRECTION_ABSOLUTE, RULE_DIRECTION_ABSOLUTE_SET, RULE_DIRECTION_ABSOLUTE_LIST, Optional } from "../util";
+import { ICacheable, DEBUG_FLAG, setDifference, RULE_DIRECTION, Optional } from "../util";
 import { BaseForLines, IGameCode } from "../models/game";
 import { AbstractCommand } from "../models/command";
 import { SimpleRule, SimpleBracket, SimpleRuleGroup, SimpleNeighbor, SimpleTileWithModifier, SimpleBracketConditionOnly, SIMPLE_DIRECTION_DIRECTIONS, SimpleRuleLoop, ISimpleBracket, SimpleEllipsisBracket } from "../models/rule";
-import { RULE_DIRECTION } from "../enums";
 import { Cell } from '../engine';
 import { IGameTile } from '../models/tile';
 
@@ -21,6 +20,15 @@ export enum AST_RULE_MODIFIER {
     LATE = 'LATE',
     RIGID = 'RIGID',
 }
+
+const RULE_DIRECTION_LIST = [
+    RULE_DIRECTION.UP,
+    RULE_DIRECTION.DOWN,
+    RULE_DIRECTION.LEFT,
+    RULE_DIRECTION.RIGHT
+]
+
+const RULE_DIRECTION_SET: Set<string> = new Set(RULE_DIRECTION_LIST)
 
 function cacheSetAndGet<A extends ICacheable>(cache: Map<string, A>, obj: A) {
     const key = obj.toKey()
@@ -51,7 +59,12 @@ function cacheSetAndGet<A extends ICacheable>(cache: Map<string, A>, obj: A) {
 // DOWN  [ RIGHT  player HORIZONTAL cat ] -> [ UP    crate | HORIZONTAL dog ]
 //
 // See https://www.puzzlescript.net/Documentation/executionorder.html
-export class ASTGameRule extends BaseForLines implements ICacheable {
+/**
+ * Represents a rule as written in the game as well as the expanded intermediate version.
+ *
+ * See `.simplify()` for more details on the expanded intermediate version.
+ */
+export class ASTRule extends BaseForLines implements ICacheable {
     private readonly modifiers: AST_RULE_MODIFIER[]
     private readonly commands: AbstractCommand[]
     private readonly brackets: ASTRuleBracket[]
@@ -62,6 +75,22 @@ export class ASTGameRule extends BaseForLines implements ICacheable {
         return `${this.modifiers.join(' ')} ${this.brackets.map(x => x.toKey())} -> ${this.actionBrackets.map(x => x.toKey())} ${this.commands.join(' ')} {debugger?${this.debugFlag}}`
     }
 
+    /**
+     * Expands this Rule into multiple `ASTRule` objects and then converts each one into a `SimpleRule`.
+     *
+     * For example, `HORIZONTAL [ > player ] -> [ < crate ]` gets expanded to the following `ASTRule`s:
+     *
+     * -  `LEFT  [ LEFT  player ] -> [ RIGHT crate ]`
+     * -  `RIGHT [ RIGHT player ] -> [ LEFT  crate ]`
+     *
+     * and then each one is converted into a `SimpleRule` which only has absolute directions
+     * rather than the relative ones that were specified in the original game code.
+     *
+     * @param ruleCache A cache for de-duplicating rules (so fewer need to be updated when the game is played)
+     * @param bracketCache A cache for de-duplicating brackets found in the game (so fewer need to be updated)
+     * @param neighborCache A cache for de-duplicating neighbors found in the game (so fewer need to be updated)
+     * @param tileCache A cache for de-duplicating tiles in the game (so fewer need to be updated)
+     */
     simplify(ruleCache: Map<string, SimpleRule>, bracketCache: Map<string, ISimpleBracket>, neighborCache: Map<string, SimpleNeighbor>, tileCache: Map<string, SimpleTileWithModifier>) {
         const simpleRules = this.convertToMultiple().map(r => r.toSimple(ruleCache, bracketCache, neighborCache, tileCache))
         // Register listeners to Cell changes
@@ -165,7 +194,7 @@ export class ASTGameRule extends BaseForLines implements ICacheable {
 
     private convertToMultiple() {
         let rulesToConvert = []
-        let convertedRules: ASTGameRule[] = []
+        let convertedRules: ASTRule[] = []
 
         for (const direction of this.getDirectionModifiers()) {
             const expandedDirection = this.clone(direction, null, null)
@@ -198,13 +227,13 @@ export class ASTGameRule extends BaseForLines implements ICacheable {
                     let orthogonals
                     let parallels
                     switch(direction) {
-                        case RULE_DIRECTION_ABSOLUTE.UP:
-                        case RULE_DIRECTION_ABSOLUTE.DOWN:
+                        case RULE_DIRECTION.UP:
+                        case RULE_DIRECTION.DOWN:
                             orthogonals = [RULE_DIRECTION.LEFT, RULE_DIRECTION.RIGHT]
                             parallels = [RULE_DIRECTION.UP, RULE_DIRECTION.DOWN]
                             break
-                        case RULE_DIRECTION_ABSOLUTE.LEFT:
-                        case RULE_DIRECTION_ABSOLUTE.RIGHT:
+                        case RULE_DIRECTION.LEFT:
+                        case RULE_DIRECTION.RIGHT:
                             orthogonals = [RULE_DIRECTION.UP, RULE_DIRECTION.DOWN]
                             parallels = [RULE_DIRECTION.LEFT, RULE_DIRECTION.RIGHT]
                             break
@@ -235,29 +264,29 @@ export class ASTGameRule extends BaseForLines implements ICacheable {
         return rulesToConvert
     }
 
-    private clone(direction: RULE_DIRECTION_ABSOLUTE, nameToExpand: Optional<AST_RULE_MODIFIER>, newName: Optional<RULE_DIRECTION>) {
+    private clone(direction: RULE_DIRECTION, nameToExpand: Optional<AST_RULE_MODIFIER>, newName: Optional<RULE_DIRECTION>) {
         const conditionBrackets = this.brackets.map(bracket => bracket.clone(direction, nameToExpand, newName))
         const actionBrackets = this.actionBrackets.map(bracket => bracket.clone(direction, nameToExpand, newName))
         // retain LATE and RIGID but discard the rest of the modifiers
         let directionModifier
         switch (direction) {
-            case RULE_DIRECTION_ABSOLUTE.UP:
+            case RULE_DIRECTION.UP:
                 directionModifier = AST_RULE_MODIFIER.UP
                 break
-            case RULE_DIRECTION_ABSOLUTE.DOWN:
+            case RULE_DIRECTION.DOWN:
                 directionModifier = AST_RULE_MODIFIER.DOWN
                 break
-            case RULE_DIRECTION_ABSOLUTE.LEFT:
+            case RULE_DIRECTION.LEFT:
                 directionModifier = AST_RULE_MODIFIER.LEFT
                 break
-            case RULE_DIRECTION_ABSOLUTE.RIGHT:
+            case RULE_DIRECTION.RIGHT:
                 directionModifier = AST_RULE_MODIFIER.RIGHT
                 break
             default:
                 throw new Error(`BUG: Invalid direction "${direction}"`)
         }
         const modifiers = _.intersection(this.modifiers, [AST_RULE_MODIFIER.LATE, AST_RULE_MODIFIER.RIGID, AST_RULE_MODIFIER.RANDOM]).concat([directionModifier])
-        return new ASTGameRule(this.__source, modifiers, conditionBrackets, actionBrackets, this.commands, this.debugFlag)
+        return new ASTRule(this.__source, modifiers, conditionBrackets, actionBrackets, this.commands, this.debugFlag)
     }
 
     private hasModifier(modifier: AST_RULE_MODIFIER) {
@@ -276,27 +305,27 @@ export class ASTGameRule extends BaseForLines implements ICacheable {
     private getDirectionModifiers() {
         // Convert HORIZONTAL and VERTICAL to 2:
         if (this.modifiers.indexOf(AST_RULE_MODIFIER.HORIZONTAL) >= 0) {
-            return [RULE_DIRECTION_ABSOLUTE.LEFT, RULE_DIRECTION_ABSOLUTE.RIGHT]
+            return [RULE_DIRECTION.LEFT, RULE_DIRECTION.RIGHT]
         }
         if (this.modifiers.indexOf(AST_RULE_MODIFIER.VERTICAL) >= 0) {
-            return [RULE_DIRECTION_ABSOLUTE.UP, RULE_DIRECTION_ABSOLUTE.DOWN]
+            return [RULE_DIRECTION.UP, RULE_DIRECTION.DOWN]
         }
-        const directions = this.modifiers.filter(m => RULE_DIRECTION_ABSOLUTE_SET.has(m)).map(d => {
+        const directions = this.modifiers.filter(m => RULE_DIRECTION_SET.has(m)).map(d => {
             switch (d) {
                 case AST_RULE_MODIFIER.UP:
-                    return RULE_DIRECTION_ABSOLUTE.UP
+                    return RULE_DIRECTION.UP
                 case AST_RULE_MODIFIER.DOWN:
-                    return RULE_DIRECTION_ABSOLUTE.DOWN
+                    return RULE_DIRECTION.DOWN
                 case AST_RULE_MODIFIER.LEFT:
-                    return RULE_DIRECTION_ABSOLUTE.LEFT
+                    return RULE_DIRECTION.LEFT
                 case AST_RULE_MODIFIER.RIGHT:
-                    return RULE_DIRECTION_ABSOLUTE.RIGHT
+                    return RULE_DIRECTION.RIGHT
                 default:
                     throw new Error(`BUG: Invalid rule direction "${d}"`)
             }
         })
         if (directions.length === 0) {
-            return RULE_DIRECTION_ABSOLUTE_LIST
+            return RULE_DIRECTION_LIST
         } else {
             return directions
         }
@@ -335,8 +364,8 @@ export class ASTGameRule extends BaseForLines implements ICacheable {
 }
 
 export interface IASTRuleBracket extends ICacheable {
-    clone: (direction: RULE_DIRECTION_ABSOLUTE, nameToExpand: Optional<AST_RULE_MODIFIER>, newName: Optional<RULE_DIRECTION>) => IASTRuleBracket
-    toSimple: (direction: RULE_DIRECTION_ABSOLUTE, ruleCache: Map<string, SimpleRule>, bracketCache: Map<string, ISimpleBracket>, neighborCache: Map<string, SimpleNeighbor>, tileCache: Map<string, SimpleTileWithModifier>) => ISimpleBracket
+    clone: (direction: RULE_DIRECTION, nameToExpand: Optional<AST_RULE_MODIFIER>, newName: Optional<RULE_DIRECTION>) => IASTRuleBracket
+    toSimple: (direction: RULE_DIRECTION, ruleCache: Map<string, SimpleRule>, bracketCache: Map<string, ISimpleBracket>, neighborCache: Map<string, SimpleNeighbor>, tileCache: Map<string, SimpleTileWithModifier>) => ISimpleBracket
     hasEllipsis: () => boolean
     _getAllNeighbors: () => ASTRuleBracketNeighbor[]
 }
@@ -363,11 +392,11 @@ export class ASTRuleBracket extends BaseForLines implements IASTRuleBracket {
         return this.neighbors.map(n => n.toKey()).join('|')
     }
 
-    clone(direction: RULE_DIRECTION_ABSOLUTE, nameToExpand: Optional<AST_RULE_MODIFIER>, newName: Optional<RULE_DIRECTION>) {
+    clone(direction: RULE_DIRECTION, nameToExpand: Optional<AST_RULE_MODIFIER>, newName: Optional<RULE_DIRECTION>) {
         return new ASTRuleBracket(this.__source, this.neighbors.map(n => n.clone(direction, nameToExpand, newName)), null, this.debugFlag)
     }
 
-    toSimple(direction: RULE_DIRECTION_ABSOLUTE, ruleCache: Map<string, SimpleRule>, bracketCache: Map<string, ISimpleBracket>, neighborCache: Map<string, SimpleNeighbor>, tileCache: Map<string, SimpleTileWithModifier>) {
+    toSimple(direction: RULE_DIRECTION, ruleCache: Map<string, SimpleRule>, bracketCache: Map<string, ISimpleBracket>, neighborCache: Map<string, SimpleNeighbor>, tileCache: Map<string, SimpleTileWithModifier>) {
         return cacheSetAndGet(bracketCache, new SimpleBracket(this.__source, direction, this.neighbors.map(x => x.toSimple(ruleCache, bracketCache, neighborCache, tileCache)), this.debugFlag))
     }
 
@@ -381,7 +410,7 @@ export class ASTRuleBracket extends BaseForLines implements IASTRuleBracket {
 
 }
 
-export class ASTEllipsisRuleBracket extends BaseForLines implements IASTRuleBracket {
+export class ASTRuleBracketEllipsis extends BaseForLines implements IASTRuleBracket {
     private readonly beforeEllipsisNeighbors: ASTRuleBracketNeighbor[]
     private readonly afterEllipsisNeighbors: ASTRuleBracketNeighbor[]
     private readonly debugFlag: DEBUG_FLAG
@@ -397,11 +426,11 @@ export class ASTEllipsisRuleBracket extends BaseForLines implements IASTRuleBrac
         return `${this.beforeEllipsisNeighbors.map(n => n.toKey()).join('|')} ... ${this.afterEllipsisNeighbors.map(n => n.toKey()).join('|')}`
     }
 
-    clone(direction: RULE_DIRECTION_ABSOLUTE, nameToExpand: Optional<AST_RULE_MODIFIER>, newName: Optional<RULE_DIRECTION>) {
-        return new ASTEllipsisRuleBracket(this.__source, this.beforeEllipsisNeighbors.map(n => n.clone(direction, nameToExpand, newName)), this.afterEllipsisNeighbors.map(n => n.clone(direction, nameToExpand, newName)), this.debugFlag)
+    clone(direction: RULE_DIRECTION, nameToExpand: Optional<AST_RULE_MODIFIER>, newName: Optional<RULE_DIRECTION>) {
+        return new ASTRuleBracketEllipsis(this.__source, this.beforeEllipsisNeighbors.map(n => n.clone(direction, nameToExpand, newName)), this.afterEllipsisNeighbors.map(n => n.clone(direction, nameToExpand, newName)), this.debugFlag)
     }
 
-    toSimple(direction: RULE_DIRECTION_ABSOLUTE, ruleCache: Map<string, SimpleRule>, bracketCache: Map<string, ISimpleBracket>, neighborCache: Map<string, SimpleNeighbor>, tileCache: Map<string, SimpleTileWithModifier>) {
+    toSimple(direction: RULE_DIRECTION, ruleCache: Map<string, SimpleRule>, bracketCache: Map<string, ISimpleBracket>, neighborCache: Map<string, SimpleNeighbor>, tileCache: Map<string, SimpleTileWithModifier>) {
         return cacheSetAndGet(bracketCache, new SimpleEllipsisBracket(this.__source, direction, this.beforeEllipsisNeighbors.map(x => x.toSimple(ruleCache, bracketCache, neighborCache, tileCache)), this.afterEllipsisNeighbors.map(x => x.toSimple(ruleCache, bracketCache, neighborCache, tileCache)), this.debugFlag))
     }
 
@@ -443,7 +472,7 @@ export class ASTRuleBracketNeighbor extends BaseForLines implements ICacheable {
         return `{${this.tilesWithModifier.map(t => t.toKey()).sort().join(' ')} debugging?${this.debugFlag}}`
     }
 
-    clone(direction: RULE_DIRECTION_ABSOLUTE, nameToExpand: Optional<AST_RULE_MODIFIER>, newName: Optional<RULE_DIRECTION>) {
+    clone(direction: RULE_DIRECTION, nameToExpand: Optional<AST_RULE_MODIFIER>, newName: Optional<RULE_DIRECTION>) {
         return new ASTRuleBracketNeighbor(this.__source, this.tilesWithModifier.map(t => t.clone(direction, nameToExpand, newName)), this.debugFlag)
     }
 
@@ -473,7 +502,7 @@ export class ASTTileWithModifier extends BaseForLines implements ICacheable {
         return `${this.modifier || ''} ${this.tile ? this.tile.getSprites().map(sprite => sprite.getName()) : '|||(notile)|||'}{debugging?${this.debugFlag}}`
     }
 
-    clone(direction: RULE_DIRECTION_ABSOLUTE, nameToExpand: Optional<AST_RULE_MODIFIER>, newName: Optional<RULE_DIRECTION>) {
+    clone(direction: RULE_DIRECTION, nameToExpand: Optional<AST_RULE_MODIFIER>, newName: Optional<RULE_DIRECTION>) {
         switch (this.modifier) {
             case '>':
             case '<':
@@ -495,16 +524,16 @@ export class ASTTileWithModifier extends BaseForLines implements ICacheable {
             case 'DOWN':
             case 'LEFT':
             case 'RIGHT':
-                direction = RULE_DIRECTION_ABSOLUTE[this.modifier]
+                direction = RULE_DIRECTION[this.modifier]
                 break
             case 'STATIONARY':
-                direction = RULE_DIRECTION_ABSOLUTE.STATIONARY
+                direction = RULE_DIRECTION.STATIONARY
                 break
             case 'ACTION':
-                direction = RULE_DIRECTION_ABSOLUTE.ACTION
+                direction = RULE_DIRECTION.ACTION
                 break
             case 'RANDOMDIR':
-                direction = RULE_DIRECTION_ABSOLUTE.RANDOMDIR
+                direction = RULE_DIRECTION.RANDOMDIR
                 break
             default:
                 direction = null
@@ -516,7 +545,7 @@ export class ASTTileWithModifier extends BaseForLines implements ICacheable {
         return this.modifier === M_NO
     }
     isRandom() {
-        return this.modifier === RULE_DIRECTION.RANDOM
+        return this.modifier === AST_RULE_MODIFIER.RANDOM
     }
     isRandomDir() {
         return this.modifier === RULE_DIRECTION.RANDOMDIR
@@ -524,7 +553,7 @@ export class ASTTileWithModifier extends BaseForLines implements ICacheable {
 }
 
 // Extend RuleBracketNeighbor so that NeighborPair doesn't break
-export class ASTHackNode extends ASTRuleBracketNeighbor {
+export class ASTRuleBracketNeighborHack extends ASTRuleBracketNeighbor {
     fields: object
 
     // These should be addressed as we write the interpreter
@@ -534,10 +563,10 @@ export class ASTHackNode extends ASTRuleBracketNeighbor {
     }
 }
 
-export class ASTGameRuleLoop extends BaseForLines {
-    readonly rules: ASTGameRule[]
+export class ASTRuleLoop extends BaseForLines {
+    readonly rules: ASTRule[]
 
-    constructor(source: IGameCode, rules: ASTGameRule[], debugFlag: DEBUG_FLAG) {
+    constructor(source: IGameCode, rules: ASTRule[], debugFlag: DEBUG_FLAG) {
         super(source)
         this.rules = rules
     }
@@ -550,7 +579,7 @@ export class ASTGameRuleLoop extends BaseForLines {
     }
 }
 
-export class ASTGameRuleGroup extends ASTGameRuleLoop {
+export class ASTRuleGroup extends ASTRuleLoop {
     // Yes. One propagates isRandom while the other does not
     simplify(ruleCache: Map<string, SimpleRule>, bracketCache: Map<string, ISimpleBracket>, neighborCache: Map<string, SimpleNeighbor>, tileCache: Map<string, SimpleTileWithModifier>) {
         return new SimpleRuleGroup(this.__source, this.isRandom(), this.rules.map(rule => rule.simplify(ruleCache, bracketCache, neighborCache, tileCache)))
@@ -560,19 +589,19 @@ export class ASTGameRuleGroup extends ASTGameRuleLoop {
 
 const M_NO = 'NO'
 
-export function relativeDirectionToAbsolute(currentDirection: RULE_DIRECTION_ABSOLUTE, relativeModifier: string) {
+export function relativeDirectionToAbsolute(currentDirection: RULE_DIRECTION, relativeModifier: string) {
     let currentDir
     switch (currentDirection) {
-        case RULE_DIRECTION_ABSOLUTE.RIGHT:
+        case RULE_DIRECTION.RIGHT:
             currentDir = 0
             break
-        case RULE_DIRECTION_ABSOLUTE.UP:
+        case RULE_DIRECTION.UP:
             currentDir = 1
             break
-        case RULE_DIRECTION_ABSOLUTE.LEFT:
+        case RULE_DIRECTION.LEFT:
             currentDir = 2
             break
-        case RULE_DIRECTION_ABSOLUTE.DOWN:
+        case RULE_DIRECTION.DOWN:
             currentDir = 3
             break
         default:
@@ -597,13 +626,13 @@ export function relativeDirectionToAbsolute(currentDirection: RULE_DIRECTION_ABS
     }
     switch (currentDir % 4) {
         case 0:
-            return RULE_DIRECTION_ABSOLUTE.RIGHT
+            return RULE_DIRECTION.RIGHT
         case 1:
-            return RULE_DIRECTION_ABSOLUTE.UP
+            return RULE_DIRECTION.UP
         case 2:
-            return RULE_DIRECTION_ABSOLUTE.LEFT
+            return RULE_DIRECTION.LEFT
         case 3:
-            return RULE_DIRECTION_ABSOLUTE.DOWN
+            return RULE_DIRECTION.DOWN
         default:
             throw new Error(`BUG! Incorrectly computed rule direction "${currentDirection}" "${relativeModifier}"`)
     }

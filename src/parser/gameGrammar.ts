@@ -7,7 +7,7 @@ import { LookupHelper } from './lookup'
 import { ValidationLevel, AddValidationFunc } from './parser'
 import { LevelMap } from '../models/level';
 import { WinConditionSimple } from '../models/winCondition';
-import { ASTGameRule } from '../parser/rule';
+import { ASTRule } from '../parser/astRule';
 import { CollisionLayer } from '../models/collisionLayer';
 import { GameSound } from '../models/sound';
 import { GameLegendTileSimple, GameSprite } from '../models/tile';
@@ -273,7 +273,7 @@ export const METADATA_GRAMMAR = `
 export function getGameSemantics(lookup: LookupHelper, addValidationMessage: AddValidationFunc) {
     let currentColorPalette = 'arnecolors' // default
     return {
-        GameData: function (this: ohm.Node, _whitespace1: Parseable<string>, title: Parseable<string>, _whitespace2: Parseable<string>, settingsFields: Parseable<{key: string, value: boolean | string | Dimension}[]>, _whitespace3: Parseable<string>, spritesSection: Parseable<GameSprite[][]>, legendsSection: Parseable<GameLegendTileSimple[][]>, soundsSection: Parseable<GameSound[][]>, collisionLayersSection: Parseable<CollisionLayer[][]>, rulesSection: Parseable<ASTGameRule[][]>, winConditionsSection: Parseable<WinConditionSimple[][]>, levelsSection: Parseable<LevelMap[][]>) {
+        GameData: function (this: ohm.Node, _whitespace1: Parseable<string>, title: Parseable<string>, _whitespace2: Parseable<string>, settingsFields: Parseable<{key: string, value: boolean | string | Dimension}[]>, _whitespace3: Parseable<string>, spritesSection: Parseable<GameSprite[][]>, legendsSection: Parseable<GameLegendTileSimple[][]>, soundsSection: Parseable<GameSound[][]>, collisionLayersSection: Parseable<CollisionLayer[][]>, rulesSection: Parseable<ASTRule[][]>, winConditionsSection: Parseable<WinConditionSimple[][]>, levelsSection: Parseable<LevelMap[][]>) {
             const metadata = new GameMetadata()
             for (const {key, value} of settingsFields.parse()) {
                 if (!key) {

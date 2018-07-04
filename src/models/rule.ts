@@ -6,9 +6,8 @@ import {
     IGameNode
 } from '../models/game'
 import { IGameTile, GameSprite } from './tile'
-import { setIntersection, nextRandom, RULE_DIRECTION_ABSOLUTE, DEBUG_FLAG, ICacheable, Optional } from '../util'
+import { setIntersection, nextRandom, RULE_DIRECTION, DEBUG_FLAG, ICacheable, Optional } from '../util'
 import { Cell } from '../engine'
-import { RULE_DIRECTION } from '../enums';
 import TerminalUI from '../ui'
 import { AbstractCommand } from './command';
 import { CollisionLayer } from './collisionLayer';
@@ -22,16 +21,16 @@ export const SIMPLE_DIRECTION_DIRECTIONS = [
     RULE_DIRECTION.UP
 ]
 
-function opposite(dir: RULE_DIRECTION_ABSOLUTE) {
+function opposite(dir: RULE_DIRECTION) {
     switch (dir) {
-        case RULE_DIRECTION_ABSOLUTE.UP:
-            return RULE_DIRECTION_ABSOLUTE.DOWN
-        case RULE_DIRECTION_ABSOLUTE.DOWN:
-            return RULE_DIRECTION_ABSOLUTE.UP
-        case RULE_DIRECTION_ABSOLUTE.LEFT:
-            return RULE_DIRECTION_ABSOLUTE.RIGHT
-        case RULE_DIRECTION_ABSOLUTE.RIGHT:
-            return RULE_DIRECTION_ABSOLUTE.LEFT
+        case RULE_DIRECTION.UP:
+            return RULE_DIRECTION.DOWN
+        case RULE_DIRECTION.DOWN:
+            return RULE_DIRECTION.UP
+        case RULE_DIRECTION.LEFT:
+            return RULE_DIRECTION.RIGHT
+        case RULE_DIRECTION.RIGHT:
+            return RULE_DIRECTION.LEFT
         default:
             throw new Error(`BUG: Invalid direction: "${dir}"`)
     }
@@ -173,7 +172,7 @@ export class SimpleRuleLoop extends SimpleRuleGroup {
 // DOWN [ DOWN player LEFT cat RIGHT dog UP crate UP wall ] -> [ RIGHT crate RIGHT dog ]
 // DOWN [ DOWN player LEFT cat RIGHT dog UP crate DOWN wall ] -> [ RIGHT crate RIGHT dog ]
 export class SimpleRule extends BaseForLines implements ICacheable, IRule {
-    private evaluationDirection: RULE_DIRECTION_ABSOLUTE
+    private evaluationDirection: RULE_DIRECTION
     private conditionBrackets: ISimpleBracket[]
     private actionBrackets: ISimpleBracket[]
     private commands: AbstractCommand[]
@@ -184,7 +183,7 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
     private debugFlag: DEBUG_FLAG
     private doesEvaluationOrderMatter: boolean
     private isOnlyEvaluatingFirstRandomMatch: boolean
-    constructor(source: IGameCode, evaluationDirection: RULE_DIRECTION_ABSOLUTE, conditionBrackets: ISimpleBracket[], actionBrackets: ISimpleBracket[], commands: AbstractCommand[], isLate: boolean, isRigid: boolean, isRandom: boolean, debugFlag: DEBUG_FLAG, doesEvaluationOrderMatter: boolean) {
+    constructor(source: IGameCode, evaluationDirection: RULE_DIRECTION, conditionBrackets: ISimpleBracket[], actionBrackets: ISimpleBracket[], commands: AbstractCommand[], isLate: boolean, isRigid: boolean, isRandom: boolean, debugFlag: DEBUG_FLAG, doesEvaluationOrderMatter: boolean) {
         super(source)
         this.evaluationDirection = evaluationDirection
         this.conditionBrackets = conditionBrackets
@@ -534,10 +533,10 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
 
 export abstract class ISimpleBracket extends BaseForLines implements ICacheable {
     readonly debugFlag: DEBUG_FLAG
-    readonly direction: RULE_DIRECTION_ABSOLUTE
+    readonly direction: RULE_DIRECTION
     protected firstCells: Set<Cell>
     private allNeighbors: SimpleNeighbor[]
-    constructor(source: IGameCode, direction: RULE_DIRECTION_ABSOLUTE, allNeighbors: SimpleNeighbor[], debugFlag: DEBUG_FLAG) {
+    constructor(source: IGameCode, direction: RULE_DIRECTION, allNeighbors: SimpleNeighbor[], debugFlag: DEBUG_FLAG) {
         super(source)
         this.direction = direction
         this.debugFlag = debugFlag
@@ -552,7 +551,7 @@ export abstract class ISimpleBracket extends BaseForLines implements ICacheable 
     abstract clearCaches(): void
     abstract prepareAction(action: ISimpleBracket): void
     abstract getNeighbors(): SimpleNeighbor[]
-    abstract addCell(index: number, neighbor: SimpleNeighbor, t: SimpleTileWithModifier, sprite: GameSprite, cell: Cell, wantsToMove: Optional<RULE_DIRECTION_ABSOLUTE>): void
+    abstract addCell(index: number, neighbor: SimpleNeighbor, t: SimpleTileWithModifier, sprite: GameSprite, cell: Cell, wantsToMove: Optional<RULE_DIRECTION>): void
     abstract removeCell(index: number, neighbor: SimpleNeighbor, t: SimpleTileWithModifier, sprite: GameSprite, cell: Cell): void
     abstract addCellsToEmptyRules(cells: Iterable<Cell>): void
 
@@ -568,7 +567,7 @@ export class SimpleBracket extends ISimpleBracket {
     private neighbors: SimpleNeighbor[]
     protected actionDebugFlag: Optional<DEBUG_FLAG>
     private ellipsisBracketListeners: Map<SimpleEllipsisBracket, BEFORE_OR_AFTER>
-    constructor(source: IGameCode, direction: RULE_DIRECTION_ABSOLUTE, neighbors: SimpleNeighbor[], debugFlag: DEBUG_FLAG) {
+    constructor(source: IGameCode, direction: RULE_DIRECTION, neighbors: SimpleNeighbor[], debugFlag: DEBUG_FLAG) {
         super(source, direction, neighbors, debugFlag)
         this.neighbors = neighbors
         this.firstCells = new Set()
@@ -681,7 +680,7 @@ export class SimpleBracket extends ISimpleBracket {
         }
     }
 
-    addCell(index: number, neighbor: SimpleNeighbor, t: SimpleTileWithModifier, sprite: GameSprite, cell: Cell, wantsToMove: Optional<RULE_DIRECTION_ABSOLUTE>) {
+    addCell(index: number, neighbor: SimpleNeighbor, t: SimpleTileWithModifier, sprite: GameSprite, cell: Cell, wantsToMove: Optional<RULE_DIRECTION>) {
         // check if downstream neighbors match
         if (!this.matchesDownstream(cell, index)) {
             // Try to remove the match if there is one
@@ -707,9 +706,6 @@ export class SimpleBracket extends ISimpleBracket {
         // We have a match. Add to the firstCells set.
         this._addFirstCell(firstCell)
     }
-    // updateCell(neighbor: SimpleNeighbor, t: SimpleTileWithModifier, sprite: GameSprite, cell: Cell, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
-    //     this.updateCellOld(cell, sprite, t, neighbor, wantsToMove, true)
-    // }
     removeCell(index: number, neighbor: SimpleNeighbor, t: SimpleTileWithModifier, sprite: GameSprite, cell: Cell) {
         // cell was removed
         // Loop Upstream
@@ -899,7 +895,7 @@ export class SimpleEllipsisBracket extends ISimpleBracket {
     private afterEllipsisBracket: SimpleBracket
     private linkages: MultiMap<Cell, Cell> // 1 before may have many afters
     private actionDebugFlag: Optional<DEBUG_FLAG>
-    constructor(source: IGameCode, direction: RULE_DIRECTION_ABSOLUTE, beforeEllipsisNeighbors: SimpleNeighbor[], afterEllipsisNeighbors: SimpleNeighbor[], debugFlag: DEBUG_FLAG) {
+    constructor(source: IGameCode, direction: RULE_DIRECTION, beforeEllipsisNeighbors: SimpleNeighbor[], afterEllipsisNeighbors: SimpleNeighbor[], debugFlag: DEBUG_FLAG) {
         super(source, direction, [...beforeEllipsisNeighbors, ...afterEllipsisNeighbors], debugFlag)
         this.beforeEllipsisBracket = new SimpleBracket(source, direction, beforeEllipsisNeighbors, debugFlag)
         this.afterEllipsisBracket = new SimpleBracket(source, direction, afterEllipsisNeighbors, debugFlag)
@@ -973,7 +969,7 @@ export class SimpleEllipsisBracket extends ISimpleBracket {
     }
 
 
-    addCell(index: number, neighbor: SimpleNeighbor, t: SimpleTileWithModifier, sprite: GameSprite, cell: Cell, wantsToMove: Optional<RULE_DIRECTION_ABSOLUTE>) {
+    addCell(index: number, neighbor: SimpleNeighbor, t: SimpleTileWithModifier, sprite: GameSprite, cell: Cell, wantsToMove: Optional<RULE_DIRECTION>) {
         throw new Error(`BUG: We should not be subscribed to these events`)
     }
     removeCell(index: number, neighbor: SimpleNeighbor, t: SimpleTileWithModifier, sprite: GameSprite, cell: Cell) {
@@ -1032,26 +1028,26 @@ export class SimpleEllipsisBracket extends ISimpleBracket {
         this.checkInvariants()
     }
 
-    private findMatching(cell: Cell, direction: RULE_DIRECTION_ABSOLUTE, inBracket: SimpleBracket) {
+    private findMatching(cell: Cell, direction: RULE_DIRECTION, inBracket: SimpleBracket) {
         const matches = new Set()
         for (const inBracketCell of inBracket.getFirstCells()) {
             switch (direction) {
-                case RULE_DIRECTION_ABSOLUTE.UP:
+                case RULE_DIRECTION.UP:
                     if (cell.colIndex === inBracketCell.colIndex && cell.rowIndex > inBracketCell.rowIndex) {
                         matches.add(inBracketCell)
                     }
                     break
-                case RULE_DIRECTION_ABSOLUTE.DOWN:
+                case RULE_DIRECTION.DOWN:
                     if (cell.colIndex === inBracketCell.colIndex && cell.rowIndex < inBracketCell.rowIndex) {
                         matches.add(inBracketCell)
                     }
                     break
-                case RULE_DIRECTION_ABSOLUTE.LEFT:
+                case RULE_DIRECTION.LEFT:
                     if (cell.colIndex > inBracketCell.colIndex && cell.rowIndex === inBracketCell.rowIndex) {
                         matches.add(inBracketCell)
                     }
                     break
-                case RULE_DIRECTION_ABSOLUTE.RIGHT:
+                case RULE_DIRECTION.RIGHT:
                     if (cell.colIndex < inBracketCell.colIndex && cell.rowIndex === inBracketCell.rowIndex) {
                         matches.add(inBracketCell)
                     }
@@ -1145,9 +1141,9 @@ class ReplaceTile {
 
 class ReplaceDirection {
     private collisionLayer: CollisionLayer
-    private direction: Optional<RULE_DIRECTION_ABSOLUTE>
+    private direction: Optional<RULE_DIRECTION>
     private mightNotFindConditionButThatIsOk: boolean
-    constructor(collisionLayer: CollisionLayer, direction: Optional<RULE_DIRECTION_ABSOLUTE>, mightNotFindConditionButThatIsOk: boolean) {
+    constructor(collisionLayer: CollisionLayer, direction: Optional<RULE_DIRECTION>, mightNotFindConditionButThatIsOk: boolean) {
         if (!collisionLayer) {
             throw new Error('BUG: collisionLayer is not set')
         }
@@ -1163,21 +1159,21 @@ class ReplaceDirection {
         }
 
         // Pick a random direction
-        if (this.direction === RULE_DIRECTION_ABSOLUTE.RANDOMDIR) {
+        if (this.direction === RULE_DIRECTION.RANDOMDIR) {
             // only set the direction if one has not already been set
-            if (cell.getCollisionLayerWantsToMove(this.collisionLayer) === RULE_DIRECTION_ABSOLUTE.STATIONARY) {
+            if (cell.getCollisionLayerWantsToMove(this.collisionLayer) === RULE_DIRECTION.STATIONARY) {
                 switch (nextRandom(4)) {
                     case 0:
-                        direction = RULE_DIRECTION_ABSOLUTE.UP
+                        direction = RULE_DIRECTION.UP
                         break
                     case 1:
-                        direction = RULE_DIRECTION_ABSOLUTE.DOWN
+                        direction = RULE_DIRECTION.DOWN
                         break
                     case 2:
-                        direction = RULE_DIRECTION_ABSOLUTE.LEFT
+                        direction = RULE_DIRECTION.LEFT
                         break
                     case 3:
-                        direction = RULE_DIRECTION_ABSOLUTE.RIGHT
+                        direction = RULE_DIRECTION.RIGHT
                         break
                     default:
                         throw new Error(`BUG: invalid random number chosen`)
@@ -1204,7 +1200,7 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
     private staticCache: Map<SimpleNeighbor, {replaceTiles: Set<ReplaceTile>, replaceDirections: Set<ReplaceDirection>}>
     private cacheYesBitSets: Map<CollisionLayer, BitSet>
     private cacheNoBitSets: Map<CollisionLayer, BitSet>
-    private cacheDirections: Map<CollisionLayer, RULE_DIRECTION_ABSOLUTE>
+    private cacheDirections: Map<CollisionLayer, RULE_DIRECTION>
     private cacheMultiCollisionLayerTiles: Set<SimpleTileWithModifier>
 
     constructor(source: IGameCode, tilesWithModifier: Set<SimpleTileWithModifier>, debugFlag: DEBUG_FLAG) {
@@ -1436,9 +1432,9 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
                         replaceTiles.add(new ReplaceTile(collisionLayer, action, extra, null))
                     }
                     if (condition._direction !== action._direction) {
-                        replaceDirections.add(new ReplaceDirection(collisionLayer, action._direction || RULE_DIRECTION_ABSOLUTE.STATIONARY, extra))
+                        replaceDirections.add(new ReplaceDirection(collisionLayer, action._direction || RULE_DIRECTION.STATIONARY, extra))
                     } else if (condition.isNo()) {
-                        replaceDirections.add(new ReplaceDirection(collisionLayer, action._direction || RULE_DIRECTION_ABSOLUTE.STATIONARY, extra))
+                        replaceDirections.add(new ReplaceDirection(collisionLayer, action._direction || RULE_DIRECTION.STATIONARY, extra))
                     }
                 }
             } else if (condition) {
@@ -1449,7 +1445,7 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
             } else if (action) {
                 if (!action.isNo()) {
                     replaceTiles.add(new ReplaceTile(collisionLayer, action, extra, null))
-                    replaceDirections.add(new ReplaceDirection(collisionLayer, action._direction || RULE_DIRECTION_ABSOLUTE.STATIONARY, extra))
+                    replaceDirections.add(new ReplaceDirection(collisionLayer, action._direction || RULE_DIRECTION.STATIONARY, extra))
                 }
             }
         }
@@ -1523,7 +1519,7 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
     matchesCellSimple(cell: Cell) {
         return this.matchesCell(cell, null, null)
     }
-    private matchesCell(cell: Cell, tileWithModifier: Optional<SimpleTileWithModifier>, wantsToMove: Optional<RULE_DIRECTION_ABSOLUTE>) {
+    private matchesCell(cell: Cell, tileWithModifier: Optional<SimpleTileWithModifier>, wantsToMove: Optional<RULE_DIRECTION>) {
         let doesMatch = false
         // Prepare the bit vectors (does not count against us in the timing)
         const collisionLayersToCheck = new Set<CollisionLayer>()
@@ -1556,7 +1552,7 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
             } else {
                 for (const sprite of t._tile.getSprites()) {
                     const c = sprite.getCollisionLayer()
-                    let cellDirection = cell.getCollisionLayerWantsToMove(c) || RULE_DIRECTION_ABSOLUTE.STATIONARY
+                    let cellDirection = cell.getCollisionLayerWantsToMove(c) || RULE_DIRECTION.STATIONARY
                     if (cell.hasSprite(sprite)) {
                         if (!t._direction || cellDirection === t._direction) {
                             matchesDirection = true
@@ -1611,7 +1607,7 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
                 // Check directions too (only if the rule has one set)
                 const ruleDirection = this.cacheDirections.get(collisionLayer)
                 const cellDirection = cell.getCollisionLayerWantsToMove(collisionLayer)
-                if (ruleDirection === RULE_DIRECTION_ABSOLUTE.STATIONARY && !cellDirection) {
+                if (ruleDirection === RULE_DIRECTION.STATIONARY && !cellDirection) {
                     // This is OK
                 } else if (ruleDirection !== cellDirection) {
                     doesMatch = false
@@ -1634,7 +1630,7 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
         }
     }
 
-    addCells(t: SimpleTileWithModifier, sprite: GameSprite, cells: Iterable<Cell>, wantsToMove: Optional<RULE_DIRECTION_ABSOLUTE>) {
+    addCells(t: SimpleTileWithModifier, sprite: GameSprite, cells: Iterable<Cell>, wantsToMove: Optional<RULE_DIRECTION>) {
         if (process.env['NODE_ENV'] === 'development' && this.debugFlag === DEBUG_FLAG.BREAKPOINT) {
             // Pausing here because it was marked in the code
             TerminalUI.debugRenderScreen(); debugger
@@ -1659,7 +1655,7 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
             }
         }
     }
-    updateCells(t: SimpleTileWithModifier, sprite: GameSprite, cells: Iterable<Cell>, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
+    updateCells(t: SimpleTileWithModifier, sprite: GameSprite, cells: Iterable<Cell>, wantsToMove: RULE_DIRECTION) {
         this.addCells(t, sprite, cells, wantsToMove)
     }
     removeCells(t: SimpleTileWithModifier, sprite: GameSprite, cells: Iterable<Cell>) {
@@ -1687,11 +1683,11 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
 export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
     readonly _isNegated: boolean
     readonly _isRandom: boolean
-    readonly _direction: Optional<RULE_DIRECTION_ABSOLUTE>
+    readonly _direction: Optional<RULE_DIRECTION>
     readonly _tile: IGameTile
     readonly _debugFlag: DEBUG_FLAG
     private neighbors: Set<SimpleNeighbor>
-    constructor(source: IGameCode, isNegated: boolean, isRandom: boolean, direction: Optional<RULE_DIRECTION_ABSOLUTE>, tile: IGameTile, debugFlag: DEBUG_FLAG) {
+    constructor(source: IGameCode, isNegated: boolean, isRandom: boolean, direction: Optional<RULE_DIRECTION>, tile: IGameTile, debugFlag: DEBUG_FLAG) {
         super(source)
         this._isNegated = isNegated
         this._isRandom = isRandom
@@ -1748,16 +1744,16 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
         return this._isNegated != hasTile
     }
 
-    private matchesCellWantsToMove(cell: Cell, wantsToMove: Optional<RULE_DIRECTION_ABSOLUTE>) {
+    private matchesCellWantsToMove(cell: Cell, wantsToMove: Optional<RULE_DIRECTION>) {
         const hasTile = this._tile && this._tile.matchesCell(cell)
         return this._isNegated != (hasTile && (this._direction === wantsToMove || this._direction === null))
     }
 
-    private matchesFirstCell(cells: Cell[], wantsToMove: Optional<RULE_DIRECTION_ABSOLUTE>) {
+    private matchesFirstCell(cells: Cell[], wantsToMove: Optional<RULE_DIRECTION>) {
         return this.matchesCellWantsToMove(cells[0], wantsToMove)
     }
 
-    addCells(sprite: GameSprite, cells: Cell[], wantsToMove: Optional<RULE_DIRECTION_ABSOLUTE>) {
+    addCells(sprite: GameSprite, cells: Cell[], wantsToMove: Optional<RULE_DIRECTION>) {
         if (process.env['NODE_ENV'] === 'development' && this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
             // Pause here because it was marked in the code
             TerminalUI.debugRenderScreen(); debugger
@@ -1779,7 +1775,7 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
             // this._removeCellsFromCache(cellsInCache)
         }
     }
-    updateCells(sprite: GameSprite, cells: Cell[], wantsToMove: RULE_DIRECTION_ABSOLUTE) {
+    updateCells(sprite: GameSprite, cells: Cell[], wantsToMove: RULE_DIRECTION) {
         if (process.env['NODE_ENV'] === 'development' && this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
             // Pause here because it was marked in the code
             TerminalUI.debugRenderScreen(); debugger
@@ -1802,19 +1798,13 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
         }
         // Cells all have the same sprites, so if the 1st matches, they all do
         if (this.matchesFirstCell(cells, null/*STATIONARY*/)) {
-            // const cellsNotInCache = setDifference(new Set(cells), new Set(this._localCache.keys()))
             for (const neighbor of this.neighbors) {
-                // neighbor.addCells(this, sprite, cellsNotInCache, RULE_DIRECTION_ABSOLUTE.STATIONARY)
-                neighbor.addCells(this, sprite, cells, RULE_DIRECTION_ABSOLUTE.STATIONARY)
+                neighbor.addCells(this, sprite, cells, RULE_DIRECTION.STATIONARY)
             }
-            // this._addCellsToCache(cellsNotInCache, RULE_DIRECTION_ABSOLUTE.STATIONARY)
         } else {
-            // const cellsInCache = setIntersection(new Set(cells), new Set(this._localCache.keys()))
             for (const neighbor of this.neighbors) {
-                // neighbor.removeCells(this, sprite, cellsInCache)
                 neighbor.removeCells(this, sprite, cells)
             }
-            // this._removeCellsFromCache(cellsInCache)
         }
     }
 

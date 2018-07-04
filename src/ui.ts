@@ -6,7 +6,7 @@ import { GameSprite } from './models/tile'
 import { GameData } from './models/game'
 import { IColor } from './models/colors'
 import { GameEngine, Cell } from './engine'
-import { RULE_DIRECTION_ABSOLUTE, Optional } from './util';
+import { RULE_DIRECTION, Optional } from './util';
 import chalk from 'chalk';
 import { makeLetterCell } from './letters';
 
@@ -725,22 +725,22 @@ class TerminalUI {
                             let wantsToMove
 
                             switch (cell.getWantsToMove(sprite)) {
-                                case RULE_DIRECTION_ABSOLUTE.STATIONARY:
+                                case RULE_DIRECTION.STATIONARY:
                                     wantsToMove = ''
                                     break
-                                case RULE_DIRECTION_ABSOLUTE.UP:
+                                case RULE_DIRECTION.UP:
                                     wantsToMove = '^'
                                     break
-                                case RULE_DIRECTION_ABSOLUTE.DOWN:
+                                case RULE_DIRECTION.DOWN:
                                     wantsToMove = 'v'
                                     break
-                                case RULE_DIRECTION_ABSOLUTE.LEFT:
+                                case RULE_DIRECTION.LEFT:
                                     wantsToMove = '<'
                                     break
-                                case RULE_DIRECTION_ABSOLUTE.RIGHT:
+                                case RULE_DIRECTION.RIGHT:
                                     wantsToMove = '>'
                                     break
-                                case RULE_DIRECTION_ABSOLUTE.ACTION:
+                                case RULE_DIRECTION.ACTION:
                                     wantsToMove = 'X'
                                     break
                                 default:
@@ -894,7 +894,7 @@ class TerminalUI {
         }
 
     }
-    moveInspector(direction: RULE_DIRECTION_ABSOLUTE) {
+    moveInspector(direction: RULE_DIRECTION) {
         if (!this.engine) {
             throw new Error(`BUG: engine has not been assigned yet`)
         }

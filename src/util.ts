@@ -71,29 +71,39 @@ export function getRandomSeed() {
     return seed
 }
 
-export enum RULE_DIRECTION_ABSOLUTE {
+export enum RULE_DIRECTION {
     UP = 'UP',
     DOWN = 'DOWN',
     LEFT = 'LEFT',
     RIGHT = 'RIGHT',
-    STATIONARY = 'STATIONARY',
     ACTION = 'ACTION',
+    STATIONARY = 'STATIONARY',
     RANDOMDIR = 'RANDOMDIR'
 }
 
-export const RULE_DIRECTION_ABSOLUTE_LIST = [
-    RULE_DIRECTION_ABSOLUTE.UP,
-    RULE_DIRECTION_ABSOLUTE.DOWN,
-    RULE_DIRECTION_ABSOLUTE.LEFT,
-    RULE_DIRECTION_ABSOLUTE.RIGHT
-]
-
-export const RULE_DIRECTION_ABSOLUTE_SET: Set<string> = new Set(RULE_DIRECTION_ABSOLUTE_LIST)
-
-
+/**
+ * A `DEBUGGER` flag in the game source that causes the evaluation to pause.
+ * It works like the [debugger](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/debugger) keyword in JavaScript.
+ *
+ * **Note:** the game needs to run in debug mode (`node --inspect-brk path/to/puzzlescript.js` or `npm run play-debug`)
+ * for this flag to have any effect.
+ *
+ * This string can be added to:
+ *
+ * - A Rule. Example: `DEBUGGER [ > player | cat ] -> [ > player | > cat ]`
+ * - A bracket when the condition is updated: `[ > player | cat ] DEBUGGER -> [ > player | > cat ]`
+ * - A bracket when it is evaluated: `[ > player | cat ] -> [ > player | > cat ] DEBUGGER`
+ * - A neighbor when the condition is updated: `[ > player DEBUGGER | cat ] -> [ > player | > cat ]`
+ * - A neighbor when it is evaluated: `[ > player | cat ] -> [ > player | > cat DEBUGGER ]`
+ * - A tile when the condition is updated: `[ > player | DEBUGGER cat ] -> [ > player | > cat ]`
+ * - A tile when it is matched: `[ > player | cat ] -> [ > player | DEBUGGER > cat ]`
+ */
 export enum DEBUG_FLAG {
     BREAKPOINT = 'DEBUGGER', // only when the rule matches elements
-    BREAKPOINT_REMOVE = 'DEBUGGER_REMOVE', // only when a cell causes an entry to be removed from the matched set
+    /**
+     * Pause when a Cell causes an entry to be removed from the set of matches for this rule/bracket/neighbor/tile
+     */
+    BREAKPOINT_REMOVE = 'DEBUGGER_REMOVE',
 }
 
 export interface ICacheable {

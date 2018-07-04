@@ -5,7 +5,7 @@ import { IColor, HexColor, TransparentColor } from './colors'
 import { CollisionLayer } from './collisionLayer'
 import { Cell } from '../engine'
 import { SimpleTileWithModifier } from './rule';
-import { RULE_DIRECTION_ABSOLUTE, setIntersection, Optional } from '../util';
+import { RULE_DIRECTION, setIntersection, Optional } from '../util';
 
 export interface IGameTile extends IGameNode {
     _getDescendantTiles: () => IGameTile[]
@@ -120,13 +120,13 @@ export class GameSprite extends BaseForLines implements IGameTile {
     addTileWithModifier(t: SimpleTileWithModifier) {
         this.tileWithModifierSet.add(t)
     }
-    addCell(cell: Cell, wantsToMove: Optional<RULE_DIRECTION_ABSOLUTE>) {
+    addCell(cell: Cell, wantsToMove: Optional<RULE_DIRECTION>) {
         this.addCells([cell], wantsToMove)
     }
     removeCell(cell: Cell) {
         this.removeCells([cell])
     }
-    updateCell(cell: Cell, wantsToMove: RULE_DIRECTION_ABSOLUTE) {
+    updateCell(cell: Cell, wantsToMove: RULE_DIRECTION) {
         if (process.env['NODE_ENV'] === 'development') {
             // check that the cell is already in the sprite cell set
             if (!this.has(cell)) {
@@ -139,7 +139,7 @@ export class GameSprite extends BaseForLines implements IGameTile {
             t.updateCells(this, [cell], wantsToMove)
         }
     }
-    addCells(cells: Cell[], wantsToMove: Optional<RULE_DIRECTION_ABSOLUTE>) {
+    addCells(cells: Cell[], wantsToMove: Optional<RULE_DIRECTION>) {
         for (const cell of cells) {
             this.cellSet.add(cell)
         }

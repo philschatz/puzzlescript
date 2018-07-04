@@ -1,7 +1,7 @@
 /* eslint-env jasmine */
 const { LevelEngine } = require('../lib/engine')
 const { default: Parser } = require('../lib/parser/parser')
-const { RULE_DIRECTION_ABSOLUTE } = require('../lib/util')
+const { RULE_DIRECTION } = require('../lib/util')
 
 function parseEngine(code) {
     const { data, error } = Parser.parse(code)
@@ -689,7 +689,7 @@ describe('engine', () => {
         engine.tick() // To get the reflections to render
 
         // press action to get the player to reflect into 4 players
-        engine.press(RULE_DIRECTION_ABSOLUTE.ACTION)
+        engine.press(RULE_DIRECTION.ACTION)
         engine.tick()
         expect(engine.toSnapshot()).toMatchSnapshot()
 
@@ -701,7 +701,7 @@ describe('engine', () => {
         expect(engine.currentLevel[4][4].getSpritesAsSet().has(player)).toBe(true)
 
         // press action again to combing all the players back to one
-        engine.press(RULE_DIRECTION_ABSOLUTE.ACTION)
+        engine.press(RULE_DIRECTION.ACTION)
         engine.tick()
         expect(player.getCellsThatMatch().size).toBe(1)
 

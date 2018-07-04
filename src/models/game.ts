@@ -7,7 +7,7 @@ import { GameSound } from './sound'
 import { LevelMap } from './level'
 import { CollisionLayer } from './collisionLayer'
 import { WinConditionSimple } from './winCondition'
-import { ASTGameRule } from '../parser/rule';
+import { ASTRule } from '../parser/astRule';
 import { Optional } from '../util';
 
 export type IGameNode = {
@@ -145,7 +145,7 @@ export class GameData {
         legends: GameLegendTileSimple[],
         sounds: GameSound[],
         collisionLayers: CollisionLayer[],
-        rules: ASTGameRule[],
+        rules: ASTRule[],
         winConditions: WinConditionSimple[],
         levels: LevelMap[]
     ) {

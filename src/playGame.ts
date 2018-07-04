@@ -13,7 +13,7 @@ import { saveCoverageFile } from './recordCoverage';
 import { closeSounds } from './models/sound';
 import { GameData } from './models/game';
 import { LoadingCellsEvent } from './engine';
-import { Optional, RULE_DIRECTION_ABSOLUTE } from './util';
+import { Optional, RULE_DIRECTION } from './util';
 
 export type GameRecording = {
     version: number,
@@ -271,16 +271,16 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: { v
                 TerminalUI.renderScreen(false)
                 return
             case 'i':
-                TerminalUI.moveInspector(RULE_DIRECTION_ABSOLUTE.UP)
+                TerminalUI.moveInspector(RULE_DIRECTION.UP)
                 return
             case 'j':
-                TerminalUI.moveInspector(RULE_DIRECTION_ABSOLUTE.LEFT)
+                TerminalUI.moveInspector(RULE_DIRECTION.LEFT)
                 return
             case 'k':
-                TerminalUI.moveInspector(RULE_DIRECTION_ABSOLUTE.DOWN)
+                TerminalUI.moveInspector(RULE_DIRECTION.DOWN)
                 return
             case 'l':
-                TerminalUI.moveInspector(RULE_DIRECTION_ABSOLUTE.RIGHT)
+                TerminalUI.moveInspector(RULE_DIRECTION.RIGHT)
                 return
             case 'p':
                 const players = data.getPlayer().getCellsThatMatch()

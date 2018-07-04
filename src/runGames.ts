@@ -6,7 +6,7 @@ import * as pify from 'pify'
 import Parser from './parser/parser'
 import TerminalUI from './ui'
 import { GameEngine } from './engine'
-import { RULE_DIRECTION_ABSOLUTE } from './util';
+import { RULE_DIRECTION } from './util';
 import { saveCoverageFile } from './recordCoverage';
 import { closeSounds } from './models/sound';
 import { LevelRecording } from './playGame';
@@ -107,19 +107,19 @@ async function run() {
                 for (var i = 0; i < keypressesStr.length; i++) {
                     switch (keypressesStr[i]) {
                         case 'W':
-                            engine.press(RULE_DIRECTION_ABSOLUTE.UP)
+                            engine.press(RULE_DIRECTION.UP)
                             break
                         case 'S':
-                            engine.press(RULE_DIRECTION_ABSOLUTE.DOWN)
+                            engine.press(RULE_DIRECTION.DOWN)
                             break
                         case 'A':
-                            engine.press(RULE_DIRECTION_ABSOLUTE.LEFT)
+                            engine.press(RULE_DIRECTION.LEFT)
                             break
                         case 'D':
-                            engine.press(RULE_DIRECTION_ABSOLUTE.RIGHT)
+                            engine.press(RULE_DIRECTION.RIGHT)
                             break
                         case 'X':
-                            engine.press(RULE_DIRECTION_ABSOLUTE.ACTION)
+                            engine.press(RULE_DIRECTION.ACTION)
                             break
                         case '.':
                         case ',':

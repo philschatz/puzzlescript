@@ -1,7 +1,7 @@
 /* eslint-env jasmine */
 const { LevelEngine } = require('../lib/engine')
 const { default: Parser } = require('../lib/parser/parser')
-const { RULE_DIRECTION_ABSOLUTE } = require('../lib/util')
+const { RULE_DIRECTION } = require('../lib/util')
 
 
 const EMPTY_GAME = `
@@ -500,7 +500,7 @@ describe('engine', () => {
         engine.tick()
         expect(engine.currentLevel[0][0].getSpritesAsSet().has(player)).toBe(true)
 
-        engine.press(RULE_DIRECTION_ABSOLUTE.RIGHT)
+        engine.press(RULE_DIRECTION.RIGHT)
         engine.tick()
         expect(player.getCellsThatMatch().size).toBe(1)
         expect(engine.currentLevel[0][1].getSpritesAsSet().has(player)).toBe(true)
@@ -512,7 +512,7 @@ describe('engine', () => {
         engine.tick()
         expect(engine.currentLevel[0][0].getSpritesAsSet().has(player)).toBe(true)
 
-        engine.press(RULE_DIRECTION_ABSOLUTE.RIGHT)
+        engine.press(RULE_DIRECTION.RIGHT)
         engine.tick()
         expect(player.getCellsThatMatch().size).toBe(1)
         expect(engine.currentLevel[0][1].getSpritesAsSet().has(player)).toBe(true)
@@ -1492,7 +1492,7 @@ describe('engine', () => {
         const player = data._getSpriteByName('player')
         const island = data._getSpriteByName('island')
         const playerIsland = data._getSpriteByName('PlayerIsland')
-        engine.press(RULE_DIRECTION_ABSOLUTE.LEFT)
+        engine.press(RULE_DIRECTION.LEFT)
         engine.tick()
         expect(engine.toSnapshot()).toMatchSnapshot()
 
@@ -1562,7 +1562,7 @@ describe('engine', () => {
     `) // end game definition
 
         const player = data._getSpriteByName('player')
-        engine.press(RULE_DIRECTION_ABSOLUTE.RIGHT)
+        engine.press(RULE_DIRECTION.RIGHT)
         engine.tick()
         expect(engine.toSnapshot()).toMatchSnapshot()
 
