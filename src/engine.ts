@@ -677,34 +677,20 @@ export interface ILoadingProgressHandler extends Listener {
  * ```
  */
 export class GameEngine {
-    private readonly events: Map<string, ILoadingProgressHandler []>
     private levelEngine: LevelEngine
     private currentLevelNum: number
     private isFirstTick: boolean
     private messageShownAndWaitingForActionPress: boolean
     constructor(gameData: GameData) {
-        this.events = new Map()
         this.isFirstTick = true
         this.currentLevelNum = -1234567
         this.messageShownAndWaitingForActionPress = false
 
         this.levelEngine = new LevelEngine(gameData)
-        // register event handlers (like for the loading progress bar)
-        for (const [eventName, handlers] of this.events.entries()) {
-            for (const handler of handlers) {
-                this.levelEngine.on(eventName, handler)
-            }
-        }
         this.messageShownAndWaitingForActionPress = false
-
     }
     on(eventName: string, handler: ILoadingProgressHandler) {
-        let events = this.events.get(eventName)
-        if (!events) {
-            events = []
-            this.events.set(eventName, events)
-        }
-        events.push(handler)
+        this.levelEngine.on(eventName, handler)
     }
     getGameData() {
         return this.levelEngine.gameData
@@ -778,6 +764,7 @@ export class GameEngine {
             if (this.levelEngine.pendingPlayerWantsToMove === RULE_DIRECTION.ACTION) {
                 // render all the cells because we are currently rendering a Message
                 this.messageShownAndWaitingForActionPress = false
+                this.levelEngine.pendingPlayerWantsToMove = null
                 return {
                     changedCells: new Set(_.flatten(this.getCurrentLevelCells())),
                     soundToPlay: null,
