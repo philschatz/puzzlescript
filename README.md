@@ -46,7 +46,7 @@ PuzzleScript lends itself nicely to be playable by people with low or no vision:
 
 This screencap is a visual demonstration of exploring and then playing a level.
 
-<a href="https://asciinema.org/a/ORa64VAH4hran37CaOBRWEWmw?t=4"><img width="600" alt="exploring and playing a level without sight" src="https://asciinema.org/a/ORa64VAH4hran37CaOBRWEWmw.png"/></a>
+<a href="https://asciinema.org/a/tlAym1396xgcEw8A49A5WyOgZ?t=4"><img width="600" alt="exploring and playing a level without sight" src="https://asciinema.org/a/tlAym1396xgcEw8A49A5WyOgZ.png"/></a>
 
 
 # About
