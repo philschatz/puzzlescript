@@ -17,6 +17,8 @@ addons:
       - g++-4.8
       - libasound2-dev
 
+install:
+  - yarn install --ignore-optional # Ignore the speaker
 script:
-  - npm run-script test
+  - npm run-script ci
   - npm run-script ci-codecov

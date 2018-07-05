@@ -2,6 +2,7 @@
   "scripts": {
     "lint": "standard --fix preprocessor.js ./test/**/*.js",
     "prepublish": "NODE_ENV=production npm run-script tsc",
+    "ci": "tsc && NODE_ENV=development jest --coverage @*",
     "ci-codecov": "codecov",
     "tsc": "tsc",
     "tsc-watch": "tsc --watch",
