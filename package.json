@@ -37,7 +37,7 @@
     "glob": "^7.1.2",
     "inquirer": "6.0.0",
     "inquirer-autocomplete-prompt": "^0.12.2",
-    "jest": "23.1.0",
+    "jest": "^23.3.0",
     "lodash": "^4.17.10",
     "ohm-js": "^0.14.0",
     "pify": "^3.0.0",
@@ -59,6 +59,7 @@
     "eslint-plugin-typescript": "^0.12.0",
     "http-server": "^0.11.1",
     "istanbul": "^0.4.5",
+    "jest-watch-typeahead": "^0.1.0",
     "standard": "^11.0.1",
     "tslint": "^5.10.0",
     "typedoc": "^0.11.1",
@@ -69,6 +70,10 @@
     "speaker": "github:philschatz/node-speaker#cac7c5b7c434b52619bfbbd9530ab0871156e815"
   },
   "jest": {
+    "watchPlugins": [
+      "jest-watch-typeahead/filename",
+      "jest-watch-typeahead/testname"
+    ],
     "moduleFileExtensions": [
       "ts",
       "js"
