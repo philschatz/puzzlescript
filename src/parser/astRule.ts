@@ -189,7 +189,7 @@ export class ASTRule extends BaseForLines implements ICacheable {
             }
         }
 
-        return cacheSetAndGet(ruleCache, new SimpleRule(this.__source, directions[0], conditionBrackets, actionBrackets, this.commands, this.isLate(), this.isRigid(), this.isRandom(), this.debugFlag, doesEvaluationOrderMatter))
+        return cacheSetAndGet(ruleCache, new SimpleRule(this.__source, directions[0], conditionBrackets, actionBrackets, this.commands, this.isLate(), this.isRigid(), this.debugFlag, doesEvaluationOrderMatter))
     }
 
     private convertToMultiple() {
@@ -360,7 +360,6 @@ export class ASTRule extends BaseForLines implements ICacheable {
     isRandom() {
         return this.modifiers.indexOf(AST_RULE_MODIFIER.RANDOM) >= 0
     }
-
 }
 
 export interface IASTRuleBracket extends ICacheable {
@@ -564,7 +563,7 @@ export class ASTRuleBracketNeighborHack extends ASTRuleBracketNeighbor {
 }
 
 export class ASTRuleLoop extends BaseForLines {
-    readonly rules: ASTRule[]
+    private readonly rules: ASTRule[]
 
     constructor(source: IGameCode, rules: ASTRule[], debugFlag: DEBUG_FLAG) {
         super(source)
@@ -572,17 +571,24 @@ export class ASTRuleLoop extends BaseForLines {
     }
 
     simplify(ruleCache: Map<string, SimpleRule>, bracketCache: Map<string, ISimpleBracket>, neighborCache: Map<string, SimpleNeighbor>, tileCache: Map<string, SimpleTileWithModifier>) {
-        return new SimpleRuleLoop(this.__source, this.isRandom(), this.rules.map(rule => rule.simplify(ruleCache, bracketCache, neighborCache, tileCache)))
+        return new SimpleRuleLoop(this.__source, false/*isRandom*/, this.rules.map(rule => rule.simplify(ruleCache, bracketCache, neighborCache, tileCache)))
     }
     isRandom() {
-        return !!this.rules.filter(r => r.isRandom())[0]
+        return false
     }
 }
 
-export class ASTRuleGroup extends ASTRuleLoop {
+export class ASTRuleGroup extends BaseForLines {
+    private isRandom: boolean
+    private readonly rules: ASTRule[]
+    constructor(source: IGameCode, isRandom: boolean, rules: ASTRule[], debugFlag: DEBUG_FLAG) {
+        super(source)
+        this.isRandom = isRandom
+        this.rules = rules
+    }
     // Yes. One propagates isRandom while the other does not
     simplify(ruleCache: Map<string, SimpleRule>, bracketCache: Map<string, ISimpleBracket>, neighborCache: Map<string, SimpleNeighbor>, tileCache: Map<string, SimpleTileWithModifier>) {
-        return new SimpleRuleGroup(this.__source, this.isRandom(), this.rules.map(rule => rule.simplify(ruleCache, bracketCache, neighborCache, tileCache)))
+        return new SimpleRuleGroup(this.__source, this.isRandom, this.rules.map(rule => rule.simplify(ruleCache, bracketCache, neighborCache, tileCache)))
     }
 
 }

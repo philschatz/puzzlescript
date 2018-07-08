@@ -83,6 +83,7 @@ export const RULE_GRAMMAR = `
 
     RuleGroup =
         t_DEBUGGER?
+        t_RANDOM?
         Rule
         (t_GROUP_RULE_PLUS Rule)+
 
@@ -101,8 +102,8 @@ export function getRuleSemantics(lookup: LookupHelper) {
         RuleLoop: function (this: ohm.Node, debugFlag: Parseable<DEBUG_FLAG[]>, _startloop: Parseable<string>, _whitespace1: Parseable<string>, rules: Parseable<ASTRule[]>, _endloop: Parseable<string>, _whitespace2: Parseable<string>) {
             return new ASTRuleLoop(this.source, rules.parse(), debugFlag.parse()[0])
         },
-        RuleGroup: function (this: ohm.Node, debugFlag: Parseable<DEBUG_FLAG[]>, firstRule: Parseable<ASTRule>, _plusses: Parseable<string>, followingRules: Parseable<ASTRule[]>) {
-            return new ASTRuleGroup(this.source, [firstRule.parse()].concat(followingRules.parse()), debugFlag.parse()[0])
+        RuleGroup: function (this: ohm.Node, debugFlag: Parseable<DEBUG_FLAG[]>, randomFlag: Parseable<AST_RULE_MODIFIER[]>, firstRule: Parseable<ASTRule>, _plusses: Parseable<string>, followingRules: Parseable<ASTRule[]>) {
+            return new ASTRuleGroup(this.source, !!randomFlag.parse()[0], [firstRule.parse()].concat(followingRules.parse()), debugFlag.parse()[0])
         },
         Rule: function (this: ohm.Node, debugFlag: Parseable<DEBUG_FLAG[]>, modifiers: Parseable<AST_RULE_MODIFIER[]>, conditions: Parseable<ASTRuleBracket[]>, _arrow: Parseable<string>, _unusuedModifer: Parseable<string>, actions: Parseable<ASTRuleBracket[]>, commands: Parseable<AbstractCommand[]>, optionalMessageCommand: Parseable<MessageCommand[]>, _whitespace: Parseable<string>) {
             const modifiers2 = _.flatten(modifiers.parse())

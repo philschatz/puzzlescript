@@ -686,7 +686,9 @@ describe('engine', () => {
     `) // end game definition
 
         const player = data.getPlayer()
+        const playerReflection = data._getSpriteByName('Reflection')
         engine.tick() // To get the reflections to render
+        expect(playerReflection.getCellsThatMatch().size).toBe(4)
 
         // press action to get the player to reflect into 4 players
         engine.press(RULE_DIRECTION.ACTION)
@@ -772,5 +774,163 @@ describe('engine', () => {
         // Player should now be in every corner of the level (because of the mirrors)
         expect(engine.currentLevel[0][0].getSpritesAsSet().has(randomTile)).toBe(true)
 
+    })
+
+    it('runs exactly one rule when group is RANDOM', () => {
+        const { engine, data } = parseEngine(`title Random
+
+        ========
+        OBJECTS
+        ========
+
+        Background
+        black
+
+        Player
+        White
+
+        Zero
+        #030303
+
+        One
+        #ff0000
+
+        Two
+        #00ff00
+
+        Three
+        #0000ff
+
+        =======
+        LEGEND
+        =======
+
+        . = Background
+        P = Player
+        Number = Zero OR One OR Two OR Three
+
+        =======
+        SOUNDS
+        =======
+
+        ================
+        COLLISIONLAYERS
+        ================
+
+        Background
+        Player
+        Number
+
+        ======
+        RULES
+        ======
+
+        RANDOM [ Player | ] -> [ | Zero ]
+        + [ Player | ] -> [ | One ]
+        + [ Player | ] -> [ | Two ]
+        + [ Player | ] -> [ | Three ]
+
+        ==============
+        WINCONDITIONS
+        ==============
+
+        =======
+        LEVELS
+        =======
+
+        ......
+        .P..P.
+        ......
+
+    `) // end game definition
+
+        const num = data._getTileByName('Number')
+        engine.tick()
+        expect(engine.toSnapshot()).toMatchSnapshot()
+
+        expect(num.getCellsThatMatch().size).toBe(1)
+
+        engine.tick()
+        expect(engine.toSnapshot()).toMatchSnapshot()
+
+        expect(num.getCellsThatMatch().size).toBe(2)
+    })
+
+    it('runs exactly one rule when group is RANDOM', () => {
+        const { engine, data } = parseEngine(`title Random
+
+        ========
+        OBJECTS
+        ========
+
+        Background
+        black
+
+        Player
+        White
+
+        Zero
+        #030303
+
+        One
+        #ff0000
+
+        Two
+        #00ff00
+
+        Three
+        #0000ff
+
+        =======
+        LEGEND
+        =======
+
+        . = Background
+        P = Player
+        Number = Zero OR One OR Two OR Three
+
+        =======
+        SOUNDS
+        =======
+
+        ================
+        COLLISIONLAYERS
+        ================
+
+        Background
+        Player
+        Number
+
+        ======
+        RULES
+        ======
+
+        STARTLOOP
+
+        RANDOM [ Player | ] -> [ | Zero ]
+        + [ Player | ] -> [ | One ]
+        + [ Player | ] -> [ | Two ]
+        + [ Player | ] -> [ | Three ]
+
+        ENDLOOP
+
+        ==============
+        WINCONDITIONS
+        ==============
+
+        =======
+        LEVELS
+        =======
+
+        ......
+        .P..P.
+        ......
+
+    `) // end game definition
+
+        const num = data._getTileByName('Number')
+        engine.tick()
+
+        expect(num.getCellsThatMatch().size).toBe(2)
     })
 })

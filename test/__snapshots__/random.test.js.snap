@@ -27,7 +27,6 @@ Array [
     ],
     Array [
       "STATIONARY Background",
-      "STATIONARY LOS",
     ],
     Array [
       "STATIONARY MirrorDR",
@@ -59,7 +58,6 @@ Array [
     ],
     Array [
       "STATIONARY Background",
-      "STATIONARY LOS",
     ],
   ],
   Array [
@@ -84,7 +82,6 @@ Array [
   Array [
     Array [
       "STATIONARY Background",
-      "STATIONARY LOS",
     ],
     Array [
       "STATIONARY Background",
@@ -116,12 +113,138 @@ Array [
     ],
     Array [
       "STATIONARY Background",
-      "STATIONARY LOS",
     ],
     Array [
       "STATIONARY Background",
       "STATIONARY HasReflection",
       "STATIONARY Player",
+    ],
+  ],
+]
+`;
+
+exports[`engine runs exactly one rule when group is RANDOM 1`] = `
+Array [
+  Array [
+    Array [
+      "STATIONARY Background",
+    ],
+    Array [
+      "STATIONARY Background",
+      "STATIONARY Zero",
+    ],
+    Array [
+      "STATIONARY Background",
+    ],
+    Array [
+      "STATIONARY Background",
+    ],
+    Array [
+      "STATIONARY Background",
+    ],
+    Array [
+      "STATIONARY Background",
+    ],
+  ],
+  Array [
+    Array [
+      "STATIONARY Background",
+    ],
+    Array [],
+    Array [
+      "STATIONARY Background",
+    ],
+    Array [
+      "STATIONARY Background",
+    ],
+    Array [
+      "STATIONARY Player",
+    ],
+    Array [
+      "STATIONARY Background",
+    ],
+  ],
+  Array [
+    Array [
+      "STATIONARY Background",
+    ],
+    Array [
+      "STATIONARY Background",
+    ],
+    Array [
+      "STATIONARY Background",
+    ],
+    Array [
+      "STATIONARY Background",
+    ],
+    Array [
+      "STATIONARY Background",
+    ],
+    Array [
+      "STATIONARY Background",
+    ],
+  ],
+]
+`;
+
+exports[`engine runs exactly one rule when group is RANDOM 2`] = `
+Array [
+  Array [
+    Array [
+      "STATIONARY Background",
+    ],
+    Array [
+      "STATIONARY Background",
+      "STATIONARY Zero",
+    ],
+    Array [
+      "STATIONARY Background",
+    ],
+    Array [
+      "STATIONARY Background",
+    ],
+    Array [
+      "STATIONARY Background",
+      "STATIONARY Three",
+    ],
+    Array [
+      "STATIONARY Background",
+    ],
+  ],
+  Array [
+    Array [
+      "STATIONARY Background",
+    ],
+    Array [],
+    Array [
+      "STATIONARY Background",
+    ],
+    Array [
+      "STATIONARY Background",
+    ],
+    Array [],
+    Array [
+      "STATIONARY Background",
+    ],
+  ],
+  Array [
+    Array [
+      "STATIONARY Background",
+    ],
+    Array [
+      "STATIONARY Background",
+    ],
+    Array [
+      "STATIONARY Background",
+    ],
+    Array [
+      "STATIONARY Background",
+    ],
+    Array [
+      "STATIONARY Background",
+    ],
+    Array [
+      "STATIONARY Background",
     ],
   ],
 ]

@@ -38,17 +38,11 @@ function opposite(dir: RULE_DIRECTION) {
 
 export class SimpleRuleGroup extends BaseForLines implements IRule {
     private rules: IRule[]
-    private isRandomSet: boolean
+    private isRandom: boolean
     constructor(source: IGameCode, isRandom: boolean, rules: IRule[]) {
         super(source)
-        this.isRandomSet = isRandom
         this.rules = rules
-        // Clear the "Random" bit from individual rules if they are part of a Rule
-        if (this.isRandom()) {
-            for (const rule of this.rules) {
-                rule.clearRandomFlag()
-            }
-        }
+        this.isRandom = isRandom
     }
 
     canEvaluate() {
@@ -59,7 +53,7 @@ export class SimpleRuleGroup extends BaseForLines implements IRule {
         }
         return false
     }
-    evaluate() {
+    evaluate(onlyEvaluateFirstMatch: boolean) {
         // Keep looping as long as one of the rules evaluated something
         const allMutations: IMutation[][] = []
         for (let iteration = 0; iteration < MAX_ITERATIONS_IN_LOOP; iteration++) {
@@ -74,30 +68,33 @@ export class SimpleRuleGroup extends BaseForLines implements IRule {
                 console.error(this.toString())
                 throw new Error(`BUG: Iterated too many times in startloop or + (rule group)`)
             }
-            if (this.isRandom()) {
+            if (this.isRandom) {
                 // Randomly pick one of the rules. I wonder if it needs to be smart
                 // It is important that it only be evaluated once (hence the returns)
                 const evaluatableRules = this.rules.filter(r => r.canEvaluate())
                 if (evaluatableRules.length === 0) {
                     return []
                 } else if (evaluatableRules.length === 1) {
-                    const ret = evaluatableRules[0].evaluate()
+                    const ret = evaluatableRules[0].evaluate(true/*only evaluate the 1st match because we are RANDOM and in a loop*/)
                     return ret
                 } else {
                     const randomIndex = nextRandom(evaluatableRules.length)
                     const rule = evaluatableRules[randomIndex]
-                    const ret = rule.evaluate()
+                    const ret = rule.evaluate(true/*only evaluate the 1st match because we are RANDOM and in a loop*/)
                     return ret
                 }
             } else {
                 let evaluatedSomething = false
                 for (const rule of this.rules) {
                     // Keep evaluating the rule until nothing changes
-                    const ret = rule.evaluate()
+                    const ret = rule.evaluate(onlyEvaluateFirstMatch)
                     if (ret.length > 0) {
                         // filter because a Rule may have caused only command mutations
                         if (ret.filter(m => m.hasCell()).length > 0) {
                             evaluatedSomething = true
+                        }
+                        if (onlyEvaluateFirstMatch) {
+                            return ret
                         }
                         allMutations.push(ret)
                     }
@@ -138,16 +135,7 @@ export class SimpleRuleGroup extends BaseForLines implements IRule {
     isRigid() {
         return this.rules[0].isRigid()
     }
-    isRandom() {
-        return this.isRandomSet
-    }
 
-    clearRandomFlag() {
-        this.isRandomSet = false
-        for (const rule of this.rules) {
-            rule.clearRandomFlag()
-        }
-    }
     addCellsToEmptyRules(cells: Iterable<Cell>) {
         for (const rule of this.rules) {
             rule.addCellsToEmptyRules(cells)
@@ -156,9 +144,6 @@ export class SimpleRuleGroup extends BaseForLines implements IRule {
 }
 
 export class SimpleRuleLoop extends SimpleRuleGroup {
-    isRandom() {
-        return false
-    }
 }
 
 // This is a rule that has been expanded from `DOWN [ > player < cat RIGHT dog ] -> [ ^ crate ]` to:
@@ -178,12 +163,10 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
     private commands: AbstractCommand[]
     private _isLate: boolean
     private _isRigid: boolean
-    private _isRandom: boolean
     private isSubscribedToCellChanges: boolean
     private debugFlag: DEBUG_FLAG
     private doesEvaluationOrderMatter: boolean
-    private isOnlyEvaluatingFirstRandomMatch: boolean
-    constructor(source: IGameCode, evaluationDirection: RULE_DIRECTION, conditionBrackets: ISimpleBracket[], actionBrackets: ISimpleBracket[], commands: AbstractCommand[], isLate: boolean, isRigid: boolean, isRandom: boolean, debugFlag: DEBUG_FLAG, doesEvaluationOrderMatter: boolean) {
+    constructor(source: IGameCode, evaluationDirection: RULE_DIRECTION, conditionBrackets: ISimpleBracket[], actionBrackets: ISimpleBracket[], commands: AbstractCommand[], isLate: boolean, isRigid: boolean, debugFlag: DEBUG_FLAG, doesEvaluationOrderMatter: boolean) {
         super(source)
         this.evaluationDirection = evaluationDirection
         this.conditionBrackets = conditionBrackets
@@ -191,10 +174,9 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
         this.commands = commands
         this._isLate = isLate
         this._isRigid = isRigid
-        this._isRandom = isRandom
         this.debugFlag = debugFlag
         this.doesEvaluationOrderMatter = doesEvaluationOrderMatter
-        this.isOnlyEvaluatingFirstRandomMatch = isRandom && this.conditionBrackets[0].getNeighbors()[0]._tilesWithModifier.size === 0 // Special-case this to only be rules that have an empty condition (Garten de Medusen) // false //this._isRandom (sometimes turning it on causes )
+        // this.isOnlyEvaluatingFirstRandomMatch = isRandom && this.conditionBrackets[0].getNeighbors()[0]._tilesWithModifier.size === 0 // Special-case this to only be rules that have an empty condition (Garten de Medusen) // false //this._isRandom (sometimes turning it on causes )
         this.isSubscribedToCellChanges = false
 
         if (actionBrackets.length > 0) {
@@ -234,7 +216,7 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
         }
         return true
     }
-    evaluate() {
+    evaluate(onlyEvaluateFirstMatch: boolean) {
         const allMutations: IMutation[][] = []
         // Keep evaluating the rule until nothing changes
         let innerIteration
@@ -247,13 +229,13 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
             if (innerIteration === MAX_ITERATIONS_IN_LOOP - 1) {
                 throw new Error(`BUG: Iterated too many times in rule or rule group\n${this.toString()}`)
             }
-            const ret = this._evaluate()
-            // Only evaluate once. This is a HACK since it always picks the 1st cell that matched rather than a RANDOM cell
-            if (this.isOnlyEvaluatingFirstRandomMatch) {
-                return ret
-            }
+            const ret = this._evaluate(onlyEvaluateFirstMatch)
             if (ret.length > 0) {
                 allMutations.push(ret)
+                // Only evaluate once. This is a HACK since it always picks the 1st cell that matched rather than a RANDOM cell
+                if (onlyEvaluateFirstMatch) {
+                    break
+                }
                 // filter because a Rule may have caused only command mutations
                 if (ret.filter(m => m.hasCell()).length > 0) {
                 } else {
@@ -279,7 +261,7 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
 
         return flattenedMutations
     }
-    _evaluate() {
+    _evaluate(onlyEvaluateFirstMatch: boolean) {
         if (this._isRigid) {
             // TODO: Just commands are not supported yet
             return []
@@ -327,8 +309,8 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
                         allMutations.push(condition.evaluate(action, cell, magicOrTiles))
 
                         // Only evaluate once. This is a HACK since it always picks the 1st cell that matched rather than a RANDOM cell
-                        if (this.isOnlyEvaluatingFirstRandomMatch) {
-                            return _.flatten(allMutations)
+                        if (onlyEvaluateFirstMatch) {
+                            break // evaluate the subsequent brackets but do not continue evaluating cells
                         }
                     }
 
@@ -339,7 +321,7 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
                 }
                 ret = _.flatten(allMutations)
             } else {
-                ret = this.evaluateInOrder()
+                ret = this.evaluateInOrder(onlyEvaluateFirstMatch)
                 // console.log('SLLLLLOOOOOOWWWWW EVALUATION.........');
                 // console.log(this.toString())
                 // console.log('Evaluation took', Date.now() - startTime)
@@ -353,7 +335,7 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
         return ret
     }
 
-    evaluateInOrder() {
+    evaluateInOrder(onlyEvaluateFirstMatch: boolean) {
         let allMutators: IMutation[][] = []
 
         // Remember which cells we apready processed
@@ -497,7 +479,7 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
                     }
 
                     // Only evaluate once. This is a HACK since it always picks the 1st cell that matched rather than a RANDOM cell
-                    if (this.isOnlyEvaluatingFirstRandomMatch) {
+                    if (onlyEvaluateFirstMatch) {
                         return _.flatten(allMutators)
                     }
 
@@ -517,11 +499,6 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
     }
     isLate() { return this._isLate }
     isRigid() { return this._isRigid }
-    isRandom() { return this._isRandom }
-
-    clearRandomFlag() {
-        this._isRandom = false
-    }
 
     addCellsToEmptyRules(cells: Iterable<Cell>) {
         for (const bracket of this.conditionBrackets) {
@@ -1828,13 +1805,11 @@ class ExtraPair<A> extends Pair<A> {
 }
 
 export interface IRule extends IGameNode {
-    evaluate: () => IMutation[]
+    evaluate: (onlyEvaluateFirstMatch: boolean) => IMutation[]
     getChildRules: () => IRule[]
     isLate: () => boolean
     isRigid: () => boolean
-    isRandom: () => boolean
     clearCaches: () => void
-    clearRandomFlag: () => void
     canEvaluate: () => boolean
     addCellsToEmptyRules: (cells: Iterable<Cell>) => void
 }

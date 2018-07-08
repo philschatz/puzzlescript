@@ -382,7 +382,7 @@ export class LevelEngine extends EventEmitter2 {
         const changedMutations: Set<IMutation> = new Set()
         const evaluatedRules: IRule[] = []
         for (const rule of rules) {
-            const cellMutations = rule.evaluate()
+            const cellMutations = rule.evaluate(false/*evaluate all rules*/)
             if (cellMutations.length > 0) {
                 evaluatedRules.push(rule)
             }

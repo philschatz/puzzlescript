@@ -166,7 +166,10 @@ export class GameData {
     }
 
     _getSpriteByName(name: string) {
-        return this.objects.filter(sprite => sprite.getName().toLowerCase() === name.toLowerCase())[0]
+        return this.objects.find(sprite => sprite.getName().toLowerCase() === name.toLowerCase())
+    }
+    _getTileByName(name: string) {
+        return this.legends.find(tile => tile.getName().toLowerCase() === name.toLowerCase())
     }
 
     getMagicBackgroundSprite() {
@@ -187,7 +190,11 @@ export class GameData {
         return background
     }
     getPlayer(): IGameTile {
-        return this._getSpriteByName('player') || this.legends.find(tile => tile.spriteNameOrLevelChar.toLocaleLowerCase() === 'player')
+        const player = this._getSpriteByName('player') || this.legends.find(tile => tile.spriteNameOrLevelChar.toLocaleLowerCase() === 'player')
+        if (!player) {
+            throw new Error(`BUG: Could not find the Player sprite or tile in the game`)
+        }
+        return player
     }
 
     clearCaches() {

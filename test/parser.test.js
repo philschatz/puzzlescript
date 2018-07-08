@@ -439,19 +439,17 @@ yellow
         expector(data.rules[5].getChildRules()[0], false, false)
     })
 
-    describe('RANDOM keywork propagation', () => {
+    describe('RANDOM keyword propagation', () => {
         it('marks a rule as being RANDOM', () => {
             const {data} = parseRule('RANDOM [.] -> []', ['.'])
-            expect(data.rules[0].isRandom()).toBe(true)
+            expect(data.rules[0].isRandom).toBe(true)
         })
 
         it('marks a rule Group as being RANDOM', () => {
             const {data} = parseRule(`
 RANDOM [.] -> []
 + [Player] -> []`, ['.', 'Player'])
-            expect(data.rules[0].isRandom()).toBe(true)
-            // But make sure the actual rule is not marked as being random
-            expect(data.rules[0].rules[0].isRandom()).toBe(false)
+            expect(data.rules[0].isRandom).toBe(true)
         })
 
         it('does not mark a rule Loop as being RANDOM', () => {
@@ -461,7 +459,7 @@ RANDOM [.] -> []
 + [Player] -> []
 ENDLOOP
     `, ['.', 'Player'])
-            expect(data.rules[0].isRandom()).toBe(false)
+            expect(data.rules[0].isRandom).toBe(false)
         })
 
         it('properly groups loops and groups', () => {
