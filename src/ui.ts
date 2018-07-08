@@ -48,12 +48,12 @@ function writeTextAt(x: number, y: number, msg: string) {
     process.stdout.write(`${setMoveTo(x, y)}${msg}`)
 }
 function drawPixelChar(x: number, y: number, fgHex: Optional<string>, bgHex: Optional<string>, char: string) {
-    const out = []
+    const out:string[] = []
     if (fgHex) {
-        out.push(writeFgColor(fgHex))
+        out.push(setFgColor(fgHex))
     }
     if (bgHex) {
-        out.push(writeBgColor(bgHex))
+        out.push(setBgColor(bgHex))
     }
     out.push(setMoveTo(x, y))
     out.push(char)
