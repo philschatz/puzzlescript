@@ -133,9 +133,7 @@ async function run() {
                     // UI.renderScreen(data, engine.currentLevel)
 
                     // Draw any cells that moved
-                    for (const cell of changedCells) {
-                        TerminalUI.drawCell(cell, false)
-                    }
+                    TerminalUI.drawCells(changedCells, false)
                     if (i > 1) { // Skip the 1st couple because they might be cleaning up the level
                         maxTickAndRenderTime = Math.max(maxTickAndRenderTime, Date.now() - startTime)
                     }

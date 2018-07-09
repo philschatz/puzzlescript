@@ -363,9 +363,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: { v
         // UI.renderScreen(data, engine.currentLevel)
 
         // Draw any cells that moved
-        for (const cell of changedCells) {
-            TerminalUI.drawCell(cell, false)
-        }
+        TerminalUI.drawCells(changedCells, false)
 
         if (didLevelChange) {
             currentLevelNum = engine.getCurrentLevelNum()
@@ -430,9 +428,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: { v
             TerminalUI.renderMessageScreen(messageToShow)
         } else {
             // Draw any cells that moved
-            for (const cell of changedCells) {
-                TerminalUI.drawCell(cell, false)
-            }
+            TerminalUI.drawCells(changedCells, false)
         }
 
         const msg = `Tick: ${tickNum} took ${Date.now() - startTime}ms. Moves: ${[...keypresses].reverse().join('').substring(0, 20)}`
