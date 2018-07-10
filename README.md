@@ -59,7 +59,7 @@ This screencap is the **non-visual** version of the same steps as shown above. T
 
 The goal of this project is to do 3 things:
 
-1. make PuzzleScript easier to embed (like in 404 pages, easter eggs, etc)
+1. make PuzzleScript easier to embed (like in 404 pages, easter eggs, etc). See [docs](https://philschatz.com/puzzlescript-cli/docs/classes/_engine_.gameengine.html)
 1. allow **blind people to play video games**
 1. use the terminal as a GUI for playing games
 
@@ -68,6 +68,7 @@ The goal of this project is to do 3 things:
 
 This is a remake of PuzzleScript that has the following features:
 
+- There is [documentation](https://philschatz.com/puzzlescript-cli/docs/) for using the [NPM package](https://www.npmjs.com/package/puzzlescript-cli)
 - There is a [Grammar](https://en.wikipedia.org/wiki/Parsing_expression_grammar) file that parses the game file (uses [ohm](https://github.com/harc/ohm))
 - The interpreter is a separate component
 - The rendering code is abstracted out so folks can add a different renderer (the example uses ASCII in the Terminal to show the game)
