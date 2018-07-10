@@ -15,20 +15,22 @@ Also, it is **accessible**, meaning that [blind or visually impaired people can 
 
 Here are some screencaps of games being played.
 
-<a href="https://asciinema.org/a/md0Zep9LOBhdB4nx00OyA0NNH?t=25"><img width="300" alt="video of install and a couple games" src="https://asciinema.org/a/md0Zep9LOBhdB4nx00OyA0NNH.png"/></a>
+### Pot Wash Panic! ([original](https://hauntpun.itch.io/pot-wash-panic))
+
+<a href="https://asciinema.org/a/188014?t=25"><img width="300" alt="video of install and a couple games" src="https://asciinema.org/a/188014.png"/></a>
 
 
 ### Hack the Net ([original](http://www.draknek.org/games/puzzlescript/hack-the-net.php))
 
-<a href="https://asciinema.org/a/TG6K5iinlW7cnrRjtJ1vz6nJl"><img width="300" alt="video of a couple levels of Hack-the-Net" src="https://asciinema.org/a/TG6K5iinlW7cnrRjtJ1vz6nJl.png"/></a>
+<a href="https://asciinema.org/a/188016"><img width="300" alt="video of a couple levels of Hack-the-Net" src="https://asciinema.org/a/188016.png"/></a>
 
 ### Skipping Stones to Lonely Homes ([original](http://www.draknek.org/games/puzzlescript/skipping-stones.php))
 
-<a href="https://asciinema.org/a/mvHT4Btkpj49GzN8fawsUgCTX?t=20"><img width="300" alt="video of the beginning of Skipping Stones (BIG)" src="https://asciinema.org/a/mvHT4Btkpj49GzN8fawsUgCTX.png"/></a>
+<a href="https://asciinema.org/a/189279?t=20"><img width="300" alt="video of the beginning of Skipping Stones (BIG)" src="https://asciinema.org/a/189279.png"/></a>
 
-### Entanglement ([original]())
+### Entanglement ([original](http://www.richardlocke.co.uk/release/entanglement/chapter-1/))
 
-<a href="https://asciinema.org/a/B6QBhxI4iarolk5k3x4cIRewc?t=23"><img width="300" alt="video of the beginning of Entanglement" src="https://asciinema.org/a/B6QBhxI4iarolk5k3x4cIRewc.png"/></a>
+<a href="https://asciinema.org/a/189281?t=23"><img width="300" alt="video of the beginning of Entanglement" src="https://asciinema.org/a/189281.png"/></a>
 
 
 # Video games that blind people can play?
@@ -46,7 +48,11 @@ PuzzleScript lends itself nicely to be playable by people with low or no vision:
 
 This screencap is a visual demonstration of exploring and then playing a level.
 
-<a href="https://asciinema.org/a/tlAym1396xgcEw8A49A5WyOgZ?t=4"><img width="600" alt="exploring and playing a level without sight" src="https://asciinema.org/a/tlAym1396xgcEw8A49A5WyOgZ.png"/></a>
+<a href="https://asciinema.org/a/190028?t=4"><img width="600" alt="exploring and playing a level without sight (visual depiction)" src="https://asciinema.org/a/190028.png"/></a>
+
+This screencap is the **non-visual** version of the same steps as shown above. This is what vision-impaired people will read when they move the Inspector cursor around and then move the player to play the game.
+
+<a href="https://asciinema.org/a/191072?t=10"><img width="600" alt="exploring and playing a level without sight" src="https://asciinema.org/a/191072.png"/></a>
 
 
 # About
