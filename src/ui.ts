@@ -646,6 +646,9 @@ class TerminalUI {
         if (!this.gameData) {
             throw new Error(`BUG: gameData was not set yet`)
         }
+        if (!this.engine) {
+            throw new Error(`BUG: gameEngine was not set yet`)
+        }
         const ret: string[] = []
 
         // Sort of HACKy... If the player is not visible on the screen then we need to
@@ -657,7 +660,10 @@ class TerminalUI {
             if (renderScreenDepth <= 1) {
                 const playerCell = [...playerTile.getCellsThatMatch()][0]
                 const { isOnScreen } = this.cellPosToXY(playerCell)
-                this.recenterPlayerIfNeeded(playerCell, isOnScreen)
+                if (this.recenterPlayerIfNeeded(playerCell, isOnScreen)) {
+                    // if we moved the screen then re-render the whole screen
+                    cells = _.flatten(this.engine.getCurrentLevelCells())
+                }
             }
             // otherwise, keep rendering cells like normal
         }
@@ -685,14 +691,6 @@ class TerminalUI {
         const spritesForDebugging = cell.getSprites().filter(s => !s.isBackground())
 
         let { isOnScreen, cellStartX, cellStartY } = this.cellPosToXY(cell)
-
-        // Sort of HACKy... If the player is not visible on the screen then we need to
-        // move the screen so that they are visible.
-        const playerTile = this.gameData.getPlayer()
-        const cellHasPlayer = playerTile.matchesCell(cell)
-        if (playerTile.getCellsThatMatch().size === 1 && cellHasPlayer && !isOnScreen) {
-            throw new Error(`BUG: Player should already have been recentered`)
-        }
 
         if (!isOnScreen) {
             return // no need to render because it is off-screen
