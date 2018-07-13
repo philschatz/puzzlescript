@@ -22,5 +22,8 @@
     {
       "solution": "X"
     }
-  ]
+  ],
+  "title": "Stairs",
+  "totalLevels": 13,
+  "totalMapLevels": 6
 }

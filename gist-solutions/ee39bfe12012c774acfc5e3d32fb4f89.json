@@ -25,5 +25,8 @@
     {
       "solution": "X"
     }
-  ]
+  ],
+  "title": "Boxes & Balloons",
+  "totalLevels": 45,
+  "totalMapLevels": 22
 }

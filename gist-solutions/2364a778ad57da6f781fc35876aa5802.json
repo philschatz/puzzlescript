@@ -13,5 +13,8 @@
     {
       "solution": "X"
     }
-  ]
+  ],
+  "title": "Dungeon Janitor",
+  "totalLevels": 12,
+  "totalMapLevels": 4
 }

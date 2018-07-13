@@ -34,5 +34,8 @@
     {
       "solution": "X"
     }
-  ]
+  ],
+  "title": "IceCrates",
+  "totalLevels": 13,
+  "totalMapLevels": 6
 }

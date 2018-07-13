@@ -5,5 +5,8 @@
     {
       "solution": "WWWWDDDSDWDDWDDSAADSSDSSAWASAASAWA"
     }
-  ]
+  ],
+  "title": "Rock, Paper, Scissors",
+  "totalLevels": 32,
+  "totalMapLevels": 18
 }

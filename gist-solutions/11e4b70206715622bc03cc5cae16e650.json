@@ -22,5 +22,8 @@
     {
       "solution": "X"
     }
-  ]
+  ],
+  "title": "Botsket Ball",
+  "totalLevels": 15,
+  "totalMapLevels": 7
 }

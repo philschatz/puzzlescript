@@ -16,5 +16,8 @@
     {
       "solution": ".."
     }
-  ]
+  ],
+  "title": "Easy Enigma",
+  "totalLevels": 21,
+  "totalMapLevels": 21
 }

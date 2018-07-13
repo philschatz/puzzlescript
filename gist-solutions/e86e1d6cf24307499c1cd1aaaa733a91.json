@@ -37,5 +37,8 @@
     {
       "solution": "X"
     }
-  ]
+  ],
+  "title": "SwapBot",
+  "totalLevels": 21,
+  "totalMapLevels": 12
 }

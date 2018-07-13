@@ -141,9 +141,11 @@ async function run() {
 
             // Load the solutions file (if it exists) so we can append to it
             const solutionsPath = path.join(__dirname, `../gist-solutions/${gistId}.json`)
-            let recordings: { version: number, solutions: LevelRecording[] } = { version: 1, solutions: [] } // default
+            let recordings: { version: number, solutions: LevelRecording[], title: string, totalLevels: number, totalMapLevels: number }
             if (existsSync(solutionsPath)) {
                 recordings = JSON.parse(readFileSync(solutionsPath, 'utf-8'))
+            } else {
+                recordings = { version: 1, solutions: [], title: data.title, totalLevels: data.levels.length, totalMapLevels: data.levels.filter(l => l.isMap()).length } // default
             }
 
             let currentLevelNum = await promptChooseLevel(recordings, data)

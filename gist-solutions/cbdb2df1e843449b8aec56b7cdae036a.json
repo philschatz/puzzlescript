@@ -24,5 +24,8 @@
     {
       "solution": ".D,,D,,A,,A,,W,,S,,D,,D,,W,,A,,"
     }
-  ]
+  ],
+  "title": "Dangerous Dungeon",
+  "totalLevels": 27,
+  "totalMapLevels": 10
 }
