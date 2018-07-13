@@ -500,7 +500,7 @@ export class LevelEngine extends EventEmitter2 {
             }
         }
 
-        const {changedCells: changedCellMutations2, evaluatedRules, commands} = this.tickUpdateCells()
+        const {changedCells: changedCellMutations2, evaluatedRules, commands, didSomeSpriteChange} = this.tickUpdateCells()
         changedCellMutations = setAddAll(changedCellMutations, changedCellMutations2)
 
         // Continue evaluating again rules only when some sprites have changed
@@ -523,15 +523,16 @@ export class LevelEngine extends EventEmitter2 {
                 evaluatedRules: evaluatedRules,
             }
         }
-        const didCheckpoint = !!allCommands.filter(c => c.getType() === COMMAND_TYPE.CHECKPOINT)[0]
+        const didCheckpoint = !!allCommands.find(c => c.getType() === COMMAND_TYPE.CHECKPOINT)
         if (didCheckpoint) {
             this.undoStack = []
             this.takeSnapshot()
         }
         // set this only if we did not CANCEL and if some cell changed
         const changedCells = setAddAll(setAddAll(changedCellMutations, changedCellsLate), movedCells)
-        if (!!allCommands.filter(c => c.getType() === COMMAND_TYPE.AGAIN)[0]) {
-            this.hasAgainThatNeedsToRun = changedCells.size > 0
+        if (!!allCommands.find(c => c.getType() === COMMAND_TYPE.AGAIN)) {
+            // Compare all the cells to the top of the undo stack. If it does not differ
+            this.hasAgainThatNeedsToRun = didSomeSpriteChange || (movedCells.size > 0)
         }
         return {
             changedCells: changedCells,
