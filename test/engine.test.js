@@ -2318,7 +2318,7 @@ describe('engine', () => {
     })
 
 
-    it('runs again tick only when cells actually changed', () => {
+    it('runs again tick only when sprites moved', () => {
         const { engine, data } = parseEngine(`title Collapse Test
 
         ========
@@ -2384,5 +2384,70 @@ describe('engine', () => {
         engine.tick()
         expect(engine.hasAgainThatNeedsToRun).toBe(false) // the player is now standing on ground
     })
+
+    it('runs again tick only when cells actually changed', () => {
+        const { engine, data } = parseEngine(`title Atlas Test
+
+        ========
+        OBJECTS
+        ========
+
+        Background .
+        Black
+
+        Player P
+        Red DarkGreen Green
+        ..0..
+        22222
+        02220
+        01110
+        .1.1.
+
+        Temp
+        Gray
+
+        =======
+        LEGEND
+        =======
+
+        =======
+        SOUNDS
+        =======
+
+        ================
+        COLLISIONLAYERS
+        ================
+
+        Background
+        Player, Temp
+
+        ======
+        RULES
+        ======
+
+        (remove and add Player so nothing changed)
+        RIGHT [ Player ] -> [ Temp ] AGAIN
+        RIGHT [ Temp ] -> [ Player ] AGAIN
+
+        ==============
+        WINCONDITIONS
+        ==============
+
+        =======
+        LEVELS
+        =======
+
+        P
+
+    `) // end game definition
+
+        const player = data._getSpriteByName('player')
+        engine.tick()
+
+        expect(player.getCellsThatMatch().size).toBe(1)
+        expect(engine.currentLevel[0][0].getSpritesAsSet().has(player)).toBe(true)
+        expect(engine.hasAgainThatNeedsToRun).toBe(false)
+    })
+
 
 })

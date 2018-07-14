@@ -3,7 +3,7 @@ import { EventEmitter2, Listener } from 'eventemitter2'
 import { GameData } from './models/game'
 import { GameSprite } from './models/tile'
 import { IRule, IMutation } from './models/rule'
-import { nextRandom, setAddAll, RULE_DIRECTION, setDifference, Optional } from './util'
+import { nextRandom, setAddAll, RULE_DIRECTION, setDifference, Optional, setEquals } from './util'
 import { AbstractCommand, COMMAND_TYPE } from './models/command';
 import { GameSound } from './models/sound';
 import { CollisionLayer } from './models/collisionLayer';
@@ -21,6 +21,8 @@ type TickResult = {
     didLevelChange: boolean,
     wasAgainTick: boolean
 }
+
+type Snapshot = Set<GameSprite>[][]
 
 
 /**
@@ -259,7 +261,7 @@ export class LevelEngine extends EventEmitter2 {
     private currentLevel: Optional<Cell[][]>
     pendingPlayerWantsToMove: Optional<RULE_DIRECTION>
     hasAgainThatNeedsToRun: boolean
-    private undoStack: Set<GameSprite>[][][]
+    private undoStack: Snapshot[]
 
     constructor(gameData: GameData) {
         super()
@@ -335,7 +337,7 @@ export class LevelEngine extends EventEmitter2 {
             i += cells.length
         }
 
-        this.takeSnapshot()
+        this.takeSnapshot(this.createSnapshot())
 
         // Return the cells so the UI can listen to when they change
         return this.getCells()
@@ -394,11 +396,11 @@ export class LevelEngine extends EventEmitter2 {
         // We may have mutated the same cell 4 times (e.g. [Player]->[>Player]) so consolidate
         const changedCells = new Set<Cell>()
         const commands = new Set<AbstractCommand>()
-        let didSomeSpriteChange = false
+        // let didSomeSpriteChange = false
         for (const mutation of changedMutations) {
-            if (mutation.getDidSpritesChange()) {
-                didSomeSpriteChange = true
-            }
+            // if (mutation.getDidSpritesChange()) {
+            //     didSomeSpriteChange = true
+            // }
             if (mutation.hasCell()) {
                 changedCells.add(mutation.getCell())
             } else {
@@ -408,7 +410,7 @@ export class LevelEngine extends EventEmitter2 {
             //     changedCells.set(mutation.cell, mutation.didSpritesChange)
             // }
         }
-        return {evaluatedRules: evaluatedRules, changedCells: changedCells, commands: commands, didSomeSpriteChange: didSomeSpriteChange}
+        return {evaluatedRules: evaluatedRules, changedCells: changedCells, commands: commands/*, didSomeSpriteChange: didSomeSpriteChange*/}
     }
 
     private tickMoveSprites(changedCells: Set<Cell>) {
@@ -480,8 +482,9 @@ export class LevelEngine extends EventEmitter2 {
 
     private tickNormal() {
         let changedCellMutations = new Set()
+        const initialSnapshot = this.createSnapshot()
         if (this.pendingPlayerWantsToMove) {
-            this.takeSnapshot()
+            this.takeSnapshot(initialSnapshot)
 
             if (process.env['LOG_LEVEL'] === 'debug') {
                 console.error(`Turn starts with input of ${this.pendingPlayerWantsToMove.toLowerCase()}.`)
@@ -500,7 +503,7 @@ export class LevelEngine extends EventEmitter2 {
             }
         }
 
-        const {changedCells: changedCellMutations2, evaluatedRules, commands, didSomeSpriteChange} = this.tickUpdateCells()
+        const {changedCells: changedCellMutations2, evaluatedRules, commands} = this.tickUpdateCells()
         changedCellMutations = setAddAll(changedCellMutations, changedCellMutations2)
 
         // Continue evaluating again rules only when some sprites have changed
@@ -526,13 +529,13 @@ export class LevelEngine extends EventEmitter2 {
         const didCheckpoint = !!allCommands.find(c => c.getType() === COMMAND_TYPE.CHECKPOINT)
         if (didCheckpoint) {
             this.undoStack = []
-            this.takeSnapshot()
+            this.takeSnapshot(this.createSnapshot())
         }
         // set this only if we did not CANCEL and if some cell changed
         const changedCells = setAddAll(setAddAll(changedCellMutations, changedCellsLate), movedCells)
         if (!!allCommands.find(c => c.getType() === COMMAND_TYPE.AGAIN)) {
             // Compare all the cells to the top of the undo stack. If it does not differ
-            this.hasAgainThatNeedsToRun = didSomeSpriteChange || (movedCells.size > 0)
+            this.hasAgainThatNeedsToRun = this.doSnapshotsDiffer(initialSnapshot, this.createSnapshot())
         }
         return {
             changedCells: changedCells,
@@ -608,11 +611,13 @@ export class LevelEngine extends EventEmitter2 {
     }
 
     // Used for UNDO and RESTART
-    private takeSnapshot() {
-        const snapshot = this.getCurrentLevel().map(row => row.map(cell => cell.toSnapshot()))
+    private createSnapshot() {
+        return this.getCurrentLevel().map(row => row.map(cell => cell.toSnapshot()))
+    }
+    private takeSnapshot(snapshot: Snapshot) {
         this.undoStack.push(snapshot)
     }
-    private applySnapshot(snpashot: Set<GameSprite>[][]) {
+    private applySnapshot(snpashot: Snapshot) {
         for (let rowIndex = 0; rowIndex < this.getCurrentLevel().length; rowIndex++) {
             const row = this.getCurrentLevel()[rowIndex]
             const snapshotRow = snpashot[rowIndex]
@@ -622,6 +627,18 @@ export class LevelEngine extends EventEmitter2 {
                 cell.fromSnapshot(state)
             }
         }
+    }
+    private doSnapshotsDiffer(snapshot1: Snapshot, snapshot2: Snapshot) {
+        for (let rowIndex = 0; rowIndex < snapshot1.length; rowIndex++) {
+            for (let colIndex = 0; colIndex < snapshot1[0].length; colIndex++) {
+                const sprites1 = snapshot1[rowIndex][colIndex]
+                const sprites2 = snapshot2[rowIndex][colIndex]
+                if (!setEquals(sprites1, sprites2)) {
+                    return true
+                }
+            }
+        }
+        return false
     }
 
     press(direction: RULE_DIRECTION) {
