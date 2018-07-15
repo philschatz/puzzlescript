@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "solutions": [
+    {
+      "partial": ".D,W.D,W,W,..A,A,A,A,,,,,,,,,,D,W,A,W,A,W,....."
+    }
+  ],
+  "title": "Vines",
+  "totalLevels": 2,
+  "totalMapLevels": 1
+}

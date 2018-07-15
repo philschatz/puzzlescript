@@ -1,8 +1,12 @@
 {
   "version": 1,
   "solutions": [
-    null,
-    null,
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "X"
+    },
     {
       "solution": ".W,,W,,D,,D,,S,,S,,S,,A,,S,,D,,D,,D,,W,,W,,A,,W,,D,,W"
     },
@@ -23,6 +27,18 @@
     },
     {
       "solution": ".D,,D,,A,,A,,W,,S,,D,,D,,W,,A,,"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": ".X,,D,,D,,D,,D,,D,,D,,W,,W,,A,,A,,A,,A,,A,,S,,D,,X,,"
     }
   ],
   "title": "Dangerous Dungeon",

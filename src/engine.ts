@@ -3,7 +3,7 @@ import { EventEmitter2, Listener } from 'eventemitter2'
 import { GameData } from './models/game'
 import { GameSprite } from './models/tile'
 import { IRule, IMutation } from './models/rule'
-import { nextRandom, setAddAll, RULE_DIRECTION, setDifference, Optional, setEquals } from './util'
+import { nextRandom, setAddAll, RULE_DIRECTION, setDifference, Optional, setEquals, resetRandomSeed } from './util'
 import { AbstractCommand, COMMAND_TYPE } from './models/command';
 import { GameSound } from './models/sound';
 import { CollisionLayer } from './models/collisionLayer';
@@ -281,6 +281,7 @@ export class LevelEngine extends EventEmitter2 {
         if (process.env['NODE_ENV'] === 'development') {
             level.__incrementCoverage()
         }
+        resetRandomSeed()
         // Clone the board because we will be modifying it
         this.currentLevel = level.getRows().map((row, rowIndex) => {
             return row.map((col, colIndex) => new Cell(this, new Set(col.getSprites()), rowIndex, colIndex))
