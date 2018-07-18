@@ -130,6 +130,7 @@ export const STRINGTOKEN_GRAMMAR = `
     t_MOVING = caseInsensitive<"MOVING">
     t_ORTHOGONAL = caseInsensitive<"ORTHOGONAL">
     t_PERPENDICULAR = caseInsensitive<"PERPENDICULAR">
+    t_PARALLEL = caseInsensitive<"PARALLEL">
     t_STATIONARY = caseInsensitive<"STATIONARY">
     t_HORIZONTAL = caseInsensitive<"HORIZONTAL">
     t_VERTICAL = caseInsensitive<"VERTICAL">

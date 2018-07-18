@@ -82,7 +82,7 @@ playerleft
 .1.1.
 
 Crate2
-#82A17C #7EE58D  #4F5B46 #394239
+#82A17C #7EE58D  #4F5B46 #394239 
 20011
 20001
 22001
@@ -297,7 +297,7 @@ All Target on win
 LEVELS
 =======
 
-message cover up all targets with blocks
+message cover up all targets with blocks 
 
 message level 1 of 4
 --------

@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "solutions": [
+    null,
+    null,
+    {
+      "solution": ".,W,,D,,D,,W,,W,,A,,S,,D,,D,,W,,W,,W,,W,,A,,A"
+    },
+    {
+      "solution": "X"
+    }
+  ],
+  "title": "sticky",
+  "totalLevels": 14,
+  "totalMapLevels": 7
+}

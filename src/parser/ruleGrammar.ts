@@ -47,6 +47,7 @@ export const RULE_GRAMMAR = `
         | t_VERTICAL
         | t_HORIZONTAL
         | t_PERPENDICULAR
+        | t_PARALLEL
         | t_ORTHOGONAL
         | t_ARROW_ANY // This can be a "v" so it needs to go at the end (behind t_VERTICAL)
 

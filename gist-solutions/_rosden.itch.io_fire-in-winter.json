@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "solutions": [
+    null,
+    null,
+    {
+      "solution": ".WDDWSSAWAWDAAWWWDDDDDDWAASAWDDAAAAASSSDDDWDSASDDAAAAAWWWWDDDDDWAAWWDDSWAAAAAAWWDDDDDDWAASAW"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": ".WAWDDASDDSSSAASDSAAWASDSADWWWDDDWWWAADWWWASSDDDDWWDWWAAWWDDWDDSAAAWWWDDDDWWAAWWDDDDDDWWAAAAAWASSDDDDDWWWWAAW"
+    },
+    {
+      "solution": "X"
+    }
+  ],
+  "title": "fire in winter",
+  "totalLevels": 8,
+  "totalMapLevels": 3
+}

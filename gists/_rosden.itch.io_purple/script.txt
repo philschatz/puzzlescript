@@ -1,22 +1,22 @@
-title the big dig
+title purple
 author Rosden Shadow [Mark Signorelli]
 homepage rosden.itch.io
 run_rules_on_level_Start
 
-background_color #52465B
+background_color #536673
 
-text_color #F2F2AA
+text_color #FFD9FC
 
 ========
 OBJECTS
 ========
 
 Background
-#705C84 #52465B (#E57ED5 #CC5285)
+#7C94A1 #536673 (#E57ED5 #CC5285)
 11111
-10001
 10101
-10001
+11011
+10101
 11111
 (
 00101
@@ -32,49 +32,41 @@ Background
 10111)
 
 
-Target
-#F2F2AA#82A17C #7EE58D #D9FFDC
+nomove
+#FFEED9 #536673
 .....
 .000.
-.0.0.
+.010.
 .000.
+.....
+
+Target
+#82A17C #7EE58D #D9FFDC 
+.....
+.010.
+.1.1.
+.010.
 .....
 
 Wall
-#DB7F55 #E5C17E #B32D2D #73342E
+#9B7CA1 #C1A2BC #845C7A #5B4654
 20001
 20001
 22220
-33333
-33333
+23232
+32323
 
 overwall
-#DB7F55 #E5C17E #B32D2D #73342E
+#9B7CA1 #C1A2BC #845C7A #5B4654
 .....
 .....
 .....
 01111
 20001
 
-digWall
-#845C5C #A17C8B #5B4846 #423D39
-20002
-12001
-21220
-32332
-33233
-
-overdigwall
-#845C5C #A17C8B #5B4846 #423D39
-.....
-.....
-.....
-01211
-20021
-
 
 Playerright
-#E0AAF2 #A87EE5  #F3FFD9 #E5C17E
+#F2F2AA #E5C17E #DB7F55 #B32D2D
 .000.
 11202
 11313
@@ -82,7 +74,7 @@ Playerright
 .1.1.
 
 playerleft
-#E0AAF2 #A87EE5  #F3FFD9 #E5C17E
+#F2F2AA #E5C17E #DB7F55 #B32D2D
 .000.
 20211
 31311
@@ -90,7 +82,7 @@ playerleft
 .1.1.
 
 Crate
-#F2F2AA #FFEED9 #E5C17E #847A5C
+#DB7F55 #E5C17E  #B32D2D #73342E
 20011
 20001
 22001
@@ -98,7 +90,7 @@ Crate
 .333.
 
 overcrate
-#F2F2AA #FFEED9 #E5C17E #847A5C
+#DB7F55 #E5C17E  #B32D2D #73342E
 .....
 .....
 .....
@@ -146,7 +138,7 @@ black
 .....
 
 thefloor
-#52465B
+#536673
 00000
 00000
 00000
@@ -171,6 +163,23 @@ black
 .....
 )
 
+switcrate
+black
+.....
+.....
+.....
+.....
+.....
+
+switcrate2
+black
+.....
+.....
+.....
+.....
+.....
+
+
 =======
 LEGEND
 =======
@@ -178,22 +187,23 @@ LEGEND
 . = Background
 # = Wall
 P = Playerright
-K = playerright and target
 * = Crate
-@ = Crate and Target
+@ = Crate2
 O = Target
-d= digWall
+n = nomove
 
 c=cloner
 -=thefloor
 
-feel=overwall or overcrate or overcrate2 or overdigwall
-pushable=crate or cloner or swapcrate  or crate2
+feel=overwall or overcrate or overcrate2
+pushable=crate or cloner or swapcrate or crate2 or switcrate or switcrate2
 win=crate or wall
 
 
-theemx= crate
+theemx= crate 
 player=playerright or playerleft
+
+blocker = wall or crate or crate2 or nomove
 =======
 SOUNDS
 =======
@@ -203,14 +213,14 @@ pushable MOVE 36772507
 
 sfx0 52836103
 sfx1 45427502
-sfx2 40712702
 ================
 COLLISIONLAYERS
 ================
 
 Background
 Target
-Player, Wall, pushable,swapwall,thefloor, digwall
+nomove
+Player, Wall, pushable,swapwall,thefloor
 feel
 
 ======
@@ -218,22 +228,28 @@ RULES
 ======
 
 [feel]->[]
+[ >  Player | crate ] -> [  >  Player | > switcrate2 ]
+[ >  Player | crate2 ] -> [  >  Player | > switcrate ]
 
+
+
+[> switcrate|blocker]->[crate2|blocker]
+[> switcrate2|blocker]->[crate|blocker]
+
+
+
+[switcrate]->[crate]
+[switcrate2]->[crate2]
 
 [ left Playerright] -> [ left playerleft]
 [ right Playerleft] -> [ right playerright]
 
-[> player | digwall] ->[ player| crate] sfx2
-
-[> player | crate] ->[> player| > crate]
-
-[> crate | digwall] ->[> crate | ] sfx2
-
 
 
 late up [wall| ]-> [wall|overwall]
-late up [digwall| ]-> [digwall|overdigwall]
 late up [theemx| ]-> [theemx|overcrate]
+
+late up [crate2| ]-> [crate2|overcrate2]
 
 
 
@@ -241,7 +257,7 @@ late up [theemx| ]-> [theemx|overcrate]
 WINCONDITIONS
 ==============
 
-all Target on crate
+no crate
 
 
 
@@ -249,76 +265,63 @@ all Target on crate
 LEVELS
 =======
 
-message Get all targets to have gold on them
+message turn all blocks purple
 
 message level 1 of 4
 ---------
 -#######-
-##.....##
-#...P...#
-#.#d#d#.#
-#.#d#d#.#
-#.#d#d#.#
+##.nnn.##
+#.n.*.n.#
+#.n***n.#
+#.n.*.n.#
+#..nnn..#
 #.......#
-#.O...O.#
-##.....##
+#..*.*..#
+##..P..##
 -#######-
 
 message level 2 of 4
 ---------
 -#######-
-##.....##
-#.......#
-#.ddddd.#
-#.ddddd.#
-#.ddddd.#
-#...P...#
-#.O...O.#
-##OOOOO##
+##.nnn.##
+#.n.*.n.#
+#nn*.*nn#
+#n*.*.*n#
+#nn*.*nn#
+#.n.*.n.#
+#..npn..#
+##..n..##
 -#######-
 
 message level 3 of 4
 ---------
-#########
-#.......#
-#.ddddd.#
-#.dOOOd.#
-#.dOOOd.#
-#.dOKOd.#
-#.dOOOd.#
-#.ddddd.#
-#.......#
-#########
+-#######-
+##.nnn.##
+#.n***n.#
+#.nn.nn.#
+#.n***n.#
+#.nn.nn.#
+#.n***n.#
+#.n...n.#
+##.nPn.##
+-#######-
 
 message level 4 of 4
 ---------
--#######-
-##..#..##
-#.......#
-#.d#ddd.#
-#.ddd#d.#
-#.d#ddd.#
-#.ddd#d.#
-#.OOPOO.#
-##OOOOO##
--#######-
-
-
-
-message level 5 of 4 SECRET LEVEL
----------
--#######-
-##.....##
-#...O...#
-#.ddddd.#
-#.ddddd.#
-#.ddddd.#
-#...P...#
-#.OOOOO.#
-##OOOOO##
+#########
+#.nnnnn.#
+#n*****n#
+#n*...*n#
+#n*...*n#
+#n*...*n#
+#n*****n#
+#.nnnnn.#
+##..P..##
 -#######-
 
 
 
 
-message you made a fortune!
+
+
+message royal purple rules
