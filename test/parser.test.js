@@ -428,15 +428,15 @@ yellow
     `)
 
         function expector(rule, late, rigid) {
-            expect(rule.isLate()).toBe(late)
-            expect(rule.isRigid()).toBe(rigid)
+            expect(rule.getChildRules()[0].isLate()).toBe(late)
+            expect(rule.hasRigid()).toBe(rigid)
         }
-        expector(data.rules[0].getChildRules()[0], true, false)
-        expector(data.rules[1].getChildRules()[0], false, true)
-        expector(data.rules[2].getChildRules()[0], false, false)
-        expector(data.rules[3].getChildRules()[0], true, true)
-        expector(data.rules[4].getChildRules()[0], false, false)
-        expector(data.rules[5].getChildRules()[0], false, false)
+        expector(data.rules[0], true, false)
+        expector(data.rules[1], false, true)
+        expector(data.rules[2], false, false)
+        expector(data.rules[3], true, true)
+        expector(data.rules[4], false, false)
+        expector(data.rules[5], false, false)
     })
 
     describe('RANDOM keyword propagation', () => {

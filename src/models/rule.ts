@@ -132,10 +132,15 @@ export class SimpleRuleGroup extends BaseForLines implements IRule {
         // All rules in a group should be parked as late if any is marked as late
         return this.rules[0].isLate()
     }
-    isRigid() {
-        return this.rules[0].isRigid()
-    }
 
+    hasRigid() {
+        for (const rule of this.rules) {
+            if (rule.hasRigid()) {
+                return true
+            }
+        }
+        return false
+    }
     addCellsToEmptyRules(cells: Iterable<Cell>) {
         for (const rule of this.rules) {
             rule.addCellsToEmptyRules(cells)
@@ -162,7 +167,7 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
     private actionBrackets: ISimpleBracket[]
     private commands: AbstractCommand[]
     private _isLate: boolean
-    private _isRigid: boolean
+    private readonly isRigid: boolean
     private isSubscribedToCellChanges: boolean
     private debugFlag: DEBUG_FLAG
     private doesEvaluationOrderMatter: boolean
@@ -173,7 +178,7 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
         this.actionBrackets = actionBrackets
         this.commands = commands
         this._isLate = isLate
-        this._isRigid = isRigid
+        this.isRigid = isRigid
         this.debugFlag = debugFlag
         this.doesEvaluationOrderMatter = doesEvaluationOrderMatter
         // this.isOnlyEvaluatingFirstRandomMatch = isRandom && this.conditionBrackets[0].getNeighbors()[0]._tilesWithModifier.size === 0 // Special-case this to only be rules that have an empty condition (Garten de Medusen) // false //this._isRandom (sometimes turning it on causes )
@@ -186,7 +191,7 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
         }
     }
     toKey() {
-        return `{Late?${this._isLate}}{Rigid?${this._isRigid}} ${this.evaluationDirection} ${this.conditionBrackets.map(x => x.toKey())} -> ${this.actionBrackets.map(x => x.toKey())} ${this.commands.join(' ')} {debugger?${this.debugFlag}}`
+        return `{Late?${this._isLate}} {Rigid?${this.isRigid}}  ${this.evaluationDirection} ${this.conditionBrackets.map(x => x.toKey())} -> ${this.actionBrackets.map(x => x.toKey())} ${this.commands.join(' ')} {debugger?${this.debugFlag}}`
     }
     getChildRules(): IRule[] {
         return []
@@ -262,11 +267,6 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
         return flattenedMutations
     }
     _evaluate(onlyEvaluateFirstMatch: boolean) {
-        if (this._isRigid) {
-            // TODO: Just commands are not supported yet
-            return []
-        }
-
         // Verify that each condition bracket has matches
         for (const condition of this.conditionBrackets) {
             if (condition.getFirstCells().size == 0) {
@@ -498,7 +498,7 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
         return _.flatten(allMutators)
     }
     isLate() { return this._isLate }
-    isRigid() { return this._isRigid }
+    hasRigid() { return this.isRigid }
 
     addCellsToEmptyRules(cells: Iterable<Cell>) {
         for (const bracket of this.conditionBrackets) {
@@ -1808,7 +1808,7 @@ export interface IRule extends IGameNode {
     evaluate: (onlyEvaluateFirstMatch: boolean) => IMutation[]
     getChildRules: () => IRule[]
     isLate: () => boolean
-    isRigid: () => boolean
+    hasRigid: () => boolean
     clearCaches: () => void
     canEvaluate: () => boolean
     addCellsToEmptyRules: (cells: Iterable<Cell>) => void

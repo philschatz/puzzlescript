@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "solutions": [
+    {
+      "solution": "X"
+    },
+    {
+      "solution": ".DDDDD"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": ".SDDWDDSD"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": ".DDASAWWDDDDDSD"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": ".SAWWDDDSWAAASDSDWDDDD"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": ".DWAASAAWDDDDSDDWAASAW"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "AWDASDDWDDSD"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": ".DDWDSSAWWAWWDSDDDDWDDDDSSSSAWWDWAAWAASD"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": ".DDWASAWWWASSWWDSSSDWAAADDDSAAAAWWW"
+    },
+    {
+      "solution": "X"
+    }
+  ],
+  "title": "out of bounds [lite demo v2]",
+  "totalLevels": 47,
+  "totalMapLevels": 22
+}
