@@ -230,7 +230,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: { v
         keypresses = [] // clear key history
     }
 
-    let keypresses: string[] = []
+    let keypresses = [...ticksToRunFirst]
     let pendingKey = null
     let shouldExitGame: boolean = false
     // https://stackoverflow.com/a/30687420
@@ -385,8 +385,8 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: { v
     }
 
     let tickNum = 0
-    let maxSleepTime = 50
     while (true) {
+        let maxSleepTime = 50
         // Exit the game if the user pressed escape
         if (shouldExitGame) {
             break // so we can detach key listeners
