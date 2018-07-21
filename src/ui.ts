@@ -764,13 +764,13 @@ class TerminalUI {
                             }
                             spriteName = `${wantsToMove}${spriteName}`
                             if (spriteName.length > 10) {
-                                spriteName = `${spriteName.substring(0, 5)}.${spriteName.substring(spriteName.length - 4)}`
+                                spriteName = `${spriteName.substring(0, this.SPRITE_WIDTH)}.${spriteName.substring(spriteName.length - this.SPRITE_WIDTH - 1)}`
                             }
                             const msg = `${spriteName.substring(spriteColIndex * 2, spriteColIndex * 2 + 2)}`
                             chars = msg.substring(0, 2)
                         }
-                        if (spriteRowIndex === 4 && spriteColIndex === 4) {
-                            if (spritesForDebugging.length > 9) {
+                        if (spriteRowIndex === this.SPRITE_HEIGHT - 1 && spriteColIndex === this.SPRITE_WIDTH - 1) {
+                            if (spritesForDebugging.length > this.SPRITE_WIDTH * 2 - 1) {
                                 chars = `${spritesForDebugging.length}`
                             } else {
                                 chars = ` ${spritesForDebugging.length}`
