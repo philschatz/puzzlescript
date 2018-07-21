@@ -1,4 +1,4 @@
-title out of bounds [lite demo v2]
+title out of bounds [lite demo]
 author cyathea tree studio
 homepage www.cyatheatree.com
 
@@ -247,7 +247,7 @@ DarkBrown White LightGrey
 00000000
 
 FixedPlane
-DarkGrey White LightGrey
+#999999 White LightGrey
 00000000
 01221120
 02112210
@@ -302,7 +302,7 @@ White DarkBrown LightGrey
 11211011
 
 FixedBrokenWallL
-White DarkGrey LightGrey
+White #999999 LightGrey
 1.......
 1.......
 2.......
@@ -313,7 +313,7 @@ White DarkGrey LightGrey
 1.......
 
 FixedBrokenWallR
-White DarkGrey LightGrey
+White #999999 LightGrey
 .......1
 .......1
 .......0
@@ -324,7 +324,7 @@ White DarkGrey LightGrey
 .......1
 
 FixedBrokenWallU
-White DarkGrey LightGrey
+White #999999 LightGrey
 11011211
 ........
 ........
@@ -335,7 +335,7 @@ White DarkGrey LightGrey
 ........
 
 FixedBrokenWallD
-White DarkGrey LightGrey
+White #999999 LightGrey
 ........
 ........
 ........
@@ -812,43 +812,47 @@ all Player on Flag
 LEVELS
 =======
 
-message capture the flag
+message level 1 - capture the flag
 
 ......
 &OOOO$
 ......
 
-message broken tiles
+message level 2 - meet the crate
 
-......
+&OO@OO
+....$.
+
+message level 3 - avoid broken tiles
+
 &%OOO%
 OOO%O$
-......
 
-message what
+message level 4 - out of the tile
 
 .....v.
 .&O%OO$
 .^.....
 
-message what what
+message level 5 - push that tile
 
 .......
 .&O%OO$
 .^.....
 
-message door
+message level 6 - more than one to push
 
-.$.....
-...&<..
+......
+&O@$@O
+^...^.
 
-message crate
+message level 7 - detour
 
 vOOO...
 O&O@O$O
 .......
 
-message stationary
+message level 8 - grey means stationary
 
 .....x.v....
 ....QQQO....
@@ -856,25 +860,7 @@ message stationary
 .7QO.x..QQ$.
 .....x......
 
-message path
-
-4.>Q..
-Q..Q..
-..O.O.
-QQ.7<.
-
-message bridge
-
-...$..
-.O....
-...O..
-...O..
-...O..
-...O..
-...O..
-...&<.
-
-message meet the little guy
+message level 9 - meet the little guy
 
 .OO}O.}OOO..
 &OOOOOO..O..
@@ -882,7 +868,7 @@ message meet the little guy
 ......O..O..
 .........$..
 
-message avoid the little guy
+message level 10 - avoid the little guy
 
 ...........
 ...QQQQ4...
@@ -892,7 +878,7 @@ message avoid the little guy
 QQQ8QQQQQ2Q
 ........Q7Q
 
-message asynchronous
+message level 11 - asynchronous
 
 ...........
 >7OQQ9Q9Q4.
@@ -901,7 +887,7 @@ message asynchronous
 ...........
 ...........
 
-message a non-picky hole
+message level 12 - a non-picky hole
 
 &O@O#O
 .....O
@@ -913,13 +899,13 @@ O#OOO#
 ....xO
 ....x$
 
-message more holes
+message level 13 - push everything into the hole
 
 &<O.H.$H.v
 ..%.H.$H.O
 ..O.H.$H..
 
-message that little guy
+message level 14 - catch that guy
 
 .....9....
 .....Q....
@@ -930,17 +916,7 @@ OO<.......
 ........3.
 ........4.
 
-message challenge 1 - witness
-
-QQQQQQQQQQ.
-QQQQQQQQQQ.
-.^OX..O....
-.O.X.O....4
-XX....O..v.
-QQQQQQQQQQ.
-QQQQQ7QQQQ.
-
-message challenge 2 - key rusher
+message level 15 - key rusher
 
 {O+OOOOOOOO:{O$
 ...O.O.........
@@ -952,7 +928,17 @@ message challenge 2 - key rusher
 ........O......
 ...&OOOOOOO+...
 
-message challenge 3 - push the hole
+message challenge 1 - slow way
+
+OOO$
+O.@.
+HO..
+O.@.
+.@..
+O.O.
+O&<.
+
+message challenge 2 - push the hole
 
 43;QQQQ8QQ.
 ...Q....Q..
@@ -966,7 +952,7 @@ message challenge 3 - push the hole
 ..7........
 ..^........
 
-message challenge 4 - slime party
+message challenge 3 - slime party
 
 .x..x
 .O$O.
@@ -993,23 +979,74 @@ message challenge ? - push the hole (extended version)
 ..7........
 ..^........
 
-message challenge ? - slow way
-
-OOO$
-O.@.
-HO..
-O.@.
-.@..
-O.O.
-O&<.
-
-message challenge ? - path 2
-
-.....
-.O<.x
-.7.QQ
-..O.Q
-.4.QQ
-.....
-
 message WOO!
+
+(
+message mechanism test level
+
+.....v.
+.&%@!O$
+.^.....
+...B*..
+.QOQO<.
+.^...].
+.~.v...
+.H.O#..
+..[....
+
+message level 15 - key rusher (origin)
+
+{O+OOOOOOOO:{O$
+...O.O.........
+...O.O.........
+...O.O.........
+...O{O.....O@O.
+...OOO:OOOOO@O+
+.+.OOO..O..O@O.
+.O......O...O..
+.OO&OOO:OOOOO..
+
+message failed level - the elevator
+
+...QQ.O&#$
+...xx..^..
+..OQQO....
+..OxxO....
+..OQQO....
+..OxxO....
+..OQ8O....
+..........
+
+message level 8
+
+...v..
+P..O..
+.xxO..
+.OOTO.
+$.....
+
+message level 9
+
+......
+P.O...
+..Ok..
+.O.*O.
+$..x^.
+
+message level 10
+
+vP...
+OgOx.
+O@@$O
+.^.O.
+..>O.
+
+message misc level
+
+.O$...
+.*O...
+.O$<*.
+*>O..P
+.OO<..
+......
+)

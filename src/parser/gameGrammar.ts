@@ -35,7 +35,7 @@ export const COMMON_GRAMMAR = `
 
     newline = "\\n"
     whitespace = " " | "\\u0009" /*tab*/
-    space := whitespace | multiLineComment // redefine what a space is so we can ignore comments
+    space := (whitespace | multiLineComment) ")"* // redefine what a space is so we can ignore comments
 
     nonVarChar = whitespace | newline | "[" | "]" | "(" | ")" | "|" | "."
 

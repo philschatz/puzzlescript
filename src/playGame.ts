@@ -7,14 +7,9 @@ import * as inquirer from 'inquirer'
 import PromptModule, * as autocomplete from 'inquirer-autocomplete-prompt'
 import chalk from 'chalk'
 
-import Parser from './parser/parser'
+import {Parser, GameEngine, LoadingCellsEvent, closeSounds, GameData, Optional, RULE_DIRECTION} from './'
 import TerminalUI, { getTerminalSize } from './ui'
-import { GameEngine } from './engine'
 import { saveCoverageFile } from './recordCoverage';
-import { closeSounds } from './models/sound';
-import { GameData } from './models/game';
-import { LoadingCellsEvent } from './engine';
-import { Optional, RULE_DIRECTION } from './util';
 
 export type GameRecording = {
     version: number,

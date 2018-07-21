@@ -2,12 +2,11 @@ import * as _ from 'lodash'
 import * as ansiStyles from 'ansi-styles'
 import * as ansiEscapes from 'ansi-escapes'
 import * as supportsColor from 'supports-color'
-import { GameSprite } from './models/tile'
-import { GameData } from './models/game'
-import { IColor } from './models/colors'
-import { GameEngine, Cell } from './engine'
-import { RULE_DIRECTION, Optional } from './util';
 import chalk from 'chalk';
+
+import { GameEngine, Cell, GameData, Optional, RULE_DIRECTION } from './'
+import { GameSprite } from './models/tile'
+import { IColor } from './models/colors'
 import { makeLetterCell } from './letters';
 
 // Determine if this

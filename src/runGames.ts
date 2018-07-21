@@ -3,12 +3,10 @@ import * as path from 'path'
 import * as glob from 'glob'
 import * as pify from 'pify'
 
-import Parser from './parser/parser'
+import {Parser, GameEngine, closeSounds, RULE_DIRECTION} from './'
+
 import TerminalUI from './ui'
-import { GameEngine } from './engine'
-import { RULE_DIRECTION } from './util';
 import { saveCoverageFile } from './recordCoverage';
-import { closeSounds } from './models/sound';
 import { LevelRecording } from './playGame';
 
 async function sleep(ms: number) {
