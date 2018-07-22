@@ -95,7 +95,7 @@ async function run() {
                 TerminalUI.setGame(engine)
                 TerminalUI.clearScreen()
                 TerminalUI.renderScreen(true)
-                TerminalUI.writeDebug(`Game: "${data.title}"`)
+                TerminalUI.writeDebug(`"${data.title}"`, 0)
 
 
                 startTime = Date.now()
@@ -137,7 +137,7 @@ async function run() {
                     }
 
                     const msg = `Tick ${i} of "${data.title}" (took ${Date.now() - startTime}ms)`
-                    TerminalUI.writeDebug(msg.substring(0, 160))
+                    TerminalUI.writeDebug(msg.substring(0, 160), 0)
 
                     // if (soundToPlay) {
                     //     await soundToPlay.play()

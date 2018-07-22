@@ -43,8 +43,8 @@ function setShowCursor() {
 function clearScreen() {
     process.stdout.write(ansiEscapes.clearScreen)
 }
-function writeTextAt(x: number, y: number, msg: string) {
-    process.stdout.write(`${setMoveTo(x, y)}${msg}`)
+function clearLineAndWriteTextAt(x: number, y: number, msg: string) {
+    process.stdout.write(`${setMoveTo(x, y)}${ansiEscapes.eraseLine}${msg}`)
 }
 function drawPixelChar(x: number, y: number, fgHex: Optional<string>, bgHex: Optional<string>, char: string) {
     const out:string[] = []
@@ -151,6 +151,7 @@ class TerminalUI {
     PIXEL_HEIGHT: number
     private inspectorCol: number
     private inspectorRow: number
+    private debugCategoryMessages: string[]
 
     constructor() {
         this.cellColorCache = new CellColorCache()
@@ -169,6 +170,8 @@ class TerminalUI {
         // This is the "inspector" cursor that allows a11y
         this.inspectorCol = 0
         this.inspectorRow = 0
+
+        this.debugCategoryMessages = []
     }
     setGame(engine: GameEngine) {
         this.engine = engine
@@ -435,7 +438,7 @@ class TerminalUI {
         this.drawCells(_.flatten(levelRows), false, renderScreenDepth)
 
         // Just for debugging, print the game title (doing it here helps with Jest rendering correctly)
-        this.writeDebug(`"${this.gameData.title}"`)
+        this.writeDebug(`"${this.gameData.title}"`, 0)
     }
 
     private cellPosToXY(cell: Cell) {
@@ -764,7 +767,7 @@ class TerminalUI {
                             }
                             spriteName = `${wantsToMove}${spriteName}`
                             if (spriteName.length > 10) {
-                                spriteName = `${spriteName.substring(0, this.SPRITE_WIDTH)}.${spriteName.substring(spriteName.length - this.SPRITE_WIDTH - 1)}`
+                                spriteName = `${spriteName.substring(0, this.SPRITE_WIDTH)}.${spriteName.substring(spriteName.length - this.SPRITE_WIDTH + 1)}`
                             }
                             const msg = `${spriteName.substring(spriteColIndex * 2, spriteColIndex * 2 + 2)}`
                             chars = msg.substring(0, 2)
@@ -826,7 +829,9 @@ class TerminalUI {
         clearScreen()
     }
 
-    writeDebug(text: string) {
+    writeDebug(text: string, category: number) {
+        this.debugCategoryMessages[category] = text
+
         if (!supportsColor.stdout) {
             // console.log(`Writing Debug text "${text}"`)
             return
@@ -834,7 +839,15 @@ class TerminalUI {
         if (!this.isDumpingScreen) {
             writeFgColor('#ffffff')
             writeBgColor('#000000')
-            writeText(0, 0, `[${text}]`)
+            clearLineAndWriteText(0, 0, `[${this.debugCategoryMessages.join(' | ')}]`)
+        }
+    }
+
+    a11yWrite(text: string) {
+        if (supportsColor.stdout) {
+            this.writeDebug(text, 0)
+        } else {
+            console.log(text)
         }
     }
 
@@ -910,13 +923,11 @@ class TerminalUI {
                 this.drawCells(cells, false)
             }
 
-            if (!supportsColor.stdout) {
-                const spriteNames = cell.getSprites()
-                .filter(s => !s.isBackground())
-                .map(s => s.getName())
-                console.log(`${spriteNames.join(', ')} (${cell.rowIndex}, ${cell.colIndex})`)
-                return
-            }
+            const spriteNames = cell.getSprites()
+            .filter(s => !s.isBackground())
+            .map(s => s.getName())
+            const msg = `${spriteNames.join(', ')} (${cell.rowIndex}, ${cell.colIndex})`
+            this.a11yWrite(msg)
 
         }
 
@@ -955,12 +966,12 @@ function getRestoreCursor() {
     ].join('')
 }
 
-function writeText(x: number, y: number, text: string) {
+function clearLineAndWriteText(x: number, y: number, text: string) {
     if (!supportsColor.stdout) {
         console.log(`Writing text at [${y}][${x}]: "${text}"`)
         return
     }
-    writeTextAt(x, y, text)
+    clearLineAndWriteTextAt(x, y, text)
     process.stdout.write(getRestoreCursor())
 }
 

@@ -198,7 +198,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: { v
         // UI.writeDebug(`Loading cells ${cellStart}-${cellEnd} of ${cellTotal}. SpriteKey="${key}"`)
         const loading = `Loading... [`
         const barChars = '                    '
-        TerminalUI.writeDebug(loading + barChars)
+        TerminalUI.writeDebug(loading + barChars, 1)
         const offset = loading.length + 1
         const barLength = barChars.length
         const percentStartYellow = Math.floor(barLength * cellStart / cellTotal)
@@ -303,7 +303,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: { v
                 shouldExitGame = true
                 return
             default:
-                TerminalUI.writeDebug(`pressed....: "${toUnicode(key)}"`)
+                TerminalUI.writeDebug(`pressed....: "${toUnicode(key)}"`, 1)
         }
     }
 
@@ -333,7 +333,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: { v
     TerminalUI.setGame(engine)
     TerminalUI.clearScreen()
     TerminalUI.renderScreen(false)
-    TerminalUI.writeDebug(`Game: "${data.title}"`)
+    TerminalUI.writeDebug(`"${data.title}"`, 1)
 
     let currentlyPlayingSoundPromise: Optional<Promise<void>> = null // stack the sounds so we know if one is playing
 
@@ -373,7 +373,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: { v
         }
 
         const msg = `Playback ${keyNum}/${ticksToRunFirst.length} of "${data.title}" (took ${Date.now() - startTime}ms)`
-        TerminalUI.writeDebug(msg.substring(0, 160))
+        TerminalUI.writeDebug(msg.substring(0, 160), 1)
 
         await sleep(1) // sleep long enough to play sounds
         // await sleep(Math.max(100 - (Date.now() - startTime), 0))
@@ -429,7 +429,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: { v
         }
 
         const msg = `Tick: ${tickNum} took ${Date.now() - startTime}ms. Moves: ${[...keypresses].reverse().join('').substring(0, 20)}`
-        TerminalUI.writeDebug(msg.substring(0, 160))
+        TerminalUI.writeDebug(msg.substring(0, 160), 1)
 
         if (wasAgainTick) {
             keypresses.push(',')
