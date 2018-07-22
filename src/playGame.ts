@@ -6,6 +6,7 @@ import * as supportsColor from 'supports-color'
 import * as inquirer from 'inquirer'
 import PromptModule, * as autocomplete from 'inquirer-autocomplete-prompt'
 import chalk from 'chalk'
+import * as commander from 'commander'
 
 import {Parser, GameEngine, LoadingCellsEvent, closeSounds, GameData, Optional, RULE_DIRECTION} from './'
 import TerminalUI, { getTerminalSize } from './ui'
@@ -19,7 +20,28 @@ export type LevelRecording = {
     partial?: string,
     solution?: string
 }
+type Package = {
+    version: string,
+    homepage: string
+}
+enum CLI_SPRITE_SIZE {
+    LARGE = 'large',
+    SMALL = 'small'
+}
+type GameInfo = { id: string, title: string, filePath: string }
+type SaveFile = { version: number, solutions: { solution?: string, partial?: string }[] }
+type CliOptions = {
+    version: string,
+    ui: boolean,
+    game: Optional<string>,
+    size: Optional<CLI_SPRITE_SIZE>,
+    new: Optional<true>,
+    level: Optional<number>,
+    resume: Optional<boolean>
+}
 
+// Use require instead of import so we can load JSON files
+const pkg: Package = <Package> require('../package.json')
 
 async function sleep(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms))
@@ -74,15 +96,29 @@ function toUnicode(theString: string) {
     return unicodeString;
 }
 
-type GameInfo = { id: string, title: string, filePath: string }
-type SaveFile = { version: number, solutions: { solution?: string, partial?: string }[] }
 
-run()
+commander
+.version(pkg.version)
+.option('--no-ui', 'just output text instead of renndering the puzzles (for accessibility)')
+.option('-g, --game <title>', 'play a specific game matching this title regexp')
+.option('-s, --size <largeOrSmall>', 'Specify the sprite size (either "large" or "small")')
+.option('-n, --new', 'start a new game')
+.option('-l, --level <num>', 'play a specific level', (arg => parseInt(arg)))
+.option('-r, --resume', 'resume the level from last save')
+.parse(process.argv)
+
+
+run().then(() => { process.exit(0) }, err => {
+    console.error(err)
+    process.exit(111)
+})
 
 
 async function run() {
     inquirer.registerPrompt('autocomplete', <PromptModule>autocomplete)
     const gists = await pify(glob)(path.join(__dirname, '../gists/*/script.txt'))
+    const cliOptions: CliOptions = <CliOptions> commander.opts()
+    let { ui: cliUi, game: cliGameTitle, size: cliSpriteSize, new: cliNewGame, level: cliLevel, resume: cliResume } = cliOptions
 
     const games: GameInfo[] = []
 
@@ -106,18 +142,20 @@ async function run() {
         })
     }
 
-    console.log(``)
-    console.log(``)
-    console.log(`Let's play some ${chalk.bold.redBright('P')}${chalk.bold.greenBright('U')}${chalk.bold.blueBright('Z')}${chalk.bold.yellowBright('Z')}${chalk.bold.cyanBright('L')}${chalk.bold.magentaBright('E')}${chalk.bold.whiteBright('S')}!`)
-    console.log(``)
-    console.log(``)
-    console.log(`${chalk.dim('Games that are')} ${chalk.bold.whiteBright('white')} ${chalk.dim('are great to start out,')} ${chalk.bold.white('gray')} ${chalk.dim('are fun and run, and')} ${chalk.bold.dim('dark')} ${chalk.dim('may or may not run.')}`)
-    console.log(``)
+    if (!cliGameTitle) {
+        console.log(``)
+        console.log(``)
+        console.log(`Let's play some ${chalk.bold.redBright('P')}${chalk.bold.greenBright('U')}${chalk.bold.blueBright('Z')}${chalk.bold.yellowBright('Z')}${chalk.bold.cyanBright('L')}${chalk.bold.magentaBright('E')}${chalk.bold.whiteBright('S')}!`)
+        console.log(``)
+        console.log(``)
+        console.log(`${chalk.dim('Games that are')} ${chalk.bold.whiteBright('white')} ${chalk.dim('are great to start out,')} ${chalk.bold.white('gray')} ${chalk.dim('are fun and run, and')} ${chalk.bold.dim('dark')} ${chalk.dim('may or may not run.')}`)
+        console.log(``)
+    }
 
     // loop indefinitely
     let wantsToPlayAgain = false
     do {
-        const { filePath: gamePath, id: gistId } = await promptGame(games)
+        const { filePath: gamePath, id: gistId } = await promptGame(games, cliGameTitle)
         const absPath = path.resolve(gamePath)
         const code = readFileSync(absPath, 'utf-8')
         const { data, error, trace } = Parser.parse(code)
@@ -132,7 +170,7 @@ async function run() {
             }
             showControls();
             // check to see if the terminal is too small
-            await promptPixelSize(data);
+            await promptPixelSize(data, cliUi ? cliSpriteSize : CLI_SPRITE_SIZE.SMALL);
 
             // Load the solutions file (if it exists) so we can append to it
             const solutionsPath = path.join(__dirname, `../gist-solutions/${gistId}.json`)
@@ -143,16 +181,21 @@ async function run() {
                 recordings = { version: 1, solutions: [], title: data.title, totalLevels: data.levels.length, totalMapLevels: data.levels.filter(l => l.isMap()).length } // default
             }
 
-            let currentLevelNum = await promptChooseLevel(recordings, data)
+            let currentLevelNum = await promptChooseLevel(recordings, data, cliNewGame ? 0 : cliLevel)
 
             // Allow the user to resume from where they left off
             let ticksToRunFirst = ''
             if (recordings.solutions[currentLevelNum] && (recordings.solutions[currentLevelNum].partial || recordings.solutions[currentLevelNum].solution)) {
-                const { shouldResume } = await inquirer.prompt<{ shouldResume: boolean }>({
-                    type: 'confirm',
-                    name: 'shouldResume',
-                    message: 'Would you like to resume where you left off?',
-                })
+                let shouldResume
+                if (cliResume !== undefined) {
+                    shouldResume = cliResume
+                } else {
+                    shouldResume = (await inquirer.prompt<{ shouldResume: boolean }>({
+                        type: 'confirm',
+                        name: 'shouldResume',
+                        message: 'Would you like to resume where you left off?',
+                    })).shouldResume
+                }
                 if (shouldResume) {
                     ticksToRunFirst = recordings.solutions[currentLevelNum].partial || recordings.solutions[currentLevelNum].solution || ''
                 }
@@ -169,27 +212,37 @@ async function run() {
 
             TerminalUI.clearScreen()
 
-            await playGame(data, currentLevelNum, recordings, ticksToRunFirst, absPath, solutionsPath)
+            await playGame(data, currentLevelNum, recordings, ticksToRunFirst, absPath, solutionsPath, cliUi, cliLevel !== undefined /*only run one level if specified*/)
 
-            wantsToPlayAgain = await promptPlayAnother()
+            if (!cliGameTitle) {
+                wantsToPlayAgain = await promptPlayAnother()
+            }
+
+            // clear the level and resume Options since if they play another game the options may not apply
+            cliResume = undefined
+            cliLevel = undefined
         }
 
     } while (wantsToPlayAgain)
 
-    console.log(``)
-    console.log(``)
-    console.log(`Thanks for playing PuzzleScript Games! Check out these links for more:`)
-    console.log(``)
-    console.log(`- ${chalk.blueBright('https://puzzlescript.net')} : The PuzzleScript homepage`)
-    console.log(`- ${chalk.blueBright('https://github.com/philschatz/puzzlescript-cli')} : Code for this program (${chalk.green('Help improve our code!')})`)
-    console.log(``)
+    if (cliUi) {
+        console.log(``)
+        console.log(``)
+        console.log(`Thanks for playing PuzzleScript Games! Check out these links for more:`)
+        console.log(``)
+        console.log(`- ${chalk.blueBright('https://puzzlescript.net')} : The PuzzleScript homepage`)
+        console.log(`- ${chalk.blueBright(pkg.homepage)} : Code for this program (${chalk.green('Help improve our code!')})`)
+        console.log(``)
+    }
 }
 
 
-async function playGame(data: GameData, currentLevelNum: number, recordings: { version: number, solutions: { solution?: string, partial?: string }[] }, ticksToRunFirst: string, absPath: string, solutionsPath: string) {
+async function playGame(data: GameData, currentLevelNum: number, recordings: { version: number, solutions: { solution?: string, partial?: string }[] }, ticksToRunFirst: string, absPath: string, solutionsPath: string, cliUi: boolean, onlyOneLevel: boolean) {
     if (process.env['LOG_LEVEL'] === 'debug') {
         console.error(`Start playing "${data.title}". Level ${currentLevelNum}`)
     }
+
+    TerminalUI.setHasVisualUi(cliUi)
 
     const level = data.levels[currentLevelNum]
     let startTime = Date.now()
@@ -363,6 +416,9 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: { v
         TerminalUI.drawCells(changedCells, false)
 
         if (didLevelChange) {
+            if (onlyOneLevel) {
+                return
+            }
             currentLevelNum = engine.getCurrentLevelNum()
             TerminalUI.clearScreen()
             TerminalUI.renderScreen(false)
@@ -465,13 +521,16 @@ async function promptPlayAnother() {
     return playAnotherGame
 }
 
-async function promptChooseLevel(recordings: SaveFile, data: GameData) {
+async function promptChooseLevel(recordings: SaveFile, data: GameData, cliLevel: Optional<number>) {
     const levels = data.levels
     const firstUncompletedLevel = levels
         .indexOf(levels
             .filter((l, index) => !(recordings.solutions[index] && recordings.solutions[index].solution))[0]
         )
 
+    if (cliLevel !== undefined && cliLevel !== null) {
+        return cliLevel
+    }
     const { currentLevelNum } = await inquirer.prompt<{
         currentLevelNum: number;
     }>([{
@@ -549,8 +608,12 @@ async function promptChooseLevel(recordings: SaveFile, data: GameData) {
     return currentLevelNum
 }
 
-async function promptPixelSize(data: GameData) {
-    if (!TerminalUI.willAllLevelsFitOnScreen(data)) {
+async function promptPixelSize(data: GameData, cliSpriteSize: Optional<CLI_SPRITE_SIZE>) {
+    if (cliSpriteSize === CLI_SPRITE_SIZE.SMALL) {
+        TerminalUI.setSmallTerminal(true);
+    } else if (cliSpriteSize === CLI_SPRITE_SIZE.LARGE) {
+        // do nothing since the terminal size is large by default
+    } else if (!TerminalUI.willAllLevelsFitOnScreen(data)) {
         // Draw some example sprites
         console.log('Some of the levels in this game are too large for your terminal.');
         console.log('You can resize your terminal or use compact sprites.');
@@ -592,7 +655,7 @@ async function promptPixelSize(data: GameData) {
     }
 }
 
-async function promptGame(games: GameInfo[]) {
+async function promptGame(games: GameInfo[], cliGameTitle: Optional<string>) {
     // Sort games by games that are fun and should be played first
     const firstGames = [
         'Pot Wash Panic',
@@ -714,23 +777,35 @@ async function promptGame(games: GameInfo[]) {
         //     }
         // })
     }
-    const { gameTitle } = await inquirer.prompt<{ gameTitle: string }>([question])
 
-    // Filter out the DIM escape codes (to give the game titles a color)
-    const firstInvisible = gameTitle.indexOf('\u2063')
-    const lastInvisible = gameTitle.lastIndexOf('\u2063')
-    let uncoloredGameTitle: string
-    if (firstInvisible >= 0) {
-        uncoloredGameTitle = gameTitle.substring(firstInvisible + 1, lastInvisible)
+    let chosenGame
+    if (cliGameTitle) {
+        chosenGame = games.find(g => {
+            return g.title.indexOf(cliGameTitle) >= 0
+        })
+        if (!chosenGame) {
+            console.error(`ERROR: Could not find game with title "${cliGameTitle}"`)
+            process.exit(111)
+            throw new Error('Could not find game')
+        }
     } else {
-        uncoloredGameTitle = gameTitle
+        const gameTitle = (await inquirer.prompt<{ gameTitle: string }>([question])).gameTitle
+        // Filter out the DIM escape codes (to give the game titles a color)
+        const firstInvisible = gameTitle.indexOf('\u2063')
+        const lastInvisible = gameTitle.lastIndexOf('\u2063')
+        let uncoloredGameTitle: string
+        if (firstInvisible >= 0) {
+            uncoloredGameTitle = gameTitle.substring(firstInvisible + 1, lastInvisible)
+        } else {
+            uncoloredGameTitle = gameTitle
+        }
+
+        chosenGame = games.filter(game => game.title === uncoloredGameTitle)[0]
+        if (!chosenGame) {
+            throw new Error(`BUG: Could not find game "${uncoloredGameTitle}"`)
+        }
     }
 
-    const chosenGame = games.filter(game => game.title === uncoloredGameTitle)[0]
-
-    if (!chosenGame) {
-        throw new Error(`BUG: Could not find game "${uncoloredGameTitle}"`)
-    }
     return chosenGame
 }
 

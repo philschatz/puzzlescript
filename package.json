@@ -18,8 +18,9 @@
     "start-debug-cli": "LOG_LEVEL=debug NODE_ENV=development node inspect lib/runGames.js 2> ./start.log",
     "poststart": "npm run-script coverage && echo 'Generated coverage. Type open ./coverage/lcov-html/index.html to see it'",
     "coverage": "istanbul report --root ./coverage/ lcov",
-    "test": "tsc && NODE_ENV=development jest --coverage --updateSnapshot @*",
+    "test": "tsc && NODE_ENV=development jest --coverage --updateSnapshot @* && npm run-script test-cli",
     "test-debug": "NODE_ENV=development node --inspect-brk -r source-map-support/register $(npm bin)/jest -i --updateSnapshot $@",
+    "test-cli": "./bin/puzzlescript.js --no-ui --game 'Beam Islands' --level 1 --size small --resume",
     "watch": "jest --updateSnapshot --watch",
     "debug": "NODE_ENV=development node --inspect-brk lib/runGames.js"
   },
@@ -118,5 +119,5 @@
   "bugs": {
     "url": "https://github.com/philschatz/puzzlescript-cli/issues"
   },
-  "homepage": "https://github.com/philschatz/puzzlescript-cli#readme"
+  "homepage": "https://github.com/philschatz/puzzlescript-cli"
 }

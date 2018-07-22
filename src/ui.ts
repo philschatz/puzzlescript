@@ -152,6 +152,7 @@ class TerminalUI {
     private inspectorCol: number
     private inspectorRow: number
     private debugCategoryMessages: string[]
+    private hasVisualUi: boolean
 
     constructor() {
         this.cellColorCache = new CellColorCache()
@@ -172,6 +173,7 @@ class TerminalUI {
         this.inspectorRow = 0
 
         this.debugCategoryMessages = []
+        this.hasVisualUi = supportsColor.stdout
     }
     setGame(engine: GameEngine) {
         this.engine = engine
@@ -204,6 +206,9 @@ class TerminalUI {
         this.inspectorCol = 0
         this.inspectorRow = 0
     }
+    setHasVisualUi(flag: boolean) {
+        this.hasVisualUi = flag
+    }
     setSmallTerminal(yesNo: boolean) {
         if (yesNo) {
             this.PIXEL_WIDTH = 1 // number of characters in the terminal used to represent a pixel
@@ -216,6 +221,17 @@ class TerminalUI {
     private isLargeTerminal() {
         return this.PIXEL_HEIGHT === 1
     }
+    private clearLineAndWriteText(x: number, y: number, text: string) {
+        if (!this.hasVisualUi) {
+            console.log(`Writing text at [${y}][${x}]: "${text}"`)
+            return
+        }
+        writeFgColor('#ffffff')
+        writeBgColor('#000000')
+        clearLineAndWriteTextAt(x, y, text)
+        process.stdout.write(getRestoreCursor())
+    }
+
     private getSpriteSize(gameData: GameData) {
         const firstSpriteWithPixels = gameData.objects.filter(sprite => sprite.hasPixels())[0]
         if (firstSpriteWithPixels) {
@@ -365,7 +381,7 @@ class TerminalUI {
         const screenHeight = 13
 
         const {columns, rows} = getTerminalSize()
-        if (supportsColor.stdout && columns >= screenWidth * 5 * this.PIXEL_WIDTH && rows >= screenHeight * 5 * this.PIXEL_HEIGHT) {
+        if (this.hasVisualUi && columns >= screenWidth * 5 * this.PIXEL_WIDTH && rows >= screenHeight * 5 * this.PIXEL_HEIGHT) {
             // re-center the screen so we can show the message
             // remember these values so we can restore them right after rendering the message
             const {windowOffsetColStart, windowOffsetRowStart, windowOffsetHeight, windowOffsetWidth} = this
@@ -412,7 +428,7 @@ class TerminalUI {
         }
 
         // Perform this AFTER the renderMessageScreen so that messages are always rendered (but puzzle levels are not)
-        if (!supportsColor.stdout) {
+        if (!this.hasVisualUi) {
             console.log('Playing a game in the console requires color support. Unfortunately, color is not supported so not rendering (for now). We could just do an ASCII dump or something, using  ░▒▓█ to denote shades of cells')
             return
         }
@@ -683,7 +699,7 @@ class TerminalUI {
         if (!this.gameData) {
             throw new Error(`BUG: gameData was not set yet`)
         }
-        if (!supportsColor.stdout) {
+        if (!this.hasVisualUi) {
             // Commented just to reduce noise. Maybe it shoud be brought back
             // console.log(`Updating cell [${cell.rowIndex}][${cell.colIndex}] to have sprites: [${cell.getSprites().map(sprite => sprite.getName())}]`)
             return // don't output anything
@@ -811,7 +827,7 @@ class TerminalUI {
     }
 
     clearScreen() {
-        if (!supportsColor.stdout) {
+        if (!this.hasVisualUi) {
             console.log(`Clearing screen`)
             return
         }
@@ -832,19 +848,17 @@ class TerminalUI {
     writeDebug(text: string, category: number) {
         this.debugCategoryMessages[category] = text
 
-        if (!supportsColor.stdout) {
+        if (!this.hasVisualUi) {
             // console.log(`Writing Debug text "${text}"`)
             return
         }
         if (!this.isDumpingScreen) {
-            writeFgColor('#ffffff')
-            writeBgColor('#000000')
-            clearLineAndWriteText(0, 0, `[${this.debugCategoryMessages.join(' | ')}]`)
+            this.clearLineAndWriteText(0, 0, `[${this.debugCategoryMessages.join(' | ')}]`)
         }
     }
 
     a11yWrite(text: string) {
-        if (supportsColor.stdout) {
+        if (this.hasVisualUi) {
             this.writeDebug(text, 0)
         } else {
             console.log(text)
@@ -914,7 +928,7 @@ class TerminalUI {
             this.inspectorCol = newCol
             this.inspectorRow = newRow
             // draw the old cell (to remove the graphic artfact)
-            if (supportsColor.stdout && this.isLargeTerminal()) {
+            if (this.hasVisualUi && this.isLargeTerminal()) {
                 const cells = [newInspectorCell]
                 if (oldInspectorCell) {
                     cells.push(oldInspectorCell)
@@ -955,9 +969,6 @@ export function getTerminalSize() {
 }
 
 function getRestoreCursor() {
-    if (!supportsColor.stdout) {
-        return ''
-    }
     const {columns, rows} = getTerminalSize()
     return [
         setFgColor('#ffffff'),
@@ -966,14 +977,6 @@ function getRestoreCursor() {
     ].join('')
 }
 
-function clearLineAndWriteText(x: number, y: number, text: string) {
-    if (!supportsColor.stdout) {
-        console.log(`Writing text at [${y}][${x}]: "${text}"`)
-        return
-    }
-    clearLineAndWriteTextAt(x, y, text)
-    process.stdout.write(getRestoreCursor())
-}
 
 export default new TerminalUI()
 

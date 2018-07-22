@@ -2,10 +2,13 @@
   "version": 1,
   "solutions": [
     {
-      "solution": ".W..A.A..W.W..D.D..D..W...D..D..D..S.D...S.D"
+      "solution": "WAAWWDDD,,,WDDDSD,,SD"
     },
     {
-      "solution": "..W.D..D.W.D..D..S.S.A..A..A..A..W..D..D..D.W..W.A..A.W..W.D..D.W"
+      "solution": "WDDWDDSSAAAAWDDDWWAAWWDDW"
+    },
+    {
+      "solution": "DDWDDAASSS,,WAWDD,,,ADWW,,D,,,D,,,SD,,,DSSDD"
     }
   ],
   "title": "Boxes Love Bloxing Gloves",
