@@ -59,3 +59,7 @@ typings/
 
 /lib/
 /docs/
+
+
+test/webpack-output.js
+test/webpack-output.js.map

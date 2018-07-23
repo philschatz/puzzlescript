@@ -1,22 +1,13 @@
 import { BaseForLines, IGameCode } from './game'
 import { IGameTile } from './tile'
-import {playSound, closeSounds as closeSounds2} from '../sounds';
-
-export function closeSounds() {
-    closeSounds2()
-}
 
 // Abstract class
 export class GameSound extends BaseForLines {
-    private readonly soundCode: number
+    public readonly soundCode: number
 
     constructor(source: IGameCode, soundCode: number) {
         super(source)
         this.soundCode = soundCode
-    }
-
-    async play() {
-        return playSound(this.soundCode)
     }
 }
 

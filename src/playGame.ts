@@ -8,7 +8,8 @@ import PromptModule, * as autocomplete from 'inquirer-autocomplete-prompt'
 import chalk from 'chalk'
 import * as commander from 'commander'
 
-import {Parser, GameEngine, LoadingCellsEvent, closeSounds, GameData, Optional, RULE_DIRECTION} from './'
+import {Parser, GameEngine, LoadingCellsEvent, GameData, Optional, RULE_DIRECTION} from './'
+import { playSound, closeSounds } from './sounds';
 import TerminalUI, { getTerminalSize } from './ui'
 import { saveCoverageFile } from './recordCoverage';
 
@@ -399,7 +400,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: { v
 
         if (soundToPlay) {
             if (!currentlyPlayingSoundPromise) {
-                currentlyPlayingSoundPromise = soundToPlay.play().then(() => {
+                currentlyPlayingSoundPromise = playSound(soundToPlay).then(() => {
                     currentlyPlayingSoundPromise = null
                     return
                 })
@@ -451,7 +452,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: { v
 
         if (soundToPlay) {
             if (!currentlyPlayingSoundPromise) {
-                currentlyPlayingSoundPromise = soundToPlay.play().then(() => {
+                currentlyPlayingSoundPromise = playSound(soundToPlay).then(() => {
                     currentlyPlayingSoundPromise = null
                     return
                 })
