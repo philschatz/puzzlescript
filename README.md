@@ -1,4 +1,11 @@
 # Terminal PuzzleScript
+[![gh-board][kanban-image]][kanban-url]
+[![NPM version][npm-image]][npm-url]
+[![Downloads][downloads-image]][downloads-url]
+[![build status][travis-image]][travis-url]
+[![dependency status][dependency-image]][dependency-url]
+[![dev dependency status][dev-dependency-image]][dev-dependency-url]
+[![code coverage][coverage-image]][coverage-url]
 
 This is a program that you can run in your terminal to play [PuzzleScript](https://puzzlescript.net) games.
 
@@ -111,3 +118,20 @@ Want to help? Here is a roadmap of things that need to be implemented:
     - a sprite is `CREATE`, `DESTROY`, `CANTMOVE`
     - a sprite is moved
     - `RESTART`, `UNDO`, `TITLESCREEN`, `STARTGAME`, `STARTLEVEL`, `ENDLEVEL`, `ENDGAME`, `SHOWMESSAGE`, `CLOSEMESSAGE`
+
+
+
+[kanban-image]: https://img.shields.io/github/issues/philschatz/puzzlescript-cli.svg?label=kanban%20board%20%28gh-board%29
+[kanban-url]: https://philschatz.com/gh-board/#/r/philschatz:puzzlescript-cli
+[npm-image]: https://img.shields.io/npm/v/puzzlescript-cli.svg
+[npm-url]: https://npmjs.org/package/puzzlescript-cli
+[downloads-image]: https://img.shields.io/npm/dm/puzzlescript-cli.svg
+[downloads-url]: https://npmjs.org/package/puzzlescript-cli
+[travis-image]: https://img.shields.io/travis/philschatz/puzzlescript-cli.svg
+[travis-url]: https://travis-ci.org/philschatz/puzzlescript-cli
+[dependency-image]: https://img.shields.io/david/philschatz/puzzlescript-cli.svg
+[dependency-url]: https://david-dm.org/philschatz/puzzlescript-cli
+[dev-dependency-image]: https://img.shields.io/david/dev/philschatz/puzzlescript-cli.svg
+[dev-dependency-url]: https://david-dm.org/philschatz/puzzlescript-cli#info=devDependencies
+[coverage-image]: https://img.shields.io/codecov/c/github/philschatz/puzzlescript-cli.svg
+[coverage-url]: https://codecov.io/gh/philschatz/puzzlescript-cli
