@@ -1,5 +1,7 @@
 # Terminal PuzzleScript
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/philschatz/puzzlescript-cli.svg)](https://greenkeeper.io/)
+
 This is a program that you can run in your terminal to play [PuzzleScript](https://puzzlescript.net) games.
 
 Also, it is **accessible**, meaning that [blind or visually impaired people can play these games](#video-games-that-blind-people-can-play) too!
