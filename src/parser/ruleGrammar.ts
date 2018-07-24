@@ -199,8 +199,7 @@ export function getRuleSemantics(lookup: LookupHelper) {
                 case 'SFX10':
                     const sound = lookup.lookupSoundEffect(type2)
                     if (!sound) {
-                        console.warn(this.toString())
-                        console.warn(`WARNING: Sound not found`)
+                        console.warn(`Sound not found "${type2}"`)
                         return null // this will get filtered out when we create the Rule
                     }
                     return new SoundCommand(this.source, sound)

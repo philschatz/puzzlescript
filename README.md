@@ -52,7 +52,7 @@ This screencap is a visual demonstration of exploring and then playing a level.
 
 This screencap is the **non-visual** version of the same steps as shown above. This is what vision-impaired people will read when they move the Inspector cursor around and then move the player to play the game.
 
-<a href="https://asciinema.org/a/191072?t=10"><img width="600" alt="exploring and playing a level without sight" src="https://asciinema.org/a/191072.png"/></a>
+<a href="https://asciinema.org/a/193133?t=7"><img width="600" alt="exploring and playing a level without sight" src="https://asciinema.org/a/193133.png"/></a>
 
 
 # About
@@ -60,7 +60,7 @@ This screencap is the **non-visual** version of the same steps as shown above. T
 The goal of this project is to do 3 things:
 
 1. make PuzzleScript easier to embed (like in 404 pages, easter eggs, etc). See [docs](https://philschatz.com/puzzlescript-cli/docs/classes/_engine_.gameengine.html)
-1. allow **blind people to play video games**
+1. allow **blind people to play video games** (by passing the `--no-ui` argument)
 1. use the terminal as a GUI for playing games
 
 
@@ -80,9 +80,9 @@ This is a remake of PuzzleScript that has the following features:
 ## Commands
 
 - `npm run docs` generates docs in the `./docs/` directory
-- `npm run play` runs the games in the [./gists/](./gists/) directory without debugging info (10x faster) (uses `NODE_ENV=production`)
-- `npm run play-dev` runs the games in the [./gists/](./gists/) directory with sprite info (useful for debugging)
-- `npm run play-debug` runs the games in the [./gists/](./gists/) directory with a Chrome Debugger open so you can set breakpoints
+- `npm run play` runs a game in the [./gists/](./gists/) directory without debugging info (10x faster) (uses `NODE_ENV=production`)
+- `npm run play-dev` runs a game in the [./gists/](./gists/) directory with sprite info (useful for debugging)
+- `npm run play-debug` runs a game in the [./gists/](./gists/) directory with a Chrome Debugger open so you can set breakpoints
 - `npm start` runs all of the games in the [./gists/](./gists/) directory with a few sample moves (up/down/left/right/action)
 - `npm test` runs all of the unit tests (including solutions in the [./gist-solutions/](./gist-solutions/) directory)
 - `npm run watch` Run the tests and when you update the source, it re-runs the tests
@@ -96,3 +96,18 @@ This is a remake of PuzzleScript that has the following features:
 - **Rule** contains the conditions and actions to be executed.
   - It also contains methods for checking if the Rule matches a Cell and methods for how to change the Cell
 - **Cell** contains a set of Sprites and is used to represent the current state of the Game
+
+
+# TODO
+
+Want to help? Here is a roadmap of things that need to be implemented:
+
+- [ ] support tabbing through the sprites to say where they are and how many of them are in the puzzle
+- [ ] output which sprites changed when the player moves or presses undo
+- [ ] improve the sound effects (needs an implementation of [BiquadFilter](https://developer.mozilla.org/en-US/docs/Web/API/BiquadFilterNode) in NodeJS)
+- [ ] support the `RIGID` keyword
+- [ ] output a simple `BEL` (ASCII character 7) when the `speaker` package is not installed
+- [ ] output sound effects when any of the following occur:
+    - a sprite is `CREATE`, `DESTROY`, `CANTMOVE`
+    - a sprite is moved
+    - `RESTART`, `UNDO`, `TITLESCREEN`, `STARTGAME`, `STARTLEVEL`, `ENDLEVEL`, `ENDGAME`, `SHOWMESSAGE`, `CLOSEMESSAGE`

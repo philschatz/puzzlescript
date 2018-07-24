@@ -285,6 +285,9 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: { v
     // https://stackoverflow.com/a/30687420
     process.stdin.on('data', handleKeyPress)
     function handleKeyPress(key: string) {
+        if (process.env['NODE_ENV'] === 'developer' && !TerminalUI.getHasVisualUi()) {
+            console.log(`${chalk.dim(`Pressed:`)} ${chalk.whiteBright(key)}`)
+        }
         switch (key) {
             case 'w':
             case '\u001B\u005B\u0041': // UP-ARROW

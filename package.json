@@ -9,7 +9,7 @@
     "docs": "typedoc --ignoreCompilerErrors --mode modules --excludePrivate --excludeExternals --theme minimal --readme ./README.md --out ./docs/ ./src/",
     "play": "NODE_ENV=production node -r source-map-support/register lib/playGame.js",
     "play-only": "NODE_ENV=production node -r source-map-support/register lib/playGame.js",
-    "play-debug": "LOG_LEVEL=debug NODE_ENV=development node --inspect -r source-map-support/register ./lib/playGame.js 2> ./play.log",
+    "play-debug": "LOG_LEVEL=debug NODE_ENV=development node --inspect -r source-map-support/register ./lib/playGame.js @* 2> ./play.log",
     "play-dev": "LOG_LEVEL=debug NODE_ENV=development node -r source-map-support/register ./lib/playGame.js 2> ./play.log",
     "start": "NODE_ENV=production node -r source-map-support/register ./lib/runGames.js",
     "start-dev": "LOG_LEVEL=debug NODE_ENV=development node -r source-map-support/register ./lib/runGames.js 2> ./start.log",
@@ -71,6 +71,7 @@
     "typedoc": "^0.11.1",
     "typescript": "^2.8.3",
     "typescript-eslint-parser": "16.0.0",
+    "webpack": "^4.16.2",
     "webpack-command": "^0.4.1"
   },
   "optionalDependencies": {
