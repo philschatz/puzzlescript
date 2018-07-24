@@ -1,3 +1,8 @@
-import {playSound, closeSounds} from '../puzzlescript/js/sfxr'
+import {playSound as playSoundCode, closeSounds} from '../puzzlescript/js/sfxr'
+import { GameSound } from './models/sound';
 
-export {playSound, closeSounds}
+async function playSound(sound: GameSound) {
+    return playSoundCode(sound.soundCode)
+}
+
+export { playSound, closeSounds }

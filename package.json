@@ -9,7 +9,7 @@
     "docs": "typedoc --ignoreCompilerErrors --mode modules --excludePrivate --excludeExternals --theme minimal --readme ./README.md --out ./docs/ ./src/",
     "play": "NODE_ENV=production node -r source-map-support/register lib/playGame.js",
     "play-only": "NODE_ENV=production node -r source-map-support/register lib/playGame.js",
-    "play-debug": "LOG_LEVEL=debug NODE_ENV=development node --inspect -r source-map-support/register ./lib/playGame.js 2> ./play.log",
+    "play-debug": "LOG_LEVEL=debug NODE_ENV=development node --inspect -r source-map-support/register ./lib/playGame.js @* 2> ./play.log",
     "play-dev": "LOG_LEVEL=debug NODE_ENV=development node -r source-map-support/register ./lib/playGame.js 2> ./play.log",
     "start": "NODE_ENV=production node -r source-map-support/register ./lib/runGames.js",
     "start-dev": "LOG_LEVEL=debug NODE_ENV=development node -r source-map-support/register ./lib/runGames.js 2> ./start.log",
@@ -18,9 +18,12 @@
     "start-debug-cli": "LOG_LEVEL=debug NODE_ENV=development node inspect lib/runGames.js 2> ./start.log",
     "poststart": "npm run-script coverage && echo 'Generated coverage. Type open ./coverage/lcov-html/index.html to see it'",
     "coverage": "istanbul report --root ./coverage/ lcov",
-    "test": "tsc && NODE_ENV=development jest --coverage --updateSnapshot @* && npm run-script test-cli",
+    "pretest": "tsc",
+    "test": "NODE_ENV=development jest --coverage --updateSnapshot --verbose",
+    "posttest": "npm run-script test-cli && npm run-script test-webpackable",
     "test-debug": "NODE_ENV=development node --inspect-brk -r source-map-support/register $(npm bin)/jest -i --updateSnapshot $@",
     "test-cli": "./bin/puzzlescript.js --no-ui --game 'Beam Islands' --level 1 --size small --resume",
+    "test-webpackable": "webpack-command ./lib/index.js --mode production --devtool source-map --output ./test/webpack-output.js",
     "watch": "jest --updateSnapshot --watch",
     "debug": "NODE_ENV=development node --inspect-brk lib/runGames.js"
   },
@@ -43,7 +46,6 @@
     "lodash": "^4.17.10",
     "ohm-js": "^0.14.0",
     "pify": "^3.0.0",
-    "source-map-support": "^0.5.6",
     "supports-color": "^5.4.0",
     "update-notifier": "^2.5.0",
     "web-audio-api": "^0.2.2"
@@ -61,15 +63,19 @@
     "eslint-plugin-typescript": "^0.12.0",
     "http-server": "^0.11.1",
     "istanbul": "^0.4.5",
+    "jest": "^23.3.0",
     "jest-watch-typeahead": "^0.2.0",
     "mkdirp": "^0.5.1",
     "node-fetch": "^2.1.2",
     "puppeteer": "^1.6.0",
+    "source-map-support": "^0.5.6",
     "standard": "^11.0.1",
     "tslint": "^5.10.0",
     "typedoc": "^0.11.1",
     "typescript": "^2.8.3",
-    "typescript-eslint-parser": "16.0.1"
+    "typescript-eslint-parser": "16.0.1",
+    "webpack": "^4.16.2",
+    "webpack-command": "^0.4.1"
   },
   "optionalDependencies": {
     "speaker": "github:philschatz/node-speaker#cac7c5b7c434b52619bfbbd9530ab0871156e815"
@@ -98,7 +104,7 @@
   },
   "name": "puzzlescript-cli",
   "description": "Play PuzzleScript games in your terminal!",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "main": "lib/index.js",
   "directories": {
     "lib": "lib",

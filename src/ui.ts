@@ -8,6 +8,7 @@ import { GameEngine, Cell, GameData, Optional, RULE_DIRECTION } from './'
 import { GameSprite } from './models/tile'
 import { IColor } from './models/colors'
 import { makeLetterCell } from './letters';
+import { CollisionLayer } from './models/collisionLayer';
 
 // Determine if this
 // 'truecolor' if this terminal supports 16m colors. 256 colors otherwise
@@ -205,6 +206,9 @@ class TerminalUI {
 
         this.inspectorCol = 0
         this.inspectorRow = 0
+    }
+    getHasVisualUi() {
+        return this.hasVisualUi
     }
     setHasVisualUi(flag: boolean) {
         this.hasVisualUi = flag
@@ -427,12 +431,6 @@ class TerminalUI {
             return
         }
 
-        // Perform this AFTER the renderMessageScreen so that messages are always rendered (but puzzle levels are not)
-        if (!this.hasVisualUi) {
-            console.log('Playing a game in the console requires color support. Unfortunately, color is not supported so not rendering (for now). We could just do an ASCII dump or something, using  ░▒▓█ to denote shades of cells')
-            return
-        }
-
         // Otherwise, the level is a Map so render the cells
         const levelRows = this.engine.getCurrentLevelCells()
 
@@ -449,6 +447,56 @@ class TerminalUI {
                 this.renderScreen(true)
             })
             process.stdout.on('resize', this.resizeHandler)
+        }
+
+        if (!this.hasVisualUi) {
+            debugger
+
+            // Print out the size of the screen and the count of each sprite on the screen
+            const collisionLayerToSprites: Map<CollisionLayer, Map<GameSprite, Cell[]>> = new Map()
+            for (const cell of _.flatten(levelRows)) {
+                if (this.cellPosToXY(cell).isOnScreen) {
+                    for (const sprite of cell.getSpritesAsSet()) {
+                        const collisionLayer = sprite.getCollisionLayer()
+                        // create a new Map if one does not exist
+                        let spriteToCells = collisionLayerToSprites.get(collisionLayer)
+                        if (!spriteToCells) {
+                            spriteToCells = new Map()
+                            collisionLayerToSprites.set(collisionLayer, spriteToCells)
+                        }
+
+                        // create a new array if one does not exist
+                        let cells = spriteToCells.get(sprite)
+                        if (!cells) {
+                            cells = []
+                            spriteToCells.set(sprite, cells)
+                        }
+
+                        cells.push(cell)
+                    }
+                }
+            }
+
+            console.log(`Level size is ${this.windowOffsetHeight || levelRows.length} high by ${this.windowOffsetWidth || levelRows[0].length} wide`)
+            console.log(`-------------------------`)
+            for (const collisionLayer of [...collisionLayerToSprites.keys()].sort((a, b) => /*reversed bc that is how they are rendered on screen*/b.id - a.id)) {
+                const spriteToCells = collisionLayerToSprites.get(collisionLayer)
+                if (!spriteToCells) {
+                    throw new Error(`BUG: could not find mapping to sprite map`)
+                }
+                console.log(`${chalk.greenBright(`START:`)} ${chalk.whiteBright(`${spriteToCells.size}`)} Sprites in same collision layer`)
+                for (const sprite of spriteToCells.keys()) {
+                    const cells = spriteToCells.get(sprite)
+
+                    if (!cells) {
+                        throw new Error(`BUG: could not find mapping to cells`)
+                    }
+                    const msg = `    ${sprite.getName()} ${cells.length}`
+                    // this.writeDebug(msg, 0)
+                    console.log(msg)
+                }
+            }
+            return
         }
 
         this.drawCells(_.flatten(levelRows), false, renderScreenDepth)
@@ -686,6 +734,10 @@ class TerminalUI {
             // otherwise, keep rendering cells like normal
         }
 
+        if (!this.hasVisualUi) {
+            return // no need to re-say the whole level (a11y)
+        }
+
         for (const cell of cells) {
             const instructions = this._drawCell(cell, dontRestoreCursor, renderScreenDepth)
             if (instructions) {
@@ -702,7 +754,7 @@ class TerminalUI {
         if (!this.hasVisualUi) {
             // Commented just to reduce noise. Maybe it shoud be brought back
             // console.log(`Updating cell [${cell.rowIndex}][${cell.colIndex}] to have sprites: [${cell.getSprites().map(sprite => sprite.getName())}]`)
-            return // don't output anything
+            throw new Error(`BUG: Should not get to this point`)
         }
 
         // TODO: Also eventually filter out the Background ones when Background is an OR Tile
