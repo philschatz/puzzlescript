@@ -101,7 +101,7 @@ function toUnicode(theString: string) {
 commander
 .version(pkg.version)
 .option('--no-ui', 'just output text instead of renndering the puzzles (for accessibility)')
-.option('-g, --game <title>', 'play a specific game matching this title regexp')
+.option('-g, --game <title>', 'play a specific game matching this title regexp or "random" to pick a random one')
 .option('-s, --size <largeOrSmall>', 'Specify the sprite size (either "large" or "small")')
 .option('-n, --new', 'start a new game')
 .option('-l, --level <num>', 'play a specific level', (arg => parseInt(arg)))
@@ -169,6 +169,10 @@ async function run() {
             if (!data) {
                 throw new Error(`BUG: did not load gameData`)
             }
+            console.log('')
+            console.log(`Opened Game: "${chalk.blueBright(data.title)}"`)
+            console.log('')
+
             showControls();
             // check to see if the terminal is too small
             await promptPixelSize(data, cliUi ? cliSpriteSize : CLI_SPRITE_SIZE.SMALL);
@@ -659,6 +663,15 @@ async function promptPixelSize(data: GameData, cliSpriteSize: Optional<CLI_SPRIT
     }
 }
 
+// https://stackoverflow.com/a/12646864
+function shuffleArray<T>(array: T[]) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]]; // eslint-disable-line no-param-reassign
+    }
+    return array
+}
+
 async function promptGame(games: GameInfo[], cliGameTitle: Optional<string>) {
     // Sort games by games that are fun and should be played first
     const firstGames = [
@@ -784,9 +797,20 @@ async function promptGame(games: GameInfo[], cliGameTitle: Optional<string>) {
 
     let chosenGame
     if (cliGameTitle) {
-        chosenGame = games.find(g => {
-            return g.title.indexOf(cliGameTitle) >= 0
-        })
+        if (cliGameTitle.toUpperCase() === 'RANDOM') {
+            chosenGame = shuffleArray([...games])[0]
+        } else {
+            // try to match the title exactly, then try a substring
+            chosenGame = games.find(g => {
+                return g.title.toLowerCase() === cliGameTitle.toLowerCase()
+            })
+
+            if (!chosenGame) {
+                chosenGame = games.find(g => {
+                    return g.title.toLowerCase().indexOf(cliGameTitle.toLowerCase()) >= 0
+                })
+            }
+        }
         if (!chosenGame) {
             console.error(`ERROR: Could not find game with title "${cliGameTitle}"`)
             process.exit(111)
