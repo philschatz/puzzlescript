@@ -1111,6 +1111,7 @@ function cacheSeed(seed){
 function playSound(seed) {
   // Disable speaker for Travis
   if (!Speaker) {
+    process.stdout.write('\u0007') // BELL character
     return Promise.resolve('SOUND_EFFECT_DID_NOT_PLAY_BECAUSE_CI')
   }
 
