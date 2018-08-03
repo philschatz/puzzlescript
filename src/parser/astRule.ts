@@ -111,7 +111,7 @@ export class ASTRule extends BaseForLines implements ICacheable {
         const actionBrackets = this.actionBrackets.map(x => x.toSimple(directions[0], ruleCache, bracketCache, neighborCache, tileCache))
 
         // Below (in the loop) we check to see if evaluation order matters
-        let doesEvaluationOrderMatter = false
+        let doesEvaluationOrderMatter = true
 
         for (let index = 0; index < conditionBrackets.length; index++) {
             const condition = conditionBrackets[index]
@@ -189,6 +189,39 @@ export class ASTRule extends BaseForLines implements ICacheable {
             }
         }
 
+        // If action tiles involve creating tiles that are in different brackets than the condition tiles
+        // then order does matter
+        if (!doesEvaluationOrderMatter) {
+            const conditionTilesAndBracketIndex = new Map<IGameTile, number>()
+            const actionTilesAndBracketIndex = new Map<IGameTile, number>()
+            for (let index = 0; index < conditionBrackets.length; index++) {
+                const condition = conditionBrackets[index]
+                const action = actionBrackets[index]
+                if (action) {
+                    for (const neighbor of condition.getNeighbors()) {
+                        for (const t of neighbor._tilesWithModifier) {
+                            if (!t.isNo()) {
+                                conditionTilesAndBracketIndex.set(t._tile, index)
+                            }
+                        }
+                    }
+                    for (const neighbor of action.getNeighbors()) {
+                        for (const t of neighbor._tilesWithModifier) {
+                            if (!t.isNo()) {
+                                actionTilesAndBracketIndex.set(t._tile, index)
+                            }
+                        }
+                    }
+                } else {
+                    break
+                }
+            }
+            for (const [conditionTile, index] of conditionTilesAndBracketIndex) {
+                if (actionTilesAndBracketIndex.has(conditionTile) && actionTilesAndBracketIndex.get(conditionTile) !== index) {
+                    doesEvaluationOrderMatter = true
+                }
+            }
+        }
         return cacheSetAndGet(ruleCache, new SimpleRule(this.__source, directions[0], conditionBrackets, actionBrackets, this.commands, this.isLate(), this.isRigid(), this.debugFlag, doesEvaluationOrderMatter))
     }
 

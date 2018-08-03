@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "solutions": [
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "XD,X,D,S"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "W,D,XW,X,A"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "XS,X,D,XW,X,A"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "W,D,XW,X,A,S"
+    },
+    {
+      "solution": "X"
+    }
+  ],
+  "title": "Slidings",
+  "totalLevels": 22,
+  "totalMapLevels": 11
+}

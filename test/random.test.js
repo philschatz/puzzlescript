@@ -856,7 +856,7 @@ describe('engine', () => {
         expect(num.getCellsThatMatch().size).toBe(2)
     })
 
-    it('runs exactly one rule when group is RANDOM', () => {
+    it('runs exactly one rule when group is RANDOM2', () => {
         const { engine, data } = parseEngine(`title Random
 
         ========

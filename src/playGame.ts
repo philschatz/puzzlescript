@@ -654,7 +654,7 @@ async function promptPixelSize(data: GameData, cliSpriteSize: Optional<CLI_SPRIT
         }>({
             type: 'confirm',
             name: 'useCompressedCharacters',
-            default: true,
+            default: process.env['NODE_ENV'] !== 'development',
             message: 'Would you like to use small characters when rendering the game?',
         });
         if (useCompressedCharacters) {

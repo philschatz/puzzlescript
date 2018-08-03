@@ -20,6 +20,13 @@ function parseEngine(code, levelNum = 0) {
 const SHOW_STEPS = false
 
 function createTests(moduloNumber, moduloTotal) {
+    if (process.env['SKIP_SOLUTIONS']) {
+        describe.skip('Skipping replay tests', () => {
+            it.skip('skiping test')
+        })
+        console.log('Skipping Replay tests')
+        return
+    }
     describe('replays levels of games', () => {
 
         solutionFiles.forEach((solutionFilename, solutionIndex) => {
@@ -31,12 +38,20 @@ function createTests(moduloNumber, moduloTotal) {
             if (solutionIndex % moduloTotal !== moduloNumber) {
                 return
             }
+
+            let itOrSkip = it
+            if (process.env['ONLY_SOLUTIONS'] && parseInt(process.env['ONLY_SOLUTIONS']) !== moduloNumber) {
+                itOrSkip = it.skip
+            }
+
             const GIST_ID = path.basename(solutionFilename).replace('.json', '')
 
-            it(`plays the solved levels of ${GIST_ID}`, async () => {
+            itOrSkip(`plays the solved levels of ${GIST_ID}`, async () => {
                 const gistFilename = path.join(__dirname, `../../gists/${GIST_ID}/script.txt`)
                 const { engine, data } = parseEngine(fs.readFileSync(gistFilename, 'utf-8'))
                 const recordings = JSON.parse(fs.readFileSync(path.join(SOLUTION_ROOT, solutionFilename), 'utf-8')).solutions
+                // play games in reverse order because it is likely that the harder levels will fail first
+                // for (let index = recordings.length - 1; index >= 0; index--) {
                 for (let index = 0; index < recordings.length; index++) {
                     const recording = recordings[index]
                     if (!recording || !recording.solution) {
