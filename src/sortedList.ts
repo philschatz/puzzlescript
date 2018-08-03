@@ -14,20 +14,39 @@ export class SortedArray<T> implements Iterable<T> {
     [Symbol.iterator]() {
         return this.ary[Symbol.iterator]()
     }
-    add(newItem: T) {
-        if (this.ary.indexOf(newItem) < 0) {
-            this.ary.push(newItem)
+
+    private indexOf(theItem: T) {
+        const index = this.ary.indexOf(theItem)
+        if (index >= 0) {
+            return index
+        }
+
+        for (const item of this.ary) {
+            if (this.comparator(item, theItem) === 0) {
+                const index = this.ary.indexOf(item)
+                return index
+            }
+        }
+        return -1
+    }
+
+    add(item: T) {
+        const index = this.indexOf(item)
+        if (index < 0) {
+            this.ary.push(item)
             this.ary.sort(this.comparator)
         }
     }
 
-    delete(item: T) {
-        const index = this.ary.indexOf(item)
-        this.ary.splice(index, 1)
+    delete(theItem: T) {
+        const index = this.indexOf(theItem)
+        if (index >= 0) {
+            this.ary.splice(index, 1)
+        }
     }
 
     has(item: T) {
-        return this.ary.indexOf(item) >= 0
+        return this.indexOf(item) >= 0
     }
 
     isEmpty() {
@@ -42,13 +61,6 @@ export class SortedArray<T> implements Iterable<T> {
 }
 
 export class SortedList<T> implements Iterable<T> {
-    static fromIterable<T>(iterable: Iterable<T>, comparator: Comparator<T>) {
-        const list = new SortedList(comparator)
-        for (const item of iterable) {
-            list.add(item)
-        }
-        return list
-    }
     private readonly comparator: Comparator<T>
     private head: Optional<ListItem<T>>
     constructor(comparator: Comparator<T>) {

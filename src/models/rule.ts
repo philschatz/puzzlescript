@@ -11,7 +11,7 @@ import { Cell } from '../engine'
 import TerminalUI from '../ui'
 import { AbstractCommand } from './command';
 import { CollisionLayer } from './collisionLayer';
-import { SortedList } from '../sortedList';
+import { SortedArray } from '../sortedList';
 
 const MAX_ITERATIONS_IN_LOOP = 350 // Set by the Random World Generation game
 
@@ -193,8 +193,7 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
     private readonly isRigid: boolean
     private isSubscribedToCellChanges: boolean
     private debugFlag: DEBUG_FLAG
-    private doesEvaluationOrderMatter: boolean
-    constructor(source: IGameCode, evaluationDirection: RULE_DIRECTION, conditionBrackets: ISimpleBracket[], actionBrackets: ISimpleBracket[], commands: AbstractCommand[], isLate: boolean, isRigid: boolean, debugFlag: DEBUG_FLAG, doesEvaluationOrderMatter: boolean) {
+    constructor(source: IGameCode, evaluationDirection: RULE_DIRECTION, conditionBrackets: ISimpleBracket[], actionBrackets: ISimpleBracket[], commands: AbstractCommand[], isLate: boolean, isRigid: boolean, debugFlag: DEBUG_FLAG) {
         super(source)
         this.evaluationDirection = evaluationDirection
         this.conditionBrackets = conditionBrackets
@@ -203,8 +202,6 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
         this._isLate = isLate
         this.isRigid = isRigid
         this.debugFlag = debugFlag
-        this.doesEvaluationOrderMatter = false
-        // this.isOnlyEvaluatingFirstRandomMatch = isRandom && this.conditionBrackets[0].getNeighbors()[0]._tilesWithModifier.size === 0 // Special-case this to only be rules that have an empty condition (Garten de Medusen) // false //this._isRandom (sometimes turning it on causes )
         this.isSubscribedToCellChanges = false
 
         if (actionBrackets.length > 0) {
@@ -289,7 +286,8 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
 
         return flattenedMutations
     }
-    _evaluate(onlyEvaluateFirstMatch: boolean) {
+
+    private _evaluate(onlyEvaluateFirstMatch: boolean) {
         // Verify that each condition bracket has matches
         for (const condition of this.conditionBrackets) {
             if (!condition.hasFirstCells()) {
@@ -307,73 +305,65 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
         // Some rules only contain commands.
         // If there are actionBrackets then evaluate them.
         if (this.actionBrackets.length > 0) {
-            if (!this.doesEvaluationOrderMatter) {
+            // Get ready to Evaluate
+            if (process.env['NODE_ENV'] === 'development' && this.debugFlag === DEBUG_FLAG.BREAKPOINT) {
+                // A "DEBUGGER" flag was set in the game so we are pausing here
+                TerminalUI.debugRenderScreen(); debugger
+            }
 
-                // Get ready to Evaluate
-                if (process.env['NODE_ENV'] === 'development' && this.debugFlag === DEBUG_FLAG.BREAKPOINT) {
-                    // A "DEBUGGER" flag was set in the game so we are pausing here
-                    TerminalUI.debugRenderScreen(); debugger
+            const allFirstCellsToProcess: Cell[][] = []
+            for (let index = 0; index < this.conditionBrackets.length; index++) {
+                const condition = this.conditionBrackets[index]
+                const firstCells = condition.getFirstCells()
+                if (firstCells.size() === 0) {
+                    return []
                 }
+                allFirstCellsToProcess.push([...firstCells])
+            }
+            const cellPermutations = buildPermutations(allFirstCellsToProcess)
 
-                const allFirstCellsToProcess: Cell[][] = []
+            const allMutations: IMutation[][] = []
+
+            for (const permutation of cellPermutations) {
+                let didAllBracketsStillMatch = true
+                const magicOrTiles = new Map()
+                // Populate the magicOrTiles. This needs to be done first because of things like:
+                // [ Player ] [ Color ] -> [ Player Color ] [ ]
                 for (let index = 0; index < this.conditionBrackets.length; index++) {
                     const condition = this.conditionBrackets[index]
-                    const firstCells = condition.getFirstCells()
-                    if (firstCells.size() === 0) {
-                        return []
+                    const cell = permutation[index]
+                    if (condition.getFirstCellsSet().has(cell)) {
+                        condition.populateMagicOrTiles(cell, magicOrTiles)
+                    } else {
+                        didAllBracketsStillMatch = false
                     }
-                    allFirstCellsToProcess.push([...firstCells])
                 }
-                const cellPermutations = buildPermutations(allFirstCellsToProcess)
+                // break if the cells no longer match
+                if (!didAllBracketsStillMatch) {
+                    continue
+                }
 
-                const allMutations: IMutation[][] = []
+                for (let index = 0; index < this.conditionBrackets.length; index++) {
+                    const condition = this.conditionBrackets[index]
+                    const action = this.actionBrackets[index]
+                    const cell = permutation[index]
 
-                for (const permutation of cellPermutations) {
-                    let didAllBracketsStillMatch = true
-                    const magicOrTiles = new Map()
-                    // Populate the magicOrTiles. This needs to be done first because of things like:
-                    // [ Player ] [ Color ] -> [ Player Color ] [ ]
-                    for (let index = 0; index < this.conditionBrackets.length; index++) {
-                        const condition = this.conditionBrackets[index]
-                        const cell = permutation[index]
-                        if (condition.getFirstCellsSet().has(cell)) {
-                            condition.populateMagicOrTiles(cell, magicOrTiles)
-                        } else {
-                            didAllBracketsStillMatch = false
-                        }
-                    }
-                    // break if the cells no longer match
-                    if (!didAllBracketsStillMatch) {
-                        continue
-                    }
+                    allMutations.push(condition.evaluate(action, cell, magicOrTiles))
 
-                    for (let index = 0; index < this.conditionBrackets.length; index++) {
-                        const condition = this.conditionBrackets[index]
-                        const action = this.actionBrackets[index]
-                        const cell = permutation[index]
-
-                        allMutations.push(condition.evaluate(action, cell, magicOrTiles))
-
-                        if (process.env['NODE_ENV'] === 'development') {
-                            this.__incrementCoverage()
-                        }
-
-                    }
-
-                    // Only evaluate once. This is a HACK since it always picks the 1st cell that matched rather than a RANDOM cell
-                    if (onlyEvaluateFirstMatch) {
-                        break // evaluate the subsequent brackets but do not continue evaluating cells
+                    if (process.env['NODE_ENV'] === 'development') {
+                        this.__incrementCoverage()
                     }
 
                 }
 
-                ret = _.flatten(allMutations)
-            } else {
-                ret = this.evaluateInOrder(onlyEvaluateFirstMatch)
-                // console.log('SLLLLLOOOOOOWWWWW EVALUATION.........');
-                // console.log(this.toString())
-                // console.log('Evaluation took', Date.now() - startTime)
+                // Only evaluate once. This is a HACK since it always picks the 1st cell that matched rather than a RANDOM cell
+                if (onlyEvaluateFirstMatch) {
+                    break // evaluate the subsequent brackets but do not continue evaluating cells
+                }
+
             }
+
+            ret = _.flatten(allMutations)
         }
 
         // Append any Commands that need to be evaluated
@@ -383,102 +373,6 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
         return ret
     }
 
-    evaluateInOrder(onlyEvaluateFirstMatch: boolean) {
-        let allMutators: IMutation[][] = []
-
-        // Remember which cells we apready processed
-        // Entries are cell.toString() so we do not have to reprocess `[ > Player ] -> [ Player Color ]`
-        // TODO: Needs to be an Array so we can reprocess a cell in a different bracket
-        const alreadyProcessed: Set<string>[] = []
-        for (let index = 0; index < this.conditionBrackets.length; index++) {
-            alreadyProcessed[index] = new Set()
-        }
-
-
-        // Get ready to Evaluate
-        if (process.env['NODE_ENV'] === 'development' && this.debugFlag === DEBUG_FLAG.BREAKPOINT) {
-            // A "DEBUGGER" flag was set in the game so we are pausing here
-            TerminalUI.debugRenderScreen(); debugger
-        }
-
-        let somethingChanged
-        let hasMoreCells
-        do {
-            somethingChanged = false
-            hasMoreCells = true
-
-            // Check that each of the brackets still have matches
-            for (const bracket of this.conditionBrackets) {
-                if (!bracket.hasFirstCells()) {
-                    hasMoreCells = false
-                    break
-                }
-            }
-
-            // If not all brackets match a cell then break out
-            if (!hasMoreCells) {
-                break
-            }
-
-            // This will be used to store the sprites that are in an OR tile.
-            // Example: `[ Color ] [ Player ] -> [ ] [ Player Color ]`
-            const magicOrTiles = new Map<IGameTile, Set<GameSprite>>()
-
-            for (const bracket of this.conditionBrackets) {
-                bracket.populateMagicOrTiles
-            }
-
-            // Evaluate!
-            // const cellsToMarkAsProcessed = []
-            let emptyCellsCount = 0
-            for (let index = 0; index < this.conditionBrackets.length; index++) {
-                const bracket = this.conditionBrackets[index]
-                const actionBracket = this.actionBrackets[index]
-                let firstCells
-                if (onlyEvaluateFirstMatch) {
-                    firstCells = [bracket.getFirstCells().first()]
-                } else {
-                    firstCells = bracket.getFirstCells()
-                }
-                for (const cell of firstCells) {
-                    bracket.populateMagicOrTiles(cell, magicOrTiles)
-                    const mutations = bracket.evaluate(actionBracket, cell, magicOrTiles)
-
-                    if (process.env['NODE_ENV'] === 'development') {
-                        this.__incrementCoverage()
-                    }
-
-                    // If at least one modifier changedSprites then somethingChanged = true
-                    // let someSpriteChanged = false
-                    // for (const mutation of mutations) {
-                    //     somethingChanged = true // could have just been a direction
-                    //     if (mutation.getDidSpritesChange()) {
-                    //         someSpriteChanged = true
-                    //     }
-                    // }
-                    if (mutations.length > 0) {
-                        somethingChanged = true
-                    }
-                    allMutators.push(mutations)
-                }
-            }
-
-            // Only evaluate once. This is a HACK since it always picks the 1st cell that matched rather than a RANDOM cell
-            if (onlyEvaluateFirstMatch) {
-                return _.flatten(allMutators)
-            }
-
-
-            if (emptyCellsCount === this.conditionBrackets.length) {
-                hasMoreCells = false
-            }
-
-            // If at least one of the brackets changed, then keep going.
-            // For example: `[ > Player ] [ Island ] -> [ > Player ] [ > Island ]`
-        } while (hasMoreCells && somethingChanged)
-
-        return _.flatten(allMutators)
-    }
     isLate() { return this._isLate }
     hasRigid() { return this.isRigid }
 
@@ -497,14 +391,14 @@ function CELL_COMPARATOR(a: Cell, b: Cell) {
 export abstract class ISimpleBracket extends BaseForLines implements ICacheable {
     readonly debugFlag: DEBUG_FLAG
     readonly direction: RULE_DIRECTION
-    protected firstCells: SortedList<Cell>
+    protected firstCells: SortedArray<Cell>
     private allNeighbors: SimpleNeighbor[]
     constructor(source: IGameCode, direction: RULE_DIRECTION, allNeighbors: SimpleNeighbor[], debugFlag: DEBUG_FLAG) {
         super(source)
         this.direction = direction
         this.debugFlag = debugFlag
         this.allNeighbors = allNeighbors
-        this.firstCells = new SortedList<Cell>(CELL_COMPARATOR)
+        this.firstCells = new SortedArray<Cell>(CELL_COMPARATOR)
     }
 
     abstract subscribeToNeighborChanges(): void

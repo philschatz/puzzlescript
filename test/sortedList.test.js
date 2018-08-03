@@ -1,4 +1,4 @@
-const {SortedList} = require('../lib/sortedList')
+const {SortedList, SortedArray} = require('../lib/sortedList')
 
 function numberComparator(a, b) {
     return a - b
@@ -88,5 +88,56 @@ describe('SortedList', () => {
 
         // ensure 1 & 4 were removed, and 0 & 1.5 were added
         expect([...list]).toEqual([ 0, 1.5, 1.9, 2, 3, 5, 6 ])
+    })
+})
+
+
+describe('SortedArray', () => {
+    it('does not add duplicates', () => {
+        const list = new SortedArray(numberComparator)
+        expect(list.size()).toBe(0)
+        list.add(1)
+        expect(list.size()).toBe(1)
+        list.add(1)
+        expect(list.size()).toBe(1)
+    })
+
+    it('validates simple', () => {
+        const list = new SortedArray(objComparator)
+        expect(list.size()).toBe(0)
+        expect(list.isEmpty()).toBe(true)
+        list.add({value: 1})
+        expect(list.size()).toBe(1)
+        expect(list.isEmpty()).toBe(false)
+        list.add({value: 1})
+        expect(list.size()).toBe(1)
+
+        expect([{value: 1}]).toEqual([...list])
+
+        list.delete({value: 1})
+        expect(list.size()).toBe(0)
+    })
+
+    it('validates intermediate', () => {
+        const list = new SortedArray(numberComparator)
+
+        list.add(6)
+        list.add(5)
+        list.add(4)
+        list.add(3)
+        list.add(2)
+        list.add(1)
+
+        list.delete(6)
+        expect(list.size()).toBe(5)
+
+        list.delete(1)
+        expect(list.size()).toBe(4)
+
+        list.delete(3)
+        expect(list.size()).toBe(3)
+    })
+
+    it.skip('iterates properly when the list is modified during iteration', () => {
     })
 })

@@ -1,5 +1,5 @@
 import * as _ from 'lodash'
-import { ICacheable, DEBUG_FLAG, setDifference, RULE_DIRECTION, Optional } from "../util";
+import { ICacheable, DEBUG_FLAG, RULE_DIRECTION, Optional } from "../util";
 import { BaseForLines, IGameCode } from "../models/game";
 import { AbstractCommand } from "../models/command";
 import { SimpleRule, SimpleBracket, SimpleRuleGroup, SimpleNeighbor, SimpleTileWithModifier, SimpleBracketConditionOnly, SIMPLE_DIRECTION_DIRECTIONS, SimpleRuleLoop, ISimpleBracket, SimpleEllipsisBracket } from "../models/rule";
@@ -110,9 +110,6 @@ export class ASTRule extends BaseForLines implements ICacheable {
         const conditionBrackets = this.brackets.map(x => x.toSimple(directions[0], ruleCache, bracketCache, neighborCache, tileCache))
         const actionBrackets = this.actionBrackets.map(x => x.toSimple(directions[0], ruleCache, bracketCache, neighborCache, tileCache))
 
-        // Below (in the loop) we check to see if evaluation order matters
-        let doesEvaluationOrderMatter = true
-
         for (let index = 0; index < conditionBrackets.length; index++) {
             const condition = conditionBrackets[index]
             const action = actionBrackets[index]
@@ -127,102 +124,8 @@ export class ASTRule extends BaseForLines implements ICacheable {
                 conditionBrackets[index] = new SimpleBracketConditionOnly(condition, action)
                 // actionBrackets[index] = null
             }
-
-            // If there is only 1 bracket with only 1 neighbor then order does not matter
-            // So we can skip the introspection loops below
-            if (conditionBrackets.length === 1 && conditionBrackets[0]._getAllNeighbors().length === 1) {
-                continue
-            }
-            // Brackets that only involve adding/removing Tiles (or directions) that are not on the condition side can be evaluated easier
-            // since they do not need to run in-order
-            const conditionTilesWithModifiers = new Set()
-            const conditionTilesMap = new Map()
-            const actionTilesWithModifiers = new Set()
-            for (let index = 0; index < condition._getAllNeighbors().length; index++) {
-                const neighbor = condition._getAllNeighbors()[index]
-                for (const t of neighbor._tilesWithModifier) {
-                    conditionTilesWithModifiers.add(t)
-                    conditionTilesMap.set(t._tile, { direction: t._direction, neighborIndex: index })
-                }
-            }
-            for (let index = 0; index < action._getAllNeighbors().length; index++) {
-                const neighbor = action._getAllNeighbors()[index]
-                for (const t of neighbor._tilesWithModifier) {
-                    actionTilesWithModifiers.add(t)
-                    if (t._tile /* because of ellipsis*/ && t._tile.isOr()) {
-                        // check if the condition contains the OR tile and maybe is more specific
-                        let orTileOnConditionSide
-                        for (const conditionTile of condition._getAllNeighbors()[index]._tilesWithModifier) {
-                            if (t._tile === conditionTile._tile && !conditionTile.isNo()) {
-                                orTileOnConditionSide = conditionTile
-                            }
-                        }
-                        if (orTileOnConditionSide) {
-
-                        } else {
-                            // console.log('Marking as slow because the action side has an OR tile')
-                            // console.log(this.toString())
-                            doesEvaluationOrderMatter = true // not strictly true, but it means we need to use the magicOrTiles
-                        }
-                    }
-                }
-            }
-            const uniqueActionTiles = setDifference(actionTilesWithModifiers, conditionTilesWithModifiers)
-            for (const t of uniqueActionTiles) {
-                if (conditionTilesMap.has(t._tile)) { //use .get instead of HAS because if we are setting a direction then we should be ok
-                    // Determine the neighbor index of the tile
-                    for (let index = 0; index < action.getNeighbors().length; index++) {
-                        const neighbor = action.getNeighbors()[index]
-                        if (neighbor._tilesWithModifier.has(t)) {
-                            if (index !== conditionTilesMap.get(t._tile).neighborIndex) {
-                                // console.log('Marking as slow because the action side has a Tile that may modify the condition and need to re-run')
-                                // console.log(this.toString())
-                                // console.log(t.toString())
-                                // console.log(t._tile.toString())
-                                // console.log('------------------------------------');
-
-                                doesEvaluationOrderMatter = true
-                            }
-                        }
-                    }
-                }
-            }
         }
-
-        // If action tiles involve creating tiles that are in different brackets than the condition tiles
-        // then order does matter
-        if (!doesEvaluationOrderMatter) {
-            const conditionTilesAndBracketIndex = new Map<IGameTile, number>()
-            const actionTilesAndBracketIndex = new Map<IGameTile, number>()
-            for (let index = 0; index < conditionBrackets.length; index++) {
-                const condition = conditionBrackets[index]
-                const action = actionBrackets[index]
-                if (action) {
-                    for (const neighbor of condition.getNeighbors()) {
-                        for (const t of neighbor._tilesWithModifier) {
-                            if (!t.isNo()) {
-                                conditionTilesAndBracketIndex.set(t._tile, index)
-                            }
-                        }
-                    }
-                    for (const neighbor of action.getNeighbors()) {
-                        for (const t of neighbor._tilesWithModifier) {
-                            if (!t.isNo()) {
-                                actionTilesAndBracketIndex.set(t._tile, index)
-                            }
-                        }
-                    }
-                } else {
-                    break
-                }
-            }
-            for (const [conditionTile, index] of conditionTilesAndBracketIndex) {
-                if (actionTilesAndBracketIndex.has(conditionTile) && actionTilesAndBracketIndex.get(conditionTile) !== index) {
-                    doesEvaluationOrderMatter = true
-                }
-            }
-        }
-        return cacheSetAndGet(ruleCache, new SimpleRule(this.__source, directions[0], conditionBrackets, actionBrackets, this.commands, this.isLate(), this.isRigid(), this.debugFlag, doesEvaluationOrderMatter))
+        return cacheSetAndGet(ruleCache, new SimpleRule(this.__source, directions[0], conditionBrackets, actionBrackets, this.commands, this.isLate(), this.isRigid(), this.debugFlag))
     }
 
     private convertToMultiple() {
