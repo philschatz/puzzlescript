@@ -12,29 +12,19 @@ export class SortedArray<T> implements Iterable<T> {
         this.ary = []
     }
     [Symbol.iterator]() {
+        // We only need to sort when we are iterating
+        this.ary.sort(this.comparator)
         return this.ary[Symbol.iterator]()
     }
 
     private indexOf(theItem: T) {
-        const index = this.ary.indexOf(theItem)
-        if (index >= 0) {
-            return index
-        }
-
-        for (const item of this.ary) {
-            if (this.comparator(item, theItem) === 0) {
-                const index = this.ary.indexOf(item)
-                return index
-            }
-        }
-        return -1
+        return this.ary.indexOf(theItem)
     }
 
     add(item: T) {
         const index = this.indexOf(item)
         if (index < 0) {
             this.ary.push(item)
-            this.ary.sort(this.comparator)
         }
     }
 

@@ -11,7 +11,6 @@ import { Cell } from '../engine'
 import TerminalUI from '../ui'
 import { AbstractCommand } from './command';
 import { CollisionLayer } from './collisionLayer';
-import { SortedArray } from '../sortedList';
 
 const MAX_ITERATIONS_IN_LOOP = 350 // Set by the Random World Generation game
 
@@ -314,11 +313,11 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
             const allFirstCellsToProcess: Cell[][] = []
             for (let index = 0; index < this.conditionBrackets.length; index++) {
                 const condition = this.conditionBrackets[index]
-                const firstCells = condition.getFirstCells()
-                if (firstCells.size() === 0) {
+                const firstCells = condition.getFirstCellsSet()
+                if (firstCells.size === 0) {
                     return []
                 }
-                allFirstCellsToProcess.push([...firstCells])
+                allFirstCellsToProcess.push([...firstCells].sort(CELL_COMPARATOR))
             }
             const cellPermutations = buildPermutations(allFirstCellsToProcess)
 
@@ -391,14 +390,14 @@ function CELL_COMPARATOR(a: Cell, b: Cell) {
 export abstract class ISimpleBracket extends BaseForLines implements ICacheable {
     readonly debugFlag: DEBUG_FLAG
     readonly direction: RULE_DIRECTION
-    protected firstCells: SortedArray<Cell>
+    protected firstCells: Set<Cell>
     private allNeighbors: SimpleNeighbor[]
     constructor(source: IGameCode, direction: RULE_DIRECTION, allNeighbors: SimpleNeighbor[], debugFlag: DEBUG_FLAG) {
         super(source)
         this.direction = direction
         this.debugFlag = debugFlag
         this.allNeighbors = allNeighbors
-        this.firstCells = new SortedArray<Cell>(CELL_COMPARATOR)
+        this.firstCells = new Set<Cell>()
     }
 
     abstract subscribeToNeighborChanges(): void
@@ -416,10 +415,7 @@ export abstract class ISimpleBracket extends BaseForLines implements ICacheable 
         return this.allNeighbors
     }
     hasFirstCells() {
-        return !this.firstCells.isEmpty()
-    }
-    getFirstCells() {
-        return this.firstCells
+        return this.firstCells.size > 0
     }
     getFirstCellsSet() {
         return this.firstCells
@@ -775,7 +771,7 @@ export class SimpleEllipsisBracket extends ISimpleBracket {
     }
 
     private checkInvariants() {
-        if (this.firstCells.size() !== this.linkages.sizeA()) {
+        if (this.firstCells.size !== this.linkages.sizeA()) {
             debugger; throw new Error(`BUG: Invariant violation`)
         }
     }
@@ -894,7 +890,7 @@ export class SimpleEllipsisBracket extends ISimpleBracket {
 
     private findMatching(cell: Cell, direction: RULE_DIRECTION, inBracket: SimpleBracket) {
         const matches = new Set()
-        for (const inBracketCell of inBracket.getFirstCells()) {
+        for (const inBracketCell of inBracket.getFirstCellsSet()) {
             switch (direction) {
                 case RULE_DIRECTION.UP:
                     if (cell.colIndex === inBracketCell.colIndex && cell.rowIndex > inBracketCell.rowIndex) {

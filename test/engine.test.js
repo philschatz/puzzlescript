@@ -2301,7 +2301,7 @@ describe('engine', () => {
         expect(engine.currentLevel[0][2].getSpritesAsSet().has(dot)).toBe(true) // the dot appeared
 
         // Verify that the bracket no longer has any matches (since things are no longer moving bc the tick is done)
-        expect(engine.gameData.rules[1].rules[0].conditionBrackets[0].firstCells.size()).toBe(0)
+        expect(engine.gameData.rules[1].rules[0].conditionBrackets[0].firstCells.size).toBe(0)
 
         engine.pressUndo()
         engine.tick()

@@ -102,22 +102,6 @@ describe('SortedArray', () => {
         expect(list.size()).toBe(1)
     })
 
-    it('validates simple', () => {
-        const list = new SortedArray(objComparator)
-        expect(list.size()).toBe(0)
-        expect(list.isEmpty()).toBe(true)
-        list.add({value: 1})
-        expect(list.size()).toBe(1)
-        expect(list.isEmpty()).toBe(false)
-        list.add({value: 1})
-        expect(list.size()).toBe(1)
-
-        expect([{value: 1}]).toEqual([...list])
-
-        list.delete({value: 1})
-        expect(list.size()).toBe(0)
-    })
-
     it('validates intermediate', () => {
         const list = new SortedArray(numberComparator)
 
@@ -138,6 +122,16 @@ describe('SortedArray', () => {
         expect(list.size()).toBe(3)
     })
 
-    it.skip('iterates properly when the list is modified during iteration', () => {
+    it('iterates in sorted order', () => {
+        const list = new SortedArray(numberComparator)
+
+        list.add(6)
+        list.add(1)
+        list.add(5)
+        list.add(4)
+        list.add(2)
+        list.add(3)
+
+        expect([...list]).toEqual([1, 2, 3, 4, 5, 6])
     })
 })
