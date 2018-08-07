@@ -40,7 +40,7 @@
     "eventemitter2": "^5.0.1",
     "firstline": "^2.0.2",
     "glob": "^7.1.2",
-    "inquirer": "6.0.0",
+    "inquirer": "6.1.0",
     "inquirer-autocomplete-prompt": "^1.0.1",
     "jest": "^23.3.0",
     "lodash": "^4.17.10",
