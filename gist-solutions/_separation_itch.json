@@ -16,6 +16,21 @@
     null,
     {
       "solution": ".......W..A.A..S...S.....DD.D..D.D...W.......S.A.A......A..A"
+    },
+    {
+      "solution": ".......W..A.A..S...S.....DD.D..D.D...W.......S.A.A......A..A.......W..A.A..S...S.....DD.D..D.D...W.......S.A.A......A..AX"
+    },
+    {
+      "solution": "WAASDWWASDDW"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "SDDSAAAWWDSAASDDDWWWASSDDWWAASWDDSSAASAWWDSADDDWWAASAADDWDDDASSDDAAWAS"
+    },
+    {
+      "solution": "X"
     }
   ],
   "title": "Separation",

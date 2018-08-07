@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "solutions": [
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": ".,W,W,W,W,S,S,S,D,D,W,W,W,S,S,S,A,A,A,A,W,W,W"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": ".,D,D,W,W,D,W,A,A,A,A,A,D,S,S,A,W,S,D,D,W,D,W,A"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": ".,W,D,W,A,W,D,S,S,D,D,D,W,W,A,S,A,A,W,D,S,D,W,W,D,W,A,A,D,D,S,S,S,S,A,A,A,D,S,S,A,A,W,W,W,S,A,W,W,A,W,D,D,D"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": ".,A,A,W,W,A,D,D,D,W,D,D,S,D,S,S,A,W,W,W,D,W,A,A,A,D,D,S,S,S,A,W,W,W,D,W,A,S,S,S,A,A,A,A,W,D,D,D,S,D,W,W,D,W,W,A,S,D,S,S,A,W,A,W"
+    },
+    {
+      "solution": "X"
+    }
+  ],
+  "title": "White Pillars",
+  "totalLevels": 18,
+  "totalMapLevels": 9
+}
