@@ -45,7 +45,7 @@
     "jest": "^23.3.0",
     "lodash": "^4.17.10",
     "ohm-js": "^0.14.0",
-    "pify": "^3.0.0",
+    "pify": "^4.0.0",
     "supports-color": "^5.4.0",
     "update-notifier": "^2.5.0",
     "web-audio-api": "^0.2.2"
