@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "solutions": [
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "DDDDWWWWAAAA"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "WWAWDDDDSSSASA"
+    },
+    {
+      "solution": "X"
+    }
+  ],
+  "title": "Fatigued square maze",
+  "totalLevels": 17,
+  "totalMapLevels": 8
+}

@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "solutions": [
+    {
+      "solution": "X"
+    },
+    {
+      "solution": ".,S,S,S,S,S,D,S,S,S,A,A,A,A,W,W,W,W,A,W,W,W,D,W,W"
+    },
+    {
+      "solution": "X"
+    }
+  ],
+  "title": "Covering holes",
+  "totalLevels": 13,
+  "totalMapLevels": 7
+}
