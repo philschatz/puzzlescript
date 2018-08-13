@@ -104,7 +104,7 @@
   },
   "name": "puzzlescript-cli",
   "description": "Play PuzzleScript games in your terminal!",
-  "version": "1.6.2",
+  "version": "1.6.3",
   "main": "lib/index.js",
   "directories": {
     "lib": "lib",
