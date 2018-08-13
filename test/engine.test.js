@@ -2082,7 +2082,7 @@ describe('engine', () => {
         engine.tick()
 
         expect(hat.getCellsThatMatch().size).toBe(0)
-        expect(shirt.getCellsThatMatch().size).toBe(0)
+        expect(shirt.getCellsThatMatch().size).toBe(1) // reference implementation only removes the 1st tile
     })
 
 
@@ -2449,5 +2449,108 @@ describe('engine', () => {
         expect(engine.hasAgainThatNeedsToRun).toBe(false)
     })
 
+    it('Only removes one OR tile per evaluation', () => {
+        const { engine, data } = parseEngine(`title OR test
+
+        ========
+        OBJECTS
+        ========
+
+        Background
+        BLACK
+
+        A
+        Red
+        0....
+        0....
+        0....
+        0....
+        0....
+
+        B
+        Yellow
+        .0...
+        .0...
+        .0...
+        .0...
+        .0...
+
+
+        Player
+        White
+        0...0
+        .0.0.
+        ..0..
+        .0.0.
+        0...0
+
+
+        C
+        Blue
+        ..0..
+        ..0..
+        ..0..
+        ..0..
+        ..0..
+
+
+
+        =======
+        LEGEND
+        =======
+
+        . = Background
+        P = Player
+        letter = A or B or C
+        X = B and C
+
+        =======
+        SOUNDS
+        =======
+
+        ================
+        COLLISIONLAYERS
+        ================
+
+        Background
+        Player
+        A
+        B
+        C
+
+        ======
+        RULES
+        ======
+
+        [ Letter NO Player ] -> [  Player  ]
+
+        ==============
+        WINCONDITIONS
+        ==============
+
+
+        =======
+        LEVELS
+        =======
+
+        X
+
+    `) // end game definition
+
+        const player = data._getSpriteByName('player')
+        const b = data._getSpriteByName('b')
+        const c = data._getSpriteByName('c')
+        engine.tick()
+
+        expect(player.getCellsThatMatch().size).toBe(1)
+        // remove the 1st OR tile, but not the second.
+        // The reference implementation removes "b" and keeps "c"
+        // but it the current implementation removes the githest collision layer first.
+        // It does not seem like any games rely directly on _which_ is removed
+        // so it does not matter. If a game _does_ rely, then getSprites() should sort
+        // them in the order they occured.
+        expect(b.getCellsThatMatch().size).toBe(1)
+        expect(c.getCellsThatMatch().size).toBe(0)
+    })
 
 })

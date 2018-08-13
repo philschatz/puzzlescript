@@ -935,7 +935,7 @@ class ReplaceTile {
         this.mightNotFindConditionButThatIsOk = mightNotFindConditionButThatIsOk
         this.conditionSpritesToRemove = conditionSpritesToRemove
     }
-    replace(cell: Cell, magicOrTiles: Map<IGameTile, Set<GameSprite>>) {
+    replace(cell: Cell, magicOrTiles: Map<IGameTile, Set<GameSprite>>, orTilesRemoved: Set<IGameTile>) {
         let didActuallyChange = false
         // Check if we are adding or removing....
         if (this.actionTileWithModifier) {
@@ -976,12 +976,31 @@ class ReplaceTile {
                 throw new Error(`BUG: No tile found`)
             }
             if (this.conditionSpritesToRemove) {
-                // only remove the sprites in the cell that match the condition... not all the sprites in a collisionLayer
-                const conditionSpritesToRemove = new Set(this.conditionSpritesToRemove._tile.getSprites())
-                for (const sprite of tile.getSprites()) {
-                    if (conditionSpritesToRemove.has(sprite)) {
-                        const removed = cell.removeSprite(sprite)
-                        didActuallyChange = didActuallyChange || removed
+                // For OR tiles we need to only remove one of the sprites, not ALL of the sprites
+                if (this.conditionSpritesToRemove._tile.isOr()) {
+                    if (! orTilesRemoved.has(this.conditionSpritesToRemove._tile)) {
+                        // only remove the sprites in the cell that match the condition... not all the sprites in a collisionLayer
+                        const cellSprites = tile.getSprites()
+                        for (const conditionSpriteToRemove of this.conditionSpritesToRemove._tile.getSprites()) {
+                            if (cellSprites.indexOf(conditionSpriteToRemove) >= 0) {
+                                const removed = cell.removeSprite(conditionSpriteToRemove)
+                                didActuallyChange = didActuallyChange || removed
+
+                                if (removed) {
+                                    orTilesRemoved.add(this.conditionSpritesToRemove._tile)
+                                }
+                                break
+                            }
+                        }
+                    }
+                } else {
+                    // only remove the sprites in the cell that match the condition... not all the sprites in a collisionLayer
+                    const conditionSpritesToRemove = new Set(this.conditionSpritesToRemove._tile.getSprites())
+                    for (const sprite of tile.getSprites()) {
+                        if (conditionSpritesToRemove.has(sprite)) {
+                            const removed = cell.removeSprite(sprite)
+                            didActuallyChange = didActuallyChange || removed
+                        }
                     }
                 }
 
@@ -1328,8 +1347,9 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
 
         let didChangeSprites = false
         let didChangeDirection = false
+        const orTilesRemoved = new Set()
         for (const replaceTile of replaceTiles) {
-            const {didActuallyChange} = replaceTile.replace(cell, magicOrTiles)
+            const {didActuallyChange} = replaceTile.replace(cell, magicOrTiles, orTilesRemoved)
             didChangeSprites = didChangeSprites || didActuallyChange || false
         }
         for (const replaceDirection of replaceDirections) {
