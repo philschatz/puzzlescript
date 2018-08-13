@@ -263,6 +263,9 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: { v
     TerminalUI.setHasVisualUi(cliUi)
 
     const level = data.levels[currentLevelNum]
+    if (!level) {
+        throw new Error(`BUG: Could not find level ${currentLevelNum}`)
+    }
     let startTime = Date.now()
     const engine = new GameEngine(data)
     engine.on('loading-cells', ({ cellStart, cellEnd, cellTotal }: LoadingCellsEvent) => {
@@ -542,6 +545,12 @@ async function promptPlayAnother() {
     return playAnotherGame
 }
 
+enum START_MODE {
+    NEW_GAME = 'New Game',
+    CONTINUE = 'Continue',
+    CHOOSE_LEVEL = 'Choose a Level'
+}
+
 async function promptChooseLevel(recordings: SaveFile, data: GameData, cliLevel: Optional<number>) {
     const levels = data.levels
     const firstUncompletedLevel = levels
@@ -552,6 +561,32 @@ async function promptChooseLevel(recordings: SaveFile, data: GameData, cliLevel:
     if (cliLevel !== undefined && cliLevel !== null) {
         return cliLevel
     }
+    // First ask if they want to Continue, Start a new Game, or Choose a Level
+    const startModeOptions: any[] = []
+    if (firstUncompletedLevel > 0) {
+        startModeOptions.push(START_MODE.CONTINUE)
+    }
+    startModeOptions.push(START_MODE.NEW_GAME)
+    startModeOptions.push(new inquirer.Separator())
+    startModeOptions.push(START_MODE.CHOOSE_LEVEL)
+
+    const {startMode} = await inquirer.prompt<{
+        startMode: START_MODE;
+    }>([{
+        type: 'list',
+        name: 'startMode',
+        message: 'What would you like to do?',
+        choices: startModeOptions
+    }])
+
+    if (startMode === START_MODE.NEW_GAME) {
+        return 0
+    } else if (startMode === START_MODE.CONTINUE) {
+        return firstUncompletedLevel
+    } else if (startMode !== START_MODE.CHOOSE_LEVEL) {
+        throw new Error(`BUG: Invalid startMode: ${startMode}`)
+    }
+
     const { currentLevelNum } = await inquirer.prompt<{
         currentLevelNum: number;
     }>([{

@@ -1,22 +1,68 @@
 {
   "version": 1,
   "solutions": [
-    null,
     {
-      "solution": ".W.W.W..W"
+      "solution": "X"
     },
-    null,
-    null,
+    {
+      "solution": "XXWWWW"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "X"
+    },
     {
       "solution": "WW.W.W"
     },
-    null,
+    {
+      "solution": "X"
+    },
     {
       "solution": "DD.D.D.D.W..WA.A..AA.A..A..AA..W.W..W.W..WW..W"
     },
-    null,
+    {
+      "solution": "X"
+    },
     {
       "solution": "D.D.SS..WD.D.S.A.S..SS.S..S.A.A.A..A.A..AA.A.A..A"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "DWWWWDDDDDDDDDDDSSSSSAS"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "AAAWWDSAAAAAAWWWWWWWWWAAA"
+    },
+    {
+      "solution": "SDDWDDDDSDDSSASAAAAA"
+    },
+    {
+      "solution": "DSDDDWWADWWAAAAAASSSSD"
+    },
+    {
+      "solution": "SDDDDDWWASWAWWDDDDWWWDDD"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "ASAAAWWWAASAAASSDDDDSSSSDDDDDDDDDDDDDDDWWWWWW"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "AAAAAAAAASSWWWWDDDAAASDDDWWWWSDAAA"
+    },
+    {
+      "solution": "X"
     }
   ],
   "title": "Spider's Hollow",
