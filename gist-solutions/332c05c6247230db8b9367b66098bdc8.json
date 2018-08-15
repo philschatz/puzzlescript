@@ -5,22 +5,22 @@
       "solution": "X"
     },
     {
-      "solution": "X,DX,DX,DX"
+      "solution": "X,DX,DX,DX,"
     },
     {
-      "solution": "SDX,WSX,SDX,WSX"
-    },
-    {
-      "solution": "X"
-    },
-    {
-      "solution": "SSSX,SX,SDDX,DX,AX"
+      "solution": "SDX,WSX,SDX,WSX,"
     },
     {
       "solution": "X"
     },
     {
-      "solution": "SSSWDDDDSWAAAASDDWDDSDWWAAASX,DDWSX,DWSSX,WAAASDDASDWWSX,WASX"
+      "solution": "SSSX,SX,SDDX,DX,AX,"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "SSSWDDDDSWAAAASDDWDDSDWWAAASX,DDWSX,DWSSX,WAAASDDASDWWSX,WASX,"
     }
   ],
   "title": "Mowing",

@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "solutions": [
+    {
+      "solution": "X"
+    },
+    {
+      "solution": ".DDDDSDWWWWDWSAWWWDWAAAWAS"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": ".SDDDWDSAA"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": ".SDDWAWDSDWSAAAAWAASDDDDSDWAWDSDWDWWWAAWASDSADWDDSSAW"
+    },
+    {
+      "solution": "X"
+    }
+  ],
+  "title": "Overstep",
+  "totalLevels": 13,
+  "totalMapLevels": 7
+}
