@@ -20,7 +20,7 @@
     "coverage": "istanbul report --root ./coverage/ lcov",
     "pretest": "tsc",
     "test": "NODE_ENV=development jest --coverage --updateSnapshot --verbose",
-    "posttest": "npm run-script test-cli && npm run-script test-webpackable",
+    "posttest": "npm run-script test-cli && npm run-script test-webpackable && npm run-script coverage",
     "test-debug": "NODE_ENV=development node --inspect-brk -r source-map-support/register $(npm bin)/jest -i --updateSnapshot $@",
     "test-cli": "./bin/puzzlescript.js --no-ui --game 'Beam Islands' --level 1 --size small --resume",
     "test-webpackable": "webpack-command ./lib/index.js --mode production --devtool source-map --output ./test/webpack-output.js",

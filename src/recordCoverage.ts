@@ -41,9 +41,28 @@ export function saveCoverageFile(data: GameData, absPath: string, coverageFilena
         // This is a problem with `startloop`
         const { start, end } = node.__getLineAndColumnRange()
         if (start.line !== end.line) {
-            return JSON.stringify({ start, end: { line: start.line, col: start.col + 3 } })
+            return JSON.stringify({
+                start: {
+                    line: start.line,
+                    col: start.col - 1
+                },
+                end: {
+                    line: start.line,
+                    col: start.col + 3
+                }
+            })
+        } else {
+            return JSON.stringify({
+                start: {
+                    line: start.line,
+                    col: start.col - 1
+                },
+                end: {
+                    line: end.line,
+                    col: end.col - 1
+                }
+            })
         }
-        return JSON.stringify({ start, end })
     }
     function addNodeToCoverage(node: IGameNode) {
         codeCoverageTemp.set(coverageKey(node), 0)
@@ -79,7 +98,8 @@ export function saveCoverageFile(data: GameData, absPath: string, coverageFilena
     }
 
     const codeCoverage2 = [...codeCoverageTemp.entries()].map(([key, value]) => {
-        return { loc: JSON.parse(key), count: value }
+        const loc = JSON.parse(key)
+        return { loc: loc, count: value }
     })
     // Generate the coverage.json file from which Rules were applied
     const statementMap: CoverageStatements = {}
@@ -89,8 +109,12 @@ export function saveCoverageFile(data: GameData, absPath: string, coverageFilena
 
     // Add all the matched rules
     codeCoverage2.forEach((entry: { loc: CoverageLocationRange, count: number }, index) => {
-        const { loc, count } = entry
+        let { loc, count } = entry
 
+        // sometimes count can be null
+        if (!(count >= 0)) {
+            count = 0
+        }
         s[index] = count
         statementMap[index] = loc
         f[index] = count
@@ -100,8 +124,7 @@ export function saveCoverageFile(data: GameData, absPath: string, coverageFilena
             loc: loc,
             line: loc.start.line
         }
-
-    })
+})
 
     const codeCoverageEntry: CoverageEntry = {
         path: absPath,
