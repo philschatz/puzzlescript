@@ -348,7 +348,7 @@ P.
 `)
         setRandomValuesForTesting([0, 1])
         const {changedCells} = engine.tick()
-        console.log('Random seed index is now at', getRandomSeed())
+        expect(getRandomSeed()).toBe(2)
         // expect(engine.toSnapshot()).toMatchSnapshot()
         const one = data._getSpriteByName('one')
         const two = data._getSpriteByName('two')
