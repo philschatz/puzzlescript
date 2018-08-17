@@ -15,6 +15,7 @@ export type IGameNode = {
     __getLineAndColumnRange: () => { start: { line: number, col: number }, end: { line: number, col: number } }
     __coverageCount: Optional<number>
     toString: () => string
+    toSourceString: () => string
 }
 
 export type IGameCode = ohm.Interval
@@ -49,6 +50,10 @@ export class BaseForLines {
     toString() {
         const s = <IGameCodeWithSource> this.__source
         return s.getLineAndColumnMessage()
+    }
+    toSourceString() {
+        const s = <IGameCodeWithSource> this.__source
+        return s.trimmed().contents
     }
 
     // This is mostly used for creating code coverage for the games. So we know which Rules (or objects) are not being matched

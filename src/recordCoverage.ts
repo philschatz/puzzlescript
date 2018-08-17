@@ -32,7 +32,7 @@ type CoverageEntry = {
 
 export function saveCoverageFile(data: GameData, absPath: string, coverageFilenameSuffix: string) {
     // record the appliedRules in a coverage.json file
-    const codeCoverageTemp = new Map() // key = Line number, value = count of times the rule executed
+    const codeCoverageTemp = new Map<string, {count: number, node: IGameNode}>() // key = Line number, value = count of times the rule executed
 
     // First add all the Tiles, Legend Items, collisionLayers, Rules, and Levels.
     // Then, after running, add all the matched rules.
@@ -65,7 +65,7 @@ export function saveCoverageFile(data: GameData, absPath: string, coverageFilena
         }
     }
     function addNodeToCoverage(node: IGameNode) {
-        codeCoverageTemp.set(coverageKey(node), 0)
+        codeCoverageTemp.set(coverageKey(node), {count: 0, node})
     }
     // data.objects.forEach(addNodeToCoverage)
     // data.legends.forEach(addNodeToCoverage)
@@ -90,16 +90,18 @@ export function saveCoverageFile(data: GameData, absPath: string, coverageFilena
     const nodesToCover = ary.concat(recursivelyGetRules(data.rules))/*.concat(data.objects).concat(data.legends)*/.concat(data.winConditions)/*.concat(data.levels)*/
     for (const node of nodesToCover) {
         const line = coverageKey(node)
-        if (codeCoverageTemp.has(line)) {
-            codeCoverageTemp.set(line, codeCoverageTemp.get(line) + node.__coverageCount)
+        const nodeCount = node.__coverageCount || 0
+        const existingEntry = codeCoverageTemp.get(line)
+        if (existingEntry) {
+            codeCoverageTemp.set(line, {count: existingEntry.count + nodeCount, node})
         } else {
-            codeCoverageTemp.set(line, node.__coverageCount)
+            codeCoverageTemp.set(line, {count: nodeCount, node})
         }
     }
 
-    const codeCoverage2 = [...codeCoverageTemp.entries()].map(([key, value]) => {
-        const loc = JSON.parse(key)
-        return { loc: loc, count: value }
+    const codeCoverage2 = [...codeCoverageTemp.entries()].map(([key, {count, node}]) => {
+        const loc = <CoverageLocationRange> JSON.parse(key)
+        return { loc: loc, count, node }
     })
     // Generate the coverage.json file from which Rules were applied
     const statementMap: CoverageStatements = {}
@@ -108,8 +110,8 @@ export function saveCoverageFile(data: GameData, absPath: string, coverageFilena
     const s: CoverageCount = {}
 
     // Add all the matched rules
-    codeCoverage2.forEach((entry: { loc: CoverageLocationRange, count: number }, index) => {
-        let { loc, count } = entry
+    codeCoverage2.forEach((entry, index) => {
+        let { loc, count, node } = entry
 
         // sometimes count can be null
         if (!(count >= 0)) {
@@ -119,7 +121,7 @@ export function saveCoverageFile(data: GameData, absPath: string, coverageFilena
         statementMap[index] = loc
         f[index] = count
         fnMap[index] = {
-            name: "foo",
+            name: node.toSourceString(),
             decl: loc,
             loc: loc,
             line: loc.start.line
