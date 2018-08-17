@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "solutions": [
+    null,
+    null,
+    null,
+    {
+      "solution": ".SSSSDDDDD.DDWWWAAXSSSSSSSSDX....WDWWDDDSSDDDDDWWWW"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": ".WWDDWWWSSSSDX............DDDDD"
+    }
+  ],
+  "title": "Magik",
+  "totalLevels": 11,
+  "totalMapLevels": 4
+}

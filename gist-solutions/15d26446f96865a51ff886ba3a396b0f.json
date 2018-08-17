@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "solutions": [
+    null,
+    {
+      "solution": "DDDDWWDDDDDSSSWAAAADDD"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "DDDD"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "DDDD"
+    },
+    {
+      "solution": "DDDDDDDDX"
+    },
+    {
+      "solution": "SADDWWWASSDSSSSADWA"
+    }
+  ],
+  "title": "magnetic",
+  "totalLevels": 8,
+  "totalMapLevels": 4
+}

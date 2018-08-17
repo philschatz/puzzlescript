@@ -1,16 +1,41 @@
 {
   "version": 1,
   "solutions": [
-    null,
-    null,
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "X"
+    },
     {
       "solution": "AASDDD"
     },
-    null,
-    null,
-    null,
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "X"
+    },
     {
       "solution": "WDWASAAWDSDWAWD"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "WDSSDDWWWADSWAAWSDDS"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "SAWDSSSAWADDDADWWAAASWDSDWWAWD"
+    },
+    {
+      "solution": "X"
     }
   ],
   "title": "Sleepy players",
