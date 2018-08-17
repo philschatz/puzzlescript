@@ -309,24 +309,32 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: { v
             console.log(`${chalk.dim(`Pressed:`)} ${chalk.whiteBright(key)}`)
         }
         switch (key) {
+            case 'W':
             case 'w':
             case '\u001B\u005B\u0041': // UP-ARROW
                 pendingKey = 'W'; break
+            case 'S':
             case 's':
             case '\u001B\u005B\u0042': // DOWN-ARROW
                 pendingKey = 'S'; break
+            case 'A':
             case 'a':
             case '\u001B\u005B\u0044': // LEFT-ARROW
                 pendingKey = 'A'; break
+            case 'D':
             case 'd':
             case '\u001B\u005B\u0043': // RIGHT-ARROW
                 pendingKey = 'D'; break
+            case 'X':
             case 'x':
             case ' ':
             case '\u000D':
                 pendingKey = 'X'; break
+            case 'R':
             case 'r':
                 return restartLevel()
+            case 'U':
+            case 'Z':
             case 'u':
             case 'z':
                 // update keypresses so that it does not contain the most-recent key
@@ -341,22 +349,28 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: { v
                 engine.pressUndo()
                 TerminalUI.renderScreen(false)
                 return
+            case 'C':
             case 'c':
                 TerminalUI.clearScreen()
                 TerminalUI.renderScreen(false)
                 return
+            case 'I':
             case 'i':
                 TerminalUI.moveInspector(RULE_DIRECTION.UP)
                 return
+            case 'J':
             case 'j':
                 TerminalUI.moveInspector(RULE_DIRECTION.LEFT)
                 return
+            case 'K':
             case 'k':
                 TerminalUI.moveInspector(RULE_DIRECTION.DOWN)
                 return
+            case 'L':
             case 'l':
                 TerminalUI.moveInspector(RULE_DIRECTION.RIGHT)
                 return
+            case 'P':
             case 'p':
                 const players = data.getPlayer().getCellsThatMatch()
                 if (players.size === 1) {
@@ -369,7 +383,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: { v
                 closeSounds()
                 return process.exit(1)
             case '\u001B': // Escape
-                saveCoverageFile(data, absPath, 'playgame')
+                saveCoverageFile(data, absPath, `${path.basename(path.dirname(absPath))}-playgame`)
                 // Save the partially-completed steps
                 if (keypresses.join('').replace(/\./g, '').length > 0) { // skip just empty ticks
                     recordings.solutions[currentLevelNum] = recordings.solutions[currentLevelNum] || {}
