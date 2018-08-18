@@ -3,9 +3,9 @@ import * as path from 'path'
 import * as glob from 'glob'
 import * as pify from 'pify'
 
-import {Parser, GameEngine, RULE_DIRECTION} from './'
+import {Parser, GameEngine, RULE_DIRECTION} from '.'
 import { closeSounds } from './sounds';
-import TerminalUI from './ui'
+import TerminalUI from './terminalUi'
 import { saveCoverageFile } from './recordCoverage';
 import { LevelRecording } from './playGame';
 

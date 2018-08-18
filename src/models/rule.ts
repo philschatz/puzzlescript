@@ -4,11 +4,11 @@ import {
     BaseForLines,
     IGameCode,
     IGameNode
-} from '../models/game'
+} from './game'
 import { IGameTile, GameSprite } from './tile'
 import { setIntersection, nextRandom, RULE_DIRECTION, DEBUG_FLAG, ICacheable, Optional } from '../util'
 import { Cell } from '../engine'
-import TerminalUI from '../ui'
+import TerminalUI from '../terminalUi'
 import { AbstractCommand } from './command';
 import { CollisionLayer } from './collisionLayer';
 

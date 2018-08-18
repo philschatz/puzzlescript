@@ -6,6 +6,8 @@ import { CollisionLayer } from './collisionLayer'
 import { Cell } from '../engine'
 import { SimpleTileWithModifier } from './rule';
 import { RULE_DIRECTION, setIntersection, Optional } from '../util';
+// BitSet does not export a default so import does not work in webpack-built file
+const BitSet2 = require('bitset')
 
 export interface IGameTile extends IGameNode {
     _getDescendantTiles: () => IGameTile[]
@@ -81,7 +83,7 @@ export class GameSprite extends BaseForLines implements IGameTile {
     setCollisionLayerAndIndex(collisionLayer: CollisionLayer, bitSetIndex: number) {
         this.collisionLayer = collisionLayer
         this.collisionLayerIndex = bitSetIndex
-        this.bitSet = new BitSet()
+        this.bitSet = <BitSet> new BitSet2()
         this.bitSet.set(bitSetIndex)
     }
     getBitSet() {

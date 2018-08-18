@@ -142,6 +142,7 @@ export class GameData {
     readonly rules: IRule[]
     readonly winConditions: WinConditionSimple[]
     readonly levels: LevelMap[]
+    private readonly cacheSpriteSize: {spriteHeight: number, spriteWidth: number}
 
     constructor(
         title: string,
@@ -168,6 +169,22 @@ export class GameData {
         const neighborCache = new Map()
         const tileCache = new Map()
         this.rules = _.flatten(rules.map(rule => rule.simplify(ruleCache, bracketCache, neighborCache, tileCache)))
+
+        const firstSpriteWithPixels = this.objects.filter(sprite => sprite.hasPixels())[0]
+        if (firstSpriteWithPixels) {
+            const firstSpritePixels = firstSpriteWithPixels.getPixels(1, 1) // We don't care about these args
+            this.cacheSpriteSize = {
+                spriteHeight: firstSpritePixels.length,
+                spriteWidth: firstSpritePixels[0].length
+            }
+        } else {
+            // All the sprites are just a single color, so set the size to be 5x5
+            this.cacheSpriteSize = {
+                spriteHeight: 1,
+                spriteWidth: 1
+            }
+        }
+
     }
 
     _getSpriteByName(name: string) {
@@ -210,4 +227,9 @@ export class GameData {
             sprite.clearCaches()
         }
     }
+
+    getSpriteSize() {
+        return this.cacheSpriteSize
+    }
+
 }

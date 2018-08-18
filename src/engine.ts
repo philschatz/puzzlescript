@@ -873,4 +873,8 @@ export class GameEngine {
         this.levelEngine.pressUndo()
     }
 
+    // Pixels and Sprites
+    getSpriteSize() {
+        return this.getGameData().getSpriteSize()
+    }
 }

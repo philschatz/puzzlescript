@@ -7,7 +7,7 @@ import { LookupHelper } from './lookup'
 import { ValidationLevel, AddValidationFunc } from './parser'
 import { LevelMap } from '../models/level';
 import { WinConditionSimple } from '../models/winCondition';
-import { ASTRule } from '../parser/astRule';
+import { ASTRule } from './astRule';
 import { CollisionLayer } from '../models/collisionLayer';
 import { GameSound } from '../models/sound';
 import { GameLegendTileSimple, GameSprite } from '../models/tile';
