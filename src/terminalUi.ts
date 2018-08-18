@@ -8,7 +8,7 @@ import { Cell, GameData, Optional, RULE_DIRECTION } from '.'
 import { GameSprite } from './models/tile'
 import { IColor } from './models/colors'
 import { CollisionLayer } from './models/collisionLayer';
-import AbstractUI from './ui';
+import BaseUI from './ui';
 
 // Determine if this
 // 'truecolor' if this terminal supports 16m colors. 256 colors otherwise
@@ -65,7 +65,7 @@ function drawPixelChar(x: number, y: number, fgHex: Optional<string>, bgHex: Opt
 }
 
 
-class TerminalUI extends AbstractUI {
+class TerminalUI extends BaseUI {
     private resizeHandler: Optional<() => void>
     private debugCategoryMessages: string[]
     protected inspectorCol: number
@@ -519,6 +519,22 @@ class TerminalUI extends AbstractUI {
         }
     }
 
+    protected checkIfCellCanBeDrawnOnScreen(cellStartX: number, cellStartY: number) {
+        // Check if the cell can be completely drawn on the screen. If not, print ellipses
+        const {columns, rows} = getTerminalSize()
+        const cellIsTooWide = (cellStartX + this.SPRITE_WIDTH) * this.PIXEL_WIDTH >= columns
+        const cellIsTooHigh = (cellStartY + this.SPRITE_HEIGHT) * this.PIXEL_HEIGHT >= rows
+
+        if (cellIsTooWide || cellIsTooHigh) {
+            // do not draw the cell
+            return false
+        }
+        return true
+    }
+
+    protected getMaxSize() {
+        return getTerminalSize()
+    }
 }
 
 

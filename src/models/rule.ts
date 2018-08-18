@@ -8,9 +8,10 @@ import {
 import { IGameTile, GameSprite } from './tile'
 import { setIntersection, nextRandom, RULE_DIRECTION, DEBUG_FLAG, ICacheable, Optional } from '../util'
 import { Cell } from '../engine'
-import TerminalUI from '../terminalUi'
+// import TerminalUI from '../terminalUi'
 import { AbstractCommand } from './command';
 import { CollisionLayer } from './collisionLayer';
+const BitSet2 = require('bitset')
 
 const MAX_ITERATIONS_IN_LOOP = 350 // Set by the Random World Generation game
 
@@ -84,7 +85,7 @@ export class SimpleRuleGroup extends BaseForLines implements IRule {
                 // so that we can step through the evaluations.
                 console.error(this.toString())
                 console.error('BUG: Iterated too many times in startloop or + (rule group)')
-                TerminalUI.debugRenderScreen(); debugger
+                // TerminalUI.debugRenderScreen(); debugger
             }
             if (iteration === MAX_ITERATIONS_IN_LOOP - 1) {
                 console.error(this.toString())
@@ -248,7 +249,7 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
             if (process.env['NODE_ENV'] === 'development' && innerIteration === MAX_ITERATIONS_IN_LOOP - 10) {
                 // Provide a breakpoint just before we run out of MAX_ITERATIONS_IN_LOOP
                 // so that we can step through the evaluations.
-                TerminalUI.debugRenderScreen(); debugger
+                // TerminalUI.debugRenderScreen(); debugger
             }
             if (innerIteration === MAX_ITERATIONS_IN_LOOP - 1) {
                 throw new Error(`BUG: Iterated too many times in rule or rule group\n${this.toString()}`)
@@ -292,7 +293,7 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
             if (!condition.hasFirstCells()) {
                 if (process.env['NODE_ENV'] === 'development' && this.debugFlag === DEBUG_FLAG.BREAKPOINT_REMOVE) {
                     // A "DEBUGGER_REMOVE" flag was set in the game so we are pausing here
-                    TerminalUI.debugRenderScreen(); debugger
+                    // TerminalUI.debugRenderScreen(); debugger
                 }
                 return [] // Rule did not match, so nothing ran
             }
@@ -307,7 +308,7 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
             // Get ready to Evaluate
             if (process.env['NODE_ENV'] === 'development' && this.debugFlag === DEBUG_FLAG.BREAKPOINT) {
                 // A "DEBUGGER" flag was set in the game so we are pausing here
-                TerminalUI.debugRenderScreen(); debugger
+                // TerminalUI.debugRenderScreen(); debugger
             }
 
             const allFirstCellsToProcess: Cell[][] = []
@@ -481,7 +482,7 @@ export class SimpleBracket extends ISimpleBracket {
 
     evaluate(actionBracket: ISimpleBracket, cell: Cell, magicOrTiles: Map<IGameTile, Set<GameSprite>>) {
         if (process.env['NODE_ENV'] === 'development' && this.actionDebugFlag === DEBUG_FLAG.BREAKPOINT) {
-            TerminalUI.debugRenderScreen(); debugger // pausing here because it is in the code
+            // TerminalUI.debugRenderScreen(); debugger // pausing here because it is in the code
         }
         const ret: IMutation[] = []
         let curCell: Optional<Cell> = cell
@@ -514,7 +515,7 @@ export class SimpleBracket extends ISimpleBracket {
     _addFirstCell(firstCell: Cell) {
         if (process.env['NODE_ENV'] === 'development' && this.debugFlag === DEBUG_FLAG.BREAKPOINT) {
             // Pausing here because it was marked in the code
-            TerminalUI.debugRenderScreen(); debugger
+            // TerminalUI.debugRenderScreen(); debugger
         }
         this.firstCells.add(firstCell)
         for (const [ellipsisBracket, token] of this.ellipsisBracketListeners) {
@@ -526,7 +527,7 @@ export class SimpleBracket extends ISimpleBracket {
         if (this.firstCells.has(firstCell)) {
             if (process.env['NODE_ENV'] === 'development' && this.debugFlag === DEBUG_FLAG.BREAKPOINT_REMOVE) {
                 // Pausing here because it was marked in the code
-                TerminalUI.debugRenderScreen(); debugger
+                // TerminalUI.debugRenderScreen(); debugger
             }
             this.firstCells.delete(firstCell)
             for (const [ellipsisBracket, token] of this.ellipsisBracketListeners) {
@@ -649,7 +650,7 @@ export class SimpleBracketConditionOnly extends SimpleBracket {
     }
     evaluate(): IMutation[] {
         if (process.env['NODE_ENV'] === 'development' && this.actionDebugFlag === DEBUG_FLAG.BREAKPOINT) {
-            TerminalUI.debugRenderScreen(); debugger // pausing here because it is in the code
+            // TerminalUI.debugRenderScreen(); debugger // pausing here because it is in the code
         }
         return []
     }
@@ -804,7 +805,7 @@ export class SimpleEllipsisBracket extends ISimpleBracket {
     }
     evaluate(actionBracket: ISimpleBracket, cell: Cell, magicOrTiles: Map<IGameTile, Set<GameSprite>>) {
         if (process.env['NODE_ENV'] === 'development' && this.actionDebugFlag === DEBUG_FLAG.BREAKPOINT) {
-            TerminalUI.debugRenderScreen(); debugger // pausing here because it is in the code
+            // TerminalUI.debugRenderScreen(); debugger // pausing here because it is in the code
         }
         const action = <SimpleEllipsisBracket> actionBracket
         const firstBeforeCell = cell
@@ -1112,7 +1113,7 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
                     }
                     let yesBitSet = this.cacheYesBitSets.get(c)
                     if (!yesBitSet) {
-                        yesBitSet = new BitSet()
+                        yesBitSet = <BitSet> new BitSet2()
                         this.cacheYesBitSets.set(c, yesBitSet)
                     }
                     yesBitSet.set(c.getBitSetIndexOf(sprite))
@@ -1131,7 +1132,7 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
                     }
                     let noBitSet = this.cacheNoBitSets.get(c)
                     if (!noBitSet) {
-                        noBitSet = new BitSet()
+                        noBitSet = <BitSet> new BitSet2()
                         this.cacheNoBitSets.set(c, noBitSet)
                     }
                     noBitSet.set(c.getBitSetIndexOf(sprite))
@@ -1336,7 +1337,7 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
     evaluate(actionNeighbor: SimpleNeighbor, cell: Cell, magicOrTiles: Map<IGameTile, Set<GameSprite>>) {
         if (process.env['NODE_ENV'] === 'development' && actionNeighbor.debugFlag === DEBUG_FLAG.BREAKPOINT) {
             // Pausing here because this breakpoint was marked in the game code
-            TerminalUI.debugRenderScreen(); debugger
+            // TerminalUI.debugRenderScreen(); debugger
         }
 
         const r = this.staticCache.get(actionNeighbor)
@@ -1514,7 +1515,7 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
     addCells(t: SimpleTileWithModifier, sprite: GameSprite, cells: Iterable<Cell>, wantsToMove: Optional<RULE_DIRECTION>) {
         if (process.env['NODE_ENV'] === 'development' && this.debugFlag === DEBUG_FLAG.BREAKPOINT) {
             // Pausing here because it was marked in the code
-            TerminalUI.debugRenderScreen(); debugger
+            // TerminalUI.debugRenderScreen(); debugger
         }
         for (const cell of cells) {
             const matchesTiles = this.matchesCell(cell, t, wantsToMove)
@@ -1542,7 +1543,7 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
     removeCells(t: SimpleTileWithModifier, sprite: GameSprite, cells: Iterable<Cell>) {
         if (process.env['NODE_ENV'] === 'development' && this.debugFlag === DEBUG_FLAG.BREAKPOINT_REMOVE) {
             // Pausing here because it was marked in the code
-            TerminalUI.debugRenderScreen(); debugger
+            // TerminalUI.debugRenderScreen(); debugger
         }
         for (const cell of cells) {
             // Check if the cell still matches. If not, remove it from upstream
@@ -1637,7 +1638,7 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
     addCells(sprite: GameSprite, cells: Cell[], wantsToMove: Optional<RULE_DIRECTION>) {
         if (process.env['NODE_ENV'] === 'development' && this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
             // Pause here because it was marked in the code
-            TerminalUI.debugRenderScreen(); debugger
+            // TerminalUI.debugRenderScreen(); debugger
         }
         // Cells all have the same sprites, so if the 1st matches, they all do
         if (this.matchesFirstCell(cells, wantsToMove)) {
@@ -1659,7 +1660,7 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
     updateCells(sprite: GameSprite, cells: Cell[], wantsToMove: RULE_DIRECTION) {
         if (process.env['NODE_ENV'] === 'development' && this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
             // Pause here because it was marked in the code
-            TerminalUI.debugRenderScreen(); debugger
+            // TerminalUI.debugRenderScreen(); debugger
         }
         // Cells all have the same sprites, so if the 1st matches, they all do
         if (this.matchesFirstCell(cells, wantsToMove)) {
@@ -1675,7 +1676,7 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
     removeCells(sprite: GameSprite, cells: Cell[]) {
         if (process.env['NODE_ENV'] === 'development' && this._debugFlag === DEBUG_FLAG.BREAKPOINT_REMOVE) {
             // Pause here because it was marked in the code
-            TerminalUI.debugRenderScreen(); debugger
+            // TerminalUI.debugRenderScreen(); debugger
         }
         // Cells all have the same sprites, so if the 1st matches, they all do
         if (this.matchesFirstCell(cells, null/*STATIONARY*/)) {

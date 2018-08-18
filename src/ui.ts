@@ -5,7 +5,6 @@ import { GameEngine, Cell, GameData, Optional } from '.'
 import { GameSprite } from './models/tile'
 import { IColor } from './models/colors'
 import { makeLetterCell } from './letters';
-import { getTerminalSize } from './terminalUi';
 
 class CellColorCache {
     private readonly cache: Map<string, IColor[][]>
@@ -77,7 +76,7 @@ function collapseSpritesToPixels(spritesToDraw: GameSprite[], backgroundColor: O
     return sprite
 }
 
-abstract class AbstractUI {
+abstract class BaseUI {
     private readonly cellColorCache: CellColorCache
     protected gameData: Optional<GameData>
     protected engine: Optional<GameEngine>
@@ -248,7 +247,7 @@ abstract class AbstractUI {
         const screenWidth = 34
         const screenHeight = 13
 
-        const {columns} = getTerminalSize()
+        const {columns} = this.getMaxSize()
         if (this.canShowMessageAsCells()) {
             // re-center the screen so we can show the message
             // remember these values so we can restore them right after rendering the message
@@ -311,6 +310,8 @@ abstract class AbstractUI {
 
     protected abstract setPixel(x: number, y: number, hex: string, fgHex: Optional<string>, chars: string): void
 
+    protected abstract checkIfCellCanBeDrawnOnScreen(cellStartX: number, cellStartY: number): boolean
+
     protected cellPosToXY(cell: Cell) {
         const { colIndex, rowIndex } = cell
         let isOnScreen = true // can be set to false for many reasons
@@ -329,13 +330,8 @@ abstract class AbstractUI {
         cellStartX = (colIndex - this.windowOffsetColStart) * this.SPRITE_WIDTH
         cellStartY = (rowIndex - this.windowOffsetRowStart) * this.SPRITE_HEIGHT /*pixels*/
 
-        // Check if the cell can be completely drawn on the screen. If not, print ellipses
-        const {columns, rows} = getTerminalSize()
-        const cellIsTooWide = (cellStartX + this.SPRITE_WIDTH) * this.PIXEL_WIDTH >= columns
-        const cellIsTooHigh = (cellStartY + this.SPRITE_HEIGHT) * this.PIXEL_HEIGHT >= rows
-        if (cellIsTooWide || cellIsTooHigh) {
-            // do not draw the cell
-            isOnScreen = false
+        if (isOnScreen) {
+            isOnScreen = this.checkIfCellCanBeDrawnOnScreen(cellStartX, cellStartY)
         }
 
         if (cellStartX < 0 || cellStartY < 0) {
@@ -343,6 +339,8 @@ abstract class AbstractUI {
         }
         return { isOnScreen, cellStartX, cellStartY }
     }
+
+    protected abstract getMaxSize() : {columns: number, rows: number}
 
     // Returns true if the window was moved (so we can re-render the screen)
     private recenterPlayerIfNeeded(playerCell: Cell, isOnScreen: boolean) {
@@ -365,7 +363,7 @@ abstract class AbstractUI {
         const flickScreen = this.gameData.metadata.flickscreen
         const zoomScreen = this.gameData.metadata.zoomscreen
         // these are number of sprites that can fit on the terminal
-        const {columns, rows} = getTerminalSize()
+        const {columns, rows} = this.getMaxSize()
         const terminalWidth = Math.floor(columns / this.SPRITE_WIDTH / this.PIXEL_WIDTH)
         const terminalHeight = Math.floor(rows / this.SPRITE_HEIGHT / this.PIXEL_HEIGHT)
 
@@ -521,4 +519,4 @@ abstract class AbstractUI {
 
 }
 
-export default AbstractUI
+export default BaseUI

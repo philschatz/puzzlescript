@@ -1,7 +1,5 @@
-const table = document.querySelector('table')
-console.log(window.PuzzleScript)
-const {Parser, GameEngine} = window.PuzzleScript
-const {data} = Parser.parse(`title Trivial Game
+const gameSource = `
+title Trivial Game
 
 ===
 OBJECTS
@@ -33,13 +31,30 @@ LEVELS
 .P..
 ....
 
-`)
-console.log('oerituoeiruteroiu')
+`
+
+const {Parser, GameEngine, TableUI, keymaster} = window.PuzzleScript
+const table = document.querySelector('table')
+
+console.log(window.PuzzleScript)
+const {data} = Parser.parse(gameSource)
 const {spriteHeight, spriteWidth} = data.getSpriteSize()
 
 const engine = new GameEngine(data)
-engine.pressRight()
+
+const tableUI = new TableUI(table)
+tableUI.setGame(engine)
+
 engine.setLevel(0)
+
+keymaster('up, w', () => engine.pressUp())
+keymaster('down, s', () => engine.pressDown())
+keymaster('left, a', () => engine.pressLeft())
+keymaster('right, d', () => engine.pressRight())
+keymaster('space, x', () => engine.pressAction())
+keymaster('z, u', () => engine.pressUndo())
+keymaster('r', () => engine.pressRestart())
+
 
 const levelCells = engine.getCurrentLevelCells()
 // Draw the level
@@ -49,16 +64,18 @@ for (let rowIndex = 0; rowIndex < spriteHeight * levelCells.length; rowIndex++) 
     table.appendChild(tr)
     for (let colIndex = 0; colIndex < spriteWidth * levelCells[0].length; colIndex++) {
         const td = document.createElement('td')
+        td.textContent = '\xa0\xa0' // &nbsp;&nbsp;
         tr.appendChild(td)
     }
 }
 
-const {changedCells} = engine.tick()
-for (const cell of changedCells) {
-    const {rowIndex, colIndex} = cell
-    const td = table.querySelector(`tr:nth-of-type(${rowIndex}) td:nth-of-type(${colIndex})`)
-
-    if (!td) {
-        throw new Error(`BUG: Missing <td> ${rowIndex}, ${colIndex}`)
-    }
+for (const row of levelCells) {
+    tableUI.drawCells(row)
 }
+
+function runLoop() {
+    const {changedCells} = engine.tick()
+    tableUI.drawCells(changedCells)
+}
+
+setInterval(runLoop, 30)

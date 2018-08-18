@@ -24,7 +24,7 @@
     "posttest": "npm run-script test-cli && npm run-script build-webpack && npm run-script coverage",
     "test-debug": "NODE_ENV=development node --inspect-brk -r source-map-support/register $(npm bin)/jest -i --updateSnapshot $@",
     "test-cli": "./bin/puzzlescript.js --no-ui --game 'Beam Islands' --level 1 --size small --resume",
-    "build-webpack": "webpack-command ./lib/index.js --target web --output-library PuzzleScript --output-library-target umd --mode development --devtool source-map --output ./test/webpack-output.js",
+    "build-webpack": "webpack-command ./lib/index-browser.js --target web --output-library PuzzleScript --output-library-target umd --mode development --devtool source-map --output ./test/webpack-output.js",
     "watch": "jest --updateSnapshot --watch",
     "debug": "NODE_ENV=development node --inspect-brk lib/runGames.js"
   },
@@ -33,6 +33,7 @@
     "puzzlescript-demo": "./bin/puzzlescript-demo.js"
   },
   "dependencies": {
+    "@types/keymaster": "^1.6.28",
     "ansi-escapes": "^3.1.0",
     "ansi-styles": "^3.2.1",
     "bitset": "^5.0.3",
@@ -44,6 +45,7 @@
     "inquirer": "6.0.0",
     "inquirer-autocomplete-prompt": "^1.0.1",
     "jest": "^23.3.0",
+    "keymaster": "^1.6.2",
     "lodash": "^4.17.10",
     "ohm-js": "^0.14.0",
     "pify": "^3.0.0",
