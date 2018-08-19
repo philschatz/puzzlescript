@@ -421,7 +421,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: { v
     //   UI.drawCellAt(data, cell, cell.rowIndex, cell.colIndex, false)
     // })
 
-    TerminalUI.setGame(engine)
+    TerminalUI.setGameEngine(engine)
     TerminalUI.clearScreen()
     TerminalUI.renderScreen(false)
     TerminalUI.writeDebug(`"${data.title}"`, 1)

@@ -13,7 +13,7 @@ function parseAndReturnFirstSpritePixels(code) {
     engine.setLevel(0)
     const cell = engine.getCurrentLevelCells()[0][0]
     // console.log(cell.getSprites())
-    UI.setGame(engine)
+    UI.setGameEngine(engine)
     return { pixels: UI.getPixelsForCell(cell), data }
 }
 

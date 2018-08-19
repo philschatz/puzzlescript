@@ -5,6 +5,7 @@ import { GameEngine, Cell, GameData, Optional } from '.'
 import { GameSprite } from './models/tile'
 import { IColor } from './models/colors'
 import { makeLetterCell } from './letters';
+import Parser from './parser/parser';
 
 class CellColorCache {
     private readonly cache: Map<string, IColor[][]>
@@ -106,7 +107,7 @@ abstract class BaseUI {
 
         this.hasVisualUi = true
     }
-    setGame(engine: GameEngine) {
+    setGameEngine(engine: GameEngine) {
         this.engine = engine
         this.gameData = engine.getGameData()
         this.cellColorCache.clear()
@@ -133,6 +134,42 @@ abstract class BaseUI {
         const {spriteHeight, spriteWidth} = this.gameData.getSpriteSize()
         this.SPRITE_HEIGHT = spriteHeight
         this.SPRITE_WIDTH = spriteWidth
+    }
+
+    setGame(gameData: string) {
+        const {data, error} = Parser.parse(gameData)
+        if (!data) {
+            if (error) {
+                throw error
+            } else {
+                throw new Error(`BUG: Could not parse gameData and did not find an error`)
+            }
+        }
+        this.setGameEngine(new GameEngine(data))
+    }
+    getGameData() {
+        if (!this.engine) {
+            throw new Error(`BUG: Game has not been specified yet`)
+        }
+        return this.engine.getGameData()
+    }
+
+    pressUp() { if (this.engine) { this.engine.pressUp() } }
+    pressDown() { if (this.engine) { this.engine.pressDown() } }
+    pressLeft() { if (this.engine) { this.engine.pressLeft() } }
+    pressRight() { if (this.engine) { this.engine.pressRight() } }
+    pressAction() { if (this.engine) { this.engine.pressAction() } }
+    pressUndo() { if (this.engine) { this.engine.pressUndo(); this.renderScreen(false) } }
+    pressRestart() { if (this.engine) { this.engine.pressRestart(); this.renderScreen(false) } }
+    setLevel(levelNum: number) { if (this.engine) { this.engine.setLevel(levelNum) }}
+    getCurrentLevelCells() { if (this.engine) { return this.engine.getCurrentLevelCells() } else { throw new Error(`BUG: Game has not been specified yet`)}}
+    tick() {
+        if (!this.engine) {
+            throw new Error(`BUG: Game has not been specified yet`)
+        }
+        const ret = this.engine.tick()
+        this.drawCells(ret.changedCells, false)
+        return ret
     }
 
     debugRenderScreen() {

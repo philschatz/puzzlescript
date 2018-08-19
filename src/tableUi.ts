@@ -13,6 +13,30 @@ class TableUI extends BaseUI {
         this.table = table
     }
 
+    setLevel(levelNum: number) {
+        super.setLevel(levelNum)
+        const {spriteHeight, spriteWidth} = this.getGameData().getSpriteSize()
+
+        this.table.innerHTML = '' // clear all the rows
+        const levelCells = this.getCurrentLevelCells()
+        // Draw the level
+        // Draw the empty table
+        for (let rowIndex = 0; rowIndex < spriteHeight * levelCells.length; rowIndex++) {
+            const tr = document.createElement('tr')
+            this.table.appendChild(tr)
+            for (let colIndex = 0; colIndex < spriteWidth * levelCells[0].length; colIndex++) {
+                const td = document.createElement('td')
+                td.textContent = '\xa0\xa0' // &nbsp;&nbsp;
+                tr.appendChild(td)
+            }
+        }
+
+        for (const row of levelCells) {
+            this.drawCells(row, false)
+        }
+
+    }
+
     canShowMessageAsCells() {
         return true
     }
