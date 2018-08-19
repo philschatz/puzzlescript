@@ -10,7 +10,7 @@ import * as commander from 'commander'
 
 import {Parser, GameEngine, LoadingCellsEvent, GameData, Optional, RULE_DIRECTION} from '.'
 import { playSound, closeSounds } from './sounds';
-import TerminalUI, { getTerminalSize } from './terminalUi'
+import TerminalUI, { getTerminalSize } from './ui/terminal'
 import { saveCoverageFile } from './recordCoverage';
 
 export type GameRecording = {

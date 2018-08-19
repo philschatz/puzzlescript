@@ -1,7 +1,7 @@
 import Parser from './parser/parser'
 import { GameEngine, Cell, LoadingCellsEvent } from './engine'
 import { GameData } from './models/game';
-import BaseUI from './ui';
+import BaseUI from './ui/base';
 import { Optional, RULE_DIRECTION } from './util';
 
 // Public API

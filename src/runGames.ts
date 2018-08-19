@@ -5,7 +5,7 @@ import * as pify from 'pify'
 
 import {Parser, GameEngine, RULE_DIRECTION} from '.'
 import { closeSounds } from './sounds';
-import TerminalUI from './terminalUi'
+import TerminalUI from './ui/terminal'
 import { saveCoverageFile } from './recordCoverage';
 import { LevelRecording } from './playGame';
 
@@ -92,7 +92,7 @@ async function run() {
                 //   UI.drawCellAt(cell, cell.rowIndex, cell.colIndex, false)
                 // })
 
-                TerminalUI.setGame(engine)
+                TerminalUI.setGameEngine(engine)
                 TerminalUI.clearScreen()
                 TerminalUI.renderScreen(true)
                 TerminalUI.writeDebug(`"${data.title}"`, 0)

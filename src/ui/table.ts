@@ -1,9 +1,9 @@
 import * as _ from 'lodash'
-import BaseUI from "./ui";
-import { Cell } from "./engine";
-import { Optional, RULE_DIRECTION } from "./util";
-import { IColor } from "./models/colors";
-import { GameData } from "./models/game";
+import BaseUI from "./base";
+import { Cell } from "../engine";
+import { Optional, RULE_DIRECTION } from "../util";
+import { IColor } from "../models/colors";
+import { GameData } from "../models/game";
 
 class TableUI extends BaseUI {
     private readonly table: HTMLElement

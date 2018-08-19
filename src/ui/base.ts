@@ -1,11 +1,11 @@
 import * as _ from 'lodash'
 import chalk from 'chalk';
 
-import { GameEngine, Cell, GameData, Optional } from '.'
-import { GameSprite } from './models/tile'
-import { IColor } from './models/colors'
-import { makeLetterCell } from './letters';
-import Parser from './parser/parser';
+import { GameEngine, Cell, GameData, Optional } from '..'
+import { GameSprite } from '../models/tile'
+import { IColor } from '../models/colors'
+import { makeLetterCell } from '../letters';
+import Parser from '../parser/parser';
 
 class CellColorCache {
     private readonly cache: Map<string, IColor[][]>

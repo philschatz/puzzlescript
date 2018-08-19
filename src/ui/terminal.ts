@@ -4,11 +4,11 @@ import * as ansiEscapes from 'ansi-escapes'
 import * as supportsColor from 'supports-color'
 import chalk from 'chalk';
 
-import { Cell, GameData, Optional, RULE_DIRECTION } from '.'
-import { GameSprite } from './models/tile'
-import { IColor } from './models/colors'
-import { CollisionLayer } from './models/collisionLayer';
-import BaseUI from './ui';
+import { Cell, GameData, Optional, RULE_DIRECTION } from '..'
+import { GameSprite } from '../models/tile'
+import { IColor } from '../models/colors'
+import { CollisionLayer } from '../models/collisionLayer';
+import BaseUI from './base';
 
 // Determine if this
 // 'truecolor' if this terminal supports 16m colors. 256 colors otherwise
