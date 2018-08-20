@@ -11,24 +11,46 @@ class TableUI extends BaseUI {
     constructor(table: HTMLElement) {
         super()
         this.table = table
+        table.classList.add('ps-table')
     }
 
     setLevel(levelNum: number) {
         super.setLevel(levelNum)
-        const {spriteHeight, spriteWidth} = this.getGameData().getSpriteSize()
+        this.clearScreen()
 
-        this.table.innerHTML = '' // clear all the rows
         const levelCells = this.getCurrentLevelCells()
         // Draw the level
         // Draw the empty table
-        for (let rowIndex = 0; rowIndex < spriteHeight * levelCells.length; rowIndex++) {
+        for (let rowIndex = 0; rowIndex < levelCells.length; rowIndex++) {
             const tr = document.createElement('tr')
-            this.table.appendChild(tr)
-            for (let colIndex = 0; colIndex < spriteWidth * levelCells[0].length; colIndex++) {
+            for (let colIndex = 0; colIndex < levelCells[0].length; colIndex++) {
                 const td = document.createElement('td')
-                td.textContent = '\xa0\xa0' // &nbsp;&nbsp;
+                td.classList.add('ps-cell')
+                td.setAttribute('tabindex', '0')
+
+                const cellLabel = document.createElement('span')
+                cellLabel.classList.add('ps-cell-label')
+                td.appendChild(cellLabel)
+
+                const sprite = document.createElement('div')
+                sprite.classList.add('ps-sprite-whole')
+                sprite.setAttribute('aria-hidden', 'true')
+
+                for (let row = 0; row < this.SPRITE_HEIGHT; row++) {
+                    const spriteRow = document.createElement('div')
+                    spriteRow.classList.add('ps-sprite-row')
+
+                    for (let col = 0; col < this.SPRITE_WIDTH; col++) {
+                        const spritePixel = document.createElement('span')
+                        spritePixel.classList.add('ps-sprite-pixel')
+                        spriteRow.appendChild(spritePixel)
+                    }
+                    sprite.appendChild(spriteRow)
+                }
+                td.appendChild(sprite)
                 tr.appendChild(td)
             }
+            this.table.appendChild(tr)
         }
 
         for (const row of levelCells) {
@@ -47,12 +69,17 @@ class TableUI extends BaseUI {
 
 
     protected setPixel(x: number, y: number, hex: string, fgHex: Optional<string>, chars: string) {
-        const td = this.table.querySelector(`tr:nth-of-type(${y + 1}) td:nth-of-type(${x + 1})`)
-        if (!td) {
+        const rowIndex = Math.floor(y / this.SPRITE_HEIGHT)
+        const colIndex = Math.floor(x / this.SPRITE_WIDTH)
+        const pixelY = y % this.SPRITE_HEIGHT
+        const pixelX = x % this.SPRITE_WIDTH
+
+        const pixel = this.table.querySelector(`tr:nth-of-type(${rowIndex + 1}) td:nth-of-type(${colIndex + 1}) .ps-sprite-row:nth-of-type(${pixelY + 1}) .ps-sprite-pixel:nth-of-type(${pixelX + 1})`)
+        if (!pixel) {
             throw new Error(`BUG: Could not set pixel because table is too small`)
         }
         if (!chars || chars.trim().length === 0) {
-            chars = '\xa0\xa0' //nbsp
+            chars = ''
         }
 
         if (!this.renderedPixels[y]) {
@@ -62,8 +89,8 @@ class TableUI extends BaseUI {
         if (!onScreenPixel || onScreenPixel.hex !== hex || onScreenPixel.chars !== chars) {
             this.renderedPixels[y][x] = {hex, chars}
 
-            td.setAttribute('style', `background-color: ${hex}`)
-            td.textContent = chars
+            pixel.setAttribute('style', `background-color: ${hex}`)
+            // pixel.textContent = chars
         }
     }
 
@@ -91,6 +118,18 @@ class TableUI extends BaseUI {
         if (!isOnScreen) {
             return // no need to render because it is off-screen
         }
+
+        // Inject the set of sprites for a11y
+        const cellLabel = this.table.querySelector(`tr:nth-of-type(${cell.rowIndex + 1}) td.ps-cell:nth-of-type(${cell.colIndex + 1}) .ps-cell-label`)
+        if (!cellLabel) {
+            throw new Error(`BUG: Could not find cell in the table`)
+        }
+        if (spritesForDebugging.length > 0) {
+            cellLabel.textContent = spritesForDebugging.map(s => s.getName()).join(', ')
+        } else {
+            cellLabel.textContent = '(empty)'
+        }
+
         const pixels: IColor[][] = this.getPixelsForCell(cell)
         pixels.forEach((spriteRow, spriteRowIndex) => {
             spriteRow.forEach((spriteColor: IColor, spriteColIndex) => {
@@ -184,16 +223,21 @@ class TableUI extends BaseUI {
     }
 
     _drawPixel(x: number, y: number, fgHex: string, bgHex: Optional<string>, chars: string) {
-        const td = this.table.querySelector(`tr:nth-of-type(${y + 1}) td:nth-of-type(${x + 1})`)
-        if (!td) {
-            throw new Error(`BUG: Missing <td> ${y}, ${x}`)
+        const rowIndex = Math.floor(y / this.SPRITE_HEIGHT)
+        const colIndex = Math.floor(x / this.SPRITE_WIDTH)
+        const pixelY = y % this.SPRITE_HEIGHT
+        const pixelX = x % this.SPRITE_WIDTH
+
+        const pixel = this.table.querySelector(`tr:nth-of-type(${rowIndex + 1}) td:nth-of-type(${colIndex + 1}) .ps-sprite-row:nth-of-type(${pixelY + 1}) .ps-sprite-pixel:nth-of-type(${pixelX + 1})`)
+        if (!pixel) {
+            throw new Error(`BUG: Could not set pixel because table is too small`)
         }
         let style = `color: ${fgHex};`
         if (bgHex) {
             style += ` background-color: ${bgHex};`
         }
-        td.setAttribute('style', style)
-        td.textContent = chars
+        pixel.setAttribute('style', style)
+        // pixel.textContent = chars
     }
 
     protected checkIfCellCanBeDrawnOnScreen(cellStartX: number, cellStartY: number) {
@@ -209,12 +253,8 @@ class TableUI extends BaseUI {
     }
 
     clearScreen() {
-        const tds = this.table.querySelectorAll('td')
-        for (let index = 0; index < tds.length; index++) {
-            const td = tds.item(index)
-            td.removeAttribute('style')
-            td.textContent = ''
-        }
+        super.clearScreen()
+        this.table.innerHTML = '' // clear all the rows
     }
 }
 

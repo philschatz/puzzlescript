@@ -315,6 +315,14 @@ All Target on CleanDishes
 LEVELS
 =======
 
+(message Wash up those dishes you flipping doyle. Then put them on the trolley. Level 1/14)
+
+788888888889
+4#22222222#6
+46p.d.w..o46
+4#88888888#6
+122222222223
+
 (message You can't wash clean dishes in dirty water! Level 2/14)
 
 
@@ -325,14 +333,25 @@ $####22####£
 6..........4
 #8889..7888#
 £####88####$
+
+(message I want to see my face in them! Level 3/14)
+
+#2222#222#
+6....B..o4
+6..d.wp..4
+6.c..U..o4
+6..78#888#
+#88#######
+
 `
 
 const {TableUI, keymaster} = window.PuzzleScript
-const table = document.querySelector('table')
+const table = document.querySelector('#thegamecanbeidentifiedbyselector')
 const tableUI = new TableUI(table)
 
+let currentLevel = 0
 tableUI.setGame(gameSource)
-tableUI.setLevel(0)
+tableUI.setLevel(currentLevel)
 
 // Set the key handlers
 keymaster('up, w', () => tableUI.pressUp())
@@ -354,6 +373,19 @@ function runLoop() {
         soundToPlay,
         wasAgainTick
     } = tableUI.tick()
+
+    if (didWinGame) {
+        alert(`You Won!`)
+        clearInterval(timer)
+    } else if (didLevelChange) {
+        currentLevel++
+        tableUI.setLevel(currentLevel)
+    } else if (messageToShow) {
+        alert(messageToShow)
+    }
+    if (soundToPlay) {
+        console.log(`playing sound`)
+    }
 }
 
-setInterval(runLoop, 30)
+const timer = setInterval(runLoop, 30)
