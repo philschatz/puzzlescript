@@ -8,8 +8,7 @@ import PromptModule, * as autocomplete from 'inquirer-autocomplete-prompt'
 import chalk from 'chalk'
 import * as commander from 'commander'
 
-import {Parser, GameEngine, LoadingCellsEvent, GameData, Optional, RULE_DIRECTION} from '.'
-import { playSound, closeSounds } from './sounds';
+import {Parser, GameEngine, LoadingCellsEvent, GameData, Optional, RULE_DIRECTION, playSound, closeSounds} from '.'
 import TerminalUI, { getTerminalSize } from './ui/terminal'
 import { saveCoverageFile } from './recordCoverage';
 

@@ -129,7 +129,7 @@ class TerminalUI extends BaseUI {
         }
 
         // clear the cache of what is rendered
-        this.renderedPixels = []
+        super.clearScreen()
 
         writeFgColor('#ffffff')
         writeBgColor('#000000')

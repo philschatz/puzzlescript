@@ -110,6 +110,9 @@ abstract class BaseUI {
     setGameEngine(engine: GameEngine) {
         this.engine = engine
         this.gameData = engine.getGameData()
+
+        this.renderedPixels = []
+        this.cellColorCache.clear()
         this.clearScreen()
 
         // reset flickscreen and zoomscreen settings
@@ -553,7 +556,6 @@ abstract class BaseUI {
 
     protected clearScreen() {
         this.renderedPixels = []
-        this.cellColorCache.clear()
     }
 
 }

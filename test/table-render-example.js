@@ -345,7 +345,7 @@ $####22####£
 
 `
 
-const {TableUI, keymaster} = window.PuzzleScript
+const {TableUI, keymaster, playSound} = window.PuzzleScript
 const table = document.querySelector('#thegamecanbeidentifiedbyselector')
 const tableUI = new TableUI(table)
 
@@ -364,7 +364,7 @@ keymaster('r', () => tableUI.pressRestart())
 
 
 
-function runLoop() {
+async function runLoop() {
     const {
         changedCells,
         didLevelChange,
@@ -374,18 +374,19 @@ function runLoop() {
         wasAgainTick
     } = tableUI.tick()
 
+    if (soundToPlay) {
+        /*await*/ playSound(soundToPlay) // let sounds play while the game loads or player keeps moving
+    }
     if (didWinGame) {
         alert(`You Won!`)
-        clearInterval(timer)
+        cancelAnimationFrame(timer)
     } else if (didLevelChange) {
         currentLevel++
         tableUI.setLevel(currentLevel)
     } else if (messageToShow) {
         alert(messageToShow)
     }
-    if (soundToPlay) {
-        console.log(`playing sound`)
-    }
+    timer = window.requestAnimationFrame(runLoop)
 }
 
-const timer = setInterval(runLoop, 30)
+let timer = window.requestAnimationFrame(runLoop)

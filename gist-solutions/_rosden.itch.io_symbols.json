@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "solutions": [
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": ".,W,,D,,A,,S,,W,,A,,D,,W,,S"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": ".,A,,W,,D,,D,,S,,S,,A,,A,,D,,W,,A,,D"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": ".,D,,W,,S,,A,,A,,D,,S,,W,,S,,D,,A"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": ".,W,,W,,D,,S,,W,,S,,S,,A,,A,,W,,D,,D"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": ".,A,,D,,D,,W,,A,,A,,S,,W,,W,,S,,W,,D,,D,,A,,A,,D,,D"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": ".,A,,D,,D,,A,,W,,S,,W,,W,,A,,D,,S,,W,,D"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": ".,W,,D,,A,,S,,W,,A,,D,,W,,S"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": ".,S,,A,,D,,D,,W,,W,,A,,A"
+    },
+    {
+      "solution": "X"
+    }
+  ],
+  "title": "Symbols",
+  "totalLevels": 38,
+  "totalMapLevels": 19
+}
