@@ -17,8 +17,15 @@ describe('Browser', () => {
         jest.setTimeout(60 * 1000) // browser tests are slow
         const url = `file://${__dirname}/browser/html-table.xhtml`
 
+        const puppeteerArgs = []
+        // See https://github.com/GoogleChrome/puppeteer/blob/master/docs/troubleshooting.md#running-puppeteer-on-travis-ci
+        if (process.env['CI'] === 'true') {
+            puppeteerArgs.push('--no-sandbox')
+        }
+
         const browser = await puppeteer.launch({
-            devtools: process.env.NODE_ENV === 'development'
+            devtools: process.env.NODE_ENV === 'development',
+            args: puppeteerArgs
         })
         const page = await browser.newPage()
         await page.goto(url)
