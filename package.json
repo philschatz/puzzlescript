@@ -4,7 +4,7 @@
     "prepublish": "NODE_ENV=production npm run-script tsc",
     "preci": "npm run tsc",
     "ci": "npm run-script test",
-    "postci": "codecov",
+    "ci-codecov": "codecov",
     "tsc": "tsc",
     "tsc-watch": "tsc --watch",
     "docs": "typedoc --ignoreCompilerErrors --mode modules --excludePrivate --excludeExternals --theme minimal --readme ./README.md --out ./docs/ ./src/",
