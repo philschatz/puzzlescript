@@ -17,6 +17,9 @@ Also, it is **accessible**, meaning that [blind or visually impaired people can 
 1. Run `npm install -g puzzlescript-cli`
 1. Run `puzzlescript` to start playing
 
+### Embed in a Browser
+
+See [./test/browser/html-table.xhtml](./test/browser/html-table.xhtml) for an example of embedding in a browser.
 
 # Screencaps
 
@@ -113,11 +116,12 @@ Want to help? Here is a roadmap of things that need to be implemented:
 - [ ] output which sprites changed when the player moves or presses undo
 - [ ] improve the sound effects (needs an implementation of [BiquadFilter](https://developer.mozilla.org/en-US/docs/Web/API/BiquadFilterNode) in NodeJS)
 - [ ] support the `RIGID` keyword
-- [ ] output a simple `BEL` (ASCII character 7) when the `speaker` package is not installed
+- [x] output a simple `BEL` (ASCII character 7) when the `speaker` package is not installed
 - [ ] output sound effects when any of the following occur:
     - a sprite is `CREATE`, `DESTROY`, `CANTMOVE`
     - a sprite is moved
     - `RESTART`, `UNDO`, `TITLESCREEN`, `STARTGAME`, `STARTLEVEL`, `ENDLEVEL`, `ENDGAME`, `SHOWMESSAGE`, `CLOSEMESSAGE`
+- [x] use HTML Tables to render in the browser (see [./test/browser/html-table.xhtml](./test/browser/html-table.xhtml))
 
 
 

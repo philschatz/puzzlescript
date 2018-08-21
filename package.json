@@ -19,9 +19,9 @@
     "start-debug-cli": "LOG_LEVEL=debug NODE_ENV=development node inspect lib/runGames.js 2> ./start.log",
     "poststart": "npm run-script coverage && echo 'Generated coverage. Type open ./coverage/lcov-html/index.html to see it'",
     "coverage": "istanbul report --root ./coverage/ lcov",
-    "pretest": "tsc",
+    "pretest": "tsc && npm run-script build-webpack",
     "test": "NODE_ENV=development jest --coverage --updateSnapshot --verbose",
-    "posttest": "npm run-script test-cli && npm run-script build-webpack && npm run-script coverage",
+    "posttest": "npm run-script test-cli && npm run-script coverage",
     "test-debug": "NODE_ENV=development node --inspect-brk -r source-map-support/register $(npm bin)/jest -i --updateSnapshot $@",
     "test-cli": "./bin/puzzlescript.js --no-ui --game 'Beam Islands' --level 1 --size small --resume",
     "build-webpack": "webpack-command ./lib/index-browser.js --target web --output-library PuzzleScript --output-library-target umd --mode development --devtool source-map --output ./test/webpack-output.js",
@@ -70,7 +70,7 @@
     "jest-watch-typeahead": "^0.2.0",
     "mkdirp": "^0.5.1",
     "node-fetch": "^2.1.2",
-    "puppeteer": "^1.6.0",
+    "puppeteer": "^1.7.0",
     "source-map-support": "^0.5.6",
     "standard": "^11.0.1",
     "tslint": "^5.10.0",
@@ -89,6 +89,7 @@
       "jest-watch-typeahead/testname"
     ],
     "moduleFileExtensions": [
+      "json",
       "ts",
       "js"
     ],

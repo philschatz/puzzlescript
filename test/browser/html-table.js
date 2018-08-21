@@ -336,12 +336,14 @@ $####22####£
 
 (message I want to see my face in them! Level 3/14)
 
+(
 #2222#222#
 6....B..o4
 6..d.wp..4
 6.c..U..o4
 6..78#888#
 #88#######
+)
 
 `
 
