@@ -27,6 +27,7 @@ export interface IGameTile extends IGameNode {
 }
 
 export class GameSprite extends BaseForLines implements IGameTile {
+    allSpritesBitSetIndex: number // set onde all the sprites have been determined
     private readonly name: string
     readonly _optionalLegendChar: Optional<string>
     private collisionLayer: Optional<CollisionLayer>
@@ -41,6 +42,7 @@ export class GameSprite extends BaseForLines implements IGameTile {
         this._optionalLegendChar = optionalLegendChar
         this.cellSet = new Set()
         this.tileWithModifierSet = new Set()
+        this.allSpritesBitSetIndex = -1 // will be changed once we have all the sprites
     }
     isOr() {
         return false

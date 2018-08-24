@@ -164,6 +164,11 @@ export class GameData {
         this.winConditions = winConditions
         this.levels = levels
 
+        // assign an index to each GameSprite
+        this.objects.forEach((sprite, index) => {
+            sprite.allSpritesBitSetIndex = index
+        })
+
         const ruleCache = new Map()
         const bracketCache = new Map()
         const neighborCache = new Map()

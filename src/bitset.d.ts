@@ -4,6 +4,13 @@ declare module 'bitset' {
     class BitSet {
         get: (i: number) => number
         set: (i: number) => void
+        clear: (i: number) => void
+        slice: (from: number, to: number) => BitSet
+        clone: () => BitSet
+        and: (b: BitSet) => BitSet
+        or: (b: BitSet) => BitSet
+        isEmpty: () => boolean
+        cardinality: () => number
     }
 
     export default BitSet

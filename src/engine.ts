@@ -7,6 +7,7 @@ import { nextRandom, setAddAll, RULE_DIRECTION, setDifference, Optional, setEqua
 import { AbstractCommand, COMMAND_TYPE } from './models/command';
 import { GameSound } from './models/sound';
 import { CollisionLayer } from './models/collisionLayer';
+import {SpriteBitSet} from './spriteBitSet';
 
 type CollisionLayerState = {
     readonly wantsToMove: Optional<RULE_DIRECTION>
@@ -39,6 +40,7 @@ export class Cell {
     private cacheCollisionLayers: CollisionLayer[]
     public readonly rowIndex: number
     public readonly colIndex: number
+    public readonly spriteBitSet: SpriteBitSet
 
     constructor(engine: Optional<LevelEngine>, sprites: Set<GameSprite>, rowIndex: number, colIndex: number) {
         this.engine = engine
@@ -46,11 +48,11 @@ export class Cell {
         this.colIndex = colIndex
         this.state = new Map()
         this.cacheCollisionLayers = []
+        this.spriteBitSet = new SpriteBitSet(sprites)
 
         for (const sprite of sprites) {
             this._setWantsToMove(sprite, RULE_DIRECTION.STATIONARY)
         }
-
     }
     private _setState(collisionLayer: CollisionLayer, sprite: Optional<GameSprite>, wantsToMove: Optional<RULE_DIRECTION>) {
         let needsToUpdateCache
@@ -73,13 +75,27 @@ export class Cell {
         const {wantsToMove: cellWantsToMove, sprite: cellSprite} = this.getStateForCollisionLayer(collisionLayer)
         const didActuallyChangeDir = cellWantsToMove !== wantsToMove
         const didActuallyChangeSprite = cellSprite !== sprite
+        // replace the sprite in the bitSet
+        if (cellSprite !== sprite) {
+            if (cellSprite) {
+                throw new Error(`BUG: Should have already been removed?`)
+                // this.spriteBitSet.remove(cellSprite)
+            }
+            this.spriteBitSet.add(sprite)
+        }
+
         this._setState(collisionLayer, sprite, wantsToMove)
         return didActuallyChangeSprite || didActuallyChangeDir
     }
     _deleteWantsToMove(sprite: GameSprite) {
         // There may be other sprites in the same ... oh wait, no that's not possible.
         const collisionLayer = sprite.getCollisionLayer()
-        const didActuallyChange = !!this.getSpriteByCollisionLayer(collisionLayer)
+        const cellSprite = this.getSpriteByCollisionLayer(collisionLayer)
+        const didActuallyChange = !!cellSprite
+
+        if (cellSprite) {
+            this.spriteBitSet.remove(cellSprite)
+        }
 
         this._setState(collisionLayer, null, null) // delete the entry
 

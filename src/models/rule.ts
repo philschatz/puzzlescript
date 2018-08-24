@@ -11,6 +11,7 @@ import { Cell } from '../engine'
 // import TerminalUI from '../terminalUi'
 import { AbstractCommand } from './command';
 import { CollisionLayer } from './collisionLayer';
+import { SpriteBitSet, CollisionLayerBitSet } from '../spriteBitSet';
 const BitSet2 = require('bitset')
 
 const MAX_ITERATIONS_IN_LOOP = 350 // Set by the Random World Generation game
@@ -1084,6 +1085,11 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
     private cacheDirections: Map<CollisionLayer, RULE_DIRECTION>
     private cacheMultiCollisionLayerTiles: Set<SimpleTileWithModifier>
 
+    private spritesPresent: SpriteBitSet
+    private spritesMissing: SpriteBitSet
+    private anySpritesPresent: Set<SpriteBitSet>
+    private movementsPresent: Map<CollisionLayer, RULE_DIRECTION>
+
     constructor(source: IGameCode, tilesWithModifier: Set<SimpleTileWithModifier>, debugFlag: DEBUG_FLAG) {
         super(source)
         this._tilesWithModifier = tilesWithModifier
@@ -1092,6 +1098,11 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
         this.debugFlag = debugFlag
 
         this.staticCache = new Map()
+
+        this.spritesPresent = new SpriteBitSet()
+        this.spritesMissing = new SpriteBitSet()
+        this.anySpritesPresent = new Set<SpriteBitSet>()
+        this.movementsPresent = new Map()
 
         // Build up the cache BitSet for each collisionLayer
         this.cacheYesBitSets = new Map()
@@ -1121,6 +1132,22 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
             } else {
                 this.cacheMultiCollisionLayerTiles.add(t)
             }
+
+            if (t._tile.isOr()) {
+                // TODO: (optimization) Check for duplicates
+                this.anySpritesPresent.add(new SpriteBitSet(t._tile.getSprites()))
+            } else {
+                this.spritesPresent.addAll(t._tile.getSprites())
+            }
+            for (const sprite of t._tile.getSprites()) {
+                if (t._direction) {
+                    const prevDir = this.movementsPresent.get(sprite.getCollisionLayer())
+                    if (prevDir && prevDir !== t._direction) {
+                        throw new Error(`BUG??? prev=${prevDir} ${t._direction}`)
+                    }
+                    this.movementsPresent.set(sprite.getCollisionLayer(), t._direction)
+                }
+            }
         }
 
         for (const t of noTiles) {
@@ -1139,6 +1166,13 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
                 }
             } else {
                 this.cacheMultiCollisionLayerTiles.add(t)
+            }
+
+            if (t._tile.isOr()) {
+                // NO Color === NO Red NO Green NO Blue
+                this.spritesMissing.addAll(t._tile.getSprites())
+            } else {
+                this.spritesMissing.addAll(t._tile.getSprites())
             }
         }
 
@@ -1497,6 +1531,44 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
                 }
             }
         }
+
+        // try using the spritesPresent, spritesMissing, anySpritesPresent, and the movement sets
+        const doesMatch2Sprites =
+            cell.spriteBitSet.containsAll(this.spritesPresent) &&
+            cell.spriteBitSet.containsNone(this.spritesMissing)
+        let doesMatch2AnySprites = true
+        for (const anySpritesPresent of this.anySpritesPresent) {
+            doesMatch2AnySprites = doesMatch2AnySprites && cell.spriteBitSet.containsAny(anySpritesPresent)
+        }
+        // Check CollisionLayers
+        // TODO: Move this into the Cell definition
+        const movementsPresent = new CollisionLayerBitSet()
+        const movementsMissing = new CollisionLayerBitSet()
+        for (const collisionLayer of cell.getCollisionLayers()) {
+            const direction = cell.getCollisionLayerWantsToMove(collisionLayer)
+            if (direction === RULE_DIRECTION.STATIONARY) {
+                movementsMissing.add(collisionLayer)
+            } else if (direction) {
+                movementsPresent.add(collisionLayer)
+            }
+        }
+        let doesMatch2MovementsPresent = true
+        for (const [collisionLayer, direction] of this.movementsPresent) {
+            const cellDir = cell.getCollisionLayerWantsToMove(collisionLayer)
+            if (direction !== cellDir) {
+                doesMatch2MovementsPresent = false
+            }
+        }
+        const doesMatch2 = doesMatch2Sprites && doesMatch2AnySprites && doesMatch2MovementsPresent
+
+
+        if (doesMatch !== doesMatch2) {
+            console.error(this.toString())
+            console.error(cell.toString())
+            console.error(`BUG: using bit sets does not match. Expected ${doesMatch} but got: ${doesMatch2Sprites} ${doesMatch2AnySprites} ${doesMatch2MovementsPresent}`)
+            throw new Error(`BUG: using bit sets does not match. Expected ${doesMatch} but got: ${doesMatch2Sprites} ${doesMatch2AnySprites} ${doesMatch2MovementsPresent}`)
+        }
+
         return doesMatch
     }
     private matchesCellWithout(cell: Cell, sprite: GameSprite) {
