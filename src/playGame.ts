@@ -398,24 +398,32 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: { v
                 shouldExitGame = true
                 return
             case '1':
-                pendingKey = '[pause]'
+                if (process.env['NODE_ENV'] === 'development') {
+                    pendingKey = '[pause]'
+                }
                 return
             case '2':
-                pendingKey = '[continue]'
+                if (process.env['NODE_ENV'] === 'development') {
+                    pendingKey = '[continue]'
+                }
                 return
             case '9':
                 // Save State
-                const cellState = engine.saveSnapshotToJSON()
-                recordings.solutions[currentLevelNum].snapshot = {tickNum, cellState}
-                writeFileSync(solutionsPath, JSON.stringify(recordings, null, 2))
+                if (process.env['NODE_ENV'] === 'development') {
+                    const cellState = engine.saveSnapshotToJSON()
+                    recordings.solutions[currentLevelNum].snapshot = {tickNum, cellState}
+                    writeFileSync(solutionsPath, JSON.stringify(recordings, null, 2))
+                }
                 return
             case '0':
                 // Load most-recent state
-                const {snapshot} = recordings.solutions[currentLevelNum]
-                if (snapshot) {
-                    const {tickNum: savedTickNum, cellState} = snapshot
-                    engine.loadSnapshotFromJSON(cellState)
-                    tickNum = savedTickNum
+                if (process.env['NODE_ENV'] === 'development') {
+                    const {snapshot} = recordings.solutions[currentLevelNum]
+                    if (snapshot) {
+                        const {tickNum: savedTickNum, cellState} = snapshot
+                        engine.loadSnapshotFromJSON(cellState)
+                        tickNum = savedTickNum
+                    }
                 }
                 return
             default:
