@@ -4,6 +4,7 @@ exports[`engine runs RANDOM exactly once when condition is [ ] 1`] = `
 Array [
   Array [
     Array [
+      "STATIONARY Background",
       "STATIONARY Player",
       "STATIONARY RandomTile",
     ],
@@ -29,6 +30,7 @@ Array [
       "STATIONARY Background",
     ],
     Array [
+      "STATIONARY Background",
       "STATIONARY MirrorDR",
     ],
     Array [
@@ -62,6 +64,7 @@ Array [
   ],
   Array [
     Array [
+      "STATIONARY Background",
       "STATIONARY MirrorUR",
     ],
     Array [
@@ -69,6 +72,7 @@ Array [
       "STATIONARY LOS",
     ],
     Array [
+      "STATIONARY Background",
       "STATIONARY Reflection",
     ],
     Array [
@@ -76,6 +80,7 @@ Array [
       "STATIONARY LOS",
     ],
     Array [
+      "STATIONARY Background",
       "STATIONARY MirrorDL",
     ],
   ],
@@ -109,6 +114,7 @@ Array [
       "STATIONARY LOS",
     ],
     Array [
+      "STATIONARY Background",
       "STATIONARY MirrorUL",
     ],
     Array [
@@ -150,7 +156,6 @@ Array [
     Array [
       "STATIONARY Background",
     ],
-    Array [],
     Array [
       "STATIONARY Background",
     ],
@@ -158,6 +163,10 @@ Array [
       "STATIONARY Background",
     ],
     Array [
+      "STATIONARY Background",
+    ],
+    Array [
+      "STATIONARY Background",
       "STATIONARY Player",
     ],
     Array [
@@ -215,14 +224,18 @@ Array [
     Array [
       "STATIONARY Background",
     ],
-    Array [],
     Array [
       "STATIONARY Background",
     ],
     Array [
       "STATIONARY Background",
     ],
-    Array [],
+    Array [
+      "STATIONARY Background",
+    ],
+    Array [
+      "STATIONARY Background",
+    ],
     Array [
       "STATIONARY Background",
     ],

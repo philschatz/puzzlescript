@@ -284,7 +284,14 @@ export class LevelEngine extends EventEmitter2 {
         resetRandomSeed()
         // Clone the board because we will be modifying it
         this.currentLevel = level.getRows().map((row, rowIndex) => {
-            return row.map((col, colIndex) => new Cell(this, new Set(col.getSprites()), rowIndex, colIndex))
+            return row.map((col, colIndex) => {
+                const sprites = new Set(col.getSprites())
+                const backgroundSprite = this.gameData.getMagicBackgroundSprite()
+                if (backgroundSprite) {
+                    sprites.add(backgroundSprite)
+                }
+                return new Cell(this, sprites, rowIndex, colIndex)
+            })
         })
 
         // link up all the cells. Loop over all the sprites
@@ -570,6 +577,7 @@ export class LevelEngine extends EventEmitter2 {
                     soundToPlay = command.getSound()
                     break
                 case COMMAND_TYPE.MESSAGE:
+                    this.hasAgainThatNeedsToRun = false // make sure we won't be waiting on another tick
                     messageToShow = command.getMessage()
                     break
                 case COMMAND_TYPE.WIN:
@@ -679,6 +687,8 @@ export type LoadingCellsEvent = {
 export interface ILoadingProgressHandler extends Listener {
     (info: LoadingCellsEvent): void;
 }
+
+export type CellSaveState = string[][][]
 
 /**
  * Maintains the state of the game. Here is an example flow:
@@ -876,5 +886,28 @@ export class GameEngine {
     // Pixels and Sprites
     getSpriteSize() {
         return this.getGameData().getSpriteSize()
+    }
+
+    saveSnapshotToJSON(): CellSaveState {
+        return this.getCurrentLevelCells().map(row => row.map(cell => [...cell.toSnapshot()].map(s => s.getName())))
+    }
+
+    loadSnapshotFromJSON(json: CellSaveState) {
+        json.forEach((rowSave, rowIndex) => {
+            rowSave.forEach((cellSave, colIndex) => {
+                const cell = this.levelEngine.getCurrentLevel()[rowIndex][colIndex]
+
+                const spritesToHave = cellSave.map(spriteName => {
+                    const sprite = this.getGameData()._getSpriteByName(spriteName)
+                    if (sprite) {
+                        return sprite
+                    } else {
+                        throw new Error(`BUG: Could not find sprite to add named ${spriteName}`)
+                    }
+                })
+
+                cell.fromSnapshot(new Set(spritesToHave))
+            })
+        })
     }
 }

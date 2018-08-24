@@ -37,7 +37,8 @@ type CliOptions = {
     size: Optional<CLI_SPRITE_SIZE>,
     new: Optional<true>,
     level: Optional<number>,
-    resume: Optional<boolean>
+    resume: Optional<boolean>,
+    nosound: Optional<boolean>
 }
 
 // Use require instead of import so we can load JSON files
@@ -105,6 +106,7 @@ commander
 .option('-n, --new', 'start a new game')
 .option('-l, --level <num>', 'play a specific level', (arg => parseInt(arg)))
 .option('-r, --resume', 'resume the level from last save')
+.option('--nosound', 'disable sound')
 .parse(process.argv)
 
 
@@ -118,11 +120,11 @@ async function run() {
     inquirer.registerPrompt('autocomplete', <PromptModule>autocomplete)
     const gists = await pify(glob)(path.join(__dirname, '../gists/*/script.txt'))
     const cliOptions: CliOptions = <CliOptions> commander.opts()
-    let { ui: cliUi, game: cliGameTitle, level: cliLevel, resume: cliResume} = cliOptions
+    let { ui: cliUi, game: cliGameTitle, level: cliLevel, resume: cliResume, nosound} = cliOptions
     const gamePath = commander.args[0]
 
     if (gamePath) {
-        await startPromptsAndPlayGame(gamePath, null, cliResume, cliLevel)
+        await startPromptsAndPlayGame(gamePath, null, cliResume, cliLevel, nosound)
         return // we are only playing one game
     }
 
@@ -162,7 +164,7 @@ async function run() {
     let wantsToPlayAgain = false
     do {
         const { filePath: gamePath, id: gistId } = await promptGame(games, cliGameTitle)
-        await startPromptsAndPlayGame(gamePath, gistId, cliResume, cliLevel)
+        await startPromptsAndPlayGame(gamePath, gistId, cliResume, cliLevel, nosound)
 
         if (!cliGameTitle) {
             wantsToPlayAgain = await promptPlayAnother()
@@ -185,7 +187,7 @@ async function run() {
     }
 }
 
-async function startPromptsAndPlayGame(gamePath: string, gistId: Optional<string>, cliResume: Optional<boolean>, cliLevel: Optional<number>) {
+async function startPromptsAndPlayGame(gamePath: string, gistId: Optional<string>, cliResume: Optional<boolean>, cliLevel: Optional<number>, nosound: Optional<boolean>) {
     const cliOptions: CliOptions = <CliOptions> commander.opts()
     let { ui: cliUi, size: cliSpriteSize, new: cliNewGame} = cliOptions
 
@@ -249,15 +251,17 @@ async function startPromptsAndPlayGame(gamePath: string, gistId: Optional<string
 
         TerminalUI.clearScreen()
 
-        await playGame(data, currentLevelNum, recordings, ticksToRunFirst, absPath, solutionsPath, cliUi, cliLevel !== undefined /*only run one level if specified*/)
+        await playGame(data, currentLevelNum, recordings, ticksToRunFirst, absPath, solutionsPath, cliUi, cliLevel !== undefined /*only run one level if specified*/, nosound)
 
     }
 }
 
-async function playGame(data: GameData, currentLevelNum: number, recordings: { version: number, solutions: { solution?: string, partial?: string }[] }, ticksToRunFirst: string, absPath: string, solutionsPath: string, cliUi: boolean, onlyOneLevel: boolean) {
+async function playGame(data: GameData, currentLevelNum: number, recordings: { version: number, solutions: { solution?: string, partial?: string, snapshot?: {tickNum: number, cellState: string[][][]} }[] }, ticksToRunFirst: string, absPath: string, solutionsPath: string, cliUi: boolean, onlyOneLevel: boolean, nosound: Optional<boolean>) {
     if (process.env['LOG_LEVEL'] === 'debug') {
         console.error(`Start playing "${data.title}". Level ${currentLevelNum}`)
     }
+
+    const ticksToRunFirstAry = ticksToRunFirst.split('')
 
     TerminalUI.setHasVisualUi(cliUi)
 
@@ -298,8 +302,9 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: { v
         keypresses = [] // clear key history
     }
 
-    let keypresses = [...ticksToRunFirst]
+    let keypresses: string[] = [] // set later once we walk through all the existing partial keys
     let pendingKey = null
+    let tickNum = 0
     let shouldExitGame: boolean = false
     // https://stackoverflow.com/a/30687420
     process.stdin.on('data', handleKeyPress)
@@ -392,10 +397,33 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: { v
                 closeSounds()
                 shouldExitGame = true
                 return
+            case '1':
+                pendingKey = '[pause]'
+                return
+            case '2':
+                pendingKey = '[continue]'
+                return
+            case '9':
+                // Save State
+                const cellState = engine.saveSnapshotToJSON()
+                recordings.solutions[currentLevelNum].snapshot = {tickNum, cellState}
+                writeFileSync(solutionsPath, JSON.stringify(recordings, null, 2))
+                return
+            case '0':
+                // Load most-recent state
+                const {snapshot} = recordings.solutions[currentLevelNum]
+                if (snapshot) {
+                    const {tickNum: savedTickNum, cellState} = snapshot
+                    engine.loadSnapshotFromJSON(cellState)
+                    tickNum = savedTickNum
+                }
+                return
             default:
                 TerminalUI.writeDebug(`pressed....: "${toUnicode(key)}"`, 1)
         }
     }
+
+    let isPaused = false
 
     function doPress(key: string, recordPress: boolean) {
         switch (key) {
@@ -404,12 +432,15 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: { v
             case 'A': engine.pressLeft(); break
             case 'D': engine.pressRight(); break
             case 'X': engine.pressAction(); break
+            case 'b': // so we can set a breakpoint in the playback
+            case '[pause]': isPaused = true; break
+            case '[continue]': isPaused = false; break
             case '.':
             case ',':
                 // just .tick()
                 break
             default:
-                throw new Error(`BUG: Invalid keypress character "${ticksToRunFirst[keyNum]}"`)
+                throw new Error(`BUG: Invalid keypress character "${ticksToRunFirstAry[tickNum]}"`)
         }
         if (recordPress) {
             keypresses.push(key)
@@ -429,12 +460,33 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: { v
 
     // Run a bunch of ticks in case the user partially played a level
     let maxTickAndRenderTime = -1
-    for (var keyNum = 0; keyNum < ticksToRunFirst.length; keyNum++) {
-        doPress(ticksToRunFirst[keyNum], true)
+    for (tickNum = 0; tickNum < ticksToRunFirstAry.length; tickNum++) {
+        let key = ticksToRunFirstAry[tickNum]
+
+        if (isPaused && !pendingKey) {
+            tickNum--
+            await sleep(1000)
+            continue
+        }
+        if (pendingKey) {
+            key = pendingKey
+            ticksToRunFirstAry.splice(tickNum, 0, key)
+            pendingKey = null
+            if (key === '[continue]') {
+                console.log('New Game Code:')
+                console.log(ticksToRunFirstAry.join(''))
+            }
+        }
+        doPress(key, false)
         startTime = Date.now()
         const { changedCells, soundToPlay, didLevelChange, messageToShow } = engine.tick()
 
-        if (soundToPlay) {
+        // if (changedCells.size === 0 && !messageToShow && 'WSAD'.includes(key)) {
+        //     isPaused = true
+        //     ticksToRunFirstAry.splice(keyNum, 0, '[PAUSED]')
+        // }
+
+        if (soundToPlay && !nosound) {
             if (!currentlyPlayingSoundPromise) {
                 currentlyPlayingSoundPromise = playSound(soundToPlay).then(() => {
                     currentlyPlayingSoundPromise = null
@@ -461,18 +513,19 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: { v
             TerminalUI.renderScreen(false)
         }
 
-        if (keyNum > 1) { // Skip the 1st couple because they might be cleaning up the level
+        if (tickNum > 1) { // Skip the 1st couple because they might be cleaning up the level
             maxTickAndRenderTime = Math.max(maxTickAndRenderTime, Date.now() - startTime)
         }
 
-        const msg = `Playback ${keyNum}/${ticksToRunFirst.length} of "${data.title}" (took ${Date.now() - startTime}ms)`
+        const msg = `Playback ${tickNum}/${ticksToRunFirstAry.length} of "${data.title}" (took ${Date.now() - startTime}ms) ${ticksToRunFirstAry.slice(Math.max(tickNum - 25, 0), tickNum + 1).join('')}`
         TerminalUI.writeDebug(msg.substring(0, 160), 1)
 
         await sleep(1) // sleep long enough to play sounds
         // await sleep(Math.max(100 - (Date.now() - startTime), 0))
     }
 
-    let tickNum = 0
+    keypresses = [...ticksToRunFirstAry]
+
     while (true) {
         let maxSleepTime = 50
         // Exit the game if the user pressed escape
@@ -480,13 +533,21 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: { v
             break // so we can detach key listeners
         }
 
+        if (isPaused && !pendingKey) {
+            await sleep(maxSleepTime)
+            continue
+        }
+
+        let didHandleKeyPress = false
         if (pendingKey && !engine.hasAgain()) {
             doPress(pendingKey, true/*record*/)
+            pendingKey = null
+            didHandleKeyPress = true
         }
         const startTime = Date.now()
         const { changedCells, soundToPlay, messageToShow, didLevelChange, wasAgainTick } = engine.tick()
 
-        if (soundToPlay) {
+        if (soundToPlay && !nosound) {
             if (!currentlyPlayingSoundPromise) {
                 currentlyPlayingSoundPromise = playSound(soundToPlay).then(() => {
                     currentlyPlayingSoundPromise = null
@@ -527,7 +588,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: { v
         if (wasAgainTick) {
             keypresses.push(',')
         } else {
-            if (!pendingKey && changedCells.size > 0) {
+            if (!didHandleKeyPress && changedCells.size > 0) {
                 keypresses.push('.') // Add a "tick"
                 if (process.env.NODE_ENV === 'development') {
                     maxSleepTime = 500 // Slow down when every "." matters (for recording)

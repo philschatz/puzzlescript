@@ -4,20 +4,25 @@ exports[`Rule simplifier converts VERTICAL and HORIZONTAL at the beginning of a 
 Array [
   Array [
     Array [
+      "STATIONARY Background",
       "STATIONARY SimpleWall",
     ],
     Array [
+      "STATIONARY Background",
       "STATIONARY PrettyHorizWall",
     ],
     Array [
+      "STATIONARY Background",
       "STATIONARY PrettyHorizWall",
     ],
     Array [
+      "STATIONARY Background",
       "STATIONARY SimpleWall",
     ],
   ],
   Array [
     Array [
+      "STATIONARY Background",
       "STATIONARY PrettyVertWall",
     ],
     Array [
@@ -27,34 +32,41 @@ Array [
       "STATIONARY Background",
     ],
     Array [
-      "STATIONARY PrettyVertWall",
-    ],
-  ],
-  Array [
-    Array [
-      "STATIONARY PrettyVertWall",
-    ],
-    Array [
       "STATIONARY Background",
-    ],
-    Array [
-      "STATIONARY Background",
-    ],
-    Array [
       "STATIONARY PrettyVertWall",
     ],
   ],
   Array [
     Array [
+      "STATIONARY Background",
+      "STATIONARY PrettyVertWall",
+    ],
+    Array [
+      "STATIONARY Background",
+    ],
+    Array [
+      "STATIONARY Background",
+    ],
+    Array [
+      "STATIONARY Background",
+      "STATIONARY PrettyVertWall",
+    ],
+  ],
+  Array [
+    Array [
+      "STATIONARY Background",
       "STATIONARY SimpleWall",
     ],
     Array [
+      "STATIONARY Background",
       "STATIONARY PrettyHorizWall",
     ],
     Array [
+      "STATIONARY Background",
       "STATIONARY PrettyHorizWall",
     ],
     Array [
+      "STATIONARY Background",
       "STATIONARY SimpleWall",
     ],
   ],
@@ -64,7 +76,9 @@ Array [
 exports[`Rule simplifier expands MOVING in multiple brackets into simple UP DOWN LEFT RIGHT ACTION rules 1`] = `
 Array [
   Array [
-    Array [],
+    Array [
+      "STATIONARY Background",
+    ],
     Array [
       "STATIONARY Background",
       "STATIONARY Player",
@@ -74,7 +88,9 @@ Array [
     ],
   ],
   Array [
-    Array [],
+    Array [
+      "STATIONARY Background",
+    ],
     Array [
       "STATIONARY Background",
       "STATIONARY Shadow",
@@ -89,7 +105,9 @@ Array [
 exports[`Rule simplifier expands MOVING into simple UP DOWN LEFT RIGHT ACTION rules 1`] = `
 Array [
   Array [
-    Array [],
+    Array [
+      "STATIONARY Background",
+    ],
     Array [
       "STATIONARY Background",
       "STATIONARY Player",
@@ -99,7 +117,9 @@ Array [
     ],
   ],
   Array [
-    Array [],
+    Array [
+      "STATIONARY Background",
+    ],
     Array [
       "STATIONARY Background",
       "STATIONARY Shadow",

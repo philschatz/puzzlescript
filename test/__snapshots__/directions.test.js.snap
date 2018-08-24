@@ -4,6 +4,7 @@ exports[`Directions Marks a sprite when it wants to move 1`] = `
 Array [
   Array [
     Array [
+      "STATIONARY Background",
       "RIGHT Player",
     ],
     Array [
