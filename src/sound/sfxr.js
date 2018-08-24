@@ -1,5 +1,5 @@
-const {RNG} = require('../../lib/sound/rng')
-const {MakeRiff, FastBase64_Encode} = require('../../lib/sound/riffwave')
+const {RNG} = require('./rng')
+const {MakeRiff, FastBase64_Encode} = require('./riffwave')
 const {AudioContext} = require('web-audio-api')
 
 let Speaker = null
@@ -124,7 +124,7 @@ function rnd(max) {
 }
 
 
-pickupCoin = function() {
+function pickupCoin() {
   var result=Params();
   result.wave_type = Math.floor(frnd(SHAPES.length));
   if (result.wave_type === 3) {
@@ -145,7 +145,7 @@ pickupCoin = function() {
 };
 
 
-laserShoot = function() {
+function laserShoot() {
   var result=Params();
   result.wave_type = rnd(2);
   if (result.wave_type === SINE && rnd(1))
@@ -192,7 +192,7 @@ laserShoot = function() {
   return result;
 };
 
-explosion = function() {
+function explosion() {
   var result=Params();
 
   if (rnd(1)) {
@@ -227,7 +227,7 @@ explosion = function() {
   return result;
 };
 //9675111
-birdSound = function() {
+function birdSound() {
   var result=Params();
 
 if (frnd(10) < 1) {
@@ -419,7 +419,7 @@ return result;
 };
 
 
-pushSound = function() {
+function pushSound() {
   var result=Params();
   result.wave_type = Math.floor(frnd(SHAPES.length));//TRIANGLE;
   if (result.wave_type === 2) {
@@ -447,7 +447,7 @@ pushSound = function() {
 
 
 
-powerUp = function() {
+function powerUp() {
   var result=Params();
   if (rnd(1))
     result.wave_type = SAWTOOTH;
@@ -480,7 +480,7 @@ powerUp = function() {
   return result;
 };
 
-hitHurt = function() {
+function hitHurt() {
   result = Params();
   result.wave_type = rnd(2);
   if (result.wave_type === SINE)
@@ -499,7 +499,7 @@ hitHurt = function() {
 };
 
 
-jump = function() {
+function jump() {
   result = Params();
   result.wave_type = SQUARE;
   result.wave_type = Math.floor(frnd(SHAPES.length));
@@ -519,7 +519,7 @@ jump = function() {
   return result;
 };
 
-blipSelect = function() {
+function blipSelect() {
   result = Params();
   result.wave_type = rnd(1);
   result.wave_type = Math.floor(frnd(SHAPES.length));
@@ -536,7 +536,7 @@ blipSelect = function() {
   return result;
 };
 
-random = function() {
+function random() {
   result = Params();
   result.wave_type = Math.floor(frnd(SHAPES.length));
   result.p_base_freq = Math.pow(frnd(2.0) - 1.0, 2.0);
@@ -605,7 +605,7 @@ var generatorNames = [
 /*
 i like 9675111
 */
-generateFromSeed = function(seed) {
+function generateFromSeed(seed) {
   rng = new RNG((seed / 100) | 0);
   var generatorindex = seed % 100;
   var soundGenerator = generators[generatorindex % generators.length];

@@ -12,7 +12,7 @@ module.exports = {
     devtool: 'source-map',
     resolve: {
         alias: {
-            '../puzzlescript/js/sfxr': path.resolve(__dirname, './puzzlescript/js/sfxr-browser')
+            './sound/sfxr': path.resolve(__dirname, './lib/sound/sfxr-browser')
         }
     }
 }
