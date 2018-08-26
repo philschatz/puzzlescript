@@ -147,19 +147,19 @@ export class GameSprite extends BaseForLines implements IGameTile {
         for (const cell of cells) {
             this.cellSet.add(cell)
         }
-        // propagate up
-        for (const t of this.tileWithModifierSet) {
-            t.addCells(this, cells, wantsToMove)
-        }
+        // // propagate up
+        // for (const t of this.tileWithModifierSet) {
+        //     t.addCells(this, cells, wantsToMove)
+        // }
     }
     removeCells(cells: Cell[]) {
         for (const cell of cells) {
             this.cellSet.delete(cell)
         }
-        // propagate up
-        for (const t of this.tileWithModifierSet) {
-            t.removeCells(this, cells)
-        }
+        // // propagate up
+        // for (const t of this.tileWithModifierSet) {
+        //     t.removeCells(this, cells)
+        // }
     }
     has(cell: Cell) {
         return this.cellSet.has(cell)

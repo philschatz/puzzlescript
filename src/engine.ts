@@ -407,8 +407,11 @@ export class LevelEngine extends EventEmitter2 {
     private _tickUpdateCells(rules: Iterable<IRule>) {
         const changedMutations: Set<IMutation> = new Set()
         const evaluatedRules: IRule[] = []
+        if (!this.currentLevel) {
+            throw new Error(`BUG: Level Cells do not exist yet`)
+        }
         for (const rule of rules) {
-            const cellMutations = rule.evaluate(false/*evaluate all rules*/)
+            const cellMutations = rule.evaluate(this.currentLevel, false/*evaluate all rules*/)
             if (cellMutations.length > 0) {
                 evaluatedRules.push(rule)
             }
