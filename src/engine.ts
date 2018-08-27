@@ -41,6 +41,8 @@ export class Cell {
     public readonly rowIndex: number
     public readonly colIndex: number
     public readonly spriteBitSet: SpriteBitSet
+    private keyValue: string
+    private isKeyValueStale: boolean
 
     constructor(engine: Optional<LevelEngine>, sprites: Set<GameSprite>, rowIndex: number, colIndex: number) {
         this.engine = engine
@@ -49,6 +51,8 @@ export class Cell {
         this.state = new Map()
         this.cacheCollisionLayers = []
         this.spriteBitSet = new SpriteBitSet(sprites)
+        this.isKeyValueStale = true
+        this.keyValue = ''
 
         for (const sprite of sprites) {
             this._setWantsToMove(sprite, RULE_DIRECTION.STATIONARY)
@@ -69,6 +73,7 @@ export class Cell {
             this.cacheCollisionLayers = [...this.state.keys()]
             .sort((c1, c2) => c1.id - c2.id)
         }
+        this.invalidateKey()
     }
     _setWantsToMove(sprite: GameSprite, wantsToMove: Optional<RULE_DIRECTION>) {
         const collisionLayer = sprite.getCollisionLayer()
@@ -252,6 +257,16 @@ export class Cell {
     }
     toString() {
         return `Cell [${this.rowIndex}][${this.colIndex}] ${[...this.getSpriteAndWantsToMoves().entries()].map(([sprite, wantsToMove]) => `${wantsToMove} ${sprite.getName()}`).join(' ')}`
+    }
+    toKey() {
+        if (this.isKeyValueStale) {
+            this.keyValue = [...this.getSpriteAndWantsToMoves().entries()].map(([sprite, wantsToMove]) => `${wantsToMove} ${sprite.getName()}`).join(' ')
+            this.isKeyValueStale = false
+        }
+        return this.keyValue
+    }
+    private invalidateKey() {
+        this.isKeyValueStale = true
     }
     toSnapshot() {
         return this.getSpritesAsSet()

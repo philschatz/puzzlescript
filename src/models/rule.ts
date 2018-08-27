@@ -11,10 +11,12 @@ import { Cell } from '../engine'
 // import TerminalUI from '../ui/terminal'
 import { AbstractCommand } from './command';
 import { CollisionLayer } from './collisionLayer';
+import LruCache from '../lruCache'
 import { SpriteBitSet } from '../spriteBitSet';
 const BitSet2 = require('bitset')
 
 const MAX_ITERATIONS_IN_LOOP = 350 // Set by the Random World Generation game
+const LRU_CACHE_SIZE = 50 // 1000
 
 export const SIMPLE_DIRECTION_DIRECTIONS = [
     RULE_DIRECTION.RIGHT,
@@ -1225,7 +1227,7 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
     private anySpritesPresent: Set<SpriteBitSet>
     private spriteMovementsPresent: Map<CollisionLayer, RULE_DIRECTION>
     private orTileMovementsPresent: Map<IGameTile, RULE_DIRECTION>
-    // private alreadyReportedMismatch: boolean
+    private lruCache: LruCache<string, boolean>
 
     constructor(source: IGameCode, tilesWithModifier: Set<SimpleTileWithModifier>, debugFlag: DEBUG_FLAG) {
         super(source)
@@ -1242,6 +1244,7 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
         this.anySpritesPresent = new Set<SpriteBitSet>()
         this.spriteMovementsPresent = new Map()
         this.orTileMovementsPresent = new Map()
+        this.lruCache = new LruCache<string, boolean>(LRU_CACHE_SIZE)
 
         // Build up the cache BitSet for each collisionLayer
         this.cacheYesBitSets = new Map()
@@ -1677,50 +1680,56 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
         //     }
         // }
 
-        // try using the spritesPresent, spritesMissing, anySpritesPresent, and the movement sets
-        let doesMatch =
-            cell.spriteBitSet.containsAll(this.spritesPresent) &&
-            cell.spriteBitSet.containsNone(this.spritesMissing)
-        if (doesMatch) {
-            for (const anySpritesPresent of this.anySpritesPresent) {
-                doesMatch = doesMatch && cell.spriteBitSet.containsAny(anySpritesPresent)
-            }
+        function keyFn() {
+            return `[${cell.toKey()}]`
         }
-        // Check CollisionLayers
-        // TODO: Move this into the Cell definition
-        if (doesMatch) {
-            for (const [collisionLayer, direction] of this.spriteMovementsPresent) {
-                const cellDir = cell.getCollisionLayerWantsToMove(collisionLayer)
-                if (direction !== cellDir) {
-                    doesMatch = false
+        const valueFn = () => {
+            // try using the spritesPresent, spritesMissing, anySpritesPresent, and the movement sets
+            let doesMatch =
+                cell.spriteBitSet.containsAll(this.spritesPresent) &&
+                cell.spriteBitSet.containsNone(this.spritesMissing)
+            if (doesMatch) {
+                for (const anySpritesPresent of this.anySpritesPresent) {
+                    doesMatch = doesMatch && cell.spriteBitSet.containsAny(anySpritesPresent)
                 }
             }
-        }
-
-        if (doesMatch) {
-            for (const [orTile, direction] of this.orTileMovementsPresent) {
-                if (orTile.hasSingleCollisionLayer()) {
-                    const cellDir = cell.getCollisionLayerWantsToMove(orTile.getCollisionLayer())
+            // Check CollisionLayers
+            // TODO: Move this into the Cell definition
+            if (doesMatch) {
+                for (const [collisionLayer, direction] of this.spriteMovementsPresent) {
+                    const cellDir = cell.getCollisionLayerWantsToMove(collisionLayer)
                     if (direction !== cellDir) {
                         doesMatch = false
                     }
-                } else {
-                    // find which sprite in the OR tile matched and get its direction
-                    let foundSprite = false
-                    for (const sprite of orTile.getSprites()) {
-                        if (cell.spriteBitSet.has(sprite)) {
-                            foundSprite = true
-                            const cellDir = cell.getCollisionLayerWantsToMove(sprite.getCollisionLayer())
-                            if (direction !== cellDir) {
-                                doesMatch = false
+                }
+            }
+
+            if (doesMatch) {
+                for (const [orTile, direction] of this.orTileMovementsPresent) {
+                    if (orTile.hasSingleCollisionLayer()) {
+                        const cellDir = cell.getCollisionLayerWantsToMove(orTile.getCollisionLayer())
+                        if (direction !== cellDir) {
+                            doesMatch = false
+                        }
+                    } else {
+                        // find which sprite in the OR tile matched and get its direction
+                        let foundSprite = false
+                        for (const sprite of orTile.getSprites()) {
+                            if (cell.spriteBitSet.has(sprite)) {
+                                foundSprite = true
+                                const cellDir = cell.getCollisionLayerWantsToMove(sprite.getCollisionLayer())
+                                if (direction !== cellDir) {
+                                    doesMatch = false
+                                }
                             }
                         }
-                    }
-                    if (!foundSprite) {
-                        throw new Error(`BUG: Could not find sprite. One should have already been matched before`)
+                        if (!foundSprite) {
+                            throw new Error(`BUG: Could not find sprite. One should have already been matched before`)
+                        }
                     }
                 }
             }
+            return doesMatch
         }
 
         // if (doesMatch !== doesMatch2) {
@@ -1731,8 +1740,8 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
         //         console.error(`BUG: using bit sets does not match. Expected ${doesMatch} but got: ${doesMatch2}`)
         //     }
         // }
+        return this.lruCache.get(keyFn(), valueFn)
 
-        return doesMatch
     }
     private matchesCellWithout(cell: Cell, sprite: GameSprite) {
         // Temporarily remove the sprite from the cell
