@@ -36,7 +36,6 @@ String.prototype.getBytes = function() {
  * @constructor
  */
 function RC4(seed) {
-    debugger
     this.s = new Array(256);
     this.i = 0;
     this.j = 0;
@@ -240,6 +239,3 @@ RNG.roller = function(expr, rng) {
         return total;
     };
 };
-
-
-module.exports = RNG

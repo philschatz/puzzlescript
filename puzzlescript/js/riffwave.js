@@ -115,6 +115,3 @@ function MakeRiff ( sampleRate, bitsPerSample,data) {
 
     return result;
 }
-
-
-module.exports = {MakeRiff, FastBase64_Encode}

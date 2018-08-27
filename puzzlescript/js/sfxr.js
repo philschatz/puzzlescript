@@ -1,20 +1,3 @@
-const {RNG} = require('../../lib/sound/rng')
-const {MakeRiff, FastBase64_Encode} = require('../../lib/sound/riffwave')
-const {AudioContext} = require('web-audio-api')
-
-let Speaker = null
-if (!process.env.CONTINUOUS_INTEGRATION && !process.env.CI) {
-    try {
-        Speaker = require('speaker')
-    } catch (err) {
-        // it's ok, we just won't use the speaker
-    }
-}
-
-async function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms))
-}
-
 var SOUND_VOL = 0.25;
 var SAMPLE_RATE = 5512;
 var BIT_DEPTH = 8;
@@ -25,27 +8,27 @@ var SINE = 2;
 var NOISE = 3;
 var TRIANGLE = 4;
 var BREAKER = 5;
+var muted = 0;
 
 var SHAPES = [
   'square', 'sawtooth', 'sine', 'noise', 'triangle', 'breaker'
 ];
 
-let AUDIO_CONTEXT = new AudioContext()
-
-// see https://github.com/audiojs/web-audio-api/issues/59
-// The samplerate is hardcoded to be 44100 for some reason
-// and an exception is thrown if this does not match the buffer that is being played
-AUDIO_CONTEXT.sampleRate = SAMPLE_RATE //5512
+var AUDIO_CONTEXT;
 
 function checkAudioContextExists(){
+  try{
     if (AUDIO_CONTEXT==null){
       if (typeof AudioContext != 'undefined') {
-        const context = new AudioContext()
-        AUDIO_CONTEXT = context
-      } else {
-        throw new Error('Audio not supported!')
+        AUDIO_CONTEXT = new AudioContext();
+      } else if (typeof webkitAudioContext != 'undefined') {
+        AUDIO_CONTEXT = new webkitAudioContext();
       }
     }
+  }
+  catch (ex){
+    window.console.log(ex)
+  }
 }
 
 checkAudioContextExists();
@@ -616,182 +599,76 @@ generateFromSeed = function(seed) {
   return result;
 };
 
-// function SoundEffect(length, sample_rate) {
-//   this._buffer = AUDIO_CONTEXT.createBuffer(1, length, sample_rate);
-// }
+function SoundEffect(length, sample_rate) {
+  this._buffer = AUDIO_CONTEXT.createBuffer(1, length, sample_rate);
+}
 
-// SoundEffect.prototype.getBuffer = function() {
-//   return this._buffer.getChannelData(0);
-// };
+SoundEffect.prototype.getBuffer = function() {
+  return this._buffer.getChannelData(0);
+};
 
 
-// SoundEffect.prototype.play = function() {
-//     debugger
-//   var source = AUDIO_CONTEXT.createBufferSource();
-// https://github.com/audiojs/audio-biquad
-// //   var filter1 = AUDIO_CONTEXT.createBiquadFilter();
-// //   var filter2 = AUDIO_CONTEXT.createBiquadFilter();
-// //   var filter3 = AUDIO_CONTEXT.createBiquadFilter();
-//     // const filter1 = biquad.allpass({frequency: 1600}) // https://developer.mozilla.org/en-US/docs/Web/API/BiquadFilterNode/type
-//     // const filter2 = biquad.allpass({frequency: 1600})
-//     // const filter3 = biquad.allpass({frequency: 1600})
+SoundEffect.prototype.play = function() {
+  var source = AUDIO_CONTEXT.createBufferSource();
+  var filter1 = AUDIO_CONTEXT.createBiquadFilter();
+  var filter2 = AUDIO_CONTEXT.createBiquadFilter();
+  var filter3 = AUDIO_CONTEXT.createBiquadFilter();
 
-//   source.buffer = this._buffer;
-// //   source.connect(filter1);
+  source.buffer = this._buffer;
+  source.connect(filter1);
 
-// //   filter1.frequency.value = 1600;
-// //   filter2.frequency.value = 1600;
-// //   filter3.frequency.value = 1600;
+  filter1.frequency.value = 1600;
+  filter2.frequency.value = 1600;
+  filter3.frequency.value = 1600;
 
-// //   filter1.connect(filter2);
-// //   filter2.connect(filter3);
-// //   filter3.connect(AUDIO_CONTEXT.destination);
+  filter1.connect(filter2);
+  filter2.connect(filter3);
+  filter3.connect(AUDIO_CONTEXT.destination);
+  var t = AUDIO_CONTEXT.currentTime;
+  if (typeof source.start != 'undefined') {
+    source.start(t);
+  } else {
+    source.noteOn(t);
+  }
+  source.onended = function() {
+    filter3.disconnect()
+  }
+};
 
-// source.connect(AUDIO_CONTEXT.destination)
+SoundEffect.MIN_SAMPLE_RATE = 22050;
 
-//   var t = AUDIO_CONTEXT.currentTime;
-//   if (typeof source.start != 'undefined') {
-//     source.start(t);
-//   } else {
-//     source.noteOn(t);
-//   }
-// //   source.onended = function() {
-// //     filter3.disconnect()
-// //   }
-// };
-
-// let CURERNT_SILENTBUFFER = null
-
-// if (typeof AUDIO_CONTEXT == 'undefined') {
-  var SoundEffect = function SoundEffect(length, sample_rate) {
+if (typeof AUDIO_CONTEXT == 'undefined') {
+  SoundEffect = function SoundEffect(length, sample_rate) {
     this._sample_rate = sample_rate;
     this._buffer = new Array(length);
     this._audioElement = null;
-    this._decodedBuffer = null
   };
-
-  SoundEffect.MIN_SAMPLE_RATE = 22050;
 
   SoundEffect.prototype.getBuffer = function() {
     this._audioElement = null;
     return this._buffer;
   };
 
-  SoundEffect.prototype.cacheDecodedBuffer = function() {
-    for (var i = 0; i < this._buffer.length; i++) {
+  SoundEffect.prototype.play = function() {
+    if (this._audioElement) {
+      this._audioElement.cloneNode(false).play();
+    } else {
+      for (var i = 0; i < this._buffer.length; i++) {
         // bit_depth is always 8, rescale [-1.0, 1.0) to [0, 256)
         this._buffer[i] = 255 & Math.floor(128 * Math.max(0, Math.min(this._buffer[i] + 1, 2)));
       }
       var wav = MakeRiff(this._sample_rate, BIT_DEPTH, this._buffer);
-
-
-    const b64string = FastBase64_Encode(wav.wav)
-    this._decodedBuffer = Buffer.from(b64string, 'base64')
-  }
-
-  // Disable speaker for Travis
-  if (Speaker) {
-    AUDIO_CONTEXT.outStream = new Speaker({
-        channels: AUDIO_CONTEXT.format.numberOfChannels,
-        bitDepth: AUDIO_CONTEXT.format.bitDepth,
-        sampleRate: AUDIO_CONTEXT.sampleRate
-    })
-  }
-
-  SoundEffect.prototype.play = async function() {
-
-
-    // from https://mdn.github.io/webaudio-examples/audio-buffer/
-    // which is from https://developer.mozilla.org/en-US/docs/Web/API/AudioBuffer
-    function makeSilence() {
-        var channels = 2;
-        // Create an empty two second stereo buffer at the
-        // sample rate of the AudioContext
-        var frameCount = AUDIO_CONTEXT.sampleRate * 2.0;
-
-        var myArrayBuffer = AUDIO_CONTEXT.createBuffer(channels, frameCount, AUDIO_CONTEXT.sampleRate);
-
-
-        // Fill the buffer with white noise;
-        //just random values between -1.0 and 1.0
-        for (var channel = 0; channel < channels; channel++) {
-            // This gives us the actual array that contains the data
-            var nowBuffering = myArrayBuffer.getChannelData(channel);
-            for (var i = 0; i < frameCount; i++) {
-                // Math.random() is in [0; 1.0]
-                // audio needs to be in [-1.0; 1.0]
-                nowBuffering[i] = 0;
-            }
-        }
-
-        // // Get an AudioBufferSourceNode.
-        // // This is the AudioNode to use when we want to play an AudioBuffer
-        // var source = AUDIO_CONTEXT.createBufferSource();
-        // // set the buffer in the AudioBufferSourceNode
-        // source.buffer = myArrayBuffer;
-        // // connect the AudioBufferSourceNode to the
-        // // destination so we can hear the sound
-        // source.connect(AUDIO_CONTEXT.destination);
-        // // start the source playing
-        // source.start();
-
-        return myArrayBuffer
+      this._audioElement = new Audio();
+      this._audioElement.src = wav.dataURI;
+      this._audioElement.play();
     }
-
-    return new Promise((resolve, reject) => {
-        AUDIO_CONTEXT.decodeAudioData(this._decodedBuffer, (audioBuffer) => {
-
-            var bufferNode = AUDIO_CONTEXT.createBufferSource()
-            bufferNode.connect(AUDIO_CONTEXT.destination)
-            bufferNode.buffer = audioBuffer
-            bufferNode.loop = false
-            bufferNode.start(0)
-
-            // if (CURERNT_SILENTBUFFER) {
-            //     CURERNT_SILENTBUFFER.stop(0)
-            // }
-            // CURERNT_SILENTBUFFER = AUDIO_CONTEXT.createBufferSource()
-            // CURERNT_SILENTBUFFER.connect(AUDIO_CONTEXT.destination)
-            // CURERNT_SILENTBUFFER.buffer = makeSilence()
-            // CURERNT_SILENTBUFFER.loop = true
-            // CURERNT_SILENTBUFFER.start(0)
-
-            bufferNode.onended = async () => {
-                // bufferNode.stop(0)
-
-                // const x = await sleep(10000)
-
-                // Play silence
-                // CURERNT_SILENTBUFFER = AUDIO_CONTEXT.createBufferSource()
-                // CURERNT_SILENTBUFFER.buffer = [0] // silence
-                // CURERNT_SILENTBUFFER.loop = true
-                // CURERNT_SILENTBUFFER.connect(AUDIO_CONTEXT.destination)
-                // CURERNT_SILENTBUFFER.start(0)
-
-                // AUDIO_CONTEXT.outStream._flush()
-                // AUDIO_CONTEXT.outStream.end()
-
-                // AUDIO_CONTEXT.outStream._flush() // End the speaker
-                // AUDIO_CONTEXT._playing = false // So we do not continue outputing sound (since onended did not actually work) ... maybe we should do bufferNode.on('kill', ...)
-                // AUDIO_CONTEXT._kill()
-                // // AUDIO_CONTEXT.outStream.end()
-                // // AUDIO_CONTEXT.outStream.close()
-                // AUDIO_CONTEXT = new AudioContext() // after ._kill() is called, we need to create a new context
-                // AUDIO_CONTEXT.sampleRate = SAMPLE_RATE
-                resolve('SOUND_EFFECT_FINISHED_PLAYING')
-            }
-        })
-
-    })
-
   };
 
   SoundEffect.MIN_SAMPLE_RATE = 1;
-// }
+}
 
 SoundEffect.generate = function(ps) {
 /*  window.console.log(ps.wave_type + "\t" + ps.seed);
-
   var psstring="";
   for (var n in ps) {
     if (ps.hasOwnProperty(n)) {
@@ -1069,17 +946,15 @@ window.console.log(psstring);*/
     }
   }
 
-  sound.cacheDecodedBuffer()
-
   return sound;
 };
 
-// if (typeof exports != 'undefined') {
-//   // For node.js
-//   var RIFFWAVE = require('./riffwave').RIFFWAVE;
-//   exports.Params = Params;
-//   exports.generate = generate;
-// }
+if (typeof exports != 'undefined') {
+  // For node.js
+  var RIFFWAVE = require('./riffwave').RIFFWAVE;
+  exports.Params = Params;
+  exports.generate = generate;
+}
 
 var sfxCache = {};
 var cachedSeeds = [];
@@ -1109,30 +984,61 @@ function cacheSeed(seed){
 }
 
 function playSound(seed) {
-  // Disable speaker for Travis
-  if (!Speaker) {
-    process.stdout.write('\u0007') // BELL character
-    return Promise.resolve('SOUND_EFFECT_DID_NOT_PLAY_BECAUSE_CI')
+  if (muted){
+    return;
   }
-
   checkAudioContextExists();
-//   if (unitTesting) return;
+  if (unitTesting) return;
   var sound = cacheSeed(seed);
-  return sound.play();
+  sound.play();
 }
 
-function closeSounds() {
-    // Disable speaker for Travis
-    if (!Speaker) {
-        return
-    }
 
-    AUDIO_CONTEXT.outStream._flush() // End the speaker
-    AUDIO_CONTEXT._playing = false // So we do not continue outputing sound (since onended did not actually work) ... maybe we should do bufferNode.on('kill', ...)
-    AUDIO_CONTEXT._kill()
+
+function killAudioButton(){
+  var mb = document.getElementById("muteButton");
+  var umb = document.getElementById("unMuteButton");
+  if (mb){
+    mb.remove();
+    umb.remove();
+  }
 }
 
-module.exports = {
-    playSound,
-    closeSounds
+function showAudioButton(){
+  var mb = document.getElementById("muteButton");
+  var umb = document.getElementById("unMuteButton");
+  if (mb){
+    mb.style.display="block";
+    umb.style.display="none";
+  }
+}
+
+
+function toggleMute() {
+  if (muted===0){
+    muteAudio();
+  } else {
+    unMuteAudio();
+  }
+}
+
+function muteAudio() {
+  muted=1;
+  tryDeactivateYoutube();
+  var mb = document.getElementById("muteButton");
+  var umb = document.getElementById("unMuteButton");
+  if (mb){
+    mb.style.display="none";
+    umb.style.display="block";
+  }
+}
+function unMuteAudio() {
+  muted=0;
+  tryActivateYoutube();
+  var mb = document.getElementById("muteButton");
+  var umb = document.getElementById("unMuteButton");
+  if (mb){
+    mb.style.display="block";
+    umb.style.display="none";
+  }
 }
