@@ -5,23 +5,23 @@ Array [
   Array [
     Array [
       "STATIONARY BgNW1",
+      "STATIONARY Island",
+      "STATIONARY PlayerIsland",
     ],
     Array [
       "STATIONARY BgNW1",
-      "STATIONARY Island",
       "STATIONARY Player",
-      "STATIONARY PlayerIsland",
     ],
   ],
   Array [
     Array [
       "STATIONARY BgNW1",
       "STATIONARY Bridge",
+      "STATIONARY PlayerIsland",
     ],
     Array [
       "STATIONARY BgNW1",
       "STATIONARY Island",
-      "STATIONARY PlayerIsland",
     ],
   ],
 ]

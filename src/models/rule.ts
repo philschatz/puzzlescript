@@ -662,11 +662,17 @@ type MatchedCellAndCorrespondingNeighbors = {
 }
 
 class MatchedCellsForRule {
-    private cellsAndNeighbors: Iterable<MatchedCellAndCorrespondingNeighbors>
+    readonly cellsAndNeighbors: Iterable<MatchedCellAndCorrespondingNeighbors>
     constructor(cellsAndNeighbors: Iterable<MatchedCellAndCorrespondingNeighbors>) {
         this.cellsAndNeighbors = cellsAndNeighbors
     }
 
+    firstCell() {
+        for (const {cell} of this.cellsAndNeighbors) {
+            return cell
+        }
+        throw new Error(`BUG: ? No cells were included in the match`)
+    }
     doesStillMatch() {
         for (const {cell, condition} of this.cellsAndNeighbors) {
             if (!condition.matchesCellSimple(cell)) {
@@ -777,7 +783,7 @@ class MultiMap<A, B> {
         }
         return asRemoved
     }
-    protected /*unused*/ delete(a: A, b: B) {
+    delete(a: A, b: B) {
         const set = this.map.get(a)
         if (set) {
             if (!set.has(b)) {
@@ -885,39 +891,39 @@ export class SimpleEllipsisBracket extends ISimpleBracket {
     }
 
     addFirstCell(bracket: SimpleBracket, firstCell: Cell, token: BEFORE_OR_AFTER) {
-        // check to see if the new cell is in line with any firstCells in the other bracket. If so, we have a match!
-        let firstBeforeCells
-        let firstAfterCells
-        if (bracket == this.beforeEllipsisBracket) {
-            firstBeforeCells = new Set([firstCell])
-            // search for a matching afterCell
-            firstAfterCells = this.findMatching(firstCell, this.direction, this.afterEllipsisBracket)
-        } else if (bracket === this.afterEllipsisBracket) {
-            firstAfterCells = new Set([firstCell])
-            // search for a matching beforeCell
-            firstBeforeCells = this.findMatching(firstCell, opposite(this.direction), this.beforeEllipsisBracket)
-        } else {
-            throw new Error(`BUG: Bracket should only ever be the before-ellipsis or after-ellipsis one`)
-        }
+        // // check to see if the new cell is in line with any firstCells in the other bracket. If so, we have a match!
+        // let firstBeforeCells
+        // let firstAfterCells
+        // if (bracket == this.beforeEllipsisBracket) {
+        //     firstBeforeCells = new Set([firstCell])
+        //     // search for a matching afterCell
+        //     firstAfterCells = this.findMatching(firstCell, this.direction, this.afterEllipsisBracket)
+        // } else if (bracket === this.afterEllipsisBracket) {
+        //     firstAfterCells = new Set([firstCell])
+        //     // search for a matching beforeCell
+        //     firstBeforeCells = this.findMatching(firstCell, opposite(this.direction), this.beforeEllipsisBracket)
+        // } else {
+        //     throw new Error(`BUG: Bracket should only ever be the before-ellipsis or after-ellipsis one`)
+        // }
 
-        for (const firstBeforeCell of firstBeforeCells) {
-            for (const firstAfterCell of firstAfterCells) {
-                this.checkInvariants()
-                // Check if we need to actually change anything first. Becauase the !doesEvaluationOrderMatter case
-                // keeps iterating on the set of firstCells but if they keep flipping then it's a problem because it
-                // runs in an infinite loop
+        // for (const firstBeforeCell of firstBeforeCells) {
+        //     for (const firstAfterCell of firstAfterCells) {
+        //         this.checkInvariants()
+        //         // Check if we need to actually change anything first. Becauase the !doesEvaluationOrderMatter case
+        //         // keeps iterating on the set of firstCells but if they keep flipping then it's a problem because it
+        //         // runs in an infinite loop
 
-                // Delete any mapping that may have existed before
-                if (this.linkages.has(firstBeforeCell, firstAfterCell)) {
-                    // nothing to do. we already have those entries
-                } else {
-                    this.linkages.add(firstBeforeCell, firstAfterCell)
-                    this.firstCells.add(firstBeforeCell)
-                }
-                this.checkInvariants()
+        //         // Delete any mapping that may have existed before
+        //         if (this.linkages.has(firstBeforeCell, firstAfterCell)) {
+        //             // nothing to do. we already have those entries
+        //         } else {
+        //             this.linkages.add(firstBeforeCell, firstAfterCell)
+        //             this.firstCells.add(firstBeforeCell)
+        //         }
+        //         this.checkInvariants()
 
-            }
-        }
+        //     }
+        // }
     }
     removeFirstCell(bracket: SimpleBracket, firstCell: Cell, token: BEFORE_OR_AFTER) {
         // Figure out the 1st cell for us and remove it (by maybe looking at the matching bracket)
@@ -941,60 +947,92 @@ export class SimpleEllipsisBracket extends ISimpleBracket {
         this.checkInvariants()
     }
 
-    private findMatching(cell: Cell, direction: RULE_DIRECTION, inBracket: SimpleBracket): Set<Cell> {
-        throw new Error(`BUG: Ellipses not implemented yet`)
-        // const matches = new Set()
-        // for (const inBracketCell of inBracket.getFirstCellsSet()) {
-        //     switch (direction) {
-        //         case RULE_DIRECTION.UP:
-        //             if (cell.colIndex === inBracketCell.colIndex && cell.rowIndex > inBracketCell.rowIndex) {
-        //                 matches.add(inBracketCell)
-        //             }
-        //             break
-        //         case RULE_DIRECTION.DOWN:
-        //             if (cell.colIndex === inBracketCell.colIndex && cell.rowIndex < inBracketCell.rowIndex) {
-        //                 matches.add(inBracketCell)
-        //             }
-        //             break
-        //         case RULE_DIRECTION.LEFT:
-        //             if (cell.colIndex > inBracketCell.colIndex && cell.rowIndex === inBracketCell.rowIndex) {
-        //                 matches.add(inBracketCell)
-        //             }
-        //             break
-        //         case RULE_DIRECTION.RIGHT:
-        //             if (cell.colIndex < inBracketCell.colIndex && cell.rowIndex === inBracketCell.rowIndex) {
-        //                 matches.add(inBracketCell)
-        //             }
-        //             break
-        //         default:
-        //             throw new Error(`BUG: Invalid direction`)
-        //     }
-        // }
-        // return matches
-    }
+    // private findMatching(cell: Cell, direction: RULE_DIRECTION, inBracket: SimpleBracket): Set<Cell> {
+    //     throw new Error(`BUG: Ellipses not implemented yet`)
+    //     // const matches = new Set()
+    //     // for (const inBracketCell of inBracket.getFirstCellsSet()) {
+    //     //     switch (direction) {
+    //     //         case RULE_DIRECTION.UP:
+    //     //             if (cell.colIndex === inBracketCell.colIndex && cell.rowIndex > inBracketCell.rowIndex) {
+    //     //                 matches.add(inBracketCell)
+    //     //             }
+    //     //             break
+    //     //         case RULE_DIRECTION.DOWN:
+    //     //             if (cell.colIndex === inBracketCell.colIndex && cell.rowIndex < inBracketCell.rowIndex) {
+    //     //                 matches.add(inBracketCell)
+    //     //             }
+    //     //             break
+    //     //         case RULE_DIRECTION.LEFT:
+    //     //             if (cell.colIndex > inBracketCell.colIndex && cell.rowIndex === inBracketCell.rowIndex) {
+    //     //                 matches.add(inBracketCell)
+    //     //             }
+    //     //             break
+    //     //         case RULE_DIRECTION.RIGHT:
+    //     //             if (cell.colIndex < inBracketCell.colIndex && cell.rowIndex === inBracketCell.rowIndex) {
+    //     //                 matches.add(inBracketCell)
+    //     //             }
+    //     //             break
+    //     //         default:
+    //     //             throw new Error(`BUG: Invalid direction`)
+    //     //     }
+    //     // }
+    //     // return matches
+    // }
 
-    getMatches(level: Cell[][], actionBracket: SimpleBracket): MatchedCellsForRule[] {
-        throw new Error(`BUG: Ellipses not implemented yet`)
-        // const matches = []
-        // for (const row of level) {
-        //     for (const cell of row) {
-        //         if (this.neighbors[0].matchesCellSimple(cell) && this.matchesDownstream(cell, 0)) {
-        //             const cellMatches = []
-        //             for (let index = 0; index < this.neighbors.length; index++) {
-        //                 const condition = this.neighbors[index]
-        //                 const action = this.neighbors[index]
-        //                 const x: MatchedCellAndCorrespondingNeighbors = {
-        //                     cell,
-        //                     condition,
-        //                     action
-        //                 }
-        //                 cellMatches.push(x)
-        //             }
-        //             matches.push(new MatchedCellsForRule(cellMatches))
-        //         }
-        //     }
-        // }
-        // return matches
+    getMatches(level: Cell[][], actionBracket: SimpleEllipsisBracket): MatchedCellsForRule[] {
+        const ret: MatchedCellsForRule[] = []
+        const beforeMatches = this.beforeEllipsisBracket.getMatches(level, actionBracket.beforeEllipsisBracket)
+        const afterMatches = this.afterEllipsisBracket.getMatches(level, actionBracket.afterEllipsisBracket)
+        const beforeMatchesByIndex = new MultiMap<number, MatchedCellsForRule>()
+
+        if (beforeMatches.length === 0 || afterMatches.length === 0) {
+            return ret
+        }
+
+        switch (this.direction) {
+            case RULE_DIRECTION.UP:
+            case RULE_DIRECTION.DOWN:
+                for (const beforeMatch of beforeMatches) {
+                    beforeMatchesByIndex.add(beforeMatch.firstCell().rowIndex, beforeMatch)
+                }
+                for (const afterMatch of afterMatches) {
+                    const {rowIndex, colIndex} = afterMatch.firstCell()
+                    for (const beforeMatch of beforeMatchesByIndex.getB(rowIndex) || []) {
+                        // check if the afterMatch matches it.
+                        // If so, remove the beforeMatch and include the whole match
+                        const {colIndex: beforeColIndex} = beforeMatch.firstCell()
+                        const isAfter = (this.direction === RULE_DIRECTION.DOWN) ? beforeColIndex < colIndex : colIndex < beforeColIndex
+                        if (isAfter) {
+                            ret.push(new MatchedCellsForRule([...beforeMatch.cellsAndNeighbors].concat([...afterMatch.cellsAndNeighbors])))
+                            beforeMatchesByIndex.delete(rowIndex, beforeMatch)
+                        }
+                    }
+                }
+                break
+            case RULE_DIRECTION.LEFT:
+            case RULE_DIRECTION.RIGHT:
+                for (const beforeMatch of beforeMatches) {
+                    beforeMatchesByIndex.add(beforeMatch.firstCell().colIndex, beforeMatch)
+                }
+                for (const afterMatch of afterMatches) {
+                    const {colIndex, rowIndex} = afterMatch.firstCell()
+                    for (const beforeMatch of beforeMatchesByIndex.getB(colIndex) || []) {
+                        // check if the afterMatch matches it.
+                        // If so, remove the beforeMatch and include the whole match
+                        const {rowIndex: beforeRowIndex} = beforeMatch.firstCell()
+                        const isAfter = (this.direction === RULE_DIRECTION.RIGHT) ? beforeRowIndex < rowIndex : rowIndex < beforeRowIndex
+                        if (isAfter) {
+                            ret.push(new MatchedCellsForRule([...beforeMatch.cellsAndNeighbors].concat([...afterMatch.cellsAndNeighbors])))
+                            beforeMatchesByIndex.delete(colIndex, beforeMatch)
+                        }
+                    }
+                }
+                break
+            default:
+                throw new Error(`BUG: Invalid direction ${this.direction}`)
+        }
+
+        return ret
     }
 
 }
