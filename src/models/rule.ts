@@ -8,7 +8,7 @@ import {
 import { IGameTile, GameSprite } from './tile'
 import { setIntersection, nextRandom, RULE_DIRECTION, DEBUG_FLAG, ICacheable, Optional } from '../util'
 import { Cell } from '../engine'
-import TerminalUI from '../ui/terminal'
+// import TerminalUI from '../ui/terminal'
 import { AbstractCommand } from './command';
 import { CollisionLayer } from './collisionLayer';
 import { SpriteBitSet } from '../spriteBitSet';
@@ -78,7 +78,7 @@ export class SimpleRuleGroup extends BaseForLines implements IRule {
                 // so that we can step through the evaluations.
                 console.error(this.toString())
                 console.error('BUG: Iterated too many times in startloop or + (rule group)')
-                TerminalUI.debugRenderScreen(); debugger
+                /*TerminalUI.debugRenderScreen();*/ debugger
             }
             if (iteration === MAX_ITERATIONS_IN_LOOP - 1) {
                 console.error(this.toString())
@@ -233,7 +233,7 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
             if (process.env['NODE_ENV'] === 'development' && innerIteration === MAX_ITERATIONS_IN_LOOP - 10) {
                 // Provide a breakpoint just before we run out of MAX_ITERATIONS_IN_LOOP
                 // so that we can step through the evaluations.
-                TerminalUI.debugRenderScreen(); debugger
+                /*TerminalUI.debugRenderScreen();*/ debugger
             }
             if (innerIteration === MAX_ITERATIONS_IN_LOOP - 1) {
                 throw new Error(`BUG: Iterated too many times in rule or rule group\n${this.toString()}`)
@@ -277,7 +277,7 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
         //     if (!condition.hasFirstCells()) {
         //         if (process.env['NODE_ENV'] === 'development' && this.debugFlag === DEBUG_FLAG.BREAKPOINT_REMOVE) {
         //             // A "DEBUGGER_REMOVE" flag was set in the game so we are pausing here
-        //             TerminalUI.debugRenderScreen(); debugger
+        //             /*TerminalUI.debugRenderScreen();*/ debugger
         //         }
         //         return [] // Rule did not match, so nothing ran
         //     }
@@ -288,7 +288,7 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
         let ret: IMutation[] = []
         if (process.env['NODE_ENV'] === 'development' && this.debugFlag === DEBUG_FLAG.BREAKPOINT) {
             // A "DEBUGGER" flag was set in the game so we are pausing here
-            TerminalUI.debugRenderScreen(); debugger
+            /*TerminalUI.debugRenderScreen();*/ debugger
         }
 
         const allBracketsToProcess: MatchedCellsForRule[][] = []
@@ -320,7 +320,9 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
                 for (const x of permutation) {
                     if (!x.doesStillMatch()) {
                         didAllBracketsStillMatch = false
+                        break
                     }
+                    x.populateMagicOrTiles(magicOrTiles)
                 }
                 // break if the cells no longer match
                 if (!didAllBracketsStillMatch) {
@@ -461,7 +463,7 @@ export class SimpleBracket extends ISimpleBracket {
 
     evaluate(actionBracket: ISimpleBracket, cell: Cell, magicOrTiles: Map<IGameTile, Set<GameSprite>>) {
         if (process.env['NODE_ENV'] === 'development' && this.actionDebugFlag === DEBUG_FLAG.BREAKPOINT) {
-            TerminalUI.debugRenderScreen(); debugger // pausing here because it is in the code
+            /*TerminalUI.debugRenderScreen();*/ debugger // pausing here because it is in the code
         }
         const ret: IMutation[] = []
         let curCell: Optional<Cell> = cell
@@ -494,7 +496,7 @@ export class SimpleBracket extends ISimpleBracket {
     _addFirstCell(firstCell: Cell) {
         if (process.env['NODE_ENV'] === 'development' && this.debugFlag === DEBUG_FLAG.BREAKPOINT) {
             // Pausing here because it was marked in the code
-            TerminalUI.debugRenderScreen(); debugger
+            /*TerminalUI.debugRenderScreen();*/ debugger
         }
         this.firstCells.add(firstCell)
         for (const [ellipsisBracket, token] of this.ellipsisBracketListeners) {
@@ -506,7 +508,7 @@ export class SimpleBracket extends ISimpleBracket {
         if (this.firstCells.has(firstCell)) {
             if (process.env['NODE_ENV'] === 'development' && this.debugFlag === DEBUG_FLAG.BREAKPOINT_REMOVE) {
                 // Pausing here because it was marked in the code
-                TerminalUI.debugRenderScreen(); debugger
+                /*TerminalUI.debugRenderScreen();*/ debugger
             }
             this.firstCells.delete(firstCell)
             for (const [ellipsisBracket, token] of this.ellipsisBracketListeners) {
@@ -673,6 +675,18 @@ class MatchedCellsForRule {
         }
         throw new Error(`BUG: ? No cells were included in the match`)
     }
+
+    lastCell() {
+        let ret
+        for (const {cell} of this.cellsAndNeighbors) {
+            ret = cell
+        }
+        if (ret) {
+            return ret
+        }
+        throw new Error(`BUG: ? No cells were included in the match`)
+    }
+
     doesStillMatch() {
         for (const {cell, condition} of this.cellsAndNeighbors) {
             if (!condition.matchesCellSimple(cell)) {
@@ -682,10 +696,17 @@ class MatchedCellsForRule {
         return true
     }
 
+    populateMagicOrTiles(magicOrTiles: Map<IGameTile, Set<GameSprite>>) {
+        // populate the OR tiles in all neighbors first. Example:
+        // [ | Player ] -> [ Player | ]
+        for (const {cell, condition} of this.cellsAndNeighbors) {
+            condition.populateMagicOrTiles(cell, magicOrTiles)
+        }
+    }
+
     evaluate(magicOrTiles: Map<IGameTile, Set<GameSprite>>) {
         const mutations: CellMutation[] = []
         for (const {cell, condition, action} of this.cellsAndNeighbors) {
-            condition.populateMagicOrTiles(cell, magicOrTiles)
             if (!action) {
                 throw new Error(`BUG: Should not have tried to evaluate something when there is no action`)
             }
@@ -708,7 +729,7 @@ export class SimpleBracketConditionOnly extends SimpleBracket {
     }
     evaluate(): IMutation[] {
         if (process.env['NODE_ENV'] === 'development' && this.actionDebugFlag === DEBUG_FLAG.BREAKPOINT) {
-            TerminalUI.debugRenderScreen(); debugger // pausing here because it is in the code
+            /*TerminalUI.debugRenderScreen();*/ debugger // pausing here because it is in the code
         }
         return []
     }
@@ -863,7 +884,7 @@ export class SimpleEllipsisBracket extends ISimpleBracket {
     }
     evaluate(actionBracket: ISimpleBracket, cell: Cell, magicOrTiles: Map<IGameTile, Set<GameSprite>>) {
         if (process.env['NODE_ENV'] === 'development' && this.actionDebugFlag === DEBUG_FLAG.BREAKPOINT) {
-            TerminalUI.debugRenderScreen(); debugger // pausing here because it is in the code
+            /*TerminalUI.debugRenderScreen();*/ debugger // pausing here because it is in the code
         }
         const action = <SimpleEllipsisBracket> actionBracket
         const firstBeforeCell = cell
@@ -993,18 +1014,18 @@ export class SimpleEllipsisBracket extends ISimpleBracket {
             case RULE_DIRECTION.UP:
             case RULE_DIRECTION.DOWN:
                 for (const beforeMatch of beforeMatches) {
-                    beforeMatchesByIndex.add(beforeMatch.firstCell().rowIndex, beforeMatch)
+                    beforeMatchesByIndex.add(beforeMatch.lastCell().colIndex, beforeMatch)
                 }
                 for (const afterMatch of afterMatches) {
-                    const {rowIndex, colIndex} = afterMatch.firstCell()
-                    for (const beforeMatch of beforeMatchesByIndex.getB(rowIndex) || []) {
+                    const {colIndex, rowIndex} = afterMatch.firstCell()
+                    for (const beforeMatch of beforeMatchesByIndex.getB(colIndex) || []) {
                         // check if the afterMatch matches it.
                         // If so, remove the beforeMatch and include the whole match
-                        const {colIndex: beforeColIndex} = beforeMatch.firstCell()
-                        const isAfter = (this.direction === RULE_DIRECTION.DOWN) ? beforeColIndex < colIndex : colIndex < beforeColIndex
+                        const {rowIndex: beforeRowIndex} = beforeMatch.lastCell()
+                        const isAfter = (this.direction === RULE_DIRECTION.DOWN) ? beforeRowIndex < rowIndex : rowIndex < beforeRowIndex
                         if (isAfter) {
                             ret.push(new MatchedCellsForRule([...beforeMatch.cellsAndNeighbors].concat([...afterMatch.cellsAndNeighbors])))
-                            beforeMatchesByIndex.delete(rowIndex, beforeMatch)
+                            // beforeMatchesByIndex.delete(colIndex, beforeMatch)
                         }
                     }
                 }
@@ -1012,18 +1033,18 @@ export class SimpleEllipsisBracket extends ISimpleBracket {
             case RULE_DIRECTION.LEFT:
             case RULE_DIRECTION.RIGHT:
                 for (const beforeMatch of beforeMatches) {
-                    beforeMatchesByIndex.add(beforeMatch.firstCell().colIndex, beforeMatch)
+                    beforeMatchesByIndex.add(beforeMatch.lastCell().rowIndex, beforeMatch)
                 }
                 for (const afterMatch of afterMatches) {
-                    const {colIndex, rowIndex} = afterMatch.firstCell()
-                    for (const beforeMatch of beforeMatchesByIndex.getB(colIndex) || []) {
+                    const {rowIndex, colIndex} = afterMatch.firstCell()
+                    for (const beforeMatch of beforeMatchesByIndex.getB(rowIndex) || []) {
                         // check if the afterMatch matches it.
                         // If so, remove the beforeMatch and include the whole match
-                        const {rowIndex: beforeRowIndex} = beforeMatch.firstCell()
-                        const isAfter = (this.direction === RULE_DIRECTION.RIGHT) ? beforeRowIndex < rowIndex : rowIndex < beforeRowIndex
+                        const {colIndex: beforeColIndex} = beforeMatch.lastCell()
+                        const isAfter = (this.direction === RULE_DIRECTION.RIGHT) ? beforeColIndex < colIndex : colIndex < beforeColIndex
                         if (isAfter) {
                             ret.push(new MatchedCellsForRule([...beforeMatch.cellsAndNeighbors].concat([...afterMatch.cellsAndNeighbors])))
-                            beforeMatchesByIndex.delete(colIndex, beforeMatch)
+                            // beforeMatchesByIndex.delete(rowIndex, beforeMatch)
                         }
                     }
                 }
@@ -1491,7 +1512,7 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
     evaluate(actionNeighbor: SimpleNeighbor, cell: Cell, magicOrTiles: Map<IGameTile, Set<GameSprite>>) {
         if (process.env['NODE_ENV'] === 'development' && actionNeighbor.debugFlag === DEBUG_FLAG.BREAKPOINT) {
             // Pausing here because this breakpoint was marked in the game code
-            TerminalUI.debugRenderScreen(); debugger
+            /*TerminalUI.debugRenderScreen();*/ debugger
         }
 
         let r = this.staticCache.get(actionNeighbor)
@@ -1729,7 +1750,7 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
     addCells(t: SimpleTileWithModifier, sprite: GameSprite, cells: Iterable<Cell>, wantsToMove: Optional<RULE_DIRECTION>) {
         if (process.env['NODE_ENV'] === 'development' && this.debugFlag === DEBUG_FLAG.BREAKPOINT) {
             // Pausing here because it was marked in the code
-            TerminalUI.debugRenderScreen(); debugger
+            /*TerminalUI.debugRenderScreen();*/ debugger
         }
         for (const cell of cells) {
             const matchesTiles = this.matchesCell(cell, t, wantsToMove)
@@ -1757,7 +1778,7 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
     removeCells(t: SimpleTileWithModifier, sprite: GameSprite, cells: Iterable<Cell>) {
         if (process.env['NODE_ENV'] === 'development' && this.debugFlag === DEBUG_FLAG.BREAKPOINT_REMOVE) {
             // Pausing here because it was marked in the code
-            TerminalUI.debugRenderScreen(); debugger
+            /*TerminalUI.debugRenderScreen();*/ debugger
         }
         for (const cell of cells) {
             // Check if the cell still matches. If not, remove it from upstream
@@ -1852,7 +1873,7 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
     addCells(sprite: GameSprite, cells: Cell[], wantsToMove: Optional<RULE_DIRECTION>) {
         if (process.env['NODE_ENV'] === 'development' && this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
             // Pause here because it was marked in the code
-            TerminalUI.debugRenderScreen(); debugger
+            /*TerminalUI.debugRenderScreen();*/ debugger
         }
         // Cells all have the same sprites, so if the 1st matches, they all do
         if (this.matchesFirstCell(cells, wantsToMove)) {
@@ -1874,7 +1895,7 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
     updateCells(sprite: GameSprite, cells: Cell[], wantsToMove: RULE_DIRECTION) {
         if (process.env['NODE_ENV'] === 'development' && this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
             // Pause here because it was marked in the code
-            TerminalUI.debugRenderScreen(); debugger
+            /*TerminalUI.debugRenderScreen();*/ debugger
         }
         // Cells all have the same sprites, so if the 1st matches, they all do
         if (this.matchesFirstCell(cells, wantsToMove)) {
@@ -1890,7 +1911,7 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
     removeCells(sprite: GameSprite, cells: Cell[]) {
         if (process.env['NODE_ENV'] === 'development' && this._debugFlag === DEBUG_FLAG.BREAKPOINT_REMOVE) {
             // Pause here because it was marked in the code
-            TerminalUI.debugRenderScreen(); debugger
+            /*TerminalUI.debugRenderScreen();*/ debugger
         }
         // Cells all have the same sprites, so if the 1st matches, they all do
         if (this.matchesFirstCell(cells, null/*STATIONARY*/)) {

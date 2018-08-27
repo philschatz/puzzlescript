@@ -2553,4 +2553,206 @@ describe('engine', () => {
         expect(c.getCellsThatMatch().size).toBe(0)
     })
 
+    it('Supports Magic OR tiles in different neighbors', () => {
+        const { engine, data } = parseEngine(`title OR test
+
+        ========
+        OBJECTS
+        ========
+
+        Background
+        BLACK
+
+        A
+        Red
+        0....
+        0....
+        0....
+        0....
+        0....
+
+        B
+        Yellow
+        .0...
+        .0...
+        .0...
+        .0...
+        .0...
+
+
+        Player
+        White
+        0...0
+        .0.0.
+        ..0..
+        .0.0.
+        0...0
+
+
+        C
+        Blue
+        ..0..
+        ..0..
+        ..0..
+        ..0..
+        ..0..
+
+
+
+        =======
+        LEGEND
+        =======
+
+        . = Background
+        P = Player
+        letter = A or B or C
+
+        =======
+        SOUNDS
+        =======
+
+        ================
+        COLLISIONLAYERS
+        ================
+
+        Background
+        Player
+        A
+        B
+        C
+
+        ======
+        RULES
+        ======
+
+        RIGHT [ | Letter ] -> [ Letter | ]
+
+        ==============
+        WINCONDITIONS
+        ==============
+
+        =======
+        LEVELS
+        =======
+
+        .B
+
+    `) // end game definition
+
+        const player = data._getSpriteByName('player')
+        const a = data._getSpriteByName('a')
+        const b = data._getSpriteByName('b')
+        const c = data._getSpriteByName('c')
+        engine.tick()
+
+        expect(a.getCellsThatMatch().size).toBe(0)
+        expect(b.getCellsThatMatch().size).toBe(1)
+        expect(c.getCellsThatMatch().size).toBe(0)
+        // ensure that B was moved left
+        expect(engine.currentLevel[0][0].getSpritesAsSet().has(b)).toBe(true)
+        expect(engine.currentLevel[0][1].getSpritesAsSet().has(b)).toBe(false)
+    })
+
+    it('Supports Magic OR tiles in different brackets', () => {
+        const { engine, data } = parseEngine(`title OR test
+
+        ========
+        OBJECTS
+        ========
+
+        Background
+        BLACK
+
+        A
+        Red
+        0....
+        0....
+        0....
+        0....
+        0....
+
+        B
+        Yellow
+        .0...
+        .0...
+        .0...
+        .0...
+        .0...
+
+
+        Player
+        White
+        0...0
+        .0.0.
+        ..0..
+        .0.0.
+        0...0
+
+
+        C
+        Blue
+        ..0..
+        ..0..
+        ..0..
+        ..0..
+        ..0..
+
+
+
+        =======
+        LEGEND
+        =======
+
+        . = Background
+        P = Player
+        letter = A or B or C
+
+        =======
+        SOUNDS
+        =======
+
+        ================
+        COLLISIONLAYERS
+        ================
+
+        Background
+        Player
+        A
+        B
+        C
+
+        ======
+        RULES
+        ======
+
+        RIGHT [ Player ] [ Letter ] -> [ Letter ] [ ]
+
+        ==============
+        WINCONDITIONS
+        ==============
+
+        =======
+        LEVELS
+        =======
+
+        PB
+
+    `) // end game definition
+
+        const player = data._getSpriteByName('player')
+        const a = data._getSpriteByName('a')
+        const b = data._getSpriteByName('b')
+        const c = data._getSpriteByName('c')
+        engine.tick()
+
+        expect(player.getCellsThatMatch().size).toBe(0)
+        expect(a.getCellsThatMatch().size).toBe(0)
+        expect(b.getCellsThatMatch().size).toBe(1)
+        expect(c.getCellsThatMatch().size).toBe(0)
+        // ensure that B was moved left
+        expect(engine.currentLevel[0][0].getSpritesAsSet().has(b)).toBe(true)
+        expect(engine.currentLevel[0][1].getSpritesAsSet().has(b)).toBe(false)
+
+    })
+
 })
