@@ -1746,15 +1746,22 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
                     } else {
                         // find which sprite in the OR tile matched and get its direction
                         let foundSprite = false
+                        // the OR tile can match multiple sprites so make sure at least one matched (not all)
+                        // e.g:
+                        // Movable = Player OR Island
+                        // Rule: [ LEFT Movable ]
+                        // Cell: STATIONARY Player LEFT Island
+                        let didMatch = false
                         for (const sprite of orTile.getSprites()) {
                             if (cell.spriteBitSet.has(sprite)) {
                                 foundSprite = true
                                 const cellDir = cell.getCollisionLayerWantsToMove(sprite.getCollisionLayer())
-                                if (direction !== cellDir) {
-                                    doesMatch = false
+                                if (direction === cellDir) {
+                                    didMatch = true
                                 }
                             }
                         }
+                        doesMatch = doesMatch && didMatch
                         if (!foundSprite) {
                             throw new Error(`BUG: Could not find sprite. One should have already been matched before`)
                         }

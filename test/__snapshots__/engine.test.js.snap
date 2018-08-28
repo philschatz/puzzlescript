@@ -228,6 +228,21 @@ Array [
 ]
 `;
 
+exports[`engine supports partially matching an OR tile (e.g. [ LEFT Movable ] when the cell says [ STATIONARY Player LEFT Island ] 1`] = `
+Array [
+  Array [
+    Array [
+      "STATIONARY BgNW1",
+    ],
+    Array [
+      "STATIONARY BgNW1",
+      "STATIONARY Island",
+      "STATIONARY Player",
+    ],
+  ],
+]
+`;
+
 exports[`engine swaps 2 OR tiles (OR tile has sprites in DIFFERENT collisionlayer 1`] = `
 Array [
   Array [

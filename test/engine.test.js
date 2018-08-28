@@ -2755,4 +2755,86 @@ describe('engine', () => {
 
     })
 
+    it('supports partially matching an OR tile (e.g. [ LEFT Movable ] when the cell says [ STATIONARY Player LEFT Island ]', () => {
+        const { engine, data } = parseEngine(`title BeamishIslands testing
+        author mjau
+        run_rules_on_level_start
+        realtime_interval 0.3
+
+        ( for ludum dare 29 )
+
+        =========
+         OBJECTS
+        =========
+
+        BgNW1 .
+        #6719ac #a13cb7
+        00000
+        00000
+        00000
+        00000
+        00000
+
+
+        Player
+        #f7e26b #000000
+        01010
+        .000.
+        .0.0.
+        .....
+        .....
+
+        Island #
+        #000000
+
+        ========
+         LEGEND
+        ========
+
+        @ = Player AND Island
+
+        Background = BgNW1
+        Movable = Player OR Island
+
+        ========
+         SOUNDS
+        ========
+
+        =================
+         COLLISIONLAYERS
+        =================
+
+        Background
+        Island
+        Player
+
+        =======
+         RULES
+        =======
+
+        (Cause the Island to be moving but the Player to be stationary)
+        RIGHT [ Island ] -> [ > Island ]
+        RIGHT [ LEFT Movable ]  -> [ STATIONARY Movable ]
+
+        ===============
+         WINCONDITIONS
+        ===============
+
+        ========
+         LEVELS
+        ========
+
+        .@
+
+    `) // end game definition
+
+        const island = data._getSpriteByName('island')
+        engine.tick()
+        expect(engine.toSnapshot()).toMatchSnapshot()
+
+        expect(island.getCellsThatMatch().size).toBe(1)
+        // Check that the Island did not move
+        expect(engine.currentLevel[0][0].getSpritesAsSet().has(island)).toBe(false)
+        expect(engine.currentLevel[0][1].getSpritesAsSet().has(island)).toBe(true)
+    })
 })

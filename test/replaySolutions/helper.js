@@ -6,6 +6,9 @@ const { default: Parser } = require('../../lib/parser/parser')
 const { RULE_DIRECTION } = require('../../lib/util')
 const { saveCoverageFile } = require('../../lib/recordCoverage')
 
+// Just solve the last level of Cyber Lasso
+const CYBER_LASSO = '_cyber-lasso-e3e444f7c63fb21b6ec0'
+
 const SOLUTION_ROOT = path.join(__dirname, '../../gist-solutions/')
 const solutionFiles = fs.readdirSync(SOLUTION_ROOT)
 
@@ -46,10 +49,15 @@ function createTests(moduloNumber, moduloTotal) {
 
             const GIST_ID = path.basename(solutionFilename).replace('.json', '')
 
-            itOrSkip(`plays the solved levels of ${GIST_ID}`, async () => {
+            itOrSkip(`plays the solved levels of ${GIST_ID} ${GIST_ID === CYBER_LASSO ? '(just the last level)': ''}`, async () => {
                 const gistFilename = path.join(__dirname, `../../gists/${GIST_ID}/script.txt`)
                 const { engine, data } = parseEngine(fs.readFileSync(gistFilename, 'utf-8'))
-                const recordings = JSON.parse(fs.readFileSync(path.join(SOLUTION_ROOT, solutionFilename), 'utf-8')).solutions
+                let recordings = JSON.parse(fs.readFileSync(path.join(SOLUTION_ROOT, solutionFilename), 'utf-8')).solutions
+
+                // In the interest of speed, just test the last level of CyberLasso because it is so long
+                if (GIST_ID === CYBER_LASSO) {
+                    recordings = [recordings[0]]
+                }
                 // play games in reverse order because it is likely that the harder levels will fail first
                 // for (let index = recordings.length - 1; index >= 0; index--) {
                 for (let index = 0; index < recordings.length; index++) {
