@@ -71,6 +71,15 @@ export class SimpleRuleGroup extends BaseForLines implements IRule {
         this.isRandom = isRandom
     }
 
+    hasMatches(level: Cell[][]) {
+        for (const rule of this.rules) {
+            if (rule.hasMatches(level)) {
+                return true
+            }
+        }
+        return false
+    }
+
     evaluate(level: Cell[][], onlyEvaluateFirstMatch: boolean) {
         // Keep looping as long as one of the rules evaluated something
         const allMutations: IMutation[][] = []
@@ -89,7 +98,7 @@ export class SimpleRuleGroup extends BaseForLines implements IRule {
             if (this.isRandom) {
                 // Randomly pick one of the rules. I wonder if it needs to be smart
                 // It is important that it only be evaluated once (hence the returns)
-                const evaluatableRules = this.rules
+                const evaluatableRules = this.rules.filter(r => r.hasMatches(level))
                 if (evaluatableRules.length === 0) {
                     return []
                 } else if (evaluatableRules.length === 1) {
@@ -273,6 +282,20 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
         return flattenedMutations
     }
 
+    getMatches(level: Cell[][]) {
+        const allBracketsToProcess: MatchedCellsForRule[][] = []
+        for (let index = 0; index < this.conditionBrackets.length; index++) {
+            const condition = this.conditionBrackets[index]
+            const action = this.actionBrackets[index]
+            const bracketMatches = condition.getMatches(level, action)
+            if (bracketMatches.length === 0) {
+                return []
+            }
+            allBracketsToProcess.push(bracketMatches)
+        }
+        return allBracketsToProcess
+    }
+
     private _evaluate(level: Cell[][], onlyEvaluateFirstMatch: boolean) {
         // Verify that each condition bracket has matches
         // for (const condition of this.conditionBrackets) {
@@ -293,15 +316,10 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
             /*TerminalUI.debugRenderScreen();*/ debugger
         }
 
-        const allBracketsToProcess: MatchedCellsForRule[][] = []
-        for (let index = 0; index < this.conditionBrackets.length; index++) {
-            const condition = this.conditionBrackets[index]
-            const action = this.actionBrackets[index]
-            const bracketMatches = condition.getMatches(level, action)
-            if (bracketMatches.length === 0) {
-                return []
-            }
-            allBracketsToProcess.push(bracketMatches)
+        const allBracketsToProcess = this.getMatches(level)
+
+        if (allBracketsToProcess.length === 0) {
+            return []
         }
 
         // Some rules only contain commands.
@@ -355,6 +373,17 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
         return ret
     }
 
+    hasMatches(level: Cell[][]) {
+        for (let index = 0; index < this.conditionBrackets.length; index++) {
+            const condition = this.conditionBrackets[index]
+            const action = this.actionBrackets[index]
+            if (!condition.hasMatches(level, action)) {
+                return false
+            }
+        }
+        return true
+    }
+
     isLate() { return this._isLate }
     hasRigid() { return this.isRigid }
 
@@ -403,6 +432,9 @@ export abstract class ISimpleBracket extends BaseForLines implements ICacheable 
     }
     getFirstCellsSet(level: Cell[][]) {
         return this.firstCells
+    }
+    hasMatches(level: Cell[][], actionBracket: Optional<ISimpleBracket>) {
+        return this.getMatches(level, actionBracket).length > 0
     }
 }
 
@@ -1954,6 +1986,7 @@ class ExtraPair<A> extends BracketPair<A> {
 }
 
 export interface IRule extends IGameNode {
+    hasMatches: (level: Cell[][]) => boolean
     evaluate: (level: Cell[][], onlyEvaluateFirstMatch: boolean) => IMutation[]
     getChildRules: () => IRule[]
     isLate: () => boolean
