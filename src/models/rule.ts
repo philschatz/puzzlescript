@@ -214,8 +214,12 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
             }
         }
     }
+    private dependsOnDirection() {
+        return !!(this.conditionBrackets.find(b => b.dependsOnDirection()) || this.actionBrackets.find(b => b.dependsOnDirection()))
+    }
     toKey() {
-        return `{Late?${this._isLate}} {Rigid?${this.isRigid}}  ${this.evaluationDirection} ${this.conditionBrackets.map(x => x.toKey())} -> ${this.actionBrackets.map(x => x.toKey())} ${this.commands.join(' ')} {debugger?${this.debugFlag}}`
+        const dir = this.dependsOnDirection() ? this.evaluationDirection : ''
+        return `{Late?${this._isLate}} {Rigid?${this.isRigid}}  ${dir} ${this.conditionBrackets.map(x => x.toKey())} -> ${this.actionBrackets.map(x => x.toKey())} ${this.commands.join(' ')} {debugger?${this.debugFlag}}`
     }
     getChildRules(): IRule[] {
         return []
@@ -423,6 +427,7 @@ export abstract class ISimpleBracket extends BaseForLines implements ICacheable 
     abstract removeCell(index: number, neighbor: SimpleNeighbor, t: SimpleTileWithModifier, sprite: GameSprite, cell: Cell): void
     abstract addCellsToEmptyRules(cells: Iterable<Cell>): void
     abstract getMatches(level: Cell[][], actionBracket: Optional<ISimpleBracket>): MatchedCellsForRule[]
+    abstract dependsOnDirection(): boolean
 
     _getAllNeighbors() {
         return this.allNeighbors
@@ -436,6 +441,7 @@ export abstract class ISimpleBracket extends BaseForLines implements ICacheable 
     hasMatches(level: Cell[][], actionBracket: Optional<ISimpleBracket>) {
         return this.getMatches(level, actionBracket).length > 0
     }
+
 }
 
 
@@ -449,11 +455,16 @@ export class SimpleBracket extends ISimpleBracket {
         this.ellipsisBracketListeners = new Map()
     }
     toKey(ignoreDebugFlag?: boolean) {
+        let dir = this.dependsOnDirection() ? this.direction : ''
         if (ignoreDebugFlag) {
-            return `{${this.direction}[${this.neighbors.map(n => n.toKey(ignoreDebugFlag)).join('|')}]}`
+            return `{${dir}[${this.neighbors.map(n => n.toKey(ignoreDebugFlag)).join('|')}]}`
         } else {
-            return `{${this.direction}[${this.neighbors.map(n => n.toKey(ignoreDebugFlag)).join('|')}]{debugging?${this.debugFlag}}}`
+            return `{${dir}[${this.neighbors.map(n => n.toKey(ignoreDebugFlag)).join('|')}]{debugging?${this.debugFlag}}}`
         }
+    }
+
+    dependsOnDirection() {
+        return this.neighbors.length > 1 || !!this.neighbors.find(n => n.dependsOnDirection())
     }
 
     subscribeToNeighborChanges() {
@@ -866,6 +877,9 @@ export class SimpleEllipsisBracket extends ISimpleBracket {
     private actionDebugFlag: Optional<DEBUG_FLAG>
     constructor(source: IGameCode, direction: RULE_DIRECTION, beforeEllipsisNeighbors: SimpleNeighbor[], afterEllipsisNeighbors: SimpleNeighbor[], debugFlag: DEBUG_FLAG) {
         super(source, direction, [...beforeEllipsisNeighbors, ...afterEllipsisNeighbors], debugFlag)
+        if (!direction) {
+            debugger
+        }
         this.beforeEllipsisBracket = new SimpleBracket(source, direction, beforeEllipsisNeighbors, debugFlag)
         this.afterEllipsisBracket = new SimpleBracket(source, direction, afterEllipsisNeighbors, debugFlag)
         this.linkages = new MultiMap()
@@ -877,8 +891,12 @@ export class SimpleEllipsisBracket extends ISimpleBracket {
         this.afterEllipsisBracket.addEllipsisBracket(this, BEFORE_OR_AFTER.AFTER)
     }
     toKey(ignoreDebugFlag?: boolean) {
-        return `[${this.beforeEllipsisBracket.toKey(ignoreDebugFlag)} ... ${this.afterEllipsisBracket.toKey(ignoreDebugFlag)}]}`
+        return `[${this.direction} ${this.beforeEllipsisBracket.toKey(ignoreDebugFlag)} ... ${this.afterEllipsisBracket.toKey(ignoreDebugFlag)}]}`
     }
+    dependsOnDirection() {
+        return true
+    }
+
     getNeighbors() {
         // throw new Error(`BUG: Should not be calling this method`)
         return [] // TODO: Implement me
@@ -1366,6 +1384,10 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
         } else {
             return `{${[...this._tilesWithModifier].map(t => t.toKey(ignoreDebugFlag)).sort().join(' ')} debugging?${this.debugFlag}}`
         }
+    }
+
+    dependsOnDirection() {
+        return !![...this._tilesWithModifier].find(t => !!t._direction)
     }
 
     prepareAction(actionNeighbor: SimpleNeighbor) {

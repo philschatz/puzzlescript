@@ -124,7 +124,7 @@ Want to help? Here is a roadmap of things that need to be implemented:
 - [x] use HTML Tables to render in the browser (see [./test/browser/html-table.xhtml](./test/browser/html-table.xhtml))
 - [ ] Cache Improvements
     - [x] cache the `SimpleNeighbor.matchesCell()` function so we do not have to recompute if a cell matches a Neighbor
-    - [ ] de-duplicate `SimpleNeighbor` that have a direction but none of the tiles depend on the direction (causes fewer caches to be updated)
+    - [x] de-duplicate `SimpleNeighbor` that have a direction but none of the tiles depend on the direction (causes fewer caches to be updated)
     - [ ] improve `getMatches(level)` by storing a cache of all the sprites in each row/column so we can skip the row/column entirely if the necessary sprites are not available
 
 
