@@ -18,7 +18,8 @@ describeFn = process.env['CI'] === 'true' ? describe.skip : describe
 
 describeFn('Browser', () => {
     it('plays a game in the browser (using sleep so needs to be sped up)', async () => {
-        jest.setTimeout(60 * 1000) // browser tests are slow
+        // browser tests are slow. Headless is slower it seems (from jest watch mode)
+        jest.setTimeout(process.env.NODE_ENV === 'development' ? 90 * 1000 : 90 * 1000)
         const url = `file://${__dirname}/browser/html-table.xhtml`
 
         const puppeteerArgs = []
@@ -40,7 +41,7 @@ describeFn('Browser', () => {
 
         return new Promise( async (resolve) => {
             page.on('dialog', async dialog => {
-                console.log(dialog.message())
+                expect(dialog.message()).toBe('You Won!')
                 await dialog.dismiss()
                 await browser.close()
                 resolve()

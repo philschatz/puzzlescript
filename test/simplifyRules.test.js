@@ -117,7 +117,7 @@ describe('Rule simplifier', () => {
         const rightExtension = data._getSpriteByName('RightExtension')
         engine.tick()
 
-        expect(engine.currentLevel[0][0].getSpritesAsSet().has(rightExtension)).toBe(true)
+        expect(engine.currentLevel.getCells()[0][0].getSpritesAsSet().has(rightExtension)).toBe(true)
     })
 
     it('converts VERTICAL and HORIZONTAL at the beginning of a rule into 2 rules', () => {
@@ -203,17 +203,17 @@ describe('Rule simplifier', () => {
         expect(data.rules[0].rules.length).toBe(2) // just LEFT RIGHT
         expect(data.rules[1].rules.length).toBe(2) // just UP DOWN
 
-        expect(engine.currentLevel[0][1].getSpritesAsSet().has(horiz)).toBe(true)
-        expect(engine.currentLevel[0][2].getSpritesAsSet().has(horiz)).toBe(true)
+        expect(engine.currentLevel.getCells()[0][1].getSpritesAsSet().has(horiz)).toBe(true)
+        expect(engine.currentLevel.getCells()[0][2].getSpritesAsSet().has(horiz)).toBe(true)
 
-        expect(engine.currentLevel[3][1].getSpritesAsSet().has(horiz)).toBe(true)
-        expect(engine.currentLevel[3][2].getSpritesAsSet().has(horiz)).toBe(true)
+        expect(engine.currentLevel.getCells()[3][1].getSpritesAsSet().has(horiz)).toBe(true)
+        expect(engine.currentLevel.getCells()[3][2].getSpritesAsSet().has(horiz)).toBe(true)
 
-        expect(engine.currentLevel[1][0].getSpritesAsSet().has(vert)).toBe(true)
-        expect(engine.currentLevel[1][3].getSpritesAsSet().has(vert)).toBe(true)
+        expect(engine.currentLevel.getCells()[1][0].getSpritesAsSet().has(vert)).toBe(true)
+        expect(engine.currentLevel.getCells()[1][3].getSpritesAsSet().has(vert)).toBe(true)
 
-        expect(engine.currentLevel[2][0].getSpritesAsSet().has(vert)).toBe(true)
-        expect(engine.currentLevel[2][3].getSpritesAsSet().has(vert)).toBe(true)
+        expect(engine.currentLevel.getCells()[2][0].getSpritesAsSet().has(vert)).toBe(true)
+        expect(engine.currentLevel.getCells()[2][3].getSpritesAsSet().has(vert)).toBe(true)
 
     })
 
@@ -275,11 +275,11 @@ describe('Rule simplifier', () => {
 
         expect(engine.toSnapshot()).toMatchSnapshot()
 
-        expect(engine.currentLevel[0][0].getSpritesAsSet().has(player)).toBe(false)
-        expect(engine.currentLevel[0][1].getSpritesAsSet().has(player)).toBe(true)
+        expect(engine.currentLevel.getCells()[0][0].getSpritesAsSet().has(player)).toBe(false)
+        expect(engine.currentLevel.getCells()[0][1].getSpritesAsSet().has(player)).toBe(true)
 
-        expect(engine.currentLevel[1][0].getSpritesAsSet().has(shadow)).toBe(false)
-        expect(engine.currentLevel[1][1].getSpritesAsSet().has(shadow)).toBe(true)
+        expect(engine.currentLevel.getCells()[1][0].getSpritesAsSet().has(shadow)).toBe(false)
+        expect(engine.currentLevel.getCells()[1][1].getSpritesAsSet().has(shadow)).toBe(true)
     })
 
     it('expands MOVING in multiple brackets into simple UP DOWN LEFT RIGHT ACTION rules', () => {
@@ -339,10 +339,10 @@ describe('Rule simplifier', () => {
 
         expect(engine.toSnapshot()).toMatchSnapshot()
 
-        expect(engine.currentLevel[0][0].getSpritesAsSet().has(player)).toBe(false)
-        expect(engine.currentLevel[0][1].getSpritesAsSet().has(player)).toBe(true)
+        expect(engine.currentLevel.getCells()[0][0].getSpritesAsSet().has(player)).toBe(false)
+        expect(engine.currentLevel.getCells()[0][1].getSpritesAsSet().has(player)).toBe(true)
 
-        expect(engine.currentLevel[1][0].getSpritesAsSet().has(shadow)).toBe(false)
-        expect(engine.currentLevel[1][1].getSpritesAsSet().has(shadow)).toBe(true)
+        expect(engine.currentLevel.getCells()[1][0].getSpritesAsSet().has(shadow)).toBe(false)
+        expect(engine.currentLevel.getCells()[1][1].getSpritesAsSet().has(shadow)).toBe(true)
     })
 })

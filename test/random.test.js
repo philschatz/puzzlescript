@@ -697,17 +697,17 @@ describe('engine', () => {
 
         expect(player.getCellsThatMatch().size).toBe(4)
         // Player should now be in every corner of the level (because of the mirrors)
-        expect(engine.currentLevel[0][0].getSpritesAsSet().has(player)).toBe(true)
-        expect(engine.currentLevel[0][4].getSpritesAsSet().has(player)).toBe(true)
-        expect(engine.currentLevel[4][0].getSpritesAsSet().has(player)).toBe(true)
-        expect(engine.currentLevel[4][4].getSpritesAsSet().has(player)).toBe(true)
+        expect(engine.currentLevel.getCells()[0][0].getSpritesAsSet().has(player)).toBe(true)
+        expect(engine.currentLevel.getCells()[0][4].getSpritesAsSet().has(player)).toBe(true)
+        expect(engine.currentLevel.getCells()[4][0].getSpritesAsSet().has(player)).toBe(true)
+        expect(engine.currentLevel.getCells()[4][4].getSpritesAsSet().has(player)).toBe(true)
 
         // press action again to combing all the players back to one
         engine.press(RULE_DIRECTION.ACTION)
         engine.tick()
         expect(player.getCellsThatMatch().size).toBe(1)
 
-        expect(engine.currentLevel[2][2].getSpritesAsSet().has(player)).toBe(true)
+        expect(engine.currentLevel.getCells()[2][2].getSpritesAsSet().has(player)).toBe(true)
 
 
     })
@@ -772,7 +772,7 @@ describe('engine', () => {
 
         expect(randomTile.getCellsThatMatch().size).toBe(1)
         // Player should now be in every corner of the level (because of the mirrors)
-        expect(engine.currentLevel[0][0].getSpritesAsSet().has(randomTile)).toBe(true)
+        expect(engine.currentLevel.getCells()[0][0].getSpritesAsSet().has(randomTile)).toBe(true)
 
     })
 

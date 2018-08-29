@@ -109,7 +109,7 @@ P.
         // 3. Late: Update all the cells with new sprites ...
         // 4. Late: Move all the sprites that want to move
         // next tick for all the AGAIN rules
-        expect(engine.currentLevel[0][0].getWantsToMove(player)).toBe('RIGHT')
+        expect(engine.currentLevel.getCells()[0][0].getWantsToMove(player)).toBe('RIGHT')
 
         // Ensure only 1 cell was marked for update
         expect(changedCells.size).toBe(1)
@@ -159,12 +159,12 @@ P.
         const {changedCells} = engine.tick()
         // expect(engine.toSnapshot()).toMatchSnapshot()
         const player = data._getSpriteByName('player')
-        expect(engine.currentLevel[0][1].getSpritesAsSet().has(player)).toBe(true)
+        expect(engine.currentLevel.getCells()[0][1].getSpritesAsSet().has(player)).toBe(true)
 
         // Ensure both cells were marked for re-rendering
         expect(changedCells.size).toBe(2)
-        expect(changedCells).toContain(engine.currentLevel[0][0])
-        expect(changedCells).toContain(engine.currentLevel[0][1])
+        expect(changedCells).toContain(engine.currentLevel.getCells()[0][0])
+        expect(changedCells).toContain(engine.currentLevel.getCells()[0][1])
     })
 
     it('Does not move the sprite if it collides with a sprite in another cell (same collisionlayer)', () => {
@@ -215,11 +215,11 @@ PW
         const {changedCells} = engine.tick()
         // expect(engine.toSnapshot()).toMatchSnapshot()
         const player = data._getSpriteByName('player')
-        expect(engine.currentLevel[0][1].getSpritesAsSet().has(player)).toBe(false)
-        expect(engine.currentLevel[0][0].getSpritesAsSet().has(player)).toBe(true)
+        expect(engine.currentLevel.getCells()[0][1].getSpritesAsSet().has(player)).toBe(false)
+        expect(engine.currentLevel.getCells()[0][0].getSpritesAsSet().has(player)).toBe(true)
 
         // Make sure the wantsToMove flag is cleared
-        expect(engine.currentLevel[0][0].getWantsToMove(player)).toBe('STATIONARY')
+        expect(engine.currentLevel.getCells()[0][0].getWantsToMove(player)).toBe('STATIONARY')
 
         // nothing actually changed visually
         // expect(changedCells.size).toBe(0)
@@ -269,10 +269,10 @@ P.
         const {changedCells} = engine.tick()
         // expect(engine.toSnapshot()).toMatchSnapshot()
         const player = data._getSpriteByName('player')
-        expect(engine.currentLevel[0][0].getSpritesAsSet().has(player)).toBe(true)
+        expect(engine.currentLevel.getCells()[0][0].getSpritesAsSet().has(player)).toBe(true)
 
         // Make sure the wantsToMove flag is cleared
-        expect(engine.currentLevel[0][0].getWantsToMove(player)).toBe('STATIONARY')
+        expect(engine.currentLevel.getCells()[0][0].getWantsToMove(player)).toBe('STATIONARY')
 
         // nothing actually changed visually
         // expect(changedCells.size).toBe(0)
@@ -359,7 +359,7 @@ P.
         let threeCells = [...three.getCellsThatMatch()]
         let threeCell = threeCells[0]
         expect(threeCells.length).toBe(1)
-        expect(engine.currentLevel[0][1].getSpritesAsSet().has(two/*three*/)).toBe(true)
+        expect(engine.currentLevel.getCells()[0][1].getSpritesAsSet().has(two/*three*/)).toBe(true)
     })
 
     it('Moves the sprite in a "random" direction using "RANDOMDIR" in a bracket', () => {
@@ -411,26 +411,26 @@ LEVELS
         const {changedCells} = engine.tick()
         // expect(engine.toSnapshot()).toMatchSnapshot()
         const player = data._getSpriteByName('player')
-        expect(engine.currentLevel[2][2].getSpritesAsSet().has(player)).toBe(false)
+        expect(engine.currentLevel.getCells()[2][2].getSpritesAsSet().has(player)).toBe(false)
         // Check that the player is around thir previous location
         let playerCells = [...player.getCellsThatMatch()]
         let playerCell = playerCells[0]
         expect(playerCells.length).toBe(1)
-        expect(engine.currentLevel[playerCell.rowIndex][playerCell.colIndex].getSpritesAsSet().has(player)).toBe(true)
+        expect(engine.currentLevel.getCells()[playerCell.rowIndex][playerCell.colIndex].getSpritesAsSet().has(player)).toBe(true)
 
         // Ensure 2 cells were marked for re-rendering
         expect(changedCells.size).toBe(2)
-        expect(changedCells).toContain(engine.currentLevel[2][2])
-        expect(changedCells).toContain(engine.currentLevel[playerCell.rowIndex][playerCell.colIndex])
+        expect(changedCells).toContain(engine.currentLevel.getCells()[2][2])
+        expect(changedCells).toContain(engine.currentLevel.getCells()[playerCell.rowIndex][playerCell.colIndex])
 
         engine.tick()
         // Check that the player is no longer in the spot they were
-        expect(engine.currentLevel[playerCell.rowIndex][playerCell.colIndex].getSpritesAsSet().has(player)).toBe(false)
+        expect(engine.currentLevel.getCells()[playerCell.rowIndex][playerCell.colIndex].getSpritesAsSet().has(player)).toBe(false)
         // Check that the player is around thir previous location
         playerCells = [...player.getCellsThatMatch()]
         playerCell = playerCells[0]
         expect(playerCells.length).toBe(1)
-        expect(engine.currentLevel[playerCell.rowIndex][playerCell.colIndex].getSpritesAsSet().has(player)).toBe(true)
+        expect(engine.currentLevel.getCells()[playerCell.rowIndex][playerCell.colIndex].getSpritesAsSet().has(player)).toBe(true)
     })
 
     it('supports STATIONARY modifier (simple)', () => {
@@ -554,11 +554,11 @@ LEVELS
         expect(playerCell.rowIndex).toBe(1)
         expect(playerCell.colIndex).toBe(2)
         // Check that there REALLY is only 1 Player sprite
-        expect(engine.currentLevel[0][1].getSpritesAsSet().has(player)).toBe(false)
-        expect(engine.currentLevel[1][0].getSpritesAsSet().has(player)).toBe(false)
-        expect(engine.currentLevel[2][1].getSpritesAsSet().has(player)).toBe(false)
+        expect(engine.currentLevel.getCells()[0][1].getSpritesAsSet().has(player)).toBe(false)
+        expect(engine.currentLevel.getCells()[1][0].getSpritesAsSet().has(player)).toBe(false)
+        expect(engine.currentLevel.getCells()[2][1].getSpritesAsSet().has(player)).toBe(false)
         // Check that the cooldown sprite was also added
-        expect(engine.currentLevel[1][2].getSpritesAsSet().has(cooldown)).toBe(true)
+        expect(engine.currentLevel.getCells()[1][2].getSpritesAsSet().has(cooldown)).toBe(true)
     })
 
     it('supports setting STATIONARY so sprites do not move', () => {
@@ -614,8 +614,8 @@ LEVELS
         expect(playerCell.rowIndex).toBe(0)
         expect(playerCell.colIndex).toBe(0)
         // Check that there REALLY is only 1 Player sprite
-        expect(engine.currentLevel[0][0].getSpritesAsSet().has(player)).toBe(true)
-        expect(engine.currentLevel[0][1].getSpritesAsSet().has(player)).toBe(false)
+        expect(engine.currentLevel.getCells()[0][0].getSpritesAsSet().has(player)).toBe(true)
+        expect(engine.currentLevel.getCells()[0][1].getSpritesAsSet().has(player)).toBe(false)
     })
 
     it('puts a top hat on the player (beam islands)', () => {
@@ -675,7 +675,7 @@ LEVELS
         expect(playerTopCell.rowIndex).toBe(0)
         expect(playerTopCell.colIndex).toBe(0)
         // Check that there REALLY is only 1 Player sprite
-        expect(engine.currentLevel[0][0].getSpritesAsSet().has(playerTop)).toBe(true)
+        expect(engine.currentLevel.getCells()[0][0].getSpritesAsSet().has(playerTop)).toBe(true)
     })
 
     it('Supports trivial tile negation', () => {
@@ -872,20 +872,20 @@ P
         const {changedCells} = engine.tickUpdateCells()
         // expect(engine.toSnapshot()).toMatchSnapshot()
         const player = data._getSpriteByName('player')
-        expect(engine.currentLevel[1][0].getSpritesAsSet().has(player)).toBe(false)
+        expect(engine.currentLevel.getCells()[1][0].getSpritesAsSet().has(player)).toBe(false)
         // Check that the player is around thir previous location
         let playerCells = [...player.getCellsThatMatch()]
         let playerCell = playerCells[0]
         expect(playerCells.length).toBe(1)
-        expect(engine.currentLevel[0][0].getSpritesAsSet().has(player)).toBe(true)
-        expect(engine.currentLevel[0][0].getWantsToMove(player)).toBe('DOWN')
+        expect(engine.currentLevel.getCells()[0][0].getSpritesAsSet().has(player)).toBe(true)
+        expect(engine.currentLevel.getCells()[0][0].getWantsToMove(player)).toBe('DOWN')
 
         engine.tickMoveSprites(changedCells)
         // Check that the player is no longer in the spot they were
         playerCells = [...player.getCellsThatMatch()]
         playerCell = playerCells[0]
         expect(playerCells.length).toBe(1)
-        expect(engine.currentLevel[1][0].getSpritesAsSet().has(player)).toBe(true)
+        expect(engine.currentLevel.getCells()[1][0].getSpritesAsSet().has(player)).toBe(true)
     })
 
 })

@@ -6,9 +6,13 @@ import { CollisionLayer } from './models/collisionLayer';
 const BitSet2 = require('bitset')
 
 abstract class CustomBitSet<T> {
-    private readonly bitSet: BitSet
-    constructor(items?: Iterable<T>) {
-        this.bitSet = new BitSet2()
+    protected readonly bitSet: BitSet
+    constructor(items?: Iterable<T>, bitSet?: BitSet) {
+        if (bitSet) {
+            this.bitSet = bitSet
+        } else {
+            this.bitSet = new BitSet2()
+        }
 
         if (items) {
             this.addAll(items)
@@ -16,6 +20,10 @@ abstract class CustomBitSet<T> {
     }
 
     protected abstract indexOf(item: T): number
+
+    clear() {
+        this.bitSet.clear()
+    }
 
     addAll(items: Iterable<T>) {
         for (const sprite of items) {
@@ -77,6 +85,19 @@ export class SpriteBitSet extends CustomBitSet<GameSprite> {
         }
         return str.join(' ')
     }
+
+    union(bitSets: Iterable<SpriteBitSet>) {
+        let ret: SpriteBitSet = this
+        for (const bitSet of bitSets) {
+            ret = ret.or(bitSet)
+        }
+        return ret
+    }
+
+    private or(bitSet: SpriteBitSet) {
+        return new SpriteBitSet(undefined, this.bitSet.or(bitSet.bitSet))
+    }
+
 }
 
 export class CollisionLayerBitSet extends CustomBitSet<CollisionLayer> {

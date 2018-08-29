@@ -35,24 +35,22 @@ type Snapshot = Set<GameSprite>[][]
  * of one position of the current level.
  */
 export class Cell {
-    private readonly engine: Optional<LevelEngine>
+    private readonly level: Optional<Level>
     private readonly state: Map<CollisionLayer, CollisionLayerState>
     private cacheCollisionLayers: CollisionLayer[]
     public readonly rowIndex: number
     public readonly colIndex: number
     public readonly spriteBitSet: SpriteBitSet
-    private keyValue: string
-    private isKeyValueStale: boolean
+    private cachedKeyValue: Optional<string>
 
-    constructor(engine: Optional<LevelEngine>, sprites: Set<GameSprite>, rowIndex: number, colIndex: number) {
-        this.engine = engine
+    constructor(level: Optional<Level>, sprites: Set<GameSprite>, rowIndex: number, colIndex: number) {
+        this.level = level
         this.rowIndex = rowIndex
         this.colIndex = colIndex
         this.state = new Map()
         this.cacheCollisionLayers = []
         this.spriteBitSet = new SpriteBitSet(sprites)
-        this.isKeyValueStale = true
-        this.keyValue = ''
+        this.cachedKeyValue = null
 
         for (const sprite of sprites) {
             this._setWantsToMove(sprite, RULE_DIRECTION.STATIONARY)
@@ -90,6 +88,10 @@ export class Cell {
         }
 
         this._setState(collisionLayer, sprite, wantsToMove)
+        // call replaceSprite only **after** we updated the Cell
+        if (cellSprite !== sprite) {
+            this.getLevel().replaceSprite(this, cellSprite, sprite)
+        }
         return didActuallyChangeSprite || didActuallyChangeDir
     }
     _deleteWantsToMove(sprite: GameSprite) {
@@ -105,6 +107,12 @@ export class Cell {
         this._setState(collisionLayer, null, null) // delete the entry
 
         return didActuallyChange
+    }
+    private getLevel() {
+        if (!this.level) {
+            throw new Error(`BUG: we need an engine Level in order to find neighbors. It is optional for letters in messages`)
+        }
+        return this.level
     }
     private getStateForCollisionLayer(collisionLayer: CollisionLayer) {
         const state = this.state.get(collisionLayer)
@@ -191,12 +199,7 @@ export class Cell {
     }
 
     private _getRelativeNeighbor(y: number, x: number) {
-        if (!this.engine) {
-            throw new Error(`BUG: we need an engine in order to find neighbors. It is optional for letters in messages`)
-        }
-        const row = this.engine.getCurrentLevel()[this.rowIndex + y]
-        if (!row) return null
-        return row[this.colIndex + x]
+        return this.getLevel().getCellOrNull(this.rowIndex + y, this.colIndex + x)
     }
     getNeighbor(direction: string) {
         switch (direction) {
@@ -259,14 +262,13 @@ export class Cell {
         return `Cell [${this.rowIndex}][${this.colIndex}] ${[...this.getSpriteAndWantsToMoves().entries()].map(([sprite, wantsToMove]) => `${wantsToMove} ${sprite.getName()}`).join(' ')}`
     }
     toKey() {
-        if (this.isKeyValueStale) {
-            this.keyValue = [...this.getSpriteAndWantsToMoves().entries()].map(([sprite, wantsToMove]) => `${wantsToMove} ${sprite.getName()}`).join(' ')
-            this.isKeyValueStale = false
+        if (!this.cachedKeyValue) {
+            this.cachedKeyValue = [...this.getSpriteAndWantsToMoves().entries()].map(([sprite, wantsToMove]) => `${wantsToMove} ${sprite.getName()}`).join(' ')
         }
-        return this.keyValue
+        return this.cachedKeyValue
     }
     private invalidateKey() {
-        this.isKeyValueStale = true
+        this.cachedKeyValue = null
     }
     toSnapshot() {
         return this.getSpritesAsSet()
@@ -282,6 +284,79 @@ export class Cell {
     }
 }
 
+export class Level {
+    private cells: Optional<Cell[][]>
+    private rowCache: Optional<SpriteBitSet>[]
+    private colCache: Optional<SpriteBitSet>[]
+    constructor() {
+        this.rowCache = []
+        this.colCache = []
+    }
+    setCells(cells: Cell[][]) {
+        this.cells = cells
+    }
+    getCells() {
+        if (!this.cells) {
+            throw new Error(`BUG: Should have called setCells() first`)
+        }
+        return this.cells
+    }
+    getCellOrNull(rowIndex: number, colIndex: number) {
+        const row = this.getCells()[rowIndex]
+        if (row) {
+            return row[colIndex]
+        }
+        return null
+    }
+    getCell(rowIndex: number, colIndex: number) {
+        const cell = this.getCellOrNull(rowIndex, colIndex)
+        if (!cell) {
+            throw new Error(`BUG: Expected to always find the cell`)
+        }
+        return cell
+    }
+    replaceSprite(cell: Cell, oldSprite: Optional<GameSprite>, newSprite: Optional<GameSprite>) {
+        // When a new Cell is instantiated it will call this method but `this.cells` is not defined yet
+        if (this.cells) {
+            // Invalidate the row/column cache. It will be rebuilt when requested
+            this.rowCache[cell.rowIndex] = null
+            this.colCache[cell.colIndex] = null
+        }
+    }
+    private computeRowCache(rowIndex: number) {
+        const cols = this.getCells()[0].length
+        const bitSets = []
+        for (let index = 0; index < cols; index++) {
+            bitSets.push(this.getCell(rowIndex, index).spriteBitSet)
+        }
+        return (new SpriteBitSet()).union(bitSets)
+    }
+    private computeColCache(colIndex: number) {
+        const rows = this.getCells().length
+        const bitSets = []
+        for (let index = 0; index < rows; index++) {
+            bitSets.push(this.getCell(index, colIndex).spriteBitSet)
+        }
+        return (new SpriteBitSet()).union(bitSets)
+    }
+    rowContainsSprites(rowIndex: number, sprites: SpriteBitSet) {
+        let cache = this.rowCache[rowIndex]
+        if (!cache) {
+            cache = this.computeRowCache(rowIndex)
+            this.rowCache[rowIndex] = cache
+        }
+        return cache.containsAll(sprites)
+    }
+    colContainsSprites(colIndex: number, sprites: SpriteBitSet) {
+        let cache = this.colCache[colIndex]
+        if (!cache) {
+            cache = this.computeColCache(colIndex)
+            this.colCache[colIndex] = cache
+        }
+        return cache.containsAll(sprites)
+    }
+}
+
 /**
  * Internal class that ise used to maintain the state of a level.
  *
@@ -289,7 +364,7 @@ export class Cell {
  */
 export class LevelEngine extends EventEmitter2 {
     public readonly gameData: GameData
-    private currentLevel: Optional<Cell[][]>
+    private currentLevel: Optional<Level>
     pendingPlayerWantsToMove: Optional<RULE_DIRECTION>
     hasAgainThatNeedsToRun: boolean
     private undoStack: Snapshot[]
@@ -305,25 +380,27 @@ export class LevelEngine extends EventEmitter2 {
         this.undoStack = []
         this.gameData.clearCaches()
 
-        const level = this.gameData.levels[levelNum]
-        if (!level) {
+        const levelData = this.gameData.levels[levelNum]
+        if (!levelData) {
             throw new Error(`Invalid levelNum: ${levelNum}`)
         }
         if (process.env['NODE_ENV'] === 'development') {
-            level.__incrementCoverage()
+            levelData.__incrementCoverage()
         }
         resetRandomSeed()
         // Clone the board because we will be modifying it
-        this.currentLevel = level.getRows().map((row, rowIndex) => {
+        const level = new Level()
+        this.currentLevel = level
+        level.setCells(levelData.getRows().map((row, rowIndex) => {
             return row.map((col, colIndex) => {
                 const sprites = new Set(col.getSprites())
                 const backgroundSprite = this.gameData.getMagicBackgroundSprite()
                 if (backgroundSprite) {
                     sprites.add(backgroundSprite)
                 }
-                return new Cell(this, sprites, rowIndex, colIndex)
+                return new Cell(level, sprites, rowIndex, colIndex)
             })
-        })
+        }))
 
         // link up all the cells. Loop over all the sprites
         // in case they are NO tiles (so the cell is included)
@@ -383,7 +460,7 @@ export class LevelEngine extends EventEmitter2 {
     }
 
     private getCells() {
-        return _.flatten(this.currentLevel)
+        return _.flatten(this.getCurrentLevel().getCells())
     }
     getCurrentLevel() {
         if (this.currentLevel) {
@@ -394,7 +471,7 @@ export class LevelEngine extends EventEmitter2 {
     }
 
     toSnapshot() {
-        return this.getCurrentLevel().map(row => {
+        return this.getCurrentLevel().getCells().map(row => {
             return row.map(cell => {
                 const ret: string[] = []
                 cell.getSpriteAndWantsToMoves().forEach((wantsToMove, sprite) => {
@@ -655,14 +732,15 @@ export class LevelEngine extends EventEmitter2 {
 
     // Used for UNDO and RESTART
     private createSnapshot() {
-        return this.getCurrentLevel().map(row => row.map(cell => cell.toSnapshot()))
+        return this.getCurrentLevel().getCells().map(row => row.map(cell => cell.toSnapshot()))
     }
     private takeSnapshot(snapshot: Snapshot) {
         this.undoStack.push(snapshot)
     }
     private applySnapshot(snpashot: Snapshot) {
-        for (let rowIndex = 0; rowIndex < this.getCurrentLevel().length; rowIndex++) {
-            const row = this.getCurrentLevel()[rowIndex]
+        const cells = this.getCurrentLevel().getCells()
+        for (let rowIndex = 0; rowIndex < cells.length; rowIndex++) {
+            const row = cells[rowIndex]
             const snapshotRow = snpashot[rowIndex]
             for (let colIndex = 0; colIndex < row.length; colIndex++) {
                 const cell = row[colIndex]
@@ -759,7 +837,7 @@ export class GameEngine {
         return this.levelEngine.gameData
     }
     getCurrentLevelCells() {
-        return this.levelEngine.getCurrentLevel()
+        return this.levelEngine.getCurrentLevel().getCells()
     }
     getCurrentLevel() {
         return this.getGameData().levels[this.getCurrentLevelNum()]
@@ -929,7 +1007,7 @@ export class GameEngine {
     loadSnapshotFromJSON(json: CellSaveState) {
         json.forEach((rowSave, rowIndex) => {
             rowSave.forEach((cellSave, colIndex) => {
-                const cell = this.levelEngine.getCurrentLevel()[rowIndex][colIndex]
+                const cell = this.levelEngine.getCurrentLevel().getCell(rowIndex, colIndex)
 
                 const spritesToHave = cellSave.map(spriteName => {
                     const sprite = this.getGameData()._getSpriteByName(spriteName)

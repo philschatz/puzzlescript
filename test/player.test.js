@@ -76,8 +76,8 @@ describe('player movement', () => {
         engine.press(RULE_DIRECTION.RIGHT)
         engine.tick()
 
-        expect(engine.currentLevel[0][1].getSpritesAsSet().has(playerSprite)).toBe(true)
-        expect(engine.currentLevel[0][0].getSpritesAsSet().has(playerSprite)).toBe(false)
+        expect(engine.currentLevel.getCells()[0][1].getSpritesAsSet().has(playerSprite)).toBe(true)
+        expect(engine.currentLevel.getCells()[0][0].getSpritesAsSet().has(playerSprite)).toBe(false)
     })
 
     it('players next to each other should move in unison', () => {
@@ -139,18 +139,18 @@ describe('player movement', () => {
         engine.press(RULE_DIRECTION.RIGHT)
         engine.tick()
 
-        expect(engine.currentLevel[0][0].getSpritesAsSet().has(playerSprite)).toBe(false)
-        expect(engine.currentLevel[0][1].getSpritesAsSet().has(playerSprite)).toBe(true)
-        expect(engine.currentLevel[0][2].getSpritesAsSet().has(playerSprite)).toBe(true)
-        expect(engine.currentLevel[0][3].getSpritesAsSet().has(playerSprite)).toBe(false)
+        expect(engine.currentLevel.getCells()[0][0].getSpritesAsSet().has(playerSprite)).toBe(false)
+        expect(engine.currentLevel.getCells()[0][1].getSpritesAsSet().has(playerSprite)).toBe(true)
+        expect(engine.currentLevel.getCells()[0][2].getSpritesAsSet().has(playerSprite)).toBe(true)
+        expect(engine.currentLevel.getCells()[0][3].getSpritesAsSet().has(playerSprite)).toBe(false)
 
         engine.press(RULE_DIRECTION.RIGHT)
         engine.tick()
 
-        expect(engine.currentLevel[0][0].getSpritesAsSet().has(playerSprite)).toBe(false)
-        expect(engine.currentLevel[0][1].getSpritesAsSet().has(playerSprite)).toBe(false)
-        expect(engine.currentLevel[0][2].getSpritesAsSet().has(playerSprite)).toBe(true)
-        expect(engine.currentLevel[0][3].getSpritesAsSet().has(playerSprite)).toBe(true)
+        expect(engine.currentLevel.getCells()[0][0].getSpritesAsSet().has(playerSprite)).toBe(false)
+        expect(engine.currentLevel.getCells()[0][1].getSpritesAsSet().has(playerSprite)).toBe(false)
+        expect(engine.currentLevel.getCells()[0][2].getSpritesAsSet().has(playerSprite)).toBe(true)
+        expect(engine.currentLevel.getCells()[0][3].getSpritesAsSet().has(playerSprite)).toBe(true)
     })
 
 
@@ -222,11 +222,11 @@ describe('player movement', () => {
         engine.press(RULE_DIRECTION.RIGHT)
         engine.tick()
 
-        expect(engine.currentLevel[0][0].getSpritesAsSet().has(playerSprite)).toBe(false)
-        expect(engine.currentLevel[0][1].getSpritesAsSet().has(playerSprite)).toBe(true)
+        expect(engine.currentLevel.getCells()[0][0].getSpritesAsSet().has(playerSprite)).toBe(false)
+        expect(engine.currentLevel.getCells()[0][1].getSpritesAsSet().has(playerSprite)).toBe(true)
 
-        expect(engine.currentLevel[1][0].getSpritesAsSet().has(shadowSprite)).toBe(false)
-        expect(engine.currentLevel[1][1].getSpritesAsSet().has(shadowSprite)).toBe(true)
+        expect(engine.currentLevel.getCells()[1][0].getSpritesAsSet().has(shadowSprite)).toBe(false)
+        expect(engine.currentLevel.getCells()[1][1].getSpritesAsSet().has(shadowSprite)).toBe(true)
     })
 
     it('wantsToMove should remain when updating sprites', () => {
@@ -290,8 +290,8 @@ describe('player movement', () => {
         engine.press(RULE_DIRECTION.RIGHT)
         engine.tick()
 
-        expect(engine.currentLevel[0][0].getSpritesAsSet().has(playerSprite)).toBe(false)
-        expect(engine.currentLevel[0][1].getSpritesAsSet().has(playerSprite)).toBe(true)
+        expect(engine.currentLevel.getCells()[0][0].getSpritesAsSet().has(playerSprite)).toBe(false)
+        expect(engine.currentLevel.getCells()[0][1].getSpritesAsSet().has(playerSprite)).toBe(true)
     })
 
     it('wantsToMove should be removed when the condition has a direction but the right does not', () => {
@@ -355,8 +355,8 @@ describe('player movement', () => {
         engine.press(RULE_DIRECTION.RIGHT)
         engine.tick()
 
-        expect(engine.currentLevel[0][0].getSpritesAsSet().has(playerSprite)).toBe(true)
-        expect(engine.currentLevel[0][1].getSpritesAsSet().has(playerSprite)).toBe(false)
+        expect(engine.currentLevel.getCells()[0][0].getSpritesAsSet().has(playerSprite)).toBe(true)
+        expect(engine.currentLevel.getCells()[0][1].getSpritesAsSet().has(playerSprite)).toBe(false)
     })
 
     it('only creates one Player when Player is an OR tile', () => {
@@ -417,7 +417,7 @@ describe('player movement', () => {
 
         expect(player1.getCellsThatMatch().size).toBe(1)
         expect(player2.getCellsThatMatch().size).toBe(0)
-        expect(engine.currentLevel[0][1].getSpritesAsSet().has(player1)).toBe(true)
+        expect(engine.currentLevel.getCells()[0][1].getSpritesAsSet().has(player1)).toBe(true)
     })
 
     it('preserves wantsToMove when sprite changes', () => {
@@ -478,7 +478,7 @@ describe('player movement', () => {
         engine.tick()
 
         expect(player1.getCellsThatMatch().size).toBe(1)
-        expect(engine.currentLevel[0][1].getSpritesAsSet().has(player1)).toBe(true)
+        expect(engine.currentLevel.getCells()[0][1].getSpritesAsSet().has(player1)).toBe(true)
     })
 
     it('plays a level of Beam Islands', () => {
