@@ -1,0 +1,13 @@
+{
+    "extends": [
+        "tslint:latest",
+        "tslint-config-standard"
+    ],
+    "rules": {
+        "ter-indent": [true, 4, { "SwitchCase": 1}],
+        "space-before-function-paren": [true, "never"],
+        "interface-name": [true, "always-prefix"],
+        "prefer-object-spread": false,
+        "no-implicit-dependencies": [true]
+    }
+}

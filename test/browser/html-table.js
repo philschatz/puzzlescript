@@ -1,3 +1,4 @@
+/* eslint-env browser */
 const gameSource = `
 title Pot Wash Panic
 author Dan Howard
@@ -347,7 +348,7 @@ $####22####£
 
 `
 
-const {TableUI, keymaster, playSound} = window.PuzzleScript
+const { TableUI, keymaster, playSound } = window.PuzzleScript
 const table = document.querySelector('#thegamecanbeidentifiedbyselector')
 const tableUI = new TableUI(table)
 
@@ -364,20 +365,18 @@ keymaster('space, x', () => tableUI.pressAction())
 keymaster('z, u', () => tableUI.pressUndo())
 keymaster('r', () => tableUI.pressRestart())
 
-
-
-async function runLoop() {
+async function runLoop () {
     const {
-        changedCells,
+        // changedCells,
         didLevelChange,
         didWinGame,
         messageToShow,
-        soundToPlay,
-        wasAgainTick
+        soundToPlay
+        // wasAgainTick
     } = tableUI.tick()
 
     if (soundToPlay) {
-        /*await*/ playSound(soundToPlay) // let sounds play while the game loads or player keeps moving
+    /* await */ playSound(soundToPlay) // let sounds play while the game loads or player keeps moving
     }
     if (didWinGame) {
         alert(`You Won!`)
