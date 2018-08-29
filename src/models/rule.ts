@@ -240,52 +240,6 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
         }
     }
 
-    evaluate(level: Level, onlyEvaluateFirstMatch: boolean) {
-        const allMutations: IMutation[][] = []
-        // Keep evaluating the rule until nothing changes
-        let innerIteration
-        for (innerIteration = 0; innerIteration < MAX_ITERATIONS_IN_LOOP; innerIteration++) {
-            if (process.env['NODE_ENV'] === 'development' && innerIteration === MAX_ITERATIONS_IN_LOOP - 10) {
-                // Provide a breakpoint just before we run out of MAX_ITERATIONS_IN_LOOP
-                // so that we can step through the evaluations.
-                /*TerminalUI.debugRenderScreen();*/ debugger
-            }
-            if (innerIteration === MAX_ITERATIONS_IN_LOOP - 1) {
-                throw new Error(`BUG: Iterated too many times in rule or rule group\n${this.toString()}`)
-            }
-            const ret = this._evaluate(level, onlyEvaluateFirstMatch)
-            if (ret.length > 0) {
-                allMutations.push(ret)
-                // Only evaluate once. This is a HACK since it always picks the 1st cell that matched rather than a RANDOM cell
-                if (onlyEvaluateFirstMatch) {
-                    break
-                }
-                // filter because a Rule may have caused only command mutations
-                if (ret.filter(m => m.hasCell()).length > 0) {
-                } else {
-                    break
-                }
-            } else {
-                break
-            }
-        }
-        const flattenedMutations = _.flatten(allMutations)
-        if (flattenedMutations.length > 0) {
-            // Check if direction is important
-            let isDirectionImportant = false
-            for (const bracket of this.conditionBrackets) {
-                if (bracket.getNeighbors().length > 1) {
-                    isDirectionImportant = true
-                }
-            }
-            if (process.env['LOG_LEVEL'] === 'debug') {
-                console.error(`Rule ${this.__getSourceLineAndColumn().lineNum} ${isDirectionImportant ? this.evaluationDirection.toLowerCase() + ' ' : ''}applied.${innerIteration > 2 ? ` (x${innerIteration-1})` : ''}`)
-            }
-        }
-
-        return flattenedMutations
-    }
-
     getMatches(level: Level) {
         const allBracketsToProcess: MatchedCellsForRule[][] = []
         for (let index = 0; index < this.conditionBrackets.length; index++) {
@@ -300,7 +254,7 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
         return allBracketsToProcess
     }
 
-    private _evaluate(level: Level, onlyEvaluateFirstMatch: boolean) {
+    evaluate(level: Level, onlyEvaluateFirstMatch: boolean) {
         // Verify that each condition bracket has matches
         // for (const condition of this.conditionBrackets) {
         //     if (!condition.hasFirstCells()) {
@@ -450,6 +404,8 @@ export class SimpleBracket extends ISimpleBracket {
     protected actionDebugFlag: Optional<DEBUG_FLAG>
     private ellipsisBracketListeners: Map<SimpleEllipsisBracket, BEFORE_OR_AFTER>
     private readonly spritesPresentInRowOrColumn: SpriteBitSet
+    private readonly anySpritesPresentInRowOrColumn: SpriteBitSet
+
 
     constructor(source: IGameCode, direction: RULE_DIRECTION, neighbors: SimpleNeighbor[], debugFlag: DEBUG_FLAG) {
         super(source, direction, neighbors, debugFlag)
@@ -458,6 +414,13 @@ export class SimpleBracket extends ISimpleBracket {
 
         // Compute which sprites need to be in the Row/Column to check cells in that row/column (optimization)
         this.spritesPresentInRowOrColumn = this.neighbors[0].spritesPresent.union(this.neighbors.map(n => n.spritesPresent))
+        let anySprites = []
+        for (const neighbor of this.neighbors) {
+            for (const a of neighbor.anySpritesPresent) {
+                anySprites.push(a)
+            }
+        }
+        this.anySpritesPresentInRowOrColumn = (new SpriteBitSet()).union(anySprites)
     }
     toKey(ignoreDebugFlag?: boolean) {
         let dir = this.dependsOnDirection() ? this.direction : ''
@@ -670,38 +633,38 @@ export class SimpleBracket extends ISimpleBracket {
         return matched ? curCell : null
     }
 
-    getMatches(level: Level, actionBracket: Optional<SimpleBracket>) {
-        const matches: MatchedCellsForRule[] = []
-
-        const checkCell = (cell: Cell) => {
-            if (this.neighbors[0].matchesCellSimple(cell) && this.matchesDownstream(cell, 0)) {
-                const cellMatches = []
-                let curCell: Optional<Cell> = cell
-                let didAllNeighborsMatch = true
-                for (let index = 0; index < this.neighbors.length; index++) {
-                    if (!curCell) {
-                        didAllNeighborsMatch = false
-                        break
-                    }
-                    const condition = this.neighbors[index]
-                    let action
-                    // Some rules only contain a condition bracket and a command
-                    if (actionBracket) {
-                        action = actionBracket.neighbors[index]
-                    }
-                    const x: MatchedCellAndCorrespondingNeighbors = {
-                        cell: curCell,
-                        condition,
-                        action
-                    }
-                    cellMatches.push(x)
-                    curCell = curCell.getNeighbor(this.direction)
+    private addIfCellMatches(matches: MatchedCellsForRule[], cell: Cell, actionBracket: Optional<SimpleBracket>) {
+        if (this.neighbors[0].matchesCellSimple(cell) && this.matchesDownstream(cell, 0)) {
+            const cellMatches = []
+            let curCell: Optional<Cell> = cell
+            let didAllNeighborsMatch = true
+            for (let index = 0; index < this.neighbors.length; index++) {
+                if (!curCell) {
+                    didAllNeighborsMatch = false
+                    break
                 }
-                if (didAllNeighborsMatch) {
-                    matches.push(new MatchedCellsForRule(cellMatches))
+                const condition = this.neighbors[index]
+                let action
+                // Some rules only contain a condition bracket and a command
+                if (actionBracket) {
+                    action = actionBracket.neighbors[index]
                 }
+                const x: MatchedCellAndCorrespondingNeighbors = {
+                    cell: curCell,
+                    condition,
+                    action
+                }
+                cellMatches.push(x)
+                curCell = curCell.getNeighbor(this.direction)
+            }
+            if (didAllNeighborsMatch) {
+                matches.push(new MatchedCellsForRule(cellMatches))
             }
         }
+    }
+
+    getMatches(level: Level, actionBracket: Optional<SimpleBracket>) {
+        const matches: MatchedCellsForRule[] = []
 
         const cells = level.getCells()
         const rowCount = cells.length
@@ -710,9 +673,9 @@ export class SimpleBracket extends ISimpleBracket {
             case RULE_DIRECTION.UP:
             case RULE_DIRECTION.DOWN:
                 for (let colIndex = 0; colIndex < colCount; colIndex++) {
-                    if (level.colContainsSprites(colIndex, this.spritesPresentInRowOrColumn)) {
+                    if (level.colContainsSprites(colIndex, this.spritesPresentInRowOrColumn, this.anySpritesPresentInRowOrColumn)) {
                         for (let rowIndex = 0; rowIndex < rowCount; rowIndex++) {
-                            checkCell(level.getCell(rowIndex, colIndex))
+                            this.addIfCellMatches(matches, level.getCell(rowIndex, colIndex), actionBracket)
                         }
                     }
                 }
@@ -720,9 +683,9 @@ export class SimpleBracket extends ISimpleBracket {
             case RULE_DIRECTION.LEFT:
             case RULE_DIRECTION.RIGHT:
                 for (let rowIndex = 0; rowIndex < rowCount; rowIndex++) {
-                    if (level.rowContainsSprites(rowIndex, this.spritesPresentInRowOrColumn)) {
+                    if (level.rowContainsSprites(rowIndex, this.spritesPresentInRowOrColumn, this.anySpritesPresentInRowOrColumn)) {
                         for (let colIndex = 0; colIndex < colCount; colIndex++) {
-                            checkCell(level.getCell(rowIndex, colIndex))
+                            this.addIfCellMatches(matches, level.getCell(rowIndex, colIndex), actionBracket)
                         }
                     }
                 }
@@ -1312,8 +1275,8 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
     private cacheMultiCollisionLayerTiles: Set<SimpleTileWithModifier>
 
     public spritesPresent: SpriteBitSet
+    public anySpritesPresent: Set<SpriteBitSet>
     private spritesMissing: SpriteBitSet
-    private anySpritesPresent: Set<SpriteBitSet>
     private spriteMovementsPresent: Map<CollisionLayer, RULE_DIRECTION>
     private orTileMovementsPresent: Map<IGameTile, RULE_DIRECTION>
     private lruCache: LruCache<string, boolean>

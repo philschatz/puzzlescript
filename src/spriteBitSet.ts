@@ -25,6 +25,10 @@ abstract class CustomBitSet<T> {
         this.bitSet.clear()
     }
 
+    isEmpty() {
+        return this.bitSet.isEmpty()
+    }
+
     addAll(items: Iterable<T>) {
         for (const sprite of items) {
             this.add(sprite)

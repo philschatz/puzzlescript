@@ -339,21 +339,21 @@ export class Level {
         }
         return (new SpriteBitSet()).union(bitSets)
     }
-    rowContainsSprites(rowIndex: number, sprites: SpriteBitSet) {
+    rowContainsSprites(rowIndex: number, spritesPresent: SpriteBitSet, anySpritesPresent: SpriteBitSet) {
         let cache = this.rowCache[rowIndex]
         if (!cache) {
             cache = this.computeRowCache(rowIndex)
             this.rowCache[rowIndex] = cache
         }
-        return cache.containsAll(sprites)
+        return cache.containsAll(spritesPresent) && anySpritesPresent.isEmpty() ? true : cache.containsAny(anySpritesPresent)
     }
-    colContainsSprites(colIndex: number, sprites: SpriteBitSet) {
+    colContainsSprites(colIndex: number, sprites: SpriteBitSet, anySpritesPresent: SpriteBitSet) {
         let cache = this.colCache[colIndex]
         if (!cache) {
             cache = this.computeColCache(colIndex)
             this.colCache[colIndex] = cache
         }
-        return cache.containsAll(sprites)
+        return cache.containsAll(sprites) && anySpritesPresent.isEmpty() ? true : cache.containsAny(anySpritesPresent)
     }
 }
 
