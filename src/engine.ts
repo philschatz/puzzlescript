@@ -185,7 +185,8 @@ export class Cell {
         // Retur na new set so we can mutate it later
         const map = new Map()
         for (const collisionLayer of this.getCollisionLayers()) {
-            map.set(this.getSpriteByCollisionLayer(collisionLayer), this.getCollisionLayerWantsToMove(collisionLayer))
+            const {sprite, wantsToMove} = this.getStateForCollisionLayer(collisionLayer)
+            map.set(sprite, wantsToMove)
         }
         return map
     }
@@ -263,7 +264,8 @@ export class Cell {
     }
     toKey() {
         if (!this.cachedKeyValue) {
-            this.cachedKeyValue = [...this.getSpriteAndWantsToMoves().entries()].map(([sprite, wantsToMove]) => `${wantsToMove} ${sprite.getName()}`).join(' ')
+            this.cachedKeyValue = [...this.state.values()].map(({sprite, wantsToMove}) => `${wantsToMove} ${sprite.getName()}`).join(' ')
+            // this.cachedKeyValue = [...this.getSpriteAndWantsToMoves().entries()].map(([sprite, wantsToMove]) => `${wantsToMove} ${sprite.getName()}`).join(' ')
         }
         return this.cachedKeyValue
     }
@@ -510,6 +512,14 @@ export class LevelEngine extends EventEmitter2 {
             for (const mutation of cellMutations) {
                 changedMutations.add(mutation)
             }
+            // if (process.env['NODE_ENV'] === 'development') {
+            //     if (rule.timesRan && rule.totalTimeMs) {
+            //         const avg = rule.totalTimeMs // Math.round(rule.totalTimeMs / rule.timesRan)
+            //         if (avg > 50) {
+            //             console.error(`Took:${avg}ms ${rule.toString()}`)
+            //         }
+            //     }
+            // }
         }
 
         // We may have mutated the same cell 4 times (e.g. [Player]->[>Player]) so consolidate

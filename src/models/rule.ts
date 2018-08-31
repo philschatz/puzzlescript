@@ -6,7 +6,7 @@ import {
     IGameNode
 } from './game'
 import { IGameTile, GameSprite } from './tile'
-import { setIntersection, nextRandom, RULE_DIRECTION, DEBUG_FLAG, ICacheable, Optional } from '../util'
+import { setIntersection, nextRandom, RULE_DIRECTION, DEBUG_FLAG, ICacheable, Optional, opposite } from '../util'
 import { Cell, Level } from '../engine'
 // import TerminalUI from '../ui/terminal'
 import { AbstractCommand } from './command';
@@ -24,21 +24,6 @@ export const SIMPLE_DIRECTION_DIRECTIONS = [
     RULE_DIRECTION.LEFT,
     RULE_DIRECTION.UP
 ]
-
-function opposite(dir: RULE_DIRECTION) {
-    switch (dir) {
-        case RULE_DIRECTION.UP:
-            return RULE_DIRECTION.DOWN
-        case RULE_DIRECTION.DOWN:
-            return RULE_DIRECTION.UP
-        case RULE_DIRECTION.LEFT:
-            return RULE_DIRECTION.RIGHT
-        case RULE_DIRECTION.RIGHT:
-            return RULE_DIRECTION.LEFT
-        default:
-            throw new Error(`BUG: Invalid direction: "${dir}"`)
-    }
-}
 
 // Converts `[ [1,2], [a,b] ]` to:
 // `[ [1,a], [2,a], [1,b], [2,b] ]`
@@ -65,10 +50,14 @@ function buildPermutations<T>(cells: T[][]) {
 export class SimpleRuleGroup extends BaseForLines implements IRule {
     private rules: IRule[]
     private isRandom: boolean
+    timesRan: number
+    totalTimeMs: number
     constructor(source: IGameCode, isRandom: boolean, rules: IRule[]) {
         super(source)
         this.rules = rules
         this.isRandom = isRandom
+        this.timesRan = 0
+        this.totalTimeMs = 0
     }
 
     hasMatches(level: Level) {
@@ -81,6 +70,10 @@ export class SimpleRuleGroup extends BaseForLines implements IRule {
     }
 
     evaluate(level: Level, onlyEvaluateFirstMatch: boolean) {
+        let start
+        if (process.env['NODE_ENV'] === 'development') {
+            start = Date.now()
+        }
         // Keep looping as long as one of the rules evaluated something
         const allMutations: IMutation[][] = []
         for (let iteration = 0; iteration < MAX_ITERATIONS_IN_LOOP; iteration++) {
@@ -131,6 +124,13 @@ export class SimpleRuleGroup extends BaseForLines implements IRule {
                 }
             }
 
+        }
+
+        if (process.env['NODE_ENV'] === 'development') {
+            if (start) {
+                this.totalTimeMs+= Date.now() - start
+                this.timesRan++
+            }
         }
         return _.flatten(allMutations)
 
@@ -403,8 +403,8 @@ export class SimpleBracket extends ISimpleBracket {
     private neighbors: SimpleNeighbor[]
     protected actionDebugFlag: Optional<DEBUG_FLAG>
     private ellipsisBracketListeners: Map<SimpleEllipsisBracket, BEFORE_OR_AFTER>
-    private readonly spritesPresentInRowOrColumn: SpriteBitSet
-    private readonly anySpritesPresentInRowOrColumn: SpriteBitSet
+    // private readonly spritesPresentInRowOrColumn: SpriteBitSet
+    // private readonly anySpritesPresentInRowOrColumn: SpriteBitSet
 
 
     constructor(source: IGameCode, direction: RULE_DIRECTION, neighbors: SimpleNeighbor[], debugFlag: DEBUG_FLAG) {
@@ -413,14 +413,14 @@ export class SimpleBracket extends ISimpleBracket {
         this.ellipsisBracketListeners = new Map()
 
         // Compute which sprites need to be in the Row/Column to check cells in that row/column (optimization)
-        this.spritesPresentInRowOrColumn = this.neighbors[0].spritesPresent.union(this.neighbors.map(n => n.spritesPresent))
+        // this.spritesPresentInRowOrColumn = this.neighbors[0].spritesPresent.union(this.neighbors.map(n => n.spritesPresent))
         let anySprites = []
         for (const neighbor of this.neighbors) {
             for (const a of neighbor.anySpritesPresent) {
                 anySprites.push(a)
             }
         }
-        this.anySpritesPresentInRowOrColumn = (new SpriteBitSet()).union(anySprites)
+        // this.anySpritesPresentInRowOrColumn = (new SpriteBitSet()).union(anySprites)
     }
     toKey(ignoreDebugFlag?: boolean) {
         let dir = this.dependsOnDirection() ? this.direction : ''
@@ -633,72 +633,85 @@ export class SimpleBracket extends ISimpleBracket {
         return matched ? curCell : null
     }
 
-    private addIfCellMatches(matches: MatchedCellsForRule[], cell: Cell, actionBracket: Optional<SimpleBracket>) {
-        if (this.neighbors[0].matchesCellSimple(cell) && this.matchesDownstream(cell, 0)) {
-            const cellMatches = []
-            let curCell: Optional<Cell> = cell
-            let didAllNeighborsMatch = true
-            for (let index = 0; index < this.neighbors.length; index++) {
-                if (!curCell) {
-                    didAllNeighborsMatch = false
-                    break
-                }
-                const condition = this.neighbors[index]
-                let action
-                // Some rules only contain a condition bracket and a command
-                if (actionBracket) {
-                    action = actionBracket.neighbors[index]
-                }
-                const x: MatchedCellAndCorrespondingNeighbors = {
-                    cell: curCell,
-                    condition,
-                    action
-                }
-                cellMatches.push(x)
-                curCell = curCell.getNeighbor(this.direction)
+    private addToCellMatches(matches: MatchedCellsForRule[], cell: Cell, actionBracket: Optional<SimpleBracket>) {
+        const cellMatches = []
+        let curCell: Optional<Cell> = cell
+        let didAllNeighborsMatch = true
+        for (let index = 0; index < this.neighbors.length; index++) {
+            if (!curCell) {
+                didAllNeighborsMatch = false
+                break
             }
-            if (didAllNeighborsMatch) {
-                matches.push(new MatchedCellsForRule(cellMatches))
+            const condition = this.neighbors[index]
+            let action
+            // Some rules only contain a condition bracket and a command
+            if (actionBracket) {
+                action = actionBracket.neighbors[index]
             }
+            const x: MatchedCellAndCorrespondingNeighbors = {
+                cell: curCell,
+                condition,
+                action
+            }
+            cellMatches.push(x)
+            curCell = curCell.getNeighbor(this.direction)
+        }
+        if (didAllNeighborsMatch) {
+            matches.push(new MatchedCellsForRule(cellMatches))
         }
     }
+
+    // private addIfCellMatches(matches: MatchedCellsForRule[], cell: Cell, actionBracket: Optional<SimpleBracket>) {
+    //     if (this.neighbors[0].matchesCellSimple(cell) && this.matchesDownstream(cell, 0)) {
+    //         this.addToCellMatches(matches, cell, actionBracket)
+    //     }
+    // }
 
     getMatches(level: Level, actionBracket: Optional<SimpleBracket>) {
         const matches: MatchedCellsForRule[] = []
 
-        const cells = level.getCells()
-        const rowCount = cells.length
-        const colCount = cells[0].length
-        switch (this.direction) {
-            case RULE_DIRECTION.UP:
-            case RULE_DIRECTION.DOWN:
-                for (let colIndex = 0; colIndex < colCount; colIndex++) {
-                    if (level.colContainsSprites(colIndex, this.spritesPresentInRowOrColumn, this.anySpritesPresentInRowOrColumn)) {
-                        for (let rowIndex = 0; rowIndex < rowCount; rowIndex++) {
-                            this.addIfCellMatches(matches, level.getCell(rowIndex, colIndex), actionBracket)
-                        }
-                    }
-                }
-                break
-            case RULE_DIRECTION.LEFT:
-            case RULE_DIRECTION.RIGHT:
-                for (let rowIndex = 0; rowIndex < rowCount; rowIndex++) {
-                    if (level.rowContainsSprites(rowIndex, this.spritesPresentInRowOrColumn, this.anySpritesPresentInRowOrColumn)) {
-                        for (let colIndex = 0; colIndex < colCount; colIndex++) {
-                            this.addIfCellMatches(matches, level.getCell(rowIndex, colIndex), actionBracket)
-                        }
-                    }
-                }
-                break
-            default:
-                throw new Error(`BUG: Unsupported Direction "${this.direction}"`)
-        }
+        // const cells = level.getCells()
+        // const rowCount = cells.length
+        // const colCount = cells[0].length
+        // switch (this.direction) {
+        //     case RULE_DIRECTION.UP:
+        //     case RULE_DIRECTION.DOWN:
+        //         for (let colIndex = 0; colIndex < colCount; colIndex++) {
+        //             if (level.colContainsSprites(colIndex, this.spritesPresentInRowOrColumn, this.anySpritesPresentInRowOrColumn)) {
+        //                 for (let rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+        //                     this.addIfCellMatches(matches, level.getCell(rowIndex, colIndex), actionBracket)
+        //                 }
+        //             }
+        //         }
+        //         break
+        //     case RULE_DIRECTION.LEFT:
+        //     case RULE_DIRECTION.RIGHT:
+        //         for (let rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+        //             if (level.rowContainsSprites(rowIndex, this.spritesPresentInRowOrColumn, this.anySpritesPresentInRowOrColumn)) {
+        //                 for (let colIndex = 0; colIndex < colCount; colIndex++) {
+        //                     this.addIfCellMatches(matches, level.getCell(rowIndex, colIndex), actionBracket)
+        //                 }
+        //             }
+        //         }
+        //         break
+        //     default:
+        //         throw new Error(`BUG: Unsupported Direction "${this.direction}"`)
+        // }
         // Naiive version:
         // for (const row of level.getCells()) {
         //     for (const cell of row) {
         //         checkCell(cell)
         //     }
         // }
+
+        // // Method 2
+        // if (matches.length !== this.firstCells.size) {
+        //     throw new Error(`BUG: Both implementations yield different match counts`)
+        // }
+
+        for (const firstCell of this.firstCells) {
+            this.addToCellMatches(matches, firstCell, actionBracket)
+        }
 
         return matches
     }
@@ -2024,6 +2037,10 @@ export interface IRule extends IGameNode {
     hasRigid: () => boolean
     clearCaches: () => void
     addCellsToEmptyRules: (cells: Iterable<Cell>) => void
+
+    totalTimeMs?: number
+    timesRan?: number
+
 }
 
 

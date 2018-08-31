@@ -1,5 +1,20 @@
 export type Optional<T> = T | null | undefined
 
+export function opposite(dir: RULE_DIRECTION) {
+    switch (dir) {
+        case RULE_DIRECTION.UP:
+            return RULE_DIRECTION.DOWN
+        case RULE_DIRECTION.DOWN:
+            return RULE_DIRECTION.UP
+        case RULE_DIRECTION.LEFT:
+            return RULE_DIRECTION.RIGHT
+        case RULE_DIRECTION.RIGHT:
+            return RULE_DIRECTION.LEFT
+        default:
+            throw new Error(`BUG: Invalid direction: "${dir}"`)
+    }
+}
+
 export function setEquals<T>(set1: Set<T>, set2: Set<T>) {
     if (set1.size !== set2.size) return false
     for (const elem of set1) {
