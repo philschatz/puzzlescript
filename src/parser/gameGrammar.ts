@@ -81,12 +81,19 @@ export const COMMON_GRAMMAR = `
     legendVariableChar = (~space ~newline ~"=" any)
     // Disallow:
     // space [ ] | t_ELLIPSIS   because it can occur inside a Rule
-    // "," because it can occur inside a CollisionLayer
     // "=" because it can occur inside a legend Variable
-    ruleVariableChar = (~space ~newline ~"=" ~"[" ~"]" ~"|" ~"," ~t_ELLIPSIS any)
+    ruleVariableChar = (~space ~newline ~"=" ~"[" ~"]" ~"|" ~t_ELLIPSIS any)
 
     ruleVariableName = ruleVariableChar+
     lookupRuleVariableName = ~t_AGAIN ruleVariableName // added t_AGAIN to parse '... -> [ tilename AGAIN ]' (it should be a command)
+
+    // Disallow:
+    // space [ ] | t_ELLIPSIS   because it can occur inside a Rule
+    // "," because it can occur inside a CollisionLayer
+    // "=" because it can occur inside a legend Variable
+    collisionVariableChar = (~space ~newline ~"=" ~"[" ~"]" ~"|" ~"," ~t_ELLIPSIS any)
+    collisionVariableName = collisionVariableChar+
+    lookupCollisionVariableName = collisionVariableName
 `
 
 export const STRINGTOKEN_GRAMMAR = `
@@ -390,7 +397,13 @@ export function getGameSemantics(lookup: LookupHelper, addValidationMessage: Add
         lookupRuleVariableName: function (this: ohm.Node, _1: Parseable<string>) {
             return lookup.lookupObjectOrLegendTile(this.source, _1.parse())
         },
+        lookupCollisionVariableName: function (this: ohm.Node, _1: Parseable<string>) {
+            return lookup.lookupObjectOrLegendTile(this.source, _1.parse())
+        },
         ruleVariableName: function (this: ohm.Node, _1: Parseable<string>) {
+            return this.sourceString
+        },
+        collisionVariableName: function (this: ohm.Node, _1: Parseable<string>) {
             return this.sourceString
         },
         words: function (this: ohm.Node, _1: Parseable<string>) {

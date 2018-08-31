@@ -100,6 +100,9 @@ class Parser {
 
             return { data: game, validationMessages }
         } else {
+            console.error(`Parsing failed. Message:`)
+            console.error(m.message)
+            console.error(`Trace info:`)
             const trace = g.trace(code)
             return { error: m, trace: trace }
         }

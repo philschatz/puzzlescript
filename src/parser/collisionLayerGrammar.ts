@@ -6,7 +6,7 @@ import { AddValidationFunc } from './parser'
 import { Parseable } from './gameGrammar';
 
 export const COLLISIONLAYERS_GRAMMAR = `
-    CollisionLayerItem = NonemptyListOf<lookupRuleVariableName, ","?> ","? /*support a trailing comma*/ lineTerminator+
+    CollisionLayerItem = NonemptyListOf<lookupCollisionVariableName, ","?> ","? /*support a trailing comma*/ lineTerminator+
 `
 
 export function getCollisionLayerSemantics(lookup: LookupHelper, addValidationMessage: AddValidationFunc) {
