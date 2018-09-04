@@ -84,7 +84,7 @@ class TerminalUI extends BaseUI {
 
         // Handle resize events by redrawing the game. Ooh, we do not have Cells at this point.
         // TODO Run renderScreen on cells from the engine rather than cells from the Level data
-        if (!this.resizeHandler) {
+        if (!this.resizeHandler && process.stdout) {
             this.resizeHandler = _.debounce(() => {
                 this.clearScreen()
                 this.renderScreen(true)

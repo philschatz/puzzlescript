@@ -92,7 +92,17 @@ export class ASTRule extends BaseForLines implements ICacheable {
      * @param tileCache A cache for de-duplicating tiles in the game (so fewer need to be updated)
      */
     simplify(ruleCache: Map<string, SimpleRule>, bracketCache: Map<string, ISimpleBracket>, neighborCache: Map<string, SimpleNeighbor>, tileCache: Map<string, SimpleTileWithModifier>) {
-        const simpleRules = this.convertToMultiple().map(r => r.toSimple(ruleCache, bracketCache, neighborCache, tileCache))
+        let simpleRules = this.convertToMultiple().map(r => r.toSimple(ruleCache, bracketCache, neighborCache, tileCache))
+        // let onlyHasOneNeighbor = true
+        // for (const bracket of this.brackets) {
+        //     if (bracket._getAllNeighbors().length > 1) {
+        //         onlyHasOneNeighbor = false
+        //     }
+        // }
+        // if (onlyHasOneNeighbor) {
+        //     simpleRules[0].subscribeToCellChanges()
+        //     return simpleRules[0]
+        // }
         // Register listeners to Cell changes
         for (const rule of simpleRules) {
             rule.subscribeToCellChanges()
@@ -524,7 +534,11 @@ export class ASTRuleGroup extends BaseForLines {
     }
     // Yes. One propagates isRandom while the other does not
     simplify(ruleCache: Map<string, SimpleRule>, bracketCache: Map<string, ISimpleBracket>, neighborCache: Map<string, SimpleNeighbor>, tileCache: Map<string, SimpleTileWithModifier>) {
-        return new SimpleRuleGroup(this.__source, this.isRandom, this.rules.map(rule => rule.simplify(ruleCache, bracketCache, neighborCache, tileCache)))
+        let rules = this.rules.map(rule => rule.simplify(ruleCache, bracketCache, neighborCache, tileCache))
+        // if (rules.length === 1) {
+        //     return rules[0]
+        // }
+        return new SimpleRuleGroup(this.__source, this.isRandom, rules)
     }
 
 }

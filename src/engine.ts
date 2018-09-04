@@ -311,11 +311,8 @@ export class Level {
         return null
     }
     getCell(rowIndex: number, colIndex: number) {
-        const cell = this.getCellOrNull(rowIndex, colIndex)
-        if (!cell) {
-            throw new Error(`BUG: Expected to always find the cell`)
-        }
-        return cell
+        // Skip error checks for performance
+        return this.getCells()[rowIndex][colIndex]
     }
     replaceSprite(cell: Cell, oldSprite: Optional<GameSprite>, newSprite: Optional<GameSprite>) {
         // When a new Cell is instantiated it will call this method but `this.cells` is not defined yet
@@ -512,13 +509,16 @@ export class LevelEngine extends EventEmitter2 {
             for (const mutation of cellMutations) {
                 changedMutations.add(mutation)
             }
-            // if (process.env['NODE_ENV'] === 'development') {
+            // if (process.env['LOG_LEVEL'] === 'debug') {
             //     if (rule.timesRan && rule.totalTimeMs) {
             //         const avg = rule.totalTimeMs // Math.round(rule.totalTimeMs / rule.timesRan)
-            //         if (avg > 50) {
-            //             console.error(`Took:${avg}ms ${rule.toString()}`)
+            //         if (avg > 100) {
+            //             console.error(`Took:${avg}ms (${cellMutations.length} changed) ${rule.toString()}`)
             //         }
             //     }
+            //     // if (cellMutations.length > 0) {
+            //     //     console.error(`Took:${rule.totalTimeMs}ms (${cellMutations.length} changed) ${rule.toString()}`)
+            //     // }
             // }
         }
 
@@ -616,6 +616,7 @@ export class LevelEngine extends EventEmitter2 {
             this.takeSnapshot(initialSnapshot)
 
             if (process.env['LOG_LEVEL'] === 'debug') {
+                console.error(`=======================`)
                 console.error(`Turn starts with input of ${this.pendingPlayerWantsToMove.toLowerCase()}.`)
             }
             const t = this.gameData.getPlayer()
@@ -676,7 +677,6 @@ export class LevelEngine extends EventEmitter2 {
     tick() {
         if (process.env['LOG_LEVEL'] === 'debug') {
             console.error(``)
-            console.error(`=======================`)
         }
 
         if (this.hasAgainThatNeedsToRun) {

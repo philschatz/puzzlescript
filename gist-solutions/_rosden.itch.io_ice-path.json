@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "solutions": [
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "partial": "S,W,W,D,S,S,D,D,W,A,W,D,W,,S,A,A,A,S,D,,,D,S,D,D,W,"
+    },
+    {
+      "solution": "X"
+    }
+  ],
+  "title": "Ice path",
+  "totalLevels": 15,
+  "totalMapLevels": 7
+}
