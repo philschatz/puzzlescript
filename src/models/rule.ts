@@ -1149,7 +1149,8 @@ class ReplaceTile {
     private actionTileWithModifier: Optional<SimpleTileWithModifier>
     private mightNotFindConditionButThatIsOk: boolean
     private conditionSpritesToRemove: Optional<SimpleTileWithModifier>
-    constructor(collisionLayer: CollisionLayer, actionTileWithModifier: Optional<SimpleTileWithModifier>, mightNotFindConditionButThatIsOk: boolean, conditionSpritesToRemove: Optional<SimpleTileWithModifier>) {
+    private newDirection: Optional<RULE_DIRECTION>
+    constructor(collisionLayer: CollisionLayer, actionTileWithModifier: Optional<SimpleTileWithModifier>, mightNotFindConditionButThatIsOk: boolean, conditionSpritesToRemove: Optional<SimpleTileWithModifier>, newDirection: Optional<RULE_DIRECTION>) {
         if (!collisionLayer) {
             throw new Error('BUG: collisionLayer is not set')
         }
@@ -1157,6 +1158,7 @@ class ReplaceTile {
         this.actionTileWithModifier = actionTileWithModifier
         this.mightNotFindConditionButThatIsOk = mightNotFindConditionButThatIsOk
         this.conditionSpritesToRemove = conditionSpritesToRemove
+        this.newDirection = newDirection
     }
     replace(cell: Cell, magicOrTiles: Map<IGameTile, Set<GameSprite>>, orTilesRemoved: Set<IGameTile>) {
         let didActuallyChange = false
@@ -1185,7 +1187,7 @@ class ReplaceTile {
             }
             for (const sprite of sprites) {
                 const c = sprite.getCollisionLayer()
-                const wantsToMove = cell.getCollisionLayerWantsToMove(c)
+                const wantsToMove = this.newDirection || cell.getCollisionLayerWantsToMove(c)
                 let added
                 if (cell.hasSprite(sprite)) {
                     if (!wantsToMove) {
@@ -1585,24 +1587,24 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
         for (const [collisionLayer, {condition, action, extra}] of pairsByCollisionLayer.entries()) {
             if (condition && action) {
                 if (condition !== action) { // Could be `[ TrolleyFull no CleanDishes] -> [TrolleyEmpty no CleanDishes ]`
-                    if (!condition._tile.equals(action._tile) || condition.isNo()) {
-                        replaceTiles.add(new ReplaceTile(collisionLayer, action, extra, null))
+                    let newDirection = null
+                    if (condition._direction !== action._direction || condition.isNo()) {
+                        newDirection = action._direction || RULE_DIRECTION.STATIONARY
                     }
-                    if (condition._direction !== action._direction) {
-                        replaceDirections.add(new ReplaceDirection(collisionLayer, action._direction || RULE_DIRECTION.STATIONARY, extra))
-                    } else if (condition.isNo()) {
-                        replaceDirections.add(new ReplaceDirection(collisionLayer, action._direction || RULE_DIRECTION.STATIONARY, extra))
+
+                    if (!condition._tile.equals(action._tile) || condition.isNo()) {
+                        replaceTiles.add(new ReplaceTile(collisionLayer, action, extra, null, newDirection))
+                    } else if (newDirection) {
+                        replaceDirections.add(new ReplaceDirection(collisionLayer, newDirection, extra))
                     }
                 }
             } else if (condition) {
                 if (!condition.isNo()) {
-                    replaceTiles.add(new ReplaceTile(collisionLayer, null, extra, condition))
-                    replaceDirections.add(new ReplaceDirection(collisionLayer, null, extra))
+                    replaceTiles.add(new ReplaceTile(collisionLayer, null, extra, condition, null))
                 }
             } else if (action) {
                 if (!action.isNo()) {
-                    replaceTiles.add(new ReplaceTile(collisionLayer, action, extra, null))
-                    replaceDirections.add(new ReplaceDirection(collisionLayer, action._direction || RULE_DIRECTION.STATIONARY, extra))
+                    replaceTiles.add(new ReplaceTile(collisionLayer, action, extra, null, action._direction || RULE_DIRECTION.STATIONARY))
                 }
             }
         }
@@ -1986,8 +1988,10 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
             // Pause here because it was marked in the code
             if (process.stdout) { TerminalUI.debugRenderScreen() }; debugger
         }
-        // Cells all have the same sprites, so if the 1st matches, they all do
-        if (this.matchesFirstCell(cells, wantsToMove)) {
+        // Cells all have the same sprites, so if the 1st matches, they all do.
+        // Also, we only need to check that the direction matches (optimization),
+        // we do not need to re-check that the Tile matches
+        if (!this._direction || wantsToMove === this._direction) {
             // const cellsNotInCache = setDifference(new Set(cells), new Set(this._localCache.keys()))
             for (const neighbor of this.neighbors) {
                 // neighbor.addCells(this, sprite, cellsNotInCache, wantsToMove)
