@@ -14,5 +14,7 @@ module.exports = {
         alias: {
             './sound/sfxr': path.resolve(__dirname, './lib/sound/sfxr-browser')
         }
-    }
+    },
+    // Only report errors to stdout, not the bundle stats (like compression)
+    stats: "errors-only"
 }

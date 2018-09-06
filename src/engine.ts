@@ -133,7 +133,7 @@ export class Cell {
 
         this._setState(collisionLayer, sprite, wantsToMove)
 
-        sprite.addCell(this, wantsToMove)
+        sprite.updateCell(this, wantsToMove)
         return didActuallyChange
     }
     deleteWantsToMoveCollisionLayer(collisionLayer: CollisionLayer) {
@@ -242,6 +242,22 @@ export class Cell {
             didActuallyChange = this._setWantsToMove(sprite, wantsToMove)
         }
         sprite.addCell(this, wantsToMove)
+        return didActuallyChange
+    }
+    updateSprite(sprite: GameSprite, wantsToMove: RULE_DIRECTION) {
+        // Copy/pasta from addSprite except it calls updateCell
+        let didActuallyChange = false
+        // If we already have a sprite in that collision layer then we need to remove it
+        const prevSprite = this.getSpriteByCollisionLayer(sprite.getCollisionLayer())
+        if (prevSprite !== sprite) {
+            throw new Error(`BUG: Should not be trying to update the direction of a sprite that is not in the cell`)
+        }
+        if (wantsToMove) {
+            didActuallyChange = this._setWantsToMove(sprite, wantsToMove)
+        } else if (!this.hasSprite(sprite)) {
+            didActuallyChange = this._setWantsToMove(sprite, wantsToMove)
+        }
+        sprite.updateCell(this, wantsToMove)
         return didActuallyChange
     }
     removeSprite(sprite: GameSprite) {
@@ -441,11 +457,11 @@ export class LevelEngine extends EventEmitter2 {
             for (const sprite of this.gameData.objects) {
                 const cellSprites = cells[0].getSpritesAsSet()
                 const hasSprite = cellSprites.has(sprite)
-                if (hasSprite || sprite.hasNegationTile()) {
+                if (hasSprite || sprite.hasNegationTileWithModifier()) {
                     if (hasSprite) {
-                        sprite.addCells(cells, RULE_DIRECTION.STATIONARY)
+                        sprite.addCells(sprite, cells, RULE_DIRECTION.STATIONARY)
                     } else {
-                        sprite.removeCells(cells)
+                        sprite.removeCells(sprite, cells)
                     }
                 }
             }
@@ -622,7 +638,7 @@ export class LevelEngine extends EventEmitter2 {
             const t = this.gameData.getPlayer()
             for (const cell of t.getCellsThatMatch()) {
                 for (const sprite of t.getSpritesThatMatch(cell)) {
-                    cell.addSprite(sprite, this.pendingPlayerWantsToMove)
+                    cell.updateSprite(sprite, this.pendingPlayerWantsToMove)
                     changedCellMutations.add(cell)
                 }
             }

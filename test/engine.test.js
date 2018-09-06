@@ -2837,4 +2837,72 @@ describe('engine', () => {
         expect(engine.currentLevel.getCells()[0][0].getSpritesAsSet().has(island)).toBe(false)
         expect(engine.currentLevel.getCells()[0][1].getSpritesAsSet().has(island)).toBe(true)
     })
+
+    it('supports trickling up a `NO OrTile` on load', () => {
+        const { engine, data } = parseEngine(`title NO OrTile
+
+        =========
+         OBJECTS
+        =========
+
+        Background .
+        white
+
+        Player P
+        yellow
+
+        Correct
+        green
+
+        Count0
+        transparent
+
+        Count1
+        transparent
+
+        ========
+         LEGEND
+        ========
+
+        Count = Count0 OR Count1
+
+        ========
+         SOUNDS
+        ========
+
+        =================
+         COLLISIONLAYERS
+        =================
+
+        Background
+        Player
+        Count
+        Correct
+
+        =======
+         RULES
+        =======
+
+        RIGHT [ NO Count ] -> [ Correct ]
+
+        ===============
+         WINCONDITIONS
+        ===============
+
+        ========
+         LEVELS
+        ========
+
+        .P
+
+    `) // end game definition
+
+        const correct = data._getSpriteByName('correct')
+        engine.tick()
+        expect(engine.toSnapshot()).toMatchSnapshot()
+
+        expect(correct.getCellsThatMatch().size).toBe(2)
+        // Check that the rule executed
+        expect(engine.currentLevel.getCells()[0][0].getSpritesAsSet().has(correct)).toBe(true)
+    })
 })

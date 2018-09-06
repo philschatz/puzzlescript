@@ -429,7 +429,6 @@ describe('engine', () => {
 
 
 
-
         =======
         LEGEND
         =======
@@ -687,8 +686,10 @@ describe('engine', () => {
 
         const player = data.getPlayer()
         const playerReflection = data._getSpriteByName('Reflection')
+        const hasReflection = data._getSpriteByName('HasReflection')
         engine.tick() // To get the reflections to render
         expect(playerReflection.getCellsThatMatch().size).toBe(4)
+        expect(hasReflection.getCellsThatMatch().size).toBe(1)
 
         // press action to get the player to reflect into 4 players
         engine.press(RULE_DIRECTION.ACTION)
@@ -701,6 +702,11 @@ describe('engine', () => {
         expect(engine.currentLevel.getCells()[0][4].getSpritesAsSet().has(player)).toBe(true)
         expect(engine.currentLevel.getCells()[4][0].getSpritesAsSet().has(player)).toBe(true)
         expect(engine.currentLevel.getCells()[4][4].getSpritesAsSet().has(player)).toBe(true)
+
+        expect(engine.currentLevel.getCells()[0][0].getSpritesAsSet().has(hasReflection)).toBe(true)
+        expect(engine.currentLevel.getCells()[0][4].getSpritesAsSet().has(hasReflection)).toBe(true)
+        expect(engine.currentLevel.getCells()[4][0].getSpritesAsSet().has(hasReflection)).toBe(true)
+        expect(engine.currentLevel.getCells()[4][4].getSpritesAsSet().has(hasReflection)).toBe(true)
 
         // press action again to combing all the players back to one
         engine.press(RULE_DIRECTION.ACTION)

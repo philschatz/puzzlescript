@@ -243,6 +243,22 @@ Array [
 ]
 `;
 
+exports[`engine supports trickling up a \`NO OrTile\` on load 1`] = `
+Array [
+  Array [
+    Array [
+      "STATIONARY Background",
+      "STATIONARY Correct",
+    ],
+    Array [
+      "STATIONARY Background",
+      "STATIONARY Player",
+      "STATIONARY Correct",
+    ],
+  ],
+]
+`;
+
 exports[`engine swaps 2 OR tiles (OR tile has sprites in DIFFERENT collisionlayer 1`] = `
 Array [
   Array [

@@ -10,6 +10,11 @@ import { RULE_DIRECTION, setIntersection, Optional } from '../util';
 const BitSet2 = require('bitset')
 
 export interface IGameTile extends IGameNode {
+    subscribeToCellChanges: (t: SimpleTileWithModifier) => void
+    hasNegationTileWithModifier: () => boolean
+    addCells: (sprite: GameSprite, cells: Cell[], wantsToMove: Optional<RULE_DIRECTION>) => void
+    updateCells: (sprite: GameSprite, cells: Cell[], wantsToMove: RULE_DIRECTION) => void
+    removeCells: (sprite: GameSprite, cells: Cell[]) => void
     _getDescendantTiles: () => IGameTile[]
     getSprites: () => GameSprite[]
     getSpritesForRuleAction: () => GameSprite[]
@@ -26,22 +31,24 @@ export interface IGameTile extends IGameNode {
     equals: (t: IGameTile) => boolean
 }
 
-export class GameSprite extends BaseForLines implements IGameTile {
+export abstract class GameSprite extends BaseForLines implements IGameTile {
     allSpritesBitSetIndex: number // set onde all the sprites have been determined
     private readonly name: string
     readonly _optionalLegendChar: Optional<string>
     private collisionLayer: Optional<CollisionLayer>
     private collisionLayerIndex: Optional<number>
-    private readonly cellSet: Set<Cell>
-    private readonly tileWithModifierSet: Set<SimpleTileWithModifier>
+    private readonly trickleCells: Set<Cell>
+    private readonly trickleTiles: Set<IGameTile>
+    private readonly trickleTilesWithModifier: Set<SimpleTileWithModifier>
     private bitSet: Optional<BitSet>
 
     constructor(source: IGameCode, name: string, optionalLegendChar: Optional<string>) {
         super(source)
         this.name = name
         this._optionalLegendChar = optionalLegendChar
-        this.cellSet = new Set()
-        this.tileWithModifierSet = new Set()
+        this.trickleCells = new Set()
+        this.trickleTiles = new Set()
+        this.trickleTilesWithModifier = new Set()
         this.allSpritesBitSetIndex = -1 // will be changed once we have all the sprites
     }
     isOr() {
@@ -50,12 +57,9 @@ export class GameSprite extends BaseForLines implements IGameTile {
     equals(t: IGameTile): boolean {
         return this === t // sprites MUST be exact
     }
-    hasPixels() {
-        throw new Error('BUG: Subclasses should implement this')
-    }
-    getPixels(spriteHeight: number, spriteWidth: number): IColor[][] {
-        throw new Error('BUG: Subclasses should implement this')
-    }
+    abstract hasPixels(): boolean
+    abstract getPixels(spriteHeight: number, spriteWidth: number): IColor[][]
+
     getName() {
         return this.name
     }
@@ -108,7 +112,7 @@ export class GameSprite extends BaseForLines implements IGameTile {
         return null
     }
     clearCaches() {
-        this.cellSet.clear()
+        this.trickleCells.clear()
     }
     matchesCell(cell: Cell): any {
         return cell.getSpritesAsSet().has(this)
@@ -121,14 +125,17 @@ export class GameSprite extends BaseForLines implements IGameTile {
         }
     }
 
-    addTileWithModifier(t: SimpleTileWithModifier) {
-        this.tileWithModifierSet.add(t)
+    subscribeToCellChanges(t: SimpleTileWithModifier) {
+        this.trickleTilesWithModifier.add(t)
+    }
+    subscribeToCellChangesTile(tile: IGameTile) {
+        this.trickleTiles.add(tile)
     }
     addCell(cell: Cell, wantsToMove: Optional<RULE_DIRECTION>) {
-        this.addCells([cell], wantsToMove)
+        this.addCells(this, [cell], wantsToMove)
     }
     removeCell(cell: Cell) {
-        this.removeCells([cell])
+        this.removeCells(this, [cell])
     }
     updateCell(cell: Cell, wantsToMove: RULE_DIRECTION) {
         if (process.env['NODE_ENV'] === 'development') {
@@ -139,43 +146,68 @@ export class GameSprite extends BaseForLines implements IGameTile {
         }
 
         // propagate up
-        for (const t of this.tileWithModifierSet) {
+        for (const t of this.trickleTiles) {
+            t.updateCells(this, [cell], wantsToMove)
+        }
+        for (const t of this.trickleTilesWithModifier) {
             t.updateCells(this, [cell], wantsToMove)
         }
     }
-    addCells(cells: Cell[], wantsToMove: Optional<RULE_DIRECTION>) {
+    addCells(sprite: GameSprite, cells: Cell[], wantsToMove: Optional<RULE_DIRECTION>) {
         for (const cell of cells) {
-            this.cellSet.add(cell)
+            if (this.trickleCells.has(cell)) {
+                debugger
+                throw new Error(`BUG: should not be trying to add a cell that has already been matched (right?)`)
+            }
+            this.trickleCells.add(cell)
         }
         // propagate up
-        for (const t of this.tileWithModifierSet) {
+        for (const t of this.trickleTiles) {
             t.addCells(this, cells, wantsToMove)
         }
+        for (const t of this.trickleTilesWithModifier) {
+            t.addCells(this, this, cells, wantsToMove)
+        }
     }
-    removeCells(cells: Cell[]) {
+    updateCells(sprite: GameSprite, cells: Cell[], wantsToMove: RULE_DIRECTION) {
+        // propagate up
+        for (const t of this.trickleTiles) {
+            t.updateCells(this, cells, wantsToMove)
+        }
+        for (const t of this.trickleTilesWithModifier) {
+            t.updateCells(this, cells, wantsToMove)
+        }
+    }
+    removeCells(sprite: GameSprite, cells: Cell[]) {
         for (const cell of cells) {
-            this.cellSet.delete(cell)
+            this.trickleCells.delete(cell)
         }
         // propagate up
-        for (const t of this.tileWithModifierSet) {
+        for (const t of this.trickleTiles) {
             t.removeCells(this, cells)
+        }
+        for (const t of this.trickleTilesWithModifier) {
+            t.removeCells(this, this, cells)
         }
     }
     has(cell: Cell) {
-        return this.cellSet.has(cell)
+        return this.trickleCells.has(cell)
     }
-    hasNegationTile() {
-        let hasNegationTile = false
-        for (const t of this.tileWithModifierSet) {
+    hasNegationTileWithModifier() {
+        for (const t of this.trickleTilesWithModifier) {
             if (t.isNo()) {
-                hasNegationTile = true
-                break
+                return true
             }
         }
-        return hasNegationTile
+        for (const tile of this.trickleTiles) {
+            if (tile.hasNegationTileWithModifier()) {
+                return true
+            }
+        }
+        return false
     }
     getCellsThatMatch() {
-        return this.cellSet
+        return this.trickleCells
     }
 }
 
@@ -257,7 +289,9 @@ export class GameSpritePixels extends GameSprite {
 
 }
 
-export class GameLegendTile extends BaseForLines implements IGameTile {
+export abstract class GameLegendTile extends BaseForLines implements IGameTile {
+    private trickleCells: Set<Cell>
+    private trickleTilesWithModifier: Set<SimpleTileWithModifier>
     private spritesCache: Optional<GameSprite[]>
     protected collisionLayer: Optional<CollisionLayer>
     readonly spriteNameOrLevelChar: string
@@ -267,6 +301,8 @@ export class GameLegendTile extends BaseForLines implements IGameTile {
         super(source)
         this.spriteNameOrLevelChar = spriteNameOrLevelChar
         this.tiles = tiles
+        this.trickleCells = new Set()
+        this.trickleTilesWithModifier = new Set()
     }
     equals(t: IGameTile) {
         if (this.isOr() !== t.isOr()) {
@@ -288,15 +324,9 @@ export class GameLegendTile extends BaseForLines implements IGameTile {
         }
         return null
     }
-    matchesCell(cell: Cell): boolean {
-        throw new Error('BUG: This is an abstract method')
-    }
-    getSpritesThatMatch(cell: Cell): Set<GameSprite> {
-        throw new Error('BUG: This is an abstract method')
-    }
-    hasSingleCollisionLayer(): boolean {
-        throw new Error('BUG: This is an abstract method')
-    }
+    abstract matchesCell(cell: Cell): boolean
+    abstract getSpritesThatMatch(cell: Cell): Set<GameSprite>
+    abstract hasSingleCollisionLayer(): boolean
 
     getName() {
         return this.spriteNameOrLevelChar
@@ -354,6 +384,62 @@ export class GameLegendTile extends BaseForLines implements IGameTile {
         }
         return matches
     }
+
+    subscribeToCellChanges(t: SimpleTileWithModifier) {
+        this.trickleTilesWithModifier.add(t)
+        // subscribe this to be notified of all Sprite changes of Cells
+        for (const sprite of this.getSprites()) {
+            sprite.subscribeToCellChangesTile(this)
+        }
+    }
+    hasNegationTileWithModifier() {
+        for (const t of this.trickleTilesWithModifier) {
+            if (t.isNo()) {
+                return true
+            }
+        }
+        return false
+    }
+    addCells(sprite: GameSprite, cells: Cell[], wantsToMove: Optional<RULE_DIRECTION>) {
+        for (const cell of cells) {
+            if (!this.trickleCells.has(cell)) {
+                if (this.matchesCell(cell)) {
+                    this.trickleCells.add(cell)
+                    for (const t of this.trickleTilesWithModifier) {
+                        t.addCells(this, sprite, [cell], wantsToMove)
+                    }
+                }
+            }
+        }
+    }
+    updateCells(sprite: GameSprite, cells: Cell[], wantsToMove: RULE_DIRECTION) {
+        // verify that all the cells are in trickleCells
+        if (process.env['NODE_ENV'] === 'development') {
+            for (const cell of cells) {
+                if (!this.trickleCells.has(cell)) {
+                    throw new Error(`Cell was not already added before`)
+                }
+            }
+        }
+        for (const t of this.trickleTilesWithModifier) {
+            t.updateCells(sprite, cells, wantsToMove)
+        }
+    }
+
+    removeCells(sprite: GameSprite, cells: Cell[]) {
+        for (const cell of cells) {
+            if (this.matchesCell(cell)) {
+                if (!this.trickleCells.has(cell)) {
+                    this.addCells(sprite, [cell], null)
+                }
+            } else {
+                this.trickleCells.delete(cell)
+                for (const t of this.trickleTilesWithModifier) {
+                    t.removeCells(this, sprite, [cell])
+                }
+            }
+        }
+    }
 }
 
 export class GameLegendTileSimple extends GameLegendTile {
@@ -392,7 +478,7 @@ export class GameLegendTileAnd extends GameLegendTile {
             this.__incrementCoverage()
         }
 
-        // Check that the cell contains any of the tiles (AND)
+        // Check that the cell contains all of the tiles (AND)
         for (const tile of this.tiles) {
             if (!tile.matchesCell(cell)) {
                 return false

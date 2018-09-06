@@ -676,7 +676,10 @@ export class SimpleBracket extends ISimpleBracket {
     }
 
     shouldUseOnDemandMethod() {
+        // return true
+        // return false
         // return this.neighbors.length === 1
+        // return this.neighbors.length !== 1
         return process.env['PUZZLESCRIPT_METHOD'] === 'ondemand'
     }
 
@@ -1090,7 +1093,7 @@ export class SimpleEllipsisBracket extends ISimpleBracket {
         const beforeMatchesByIndex = new MultiMap<number, MatchedCellsForRule>()
 
         if (beforeMatches.length === 0 || afterMatches.length === 0) {
-            return ret
+            return []
         }
 
         switch (this.direction) {
@@ -1182,7 +1185,17 @@ class ReplaceTile {
             }
             for (const sprite of sprites) {
                 const c = sprite.getCollisionLayer()
-                const added = cell.addSprite(sprite, cell.getCollisionLayerWantsToMove(c)) // preserve the wantsToMove if the sprite is in the same collision layer
+                const wantsToMove = cell.getCollisionLayerWantsToMove(c)
+                let added
+                if (cell.hasSprite(sprite)) {
+                    if (!wantsToMove) {
+                        throw new Error(`BUG: Invariant violation. if the sprite exists then wantsToMove must also exist (at least it would be STATIONARY)`)
+                    }
+                    added = cell.updateSprite(sprite, wantsToMove)
+                } else {
+                    // preserve the wantsToMove if the sprite is in the same collision layer
+                    added = cell.addSprite(sprite, wantsToMove)
+                }
                 didActuallyChange = didActuallyChange || added
             }
         } else {
@@ -1951,10 +1964,7 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
     subscribeToCellChanges(neighbor: SimpleNeighbor) {
         this.neighbors.add(neighbor)
 
-        // subscribe this to be notified of all Sprite changes of Cells
-        for (const sprite of this._tile.getSprites()) {
-            sprite.addTileWithModifier(this)
-        }
+        this._tile.subscribeToCellChanges(this)
     }
 
     matchesCellWithoutDirection(cell: Cell) {
@@ -1971,7 +1981,7 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
         return this.matchesCellWantsToMove(cells[0], wantsToMove)
     }
 
-    addCells(sprite: GameSprite, cells: Cell[], wantsToMove: Optional<RULE_DIRECTION>) {
+    addCells(tile: IGameTile, sprite: GameSprite, cells: Cell[], wantsToMove: Optional<RULE_DIRECTION>) {
         if (process.env['NODE_ENV'] === 'development' && this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
             // Pause here because it was marked in the code
             if (process.stdout) { TerminalUI.debugRenderScreen() }; debugger
@@ -2009,7 +2019,7 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
             }
         }
     }
-    removeCells(sprite: GameSprite, cells: Cell[]) {
+    removeCells(tile: IGameTile, sprite: GameSprite, cells: Cell[]) {
         if (process.env['NODE_ENV'] === 'development' && this._debugFlag === DEBUG_FLAG.BREAKPOINT_REMOVE) {
             // Pause here because it was marked in the code
             if (process.stdout) { TerminalUI.debugRenderScreen() }; debugger
