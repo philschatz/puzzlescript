@@ -86,8 +86,11 @@ class TerminalUI extends BaseUI {
         // TODO Run renderScreen on cells from the engine rather than cells from the Level data
         if (!this.resizeHandler && process.stdout) {
             this.resizeHandler = _.debounce(() => {
-                this.clearScreen()
-                this.renderScreen(true)
+                // the game may not be loaded yet
+                if (this.gameData) {
+                    this.clearScreen()
+                    this.renderScreen(true)
+                }
             })
             process.stdout.on('resize', this.resizeHandler)
         }

@@ -416,7 +416,7 @@ export abstract class GameLegendTile extends BaseForLines implements IGameTile {
             }
         }
     }
-    updateCells(sprite: GameSprite, cells: Cell[], wantsToMove: RULE_DIRECTION) {
+    updateCells(sprite: GameSprite, cells: Cell[], wantsToMove: Optional<RULE_DIRECTION>) {
         // verify that all the cells are in trickleCells
         if (process.env['NODE_ENV'] === 'development') {
             for (const cell of cells) {
@@ -435,6 +435,12 @@ export abstract class GameLegendTile extends BaseForLines implements IGameTile {
             if (this.matchesCell(cell)) {
                 if (!this.trickleCells.has(cell)) {
                     this.addCells(sprite, [cell], null)
+                } else {
+                    // We need to propagate this is an OR tile
+                    // because removing one of the OR tiles
+                    // may (or may not) cause this cell to
+                    // no longer match
+                    this.updateCells(sprite, [cell], null)
                 }
             } else {
                 this.trickleCells.delete(cell)
@@ -494,8 +500,9 @@ export class GameLegendTileAnd extends GameLegendTile {
         return true
     }
 
-    getSpritesThatMatch(cell: Cell) {
-        return setIntersection(new Set(this.getSprites()), cell.getSpritesAsSet())
+    getSpritesThatMatch(cell: Cell): Set<GameSprite> {
+        // return setIntersection(new Set(this.getSprites()), cell.getSpritesAsSet())
+        throw new Error(`BUG: This method should only be called for OR tiles`)
     }
 
     hasSingleCollisionLayer() {
@@ -522,11 +529,6 @@ export class GameLegendTileOr extends GameLegendTile {
             }
         }
         return false
-    }
-    getSpritesForRuleAction() {
-        // When assigning an OR, just use the 1st tile, not all of them
-        return [this.tiles[0].getSprites()[0]]
-        // return [this.getSprites()[0]] <-- this one is sorted by collisionLayer
     }
 
     getSpritesThatMatch(cell: Cell) {

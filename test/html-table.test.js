@@ -46,7 +46,7 @@ describeFn('Browser', () => {
                 await browser.close()
                 resolve()
             })
-            await pressKeys(page, 'SDDDDDSAAAWAAAAAASDWDSASDDWWDDDSSASAW'.split(''))
+            await pressKeys(page, 'SAAASASDDDWDDDDWDDSAAASASAW'.split(''))
             // Verify that the "You Won!" alert box showed up
 
         })

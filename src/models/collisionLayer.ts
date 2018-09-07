@@ -1,9 +1,7 @@
 import * as _ from 'lodash'
-import BitSet from 'bitset'
 import { BaseForLines, IGameCode } from './game'
 import { GameSprite, IGameTile } from './tile'
 import { ValidationLevel, AddValidationFunc } from '../parser/parser';
-import { Optional } from '../util';
 
 let collisionIdCounter = 0
 export class CollisionLayer extends BaseForLines {
@@ -34,9 +32,9 @@ export class CollisionLayer extends BaseForLines {
         this.sprites.forEach((sprite, index) => sprite.setCollisionLayerAndIndex(this, index))
     }
 
-    isInvalid(): Optional<string> {
-        return null
-    }
+    // isInvalid(): Optional<string> {
+    //     return null
+    // }
 
     getBitSetIndexOf(sprite: GameSprite) {
         const index = this.sprites.indexOf(sprite)
@@ -46,15 +44,15 @@ export class CollisionLayer extends BaseForLines {
         return index
     }
 
-    bitSetToSprites(bitSet: BitSet) {
-        const ret = []
-        let index = 0
-        for (const sprite of this.sprites) {
-            if (bitSet.get(index)) {
-                ret.push(sprite)
-            }
-            index++
-        }
-        return ret
-    }
+    // bitSetToSprites(bitSet: BitSet) {
+    //     const ret = []
+    //     let index = 0
+    //     for (const sprite of this.sprites) {
+    //         if (bitSet.get(index)) {
+    //             ret.push(sprite)
+    //         }
+    //         index++
+    //     }
+    //     return ret
+    // }
 }

@@ -12,15 +12,12 @@ export default class LruCache<Key, Value> {
         if (val !== undefined) {
             return val
         }
-        // if (this.lru.has(key)) {
-        //     return this.lru.get(key)
-        // }
         const value = valueFn()
         this.lru.set(key, value)
         return value
     }
 
-    has(key: Key) {
-        return key
-    }
+    // has(key: Key) {
+    //     return key
+    // }
 }

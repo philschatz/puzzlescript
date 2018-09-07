@@ -64,16 +64,16 @@ function cacheSetAndGet<A extends ICacheable>(cache: Map<string, A>, obj: A) {
  *
  * See `.simplify()` for more details on the expanded intermediate version.
  */
-export class ASTRule extends BaseForLines implements ICacheable {
+export class ASTRule extends BaseForLines {
     private readonly modifiers: AST_RULE_MODIFIER[]
     private readonly commands: AbstractCommand[]
     private readonly brackets: ASTRuleBracket[]
     private readonly actionBrackets: ASTRuleBracket[]
     private readonly debugFlag: DEBUG_FLAG // Used for setting a breakpoint when evaluating the rule
 
-    toKey() {
-        return `${this.modifiers.join(' ')} ${this.brackets.map(x => x.toKey())} -> ${this.actionBrackets.map(x => x.toKey())} ${this.commands.join(' ')} {debugger?${this.debugFlag}}`
-    }
+    // toKey() {
+    //     return `${this.modifiers.join(' ')} ${this.brackets.map(x => x.toKey())} -> ${this.actionBrackets.map(x => x.toKey())} ${this.commands.join(' ')} {debugger?${this.debugFlag}}`
+    // }
 
     /**
      * Expands this Rule into multiple `ASTRule` objects and then converts each one into a `SimpleRule`.
@@ -184,6 +184,7 @@ export class ASTRule extends BaseForLines implements ICacheable {
                             parallels = [RULE_DIRECTION.LEFT, RULE_DIRECTION.RIGHT]
                             break
                         default:
+                            throw new Error(`BUG: There must be some direction`)
                     }
                     if (orthogonals && parallels) {
                         for (const {nameToExpand, variations} of [{nameToExpand: AST_RULE_MODIFIER.ORTHOGONAL, variations: orthogonals}, {nameToExpand: AST_RULE_MODIFIER.PARALLEL, variations: parallels}]) {
@@ -311,7 +312,6 @@ export class ASTRule extends BaseForLines implements ICacheable {
 export interface IASTRuleBracket extends ICacheable {
     clone: (direction: RULE_DIRECTION, nameToExpand: Optional<AST_RULE_MODIFIER>, newName: Optional<RULE_DIRECTION>) => IASTRuleBracket
     toSimple: (direction: RULE_DIRECTION, ruleCache: Map<string, SimpleRule>, bracketCache: Map<string, ISimpleBracket>, neighborCache: Map<string, SimpleNeighbor>, tileCache: Map<string, SimpleTileWithModifier>) => ISimpleBracket
-    hasEllipsis: () => boolean
     _getAllNeighbors: () => ASTRuleBracketNeighbor[]
 }
 
@@ -348,11 +348,6 @@ export class ASTRuleBracket extends BaseForLines implements IASTRuleBracket {
     _getAllNeighbors() {
         return this.neighbors
     }
-
-    hasEllipsis() {
-        return false
-    }
-
 }
 
 export class ASTRuleBracketEllipsis extends BaseForLines implements IASTRuleBracket {
@@ -382,12 +377,6 @@ export class ASTRuleBracketEllipsis extends BaseForLines implements IASTRuleBrac
     _getAllNeighbors() {
         return [...this.beforeEllipsisNeighbors, ...this.afterEllipsisNeighbors]
     }
-
-
-    hasEllipsis() {
-        return true
-    }
-
 }
 
 export class ASTRuleBracketNeighbor extends BaseForLines implements ICacheable {
@@ -436,11 +425,6 @@ export class ASTTileWithModifier extends BaseForLines implements ICacheable {
         this.modifier = modifier
         this.tile = tile
         this.debugFlag = debugFlag
-
-        if (!this.tile) {
-            console.warn('TODO: Do something about ellipses')
-        }
-
     }
 
     toKey() {
@@ -492,9 +476,6 @@ export class ASTTileWithModifier extends BaseForLines implements ICacheable {
     isRandom() {
         return this.modifier === AST_RULE_MODIFIER.RANDOM
     }
-    isRandomDir() {
-        return this.modifier === RULE_DIRECTION.RANDOMDIR
-    }
 }
 
 // Extend RuleBracketNeighbor so that NeighborPair doesn't break
@@ -518,9 +499,6 @@ export class ASTRuleLoop extends BaseForLines {
 
     simplify(ruleCache: Map<string, SimpleRule>, bracketCache: Map<string, ISimpleBracket>, neighborCache: Map<string, SimpleNeighbor>, tileCache: Map<string, SimpleTileWithModifier>) {
         return new SimpleRuleLoop(this.__source, false/*isRandom*/, this.rules.map(rule => rule.simplify(ruleCache, bracketCache, neighborCache, tileCache)))
-    }
-    isRandom() {
-        return false
     }
 }
 

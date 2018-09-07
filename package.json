@@ -11,7 +11,7 @@
     "docs": "typedoc --ignoreCompilerErrors --mode modules --excludePrivate --excludeExternals --theme minimal --readme ./README.md --out ./docs/ ./src/",
     "play": "NODE_ENV=production node -r source-map-support/register lib/playGame.js",
     "play-only": "NODE_ENV=production node -r source-map-support/register lib/playGame.js",
-    "play-debug": "LOG_LEVEL=debug NODE_ENV=development node --inspect -r source-map-support/register ./lib/playGame.js 2> ./play.log",
+    "play-debug": "node --inspect -r source-map-support/register ./lib/playGame.js 2> ./play.log",
     "play-dev": "LOG_LEVEL=debug NODE_ENV=development node -r source-map-support/register ./lib/playGame.js 2> ./play.log",
     "start": "NODE_ENV=production node -r source-map-support/register ./lib/runGames.js",
     "start-dev": "LOG_LEVEL=debug NODE_ENV=development node -r source-map-support/register ./lib/runGames.js 2> ./start.log",
@@ -27,7 +27,7 @@
     "test-cli": "./bin/puzzlescript.js --no-ui --game 'Beam Islands' --level 1 --size small --resume",
     "build-webpack": "webpack-command ./lib/index-browser.js --target web --output-library PuzzleScript --output-library-target umd --mode development --devtool source-map --output ./test/webpack-output.js",
     "watch": "jest --updateSnapshot --watch",
-    "debug": "NODE_ENV=development node --inspect-brk lib/runGames.js"
+    "debug": "VERIFY_MATCHES=1 LOG_LEVEL=debug NODE_ENV=development node --inspect -r source-map-support/register ./lib/playGame.js 2> ./play.log"
   },
   "bin": {
     "puzzlescript": "./bin/puzzlescript.js",

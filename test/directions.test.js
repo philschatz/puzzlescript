@@ -888,4 +888,63 @@ P
         expect(engine.currentLevel.getCells()[1][0].getSpritesAsSet().has(player)).toBe(true)
     })
 
+    it('removes the match when an OR tile loses its direction', () => {
+        const { engine, data } = parseEngine(`
+title foo
+
+========
+OBJECTS
+========
+
+Background
+gray
+
+Player
+yellow
+
+Crate
+brown
+
+Wrong
+red
+
+=======
+LEGEND
+=======
+
+. = Background
+X = Player AND Crate
+
+Movable = Player OR Crate
+
+================
+COLLISIONLAYERS
+================
+
+Background
+Player
+Crate
+Wrong
+
+===
+RULES
+===
+
+RIGHT [ Player ] -> [ > Player ]
+RIGHT [ > Player ] -> [ Player ] (remove the wantsToMove on the Player. The next rule should no longer match )
+RIGHT [ > Movable ] -> [ Wrong ]
+
+=======
+LEVELS
+=======
+
+X.
+
+`)
+        const {changedCells} = engine.tick()
+        // expect(engine.toSnapshot()).toMatchSnapshot()
+        const wrong = data._getSpriteByName('Wrong')
+        expect(engine.currentLevel.getCells()[0][0].getSpritesAsSet().has(wrong)).toBe(false)
+        expect(wrong.getCellsThatMatch().size).toBe(0)
+    })
 })

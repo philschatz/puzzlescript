@@ -284,9 +284,6 @@ export function getGameSemantics(lookup: LookupHelper, addValidationMessage: Add
         GameData: function (this: ohm.Node, _whitespace1: Parseable<string>, title: Parseable<string>, _whitespace2: Parseable<string>, settingsFields: Parseable<{key: string, value: boolean | string | Dimension}[]>, _whitespace3: Parseable<string>, spritesSection: Parseable<GameSprite[][]>, legendsSection: Parseable<GameLegendTileSimple[][]>, soundsSection: Parseable<GameSound[][]>, collisionLayersSection: Parseable<CollisionLayer[][]>, rulesSection: Parseable<ASTRule[][]>, winConditionsSection: Parseable<WinConditionSimple[][]>, levelsSection: Parseable<LevelMap[][]>) {
             const metadata = new GameMetadata()
             for (const {key, value} of settingsFields.parse()) {
-                if (!key) {
-                    debugger
-                }
                 metadata._setValue(key.toLowerCase(), value)
             }
             // The order in which these are parsed is important because they populate the lookup object
@@ -376,14 +373,6 @@ export function getGameSemantics(lookup: LookupHelper, addValidationMessage: Add
         },
         NonemptyListOf: function (this: ohm.Node, _1: Parseable<string>, _2: Parseable<string>, _3: Parseable<string>) {
             return [_1.parse()].concat(_3.parse())
-        },
-        nonemptyListOf: function (this: ohm.Node, _1: Parseable<string>, _2: Parseable<string>, _3: Parseable<string>) {
-            // Do this special because LegendTile contains things like `X = A or B or C` and we need to know if they are `and` or `or`
-            return {
-                __type: 'nonemptyListOf',
-                values: [_1.parse()].concat(_3.parse()),
-                separators: [_2.parse()]
-            }
         },
         integer: function (this: ohm.Node, _1: Parseable<string>) {
             return parseInt(this.sourceString)

@@ -3,7 +3,7 @@ import { EventEmitter2, Listener } from 'eventemitter2'
 import { GameData } from './models/game'
 import { GameSprite } from './models/tile'
 import { IRule, IMutation } from './models/rule'
-import { nextRandom, setAddAll, RULE_DIRECTION, setDifference, Optional, setEquals, resetRandomSeed } from './util'
+import { setAddAll, RULE_DIRECTION, setDifference, Optional, setEquals, resetRandomSeed } from './util'
 import { AbstractCommand, COMMAND_TYPE } from './models/command';
 import { GameSound } from './models/sound';
 import { CollisionLayer } from './models/collisionLayer';
@@ -136,21 +136,6 @@ export class Cell {
         sprite.updateCell(this, wantsToMove)
         return didActuallyChange
     }
-    deleteWantsToMoveCollisionLayer(collisionLayer: CollisionLayer) {
-        // Check that there is a sprite for this collision layer
-        const {sprite, wantsToMove: cellWantsToMove} = this.getStateForCollisionLayer(collisionLayer)
-        if (!sprite) {
-            debugger
-            console.error(collisionLayer.toString())
-            throw new Error(`BUG: No sprite for collision layer. Cannot delete direction`)
-        }
-        const didActuallyChange = cellWantsToMove !== null
-
-        this._setState(collisionLayer, sprite, null)
-
-        sprite.removeCell(this)
-        return didActuallyChange
-    }
     getSpriteByCollisionLayer(collisionLayer: CollisionLayer) {
         const {sprite} = this.getStateForCollisionLayer(collisionLayer)
         return sprite || null
@@ -255,7 +240,7 @@ export class Cell {
         if (wantsToMove) {
             didActuallyChange = this._setWantsToMove(sprite, wantsToMove)
         } else if (!this.hasSprite(sprite)) {
-            didActuallyChange = this._setWantsToMove(sprite, wantsToMove)
+            throw new Error(`BUG: sprite should already be in the cell since we are updating it`)
         }
         sprite.updateCell(this, wantsToMove)
         return didActuallyChange
@@ -567,34 +552,19 @@ export class LevelEngine extends EventEmitter2 {
             for (const cell of changedCells) {
                 for (let [sprite, wantsToMove] of cell.getSpriteAndWantsToMoves()) {
 
-                    if (wantsToMove !== RULE_DIRECTION.STATIONARY) {
-                        if (wantsToMove === RULE_DIRECTION.ACTION) {
+                    switch (wantsToMove) {
+                        case RULE_DIRECTION.STATIONARY:
+                            // nothing to do
+                            break
+                        case RULE_DIRECTION.ACTION:
                             // just clear the wantsToMove flag
                             somethingChanged = true
                             cell.clearWantsToMove(sprite)
-                        } else if (wantsToMove === RULE_DIRECTION.STATIONARY) {
-                            somethingChanged = true
-                            cell.clearWantsToMove(sprite)
-                        } else {
-                            if (wantsToMove === RULE_DIRECTION.RANDOMDIR) {
-                                const rand = nextRandom(4)
-                                switch (rand) {
-                                    case 0:
-                                        wantsToMove = RULE_DIRECTION.UP
-                                        break
-                                    case 1:
-                                        wantsToMove = RULE_DIRECTION.DOWN
-                                        break
-                                    case 2:
-                                        wantsToMove = RULE_DIRECTION.LEFT
-                                        break
-                                    case 3:
-                                        wantsToMove = RULE_DIRECTION.RIGHT
-                                        break
-                                    default:
-                                        throw new Error(`BUG: Random number generator yielded something other than 0-3. "${rand}"`)
-                                }
-                            }
+                            break
+                        case RULE_DIRECTION.UP:
+                        case RULE_DIRECTION.DOWN:
+                        case RULE_DIRECTION.LEFT:
+                        case RULE_DIRECTION.RIGHT:
                             const neighbor = cell.getNeighbor(wantsToMove)
                             // Make sure
                             if (neighbor && !neighbor.hasCollisionWithSprite(sprite)) {
@@ -610,7 +580,9 @@ export class LevelEngine extends EventEmitter2 {
                                 // We do this later because we are looping as long as something changed
                                 // cell.clearWantsToMove(sprite)
                             }
-                        }
+                            break
+                        default:
+                            throw new Error(`BUG: wantsToMove should have been handled earlier`)
                     }
                 }
             }

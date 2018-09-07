@@ -67,10 +67,6 @@ export function nextRandom(maxNonInclusive: number) {
     return Math.round((x - Math.floor(x)) * (maxNonInclusive - 1))
     // return Math.round(Math.random() * (maxNonInclusive - 1))
 }
-export function nextRandomFloat() {
-    let x = Math.sin(seed++) * 10000
-    return x - Math.floor(x)
-}
 export function resetRandomSeed() {
     seed = 1
 }
