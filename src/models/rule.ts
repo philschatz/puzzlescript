@@ -677,57 +677,79 @@ export class SimpleBracket extends ISimpleBracket {
 
     shouldUseOnDemandMethod() {
         // return true
-        // return false
+        return false
         // return this.neighbors.length === 1
         // return this.neighbors.length !== 1
-        return process.env['PUZZLESCRIPT_METHOD'] === 'ondemand'
+        // return process.env['PUZZLESCRIPT_METHOD'] === 'ondemand'
+    }
+
+    getMatchesByTrickling(level: Level, actionBracket: Optional<SimpleBracket>) {
+        const matches: MatchedCellsForRule[] = []
+        for (const firstCell of this.firstCells) {
+            this.addToCellMatches(matches, firstCell, actionBracket)
+        }
+        return matches
+    }
+
+    getMatchesByLooping(level: Level, actionBracket: Optional<SimpleBracket>) {
+        const matches: MatchedCellsForRule[] = []
+        // Naiive version:
+        // for (const row of level.getCells()) {
+        //     for (const cell of row) {
+        //         checkCell(cell)
+        //     }
+        // }
+        const cells = level.getCells()
+        const rowCount = cells.length
+        const colCount = cells[0].length
+        switch (this.direction) {
+            case RULE_DIRECTION.UP:
+            case RULE_DIRECTION.DOWN:
+                for (let colIndex = 0; colIndex < colCount; colIndex++) {
+                    if (level.colContainsSprites(colIndex, this.spritesPresentInRowOrColumn, this.anySpritesPresentInRowOrColumn)) {
+                        for (let rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+                            this.addIfCellMatches(matches, level.getCell(rowIndex, colIndex), actionBracket)
+                        }
+                    }
+                }
+                break
+            case RULE_DIRECTION.LEFT:
+            case RULE_DIRECTION.RIGHT:
+                for (let rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+                    if (level.rowContainsSprites(rowIndex, this.spritesPresentInRowOrColumn, this.anySpritesPresentInRowOrColumn)) {
+                        for (let colIndex = 0; colIndex < colCount; colIndex++) {
+                            this.addIfCellMatches(matches, level.getCell(rowIndex, colIndex), actionBracket)
+                        }
+                    }
+                }
+                break
+            default:
+                throw new Error(`BUG: Unsupported Direction "${this.direction}"`)
+        }
+        return matches
     }
 
     getMatches(level: Level, actionBracket: Optional<SimpleBracket>) {
-        const matches: MatchedCellsForRule[] = []
         if (process.env['NODE_ENV'] === 'development' && this.debugFlag === DEBUG_FLAG.BREAKPOINT) {
             // A "DEBUGGER" flag was set in the game so we are pausing here
             if (process.stdout) { TerminalUI.debugRenderScreen() }; debugger
         }
 
+        let matches
         if (!this.shouldUseOnDemandMethod()) {
-            for (const firstCell of this.firstCells) {
-                this.addToCellMatches(matches, firstCell, actionBracket)
-            }
-
+            matches = this.getMatchesByTrickling(level, actionBracket)
         } else {
-            // Naiive version:
-            // for (const row of level.getCells()) {
-            //     for (const cell of row) {
-            //         checkCell(cell)
-            //     }
-            // }
-            const cells = level.getCells()
-            const rowCount = cells.length
-            const colCount = cells[0].length
-            switch (this.direction) {
-                case RULE_DIRECTION.UP:
-                case RULE_DIRECTION.DOWN:
-                    for (let colIndex = 0; colIndex < colCount; colIndex++) {
-                        if (level.colContainsSprites(colIndex, this.spritesPresentInRowOrColumn, this.anySpritesPresentInRowOrColumn)) {
-                            for (let rowIndex = 0; rowIndex < rowCount; rowIndex++) {
-                                this.addIfCellMatches(matches, level.getCell(rowIndex, colIndex), actionBracket)
-                            }
-                        }
-                    }
-                    break
-                case RULE_DIRECTION.LEFT:
-                case RULE_DIRECTION.RIGHT:
-                    for (let rowIndex = 0; rowIndex < rowCount; rowIndex++) {
-                        if (level.rowContainsSprites(rowIndex, this.spritesPresentInRowOrColumn, this.anySpritesPresentInRowOrColumn)) {
-                            for (let colIndex = 0; colIndex < colCount; colIndex++) {
-                                this.addIfCellMatches(matches, level.getCell(rowIndex, colIndex), actionBracket)
-                            }
-                        }
-                    }
-                    break
-                default:
-                    throw new Error(`BUG: Unsupported Direction "${this.direction}"`)
+            matches = this.getMatchesByLooping(level, actionBracket)
+
+            if (process.env['VERIFY_MATCHES']) {
+                const loopingMatches = this.getMatchesByLooping(level, actionBracket)
+                if (matches.length !== loopingMatches.length) {
+                    debugger
+                    console.error(`Match lengths differ. Expected ${loopingMatches.length} but found ${matches.length}`)
+                    console.error(this.toString())
+                    throw new Error(`Match lengths differ. Expected ${loopingMatches.length} but found ${matches.length}`)
+                }
+
             }
         }
 
@@ -1324,6 +1346,7 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
     private spriteMovementsPresent: Map<CollisionLayer, RULE_DIRECTION>
     private orTileMovementsPresent: Map<IGameTile, RULE_DIRECTION>
     private lruCache: LruCache<string, boolean>
+    private trickleCells: Set<Cell>
 
     constructor(source: IGameCode, tilesWithModifier: Set<SimpleTileWithModifier>, debugFlag: DEBUG_FLAG) {
         super(source)
@@ -1340,6 +1363,7 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
         this.anySpritesPresent = new Set<SpriteBitSet>()
         this.spriteMovementsPresent = new Map()
         this.orTileMovementsPresent = new Map()
+        this.trickleCells = new Set()
         this.lruCache = new LruCache<string, boolean>(LRU_CACHE_SIZE)
 
         // Build up the cache BitSet for each collisionLayer
@@ -1780,6 +1804,10 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
         //     }
         // }
 
+        // if (this.trickleCells.has(cell)) {
+        //     return true
+        // }
+
         function keyFn() {
             return `[${cell.toKey()}]`
         }
@@ -1850,17 +1878,14 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
         return this.lruCache.get(keyFn(), valueFn)
 
     }
-    private matchesCellWithout(cell: Cell, sprite: GameSprite) {
-        // Temporarily remove the sprite from the cell
-        if (cell.hasSprite(sprite)) {
-            const wantsToMove = cell.getWantsToMove(sprite)
-            cell._deleteWantsToMove(sprite)
-            const matches = this.matchesCellSimple(cell)
-            cell._setWantsToMove(sprite, wantsToMove)
-            return matches
-        } else {
-            return this.matchesCellSimple(cell)
+
+    private matchesTiles(cell: Cell) {
+        for (const t of this._tilesWithModifier) {
+            if (!t.hasCell(cell)) {
+                return false
+            }
         }
+        return true
     }
 
     addCells(t: SimpleTileWithModifier, sprite: GameSprite, cells: Iterable<Cell>, wantsToMove: Optional<RULE_DIRECTION>) {
@@ -1869,14 +1894,15 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
             if (process.stdout) { TerminalUI.debugRenderScreen() }; debugger
         }
         for (const cell of cells) {
-            const matchesTiles = this.matchesCell(cell, t, wantsToMove)
-            if (matchesTiles) {
+            if (this.matchesTiles(cell)) {
+                this.trickleCells.add(cell)
                 for (const [bracket, indexes] of this.brackets.entries()) {
                     for (const index of indexes) {
                         bracket.addCell(index, this, t, sprite, cell, wantsToMove)
                     }
                 }
             } else {
+                this.trickleCells.delete(cell)
                 // adding the Cell causes the set of Tiles to no longer match.
                 // If it previously matched, notify the bracket that it no longer matches
                 // (and delete it from our cache)
@@ -1900,7 +1926,8 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
             // Check if the cell still matches. If not, remove it from upstream
             // It's a little funky if we have a NO tile. I _think_ we need to negate the
             // result of matchesCellWithout in that case but not completely sure
-            if (t.isNo() === this.matchesCellWithout(cell, sprite)) {
+            if (!this.matchesTiles(cell)) {
+                this.trickleCells.delete(cell)
                 // remove it from upstream
                 for (const [bracket, indexes] of this.brackets.entries()) {
                     for (const index of indexes) {
@@ -1920,6 +1947,8 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
     readonly _tile: IGameTile
     readonly _debugFlag: DEBUG_FLAG
     private neighbors: Set<SimpleNeighbor>
+    private trickleCells: Set<Cell>
+
     constructor(source: IGameCode, isNegated: boolean, isRandom: boolean, direction: Optional<RULE_DIRECTION>, tile: IGameTile, debugFlag: DEBUG_FLAG) {
         super(source)
         this._isNegated = isNegated
@@ -1928,6 +1957,7 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
         this._tile = tile
         this.neighbors = new Set()
         this._debugFlag = debugFlag
+        this.trickleCells = new Set()
         // this._localCache = new Map()
     }
 
@@ -1970,13 +2000,27 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
     }
 
     matchesCellWithoutDirection(cell: Cell) {
-        const hasTile = this._tile && this._tile.matchesCell(cell)
+        const hasTile = this._tile && this._tile.hasCell(cell)
         return this._isNegated != hasTile
     }
 
     private matchesCellWantsToMove(cell: Cell, wantsToMove: Optional<RULE_DIRECTION>) {
-        const hasTile = this._tile && this._tile.matchesCell(cell)
-        return this._isNegated != (hasTile && (this._direction === wantsToMove || this._direction === null))
+        const hasTile = this._tile && this._tile.hasCell(cell)
+        const didMatch = this._isNegated != (hasTile && (this._direction === wantsToMove || this._direction === null))
+
+        if (didMatch) {
+            return true
+        } else if (!this._direction) {
+            return false
+        } else {
+            // do the more expensive match
+            for (const sprite of this._tile.getSpritesThatMatch(cell)) {
+                if (this._direction === cell.getWantsToMove(sprite)) {
+                    return true
+                }
+            }
+            return false
+        }
     }
 
     private matchesFirstCell(cells: Cell[], wantsToMove: Optional<RULE_DIRECTION>) {
@@ -1991,20 +2035,36 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
         // Cells all have the same sprites, so if the 1st matches, they all do.
         // Also, we only need to check that the direction matches (optimization),
         // we do not need to re-check that the Tile matches
+        let shouldAdd = true
         if (!this._direction || wantsToMove === this._direction) {
+            shouldAdd = !this.isNo()
+        } else if (this._tile.isOr() && this.matchesFirstCell(cells, wantsToMove)) {
+            // In OR tiles, one of the sprites may add/remove a direction but
+            // another sprite may still have the direction
+            // so we check by doing the long and expensive comparison above
+            shouldAdd = !this.isNo()
+        } else {
+            shouldAdd = this.isNo()
+        }
+
+        if (shouldAdd) {
+            for (const cell of cells) {
+                this.trickleCells.add(cell)
+            }
             // const cellsNotInCache = setDifference(new Set(cells), new Set(this._localCache.keys()))
             for (const neighbor of this.neighbors) {
                 // neighbor.addCells(this, sprite, cellsNotInCache, wantsToMove)
                 neighbor.addCells(this, sprite, cells, wantsToMove)
             }
-            // this._addCellsToCache(cellsNotInCache, wantsToMove)
         } else {
+            for (const cell of cells) {
+                this.trickleCells.delete(cell)
+            }
             // const cellsInCache = setIntersection(new Set(cells), new Set(this._localCache.keys()))
             for (const neighbor of this.neighbors) {
                 // neighbor.removeCells(this, sprite, cellsInCache)
                 neighbor.removeCells(this, sprite, cells)
             }
-            // this._removeCellsFromCache(cellsInCache)
         }
     }
     updateCells(sprite: GameSprite, cells: Cell[], wantsToMove: RULE_DIRECTION) {
@@ -2014,10 +2074,16 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
         }
         // Cells all have the same sprites, so if the 1st matches, they all do
         if (this.matchesFirstCell(cells, wantsToMove)) {
+            for (const cell of cells) {
+                this.trickleCells.add(cell)
+            }
             for (const neighbor of this.neighbors) {
                 neighbor.updateCells(this, sprite, cells, wantsToMove)
             }
         } else {
+            for (const cell of cells) {
+                this.trickleCells.delete(cell)
+            }
             for (const neighbor of this.neighbors) {
                 neighbor.removeCells(this, sprite, cells)
             }
@@ -2029,15 +2095,32 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
             if (process.stdout) { TerminalUI.debugRenderScreen() }; debugger
         }
         // Cells all have the same sprites, so if the 1st matches, they all do
-        if (this.matchesFirstCell(cells, null/*STATIONARY*/)) {
+        // OR Tiles need to be checked to see if the tile still matches.
+        // Non-OR tiles can be safely removed
+        let shouldAdd = false
+        if (this._tile.isOr()) {
+            shouldAdd = this.matchesFirstCell(cells, null)
+        } else {
+            shouldAdd = this.isNo()
+        }
+        if (shouldAdd) {
+            for (const cell of cells) {
+                this.trickleCells.add(cell)
+            }
             for (const neighbor of this.neighbors) {
                 neighbor.addCells(this, sprite, cells, RULE_DIRECTION.STATIONARY)
             }
         } else {
+            for (const cell of cells) {
+                this.trickleCells.delete(cell)
+            }
             for (const neighbor of this.neighbors) {
                 neighbor.removeCells(this, sprite, cells)
             }
         }
+    }
+    hasCell(cell: Cell) {
+        return this.trickleCells.has(cell)
     }
 
 }

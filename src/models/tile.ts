@@ -23,6 +23,7 @@ export interface IGameTile extends IGameNode {
     hasSingleCollisionLayer: () => boolean
     setCollisionLayer: (collisionLayer: CollisionLayer) => void
     getCollisionLayer: () => CollisionLayer
+    hasCell(cell: Cell): boolean
     matchesCell: (cell: Cell) => boolean
     isOr: () => boolean
     getCellsThatMatch: () => Set<Cell>
@@ -114,7 +115,10 @@ export abstract class GameSprite extends BaseForLines implements IGameTile {
     clearCaches() {
         this.trickleCells.clear()
     }
-    matchesCell(cell: Cell): any {
+    hasCell(cell: Cell): boolean {
+        return this.trickleCells.has(cell)
+    }
+    matchesCell(cell: Cell): boolean {
         return cell.getSpritesAsSet().has(this)
     }
     getSpritesThatMatch(cell: Cell) {
@@ -439,6 +443,9 @@ export abstract class GameLegendTile extends BaseForLines implements IGameTile {
                 }
             }
         }
+    }
+    hasCell(cell: Cell) {
+        return this.trickleCells.has(cell)
     }
 }
 
