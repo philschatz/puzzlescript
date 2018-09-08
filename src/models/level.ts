@@ -1,4 +1,5 @@
-import { BaseForLines, IGameCode } from './game'
+import { IGameCode } from './BaseForLines'
+import { BaseForLines } from "./BaseForLines";
 import { IGameTile } from './tile'
 import { Optional } from '../util';
 

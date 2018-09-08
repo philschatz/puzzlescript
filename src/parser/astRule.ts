@@ -1,5 +1,5 @@
 import { ICacheable, DEBUG_FLAG, RULE_DIRECTION, Optional, setIntersection } from "../util";
-import { BaseForLines, IGameCode } from "../models/game";
+import { BaseForLines, IGameCode } from "../models/BaseForLines";
 import { AbstractCommand } from "../models/command";
 import { SimpleRule, SimpleBracket, SimpleRuleGroup, SimpleNeighbor, SimpleTileWithModifier, SimpleBracketConditionOnly, SIMPLE_DIRECTION_DIRECTIONS, SimpleRuleLoop, ISimpleBracket, SimpleEllipsisBracket } from "../models/rule";
 import { Cell } from '../engine';

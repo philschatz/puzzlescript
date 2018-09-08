@@ -1,4 +1,5 @@
-import { BaseForLines, IGameCode } from './game'
+import { IGameCode } from './BaseForLines'
+import { BaseForLines } from "./BaseForLines";
 import { GameSprite, IGameTile } from './tile'
 import { ValidationLevel, AddValidationFunc } from '../parser/parser';
 import { _flatten } from '../util';

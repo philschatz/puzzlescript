@@ -41,16 +41,24 @@ abstract class CustomBitSet<T> {
         }
     }
 
+    private _indexOf(item: T) {
+        const index = this.indexOf(item)
+        if (index < 0) {
+            throw new Error(`BUG: Expected the item index to be >= 0 but it was ${index}`)
+        }
+        return index
+    }
+
     add(item: T) {
-        this.bitSet.set(this.indexOf(item))
+        this.bitSet.set(this._indexOf(item))
     }
 
     remove(item: T) {
-        this.bitSet.clear(this.indexOf(item))
+        this.bitSet.clear(this._indexOf(item))
     }
 
     has(item: T) {
-        return !!this.bitSet.get(this.indexOf(item))
+        return !!this.bitSet.get(this._indexOf(item))
     }
 
     containsAll(other: CustomBitSet<T>) {

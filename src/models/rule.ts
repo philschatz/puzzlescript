@@ -1,9 +1,6 @@
 import BitSet from 'bitset'
-import {
-    BaseForLines,
-    IGameCode,
-    IGameNode
-} from './game'
+import { IGameNode } from './game'
+import { BaseForLines, IGameCode } from "./BaseForLines";
 import { IGameTile, GameSprite } from './tile'
 import { setIntersection, nextRandom, RULE_DIRECTION, DEBUG_FLAG, ICacheable, Optional, opposite, _flatten } from '../util'
 import { Cell, Level } from '../engine'
@@ -49,14 +46,10 @@ function buildPermutations<T>(cells: T[][]) {
 export class SimpleRuleGroup extends BaseForLines implements IRule {
     private rules: IRule[]
     private isRandom: boolean
-    timesRan: number
-    totalTimeMs: number
     constructor(source: IGameCode, isRandom: boolean, rules: IRule[]) {
         super(source)
         this.rules = rules
         this.isRandom = isRandom
-        this.timesRan = 0
-        this.totalTimeMs = 0
     }
 
     hasMatches(level: Level) {
@@ -127,12 +120,12 @@ export class SimpleRuleGroup extends BaseForLines implements IRule {
         }
 
         if (process.env['LOG_LEVEL'] === 'debug') {
-            if (start) {
-                this.totalTimeMs+= Date.now() - start
-                this.timesRan++
-            }
             if (allMutations.length > 0) {
-                console.error(`Rule ${this.__getSourceLineAndColumn().lineNum} applied. ${iteration === 1 ? '' : `(x${iteration})`}`)
+                if (start) {
+                    console.error(`Rule ${this.__getSourceLineAndColumn().lineNum} applied. ${iteration === 1 ? '' : `(x${iteration})`} (${Date.now() - start}ms)`)
+                } else {
+                    console.error(`Rule ${this.__getSourceLineAndColumn().lineNum} applied. ${iteration === 1 ? '' : `(x${iteration})`}`)
+                }
             }
         }
         return _flatten(allMutations)

@@ -1,6 +1,6 @@
 import { GameSound, GameSoundSfx } from '../models/sound'
 import { GameSprite, GameLegendTileSimple, IGameTile } from '../models/tile'
-import { IGameCode } from '../models/game';
+import { IGameCode } from '../models/BaseForLines';
 
 export class LookupHelper {
     _allSoundEffects: Map<string, GameSound>

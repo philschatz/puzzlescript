@@ -1,4 +1,4 @@
-import { BaseForLines, IGameCode } from "./game";
+import { BaseForLines, IGameCode } from "./BaseForLines";
 import { GameSound } from "./sound";
 import { Optional } from "../util";
 

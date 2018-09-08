@@ -1,4 +1,5 @@
-import { BaseForLines, IGameCode, IGameNode } from './game'
+import { IGameNode } from './game'
+import { BaseForLines, IGameCode } from "./BaseForLines";
 
 export interface IColor extends IGameNode {
     isTransparent: () => boolean

@@ -1,5 +1,6 @@
 import BitSet from 'bitset'
-import { BaseForLines, IGameNode, IGameCode } from './game'
+import { IGameNode } from './game'
+import { BaseForLines, IGameCode } from "./BaseForLines";
 import { IColor, HexColor, TransparentColor } from './colors'
 import { CollisionLayer } from './collisionLayer'
 import { Cell } from '../engine'

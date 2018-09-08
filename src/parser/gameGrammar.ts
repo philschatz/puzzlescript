@@ -297,6 +297,7 @@ export function getGameSemantics(lookup: LookupHelper, addValidationMessage: Add
             const levelsWithoutNullMessages = levels.filter(l => !!l)
 
             return new GameData(
+                this.source,
                 title.parse(),
                 metadata,
                 sprites,

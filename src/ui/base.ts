@@ -3,7 +3,6 @@ import chalk from 'chalk';
 import { GameEngine, Cell, GameData, Optional } from '..'
 import { GameSprite } from '../models/tile'
 import { IColor } from '../models/colors'
-import { makeLetterCell } from '../letters';
 import Parser from '../parser/parser';
 import { _flatten } from '../util';
 
@@ -259,21 +258,18 @@ abstract class BaseUI {
         if (!this.engine) {
             throw new Error(`BUG: gameEngine was not set yet`)
         }
-
         const titleImage = this.createMessageTextScreen(messageStr)
 
         // Now, convert the string array into cells
         const cells: Cell[][] = []
-        const level = this.engine.getCurrentLevel()
-        const topCollisionLayer = this.gameData.collisionLayers[this.gameData.collisionLayers.length - 1] // so the sprite appears above the background
         for (let rowIndex = 0; rowIndex < titleImage.length; rowIndex++) {
             const row = titleImage[rowIndex]
             const cellsRow: Cell[] = []
             cells.push(cellsRow)
             for (let colIndex = 0; colIndex < row.length; colIndex++) {
                 const char = row[colIndex]
-
-                const letterCell = makeLetterCell(level.__source, topCollisionLayer, char, rowIndex, colIndex)
+                const sprite = this.gameData.getLetterSprite(char)
+                const letterCell = new Cell(null, new Set([sprite]), rowIndex, colIndex)
                 cellsRow.push(letterCell)
             }
         }

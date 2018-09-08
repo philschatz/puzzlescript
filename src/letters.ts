@@ -1,9 +1,6 @@
-import { Cell } from "./engine";
 import { GameSpritePixels } from "./models/tile";
 import { HexColor } from "./models/colors";
-import { IGameCode } from "./models/game";
-import { CollisionLayer } from "./models/collisionLayer";
-
+import { IGameCode } from './models/BaseForLines'
 
 const letters: Map<string, number[][]> = new Map()
 
@@ -14,14 +11,13 @@ function makeLetter(char: string, pixels: number[][]) {
     letters.set(char, pixels)
 }
 
-export function makeLetterCell(source: IGameCode, collisionLayer: CollisionLayer, char: string, rowIndex: number, colIndex: number) {
-    const pixels = letters.get(char)
-    if (pixels) {
+export function getLetterSprites(source: IGameCode) {
+    const sprites = new Map<string, GameSpritePixels>()
+    for (const [char, pixels] of letters.entries()) {
         const sprite = toSprite(source, char, pixels)
-        sprite.setCollisionLayer(collisionLayer)
-        return new Cell(null, new Set([sprite]), rowIndex, colIndex)
+        sprites.set(char, sprite)
     }
-    throw new Error(`BUG: Unsupported character "char". Does not exist in the font`)
+    return sprites
 }
 
 makeLetter('a', [
