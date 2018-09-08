@@ -1,4 +1,3 @@
-import * as _ from 'lodash'
 import BitSet from 'bitset'
 import {
     BaseForLines,
@@ -6,7 +5,7 @@ import {
     IGameNode
 } from './game'
 import { IGameTile, GameSprite } from './tile'
-import { setIntersection, nextRandom, RULE_DIRECTION, DEBUG_FLAG, ICacheable, Optional, opposite } from '../util'
+import { setIntersection, nextRandom, RULE_DIRECTION, DEBUG_FLAG, ICacheable, Optional, opposite, _flatten } from '../util'
 import { Cell, Level } from '../engine'
 import TerminalUI from '../ui/terminal'
 import { AbstractCommand } from './command';
@@ -136,7 +135,7 @@ export class SimpleRuleGroup extends BaseForLines implements IRule {
                 console.error(`Rule ${this.__getSourceLineAndColumn().lineNum} applied. ${iteration === 1 ? '' : `(x${iteration})`}`)
             }
         }
-        return _.flatten(allMutations)
+        return _flatten(allMutations)
 
 
         // let mutations = []
@@ -328,7 +327,7 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
 
             }
 
-            ret = _.flatten(allMutations)
+            ret = _flatten(allMutations)
         }
 
         // Append any Commands that need to be evaluated (only if the rule was evaluated at least once)

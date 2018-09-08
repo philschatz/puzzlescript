@@ -1,4 +1,3 @@
-import * as _ from 'lodash'
 import chalk from 'chalk';
 
 import { GameEngine, Cell, GameData, Optional } from '..'
@@ -6,6 +5,7 @@ import { GameSprite } from '../models/tile'
 import { IColor } from '../models/colors'
 import { makeLetterCell } from '../letters';
 import Parser from '../parser/parser';
+import { _flatten } from '../util';
 
 class CellColorCache {
     private readonly cache: Map<string, IColor[][]>
@@ -298,7 +298,7 @@ abstract class BaseUI {
             this.clearScreen()
 
             const cells = this.createMessageCells(message)
-            this.drawCells(_.flatten(cells), false)
+            this.drawCells(_flatten(cells), false)
 
             this.windowOffsetColStart = windowOffsetColStart
             this.windowOffsetRowStart = windowOffsetRowStart
@@ -524,7 +524,7 @@ abstract class BaseUI {
                 const { isOnScreen } = this.cellPosToXY(playerCell)
                 if (this.recenterPlayerIfNeeded(playerCell, isOnScreen)) {
                     // if we moved the screen then re-render the whole screen
-                    cells = _.flatten(this.engine.getCurrentLevelCells())
+                    cells = _flatten(this.engine.getCurrentLevelCells())
                 }
             }
             // otherwise, keep rendering cells like normal

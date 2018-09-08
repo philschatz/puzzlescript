@@ -1,7 +1,7 @@
-import * as _ from 'lodash'
 import { BaseForLines, IGameCode } from './game'
 import { GameSprite, IGameTile } from './tile'
 import { ValidationLevel, AddValidationFunc } from '../parser/parser';
+import { _flatten } from '../util';
 
 let collisionIdCounter = 0
 export class CollisionLayer extends BaseForLines {
@@ -27,7 +27,7 @@ export class CollisionLayer extends BaseForLines {
         })
 
         // build an array of Sprites so we can index to them in a BitSet
-        this.sprites = [...new Set(_.flatten(tiles.map(t => t.getSprites())))]
+        this.sprites = [...new Set(_flatten(tiles.map(t => t.getSprites())))]
 
         this.sprites.forEach((sprite, index) => sprite.setCollisionLayerAndIndex(this, index))
     }

@@ -1,5 +1,4 @@
-import * as _ from 'lodash'
-import { ICacheable, DEBUG_FLAG, RULE_DIRECTION, Optional } from "../util";
+import { ICacheable, DEBUG_FLAG, RULE_DIRECTION, Optional, setIntersection } from "../util";
 import { BaseForLines, IGameCode } from "../models/game";
 import { AbstractCommand } from "../models/command";
 import { SimpleRule, SimpleBracket, SimpleRuleGroup, SimpleNeighbor, SimpleTileWithModifier, SimpleBracketConditionOnly, SIMPLE_DIRECTION_DIRECTIONS, SimpleRuleLoop, ISimpleBracket, SimpleEllipsisBracket } from "../models/rule";
@@ -232,7 +231,7 @@ export class ASTRule extends BaseForLines {
             default:
                 throw new Error(`BUG: Invalid direction "${direction}"`)
         }
-        const modifiers = _.intersection(this.modifiers, [AST_RULE_MODIFIER.LATE, AST_RULE_MODIFIER.RIGID, AST_RULE_MODIFIER.RANDOM]).concat([directionModifier])
+        const modifiers = [...setIntersection(new Set(this.modifiers), [AST_RULE_MODIFIER.LATE, AST_RULE_MODIFIER.RIGID, AST_RULE_MODIFIER.RANDOM])].concat([directionModifier])
         return new ASTRule(this.__source, modifiers, conditionBrackets, actionBrackets, this.commands, this.debugFlag)
     }
 

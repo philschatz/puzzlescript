@@ -1,9 +1,8 @@
-import * as _ from 'lodash'
 import { EventEmitter2, Listener } from 'eventemitter2'
 import { GameData } from './models/game'
 import { GameSprite } from './models/tile'
 import { IRule, IMutation } from './models/rule'
-import { setAddAll, RULE_DIRECTION, setDifference, Optional, setEquals, resetRandomSeed } from './util'
+import { setAddAll, RULE_DIRECTION, setDifference, Optional, setEquals, resetRandomSeed, _flatten } from './util'
 import { AbstractCommand, COMMAND_TYPE } from './models/command';
 import { GameSound } from './models/sound';
 import { CollisionLayer } from './models/collisionLayer';
@@ -460,7 +459,7 @@ export class LevelEngine extends EventEmitter2 {
     }
 
     private getCells() {
-        return _.flatten(this.getCurrentLevel().getCells())
+        return _flatten(this.getCurrentLevel().getCells())
     }
     getCurrentLevel() {
         if (this.currentLevel) {
@@ -905,7 +904,7 @@ export class GameEngine {
                 this.messageShownAndWaitingForActionPress = false
                 this.levelEngine.pendingPlayerWantsToMove = null
                 return {
-                    changedCells: new Set(_.flatten(this.getCurrentLevelCells())),
+                    changedCells: new Set(_flatten(this.getCurrentLevelCells())),
                     soundToPlay: null,
                     messageToShow: null,
                     didWinGame: false,
@@ -932,7 +931,7 @@ export class GameEngine {
         if (hasRestart) {
             this.pressRestart()
             return {
-                changedCells: new Set(_.flatten(this.getCurrentLevelCells())),
+                changedCells: new Set(_flatten(this.getCurrentLevelCells())),
                 soundToPlay: null,
                 messageToShow: null,
                 didWinGame: false,

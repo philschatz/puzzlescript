@@ -1,7 +1,6 @@
-import * as _ from 'lodash'
 import BaseUI from "./base";
 import { Cell } from "../engine";
-import { Optional, RULE_DIRECTION } from "../util";
+import { Optional, RULE_DIRECTION, _flatten } from "../util";
 import { IColor } from "../models/colors";
 import { GameData } from "../models/game";
 
@@ -64,7 +63,7 @@ class TableUI extends BaseUI {
     }
 
     protected renderLevelScreen(levelRows: Cell[][], renderScreenDepth: number) {
-        this.drawCells(_.flatten(levelRows), false, renderScreenDepth)
+        this.drawCells(_flatten(levelRows), false, renderScreenDepth)
     }
 
 

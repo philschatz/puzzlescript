@@ -1,4 +1,3 @@
-import * as _ from 'lodash'
 import * as ansiStyles from 'ansi-styles'
 import * as ansiEscapes from 'ansi-escapes'
 import * as supportsColor from 'supports-color'
@@ -9,6 +8,7 @@ import { GameSprite } from '../models/tile'
 import { IColor } from '../models/colors'
 import { CollisionLayer } from '../models/collisionLayer';
 import BaseUI from './base';
+import { _flatten, _debounce } from '../util';
 
 // Determine if this
 // 'truecolor' if this terminal supports 16m colors. 256 colors otherwise
@@ -85,7 +85,7 @@ class TerminalUI extends BaseUI {
         // Handle resize events by redrawing the game. Ooh, we do not have Cells at this point.
         // TODO Run renderScreen on cells from the engine rather than cells from the Level data
         if (!this.resizeHandler && process.stdout) {
-            this.resizeHandler = _.debounce(() => {
+            this.resizeHandler = _debounce(() => {
                 // the game may not be loaded yet
                 if (this.gameData) {
                     this.clearScreen()
@@ -185,7 +185,7 @@ class TerminalUI extends BaseUI {
         }
 
         if (this.hasVisualUi) {
-            this.drawCells(_.flatten(levelRows), false, renderScreenDepth)
+            this.drawCells(_flatten(levelRows), false, renderScreenDepth)
 
             // Just for debugging, print the game title (doing it here helps with Jest rendering correctly)
             this.writeDebug(`"${this.gameData.title}"`, 0)
@@ -194,7 +194,7 @@ class TerminalUI extends BaseUI {
 
             // Print out the size of the screen and the count of each sprite on the screen
             const collisionLayerToSprites: Map<CollisionLayer, Map<GameSprite, Cell[]>> = new Map()
-            for (const cell of _.flatten(levelRows)) {
+            for (const cell of _flatten(levelRows)) {
                 if (this.cellPosToXY(cell).isOnScreen) {
                     for (const sprite of cell.getSpritesAsSet()) {
                         const collisionLayer = sprite.getCollisionLayer()

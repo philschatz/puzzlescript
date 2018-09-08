@@ -1,4 +1,3 @@
-import * as _ from 'lodash'
 import * as ohm from 'ohm-js'
 import { PUZZLESCRIPT_GRAMMAR } from './grammar'
 import { LookupHelper } from './lookup'
@@ -10,7 +9,7 @@ import { getLevelSemantics } from './levelGrammar'
 import { getCollisionLayerSemantics } from './collisionLayerGrammar'
 import { getWinConditionSemantics } from './winConditionGrammar'
 import { GameData, IGameNode } from '../models/game'
-import { Optional } from '../util';
+import { Optional, _extend } from '../util';
 
 let _GRAMMAR: Optional<ohm.Grammar> = null
 
@@ -69,7 +68,7 @@ class Parser {
 
             let operations = {}
 
-            _.extend(operations,
+            _extend(operations,
                 getGameSemantics(lookup, addValidationMessage),
                 getTileSemantics(lookup),
                 getSoundSemantics(lookup),

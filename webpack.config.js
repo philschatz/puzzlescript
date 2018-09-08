@@ -16,5 +16,6 @@ module.exports = {
         }
     },
     // Only report errors to stdout, not the bundle stats (like compression)
-    stats: "errors-only"
+    // stats: "errors-only"
+    stats: {maxModules: Infinity, exclude: undefined}
 }

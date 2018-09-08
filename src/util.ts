@@ -1,5 +1,40 @@
 export type Optional<T> = T | null | undefined
 
+// From https://stackoverflow.com/questions/10865025/merge-flatten-an-array-of-arrays-in-javascript/39000004#39000004
+export function _flatten<T>(arrays: T[][]) {
+    return [].concat.apply([], arrays) as T[]
+}
+
+export function _zip<T1, T2>(array1: T1[], array2: T2[]) {
+    if (array1.length < array2.length) {
+        throw new Error(`BUG: Zip array length mismatch ${array1.length} != ${array2.length}`)
+    }
+    return array1.map((v1, index) => {
+        return [v1, array2[index]]
+    })
+}
+
+export function _extend(dest: any, ...rest : any[]) {
+    for (const obj of rest) {
+        for (const key of Object.keys(obj)) {
+            dest[key] = obj[key]
+        }
+    }
+    return dest
+}
+
+export function _debounce(callback: () => any) {
+    let timeout : NodeJS.Timer
+    return () => {
+        if (timeout) {
+            clearTimeout(timeout)
+        }
+        timeout = setTimeout(() => {
+            callback()
+        }, 10)
+    }
+}
+
 export function opposite(dir: RULE_DIRECTION) {
     switch (dir) {
         case RULE_DIRECTION.UP:
@@ -17,8 +52,8 @@ export function opposite(dir: RULE_DIRECTION) {
 
 export function setEquals<T>(set1: Set<T>, set2: Set<T>) {
     if (set1.size !== set2.size) return false
-    for (const elem of set1) {
-        if (!set2.has(elem)) return false
+    for (const elem of set2) {
+        if (!set1.has(elem)) return false
     }
     return true
 }
@@ -31,7 +66,7 @@ export function setAddAll<T>(setA: Set<T>, iterable: Iterable<T>) {
     return newSet
 }
 
-export function setIntersection<T>(setA: Set<T>, setB: Set<T>) {
+export function setIntersection<T>(setA: Set<T>, setB: Iterable<T>) {
     const intersection = new Set()
     for (const elem of setB) {
         if (setA.has(elem)) {
@@ -41,7 +76,7 @@ export function setIntersection<T>(setA: Set<T>, setB: Set<T>) {
     return intersection
 }
 
-export function setDifference<T>(setA: Set<T>, setB: Set<T>) {
+export function setDifference<T>(setA: Set<T>, setB: Iterable<T>) {
     const difference = new Set(setA)
     for (const elem of setB) {
         difference.delete(elem)

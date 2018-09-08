@@ -1,9 +1,8 @@
-import * as _ from 'lodash'
 import * as ohm from 'ohm-js'
 import { AbstractCommand, COMMAND_TYPE, MessageCommand, AgainCommand, CancelCommand, CheckpointCommand, RestartCommand, WinCommand, SoundCommand } from '../models/command';
 import { LookupHelper } from './lookup';
 import { ASTTileWithModifier, ASTRuleBracketNeighbor, ASTRuleBracket, ASTRuleLoop, ASTRuleGroup, ASTRule, ASTRuleBracketNeighborHack, AST_RULE_MODIFIER, ASTRuleBracketEllipsis, IASTRuleBracket } from './astRule';
-import { DEBUG_FLAG } from '../util';
+import { DEBUG_FLAG, _flatten } from '../util';
 import { Parseable } from './gameGrammar';
 import { IGameTile } from '../models/tile';
 
@@ -106,8 +105,8 @@ export function getRuleSemantics(lookup: LookupHelper) {
         RuleGroup: function (this: ohm.Node, debugFlag: Parseable<DEBUG_FLAG[]>, randomFlag: Parseable<AST_RULE_MODIFIER[]>, firstRule: Parseable<ASTRule>, _plusses: Parseable<string>, followingRules: Parseable<ASTRule[]>) {
             return new ASTRuleGroup(this.source, !!randomFlag.parse()[0], [firstRule.parse()].concat(followingRules.parse()), debugFlag.parse()[0])
         },
-        Rule: function (this: ohm.Node, debugFlag: Parseable<DEBUG_FLAG[]>, modifiers: Parseable<AST_RULE_MODIFIER[]>, conditions: Parseable<ASTRuleBracket[]>, _arrow: Parseable<string>, _unusuedModifer: Parseable<string>, actions: Parseable<ASTRuleBracket[]>, commands: Parseable<AbstractCommand[]>, optionalMessageCommand: Parseable<MessageCommand[]>, _whitespace: Parseable<string>) {
-            const modifiers2 = _.flatten(modifiers.parse())
+        Rule: function (this: ohm.Node, debugFlag: Parseable<DEBUG_FLAG[]>, modifiers: Parseable<AST_RULE_MODIFIER[][]>, conditions: Parseable<ASTRuleBracket[]>, _arrow: Parseable<string>, _unusuedModifer: Parseable<string>, actions: Parseable<ASTRuleBracket[]>, commands: Parseable<AbstractCommand[]>, optionalMessageCommand: Parseable<MessageCommand[]>, _whitespace: Parseable<string>) {
+            const modifiers2 = _flatten(modifiers.parse())
             const commands2 = commands.parse().filter(c => !!c) // remove nulls (like an invalid sound effect... e.g. "Fish Friend")
             const optionalMessageCommand2 = optionalMessageCommand.parse()[0]
 

@@ -1,4 +1,3 @@
-import * as _ from 'lodash'
 import * as ohm from 'ohm-js'
 import { GameMetadata } from './metadata'
 import { GameSprite, GameLegendTileSimple, IGameTile } from './tile'
@@ -173,7 +172,7 @@ export class GameData {
         const bracketCache = new Map()
         const neighborCache = new Map()
         const tileCache = new Map()
-        this.rules = _.flatten(rules.map(rule => rule.simplify(ruleCache, bracketCache, neighborCache, tileCache)))
+        this.rules = rules.map(rule => rule.simplify(ruleCache, bracketCache, neighborCache, tileCache))
 
         const firstSpriteWithPixels = this.objects.filter(sprite => sprite.hasPixels())[0]
         if (firstSpriteWithPixels) {

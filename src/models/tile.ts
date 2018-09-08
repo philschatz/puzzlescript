@@ -1,11 +1,10 @@
-import * as _ from 'lodash'
 import BitSet from 'bitset'
 import { BaseForLines, IGameNode, IGameCode } from './game'
 import { IColor, HexColor, TransparentColor } from './colors'
 import { CollisionLayer } from './collisionLayer'
 import { Cell } from '../engine'
 import { SimpleTileWithModifier } from './rule';
-import { RULE_DIRECTION, setIntersection, Optional } from '../util';
+import { RULE_DIRECTION, setIntersection, Optional, _flatten, _zip, setDifference } from '../util';
 // BitSet does not export a default so import does not work in webpack-built file
 const BitSet2 = require('bitset')
 
@@ -312,12 +311,8 @@ export abstract class GameLegendTile extends BaseForLines implements IGameTile {
         if (this.isOr() !== t.isOr()) {
             return false
         }
-        for (const [a, b] of _.zip(this.getSprites(), t.getSprites())) {
-            if (a !== b) {
-                return false
-            }
-        }
-        return true
+        const difference = setDifference(new Set(this.getSprites()), t.getSprites())
+        return difference.size === 0
     }
     isOr() {
         return false
@@ -340,14 +335,14 @@ export abstract class GameLegendTile extends BaseForLines implements IGameTile {
     }
     _getDescendantTiles(): IGameTile[] {
         // recursively pull all the tiles out
-        return this.tiles.concat(_.flatten(this.tiles.map(tile => tile._getDescendantTiles())))
+        return this.tiles.concat(_flatten(this.tiles.map(tile => tile._getDescendantTiles())))
     }
     getSprites() {
         // Use a cache because all the collision layers have not been loaded in time
         if (!this.spritesCache) {
             // 2 levels of indirection should be safe
             // Sort by collisionLayer so that the most-important sprite is first
-            this.spritesCache = _.flatten(
+            this.spritesCache = _flatten(
                 this.tiles.map(tile => {
                     return tile.getSprites()
                 })
