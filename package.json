@@ -110,7 +110,7 @@
   },
   "name": "puzzlescript-cli",
   "description": "Play PuzzleScript games in your terminal!",
-  "version": "1.9.0",
+  "version": "1.10.0",
   "main": "lib/index.js",
   "directories": {
     "lib": "lib",
@@ -127,7 +127,7 @@
     "terminal"
   ],
   "engines": {
-      "node": ">=4.0.0"
+    "node": ">=4.0.0"
   },
   "author": "Philip Schatz",
   "license": "MIT",
