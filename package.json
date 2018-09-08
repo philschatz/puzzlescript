@@ -21,7 +21,7 @@
     "poststart": "npm run-script coverage && echo 'Generated coverage. Type open ./coverage/lcov-html/index.html to see it'",
     "coverage": "istanbul report --root ./coverage/ lcov",
     "pretest": "tsc && npm run-script build-webpack",
-    "test": "NODE_ENV=development jest --coverage --updateSnapshot --verbose",
+    "test": "VERIFY_MATCHES=1 NODE_ENV=development jest --coverage --updateSnapshot --verbose",
     "posttest": "npm run-script test-cli && npm run-script coverage && npm run-script lint-js",
     "test-debug": "NODE_ENV=development node --inspect-brk -r source-map-support/register $(npm bin)/jest -i --updateSnapshot $@",
     "test-cli": "./bin/puzzlescript.js --no-ui --game 'Beam Islands' --level 1 --size small --resume",
@@ -126,6 +126,9 @@
     "console",
     "terminal"
   ],
+  "engines": {
+      "node": ">=4.0.0"
+  },
   "author": "Philip Schatz",
   "license": "MIT",
   "bugs": {

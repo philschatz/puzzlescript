@@ -63,7 +63,7 @@ export class SimpleRuleGroup extends BaseForLines implements IRule {
 
     evaluate(level: Level, onlyEvaluateFirstMatch: boolean) {
         let start
-        if (process.env['NODE_ENV'] === 'development') {
+        if (process.env['LOG_LEVEL'] === 'debug') {
             start = Date.now()
         }
         // Keep looping as long as one of the rules evaluated something
@@ -121,8 +121,8 @@ export class SimpleRuleGroup extends BaseForLines implements IRule {
 
         if (process.env['LOG_LEVEL'] === 'debug') {
             if (allMutations.length > 0) {
-                if (start) {
-                    console.error(`Rule ${this.__getSourceLineAndColumn().lineNum} applied. ${iteration === 1 ? '' : `(x${iteration})`} (${Date.now() - start}ms)`)
+                if (start && (Date.now() - start) > 30 /*only show times for rules that took a long time*/) {
+                    console.error(`Rule ${this.__getSourceLineAndColumn().lineNum} applied. ${iteration === 1 ? '' : `(x${iteration})`} [[${Date.now() - start}ms]]`)
                 } else {
                     console.error(`Rule ${this.__getSourceLineAndColumn().lineNum} applied. ${iteration === 1 ? '' : `(x${iteration})`}`)
                 }
@@ -265,9 +265,9 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
         // If a Rule cannot impact itself then the evaluation order does not matter.
         // We can vastly simplify the evaluation in that case
         let ret: IMutation[] = []
-        if (process.env['LOG_LEVEL'] === 'debug') {
+        if (process.env['NODE_ENV'] === 'development') {
             // A "DEBUGGER" flag was set in the game so we are pausing here
-            if (process.stdout) { TerminalUI.renderScreen(false) }
+            if (process.env['LOG_LEVEL'] == 'debug' && process.stdout) { TerminalUI.renderScreen(false) }
             if (this.debugFlag === DEBUG_FLAG.BREAKPOINT) {
                 debugger
             }
