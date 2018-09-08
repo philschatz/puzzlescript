@@ -632,10 +632,10 @@ export class SimpleBracket extends ISimpleBracket {
 
     shouldUseOnDemandMethod() {
         // return true
-        return false
+        // return false
         // return this.neighbors.length === 1
         // return this.neighbors.length !== 1
-        // return process.env['PUZZLESCRIPT_METHOD'] === 'ondemand'
+        return process.env['PUZZLESCRIPT_METHOD'] === 'ondemand'
     }
 
     getMatchesByTrickling(level: Level, actionBracket: Optional<SimpleBracket>) {
