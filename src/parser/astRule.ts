@@ -92,21 +92,21 @@ export class ASTRule extends BaseForLines {
      */
     simplify(ruleCache: Map<string, SimpleRule>, bracketCache: Map<string, ISimpleBracket>, neighborCache: Map<string, SimpleNeighbor>, tileCache: Map<string, SimpleTileWithModifier>) {
         let simpleRules = this.convertToMultiple().map(r => r.toSimple(ruleCache, bracketCache, neighborCache, tileCache))
-        // let onlyHasOneNeighbor = true
-        // for (const bracket of this.brackets) {
-        //     if (bracket._getAllNeighbors().length > 1) {
-        //         onlyHasOneNeighbor = false
-        //     }
-        // }
-        // if (onlyHasOneNeighbor) {
-        //     simpleRules[0].subscribeToCellChanges()
-        //     return simpleRules[0]
-        // }
-        // Register listeners to Cell changes
-        for (const rule of simpleRules) {
-            rule.subscribeToCellChanges()
+        // If the brackets are all the same object then that means we can just output 1 rule
+        // (the brackets don't have any directions. Otherwise they would not have been
+        // deduplicated as part of the .toKey() and cacheGetAndSet)
+        const isDuplicate = simpleRules.length === 1 || (!this.isRandom() && simpleRules[1] && simpleRules[0].canCollapseBecauseBracketsMatch(simpleRules[1]))
+        if (isDuplicate) {
+            simpleRules[0].subscribeToCellChanges()
+            // we still need it to be in a RuleGroup
+            // so the Rule can be evaluated multiple times (not just once)
+            return new SimpleRuleGroup(this.__source, this.isRandom(), [simpleRules[0]])
+        } else {
+            for (const rule of simpleRules) {
+                rule.subscribeToCellChanges()
+            }
+            return new SimpleRuleGroup(this.__source, this.isRandom(), simpleRules)
         }
-        return new SimpleRuleGroup(this.__source, this.isRandom(), simpleRules)
     }
 
     private toSimple(ruleCache: Map<string, SimpleRule>, bracketCache: Map<string, ISimpleBracket>, neighborCache: Map<string, SimpleNeighbor>, tileCache: Map<string, SimpleTileWithModifier>) {

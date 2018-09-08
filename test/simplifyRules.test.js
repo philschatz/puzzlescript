@@ -345,4 +345,153 @@ describe('Rule simplifier', () => {
         expect(engine.currentLevel.getCells()[1][0].getSpritesAsSet().has(shadow)).toBe(false)
         expect(engine.currentLevel.getCells()[1][1].getSpritesAsSet().has(shadow)).toBe(true)
     })
+
+
+    it('collapses rules when they do not depend on the direction (major performance speedup)', () => {
+        const { engine, data } = parseEngine(`title foo
+
+    ========
+    OBJECTS
+    ========
+
+    Background
+    blue
+
+    Player
+    green
+
+    =======
+    LEGEND
+    =======
+
+    . = Background
+    P = Player
+
+    ================
+    COLLISIONLAYERS
+    ================
+
+    Background
+    Player
+
+    ======
+    RULES
+    ======
+
+    [ Player ] -> [ ]
+    [ ] -> [ Player ]
+
+    =======
+    LEVELS
+    =======
+
+    P
+
+    `) // end game
+
+        expect(data.rules.length).toBe(2)
+
+        // Ensure that both rules were collapsed because they do not depend on the direction
+        expect(data.rules[0].rules.length).toBe(1)
+        expect(data.rules[1].rules.length).toBe(1)
+    })
+
+    it('keeps rules expanded when they have neighbors', () => {
+        const { engine, data } = parseEngine(`title foo
+
+    ========
+    OBJECTS
+    ========
+
+    Background
+    blue
+
+    Player
+    green
+
+    =======
+    LEGEND
+    =======
+
+    . = Background
+    P = Player
+
+    ================
+    COLLISIONLAYERS
+    ================
+
+    Background
+    Player
+
+    ======
+    RULES
+    ======
+
+    [ Player | Player ] -> [ | ]
+    [ | ] -> [ Player | Player]
+
+    =======
+    LEVELS
+    =======
+
+    P
+
+    `) // end game
+
+        expect(data.rules.length).toBe(2)
+
+        // Ensure that both rules were collapsed because they do not depend on the direction
+        expect(data.rules[0].rules.length).toBe(4)
+        expect(data.rules[1].rules.length).toBe(4)
+    })
+
+    it('keeps rules expanded when the action has a direction', () => {
+        const { engine, data } = parseEngine(`title foo
+
+    ========
+    OBJECTS
+    ========
+
+    Background
+    blue
+
+    Player
+    green
+
+    =======
+    LEGEND
+    =======
+
+    . = Background
+    P = Player
+
+    ================
+    COLLISIONLAYERS
+    ================
+
+    Background
+    Player
+
+    ======
+    RULES
+    ======
+
+    [ ] -> [ > Player ]
+    [ > Player ] -> [ Player]
+
+    =======
+    LEVELS
+    =======
+
+    P
+
+    `) // end game
+
+        expect(data.rules.length).toBe(2)
+
+        // Ensure that both rules were collapsed because they do not depend on the direction
+        expect(data.rules[0].rules.length).toBe(4)
+        expect(data.rules[1].rules.length).toBe(4)
+    })
+
 })

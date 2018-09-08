@@ -351,6 +351,24 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
     isLate() { return this._isLate }
     hasRigid() { return this.isRigid }
 
+    canCollapseBecauseBracketsMatch(rule: SimpleRule) {
+        for (let index = 0; index < this.conditionBrackets.length; index++) {
+            if (this.conditionBrackets[index] !== rule.conditionBrackets[index]) {
+                return false
+            }
+            // also ensure there is only one neighbor.
+            // that way we can de-duplicate the rule
+            if (this.conditionBrackets[index]._getAllNeighbors().length > 1) {
+                return false
+            }
+        }
+        for (let index = 0; index < this.actionBrackets.length; index++) {
+            if (this.actionBrackets[index] !== rule.actionBrackets[index]) {
+                return false
+            }
+        }
+        return true
+    }
     addCellsToEmptyRules(cells: Iterable<Cell>) {
         for (const bracket of this.conditionBrackets) {
             bracket.addCellsToEmptyRules(cells)
@@ -1640,7 +1658,7 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
                         bracket.addCell(index, this, t, sprite, cell, wantsToMove)
                     }
                 }
-            } else {
+            } else if (this.trickleCells.has(cell)) {
                 this.trickleCells.delete(cell)
                 // adding the Cell causes the set of Tiles to no longer match.
                 // If it previously matched, notify the bracket that it no longer matches
