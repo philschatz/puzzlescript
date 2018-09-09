@@ -1,13 +1,12 @@
-import { IGameCode } from './BaseForLines'
-import { BaseForLines } from "./BaseForLines";
-import { Cell } from '../engine';
-import { IGameTile } from './tile';
+import { Cell } from '../engine'
+import { BaseForLines, IGameCode } from './BaseForLines'
+import { IGameTile } from './tile'
 
 export enum WIN_QUALIFIER {
     NO = 'NO',
     ALL = 'ALL',
     ANY = 'ANY',
-    SOME = 'SOME',
+    SOME = 'SOME'
 }
 
 export class WinConditionSimple extends BaseForLines {
@@ -23,14 +22,14 @@ export class WinConditionSimple extends BaseForLines {
         }
     }
 
-    cellsThatMatchTile(cells: Iterable<Cell>, tile: IGameTile) {
-        return [...cells].filter(cell => tile.matchesCell(cell))
+    public cellsThatMatchTile(cells: Iterable<Cell>, tile: IGameTile) {
+        return [...cells].filter((cell) => tile.matchesCell(cell))
     }
 
-    isSatisfied(cells: Iterable<Cell>) {
+    public isSatisfied(cells: Iterable<Cell>) {
         const ret = this._isSatisfied(cells)
         if (ret) {
-            if (process.env['NODE_ENV'] === 'development') {
+            if (process.env.NODE_ENV === 'development') {
                 this.__incrementCoverage()
             }
         }
@@ -60,7 +59,6 @@ export class WinConditionOn extends WinConditionSimple {
         super(source, qualifierEnum, tile)
         this.onTile = onTile
     }
-
 
     protected _isSatisfied(cells: Iterable<Cell>) {
         // ALL Target ON CleanDishes

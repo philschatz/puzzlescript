@@ -1,16 +1,16 @@
+import { getLetterSprites } from '../letters'
+import { ASTRule } from '../parser/astRule'
+import { Optional } from '../util'
+import { IGameCode } from './BaseForLines'
+import { CollisionLayer } from './collisionLayer'
+import { LevelMap } from './level'
 import { GameMetadata } from './metadata'
-import { GameSprite, GameLegendTileSimple, IGameTile } from './tile'
 import { IRule } from './rule'
 import { GameSound } from './sound'
-import { LevelMap } from './level'
-import { CollisionLayer } from './collisionLayer'
+import { GameLegendTileSimple, GameSprite, IGameTile } from './tile'
 import { WinConditionSimple } from './winCondition'
-import { ASTRule } from '../parser/astRule';
-import { Optional } from '../util';
-import { getLetterSprites } from '../letters';
-import { IGameCode } from './BaseForLines';
 
-export type IGameNode = {
+export interface IGameNode {
     __getSourceLineAndColumn: () => { lineNum: number, colNum: number }
     __getLineAndColumnRange: () => { start: { line: number, col: number }, end: { line: number, col: number } }
     __coverageCount: Optional<number>
@@ -19,15 +19,15 @@ export type IGameNode = {
 }
 
 export class GameData {
-    readonly title: string
-    readonly metadata: GameMetadata
-    readonly objects: GameSprite[]
-    readonly legends: GameLegendTileSimple[]
-    readonly sounds: GameSound[]
-    readonly collisionLayers: CollisionLayer[]
-    readonly rules: IRule[]
-    readonly winConditions: WinConditionSimple[]
-    readonly levels: LevelMap[]
+    public readonly title: string
+    public readonly metadata: GameMetadata
+    public readonly objects: GameSprite[]
+    public readonly legends: GameLegendTileSimple[]
+    public readonly sounds: GameSound[]
+    public readonly collisionLayers: CollisionLayer[]
+    public readonly rules: IRule[]
+    public readonly winConditions: WinConditionSimple[]
+    public readonly levels: LevelMap[]
     private readonly cacheSpriteSize: {spriteHeight: number, spriteWidth: number}
     private readonly letterSprites: Map<string, GameSprite>
 
@@ -61,9 +61,9 @@ export class GameData {
         const bracketCache = new Map()
         const neighborCache = new Map()
         const tileCache = new Map()
-        this.rules = rules.map(rule => rule.simplify(ruleCache, bracketCache, neighborCache, tileCache))
+        this.rules = rules.map((rule) => rule.simplify(ruleCache, bracketCache, neighborCache, tileCache))
 
-        const firstSpriteWithPixels = this.objects.filter(sprite => sprite.hasPixels())[0]
+        const firstSpriteWithPixels = this.objects.filter((sprite) => sprite.hasPixels())[0]
         if (firstSpriteWithPixels) {
             const firstSpritePixels = firstSpriteWithPixels.getPixels(1, 1) // We don't care about these args
             this.cacheSpriteSize = {
@@ -86,17 +86,17 @@ export class GameData {
         this.collisionLayers.push(letterCollisionLayer)
     }
 
-    _getSpriteByName(name: string) {
-        return this.objects.find(sprite => sprite.getName().toLowerCase() === name.toLowerCase())
+    public _getSpriteByName(name: string) {
+        return this.objects.find((sprite) => sprite.getName().toLowerCase() === name.toLowerCase())
     }
-    _getTileByName(name: string) {
-        return this.legends.find(tile => tile.getName().toLowerCase() === name.toLowerCase())
+    public _getTileByName(name: string) {
+        return this.legends.find((tile) => tile.getName().toLowerCase() === name.toLowerCase())
     }
 
-    getMagicBackgroundSprite() {
-        let background: Optional<GameSprite> = this._getSpriteByName('background')
+    public getMagicBackgroundSprite() {
+        const background: Optional<GameSprite> = this._getSpriteByName('background')
         if (!background) {
-            const legendBackground = this.legends.find(tile => tile.spriteNameOrLevelChar.toLocaleLowerCase() === 'background')
+            const legendBackground = this.legends.find((tile) => tile.spriteNameOrLevelChar.toLocaleLowerCase() === 'background')
             if (legendBackground) {
                 if (legendBackground.isOr()) {
                     return null
@@ -110,15 +110,15 @@ export class GameData {
         }
         return background
     }
-    getPlayer(): IGameTile {
-        const player = this._getSpriteByName('player') || this.legends.find(tile => tile.spriteNameOrLevelChar.toLocaleLowerCase() === 'player')
+    public getPlayer(): IGameTile {
+        const player = this._getSpriteByName('player') || this.legends.find((tile) => tile.spriteNameOrLevelChar.toLocaleLowerCase() === 'player')
         if (!player) {
             throw new Error(`BUG: Could not find the Player sprite or tile in the game`)
         }
         return player
     }
 
-    clearCaches() {
+    public clearCaches() {
         for (const rule of this.rules) {
             rule.clearCaches()
         }
@@ -127,11 +127,11 @@ export class GameData {
         }
     }
 
-    getSpriteSize() {
+    public getSpriteSize() {
         return this.cacheSpriteSize
     }
 
-    getLetterSprite(char: string) {
+    public getLetterSprite(char: string) {
         const sprite = this.letterSprites.get(char)
         if (!sprite) {
             throw new Error(`BUG: Cannot find sprite for letter "${char}"`)

@@ -393,12 +393,10 @@ COLOR_PALETTES.set('whitingjp', {
 
 export function lookupColorPalette(alias: string, colorName: string) {
     let aliasStr
-    if (Number.parseInt(alias) >= 1) {
-        aliasStr = ALIASES[Number.parseInt(alias)]
-    } else if (typeof alias === 'string') {
-        aliasStr = alias
+    if (Number.parseInt(alias, 10) >= 1) {
+        aliasStr = ALIASES[Number.parseInt(alias, 10)]
     } else {
-        throw new Error('BUG: Alias must be a string or a number')
+        aliasStr = alias
     }
     const map = COLOR_PALETTES.get(aliasStr)
     if (!map) {

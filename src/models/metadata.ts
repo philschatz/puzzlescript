@@ -1,8 +1,8 @@
 import { IColor } from './colors'
 
 export class Dimension {
-    readonly width: number
-    readonly height: number
+    public readonly width: number
+    public readonly height: number
 
     constructor(width: number, height: number) {
         this.width = width
@@ -11,57 +11,57 @@ export class Dimension {
 }
 
 export class GameMetadata {
-    author?: string
-    homepage?: string
-    youtube?: string
-    zoomscreen?: Dimension
-    flickscreen?: Dimension
-    color_palette?: string
-    background_color?: IColor
-    text_color?: IColor
-    realtime_interval?: string
-    key_repeat_interval?: string
-    again_interval?: string
-    noaction: boolean
-    noundo: boolean
-    run_rules_on_level_start?: string
-    norepeat_action: boolean
-    throttle_movement: boolean
-    norestart: boolean
-    require_player_movement: boolean
-    verbose_logging: boolean
+    public author?: string
+    public homepage?: string
+    public youtube?: string
+    public zoomscreen?: Dimension
+    public flickscreen?: Dimension
+    public colorPalette?: string
+    public backgroundColor?: IColor
+    public textColor?: IColor
+    public realtimeInterval?: string
+    public keyRepeatInterval?: string
+    public againInterval?: string
+    public noAction: boolean
+    public noUndo: boolean
+    public runRulesOnLevelStart?: string
+    public noRepeatAction: boolean
+    public throttleMovement: boolean
+    public noRestart: boolean
+    public requirePlayerMovement: boolean
+    public verboseLogging: boolean
 
     constructor() {
-        this.noaction = false
-        this.noundo = false
-        this.norepeat_action = false
-        this.throttle_movement = false
-        this.norestart = false
-        this.require_player_movement = false
-        this.verbose_logging = false
+        this.noAction = false
+        this.noUndo = false
+        this.noRepeatAction = false
+        this.throttleMovement = false
+        this.noRestart = false
+        this.requirePlayerMovement = false
+        this.verboseLogging = false
     }
 
-    _setValue(key: string, value: boolean | string | Dimension | IColor) {
+    public _setValue(key: string, value: boolean | string | Dimension | IColor) {
         switch (key) {
-            case 'author': this.author = <string> value; break
-            case 'homepage': this.homepage = <string> value; break
-            case 'youtube': this.youtube = <string> value; break
-            case 'zoomscreen': this.zoomscreen = <Dimension> value; break
-            case 'flickscreen': this.flickscreen = <Dimension> value; break
-            case 'color_palette': this.color_palette = <string> value; break
-            case 'background_color': this.background_color = <IColor> value; break
-            case 'text_color': this.text_color = <IColor> value; break
-            case 'realtime_interval': this.realtime_interval = <string> value; break
-            case 'key_repeat_interval': this.key_repeat_interval = <string> value; break
-            case 'again_interval': this.again_interval = <string> value; break
-            case 'noaction': this.noaction = <boolean> value; break
-            case 'noundo': this.noundo = <boolean> value; break
-            case 'run_rules_on_level_start': this.run_rules_on_level_start = <string> value; break
-            case 'norepeat_action': this.norepeat_action = <boolean> value; break
-            case 'throttle_movement': this.throttle_movement = <boolean> value; break
-            case 'norestart': this.norestart = <boolean> value; break
-            case 'require_player_movement': this.require_player_movement = <boolean> value; break
-            case 'verbose_logging': this.verbose_logging = <boolean> value; break
+            case 'author': this.author = value as string; break
+            case 'homepage': this.homepage = value as string; break
+            case 'youtube': this.youtube = value as string; break
+            case 'zoomscreen': this.zoomscreen = value as Dimension; break
+            case 'flickscreen': this.flickscreen = value as Dimension; break
+            case 'color_palette': this.colorPalette = value as string; break
+            case 'background_color': this.backgroundColor = value as IColor; break
+            case 'text_color': this.textColor = value as IColor; break
+            case 'realtime_interval': this.realtimeInterval = value as string; break
+            case 'key_repeat_interval': this.keyRepeatInterval = value as string; break
+            case 'again_interval': this.againInterval = value as string; break
+            case 'noaction': this.noAction = value as boolean; break
+            case 'noundo': this.noUndo = value as boolean; break
+            case 'run_rules_on_level_start': this.runRulesOnLevelStart = value as string; break
+            case 'norepeat_action': this.noRepeatAction = value as boolean; break
+            case 'throttle_movement': this.throttleMovement = value as boolean; break
+            case 'norestart': this.noRestart = value as boolean; break
+            case 'require_player_movement': this.requirePlayerMovement = value as boolean; break
+            case 'verbose_logging': this.verboseLogging = value as boolean; break
             default:
                 throw new Error(`BUG: Unsupported config field "${key}" with value "${value}"`)
         }

@@ -1,4 +1,4 @@
-import { Optional } from "../util";
+import { Optional } from '../util'
 
 /**
  * Seedable random number generator functions.
@@ -20,18 +20,18 @@ import { Optional } from "../util";
  * @return {Array} An array of bytes
  */
 function getBytes(str: string) {
-    var output: number[] = [];
-    for (var i = 0; i < str.length; i++) {
-        var c = str.charCodeAt(i);
-        var bytes: number[] = [];
+    let output: number[] = []
+    for (let i = 0; i < str.length; i++) {
+        let c = str.charCodeAt(i)
+        const bytes: number[] = []
         do {
-            bytes.push(c & 0xFF);
-            c = c >> 8;
-        } while (c > 0);
-        output = output.concat(bytes.reverse());
+            bytes.push(c & 0xFF) // tslint:disable-line:no-bitwise
+            c = c >> 8 // tslint:disable-line:no-bitwise
+        } while (c > 0)
+        output = output.concat(bytes.reverse())
     }
-    return output;
-};
+    return output
+}
 
 class RC4 {
     private s: number[]
@@ -43,49 +43,48 @@ class RC4 {
      * @constructor
      */
     constructor(seed: string) {
-        this.s = new Array(256);
-        this.i = 0;
-        this.j = 0;
-        for (var i = 0; i < 256; i++) {
-            this.s[i] = i;
+        this.s = new Array(256)
+        this.i = 0
+        this.j = 0
+        for (let i = 0; i < 256; i++) {
+            this.s[i] = i
         }
         if (seed) {
-            this.mix(seed);
+            this.mix(seed)
         }
     }
 
-    _swap(i: number, j: number) {
-        var tmp = this.s[i];
-        this.s[i] = this.s[j];
-        this.s[j] = tmp;
-    };
+    public _swap(i: number, j: number) {
+        const tmp = this.s[i]
+        this.s[i] = this.s[j]
+        this.s[j] = tmp
+    }
 
     /**
      * Mix additional entropy into this generator.
      * @param {String} seed
      */
-    mix(seed: string) {
-        var input = getBytes(seed);
-        var j = 0;
-        for (var i = 0; i < this.s.length; i++) {
-            j += this.s[i] + input[i % input.length];
-            j %= 256;
-            this._swap(i, j);
+    public mix(seed: string) {
+        const input = getBytes(seed)
+        let j = 0
+        for (let i = 0; i < this.s.length; i++) {
+            j += this.s[i] + input[i % input.length]
+            j %= 256
+            this._swap(i, j)
         }
-    };
+    }
 
     /**
      * @return The next byte of output from the generator.
      */
-    next() {
-        this.i = (this.i + 1) % 256;
-        this.j = (this.j + this.s[this.i]) % 256;
-        this._swap(this.i, this.j);
-        return this.s[(this.s[this.i] + this.s[this.j]) % 256];
-    };
+    public next() {
+        this.i = (this.i + 1) % 256
+        this.j = (this.j + this.s[this.i]) % 256
+        this._swap(this.i, this.j)
+        return this.s[(this.s[this.i] + this.s[this.j]) % 256]
+    }
 
 }
-
 
 class RNG {
     private _normal: Optional<number>
@@ -118,30 +117,29 @@ class RNG {
         //     //window.console.log("setting seed "+seed);
         //     //print_call_stack();
         // }
-        this._normal = null;
-        this._state = new RC4(JSON.stringify(seed));
+        this._normal = null
+        this._state = new RC4(JSON.stringify(seed))
     }
 
     /**
      * @return {number} Uniform random number between 0 and 255.
      */
-    nextByte() {
-        return this._state.next();
+    public nextByte() {
+        return this._state.next()
     }
-
 
     /**
      * @return {number} Uniform random number between 0 and 1.
      */
-    uniform() {
-        var BYTES = 7; // 56 bits to make a 53-bit double
-        var output = 0;
-        for (var i = 0; i < BYTES; i++) {
-            output *= 256;
-            output += this.nextByte();
+    public uniform() {
+        const BYTES = 7 // 56 bits to make a 53-bit double
+        let output = 0
+        for (let i = 0; i < BYTES; i++) {
+            output *= 256
+            output += this.nextByte()
         }
-        return output / (Math.pow(2, BYTES * 8) - 1);
-    };
+        return output / (Math.pow(2, BYTES * 8) - 1)
+    }
 
     /**
      * Produce a random integer within [n, m).
@@ -149,55 +147,56 @@ class RNG {
      * @param {number} m
      *
      */
-    random(n: number, m: number) {
+    public random(n: Optional<number>, m: Optional<number>) {
         if (n == null) {
-            return this.uniform();
+            return this.uniform()
         } else if (m == null) {
-            m = n;
-            n = 0;
+            m = n
+            n = 0
         }
-        return n + Math.floor(this.uniform() * (m - n));
-    };
+        return n + Math.floor(this.uniform() * (m - n))
+    }
 
     /**
      * Generates numbers using this.uniform() with the Box-Muller transform.
      * @return {number} Normally-distributed random number of mean 0, variance 1.
      */
-    normal() {
+    public normal() {
         if (this._normal !== null) {
-            var n = this._normal;
-            this._normal = null;
-            return n;
+            const n = this._normal
+            this._normal = null
+            return n
         } else {
-            var x = this.uniform() || Math.pow(2, -53); // can't be exactly 0
-            var y = this.uniform();
-            this._normal = Math.sqrt(-2 * Math.log(x)) * Math.sin(2 * Math.PI * y);
-            return Math.sqrt(-2 * Math.log(x)) * Math.cos(2 * Math.PI * y);
+            const x = this.uniform() || Math.pow(2, -53) // can't be exactly 0
+            const y = this.uniform()
+            this._normal = Math.sqrt(-2 * Math.log(x)) * Math.sin(2 * Math.PI * y)
+            return Math.sqrt(-2 * Math.log(x)) * Math.cos(2 * Math.PI * y)
         }
-    };
+    }
 
     /**
      * Generates numbers using this.uniform().
      * @return {number} Number from the exponential distribution, lambda = 1.
      */
-    exponential() {
-        return -Math.log(this.uniform() || Math.pow(2, -53));
-    };
+    public exponential() {
+        return -Math.log(this.uniform() || Math.pow(2, -53))
+    }
 
     /**
      * Generates numbers using this.uniform() and Knuth's method.
      * @param {number} [mean=1]
      * @return {number} Number from the Poisson distribution.
      */
-    poisson(mean: number) {
-        var L = Math.exp(-(mean || 1));
-        var k = 0, p = 1;
+    public poisson(mean: number) {
+        const L = Math.exp(-(mean || 1))
+        let k = 0
+        let p = 1
         do {
-            k++;
-            p *= this.uniform();
-        } while (p > L);
-        return k - 1;
-    };
+            k++
+            p *= this.uniform()
+        } while (p > L)
+        return k - 1
+    }
 
     /**
      * Generates numbers using this.uniform(), this.normal(),
@@ -247,6 +246,4 @@ class RNG {
     // }
 }
 
-
-
-export {RNG}
+export { RNG }

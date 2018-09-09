@@ -1,19 +1,19 @@
 import { EventEmitter2, Listener } from 'eventemitter2'
+import { CollisionLayer } from './models/collisionLayer'
+import { AbstractCommand, COMMAND_TYPE } from './models/command'
 import { GameData } from './models/game'
+import { IMutation, IRule } from './models/rule'
+import { GameSound } from './models/sound'
 import { GameSprite } from './models/tile'
-import { IRule, IMutation } from './models/rule'
-import { setAddAll, RULE_DIRECTION, setDifference, Optional, setEquals, resetRandomSeed, _flatten } from './util'
-import { AbstractCommand, COMMAND_TYPE } from './models/command';
-import { GameSound } from './models/sound';
-import { CollisionLayer } from './models/collisionLayer';
-import {SpriteBitSet} from './spriteBitSet';
+import { SpriteBitSet } from './spriteBitSet'
+import { _flatten, Optional, resetRandomSeed, RULE_DIRECTION, setAddAll, setDifference, setEquals } from './util'
 
-type CollisionLayerState = {
+interface ICollisionLayerState {
     readonly wantsToMove: Optional<RULE_DIRECTION>
     readonly sprite: GameSprite
 }
 
-type TickResult = {
+interface ITickResult {
     changedCells: Set<Cell>,
     soundToPlay: Optional<GameSound>,
     messageToShow: Optional<string>,
@@ -22,8 +22,7 @@ type TickResult = {
     wasAgainTick: boolean
 }
 
-type Snapshot = Set<GameSprite>[][]
-
+type Snapshot = Array<Array<Set<GameSprite>>>
 
 /**
  * The state of sprites in one position of the current level being played.
@@ -34,12 +33,12 @@ type Snapshot = Set<GameSprite>[][]
  * of one position of the current level.
  */
 export class Cell {
-    private readonly level: Optional<Level>
-    private readonly state: Map<CollisionLayer, CollisionLayerState>
-    private cacheCollisionLayers: CollisionLayer[]
     public readonly rowIndex: number
     public readonly colIndex: number
     public readonly spriteBitSet: SpriteBitSet
+    private readonly level: Optional<Level>
+    private readonly state: Map<CollisionLayer, ICollisionLayerState>
+    private cacheCollisionLayers: CollisionLayer[]
     private cachedKeyValue: Optional<string>
 
     constructor(level: Optional<Level>, sprites: Set<GameSprite>, rowIndex: number, colIndex: number) {
@@ -55,26 +54,9 @@ export class Cell {
             this._setWantsToMove(sprite, RULE_DIRECTION.STATIONARY)
         }
     }
-    private _setState(collisionLayer: CollisionLayer, sprite: Optional<GameSprite>, wantsToMove: Optional<RULE_DIRECTION>) {
-        let needsToUpdateCache
-        if (sprite) {
-            needsToUpdateCache = this.cacheCollisionLayers.indexOf(collisionLayer) < 0
-            this.state.set(collisionLayer, {wantsToMove, sprite})
-        } else {
-            this.state.delete(collisionLayer)
-            needsToUpdateCache = true
-        }
-
-        if (needsToUpdateCache) {
-            // Update the collisionLayer Cache
-            this.cacheCollisionLayers = [...this.state.keys()]
-            .sort((c1, c2) => c1.id - c2.id)
-        }
-        this.invalidateKey()
-    }
-    _setWantsToMove(sprite: GameSprite, wantsToMove: Optional<RULE_DIRECTION>) {
+    public _setWantsToMove(sprite: GameSprite, wantsToMove: Optional<RULE_DIRECTION>) {
         const collisionLayer = sprite.getCollisionLayer()
-        const {wantsToMove: cellWantsToMove, sprite: cellSprite} = this.getStateForCollisionLayer(collisionLayer)
+        const { wantsToMove: cellWantsToMove, sprite: cellSprite } = this.getStateForCollisionLayer(collisionLayer)
         const didActuallyChangeDir = cellWantsToMove !== wantsToMove
         const didActuallyChangeSprite = cellSprite !== sprite
         // replace the sprite in the bitSet
@@ -93,7 +75,7 @@ export class Cell {
         }
         return didActuallyChangeSprite || didActuallyChangeDir
     }
-    _deleteWantsToMove(sprite: GameSprite) {
+    public _deleteWantsToMove(sprite: GameSprite) {
         // There may be other sprites in the same ... oh wait, no that's not possible.
         const collisionLayer = sprite.getCollisionLayer()
         const cellSprite = this.getSpriteByCollisionLayer(collisionLayer)
@@ -107,26 +89,11 @@ export class Cell {
 
         return didActuallyChange
     }
-    private getLevel() {
-        if (!this.level) {
-            throw new Error(`BUG: we need an engine Level in order to find neighbors. It is optional for letters in messages`)
-        }
-        return this.level
-    }
-    private getStateForCollisionLayer(collisionLayer: CollisionLayer) {
-        const state = this.state.get(collisionLayer)
-        if (!state) {
-            return {wantsToMove: null, sprite: null}
-        }
-        return state
-    }
-    setWantsToMoveCollisionLayer(collisionLayer: CollisionLayer, wantsToMove: RULE_DIRECTION) {
+    public setWantsToMoveCollisionLayer(collisionLayer: CollisionLayer, wantsToMove: RULE_DIRECTION) {
         // Check that there is a sprite for this collision layer
-        const {sprite, wantsToMove: cellWantsToMove} = this.getStateForCollisionLayer(collisionLayer)
+        const { sprite, wantsToMove: cellWantsToMove } = this.getStateForCollisionLayer(collisionLayer)
         if (!sprite) {
-            debugger
-            console.error(collisionLayer.toString())
-            throw new Error(`BUG: No sprite for collision layer. Cannot set direction`)
+            throw new Error(`BUG: No sprite for collision layer. Cannot set direction.\n${collisionLayer.toString()}`)
         }
         const didActuallyChange = cellWantsToMove !== wantsToMove
 
@@ -135,16 +102,16 @@ export class Cell {
         sprite.updateCell(this, wantsToMove)
         return didActuallyChange
     }
-    getSpriteByCollisionLayer(collisionLayer: CollisionLayer) {
-        const {sprite} = this.getStateForCollisionLayer(collisionLayer)
+    public getSpriteByCollisionLayer(collisionLayer: CollisionLayer) {
+        const { sprite } = this.getStateForCollisionLayer(collisionLayer)
         return sprite || null
     }
-    getCollisionLayers() {
+    public getCollisionLayers() {
         // return [...this._state.keys()]
         //     .sort((c1, c2) => c1.id - c2.id)
         return this.cacheCollisionLayers
     }
-    getSprites() {
+    public getSprites() {
         // Just pull out the sprite, not the wantsToMoveDir
         const sprites: GameSprite[] = []
         const collisionLayers = this.getCollisionLayers()
@@ -156,62 +123,57 @@ export class Cell {
         }
         return sprites.reverse() // reversed so we render sprites properly
     }
-    getSpritesAsSet() {
+    public getSpritesAsSet() {
         // Just pull out the sprite, not the wantsToMoveDir
         const sprites = new Set<GameSprite>()
-        for (const {sprite} of this.state.values()) {
+        for (const { sprite } of this.state.values()) {
             sprites.add(sprite)
         }
         return sprites
     }
-    getSpriteAndWantsToMoves() {
+    public getSpriteAndWantsToMoves() {
         // Just pull out the sprite, not the wantsToMoveDir
         // Retur na new set so we can mutate it later
         const map = new Map()
         for (const collisionLayer of this.getCollisionLayers()) {
-            const {sprite, wantsToMove} = this.getStateForCollisionLayer(collisionLayer)
+            const { sprite, wantsToMove } = this.getStateForCollisionLayer(collisionLayer)
             map.set(sprite, wantsToMove)
         }
         return map
     }
-    getCollisionLayerWantsToMove(collisionLayer: CollisionLayer) {
-        const {wantsToMove} = this.getStateForCollisionLayer(collisionLayer)
+    public getCollisionLayerWantsToMove(collisionLayer: CollisionLayer) {
+        const { wantsToMove } = this.getStateForCollisionLayer(collisionLayer)
         return wantsToMove || null
     }
-    hasSprite(sprite: GameSprite) {
+    public hasSprite(sprite: GameSprite) {
         const cellSprite = this.getSpriteByCollisionLayer(sprite.getCollisionLayer())
         return sprite === cellSprite
     }
-
-    private _getRelativeNeighbor(y: number, x: number) {
-        return this.getLevel().getCellOrNull(this.rowIndex + y, this.colIndex + x)
-    }
-    getNeighbor(direction: string) {
+    public getNeighbor(direction: string) {
         switch (direction) {
             case RULE_DIRECTION.UP:
-                return this._getRelativeNeighbor(-1, 0)
+                return this.getRelativeNeighbor(-1, 0)
             case RULE_DIRECTION.DOWN:
-                return this._getRelativeNeighbor(1, 0)
+                return this.getRelativeNeighbor(1, 0)
             case RULE_DIRECTION.LEFT:
-                return this._getRelativeNeighbor(0, -1)
+                return this.getRelativeNeighbor(0, -1)
             case RULE_DIRECTION.RIGHT:
-                return this._getRelativeNeighbor(0, 1)
+                return this.getRelativeNeighbor(0, 1)
             default:
-                debugger
                 throw new Error(`BUG: Unsupported direction "${direction}"`)
         }
     }
-    getWantsToMove(sprite: GameSprite) {
+    public getWantsToMove(sprite: GameSprite) {
         return this.getCollisionLayerWantsToMove(sprite.getCollisionLayer())
     }
-    hasCollisionWithSprite(otherSprite: GameSprite) {
+    public hasCollisionWithSprite(otherSprite: GameSprite) {
         return !!this.getCollisionLayerWantsToMove(otherSprite.getCollisionLayer())
     }
-    clearWantsToMove(sprite: GameSprite) {
+    public clearWantsToMove(sprite: GameSprite) {
         this._setWantsToMove(sprite, RULE_DIRECTION.STATIONARY)
         sprite.updateCell(this, RULE_DIRECTION.STATIONARY)
     }
-    addSprite(sprite: GameSprite, wantsToMove: Optional<RULE_DIRECTION>) {
+    public addSprite(sprite: GameSprite, wantsToMove: Optional<RULE_DIRECTION>) {
         let didActuallyChange = false
         // If we already have a sprite in that collision layer then we need to remove it
         const prevSprite = this.getSpriteByCollisionLayer(sprite.getCollisionLayer())
@@ -228,7 +190,7 @@ export class Cell {
         sprite.addCell(this, wantsToMove)
         return didActuallyChange
     }
-    updateSprite(sprite: GameSprite, wantsToMove: RULE_DIRECTION) {
+    public updateSprite(sprite: GameSprite, wantsToMove: RULE_DIRECTION) {
         // Copy/pasta from addSprite except it calls updateCell
         let didActuallyChange = false
         // If we already have a sprite in that collision layer then we need to remove it
@@ -244,10 +206,66 @@ export class Cell {
         sprite.updateCell(this, wantsToMove)
         return didActuallyChange
     }
-    removeSprite(sprite: GameSprite) {
+    public removeSprite(sprite: GameSprite) {
         const didActuallyChange = this._deleteWantsToMove(sprite)
         sprite.removeCell(this)
         return didActuallyChange
+    }
+    public toString() {
+        return `Cell [${this.rowIndex}][${this.colIndex}] ${[...this.getSpriteAndWantsToMoves().entries()].map(([sprite, wantsToMove]) => `${wantsToMove} ${sprite.getName()}`).join(' ')}`
+    }
+    public toKey() {
+        if (!this.cachedKeyValue) {
+            this.cachedKeyValue = [...this.state.values()].map(({ sprite, wantsToMove }) => `${wantsToMove} ${sprite.getName()}`).join(' ')
+            // this.cachedKeyValue = [...this.getSpriteAndWantsToMoves().entries()].map(([sprite, wantsToMove]) => `${wantsToMove} ${sprite.getName()}`).join(' ')
+        }
+        return this.cachedKeyValue
+    }
+    public toSnapshot() {
+        return this.getSpritesAsSet()
+    }
+    public fromSnapshot(newSprites: Set<GameSprite>) {
+        const currentSprites = this.getSpritesAsSet()
+        const spritesToRemove = setDifference(currentSprites, newSprites)
+        const spritesToAdd = setDifference(newSprites, currentSprites)
+        // Remove Sprites
+        this.removeSprites(spritesToRemove)
+        // Add Sprites
+        this.addSprites(spritesToAdd)
+    }
+    private _setState(collisionLayer: CollisionLayer, sprite: Optional<GameSprite>, wantsToMove: Optional<RULE_DIRECTION>) {
+        let needsToUpdateCache
+        if (sprite) {
+            needsToUpdateCache = this.cacheCollisionLayers.indexOf(collisionLayer) < 0
+            this.state.set(collisionLayer, { wantsToMove, sprite })
+        } else {
+            this.state.delete(collisionLayer)
+            needsToUpdateCache = true
+        }
+
+        if (needsToUpdateCache) {
+            // Update the collisionLayer Cache
+            this.cacheCollisionLayers = [...this.state.keys()]
+            .sort((c1, c2) => c1.id - c2.id)
+        }
+        this.invalidateKey()
+    }
+    private getLevel() {
+        if (!this.level) {
+            throw new Error(`BUG: we need an engine Level in order to find neighbors. It is optional for letters in messages`)
+        }
+        return this.level
+    }
+    private getStateForCollisionLayer(collisionLayer: CollisionLayer) {
+        const state = this.state.get(collisionLayer)
+        if (!state) {
+            return { wantsToMove: null, sprite: null }
+        }
+        return state
+    }
+
+    private getRelativeNeighbor(y: number, x: number) {
+        return this.getLevel().getCellOrNull(this.rowIndex + y, this.colIndex + x)
     }
     private removeSprites(sprites: Iterable<GameSprite>) {
         for (const sprite of sprites) {
@@ -259,68 +277,62 @@ export class Cell {
             this.addSprite(sprite, null)
         }
     }
-    toString() {
-        return `Cell [${this.rowIndex}][${this.colIndex}] ${[...this.getSpriteAndWantsToMoves().entries()].map(([sprite, wantsToMove]) => `${wantsToMove} ${sprite.getName()}`).join(' ')}`
-    }
-    toKey() {
-        if (!this.cachedKeyValue) {
-            this.cachedKeyValue = [...this.state.values()].map(({sprite, wantsToMove}) => `${wantsToMove} ${sprite.getName()}`).join(' ')
-            // this.cachedKeyValue = [...this.getSpriteAndWantsToMoves().entries()].map(([sprite, wantsToMove]) => `${wantsToMove} ${sprite.getName()}`).join(' ')
-        }
-        return this.cachedKeyValue
-    }
     private invalidateKey() {
         this.cachedKeyValue = null
-    }
-    toSnapshot() {
-        return this.getSpritesAsSet()
-    }
-    fromSnapshot(newSprites: Set<GameSprite>) {
-        const currentSprites = this.getSpritesAsSet()
-        const spritesToRemove = setDifference(currentSprites, newSprites)
-        const spritesToAdd = setDifference(newSprites, currentSprites)
-        // Remove Sprites
-        this.removeSprites(spritesToRemove)
-        // Add Sprites
-        this.addSprites(spritesToAdd)
     }
 }
 
 export class Level {
     private cells: Optional<Cell[][]>
-    private rowCache: Optional<SpriteBitSet>[]
-    private colCache: Optional<SpriteBitSet>[]
+    private rowCache: Array<Optional<SpriteBitSet>>
+    private colCache: Array<Optional<SpriteBitSet>>
     constructor() {
         this.rowCache = []
         this.colCache = []
     }
-    setCells(cells: Cell[][]) {
+    public setCells(cells: Cell[][]) {
         this.cells = cells
     }
-    getCells() {
+    public getCells() {
         if (!this.cells) {
             throw new Error(`BUG: Should have called setCells() first`)
         }
         return this.cells
     }
-    getCellOrNull(rowIndex: number, colIndex: number) {
+    public getCellOrNull(rowIndex: number, colIndex: number) {
         const row = this.getCells()[rowIndex]
         if (row) {
             return row[colIndex]
         }
         return null
     }
-    getCell(rowIndex: number, colIndex: number) {
+    public getCell(rowIndex: number, colIndex: number) {
         // Skip error checks for performance
         return this.getCells()[rowIndex][colIndex]
     }
-    replaceSprite(cell: Cell, oldSprite: Optional<GameSprite>, newSprite: Optional<GameSprite>) {
+    public replaceSprite(cell: Cell, oldSprite: Optional<GameSprite>, newSprite: Optional<GameSprite>) {
         // When a new Cell is instantiated it will call this method but `this.cells` is not defined yet
         if (this.cells) {
             // Invalidate the row/column cache. It will be rebuilt when requested
             this.rowCache[cell.rowIndex] = null
             this.colCache[cell.colIndex] = null
         }
+    }
+    public rowContainsSprites(rowIndex: number, spritesPresent: SpriteBitSet, anySpritesPresent: SpriteBitSet) {
+        let cache = this.rowCache[rowIndex]
+        if (!cache) {
+            cache = this.computeRowCache(rowIndex)
+            this.rowCache[rowIndex] = cache
+        }
+        return cache.containsAll(spritesPresent) && anySpritesPresent.isEmpty() ? true : cache.containsAny(anySpritesPresent)
+    }
+    public colContainsSprites(colIndex: number, sprites: SpriteBitSet, anySpritesPresent: SpriteBitSet) {
+        let cache = this.colCache[colIndex]
+        if (!cache) {
+            cache = this.computeColCache(colIndex)
+            this.colCache[colIndex] = cache
+        }
+        return cache.containsAll(sprites) && anySpritesPresent.isEmpty() ? true : cache.containsAny(anySpritesPresent)
     }
     private computeRowCache(rowIndex: number) {
         const cols = this.getCells()[0].length
@@ -338,22 +350,6 @@ export class Level {
         }
         return (new SpriteBitSet()).union(bitSets)
     }
-    rowContainsSprites(rowIndex: number, spritesPresent: SpriteBitSet, anySpritesPresent: SpriteBitSet) {
-        let cache = this.rowCache[rowIndex]
-        if (!cache) {
-            cache = this.computeRowCache(rowIndex)
-            this.rowCache[rowIndex] = cache
-        }
-        return cache.containsAll(spritesPresent) && anySpritesPresent.isEmpty() ? true : cache.containsAny(anySpritesPresent)
-    }
-    colContainsSprites(colIndex: number, sprites: SpriteBitSet, anySpritesPresent: SpriteBitSet) {
-        let cache = this.colCache[colIndex]
-        if (!cache) {
-            cache = this.computeColCache(colIndex)
-            this.colCache[colIndex] = cache
-        }
-        return cache.containsAll(sprites) && anySpritesPresent.isEmpty() ? true : cache.containsAny(anySpritesPresent)
-    }
 }
 
 /**
@@ -363,9 +359,9 @@ export class Level {
  */
 export class LevelEngine extends EventEmitter2 {
     public readonly gameData: GameData
+    public pendingPlayerWantsToMove: Optional<RULE_DIRECTION>
+    public hasAgainThatNeedsToRun: boolean
     private currentLevel: Optional<Level>
-    pendingPlayerWantsToMove: Optional<RULE_DIRECTION>
-    hasAgainThatNeedsToRun: boolean
     private undoStack: Snapshot[]
 
     constructor(gameData: GameData) {
@@ -375,7 +371,7 @@ export class LevelEngine extends EventEmitter2 {
         this.undoStack = []
     }
 
-    setLevel(levelNum: number) {
+    public setLevel(levelNum: number) {
         this.undoStack = []
         this.gameData.clearCaches()
 
@@ -383,7 +379,7 @@ export class LevelEngine extends EventEmitter2 {
         if (!levelData) {
             throw new Error(`Invalid levelNum: ${levelNum}`)
         }
-        if (process.env['NODE_ENV'] === 'development') {
+        if (process.env.NODE_ENV === 'development') {
             levelData.__incrementCoverage()
         }
         resetRandomSeed()
@@ -406,7 +402,7 @@ export class LevelEngine extends EventEmitter2 {
         const batchCells: Map<string, Cell[]> = new Map()
         function spriteSetToKey(sprites: Set<GameSprite>) {
             const key = []
-            for (const spriteName of [...sprites].map(sprite => sprite.getName()).sort()) {
+            for (const spriteName of [...sprites].map((sprite) => sprite.getName()).sort()) {
                 key.push(spriteName)
             }
             return key.join(' ')
@@ -434,7 +430,7 @@ export class LevelEngine extends EventEmitter2 {
                     cellStart: i,
                     cellEnd: i + cells.length,
                     cellTotal: allCells.length,
-                    key: key
+                    key
                 })
             }
             // All Cells contain the same set of sprites so just pull out the 1st one
@@ -457,11 +453,7 @@ export class LevelEngine extends EventEmitter2 {
         // Return the cells so the UI can listen to when they change
         return this.getCells()
     }
-
-    private getCells() {
-        return _flatten(this.getCurrentLevel().getCells())
-    }
-    getCurrentLevel() {
+    public getCurrentLevel() {
         if (this.currentLevel) {
             return this.currentLevel
         } else {
@@ -469,9 +461,9 @@ export class LevelEngine extends EventEmitter2 {
         }
     }
 
-    toSnapshot() {
-        return this.getCurrentLevel().getCells().map(row => {
-            return row.map(cell => {
+    public toSnapshot() {
+        return this.getCurrentLevel().getCells().map((row) => {
+            return row.map((cell) => {
                 const ret: string[] = []
                 cell.getSpriteAndWantsToMoves().forEach((wantsToMove, sprite) => {
                     ret.push(`${wantsToMove} ${sprite.getName()}`)
@@ -481,18 +473,105 @@ export class LevelEngine extends EventEmitter2 {
         })
     }
 
-    private tickUpdateCells() {
-        if (process.env['LOG_LEVEL'] === 'debug') {
-            console.error(`applying rules`)
+    public tick() {
+        if (process.env.LOG_LEVEL === 'debug') {
+            console.error(``) // tslint:disable-line:no-console
         }
-        return this._tickUpdateCells(this.gameData.rules.filter(r => !r.isLate()))
+
+        if (this.hasAgainThatNeedsToRun) {
+            // run the AGAIN rules
+            this.hasAgainThatNeedsToRun = false // let the .tick() make it true
+        }
+        const ret = this.tickNormal()
+        // TODO: Handle the commands like RESTART, CANCEL, WIN at this point
+        let soundToPlay: Optional<GameSound> = null
+        let messageToShow: Optional<string> = null
+        let hasWinCommand = false
+        let hasRestart = false
+        for (const command of ret.commands) {
+            switch (command.getType()) {
+                case COMMAND_TYPE.RESTART:
+                    hasRestart = true
+                    break
+                case COMMAND_TYPE.SFX:
+                    soundToPlay = command.getSound()
+                    break
+                case COMMAND_TYPE.MESSAGE:
+                    this.hasAgainThatNeedsToRun = false // make sure we won't be waiting on another tick
+                    messageToShow = command.getMessage()
+                    break
+                case COMMAND_TYPE.WIN:
+                    hasWinCommand = true
+                    break
+                default:
+                    // console.error(`BUG: Unsupported command "${command.getType()}"`) // tslint:disable-line:no-console
+            }
+        }
+        if (process.env.LOG_LEVEL === 'debug') {
+            console.error(`checking win condition.`) // tslint:disable-line:no-console
+        }
+        if (this.hasAgainThatNeedsToRun) {
+            if (process.env.LOG_LEVEL === 'debug') {
+                console.error(`AGAIN command executed, with changes detected - will execute another turn.`) // tslint:disable-line:no-console
+            }
+        }
+
+        return {
+            changedCells: new Set(ret.changedCells.keys()),
+            soundToPlay,
+            messageToShow,
+            hasRestart,
+            isWinning: hasWinCommand || this.isWinning()
+        }
+    }
+
+    public hasAgain() {
+        return this.hasAgainThatNeedsToRun
+    }
+
+    public press(direction: RULE_DIRECTION) {
+        // Should disable keypresses if `AGAIN` is running.
+        // It is commented because the didSpritesChange logic is not correct.
+        // a rule might add a sprite, and then another rule might remove a sprite.
+        // We need to compare the set of sprites before and after ALL rules ran.
+        // This will likely be implemented as part of UNDO or CHECKPOINT.
+        // if (!this.hasAgain()) {
+        this.pendingPlayerWantsToMove = direction
+        // }
+    }
+    public pressRestart() {
+        // Add the initial checkpoint to the top (rather than clearing the stack)
+        // so the player can still "UNDO" after pressing "RESTART"
+        const snapshot = this.undoStack[0]
+        this.undoStack.push(snapshot)
+        this.applySnapshot(snapshot)
+    }
+    public pressUndo() {
+        const snapshot = this.undoStack.pop()
+        if (snapshot && this.undoStack.length > 0) { // the 0th entry is the initial load of the level
+            this.applySnapshot(snapshot)
+        } else if (snapshot) {
+            // oops, put the snapshot back on the stack
+            this.undoStack.push(snapshot)
+        }
+    }
+
+    private getCells() {
+        return _flatten(this.getCurrentLevel().getCells())
+    }
+
+    private tickUpdateCells() {
+        if (process.env.LOG_LEVEL === 'debug') {
+            console.error(`applying rules`) // tslint:disable-line:no-console
+        }
+        return this._tickUpdateCells(this.gameData.rules.filter((r) => !r.isLate()))
     }
 
     private tickUpdateCellsLate() {
-        if (process.env['LOG_LEVEL'] === 'debug') {
-            console.error(`applying late rules`)
+        if (process.env.LOG_LEVEL === 'debug') {
+            console.error(`applying late rules`) // tslint:disable-line:no-console
         }
-        return this._tickUpdateCells(this.gameData.rules.filter(r => r.isLate()))
+        return this._tickUpdateCells(this.gameData.rules.filter((r) => r.isLate()))
     }
 
     private _tickUpdateCells(rules: Iterable<IRule>) {
@@ -513,11 +592,11 @@ export class LevelEngine extends EventEmitter2 {
             //     if (rule.timesRan && rule.totalTimeMs) {
             //         const avg = rule.totalTimeMs // Math.round(rule.totalTimeMs / rule.timesRan)
             //         if (avg > 100) {
-            //             console.error(`Took:${avg}ms (${cellMutations.length} changed) ${rule.toString()}`)
+            //             console.error(`Took:${avg}ms (${cellMutations.length} changed) ${rule.toString()}`) // tslint:disable-line:no-console
             //         }
             //     }
             //     // if (cellMutations.length > 0) {
-            //     //     console.error(`Took:${rule.totalTimeMs}ms (${cellMutations.length} changed) ${rule.toString()}`)
+            //     //     console.error(`Took:${rule.totalTimeMs}ms (${cellMutations.length} changed) ${rule.toString()}`) // tslint:disable-line:no-console
             //     // }
             // }
         }
@@ -539,17 +618,17 @@ export class LevelEngine extends EventEmitter2 {
             //     changedCells.set(mutation.cell, mutation.didSpritesChange)
             // }
         }
-        return {evaluatedRules: evaluatedRules, changedCells: changedCells, commands: commands/*, didSomeSpriteChange: didSomeSpriteChange*/}
+        return { evaluatedRules, changedCells, commands/*, didSomeSpriteChange: didSomeSpriteChange*/ }
     }
 
     private tickMoveSprites(changedCells: Set<Cell>) {
-        let movedCells: Set<Cell> = new Set()
+        const movedCells: Set<Cell> = new Set()
         // Loop over all the cells, see if a Rule matches, apply the transition, and notify that cells changed
         let somethingChanged
         do {
             somethingChanged = false
             for (const cell of changedCells) {
-                for (let [sprite, wantsToMove] of cell.getSpriteAndWantsToMoves()) {
+                for (const [sprite, wantsToMove] of cell.getSpriteAndWantsToMoves()) {
 
                     switch (wantsToMove) {
                         case RULE_DIRECTION.STATIONARY:
@@ -602,9 +681,9 @@ export class LevelEngine extends EventEmitter2 {
         if (this.pendingPlayerWantsToMove) {
             this.takeSnapshot(initialSnapshot)
 
-            if (process.env['LOG_LEVEL'] === 'debug') {
-                console.error(`=======================`)
-                console.error(`Turn starts with input of ${this.pendingPlayerWantsToMove.toLowerCase()}.`)
+            if (process.env.LOG_LEVEL === 'debug') {
+                console.error(`=======================`) // tslint:disable-line:no-console
+                console.error(`Turn starts with input of ${this.pendingPlayerWantsToMove.toLowerCase()}.`) // tslint:disable-line:no-console
             }
             const t = this.gameData.getPlayer()
             for (const cell of t.getCellsThatMatch()) {
@@ -615,12 +694,12 @@ export class LevelEngine extends EventEmitter2 {
             }
             this.pendingPlayerWantsToMove = null
         } else {
-            if (process.env['LOG_LEVEL'] === 'debug') {
-                console.error(`Turn starts with no input.`)
+            if (process.env.LOG_LEVEL === 'debug') {
+                console.error(`Turn starts with no input.`) // tslint:disable-line:no-console
             }
         }
 
-        const {changedCells: changedCellMutations2, evaluatedRules, commands} = this.tickUpdateCells()
+        const { changedCells: changedCellMutations2, evaluatedRules, commands } = this.tickUpdateCells()
         changedCellMutations = setAddAll(changedCellMutations, changedCellMutations2)
 
         // Continue evaluating again rules only when some sprites have changed
@@ -629,9 +708,9 @@ export class LevelEngine extends EventEmitter2 {
         // We need to compare the set of sprites before and after ALL rules ran.
         // This will likely be implemented as part of UNDO or CHECKPOINT.
         const movedCells = this.tickMoveSprites(new Set<Cell>(changedCellMutations.keys()))
-        const {changedCells: changedCellsLate, evaluatedRules: evaluatedRulesLate, commands: commandsLate} = this.tickUpdateCellsLate()
+        const { changedCells: changedCellsLate, evaluatedRules: evaluatedRulesLate, commands: commandsLate } = this.tickUpdateCellsLate()
         const allCommands = [...commands, ...commandsLate]
-        const didCancel = !!allCommands.filter(c => c.getType() === COMMAND_TYPE.CANCEL)[0]
+        const didCancel = !!allCommands.filter((c) => c.getType() === COMMAND_TYPE.CANCEL)[0]
         if (didCancel) {
             this.hasAgainThatNeedsToRun = false
             if (this.undoStack.length > 0) {
@@ -640,86 +719,30 @@ export class LevelEngine extends EventEmitter2 {
             return {
                 changedCells: new Set(),
                 commands: new Set(),
-                evaluatedRules: evaluatedRules,
+                evaluatedRules
             }
         }
-        const didCheckpoint = !!allCommands.find(c => c.getType() === COMMAND_TYPE.CHECKPOINT)
+        const didCheckpoint = !!allCommands.find((c) => c.getType() === COMMAND_TYPE.CHECKPOINT)
         if (didCheckpoint) {
             this.undoStack = []
             this.takeSnapshot(this.createSnapshot())
         }
         // set this only if we did not CANCEL and if some cell changed
         const changedCells = setAddAll(setAddAll(changedCellMutations, changedCellsLate), movedCells)
-        if (!!allCommands.find(c => c.getType() === COMMAND_TYPE.AGAIN)) {
+        if (allCommands.find((c) => c.getType() === COMMAND_TYPE.AGAIN)) {
             // Compare all the cells to the top of the undo stack. If it does not differ
             this.hasAgainThatNeedsToRun = this.doSnapshotsDiffer(initialSnapshot, this.createSnapshot())
         }
         return {
-            changedCells: changedCells,
+            changedCells,
             evaluatedRules: evaluatedRules.concat(evaluatedRulesLate),
             commands: allCommands
         }
     }
 
-    tick() {
-        if (process.env['LOG_LEVEL'] === 'debug') {
-            console.error(``)
-        }
-
-        if (this.hasAgainThatNeedsToRun) {
-            // run the AGAIN rules
-            this.hasAgainThatNeedsToRun = false // let the .tick() make it true
-        }
-        const ret = this.tickNormal()
-        // TODO: Handle the commands like RESTART, CANCEL, WIN at this point
-        let soundToPlay: Optional<GameSound> = null
-        let messageToShow: Optional<string> = null
-        let hasWinCommand = false
-        let hasRestart = false
-        for (const command of ret.commands) {
-            switch (command.getType()) {
-                case COMMAND_TYPE.RESTART:
-                    hasRestart = true
-                    break
-                case COMMAND_TYPE.SFX:
-                    soundToPlay = command.getSound()
-                    break
-                case COMMAND_TYPE.MESSAGE:
-                    this.hasAgainThatNeedsToRun = false // make sure we won't be waiting on another tick
-                    messageToShow = command.getMessage()
-                    break
-                case COMMAND_TYPE.WIN:
-                    hasWinCommand = true
-                    break
-                default:
-                    // console.error(`BUG: Unsupported command "${command.getType()}"`)
-            }
-        }
-        if (process.env['LOG_LEVEL'] === 'debug') {
-            console.error(`checking win condition.`)
-        }
-        if (this.hasAgainThatNeedsToRun) {
-            if (process.env['LOG_LEVEL'] === 'debug') {
-                console.error(`AGAIN command executed, with changes detected - will execute another turn.`)
-            }
-        }
-
-        return {
-            changedCells: new Set(ret.changedCells.keys()),
-            soundToPlay,
-            messageToShow,
-            hasRestart,
-            isWinning: hasWinCommand || this.isWinning()
-        }
-    }
-
-    hasAgain() {
-        return this.hasAgainThatNeedsToRun
-    }
-
     private isWinning() {
         let conditionsSatisfied = this.gameData.winConditions.length > 0 // true
-        this.gameData.winConditions.forEach(winCondition => {
+        this.gameData.winConditions.forEach((winCondition) => {
             if (!winCondition.isSatisfied(this.getCells())) {
                 conditionsSatisfied = false
             }
@@ -729,7 +752,7 @@ export class LevelEngine extends EventEmitter2 {
 
     // Used for UNDO and RESTART
     private createSnapshot() {
-        return this.getCurrentLevel().getCells().map(row => row.map(cell => cell.toSnapshot()))
+        return this.getCurrentLevel().getCells().map((row) => row.map((cell) => cell.toSnapshot()))
     }
     private takeSnapshot(snapshot: Snapshot) {
         this.undoStack.push(snapshot)
@@ -758,43 +781,16 @@ export class LevelEngine extends EventEmitter2 {
         }
         return false
     }
-
-    press(direction: RULE_DIRECTION) {
-        // Should disable keypresses if `AGAIN` is running.
-        // It is commented because the didSpritesChange logic is not correct.
-        // a rule might add a sprite, and then another rule might remove a sprite.
-        // We need to compare the set of sprites before and after ALL rules ran.
-        // This will likely be implemented as part of UNDO or CHECKPOINT.
-        // if (!this.hasAgain()) {
-        this.pendingPlayerWantsToMove = direction
-        // }
-    }
-    pressRestart() {
-        // Add the initial checkpoint to the top (rather than clearing the stack)
-        // so the player can still "UNDO" after pressing "RESTART"
-        const snapshot = this.undoStack[0]
-        this.undoStack.push(snapshot)
-        this.applySnapshot(snapshot)
-    }
-    pressUndo() {
-        const snapshot = this.undoStack.pop()
-        if (snapshot && this.undoStack.length > 0) { // the 0th entry is the initial load of the level
-            this.applySnapshot(snapshot)
-        } else if (snapshot) {
-            // oops, put the snapshot back on the stack
-            this.undoStack.push(snapshot)
-        }
-    }
 }
 
-export type LoadingCellsEvent = {
+export interface ILoadingCellsEvent {
     cellStart: number,
     cellEnd: number,
     cellTotal: number,
     key: string
 }
 export interface ILoadingProgressHandler extends Listener {
-    (info: LoadingCellsEvent): void;
+    (info: ILoadingCellsEvent): void
 }
 
 export type CellSaveState = string[][][]
@@ -827,25 +823,25 @@ export class GameEngine {
         this.levelEngine = new LevelEngine(gameData)
         this.messageShownAndWaitingForActionPress = false
     }
-    on(eventName: string, handler: ILoadingProgressHandler) {
+    public on(eventName: string, handler: ILoadingProgressHandler) {
         this.levelEngine.on(eventName, handler)
     }
-    getGameData() {
+    public getGameData() {
         return this.levelEngine.gameData
     }
-    getCurrentLevelCells() {
+    public getCurrentLevelCells() {
         return this.levelEngine.getCurrentLevel().getCells()
     }
-    getCurrentLevel() {
+    public getCurrentLevel() {
         return this.getGameData().levels[this.getCurrentLevelNum()]
     }
-    getCurrentLevelNum() {
+    public getCurrentLevelNum() {
         return this.currentLevelNum
     }
-    hasAgain() {
+    public hasAgain() {
         return this.levelEngine.hasAgain()
     }
-    setLevel(levelNum: number) {
+    public setLevel(levelNum: number) {
         this.messageShownAndWaitingForActionPress = false
         this.levelEngine.hasAgainThatNeedsToRun = false // clear this so the user can press "X"
         if (this.getGameData().levels[levelNum].isMap()) {
@@ -856,16 +852,16 @@ export class GameEngine {
         }
         this.currentLevelNum = levelNum
     }
-    tick(): TickResult {
+    public tick(): ITickResult {
         // When the current level is a Message, wait until the user presses ACTION
         if (!this.getCurrentLevel().isMap()) {
             // Wait until the user presses "X" (ACTION)
-            let didWinGame = false
+            let didWinGameInMessage = false
             let didLevelChange = false
             if (this.levelEngine.pendingPlayerWantsToMove === RULE_DIRECTION.ACTION) {
                 didLevelChange = true
                 if (this.currentLevelNum === this.levelEngine.gameData.levels.length - 1) {
-                    didWinGame = true
+                    didWinGameInMessage = true
                 } else {
                     this.setLevel(this.currentLevelNum + 1)
                 }
@@ -877,15 +873,15 @@ export class GameEngine {
                 changedCells: new Set(),
                 soundToPlay: null,
                 messageToShow: null,
-                didWinGame: didWinGame,
-                didLevelChange: didLevelChange,
+                didWinGame: didWinGameInMessage,
+                didLevelChange,
                 wasAgainTick: false
             }
         }
         const hasAgain = this.levelEngine.hasAgain()
-        if (this.levelEngine.gameData.metadata.run_rules_on_level_start && this.isFirstTick) {
+        if (this.levelEngine.gameData.metadata.runRulesOnLevelStart && this.isFirstTick) {
             // don't cancel early
-        } else if (!hasAgain && !(this.levelEngine.gameData.metadata.realtime_interval || this.levelEngine.pendingPlayerWantsToMove)) {
+        } else if (!hasAgain && !(this.levelEngine.gameData.metadata.realtimeInterval || this.levelEngine.pendingPlayerWantsToMove)) {
             // check if the `require_player_movement` flag is set in the game
             return {
                 changedCells: new Set(),
@@ -925,7 +921,7 @@ export class GameEngine {
             }
         }
 
-        const {changedCells, soundToPlay, messageToShow, isWinning, hasRestart} = this.levelEngine.tick()
+        const { changedCells, soundToPlay, messageToShow, isWinning, hasRestart } = this.levelEngine.tick()
         this.isFirstTick = false
 
         if (hasRestart) {
@@ -963,50 +959,49 @@ export class GameEngine {
         }
     }
 
-
-    press(direction: RULE_DIRECTION) {
+    public press(direction: RULE_DIRECTION) {
         return this.levelEngine.press(direction)
     }
-    pressUp() {
+    public pressUp() {
         this.levelEngine.press(RULE_DIRECTION.UP)
     }
-    pressDown() {
+    public pressDown() {
         this.levelEngine.press(RULE_DIRECTION.DOWN)
     }
-    pressLeft() {
+    public pressLeft() {
         this.levelEngine.press(RULE_DIRECTION.LEFT)
     }
-    pressRight() {
+    public pressRight() {
         this.levelEngine.press(RULE_DIRECTION.RIGHT)
     }
-    pressAction() {
+    public pressAction() {
         this.levelEngine.press(RULE_DIRECTION.ACTION)
     }
 
-    pressRestart() {
+    public pressRestart() {
         this.isFirstTick = true
         this.levelEngine.pressRestart()
     }
-    pressUndo() {
+    public pressUndo() {
         this.messageShownAndWaitingForActionPress = false
         this.levelEngine.pressUndo()
     }
 
     // Pixels and Sprites
-    getSpriteSize() {
+    public getSpriteSize() {
         return this.getGameData().getSpriteSize()
     }
 
-    saveSnapshotToJSON(): CellSaveState {
-        return this.getCurrentLevelCells().map(row => row.map(cell => [...cell.toSnapshot()].map(s => s.getName())))
+    public saveSnapshotToJSON(): CellSaveState {
+        return this.getCurrentLevelCells().map((row) => row.map((cell) => [...cell.toSnapshot()].map((s) => s.getName())))
     }
 
-    loadSnapshotFromJSON(json: CellSaveState) {
+    public loadSnapshotFromJSON(json: CellSaveState) {
         json.forEach((rowSave, rowIndex) => {
             rowSave.forEach((cellSave, colIndex) => {
                 const cell = this.levelEngine.getCurrentLevel().getCell(rowIndex, colIndex)
 
-                const spritesToHave = cellSave.map(spriteName => {
+                const spritesToHave = cellSave.map((spriteName) => {
                     const sprite = this.getGameData()._getSpriteByName(spriteName)
                     if (sprite) {
                         return sprite

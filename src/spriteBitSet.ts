@@ -1,9 +1,9 @@
-import BitSet from 'bitset';
-import { GameData } from './models/game';
-import { GameSprite } from './models/tile';
-import { CollisionLayer } from './models/collisionLayer';
+import BitSet from 'bitset'
+import { CollisionLayer } from './models/collisionLayer'
+import { GameData } from './models/game'
+import { GameSprite } from './models/tile'
 // BitSet does not export a default so import does not work in webpack-built file
-const BitSet2 = require('bitset')
+const BitSet2 = require('bitset') // tslint:disable-line:no-var-requires
 
 abstract class CustomBitSet<T> {
     protected readonly bitSet: BitSet
@@ -19,27 +19,51 @@ abstract class CustomBitSet<T> {
         }
     }
 
-    protected abstract indexOf(item: T): number
-
-    clear() {
+    public clear() {
         this.bitSet.clear()
     }
 
-    isEmpty() {
+    public isEmpty() {
         return this.bitSet.isEmpty()
     }
 
-    addAll(items: Iterable<T>) {
+    public addAll(items: Iterable<T>) {
         for (const sprite of items) {
             this.add(sprite)
         }
     }
 
-    removeAll(items: Iterable<T>) {
+    public removeAll(items: Iterable<T>) {
         for (const sprite of items) {
             this.remove(sprite)
         }
     }
+
+    public add(item: T) {
+        this.bitSet.set(this._indexOf(item))
+    }
+
+    public remove(item: T) {
+        this.bitSet.clear(this._indexOf(item))
+    }
+
+    public has(item: T) {
+        return !!this.bitSet.get(this._indexOf(item))
+    }
+
+    public containsAll(other: CustomBitSet<T>) {
+        return other.bitSet.cardinality() === this.bitSet.and(other.bitSet).cardinality()
+    }
+
+    public containsAny(other: CustomBitSet<T>) {
+        return !this.bitSet.and(other.bitSet).isEmpty()
+    }
+
+    public containsNone(other: CustomBitSet<T>) {
+        return other.bitSet.and(this.bitSet).isEmpty()
+    }
+
+    protected abstract indexOf(item: T): number
 
     private _indexOf(item: T) {
         const index = this.indexOf(item)
@@ -48,39 +72,15 @@ abstract class CustomBitSet<T> {
         }
         return index
     }
-
-    add(item: T) {
-        this.bitSet.set(this._indexOf(item))
-    }
-
-    remove(item: T) {
-        this.bitSet.clear(this._indexOf(item))
-    }
-
-    has(item: T) {
-        return !!this.bitSet.get(this._indexOf(item))
-    }
-
-    containsAll(other: CustomBitSet<T>) {
-        return other.bitSet.cardinality() === this.bitSet.and(other.bitSet).cardinality()
-    }
-
-    containsAny(other: CustomBitSet<T>) {
-        return !this.bitSet.and(other.bitSet).isEmpty()
-    }
-
-    containsNone(other: CustomBitSet<T>) {
-        return other.bitSet.and(this.bitSet).isEmpty()
-    }
 }
 
 export class SpriteBitSet extends CustomBitSet<GameSprite> {
 
-    indexOf(item: GameSprite) {
+    public indexOf(item: GameSprite) {
         return item.allSpritesBitSetIndex
     }
 
-    getSprites(gameData: GameData) {
+    public getSprites(gameData: GameData) {
         const sprites = new Set<GameSprite>()
         for (const sprite of gameData.objects) {
             if (this.has(sprite)) {
@@ -90,7 +90,7 @@ export class SpriteBitSet extends CustomBitSet<GameSprite> {
         return sprites
     }
 
-    toString(gameData: GameData) {
+    public toString(gameData: GameData) {
         const str = []
         for (const sprite of this.getSprites(gameData)) {
             str.push(sprite.getName())
@@ -98,8 +98,8 @@ export class SpriteBitSet extends CustomBitSet<GameSprite> {
         return str.join(' ')
     }
 
-    union(bitSets: Iterable<SpriteBitSet>) {
-        let ret: SpriteBitSet = this
+    public union(bitSets: Iterable<SpriteBitSet>) {
+        let ret: SpriteBitSet = this // tslint:disable-line:no-this-assignment
         for (const bitSet of bitSets) {
             ret = ret.or(bitSet)
         }
@@ -114,7 +114,7 @@ export class SpriteBitSet extends CustomBitSet<GameSprite> {
 
 export class CollisionLayerBitSet extends CustomBitSet<CollisionLayer> {
 
-    indexOf(item: CollisionLayer) {
+    public indexOf(item: CollisionLayer) {
         return item.id
     }
 }

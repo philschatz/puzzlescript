@@ -1,15 +1,15 @@
 import * as ohm from 'ohm-js'
-import { PUZZLESCRIPT_GRAMMAR } from './grammar'
-import { LookupHelper } from './lookup'
-import { getGameSemantics } from './gameGrammar'
-import { getTileSemantics } from './tileGrammar'
-import { getSoundSemantics } from './soundGrammar'
-import { getRuleSemantics } from './ruleGrammar'
-import { getLevelSemantics } from './levelGrammar'
-import { getCollisionLayerSemantics } from './collisionLayerGrammar'
-import { getWinConditionSemantics } from './winConditionGrammar'
 import { GameData, IGameNode } from '../models/game'
-import { Optional, _extend } from '../util';
+import { _extend, Optional } from '../util'
+import { getCollisionLayerSemantics } from './collisionLayerGrammar'
+import { getGameSemantics } from './gameGrammar'
+import { PUZZLESCRIPT_GRAMMAR } from './grammar'
+import { getLevelSemantics } from './levelGrammar'
+import { LookupHelper } from './lookup'
+import { getRuleSemantics } from './ruleGrammar'
+import { getSoundSemantics } from './soundGrammar'
+import { getTileSemantics } from './tileGrammar'
+import { getWinConditionSemantics } from './winConditionGrammar'
 
 let _GRAMMAR: Optional<ohm.Grammar> = null
 
@@ -22,9 +22,9 @@ export enum ValidationLevel {
 }
 
 class ValidationMessage {
-    gameNode: IGameNode
-    level: ValidationLevel
-    message: string
+    public gameNode: IGameNode
+    public level: ValidationLevel
+    public message: string
 
     constructor(gameNode: IGameNode, level: ValidationLevel, message: string) {
         this.gameNode = gameNode
@@ -34,12 +34,12 @@ class ValidationMessage {
 }
 
 class Parser {
-    getGrammar() {
+    public getGrammar() {
         _GRAMMAR = _GRAMMAR || ohm.grammar(PUZZLESCRIPT_GRAMMAR)
         return _GRAMMAR
     }
 
-    parseGrammar(code: string) {
+    public parseGrammar(code: string) {
         // HACKs
         // 8645c163ff321d2fd1bad3fcaf48c107 has a typo so we .replace()
         // 0c2625672bf47fcf728fe787a2630df6 has a typo se we .replace()
@@ -53,7 +53,7 @@ class Parser {
         return { match: g.match(code) }
     }
 
-    parse(code: string) {
+    public parse(code: string) {
         const g = this.getGrammar()
         const { match: m } = this.parseGrammar(code)
         const validationMessages: ValidationMessage[] = []
@@ -66,7 +66,7 @@ class Parser {
             const s = g.createSemantics()
             const lookup = new LookupHelper()
 
-            let operations = {}
+            const operations = {}
 
             _extend(operations,
                 getGameSemantics(lookup, addValidationMessage),
@@ -99,11 +99,11 @@ class Parser {
 
             return { data: game, validationMessages }
         } else {
-            console.error(`Parsing failed. Message:`)
-            console.error(m.message)
-            console.error(`Trace info:`)
+            console.error(`Parsing failed. Message:`) // tslint:disable-line:no-console
+            console.error(m.message) // tslint:disable-line:no-console
+            console.error(`Trace info:`) // tslint:disable-line:no-console
             const trace = g.trace(code)
-            return { error: m, trace: trace }
+            return { error: m, trace }
         }
     }
 }

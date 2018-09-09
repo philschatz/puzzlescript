@@ -1,7 +1,7 @@
 import * as ohm from 'ohm-js'
-import { WinConditionSimple, WinConditionOn, WIN_QUALIFIER } from '../models/winCondition'
-import { Parseable } from './gameGrammar';
-import { IGameTile } from '../models/tile';
+import { IGameTile } from '../models/tile'
+import { WIN_QUALIFIER, WinConditionOn, WinConditionSimple } from '../models/winCondition'
+import { IParseable } from './gameGrammar'
 
 export const WINCONDITIONS_GRAMMAR = `
     WinConditionItem
@@ -20,13 +20,15 @@ export const WINCONDITIONS_GRAMMAR = `
 
 export function getWinConditionSemantics() {
     return {
-        WinConditionItemSimple: function (this: ohm.Node, qualifier: Parseable<WIN_QUALIFIER>, spriteName: Parseable<IGameTile>, _whitespace: Parseable<string>) {
+        WinConditionItemSimple(this: ohm.Node, qualifier: IParseable<WIN_QUALIFIER>, spriteName: IParseable<IGameTile>, _whitespace: IParseable<string>) {
             return new WinConditionSimple(this.source, qualifier.parse(), spriteName.parse())
         },
-        WinConditionItemOn: function (this: ohm.Node, qualifier: Parseable<WIN_QUALIFIER>, sprite: Parseable<IGameTile>, _on: Parseable<string>, onSprite: Parseable<IGameTile>, _whitespace: Parseable<string>) {
+        WinConditionItemOn(this: ohm.Node, qualifier: IParseable<WIN_QUALIFIER>, sprite: IParseable<IGameTile>,
+                           _on: IParseable<string>, onSprite: IParseable<IGameTile>, _whitespace: IParseable<string>) {
+
             return new WinConditionOn(this.source, qualifier.parse(), sprite.parse(), onSprite.parse())
         },
-        winConditionItemPrefix: function (this: ohm.Node, qualifier: Parseable<string>) {
+        winConditionItemPrefix(this: ohm.Node, qualifier: IParseable<string>) {
             switch (qualifier.parse()) {
                 case WIN_QUALIFIER.ALL:
                     return WIN_QUALIFIER.ALL

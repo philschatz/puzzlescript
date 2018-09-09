@@ -1,5 +1,5 @@
-import {playSound as playSoundCode, closeSounds} from './sound/sfxr'
-import { GameSound } from './models/sound';
+import { GameSound } from './models/sound'
+import { closeSounds, playSound as playSoundCode } from './sound/sfxr'
 
 async function playSound(sound: GameSound) {
     return playSoundCode(sound.soundCode)

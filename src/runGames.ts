@@ -1,16 +1,17 @@
-import { readFileSync, existsSync } from 'fs'
-import * as path from 'path'
+// tslint:disable:no-console
+import { existsSync, readFileSync } from 'fs'
 import * as glob from 'glob'
+import * as path from 'path'
 import * as pify from 'pify'
 
-import {Parser, GameEngine, RULE_DIRECTION} from '.'
-import { closeSounds } from './sounds';
+import { GameEngine, Parser, RULE_DIRECTION } from '.'
+import { ILevelRecording } from './playGame'
+import { saveCoverageFile } from './recordCoverage'
+import { closeSounds } from './sounds'
 import TerminalUI from './ui/terminal'
-import { saveCoverageFile } from './recordCoverage';
-import { LevelRecording } from './playGame';
 
 async function sleep(ms: number) {
-    return new Promise(resolve => setTimeout(resolve, ms))
+    return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
 async function run() {
@@ -20,12 +21,12 @@ async function run() {
     console.log(`Looping over ${files.length} games...`)
     console.log(`Screen size is ${process.stdout.columns} wide and ${process.stdout.rows} high`)
 
-    for (let filename of files) {
+    for (const filename of files) {
         console.log(`Parsing and rendering ${filename}`)
         const gistId = path.basename(path.dirname(filename))
 
         const code = readFileSync(filename, 'utf-8')
-        const startTime = Date.now()
+        let startTime = Date.now()
         const { data, error, trace, validationMessages } = Parser.parse(code)
         console.log(`Parsing took ${Date.now() - startTime}ms`)
 
@@ -48,7 +49,7 @@ async function run() {
             }
 
             // Draw the "first" level (after the messages)
-            let level = data.levels.filter(level => level.isMap())[0]
+            let currentLevel = data.levels.filter((level) => level.isMap())[0]
             // have some default keypresses but load the most-recent partial if available
             let keypressesStr = [
                 'WSSW',
@@ -59,7 +60,7 @@ async function run() {
             ].join('').split('').join('.')
             const recordingsPath = path.join(__dirname, `../gist-solutions/${gistId}.json`)
             if (existsSync(recordingsPath)) {
-                const recordings: LevelRecording[] = JSON.parse(readFileSync(recordingsPath, 'utf-8')).solutions
+                const recordings: ILevelRecording[] = JSON.parse(readFileSync(recordingsPath, 'utf-8')).solutions
                 // TODO: Use the following rules for finding which recording to play:
                 // - find the last partially (or) completed Map
                 // - pick the first Map
@@ -67,21 +68,23 @@ async function run() {
                     recordings.forEach((recording, index) => {
                         if (recording && data.levels[index].isMap()) {
                             keypressesStr = recording.partial || recording.solution || ''
-                            level = data.levels[index]
+                            // Trim the keypresses down so the game does not take too long to run
+                            keypressesStr = keypressesStr.substring(0, 500)
+                            currentLevel = data.levels[index]
                         }
                     })
                 } else {
-                    level = data.levels.filter(l => l.isMap())[0]
+                    currentLevel = data.levels.filter((l) => l.isMap())[0]
                 }
             }
 
-            if (level) {
+            if (currentLevel) {
 
-                let startTime = Date.now()
+                startTime = Date.now()
                 const engine = new GameEngine(data)
-                const levelNum = data.levels.indexOf(level)
+                const levelNum = data.levels.indexOf(currentLevel)
                 engine.setLevel(levelNum)
-                if (process.env['LOG_LEVEL'] === 'debug') {
+                if (process.env.LOG_LEVEL === 'debug') {
                     console.error('')
                     console.error('')
                     console.error(`Start playing "${data.title}". Level ${levelNum}`)
@@ -97,11 +100,10 @@ async function run() {
                 TerminalUI.renderScreen(true)
                 TerminalUI.writeDebug(`"${data.title}"`, 0)
 
-
                 startTime = Date.now()
 
                 let maxTickAndRenderTime = -1
-                for (var i = 0; i < keypressesStr.length; i++) {
+                for (let i = 0; i < keypressesStr.length; i++) {
                     switch (keypressesStr[i]) {
                         case 'W':
                             engine.press(RULE_DIRECTION.UP)
@@ -150,8 +152,7 @@ async function run() {
                     // }
 
                 }
-                console.log('Max tickAndRender Time (ms):', maxTickAndRenderTime);
-
+                console.log('Max tickAndRender Time (ms):', maxTickAndRenderTime)
 
                 const absPath = path.resolve(filename)
                 const gistName = path.basename(path.dirname(filename))
@@ -165,4 +166,4 @@ async function run() {
     closeSounds()
 }
 
-run()
+run().catch((err) => { throw err })

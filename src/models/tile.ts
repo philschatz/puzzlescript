@@ -1,13 +1,13 @@
 import BitSet from 'bitset'
-import { IGameNode } from './game'
-import { BaseForLines, IGameCode } from "./BaseForLines";
-import { IColor, HexColor, TransparentColor } from './colors'
-import { CollisionLayer } from './collisionLayer'
 import { Cell } from '../engine'
-import { SimpleTileWithModifier } from './rule';
-import { RULE_DIRECTION, setIntersection, Optional, _flatten, _zip, setDifference } from '../util';
+import { _flatten, _zip, Optional, RULE_DIRECTION, setDifference, setIntersection } from '../util'
+import { BaseForLines, IGameCode } from './BaseForLines'
+import { CollisionLayer } from './collisionLayer'
+import { HexColor, IColor, TransparentColor } from './colors'
+import { IGameNode } from './game'
+import { SimpleTileWithModifier } from './rule'
 // BitSet does not export a default so import does not work in webpack-built file
-const BitSet2 = require('bitset')
+const BitSet2 = require('bitset') // tslint:disable-line:no-var-requires
 
 export interface IGameTile extends IGameNode {
     subscribeToCellChanges: (t: SimpleTileWithModifier) => void
@@ -23,19 +23,19 @@ export interface IGameTile extends IGameNode {
     hasSingleCollisionLayer: () => boolean
     setCollisionLayer: (collisionLayer: CollisionLayer) => void
     getCollisionLayer: () => CollisionLayer
-    hasCell(cell: Cell): boolean
     matchesCell: (cell: Cell) => boolean
     isOr: () => boolean
     getCellsThatMatch: () => Set<Cell>
     getSpritesThatMatch: (cell: Cell) => Set<GameSprite>
     getName: () => string
     equals: (t: IGameTile) => boolean
+    hasCell(cell: Cell): boolean
 }
 
 export abstract class GameSprite extends BaseForLines implements IGameTile {
-    allSpritesBitSetIndex: number // set onde all the sprites have been determined
+    public allSpritesBitSetIndex: number // set onde all the sprites have been determined
+    public readonly _optionalLegendChar: Optional<string>
     private readonly name: string
-    readonly _optionalLegendChar: Optional<string>
     private collisionLayer: Optional<CollisionLayer>
     private collisionLayerIndex: Optional<number>
     private readonly trickleCells: Set<Cell>
@@ -52,76 +52,75 @@ export abstract class GameSprite extends BaseForLines implements IGameTile {
         this.trickleTilesWithModifier = new Set()
         this.allSpritesBitSetIndex = -1 // will be changed once we have all the sprites
     }
-    isOr() {
+    public isOr() {
         return false
     }
-    equals(t: IGameTile): boolean {
+    public equals(t: IGameTile): boolean {
         return this === t // sprites MUST be exact
     }
-    abstract hasPixels(): boolean
-    abstract getPixels(spriteHeight: number, spriteWidth: number): IColor[][]
+    public abstract hasPixels(): boolean
+    public abstract getPixels(spriteHeight: number, spriteWidth: number): IColor[][]
 
-    getName() {
+    public getName() {
         return this.name
     }
-    isBackground() {
+    public isBackground() {
         return this.name.toLowerCase() === 'background'
     }
-    _getDescendantTiles(): IGameTile[] {
+    public _getDescendantTiles(): IGameTile[] {
         return []
     }
-    getSprites() {
+    public getSprites() {
         // to match the signature of LegendTile
         return [this]
     }
-    getSpritesForRuleAction() {
+    public getSpritesForRuleAction() {
         return this.getSprites()
     }
-    hasCollisionLayer() {
+    public hasCollisionLayer() {
         return !!this.collisionLayer
     }
-    hasSingleCollisionLayer() {
+    public hasSingleCollisionLayer() {
         // always true. This is only ever false for OR tiles
         return this.hasCollisionLayer()
     }
-    setCollisionLayer(collisionLayer: CollisionLayer) {
+    public setCollisionLayer(collisionLayer: CollisionLayer) {
         this.collisionLayer = collisionLayer
     }
-    setCollisionLayerAndIndex(collisionLayer: CollisionLayer, bitSetIndex: number) {
+    public setCollisionLayerAndIndex(collisionLayer: CollisionLayer, bitSetIndex: number) {
         this.collisionLayer = collisionLayer
         this.collisionLayerIndex = bitSetIndex
-        this.bitSet = <BitSet> new BitSet2()
+        this.bitSet = new BitSet2() as BitSet
         this.bitSet.set(bitSetIndex)
     }
-    getBitSet() {
+    public getBitSet() {
         return this.bitSet
     }
-    getBitSetIndex() {
+    public getBitSetIndex() {
         return this.collisionLayerIndex
     }
-    getCollisionLayer() {
+    public getCollisionLayer() {
         if (!this.collisionLayer) {
-            console.error(this.__source.getLineAndColumnMessage())
-            throw new Error('ERROR: This sprite was not in a Collision Layer')
+            throw new Error(`ERROR: This sprite was not in a Collision Layer\n${this.__source.getLineAndColumnMessage()}`)
         }
         return this.collisionLayer
     }
-    isInvalid() {
+    public isInvalid() {
         if (!this.collisionLayer) {
             return 'This object does not have an entry in the COLLISIONLAYERS section.'
         }
         return null
     }
-    clearCaches() {
+    public clearCaches() {
         this.trickleCells.clear()
     }
-    hasCell(cell: Cell): boolean {
+    public hasCell(cell: Cell): boolean {
         return this.trickleCells.has(cell)
     }
-    matchesCell(cell: Cell): boolean {
+    public matchesCell(cell: Cell): boolean {
         return cell.getSpritesAsSet().has(this)
     }
-    getSpritesThatMatch(cell: Cell) {
+    public getSpritesThatMatch(cell: Cell) {
         if (cell.getSpritesAsSet().has(this)) {
             return new Set([this])
         } else {
@@ -129,20 +128,20 @@ export abstract class GameSprite extends BaseForLines implements IGameTile {
         }
     }
 
-    subscribeToCellChanges(t: SimpleTileWithModifier) {
+    public subscribeToCellChanges(t: SimpleTileWithModifier) {
         this.trickleTilesWithModifier.add(t)
     }
-    subscribeToCellChangesTile(tile: IGameTile) {
+    public subscribeToCellChangesTile(tile: IGameTile) {
         this.trickleTiles.add(tile)
     }
-    addCell(cell: Cell, wantsToMove: Optional<RULE_DIRECTION>) {
+    public addCell(cell: Cell, wantsToMove: Optional<RULE_DIRECTION>) {
         this.addCells(this, [cell], wantsToMove)
     }
-    removeCell(cell: Cell) {
+    public removeCell(cell: Cell) {
         this.removeCells(this, [cell])
     }
-    updateCell(cell: Cell, wantsToMove: RULE_DIRECTION) {
-        if (process.env['NODE_ENV'] === 'development') {
+    public updateCell(cell: Cell, wantsToMove: RULE_DIRECTION) {
+        if (process.env.NODE_ENV === 'development') {
             // check that the cell is already in the sprite cell set
             if (!this.has(cell)) {
                 throw new Error(`BUG: Expected cell to already be in the sprite set`)
@@ -157,10 +156,9 @@ export abstract class GameSprite extends BaseForLines implements IGameTile {
             t.updateCells(this, [cell], wantsToMove)
         }
     }
-    addCells(sprite: GameSprite, cells: Cell[], wantsToMove: Optional<RULE_DIRECTION>) {
+    public addCells(sprite: GameSprite, cells: Cell[], wantsToMove: Optional<RULE_DIRECTION>) {
         for (const cell of cells) {
             if (this.trickleCells.has(cell)) {
-                debugger
                 throw new Error(`BUG: should not be trying to add a cell that has already been matched (right?)`)
             }
             this.trickleCells.add(cell)
@@ -173,7 +171,7 @@ export abstract class GameSprite extends BaseForLines implements IGameTile {
             t.addCells(this, this, cells, wantsToMove)
         }
     }
-    updateCells(sprite: GameSprite, cells: Cell[], wantsToMove: RULE_DIRECTION) {
+    public updateCells(sprite: GameSprite, cells: Cell[], wantsToMove: RULE_DIRECTION) {
         // propagate up
         for (const t of this.trickleTiles) {
             t.updateCells(this, cells, wantsToMove)
@@ -182,7 +180,7 @@ export abstract class GameSprite extends BaseForLines implements IGameTile {
             t.updateCells(this, cells, wantsToMove)
         }
     }
-    removeCells(sprite: GameSprite, cells: Cell[]) {
+    public removeCells(sprite: GameSprite, cells: Cell[]) {
         for (const cell of cells) {
             this.trickleCells.delete(cell)
         }
@@ -194,10 +192,10 @@ export abstract class GameSprite extends BaseForLines implements IGameTile {
             t.removeCells(this, this, cells)
         }
     }
-    has(cell: Cell) {
+    public has(cell: Cell) {
         return this.trickleCells.has(cell)
     }
-    hasNegationTileWithModifier() {
+    public hasNegationTileWithModifier() {
         for (const t of this.trickleTilesWithModifier) {
             if (t.isNo()) {
                 return true
@@ -210,7 +208,7 @@ export abstract class GameSprite extends BaseForLines implements IGameTile {
         }
         return false
     }
-    getCellsThatMatch() {
+    public getCellsThatMatch() {
         return this.trickleCells
     }
 }
@@ -222,10 +220,10 @@ export class GameSpriteSingleColor extends GameSprite {
         super(source, name, optionalLegendChar)
         this.color = colors[0] // Ignore if the user added multiple colors (like `transparent yellow`)
     }
-    hasPixels() {
+    public hasPixels() {
         return false
     }
-    getPixels(spriteHeight: number, spriteWidth: number) {
+    public getPixels(spriteHeight: number, spriteWidth: number) {
         // When there are no pixels then it means "color the whole thing in the same color"
         const rows: HexColor[][] = []
         for (let row = 0; row < spriteHeight; row++) {
@@ -242,11 +240,11 @@ export class GameSpritePixels extends GameSprite {
     private readonly colors: IColor[]
     private readonly pixels: IColor[][]
 
-    constructor(source: IGameCode, name: string, optionalLegendChar: string, colors: HexColor[], pixels: ('.' | number)[][]) {
+    constructor(source: IGameCode, name: string, optionalLegendChar: string, colors: HexColor[], pixels: Array<Array<'.' | number>>) {
         super(source, name, optionalLegendChar)
         this.colors = colors
-        this.pixels = pixels.map(row => {
-            return row.map(col => {
+        this.pixels = pixels.map((row) => {
+            return row.map((col) => {
                 if (col === '.') {
                     return new TransparentColor(this.__source)
                 } else {
@@ -255,7 +253,7 @@ export class GameSpritePixels extends GameSprite {
             })
         }) // Pixel colors are 0-indexed.
     }
-    isInvalid() {
+    public isInvalid() {
         if (super.isInvalid()) {
             return super.isInvalid()
         }
@@ -277,29 +275,29 @@ export class GameSpritePixels extends GameSprite {
         })
         return isInvalid
     }
-    getSprites() {
+    public getSprites() {
         // to match the signature of LegendTile
         return [this]
     }
-    hasPixels() {
+    public hasPixels() {
         return true
     }
-    getPixels(spriteHeight: number, spriteWidth: number) {
+    public getPixels(spriteHeight: number, spriteWidth: number) {
         // Make a copy because others may edit it
-        return this.pixels.map(row => {
-            return row.map(col => col)
+        return this.pixels.map((row) => {
+            return row.map((col) => col)
         })
     }
 
 }
 
 export abstract class GameLegendTile extends BaseForLines implements IGameTile {
+    public readonly spriteNameOrLevelChar: string
+    public readonly tiles: IGameTile[]
+    protected collisionLayer: Optional<CollisionLayer>
     private trickleCells: Set<Cell>
     private trickleTilesWithModifier: Set<SimpleTileWithModifier>
     private spritesCache: Optional<GameSprite[]>
-    protected collisionLayer: Optional<CollisionLayer>
-    readonly spriteNameOrLevelChar: string
-    readonly tiles: IGameTile[]
 
     constructor(source: IGameCode, spriteNameOrLevelChar: string, tiles: IGameTile[]) {
         super(source)
@@ -308,43 +306,43 @@ export abstract class GameLegendTile extends BaseForLines implements IGameTile {
         this.trickleCells = new Set()
         this.trickleTilesWithModifier = new Set()
     }
-    equals(t: IGameTile) {
+    public equals(t: IGameTile) {
         if (this.isOr() !== t.isOr()) {
             return false
         }
         const difference = setDifference(new Set(this.getSprites()), t.getSprites())
         return difference.size === 0
     }
-    isOr() {
+    public isOr() {
         return false
     }
-    isInvalid() {
+    public isInvalid() {
         if (!this.hasCollisionLayer()) {
             return 'Missing collision layer'
         }
         return null
     }
-    abstract matchesCell(cell: Cell): boolean
-    abstract getSpritesThatMatch(cell: Cell): Set<GameSprite>
-    abstract hasSingleCollisionLayer(): boolean
+    public abstract matchesCell(cell: Cell): boolean
+    public abstract getSpritesThatMatch(cell: Cell): Set<GameSprite>
+    public abstract hasSingleCollisionLayer(): boolean
 
-    getName() {
+    public getName() {
         return this.spriteNameOrLevelChar
     }
-    getSpritesForRuleAction() {
+    public getSpritesForRuleAction() {
         return this.getSprites()
     }
-    _getDescendantTiles(): IGameTile[] {
+    public _getDescendantTiles(): IGameTile[] {
         // recursively pull all the tiles out
-        return this.tiles.concat(_flatten(this.tiles.map(tile => tile._getDescendantTiles())))
+        return this.tiles.concat(_flatten(this.tiles.map((tile) => tile._getDescendantTiles())))
     }
-    getSprites() {
+    public getSprites() {
         // Use a cache because all the collision layers have not been loaded in time
         if (!this.spritesCache) {
             // 2 levels of indirection should be safe
             // Sort by collisionLayer so that the most-important sprite is first
             this.spritesCache = _flatten(
-                this.tiles.map(tile => {
+                this.tiles.map((tile) => {
                     return tile.getSprites()
                 })
             ).sort((a, b) => {
@@ -353,13 +351,13 @@ export abstract class GameLegendTile extends BaseForLines implements IGameTile {
         }
         return this.spritesCache
     }
-    hasCollisionLayer() {
+    public hasCollisionLayer() {
         return !!this.collisionLayer
     }
-    setCollisionLayer(collisionLayer: CollisionLayer) {
+    public setCollisionLayer(collisionLayer: CollisionLayer) {
         this.collisionLayer = collisionLayer
     }
-    getCollisionLayer() {
+    public getCollisionLayer() {
         // OR tiles and AND tiles don't necessarily have a collisionLayer set so pull it from the sprite (this might not work)
         if (this.collisionLayer) {
             return this.collisionLayer
@@ -368,14 +366,13 @@ export abstract class GameLegendTile extends BaseForLines implements IGameTile {
         const firstCollisionLayer = this.getSprites()[0].getCollisionLayer()
         for (const sprite of this.getSprites()) {
             if (sprite.getCollisionLayer() !== firstCollisionLayer) {
-                debugger
                 throw new Error(`ooh, sprites in a tile have different collision layers... that's a problem\n${this.toString()}`)
             }
         }
         return firstCollisionLayer
     }
 
-    getCellsThatMatch() {
+    public getCellsThatMatch() {
         const matches = new Set()
         for (const sprite of this.getSprites()) {
             for (const cell of sprite.getCellsThatMatch()) {
@@ -385,14 +382,14 @@ export abstract class GameLegendTile extends BaseForLines implements IGameTile {
         return matches
     }
 
-    subscribeToCellChanges(t: SimpleTileWithModifier) {
+    public subscribeToCellChanges(t: SimpleTileWithModifier) {
         this.trickleTilesWithModifier.add(t)
         // subscribe this to be notified of all Sprite changes of Cells
         for (const sprite of this.getSprites()) {
             sprite.subscribeToCellChangesTile(this)
         }
     }
-    hasNegationTileWithModifier() {
+    public hasNegationTileWithModifier() {
         for (const t of this.trickleTilesWithModifier) {
             if (t.isNo()) {
                 return true
@@ -400,7 +397,7 @@ export abstract class GameLegendTile extends BaseForLines implements IGameTile {
         }
         return false
     }
-    addCells(sprite: GameSprite, cells: Cell[], wantsToMove: Optional<RULE_DIRECTION>) {
+    public addCells(sprite: GameSprite, cells: Cell[], wantsToMove: Optional<RULE_DIRECTION>) {
         for (const cell of cells) {
             if (!this.trickleCells.has(cell)) {
                 if (this.matchesCell(cell)) {
@@ -412,9 +409,9 @@ export abstract class GameLegendTile extends BaseForLines implements IGameTile {
             }
         }
     }
-    updateCells(sprite: GameSprite, cells: Cell[], wantsToMove: Optional<RULE_DIRECTION>) {
+    public updateCells(sprite: GameSprite, cells: Cell[], wantsToMove: Optional<RULE_DIRECTION>) {
         // verify that all the cells are in trickleCells
-        if (process.env['NODE_ENV'] === 'development') {
+        if (process.env.NODE_ENV === 'development') {
             for (const cell of cells) {
                 if (!this.trickleCells.has(cell)) {
                     throw new Error(`Cell was not already added before`)
@@ -426,7 +423,7 @@ export abstract class GameLegendTile extends BaseForLines implements IGameTile {
         }
     }
 
-    removeCells(sprite: GameSprite, cells: Cell[]) {
+    public removeCells(sprite: GameSprite, cells: Cell[]) {
         for (const cell of cells) {
             if (this.matchesCell(cell)) {
                 if (!this.trickleCells.has(cell)) {
@@ -446,7 +443,7 @@ export abstract class GameLegendTile extends BaseForLines implements IGameTile {
             }
         }
     }
-    hasCell(cell: Cell) {
+    public hasCell(cell: Cell) {
         return this.trickleCells.has(cell)
     }
 }
@@ -455,9 +452,9 @@ export class GameLegendTileSimple extends GameLegendTile {
     constructor(source: IGameCode, spriteNameOrLevelChar: string, tile: GameSprite) {
         super(source, spriteNameOrLevelChar, [tile])
     }
-    matchesCell(cell: Cell) {
+    public matchesCell(cell: Cell) {
         // Update code coverage (Maybe only count the number of times it was true?)
-        if (process.env['NODE_ENV'] === 'development') {
+        if (process.env.NODE_ENV === 'development') {
             this.__incrementCoverage()
         }
 
@@ -471,19 +468,19 @@ export class GameLegendTileSimple extends GameLegendTile {
         return true
     }
 
-    getSpritesThatMatch(cell: Cell) {
+    public getSpritesThatMatch(cell: Cell) {
         return setIntersection(new Set(this.getSprites()), cell.getSpritesAsSet())
     }
 
-    hasSingleCollisionLayer() {
+    public hasSingleCollisionLayer() {
         return !!this.collisionLayer
     }
 }
 
 export class GameLegendTileAnd extends GameLegendTile {
-    matchesCell(cell: Cell) {
+    public matchesCell(cell: Cell) {
         // Update code coverage (Maybe only count the number of times it was true?)
-        if (process.env['NODE_ENV'] === 'development') {
+        if (process.env.NODE_ENV === 'development') {
             this.__incrementCoverage()
         }
 
@@ -496,25 +493,24 @@ export class GameLegendTileAnd extends GameLegendTile {
         return true
     }
 
-    getSpritesThatMatch(cell: Cell): Set<GameSprite> {
+    public getSpritesThatMatch(cell: Cell): Set<GameSprite> {
         // return setIntersection(new Set(this.getSprites()), cell.getSpritesAsSet())
         throw new Error(`BUG: This method should only be called for OR tiles`)
     }
 
-    hasSingleCollisionLayer() {
+    public hasSingleCollisionLayer() {
         return !!this.collisionLayer
     }
-
 
 }
 
 export class GameLegendTileOr extends GameLegendTile {
-    isOr() {
+    public isOr() {
         return true
     }
-    matchesCell(cell: Cell) {
+    public matchesCell(cell: Cell) {
         // Update code coverage (Maybe only count the number of times it was true?)
-        if (process.env['NODE_ENV'] === 'development') {
+        if (process.env.NODE_ENV === 'development') {
             this.__incrementCoverage()
         }
 
@@ -527,11 +523,11 @@ export class GameLegendTileOr extends GameLegendTile {
         return false
     }
 
-    getSpritesThatMatch(cell: Cell) {
+    public getSpritesThatMatch(cell: Cell) {
         return setIntersection(new Set(this.getSprites()), cell.getSpritesAsSet())
     }
 
-    hasSingleCollisionLayer() {
+    public hasSingleCollisionLayer() {
         const sprites = this.getSprites()
         for (const sprite of sprites) {
             if (sprite.getCollisionLayer() !== sprites[0].getCollisionLayer()) {

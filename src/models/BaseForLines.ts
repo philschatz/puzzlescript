@@ -1,5 +1,5 @@
 import * as ohm from 'ohm-js'
-import { Optional } from '../util';
+import { Optional } from '../util'
 
 export type IGameCode = ohm.Interval
 export interface IGameCodeWithSource extends ohm.Interval {
@@ -20,7 +20,7 @@ export function getLineAndColumn(str: string, offset: number) {
     let prevLineStartOffset = -1
 
     while (currOffset < offset) {
-        let c = str.charAt(currOffset++)
+        const c = str.charAt(currOffset++)
         if (c === '\n') {
             lineNum++
             colNum = 1
@@ -36,7 +36,7 @@ export function getLineAndColumn(str: string, offset: number) {
         lineEndOffset = str.length
     } else {
         // Get the next line.
-        let nextLineEndOffset = str.indexOf('\n', lineEndOffset + 1)
+        const nextLineEndOffset = str.indexOf('\n', lineEndOffset + 1)
         nextLine = nextLineEndOffset === -1 ? str.slice(lineEndOffset)
             : str.slice(lineEndOffset, nextLineEndOffset)
         // Strip leading and trailing EOL char(s).
@@ -50,58 +50,58 @@ export function getLineAndColumn(str: string, offset: number) {
     }
 
     // Get the target line, stripping a trailing carriage return if necessary.
-    let line = str.slice(lineStartOffset, lineEndOffset).replace(/\r$/, '')
+    const line = str.slice(lineStartOffset, lineEndOffset).replace(/\r$/, '')
 
     return {
-        lineNum: lineNum,
-        colNum: colNum,
-        line: line,
-        prevLine: prevLine,
-        nextLine: nextLine
+        lineNum,
+        colNum,
+        line,
+        prevLine,
+        nextLine
     }
 }
 
 export class BaseForLines {
-    readonly __source: IGameCode;
-    __coverageCount: Optional<number>;
+    public readonly __source: IGameCode // tslint:disable-line:variable-name
+    public __coverageCount: Optional<number> // tslint:disable-line:variable-name
     constructor(source: IGameCode) {
         if (!source || !source.getLineAndColumnMessage) {
-            throw new Error(`BUG: failed to provide the source when constructing this object`);
+            throw new Error(`BUG: failed to provide the source when constructing this object`)
         }
-        this.__source = source;
+        this.__source = source
         // This is only used for code coverage
-        if (process.env['NODE_ENV'] === 'development') {
-            this.__coverageCount = 0;
+        if (process.env.NODE_ENV === 'development') {
+            this.__coverageCount = 0
         }
     }
-    __getSourceLineAndColumn() {
-        const s = <IGameCodeWithSource>this.__source;
-        return getLineAndColumn(s.sourceString, this.__source.startIdx);
+    public __getSourceLineAndColumn() {
+        const s = this.__source as IGameCodeWithSource
+        return getLineAndColumn(s.sourceString, this.__source.startIdx)
     }
-    toString() {
-        const s = <IGameCodeWithSource>this.__source;
-        return s.getLineAndColumnMessage();
+    public toString() {
+        const s = this.__source as IGameCodeWithSource
+        return s.getLineAndColumnMessage()
     }
-    toSourceString() {
-        const s = <IGameCodeWithSource>this.__source;
-        return s.trimmed().contents;
+    public toSourceString() {
+        const s = this.__source as IGameCodeWithSource
+        return s.trimmed().contents
     }
     // This is mostly used for creating code coverage for the games. So we know which Rules (or objects) are not being matched
-    __getLineAndColumnRange() {
-        const s = <IGameCodeWithSource>this.__source;
-        const start = getLineAndColumn(s.sourceString, this.__source.startIdx);
-        const end = getLineAndColumn(s.sourceString, this.__source.endIdx - 1); // subtract one to hopefully get the previous line
+    public __getLineAndColumnRange() {
+        const s = this.__source as IGameCodeWithSource
+        const start = getLineAndColumn(s.sourceString, this.__source.startIdx)
+        const end = getLineAndColumn(s.sourceString, this.__source.endIdx - 1) // subtract one to hopefully get the previous line
         return {
             start: { line: start.lineNum, col: start.colNum },
-            end: { line: end.lineNum, col: end.colNum },
-        };
+            end: { line: end.lineNum, col: end.colNum }
+        }
     }
-    __incrementCoverage() {
-        if (process.env['NODE_ENV'] === 'development') {
+    public __incrementCoverage() {
+        if (process.env.NODE_ENV === 'development') {
             if (!this.__coverageCount) {
-                this.__coverageCount = 0;
+                this.__coverageCount = 0
             }
-            this.__coverageCount++;
+            this.__coverageCount++
         }
     }
 }

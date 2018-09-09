@@ -1,15 +1,15 @@
 import * as ohm from 'ohm-js'
 import {
     GameSound,
-    GameSoundSfx,
-    GameSoundSimpleEnum,
-    GameSoundNormal,
+    GameSoundMoveDirection,
     GameSoundMoveSimple,
-    GameSoundMoveDirection
+    GameSoundNormal,
+    GameSoundSfx,
+    GameSoundSimpleEnum
 } from '../models/sound'
+import { IGameTile } from '../models/tile'
+import { IParseable } from './gameGrammar'
 import { LookupHelper } from './lookup'
-import { Parseable } from './gameGrammar';
-import { IGameTile } from '../models/tile';
 
 export const SOUND_GRAMMAR = `
     // TODO: Handle tokens like sfx0 and explicit args instead of just varName (like "Player CantMove up")
@@ -56,25 +56,25 @@ export const SOUND_GRAMMAR = `
 
 export function getSoundSemantics(lookup: LookupHelper) {
     return {
-        SoundItem: function (this: ohm.Node, _1: Parseable<GameSound>, _whitespace: Parseable<string>) {
+        SoundItem(this: ohm.Node, _1: IParseable<GameSound>, _whitespace: IParseable<string>) {
             return _1.parse()
         },
-        SoundItemEnum: function (this: ohm.Node, simpleEnum: Parseable<number>, soundCode: Parseable<number>) {
+        SoundItemEnum(this: ohm.Node, simpleEnum: IParseable<number>, soundCode: IParseable<number>) {
             return new GameSoundSimpleEnum(this.source, simpleEnum.parse(), soundCode.parse())
         },
-        SoundItemSfx: function (this: ohm.Node, sfxName: Parseable<string>, soundCode: Parseable<number>) {
+        SoundItemSfx(this: ohm.Node, sfxName: IParseable<string>, soundCode: IParseable<number>) {
             const soundEffect = sfxName.parse()
             const sound = new GameSoundSfx(this.source, soundEffect, soundCode.parse())
             lookup.addSoundEffect(soundEffect, sound)
             return sound
         },
-        SoundItemMoveSimple: function (this: ohm.Node, sprite: Parseable<IGameTile>, _2: Parseable<string>, soundCode: Parseable<number>) {
+        SoundItemMoveSimple(this: ohm.Node, sprite: IParseable<IGameTile>, _2: IParseable<string>, soundCode: IParseable<number>) {
             return new GameSoundMoveSimple(this.source, sprite.parse(), soundCode.parse())
         },
-        SoundItemMoveDirection: function (this: ohm.Node, sprite: Parseable<IGameTile>, _move: Parseable<string>, directionEnum: Parseable<string>, soundCode: Parseable<number>) {
+        SoundItemMoveDirection(this: ohm.Node, sprite: IParseable<IGameTile>, _move: IParseable<string>, directionEnum: IParseable<string>, soundCode: IParseable<number>) {
             return new GameSoundMoveDirection(this.source, sprite.parse(), directionEnum.parse(), soundCode.parse())
         },
-        SoundItemNormal: function (this: ohm.Node, sprite: Parseable<IGameTile>, eventEnum: Parseable<string>, soundCode: Parseable<number>) {
+        SoundItemNormal(this: ohm.Node, sprite: IParseable<IGameTile>, eventEnum: IParseable<string>, soundCode: IParseable<number>) {
             return new GameSoundNormal(this.source, sprite.parse(), eventEnum.parse(), soundCode.parse())
         }
     }

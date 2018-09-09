@@ -1,26 +1,27 @@
-import { readFileSync, writeFileSync, existsSync, createReadStream } from 'fs'
-import * as path from 'path'
-import * as glob from 'glob'
-import * as pify from 'pify'
-import * as supportsColor from 'supports-color'
-import * as inquirer from 'inquirer'
-import PromptModule, * as autocomplete from 'inquirer-autocomplete-prompt'
+// tslint:disable:no-console
 import chalk from 'chalk'
 import * as commander from 'commander'
+import { createReadStream, existsSync, readFileSync, writeFileSync } from 'fs'
+import * as glob from 'glob'
+import * as inquirer from 'inquirer'
+import PromptModule, * as autocomplete from 'inquirer-autocomplete-prompt'
+import * as path from 'path'
+import * as pify from 'pify'
+import * as supportsColor from 'supports-color'
 
-import {Parser, GameEngine, LoadingCellsEvent, GameData, Optional, RULE_DIRECTION, playSound, closeSounds} from '.'
+import { closeSounds, GameData, GameEngine, ILoadingCellsEvent, Optional, Parser, playSound, RULE_DIRECTION } from '.'
+import { saveCoverageFile } from './recordCoverage'
 import TerminalUI, { getTerminalSize } from './ui/terminal'
-import { saveCoverageFile } from './recordCoverage';
 
-export type GameRecording = {
+export interface IGameRecording {
     version: number,
-    solutions: LevelRecording[]
+    solutions: ILevelRecording[]
 }
-export type LevelRecording = {
+export interface ILevelRecording {
     partial?: string,
     solution?: string
 }
-type Package = {
+interface IPackage {
     version: string,
     homepage: string
 }
@@ -28,9 +29,9 @@ enum CLI_SPRITE_SIZE {
     LARGE = 'large',
     SMALL = 'small'
 }
-type GameInfo = { id: string, title: string, filePath: string }
-type SaveFile = { version: number, solutions: { solution?: string, partial?: string }[] }
-type CliOptions = {
+interface IGameInfo { id: string, title: string, filePath: string }
+interface ISaveFile { version: number, solutions: Array<{ solution?: string, partial?: string, snapshot?: {tickNum: number, cellState: string[][][]} }> }
+interface ICliOptions {
     version: string,
     ui: boolean,
     game: Optional<string>,
@@ -42,10 +43,10 @@ type CliOptions = {
 }
 
 // Use require instead of import so we can load JSON files
-const pkg: Package = <Package> require('../package.json')
+const pkg: IPackage = require('../package.json') as IPackage // tslint:disable-line:no-var-requires
 
 async function sleep(ms: number) {
-    return new Promise(resolve => setTimeout(resolve, ms))
+    return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
 function first2Lines(filePath: string) {
@@ -55,7 +56,7 @@ function first2Lines(filePath: string) {
         lineEnding: '\n'
     }
     return new Promise<string>((resolve, reject) => {
-        const rs = createReadStream(filePath, { encoding: opts.encoding });
+        const rs = createReadStream(filePath, { encoding: opts.encoding })
         let acc = ''
         let pos = 0
         let index
@@ -71,32 +72,30 @@ function first2Lines(filePath: string) {
                         pos += index
                         rs.close()
                     } else {
-                        pos+= chunk.length
+                        pos += chunk.length
                     }
                 }
             })
             .on('close', () => resolve(acc.slice(acc.charCodeAt(0) === 0xFEFF ? 1 : 0, pos)))
-            .on('error', err => reject(err))
+            .on('error', (err) => reject(err))
     })
 }
 
 // keypress(process.stdin)
 // keypress.enableMouse(process.stdout)
 
-
 function toUnicode(theString: string) {
-    var unicodeString = '';
-    for (var i = 0; i < theString.length; i++) {
-        var theUnicode = theString.charCodeAt(i).toString(16).toUpperCase();
+    let unicodeString = ''
+    for (let i = 0; i < theString.length; i++) {
+        let theUnicode = theString.charCodeAt(i).toString(16).toUpperCase()
         while (theUnicode.length < 4) {
-            theUnicode = '0' + theUnicode;
+            theUnicode = '0' + theUnicode
         }
-        theUnicode = '\\u' + theUnicode;
-        unicodeString += theUnicode;
+        theUnicode = '\\u' + theUnicode
+        unicodeString += theUnicode
     }
-    return unicodeString;
+    return unicodeString
 }
-
 
 commander
 .version(pkg.version)
@@ -104,31 +103,30 @@ commander
 .option('-g, --game <title>', 'play a specific game matching this title regexp or "random" to pick a random one')
 .option('-s, --size <largeOrSmall>', 'Specify the sprite size (either "large" or "small")')
 .option('-n, --new', 'start a new game')
-.option('-l, --level <num>', 'play a specific level', (arg => parseInt(arg)))
+.option('-l, --level <num>', 'play a specific level', ((arg) => parseInt(arg, 10)))
 .option('-r, --resume', 'resume the level from last save')
 .option('--nosound', 'disable sound')
 .parse(process.argv)
 
-
-run().then(() => { process.exit(0) }, err => {
+run().then(() => { process.exit(0) }, (err) => {
     console.error(err)
     process.exit(111)
 })
 
-
 async function run() {
-    inquirer.registerPrompt('autocomplete', <PromptModule>autocomplete)
+    inquirer.registerPrompt('autocomplete', autocomplete as PromptModule)
     const gists = await pify(glob)(path.join(__dirname, '../gists/*/script.txt'))
-    const cliOptions: CliOptions = <CliOptions> commander.opts()
-    let { ui: cliUi, game: cliGameTitle, level: cliLevel, resume: cliResume, nosound} = cliOptions
-    const gamePath = commander.args[0]
+    const cliOptions: ICliOptions = commander.opts() as ICliOptions
+    const { ui: cliUi, game: cliGameTitle, nosound } = cliOptions
+    let { level: cliLevel, resume: cliResume } = cliOptions
+    const gamePathInitial = commander.args[0]
 
-    if (gamePath) {
-        await startPromptsAndPlayGame(gamePath, null, cliResume, cliLevel, nosound)
+    if (gamePathInitial) {
+        await startPromptsAndPlayGame(gamePathInitial, null, cliResume, cliLevel, nosound)
         return // we are only playing one game
     }
 
-    const games: GameInfo[] = []
+    const games: IGameInfo[] = []
 
     const titleRegexp = /title/i
     for (const filePath of gists) {
@@ -145,18 +143,18 @@ async function run() {
 
         games.push({
             id: path.basename(path.dirname(filePath)),
-            title: title,
-            filePath: filePath
+            title,
+            filePath
         })
     }
 
     if (!cliGameTitle) {
         console.log(``)
         console.log(``)
-        console.log(`Let's play some ${chalk.bold.redBright('P')}${chalk.bold.greenBright('U')}${chalk.bold.blueBright('Z')}${chalk.bold.yellowBright('Z')}${chalk.bold.cyanBright('L')}${chalk.bold.magentaBright('E')}${chalk.bold.whiteBright('S')}!`)
+        console.log(`Let's play some ${chalk.bold.redBright('P')}${chalk.bold.greenBright('U')}${chalk.bold.blueBright('Z')}${chalk.bold.yellowBright('Z')}${chalk.bold.cyanBright('L')}${chalk.bold.magentaBright('E')}${chalk.bold.whiteBright('S')}!`) // tslint:disable-line:max-line-length
         console.log(``)
         console.log(``)
-        console.log(`${chalk.dim('Games that are')} ${chalk.bold.whiteBright('white')} ${chalk.dim('are great to start out,')} ${chalk.bold.white('gray')} ${chalk.dim('are fun and run, and')} ${chalk.bold.dim('dark')} ${chalk.dim('may or may not run.')}`)
+        console.log(`${chalk.dim('Games that are')} ${chalk.bold.whiteBright('white')} ${chalk.dim('are great to start out,')} ${chalk.bold.white('gray')} ${chalk.dim('are fun and run, and')} ${chalk.bold.dim('dark')} ${chalk.dim('may or may not run.')}`) // tslint:disable-line:max-line-length
         console.log(``)
     }
 
@@ -188,8 +186,8 @@ async function run() {
 }
 
 async function startPromptsAndPlayGame(gamePath: string, gistId: Optional<string>, cliResume: Optional<boolean>, cliLevel: Optional<number>, nosound: Optional<boolean>) {
-    const cliOptions: CliOptions = <CliOptions> commander.opts()
-    let { ui: cliUi, size: cliSpriteSize, new: cliNewGame} = cliOptions
+    const cliOptions: ICliOptions = commander.opts() as ICliOptions
+    const { ui: cliUi, size: cliSpriteSize, new: cliNewGame } = cliOptions
 
     const absPath = path.resolve(gamePath)
     const code = readFileSync(absPath, 'utf-8')
@@ -207,20 +205,20 @@ async function startPromptsAndPlayGame(gamePath: string, gistId: Optional<string
         console.log(`Opened Game: "${chalk.blueBright(data.title)}"`)
         console.log('')
 
-        showControls();
+        showControls()
         // check to see if the terminal is too small
-        await promptPixelSize(data, cliUi ? cliSpriteSize : CLI_SPRITE_SIZE.SMALL);
+        await promptPixelSize(data, cliUi ? cliSpriteSize : CLI_SPRITE_SIZE.SMALL)
 
         // Load the solutions file (if it exists) so we can append to it
         const solutionsPath = path.join(__dirname, `../gist-solutions/${gistId}.json`)
-        let recordings: { version: number, solutions: LevelRecording[], title: string, totalLevels: number, totalMapLevels: number }
+        let recordings: { version: number, solutions: ILevelRecording[], title: string, totalLevels: number, totalMapLevels: number }
         if (gistId && existsSync(solutionsPath)) {
             recordings = JSON.parse(readFileSync(solutionsPath, 'utf-8'))
         } else {
-            recordings = { version: 1, solutions: [], title: data.title, totalLevels: data.levels.length, totalMapLevels: data.levels.filter(l => l.isMap()).length } // default
+            recordings = { version: 1, solutions: [], title: data.title, totalLevels: data.levels.length, totalMapLevels: data.levels.filter((l) => l.isMap()).length } // default
         }
 
-        let currentLevelNum = await promptChooseLevel(recordings, data, cliNewGame ? 0 : cliLevel)
+        const currentLevelNum = await promptChooseLevel(recordings, data, cliNewGame ? 0 : cliLevel)
 
         // Allow the user to resume from where they left off
         let ticksToRunFirst = ''
@@ -232,7 +230,7 @@ async function startPromptsAndPlayGame(gamePath: string, gistId: Optional<string
                 shouldResume = (await inquirer.prompt<{ shouldResume: boolean }>({
                     type: 'confirm',
                     name: 'shouldResume',
-                    message: 'Would you like to resume where you left off?',
+                    message: 'Would you like to resume where you left off?'
                 })).shouldResume
             }
             if (shouldResume) {
@@ -256,8 +254,10 @@ async function startPromptsAndPlayGame(gamePath: string, gistId: Optional<string
     }
 }
 
-async function playGame(data: GameData, currentLevelNum: number, recordings: { version: number, solutions: { solution?: string, partial?: string, snapshot?: {tickNum: number, cellState: string[][][]} }[] }, ticksToRunFirst: string, absPath: string, solutionsPath: string, cliUi: boolean, onlyOneLevel: boolean, nosound: Optional<boolean>) {
-    if (process.env['LOG_LEVEL'] === 'debug') {
+async function playGame(data: GameData, currentLevelNum: number, recordings: ISaveFile, ticksToRunFirst: string,
+                        absPath: string, solutionsPath: string, cliUi: boolean, onlyOneLevel: boolean, nosound: Optional<boolean>) {
+
+    if (process.env.LOG_LEVEL === 'debug') {
         console.error(`Start playing "${data.title}". Level ${currentLevelNum}`)
     }
 
@@ -269,9 +269,8 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: { v
     if (!level) {
         throw new Error(`BUG: Could not find level ${currentLevelNum}`)
     }
-    let startTime = Date.now()
     const engine = new GameEngine(data)
-    engine.on('loading-cells', ({ cellStart, cellEnd, cellTotal }: LoadingCellsEvent) => {
+    engine.on('loading-cells', ({ cellStart, cellEnd, cellTotal }: ILoadingCellsEvent) => {
         // UI.writeDebug(`Loading cells ${cellStart}-${cellEnd} of ${cellTotal}. SpriteKey="${key}"`)
         const loading = `Loading... [`
         const barChars = '                    '
@@ -282,7 +281,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: { v
         const percentStartBlack = Math.floor(barLength * (cellStart + cellEnd) / cellTotal)
         for (let i = 0; i < barLength; i++) {
             let fgColor = '#707070'
-            let char = '█'
+            const char = '█'
             if (i <= percentStartYellow) {
                 fgColor = '#00ff00' // green
             } else if (i <= percentStartBlack) {
@@ -295,6 +294,10 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: { v
     TerminalUI.clearScreen()
     engine.setLevel(data.levels.indexOf(level))
 
+    let keypresses: string[] = [] // set later once we walk through all the existing partial keys
+    let pendingKey = null
+    let tickNum = 0
+    let shouldExitGame: boolean = false
 
     function restartLevel() {
         engine.pressRestart()
@@ -302,14 +305,10 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: { v
         keypresses = [] // clear key history
     }
 
-    let keypresses: string[] = [] // set later once we walk through all the existing partial keys
-    let pendingKey = null
-    let tickNum = 0
-    let shouldExitGame: boolean = false
     // https://stackoverflow.com/a/30687420
     process.stdin.on('data', handleKeyPress)
     function handleKeyPress(key: string) {
-        if (process.env['NODE_ENV'] === 'developer' && !TerminalUI.getHasVisualUi()) {
+        if (process.env.NODE_ENV === 'developer' && !TerminalUI.getHasVisualUi()) {
             console.log(`${chalk.dim(`Pressed:`)} ${chalk.whiteBright(key)}`)
         }
         switch (key) {
@@ -342,11 +341,10 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: { v
             case 'u':
             case 'z':
                 // update keypresses so that it does not contain the most-recent key
-                let lastKey = null
-                while ((lastKey = keypresses[keypresses.length - 1]) !== null) {
+                while (keypresses.length > 0) {
+                    const lastKey = keypresses[keypresses.length - 1]
                     keypresses.pop()
-                    if (lastKey === '.' || lastKey === ',') {
-                    } else {
+                    if (!(lastKey === '.' || lastKey === ',')) {
                         break
                     }
                 }
@@ -398,29 +396,29 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: { v
                 shouldExitGame = true
                 return
             case '1':
-                if (process.env['NODE_ENV'] === 'development') {
+                if (process.env.NODE_ENV === 'development') {
                     pendingKey = '[pause]'
                 }
                 return
             case '2':
-                if (process.env['NODE_ENV'] === 'development') {
+                if (process.env.NODE_ENV === 'development') {
                     pendingKey = '[continue]'
                 }
                 return
             case '9':
                 // Save State
-                if (process.env['NODE_ENV'] === 'development') {
+                if (process.env.NODE_ENV === 'development') {
                     const cellState = engine.saveSnapshotToJSON()
-                    recordings.solutions[currentLevelNum].snapshot = {tickNum, cellState}
+                    recordings.solutions[currentLevelNum].snapshot = { tickNum, cellState }
                     writeFileSync(solutionsPath, JSON.stringify(recordings, null, 2))
                 }
                 return
             case '0':
                 // Load most-recent state
-                if (process.env['NODE_ENV'] === 'development') {
-                    const {snapshot} = recordings.solutions[currentLevelNum]
+                if (process.env.NODE_ENV === 'development') {
+                    const { snapshot } = recordings.solutions[currentLevelNum]
                     if (snapshot) {
-                        const {tickNum: savedTickNum, cellState} = snapshot
+                        const { tickNum: savedTickNum, cellState } = snapshot
                         engine.loadSnapshotFromJSON(cellState)
                         tickNum = savedTickNum
                     }
@@ -470,6 +468,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: { v
     let maxTickAndRenderTime = -1
     for (tickNum = 0; tickNum < ticksToRunFirstAry.length; tickNum++) {
         let key = ticksToRunFirstAry[tickNum]
+        const startTime = Date.now()
 
         if (isPaused && !pendingKey) {
             tickNum--
@@ -486,7 +485,6 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: { v
             }
         }
         doPress(key, false)
-        startTime = Date.now()
         const { changedCells, soundToPlay, didLevelChange, messageToShow } = engine.tick()
 
         // if (changedCells.size === 0 && !messageToShow && 'WSAD'.includes(key)) {
@@ -525,7 +523,8 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: { v
             maxTickAndRenderTime = Math.max(maxTickAndRenderTime, Date.now() - startTime)
         }
 
-        const msg = `Playback ${tickNum}/${ticksToRunFirstAry.length} of "${data.title}" (took ${Date.now() - startTime}ms) ${ticksToRunFirstAry.slice(Math.max(tickNum - 25, 0), tickNum + 1).join('')}`
+        const tickHistory = ticksToRunFirstAry.slice(Math.max(tickNum - 25, 0), tickNum + 1).join('')
+        const msg = `Playback ${tickNum}/${ticksToRunFirstAry.length} of "${data.title}" (took ${Date.now() - startTime}ms) ${tickHistory}`
         TerminalUI.writeDebug(msg.substring(0, 160), 1)
 
         await sleep(1) // sleep long enough to play sounds
@@ -622,7 +621,7 @@ async function promptPlayAnother() {
     }>({
         type: 'confirm',
         name: 'playAnotherGame',
-        message: 'Would you like to play another game?',
+        message: 'Would you like to play another game?'
     })
     return playAnotherGame
 }
@@ -633,7 +632,7 @@ enum START_MODE {
     CHOOSE_LEVEL = 'Choose a Level'
 }
 
-async function promptChooseLevel(recordings: SaveFile, data: GameData, cliLevel: Optional<number>) {
+async function promptChooseLevel(recordings: ISaveFile, data: GameData, cliLevel: Optional<number>) {
     const levels = data.levels
     const firstUncompletedLevel = levels
         .indexOf(levels
@@ -652,7 +651,7 @@ async function promptChooseLevel(recordings: SaveFile, data: GameData, cliLevel:
     startModeOptions.push(new inquirer.Separator())
     startModeOptions.push(START_MODE.CHOOSE_LEVEL)
 
-    const {startMode} = await inquirer.prompt<{
+    const { startMode } = await inquirer.prompt<{
         startMode: START_MODE;
     }>([{
         type: 'list',
@@ -678,58 +677,53 @@ async function promptChooseLevel(recordings: SaveFile, data: GameData, cliLevel:
         default: firstUncompletedLevel,
         pageSize: Math.max(15, getTerminalSize().rows - 15),
         choices: levels.map((levelMap, index) => {
-            const hasSolution = recordings.solutions[index] && recordings.solutions[index].solution;
+            const hasSolution = recordings.solutions[index] && recordings.solutions[index].solution
             if (levelMap.isMap()) {
-                const levelRows = levelMap.getRows();
-                const cols = levelRows[0];
-                let width = cols.length;
-                let height = levelRows.length;
+                const levelRows = levelMap.getRows()
+                const cols = levelRows[0]
+                let width = cols.length
+                let height = levelRows.length
                 // If flickscreen or zoomscreen is enabled, then change the level size
                 // that is reported
-                const { zoomscreen, flickscreen } = data.metadata;
+                const { zoomscreen, flickscreen } = data.metadata
                 if (flickscreen) {
-                    height = flickscreen.height;
-                    width = flickscreen.width;
+                    height = flickscreen.height
+                    width = flickscreen.width
                 }
                 if (zoomscreen) {
-                    height = zoomscreen.height;
-                    width = zoomscreen.width;
+                    height = zoomscreen.height
+                    width = zoomscreen.width
                 }
                 const { columns, rows } = getTerminalSize()
-                const isTooWide = columns < width * 5 * TerminalUI.PIXEL_WIDTH;
-                const isTooTall = rows < height * 5 * TerminalUI.PIXEL_HEIGHT;
-                let message = '';
+                const isTooWide = columns < width * 5 * TerminalUI.PIXEL_WIDTH
+                const isTooTall = rows < height * 5 * TerminalUI.PIXEL_HEIGHT
+                let message = ''
                 if (isTooWide && isTooTall) {
-                    message = `(too tall & wide for your terminal)`;
-                }
-                else if (isTooWide) {
-                    message = `(too wide for your terminal)`;
-                }
-                else if (isTooTall) {
-                    message = `(too tall for your terminal)`;
+                    message = `(too tall & wide for your terminal)`
+                } else if (isTooWide) {
+                    message = `(too wide for your terminal)`
+                } else if (isTooTall) {
+                    message = `(too tall for your terminal)`
                 }
                 if (hasSolution) {
                     return {
                         name: `${chalk.green(`${index}`)} ${chalk.dim(`(${width} x ${height}) ${chalk.green('(SOLVED)')}`)} ${chalk.yellowBright(message)}`,
-                        value: index,
-                    };
-                }
-                else {
+                        value: index
+                    }
+                } else {
                     if (message) {
                         return {
                             name: `${chalk.whiteBright(`${index}`)} ${chalk.red(`(${width} x ${height})`)} ${chalk.yellowBright(message)}`,
-                            value: index,
-                        };
-                    }
-                    else {
+                            value: index
+                        }
+                    } else {
                         return {
                             name: `${chalk.whiteBright(`${index}`)} ${chalk.green(`(${width} x ${height})`)}`,
-                            value: index,
-                        };
+                            value: index
+                        }
                     }
                 }
-            }
-            else {
+            } else {
                 const message = levelMap.getMessage()
                 let snippet = message.split('\n')[0] // just use the 1st line
                 if (snippet.length > 40) {
@@ -738,7 +732,7 @@ async function promptChooseLevel(recordings: SaveFile, data: GameData, cliLevel:
                 return {
                     name: chalk.dim(`... "${snippet}"`),
                     value: index
-                };
+                }
             }
         })
     }])
@@ -748,47 +742,47 @@ async function promptChooseLevel(recordings: SaveFile, data: GameData, cliLevel:
 
 async function promptPixelSize(data: GameData, cliSpriteSize: Optional<CLI_SPRITE_SIZE>) {
     if (cliSpriteSize === CLI_SPRITE_SIZE.SMALL) {
-        TerminalUI.setSmallTerminal(true);
+        TerminalUI.setSmallTerminal(true)
     } else if (cliSpriteSize === CLI_SPRITE_SIZE.LARGE) {
         // do nothing since the terminal size is large by default
     } else if (!TerminalUI.willAllLevelsFitOnScreen(data)) {
         // Draw some example sprites
-        console.log('Some of the levels in this game are too large for your terminal.');
-        console.log('You can resize your terminal or use compact sprites.');
-        console.log('There may be some graphical artifacts if you use compact sprites.');
-        console.log('Below are examples of a compact sprite and a non-compacted sprite:');
-        console.log('');
-        const b = chalk.bgBlueBright(' ');
-        const y = chalk.bgYellowBright(' ');
-        const k = chalk.bgBlack(' ');
-        const by = chalk.bgBlueBright.yellowBright('▄');
-        const yb = chalk.bgYellowBright.blueBright('▄');
-        const yk = chalk.black.bgYellowBright('▄');
-        const ky = chalk.bgBlack.yellowBright('▄');
-        const bk = chalk.bgBlueBright.black('▄');
-        console.log(b + b + b + b + b + b + b + b + b + b + b + b + b + b);
-        console.log(b + b + b + b + y + y + y + y + y + y + b + b + b + b);
-        console.log(b + b + y + y + k + k + y + y + k + k + y + y + b + b);
-        console.log(b + b + k + k + y + y + y + y + y + y + k + k + b + b);
-        console.log(b + b + y + y + k + k + k + k + k + k + y + y + b + b);
-        console.log(b + b + b + b + y + y + y + y + y + y + b + b + b + b);
-        console.log(b + b + b + b + b + b + b + b + b + b + b + b + b + b);
-        console.log('');
-        console.log('');
-        console.log(b + b + by + by + by + b + b);
-        console.log(b + yk + ky + y + ky + yk + b);
-        console.log(b + yb + ky + ky + ky + yb + b);
-        console.log(bk + bk + bk + bk + bk + bk + bk);
+        console.log('Some of the levels in this game are too large for your terminal.')
+        console.log('You can resize your terminal or use compact sprites.')
+        console.log('There may be some graphical artifacts if you use compact sprites.')
+        console.log('Below are examples of a compact sprite and a non-compacted sprite:')
+        console.log('')
+        const b = chalk.bgBlueBright(' ')
+        const y = chalk.bgYellowBright(' ')
+        const k = chalk.bgBlack(' ')
+        const by = chalk.bgBlueBright.yellowBright('▄')
+        const yb = chalk.bgYellowBright.blueBright('▄')
+        const yk = chalk.black.bgYellowBright('▄')
+        const ky = chalk.bgBlack.yellowBright('▄')
+        const bk = chalk.bgBlueBright.black('▄')
+        console.log(b + b + b + b + b + b + b + b + b + b + b + b + b + b)
+        console.log(b + b + b + b + y + y + y + y + y + y + b + b + b + b)
+        console.log(b + b + y + y + k + k + y + y + k + k + y + y + b + b)
+        console.log(b + b + k + k + y + y + y + y + y + y + k + k + b + b)
+        console.log(b + b + y + y + k + k + k + k + k + k + y + y + b + b)
+        console.log(b + b + b + b + y + y + y + y + y + y + b + b + b + b)
+        console.log(b + b + b + b + b + b + b + b + b + b + b + b + b + b)
+        console.log('')
+        console.log('')
+        console.log(b + b + by + by + by + b + b)
+        console.log(b + yk + ky + y + ky + yk + b)
+        console.log(b + yb + ky + ky + ky + yb + b)
+        console.log(bk + bk + bk + bk + bk + bk + bk)
         const { useCompressedCharacters } = await inquirer.prompt<{
             useCompressedCharacters: boolean;
         }>({
             type: 'confirm',
             name: 'useCompressedCharacters',
-            default: process.env['NODE_ENV'] !== 'development',
-            message: 'Would you like to use small characters when rendering the game?',
-        });
+            default: process.env.NODE_ENV !== 'development',
+            message: 'Would you like to use small characters when rendering the game?'
+        })
         if (useCompressedCharacters) {
-            TerminalUI.setSmallTerminal(true);
+            TerminalUI.setSmallTerminal(true)
         }
     }
 }
@@ -797,12 +791,12 @@ async function promptPixelSize(data: GameData, cliSpriteSize: Optional<CLI_SPRIT
 function shuffleArray<T>(array: T[]) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]]; // eslint-disable-line no-param-reassign
+        [array[i], array[j]] = [array[j], array[i]] // eslint-disable-line no-param-reassign
     }
     return array
 }
 
-async function promptGame(games: GameInfo[], cliGameTitle: Optional<string>) {
+async function promptGame(games: IGameInfo[], cliGameTitle: Optional<string>) {
     // Sort games by games that are fun and should be played first
     const firstGames = [
         'Pot Wash Panic',
@@ -879,7 +873,7 @@ async function promptGame(games: GameInfo[], cliGameTitle: Optional<string>) {
         'Count Mover',
         'ESL Puzzle Game -- CHALLENGE MODE アダムのパズルゲーム'
     ]
-    function getGameIndexForSort(gameInfo: GameInfo) {
+    function getGameIndexForSort(gameInfo: IGameInfo) {
         let gameIndex = firstGames.indexOf(gameInfo.title)
         if (gameIndex < 0) {
             gameIndex = firstGames.length
@@ -890,12 +884,12 @@ async function promptGame(games: GameInfo[], cliGameTitle: Optional<string>) {
         return getGameIndexForSort(a) - getGameIndexForSort(b)
     })
 
-    const question: inquirer.Question = <inquirer.Question>{
+    const question: inquirer.Question = {
         type: 'autocomplete',
         name: 'gameTitle',
         message: 'Which game would you like to play?',
         pageSize: Math.max(15, getTerminalSize().rows - 15),
-        source: async (answers: void, input: string) => {
+        source: async(answers: void, input: string) => {
             let filteredGames
             if (!input) {
                 filteredGames = games
@@ -904,18 +898,20 @@ async function promptGame(games: GameInfo[], cliGameTitle: Optional<string>) {
                     return title.toLowerCase().indexOf(input.toLowerCase()) >= 0
                 })
             }
-            return Promise.resolve(filteredGames.map(game => {
+            return Promise.resolve(filteredGames.map((game) => {
                 // dim the games that are not recommended
                 const index = firstGames.indexOf(game.title)
                 if (index < 0) {
-                    return chalk.dim('\u2063' + game.title + '\u2063') // add an invisible unicode character so we can unescape the title later
+                    // add an invisible unicode character so we can unescape the title later
+                    return chalk.dim('\u2063' + game.title + '\u2063')
                 } else if (index <= 10) {
                     return chalk.bold.whiteBright('\u2063' + game.title + '\u2063')
                 } else {
-                    return chalk.white('\u2063' + game.title + '\u2063') // add an invisible unicode character so we can unescape the title later
+                    // add an invisible unicode character so we can unescape the title later
+                    return chalk.white('\u2063' + game.title + '\u2063')
                 }
             }))
-        },
+        }
         // choices: games.map(({id, title, filePath}) => {
         //     return {
         //         name: `${title} ${chalk.dim(`(${id})`)}`,
@@ -923,7 +919,9 @@ async function promptGame(games: GameInfo[], cliGameTitle: Optional<string>) {
         //         short: id,
         //     }
         // })
-    }
+
+    // coercing because we use the autcomplete plugin and it defines a `source:` object
+    } as inquirer.Question // tslint:disable-line:no-object-literal-type-assertion
 
     let chosenGame
     if (cliGameTitle) {
@@ -931,12 +929,12 @@ async function promptGame(games: GameInfo[], cliGameTitle: Optional<string>) {
             chosenGame = shuffleArray([...games])[0]
         } else {
             // try to match the title exactly, then try a substring
-            chosenGame = games.find(g => {
+            chosenGame = games.find((g) => {
                 return g.title.toLowerCase() === cliGameTitle.toLowerCase()
             })
 
             if (!chosenGame) {
-                chosenGame = games.find(g => {
+                chosenGame = games.find((g) => {
                     return g.title.toLowerCase().indexOf(cliGameTitle.toLowerCase()) >= 0
                 })
             }
@@ -958,7 +956,7 @@ async function promptGame(games: GameInfo[], cliGameTitle: Optional<string>) {
             uncoloredGameTitle = gameTitle
         }
 
-        chosenGame = games.filter(game => game.title === uncoloredGameTitle)[0]
+        chosenGame = games.filter((game) => game.title === uncoloredGameTitle)[0]
         if (!chosenGame) {
             throw new Error(`BUG: Could not find game "${uncoloredGameTitle}"`)
         }
@@ -967,29 +965,27 @@ async function promptGame(games: GameInfo[], cliGameTitle: Optional<string>) {
     return chosenGame
 }
 
-
 function showControls() {
     function prettyKey(keyCode: string) {
-        return chalk.whiteBright.bgWhite(`[${chalk.black(keyCode)}]`);
+        return chalk.whiteBright.bgWhite(`[${chalk.black(keyCode)}]`)
     }
-    console.log(`-------------------------------------`);
-    console.log(`Controls:`);
-    console.log(`  ${prettyKey('W')} or ${prettyKey('up')}    : Move Up`);
-    console.log(`  ${prettyKey('S')} or ${prettyKey('down')}  : Move Down`);
-    console.log(`  ${prettyKey('A')} or ${prettyKey('left')}  : Move Left`);
-    console.log(`  ${prettyKey('D')} or ${prettyKey('right')} : Move Right`);
-    console.log(`  ${prettyKey('X')} or ${prettyKey('space')} : Perform Action`);
-    console.log(`  ${prettyKey('Z')} or ${prettyKey('U')}     : Undo`);
-    console.log(`  ${prettyKey('R')}            : Restart the current level`);
-    console.log(`  ${prettyKey('C')}            : Clear and redraw the screen`);
-    console.log(`  ${prettyKey('esc')}          : Exit the Game`);
-    console.log(`-------------------------------------`);
-    console.log(`Accessibility Controls: (for inspecting which sprites are in the puzzle)`);
-    console.log(`  ${prettyKey('I')}            : Move Inspector Up`);
-    console.log(`  ${prettyKey('K')}            : Move Inspector Down`);
-    console.log(`  ${prettyKey('J')}            : Move Inspector Left`);
-    console.log(`  ${prettyKey('L')}            : Move Inspector Right`);
-    console.log(`  ${prettyKey('P')}            : Move Inspector onto the Player`);
-    console.log(`-------------------------------------`);
+    console.log(`-------------------------------------`)
+    console.log(`Controls:`)
+    console.log(`  ${prettyKey('W')} or ${prettyKey('up')}    : Move Up`)
+    console.log(`  ${prettyKey('S')} or ${prettyKey('down')}  : Move Down`)
+    console.log(`  ${prettyKey('A')} or ${prettyKey('left')}  : Move Left`)
+    console.log(`  ${prettyKey('D')} or ${prettyKey('right')} : Move Right`)
+    console.log(`  ${prettyKey('X')} or ${prettyKey('space')} : Perform Action`)
+    console.log(`  ${prettyKey('Z')} or ${prettyKey('U')}     : Undo`)
+    console.log(`  ${prettyKey('R')}            : Restart the current level`)
+    console.log(`  ${prettyKey('C')}            : Clear and redraw the screen`)
+    console.log(`  ${prettyKey('esc')}          : Exit the Game`)
+    console.log(`-------------------------------------`)
+    console.log(`Accessibility Controls: (for inspecting which sprites are in the puzzle)`)
+    console.log(`  ${prettyKey('I')}            : Move Inspector Up`)
+    console.log(`  ${prettyKey('K')}            : Move Inspector Down`)
+    console.log(`  ${prettyKey('J')}            : Move Inspector Left`)
+    console.log(`  ${prettyKey('L')}            : Move Inspector Right`)
+    console.log(`  ${prettyKey('P')}            : Move Inspector onto the Player`)
+    console.log(`-------------------------------------`)
 }
-

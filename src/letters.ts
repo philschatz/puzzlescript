@@ -1,6 +1,6 @@
-import { GameSpritePixels } from "./models/tile";
-import { HexColor } from "./models/colors";
 import { IGameCode } from './models/BaseForLines'
+import { HexColor } from './models/colors'
+import { GameSpritePixels } from './models/tile'
 
 const letters: Map<string, number[][]> = new Map()
 

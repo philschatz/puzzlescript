@@ -1,16 +1,16 @@
 import * as ohm from 'ohm-js'
+import { HexColor } from '../models/colors'
 import {
+    GameLegendTileAnd,
+    GameLegendTileOr,
+    GameLegendTileSimple,
     GameSprite,
     GameSpritePixels,
     GameSpriteSingleColor,
-    GameLegendTileSimple,
-    GameLegendTileOr,
-    GameLegendTileAnd,
     IGameTile
 } from '../models/tile'
+import { IParseable } from './gameGrammar'
 import { LookupHelper } from './lookup'
-import { Parseable } from './gameGrammar';
-import { HexColor } from '../models/colors';
 
 export const SPRITE_GRAMMAR = `
     Sprite
@@ -52,7 +52,7 @@ export const LEGEND_GRAMMAR = `
 
 export function getTileSemantics(lookup: LookupHelper) {
     return {
-        Sprite: function (this: ohm.Node, _1: Parseable<GameSprite>) {
+        Sprite(this: ohm.Node, _1: IParseable<GameSprite>) {
             const gameObject = _1.parse()
             lookup.addToAllObjects(gameObject)
             if (gameObject._optionalLegendChar) {
@@ -63,13 +63,16 @@ export function getTileSemantics(lookup: LookupHelper) {
             }
             return gameObject
         },
-        SpritePixels: function (this: ohm.Node, name: Parseable<string>, optionalLegendChar: Parseable<string[]>, _3: Parseable<string>, colors: Parseable<HexColor[]>, _5: Parseable<string>, pixels: Parseable<(number | ".")[][]>, _7: Parseable<string>) {
+        SpritePixels(this: ohm.Node, name: IParseable<string>, optionalLegendChar: IParseable<string[]>,
+                     _3: IParseable<string>, colors: IParseable<HexColor[]>, _5: IParseable<string>,
+                     pixels: IParseable<Array<Array<number | '.'>>>, _7: IParseable<string>) {
+
             return new GameSpritePixels(this.source, name.parse(), optionalLegendChar.parse()[0], colors.parse(), pixels.parse())
         },
-        SpriteNoPixels: function (this: ohm.Node, name: Parseable<string>, optionalLegendChar: Parseable<string[]>, _3: Parseable<string>, colors: Parseable<HexColor[]>, _5: Parseable<string>) {
+        SpriteNoPixels(this: ohm.Node, name: IParseable<string>, optionalLegendChar: IParseable<string[]>, _3: IParseable<string>, colors: IParseable<HexColor[]>, _5: IParseable<string>) {
             return new GameSpriteSingleColor(this.source, name.parse(), optionalLegendChar.parse()[0], colors.parse())
         },
-        PixelRows: function (this: ohm.Node, row1: Parseable<string>, row2: Parseable<string>, row3: Parseable<string>, row4: Parseable<string>, rows: Parseable<string>) {
+        PixelRows(this: ohm.Node, row1: IParseable<string>, row2: IParseable<string>, row3: IParseable<string>, row4: IParseable<string>, rows: IParseable<string>) {
             return [
                 row1.parse(),
                 row2.parse(),
@@ -77,11 +80,11 @@ export function getTileSemantics(lookup: LookupHelper) {
                 row4.parse()
             ].concat(rows.parse())
         },
-        LookupLegendVarName: function (this: ohm.Node, tileName: Parseable<string>) {
+        LookupLegendVarName(this: ohm.Node, tileName: IParseable<string>) {
             // Replace all the Sprite Names with the actual objects
             return lookup.lookupObjectOrLegendTile(this.source, tileName.parse())
         },
-        LegendTile: function (this: ohm.Node, tile: Parseable<GameLegendTileSimple>) {
+        LegendTile(this: ohm.Node, tile: IParseable<GameLegendTileSimple>) {
             const legendTile = tile.parse()
             lookup.addToAllLegendTiles(legendTile)
             if (legendTile.spriteNameOrLevelChar.length === 1) {
@@ -89,14 +92,14 @@ export function getTileSemantics(lookup: LookupHelper) {
             }
             return legendTile
         },
-        LegendTileSimple: function (this: ohm.Node, spriteNameOrLevelChar: Parseable<string>, _equals: Parseable<string>, tile: Parseable<GameSprite>, _whitespace: Parseable<string>) {
+        LegendTileSimple(this: ohm.Node, spriteNameOrLevelChar: IParseable<string>, _equals: IParseable<string>, tile: IParseable<GameSprite>, _whitespace: IParseable<string>) {
             // TODO: Do the lookup and adding to sets here rather than rewiring in LegendTile
             return new GameLegendTileSimple(this.source, spriteNameOrLevelChar.parse(), tile.parse())
         },
-        LegendTileAnd: function (this: ohm.Node, spriteNameOrLevelChar: Parseable<string>, _equals: Parseable<string>, tiles: Parseable<IGameTile[]>, _whitespace: Parseable<string>) {
+        LegendTileAnd(this: ohm.Node, spriteNameOrLevelChar: IParseable<string>, _equals: IParseable<string>, tiles: IParseable<IGameTile[]>, _whitespace: IParseable<string>) {
             return new GameLegendTileAnd(this.source, spriteNameOrLevelChar.parse(), tiles.parse())
         },
-        LegendTileOr: function (this: ohm.Node, spriteNameOrLevelChar: Parseable<string>, _equals: Parseable<string>, tiles: Parseable<IGameTile[]>, _whitespace: Parseable<string>) {
+        LegendTileOr(this: ohm.Node, spriteNameOrLevelChar: IParseable<string>, _equals: IParseable<string>, tiles: IParseable<IGameTile[]>, _whitespace: IParseable<string>) {
             return new GameLegendTileOr(this.source, spriteNameOrLevelChar.parse(), tiles.parse())
         }
     }

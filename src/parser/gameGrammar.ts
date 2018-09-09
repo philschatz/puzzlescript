@@ -1,18 +1,18 @@
 import * as ohm from 'ohm-js'
-import { GameData } from '../models/game'
-import { GameMetadata, Dimension } from '../models/metadata'
-import { HexColor, TransparentColor, IColor } from '../models/colors'
 import { lookupColorPalette } from '../colors'
+import { CollisionLayer } from '../models/collisionLayer'
+import { HexColor, IColor, TransparentColor } from '../models/colors'
+import { GameData } from '../models/game'
+import { LevelMap } from '../models/level'
+import { Dimension, GameMetadata } from '../models/metadata'
+import { GameSound } from '../models/sound'
+import { GameLegendTileSimple, GameSprite } from '../models/tile'
+import { WinConditionSimple } from '../models/winCondition'
+import { ASTRule } from './astRule'
 import { LookupHelper } from './lookup'
-import { ValidationLevel, AddValidationFunc } from './parser'
-import { LevelMap } from '../models/level';
-import { WinConditionSimple } from '../models/winCondition';
-import { ASTRule } from './astRule';
-import { CollisionLayer } from '../models/collisionLayer';
-import { GameSound } from '../models/sound';
-import { GameLegendTileSimple, GameSprite } from '../models/tile';
+import { AddValidationFunc, ValidationLevel } from './parser'
 
-export type Parseable<T> = {
+export interface IParseable<T> {
     parse: () => T
     primitiveValue: string
 }
@@ -281,9 +281,16 @@ export const METADATA_GRAMMAR = `
 export function getGameSemantics(lookup: LookupHelper, addValidationMessage: AddValidationFunc) {
     let currentColorPalette = 'arnecolors' // default
     return {
-        GameData: function (this: ohm.Node, _whitespace1: Parseable<string>, title: Parseable<string>, _whitespace2: Parseable<string>, settingsFields: Parseable<{key: string, value: boolean | string | Dimension}[]>, _whitespace3: Parseable<string>, spritesSection: Parseable<GameSprite[][]>, legendsSection: Parseable<GameLegendTileSimple[][]>, soundsSection: Parseable<GameSound[][]>, collisionLayersSection: Parseable<CollisionLayer[][]>, rulesSection: Parseable<ASTRule[][]>, winConditionsSection: Parseable<WinConditionSimple[][]>, levelsSection: Parseable<LevelMap[][]>) {
+        GameData(this: ohm.Node, _whitespace1: IParseable<string>, title: IParseable<string>,
+                 _whitespace2: IParseable<string>,
+                 settingsFields: IParseable<Array<{key: string, value: boolean | string | Dimension}>>,
+                 _whitespace3: IParseable<string>, spritesSection: IParseable<GameSprite[][]>,
+                 legendsSection: IParseable<GameLegendTileSimple[][]>, soundsSection: IParseable<GameSound[][]>,
+                 collisionLayersSection: IParseable<CollisionLayer[][]>, rulesSection: IParseable<ASTRule[][]>,
+                 winConditionsSection: IParseable<WinConditionSimple[][]>, levelsSection: IParseable<LevelMap[][]>) {
+
             const metadata = new GameMetadata()
-            for (const {key, value} of settingsFields.parse()) {
+            for (const { key, value } of settingsFields.parse()) {
                 metadata._setValue(key.toLowerCase(), value)
             }
             // The order in which these are parsed is important because they populate the lookup object
@@ -294,7 +301,7 @@ export function getGameSemantics(lookup: LookupHelper, addValidationMessage: Add
             const rules = rulesSection.parse()[0] || []
             const winConditions = winConditionsSection.parse()[0] || []
             const levels = levelsSection.parse()[0] || []
-            const levelsWithoutNullMessages = levels.filter(l => !!l)
+            const levelsWithoutNullMessages = levels.filter((l) => !!l)
 
             return new GameData(
                 this.source,
@@ -309,7 +316,7 @@ export function getGameSemantics(lookup: LookupHelper, addValidationMessage: Add
                 levelsWithoutNullMessages
             )
         },
-        Title: function (this: ohm.Node, _1: Parseable<string>, value: Parseable<string>) {
+        Title(this: ohm.Node, _1: IParseable<string>, value: IParseable<string>) {
             return value.parse()
         },
 
@@ -332,33 +339,38 @@ export function getGameSemantics(lookup: LookupHelper, addValidationMessage: Add
         t_NOREPEAT_ACTION: getConfigFieldSimple,
         t_VERBOSE_LOGGING: getConfigFieldSimple,
 
-        ColorPalette: function (this: ohm.Node, _1: Parseable<string>, colorPaletteName: Parseable<string>) {
+        ColorPalette(this: ohm.Node, _1: IParseable<string>, colorPaletteName: IParseable<string>) {
             // Set the color palette so we only need to use hex color codes
             currentColorPalette = colorPaletteName.parse()
             return getConfigField(_1, colorPaletteName)
         },
         RequirePlayerMovement: getConfigField,
 
-        Section: function (this: ohm.Node, _threeDashes1: Parseable<string>, _lineTerminator1: Parseable<string>, _sectionName: Parseable<string>, _lineTerminator2: Parseable<string>, _threeDashes2: Parseable<string>, _8: Parseable<string>, _9: Parseable<string>, _10: Parseable<string>, _11: Parseable<string>) {
+        Section(this: ohm.Node, _threeDashes1: IParseable<string>, _lineTerminator1: IParseable<string>,
+                _sectionName: IParseable<string>, _lineTerminator2: IParseable<string>, _threeDashes2: IParseable<string>,
+                _8: IParseable<string>, _9: IParseable<string>, _10: IParseable<string>, _11: IParseable<string>) {
+
             return _10.parse()
         },
-        widthAndHeight: function (this: ohm.Node, _1: Parseable<string>, _2: Parseable<string>, _3: Parseable<string>) {
+        widthAndHeight(this: ohm.Node, _1: IParseable<string>, _2: IParseable<string>, _3: IParseable<string>) {
             return {
                 __type: 'widthAndHeight',
                 width: _1.parse(),
                 height: _3.parse()
             }
         },
-        pixelRow: function (this: ohm.Node, _1: Parseable<string>, _2: Parseable<string>) {
+        pixelRow(this: ohm.Node, _1: IParseable<string>, _2: IParseable<string>) {
             return _1.parse()
         },
-        colorHex3: function (this: ohm.Node, _1: Parseable<string>, _2: Parseable<string>, _3: Parseable<string>, _4: Parseable<string>) {
+        colorHex3(this: ohm.Node, _1: IParseable<string>, _2: IParseable<string>, _3: IParseable<string>, _4: IParseable<string>) {
             return new HexColor(this.source, this.sourceString)
         },
-        colorHex6: function (this: ohm.Node, _1: Parseable<string>, _2: Parseable<string>, _3: Parseable<string>, _4: Parseable<string>, _5: Parseable<string>, _6: Parseable<string>, _7: Parseable<string>) {
+        colorHex6(this: ohm.Node, _1: IParseable<string>, _2: IParseable<string>, _3: IParseable<string>,
+                  _4: IParseable<string>, _5: IParseable<string>, _6: IParseable<string>, _7: IParseable<string>) {
+
             return new HexColor(this.source, this.sourceString)
         },
-        colorName: function (this: ohm.Node, _1: Parseable<string>) {
+        colorName(this: ohm.Node, _1: IParseable<string>) {
             const colorName = this.sourceString.toLowerCase()
             const hex = lookupColorPalette(currentColorPalette, colorName)
             if (hex) {
@@ -369,39 +381,38 @@ export function getGameSemantics(lookup: LookupHelper, addValidationMessage: Add
                 return transparent
             }
         },
-        colorTransparent: function (this: ohm.Node, _1: Parseable<string>) {
+        colorTransparent(this: ohm.Node, _1: IParseable<string>) {
             return new TransparentColor(this.source)
         },
-        NonemptyListOf: function (this: ohm.Node, _1: Parseable<string>, _2: Parseable<string>, _3: Parseable<string>) {
+        NonemptyListOf(this: ohm.Node, _1: IParseable<string>, _2: IParseable<string>, _3: IParseable<string>) {
             return [_1.parse()].concat(_3.parse())
         },
-        integer: function (this: ohm.Node, _1: Parseable<string>) {
-            return parseInt(this.sourceString)
+        integer(this: ohm.Node, _1: IParseable<string>) {
+            return parseInt(this.sourceString, 10)
         },
-        decimalWithLeadingNumber: function (this: ohm.Node, _1: Parseable<string>, _2: Parseable<string>, _3: Parseable<string>) {
+        decimalWithLeadingNumber(this: ohm.Node, _1: IParseable<string>, _2: IParseable<string>, _3: IParseable<string>) {
             return parseFloat(this.sourceString)
         },
-        decimalWithLeadingPeriod: function (this: ohm.Node, _1: Parseable<string>, _2: Parseable<string>) {
+        decimalWithLeadingPeriod(this: ohm.Node, _1: IParseable<string>, _2: IParseable<string>) {
             return parseFloat(this.sourceString)
         },
-        lookupRuleVariableName: function (this: ohm.Node, _1: Parseable<string>) {
+        lookupRuleVariableName(this: ohm.Node, _1: IParseable<string>) {
             return lookup.lookupObjectOrLegendTile(this.source, _1.parse())
         },
-        lookupCollisionVariableName: function (this: ohm.Node, _1: Parseable<string>) {
+        lookupCollisionVariableName(this: ohm.Node, _1: IParseable<string>) {
             return lookup.lookupObjectOrLegendTile(this.source, _1.parse())
         },
-        ruleVariableName: function (this: ohm.Node, _1: Parseable<string>) {
+        ruleVariableName(this: ohm.Node, _1: IParseable<string>) {
             return this.sourceString
         },
-        collisionVariableName: function (this: ohm.Node, _1: Parseable<string>) {
+        collisionVariableName(this: ohm.Node, _1: IParseable<string>) {
             return this.sourceString
         },
-        words: function (this: ohm.Node, _1: Parseable<string>) {
+        words(this: ohm.Node, _1: IParseable<string>) {
             return this.sourceString
         },
-        _terminal: function (this: ohm.Node, ) { return this.primitiveValue },
-        lineTerminator: (_1: Parseable<string>, _2: Parseable<string>, _3: Parseable<string>, _4: Parseable<string>) => { },
-        digit: (x: Parseable<string>) => {
+        _terminal(this: ohm.Node) { return this.primitiveValue },
+        digit: (x: IParseable<string>) => {
             return x.primitiveValue.charCodeAt(0) - '0'.charCodeAt(0)
         }
         // _default: function (this: ohm.Node, exp1) {
@@ -411,7 +422,7 @@ export function getGameSemantics(lookup: LookupHelper, addValidationMessage: Add
 }
 
 // Helper for setting a config field
-function getConfigField(key: Parseable<string>, value: Parseable<boolean | string | Dimension | IColor>) {
+function getConfigField(key: IParseable<string>, value: IParseable<boolean | string | Dimension | IColor>) {
     let v = value.parse()
     if (!v) {
         // settings that do not have a value means they are `true`
@@ -430,10 +441,10 @@ function getConfigField(key: Parseable<string>, value: Parseable<boolean | strin
                 // leave it as-is
         }
     }
-    return {key: key.parse(), value: value.parse()}
+    return { key: key.parse(), value: value.parse() }
 }
 
 // This just sets the value to be true for fields that do not have a value (e.g. VERBOSE_LOGGING or NOUNDO)
-function getConfigFieldSimple (key: Parseable<string>) {
-    return {key: key.parse(), value: true}
+function getConfigFieldSimple(key: IParseable<string>) {
+    return { key: key.parse(), value: true }
 }

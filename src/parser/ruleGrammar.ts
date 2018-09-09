@@ -1,10 +1,20 @@
 import * as ohm from 'ohm-js'
-import { AbstractCommand, COMMAND_TYPE, MessageCommand, AgainCommand, CancelCommand, CheckpointCommand, RestartCommand, WinCommand, SoundCommand } from '../models/command';
-import { LookupHelper } from './lookup';
-import { ASTTileWithModifier, ASTRuleBracketNeighbor, ASTRuleBracket, ASTRuleLoop, ASTRuleGroup, ASTRule, ASTRuleBracketNeighborHack, AST_RULE_MODIFIER, ASTRuleBracketEllipsis, IASTRuleBracket } from './astRule';
-import { DEBUG_FLAG, _flatten } from '../util';
-import { Parseable } from './gameGrammar';
-import { IGameTile } from '../models/tile';
+import { AbstractCommand, AgainCommand, CancelCommand, CheckpointCommand, COMMAND_TYPE, MessageCommand, RestartCommand, SoundCommand, WinCommand } from '../models/command'
+import { IGameTile } from '../models/tile'
+import { _flatten, DEBUG_FLAG } from '../util'
+import {
+    AST_RULE_MODIFIER,
+    ASTRule,
+    ASTRuleBracket,
+    ASTRuleBracketEllipsis,
+    ASTRuleBracketNeighbor,
+    ASTRuleBracketNeighborHack,
+    ASTRuleGroup,
+    ASTRuleLoop,
+    ASTTileWithModifier,
+    IASTRuleBracket } from './astRule'
+import { IParseable } from './gameGrammar'
+import { LookupHelper } from './lookup'
 
 export const RULE_GRAMMAR = `
     RuleItem
@@ -18,7 +28,8 @@ export const RULE_GRAMMAR = `
         = EllipsisRuleBracket
         | NormalRuleBracket
 
-    NormalRuleBracket = "[" NonemptyListOf<RuleBracketNeighbor, "|"> t_AGAIN? "]" t_DEBUGGER? // t_AGAIN is a HACK. It should be in the list of commands but it's not.
+    NormalRuleBracket = "[" NonemptyListOf<RuleBracketNeighbor,
+    "|"> t_AGAIN? "]" t_DEBUGGER? // t_AGAIN is a HACK. It should be in the list of commands but it's not.
     EllipsisRuleBracket = "[" NonemptyListOf<RuleBracketNeighbor, "|"> t_ELLIPSIS "|" NonemptyListOf<RuleBracketNeighbor, "|"> "]" t_DEBUGGER?
 
     RuleBracketNeighbor
@@ -30,7 +41,10 @@ export const RULE_GRAMMAR = `
 
     TileWithModifier = t_DEBUGGER? tileModifier* lookupRuleVariableName
 
-    tileModifier = space* tileModifierInner space+ // Force-check that there is whitespace after the cellLayerModifier so things like "STATIONARYZ" or "NOZ" are not parsed as a modifier (they are a variable that happens to begin with the same text as a modifier)
+    // Force-check that there is whitespace after the cellLayerModifier so things
+    // like "STATIONARYZ" or "NOZ" are not parsed as a modifier
+    // (they are a variable that happens to begin with the same text as a modifier)
+    tileModifier = space* tileModifierInner space+
 
     tileModifierInner
         = t_NO
@@ -96,18 +110,27 @@ export function getRuleSemantics(lookup: LookupHelper) {
     const cacheNeighbors: Map<string, ASTRuleBracketNeighbor> = new Map()
     const cacheBrackets: Map<string, IASTRuleBracket> = new Map()
     return {
-        RuleItem: function (this: ohm.Node, _1: Parseable<ASTRule>) {
+        RuleItem(this: ohm.Node, _1: IParseable<ASTRule>) {
             return _1.parse()
         },
-        RuleLoop: function (this: ohm.Node, debugFlag: Parseable<DEBUG_FLAG[]>, _startloop: Parseable<string>, _whitespace1: Parseable<string>, rules: Parseable<ASTRule[]>, _endloop: Parseable<string>, _whitespace2: Parseable<string>) {
+        RuleLoop(this: ohm.Node, debugFlag: IParseable<DEBUG_FLAG[]>, _startloop: IParseable<string>,
+                 _whitespace1: IParseable<string>, rules: IParseable<ASTRule[]>, _endloop: IParseable<string>,
+                 _whitespace2: IParseable<string>) {
+
             return new ASTRuleLoop(this.source, rules.parse(), debugFlag.parse()[0])
         },
-        RuleGroup: function (this: ohm.Node, debugFlag: Parseable<DEBUG_FLAG[]>, randomFlag: Parseable<AST_RULE_MODIFIER[]>, firstRule: Parseable<ASTRule>, _plusses: Parseable<string>, followingRules: Parseable<ASTRule[]>) {
+        RuleGroup(this: ohm.Node, debugFlag: IParseable<DEBUG_FLAG[]>, randomFlag: IParseable<AST_RULE_MODIFIER[]>,
+                  firstRule: IParseable<ASTRule>, _plusses: IParseable<string>, followingRules: IParseable<ASTRule[]>) {
+
             return new ASTRuleGroup(this.source, !!randomFlag.parse()[0], [firstRule.parse()].concat(followingRules.parse()), debugFlag.parse()[0])
         },
-        Rule: function (this: ohm.Node, debugFlag: Parseable<DEBUG_FLAG[]>, modifiers: Parseable<AST_RULE_MODIFIER[][]>, conditions: Parseable<ASTRuleBracket[]>, _arrow: Parseable<string>, _unusuedModifer: Parseable<string>, actions: Parseable<ASTRuleBracket[]>, commands: Parseable<AbstractCommand[]>, optionalMessageCommand: Parseable<MessageCommand[]>, _whitespace: Parseable<string>) {
+        Rule(this: ohm.Node, debugFlag: IParseable<DEBUG_FLAG[]>, modifiers: IParseable<AST_RULE_MODIFIER[][]>,
+             conditions: IParseable<ASTRuleBracket[]>, _arrow: IParseable<string>, _unusuedModifer: IParseable<string>,
+             actions: IParseable<ASTRuleBracket[]>, commands: IParseable<AbstractCommand[]>,
+             optionalMessageCommand: IParseable<MessageCommand[]>, _whitespace: IParseable<string>) {
+
             const modifiers2 = _flatten(modifiers.parse())
-            const commands2 = commands.parse().filter(c => !!c) // remove nulls (like an invalid sound effect... e.g. "Fish Friend")
+            const commands2 = commands.parse().filter((c) => !!c) // remove nulls (like an invalid sound effect... e.g. "Fish Friend")
             const optionalMessageCommand2 = optionalMessageCommand.parse()[0]
 
             if (optionalMessageCommand2) {
@@ -115,7 +138,10 @@ export function getRuleSemantics(lookup: LookupHelper) {
             }
             return new ASTRule(this.source, modifiers2, conditions.parse(), actions.parse(), commands2, debugFlag.parse()[0])
         },
-        NormalRuleBracket: function (this: ohm.Node, _openBracket: Parseable<string>, neighbors: Parseable<ASTRuleBracketNeighbor[]>, hackAgain: Parseable<string>, _closeBracket: Parseable<string>, debugFlag: Parseable<DEBUG_FLAG[]>) {
+        NormalRuleBracket(this: ohm.Node, _openBracket: IParseable<string>,
+                          neighbors: IParseable<ASTRuleBracketNeighbor[]>, hackAgain: IParseable<string>,
+                          _closeBracket: IParseable<string>, debugFlag: IParseable<DEBUG_FLAG[]>) {
+
             const b = new ASTRuleBracket(this.source, neighbors.parse(), hackAgain.parse(), debugFlag.parse()[0])
             const key = b.toKey()
             if (!cacheBrackets.has(key)) {
@@ -125,8 +151,12 @@ export function getRuleSemantics(lookup: LookupHelper) {
             }
             return cacheBrackets.get(key)
         },
-        EllipsisRuleBracket: function (this: ohm.Node, _openBracket: Parseable<string>, beforeEllipsisNeighbors: Parseable<ASTRuleBracketNeighbor[]>, _ellipsis: Parseable<string>, _pipe: Parseable<string>, afterEllipsisNeighbors: Parseable<ASTRuleBracketNeighbor[]>, _closeBracket: Parseable<string>, debugFlag: Parseable<DEBUG_FLAG[]>) {
-            // The before ellipsis neightbor contains an additional empty neighbor that we need to remove
+        EllipsisRuleBracket(this: ohm.Node, _openBracket: IParseable<string>,
+                            beforeEllipsisNeighbors: IParseable<ASTRuleBracketNeighbor[]>, _ellipsis: IParseable<string>,
+                            _pipe: IParseable<string>, afterEllipsisNeighbors: IParseable<ASTRuleBracketNeighbor[]>,
+                            _closeBracket: IParseable<string>, debugFlag: IParseable<DEBUG_FLAG[]>) {
+
+                // The before ellipsis neightbor contains an additional empty neighbor that we need to remove
             const before = beforeEllipsisNeighbors.parse()
             const extraEmptyNeighbor = before.pop()
             if (extraEmptyNeighbor && extraEmptyNeighbor.tilesWithModifier.length === 0) {
@@ -143,10 +173,10 @@ export function getRuleSemantics(lookup: LookupHelper) {
             }
             return cacheBrackets.get(key)
         },
-        RuleBracketNeighbor: function (this: ohm.Node, _1: Parseable<ASTRuleBracketNeighbor>) {
+        RuleBracketNeighbor(this: ohm.Node, _1: IParseable<ASTRuleBracketNeighbor>) {
             return _1.parse()
         },
-        RuleBracketNoEllipsisNeighbor: function (this: ohm.Node, tileWithModifiers: Parseable<ASTTileWithModifier[]>, debugFlag: Parseable<DEBUG_FLAG[]>) {
+        RuleBracketNoEllipsisNeighbor(this: ohm.Node, tileWithModifiers: IParseable<ASTTileWithModifier[]>, debugFlag: IParseable<DEBUG_FLAG[]>) {
             const n = new ASTRuleBracketNeighbor(this.source, tileWithModifiers.parse(), debugFlag.parse()[0])
             const key = n.toKey()
             if (!cacheNeighbors.has(key)) {
@@ -156,7 +186,7 @@ export function getRuleSemantics(lookup: LookupHelper) {
             }
             return cacheNeighbors.get(key)
         },
-        TileWithModifier: function (this: ohm.Node, debugFlag: Parseable<DEBUG_FLAG[]>, optionalModifier: Parseable<string[]>, tile: Parseable<IGameTile>) {
+        TileWithModifier(this: ohm.Node, debugFlag: IParseable<DEBUG_FLAG[]>, optionalModifier: IParseable<string[]>, tile: IParseable<IGameTile>) {
             const t = new ASTTileWithModifier(this.source, optionalModifier.parse()[0], tile.parse(), debugFlag.parse()[0])
             const key = t.toKey()
             if (!cacheTilesWithModifiers.has(key)) {
@@ -166,13 +196,13 @@ export function getRuleSemantics(lookup: LookupHelper) {
             }
             return cacheTilesWithModifiers.get(key)
         },
-        tileModifier: function (this: ohm.Node, _whitespace1: Parseable<string>, tileModifier: Parseable<string>, _whitespace2: Parseable<string>) {
+        tileModifier(this: ohm.Node, _whitespace1: IParseable<string>, tileModifier: IParseable<string>, _whitespace2: IParseable<string>) {
             return tileModifier.parse()
         },
-        MessageCommand: function (this: ohm.Node, _message: Parseable<string>, message: Parseable<string[]>) {
+        MessageCommand(this: ohm.Node, _message: IParseable<string>, message: IParseable<string[]>) {
             return new MessageCommand(this.source, message.parse()[0])
         },
-        RuleCommand: function (this: ohm.Node, type: Parseable<string>) {
+        RuleCommand(this: ohm.Node, type: IParseable<string>) {
             const type2 = type.parse()
             switch (type2) {
                 case COMMAND_TYPE.AGAIN:
@@ -199,7 +229,7 @@ export function getRuleSemantics(lookup: LookupHelper) {
                     const sound = lookup.lookupSoundEffect(type2)
                     if (!sound) {
                         // console.warn(this.source.getLineAndColumnMessage())
-                        console.warn(`Sound not found "${type2}"`)
+                        console.warn(`Sound not found "${type2}"`) // tslint:disable-line:no-console
                         return null // this will get filtered out when we create the Rule
                     }
                     return new SoundCommand(this.source, sound)
@@ -207,11 +237,11 @@ export function getRuleSemantics(lookup: LookupHelper) {
                     throw new Error(`BUG: Fallthrough. Did not match "${type2}"`)
             }
         },
-        HackTileNameIsSFX1: function (this: ohm.Node, sfx: Parseable<string>, debugFlag: Parseable<DEBUG_FLAG[]>) {
-            return new ASTRuleBracketNeighborHack(this.source, {sfx: sfx.parse()}, debugFlag.parse()[0])
+        HackTileNameIsSFX1(this: ohm.Node, sfx: IParseable<string>, debugFlag: IParseable<DEBUG_FLAG[]>) {
+            return new ASTRuleBracketNeighborHack(this.source, { sfx: sfx.parse() }, debugFlag.parse()[0])
         },
-        HackTileNameIsSFX2: function (this: ohm.Node, tile: Parseable<string>, sfx: Parseable<string>, debugFlag: Parseable<DEBUG_FLAG[]>) {
+        HackTileNameIsSFX2(this: ohm.Node, tile: IParseable<string>, sfx: IParseable<string>, debugFlag: IParseable<DEBUG_FLAG[]>) {
             return new ASTRuleBracketNeighborHack(this.source, { tile: tile.parse(), sfx: sfx.parse() }, debugFlag.parse()[0])
-        },
+        }
     }
 }

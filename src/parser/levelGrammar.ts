@@ -1,7 +1,7 @@
 import * as ohm from 'ohm-js'
 import { LevelMap, MessageLevel } from '../models/level'
+import { IParseable } from './gameGrammar'
 import { LookupHelper } from './lookup'
-import { Parseable } from './gameGrammar';
 
 export const LEVEL_GRAMMAR = `
     LevelItem = (GameMessageLevel | LevelMap) lineTerminator*
@@ -13,17 +13,17 @@ export const LEVEL_GRAMMAR = `
 
 export function getLevelSemantics(lookup: LookupHelper) {
     return {
-        LevelItem: function (this: ohm.Node, _1: Parseable<string>, _2: Parseable<string>) {
+        LevelItem(this: ohm.Node, _1: IParseable<string>, _2: IParseable<string>) {
             return _1.parse()
         },
-        GameMessageLevel: function (this: ohm.Node, _1: Parseable<string>, optionalMessage: Parseable<string[]>) {
+        GameMessageLevel(this: ohm.Node, _1: IParseable<string>, optionalMessage: IParseable<string[]>) {
             const msg = optionalMessage.parse()[0] /* Since the message is optional */
             if (msg) {
                 return new MessageLevel(this.source, msg)
             }
             return null
         },
-        LevelMap: function (this: ohm.Node, rows: Parseable<string[][]>) {
+        LevelMap(this: ohm.Node, rows: IParseable<string[][]>) {
             const levelRows = rows.parse().map((row: string[]) => {
                 return row.map((levelChar: string) => {
                     return lookup.lookupByLevelChar(levelChar)
@@ -31,7 +31,7 @@ export function getLevelSemantics(lookup: LookupHelper) {
             })
             return new LevelMap(this.source, levelRows)
         },
-        levelMapRow: function (this: ohm.Node, row: Parseable<string[]>, _2: Parseable<string>) {
+        levelMapRow(this: ohm.Node, row: IParseable<string[]>, _2: IParseable<string>) {
             return row.parse()
         }
     }

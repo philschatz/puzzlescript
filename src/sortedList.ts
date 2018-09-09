@@ -1,8 +1,6 @@
-import { Optional } from "./util";
+import { Optional } from './util'
 
-export interface Comparator<T> {
-    (a: T, b: T): number
-}
+export type Comparator<T> = (a: T, b: T) => number
 
 export class SortedArray<T> implements Iterable<T> {
     private readonly comparator: Comparator<T>
@@ -11,42 +9,93 @@ export class SortedArray<T> implements Iterable<T> {
         this.comparator = comparator
         this.ary = []
     }
-    [Symbol.iterator]() {
+    public [Symbol.iterator]() {
         // We only need to sort when we are iterating
         this.ary.sort(this.comparator)
         return this.ary[Symbol.iterator]()
     }
 
-    private indexOf(theItem: T) {
-        return this.ary.indexOf(theItem)
-    }
-
-    add(item: T) {
+    public add(item: T) {
         const index = this.indexOf(item)
         if (index < 0) {
             this.ary.push(item)
         }
     }
 
-    delete(theItem: T) {
+    public delete(theItem: T) {
         const index = this.indexOf(theItem)
         if (index >= 0) {
             this.ary.splice(index, 1)
         }
     }
 
-    has(item: T) {
+    public has(item: T) {
         return this.indexOf(item) >= 0
     }
 
-    isEmpty() {
+    public isEmpty() {
         return this.ary.length === 0
     }
-    size() {
+    public size() {
         return this.ary.length
     }
-    clear() {
+    public clear() {
         this.ary = []
+    }
+
+    private indexOf(theItem: T) {
+        return this.ary.indexOf(theItem)
+    }
+}
+
+class ListItem<T> {
+    public item: T
+    public previous: Optional<ListItem<T>>
+    public next: Optional<ListItem<T>>
+    constructor(item: T, previous: Optional<ListItem<T>>, next: Optional<ListItem<T>>) {
+        this.item = item
+        this.previous = previous
+        this.next = next
+    }
+}
+
+class IteratorResultDone<T> implements IteratorResult<T> {
+    public done: true
+    public value: T
+    constructor() {
+        this.done = true
+        this.value = {} as T // tslint:disable-line:no-object-literal-type-assertion
+    }
+}
+class ListIteratorResult<T> implements IteratorResult<T> {
+    public value: T
+    public done: false
+    constructor(value: T) {
+        this.done = false
+        this.value = value
+    }
+}
+
+class ListIterator<T> implements Iterator<T> {
+    private listHead: Optional<ListItem<T>>
+    private current: Optional<ListItem<T>>
+    constructor(listHead: Optional<ListItem<T>>) {
+        this.listHead = listHead
+        this.current = null
+    }
+    public next(value?: any) {
+        if (this.listHead) {
+            this.current = this.listHead
+            this.listHead = null
+        } else if (this.current) {
+            // increment right before we return the item, not earlier because folks could have add items in
+            this.current = this.current.next
+        }
+        if (this.current) {
+            return new ListIteratorResult<T>(this.current.item)
+        } else {
+            return new IteratorResultDone<T>()
+        }
     }
 }
 
@@ -56,14 +105,14 @@ export class SortedList<T> implements Iterable<T> {
     constructor(comparator: Comparator<T>) {
         this.comparator = comparator
     }
-    [Symbol.iterator]() {
+    public [Symbol.iterator]() {
         return new ListIterator<T>(this.head)
     }
-    add(newItem: T) {
+    public add(newItem: T) {
         let prev: Optional<ListItem<T>> = null
         let current = this.head
 
-        while(current) {
+        while (current) {
             // check if the current node is less than the new node
             const cmp = current.item === newItem ? 0 : this.comparator(current.item, newItem)
             if (cmp === 0) {
@@ -107,7 +156,7 @@ export class SortedList<T> implements Iterable<T> {
         return true // added
     }
 
-    delete(item: T) {
+    public delete(item: T) {
         const node = this.findNode(item)
         if (node) {
 
@@ -129,6 +178,31 @@ export class SortedList<T> implements Iterable<T> {
         }
     }
 
+    public has(item: T) {
+        return !!this.findNode(item)
+    }
+
+    public isEmpty() {
+        return !this.head
+    }
+    public size() {
+        let size = 0
+        for (const _item of this) {
+            size++
+        }
+        return size
+    }
+    public clear() {
+        this.head = null
+    }
+    public first() {
+        if (this.head) {
+            return this.head.item
+        } else {
+            throw new Error(`BUG: List was empty so cannot get first cell`)
+        }
+    }
+
     private findNode(item: T) {
         let current = this.head
         while (current) {
@@ -138,82 +212,5 @@ export class SortedList<T> implements Iterable<T> {
             current = current.next
         }
         return null
-    }
-
-    has(item: T) {
-        return !!this.findNode(item)
-    }
-
-    isEmpty() {
-        return !this.head
-    }
-    size() {
-        let size = 0
-        for (const item of this) {
-            item // just so the variable is not marked as unused
-            size++
-        }
-        return size
-    }
-    clear() {
-        this.head = null
-    }
-    first() {
-        if (this.head) {
-            return this.head.item
-        } else {
-            throw new Error(`BUG: List was empty so cannot get first cell`)
-        }
-    }
-}
-
-class ListItem<T> {
-    item: T
-    previous: Optional<ListItem<T>>
-    next: Optional<ListItem<T>>
-    constructor(item: T, previous: Optional<ListItem<T>>, next: Optional<ListItem<T>>) {
-        this.item = item
-        this.previous = previous
-        this.next = next
-    }
-}
-
-class ListIterator<T> implements Iterator<T> {
-    private listHead: Optional<ListItem<T>>
-    private current: Optional<ListItem<T>>
-    constructor(listHead: Optional<ListItem<T>>) {
-        this.listHead = listHead
-        this.current = null
-    }
-    next(value?: any) {
-        if (this.listHead) {
-            this.current = this.listHead
-            this.listHead = null
-        } else if (this.current) {
-            // increment right before we return the item, not earlier because folks could have add items in
-            this.current = this.current.next
-        }
-        if (this.current) {
-            return new ListIteratorResult<T>(this.current.item)
-        } else {
-            return new IteratorResultDone<T>()
-        }
-    }
-}
-
-class IteratorResultDone<T> implements IteratorResult<T> {
-    done: true
-    value: T
-    constructor() {
-        this.done = true
-        this.value = <T> {}
-    }
-}
-class ListIteratorResult<T> implements IteratorResult<T> {
-    value: T
-    done: false
-    constructor(value: T) {
-        this.done = false
-        this.value = value
     }
 }

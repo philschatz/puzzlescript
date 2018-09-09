@@ -1,7 +1,6 @@
-import { IGameCode } from './BaseForLines'
-import { BaseForLines } from "./BaseForLines";
+import { Optional } from '../util'
+import { BaseForLines, IGameCode } from './BaseForLines'
 import { IGameTile } from './tile'
-import { Optional } from '../util';
 
 export interface ILevel {
     isInvalid: () => Optional<string>
@@ -17,7 +16,7 @@ export class LevelMap extends BaseForLines implements ILevel {
         super(source)
         this.rows = rows
     }
-    isInvalid(): Optional<string> {
+    public isInvalid(): Optional<string> {
         const firstRowLength = this.rows[0].length
         let isInvalid = null
         this.rows.forEach((row, index) => {
@@ -27,19 +26,19 @@ export class LevelMap extends BaseForLines implements ILevel {
         })
         return isInvalid
     }
-    isMap() {
+    public isMap() {
         return true
     }
-    getRows() {
+    public getRows() {
         return this.rows
     }
-    getWidth() {
+    public getWidth() {
         return this.rows[0].length
     }
-    getHeight() {
+    public getHeight() {
         return this.rows.length
     }
-    getMessage(): string {
+    public getMessage(): string {
         throw new Error(`BUG: Check .isMap() before calling this`)
     }
 }
@@ -50,14 +49,14 @@ export class MessageLevel extends BaseForLines implements ILevel {
         super(source)
         this.message = message
     }
-    isInvalid(): Optional<string> { return null }
-    isMap() {
+    public isInvalid(): Optional<string> { return null }
+    public isMap() {
         return false
     }
-    getRows(): IGameTile[][] {
+    public getRows(): IGameTile[][] {
         throw new Error(`BUG: Should have checked isMap first`)
     }
-    getMessage() {
+    public getMessage() {
         return this.message
     }
 }

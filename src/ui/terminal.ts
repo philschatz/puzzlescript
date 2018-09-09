@@ -1,18 +1,18 @@
-import * as ansiStyles from 'ansi-styles'
 import * as ansiEscapes from 'ansi-escapes'
+import * as ansiStyles from 'ansi-styles'
+import chalk from 'chalk'
 import * as supportsColor from 'supports-color'
-import chalk from 'chalk';
 
 import { Cell, GameData, Optional, RULE_DIRECTION } from '..'
-import { GameSprite } from '../models/tile'
+import { CollisionLayer } from '../models/collisionLayer'
 import { IColor } from '../models/colors'
-import { CollisionLayer } from '../models/collisionLayer';
-import BaseUI from './base';
-import { _flatten, _debounce } from '../util';
+import { GameSprite } from '../models/tile'
+import { _debounce, _flatten } from '../util'
+import BaseUI from './base'
 
 // Determine if this
 // 'truecolor' if this terminal supports 16m colors. 256 colors otherwise
-const supports16mColors = process.env['COLORTERM'] === 'truecolor'
+const supports16mColors = process.env.COLORTERM === 'truecolor'
 
 function setBgColor(hex: string) {
     if (supports16mColors) {
@@ -48,7 +48,7 @@ function clearLineAndWriteTextAt(x: number, y: number, msg: string) {
     process.stdout.write(`${setMoveTo(x, y)}${ansiEscapes.eraseLine}${msg}`)
 }
 function drawPixelChar(x: number, y: number, fgHex: Optional<string>, bgHex: Optional<string>, char: string) {
-    const out:string[] = []
+    const out: string[] = []
     if (fgHex) {
         out.push(setFgColor(fgHex))
     }
@@ -64,12 +64,11 @@ function drawPixelChar(x: number, y: number, fgHex: Optional<string>, bgHex: Opt
     return out.join('')
 }
 
-
 class TerminalUI extends BaseUI {
-    private resizeHandler: Optional<() => void>
-    private debugCategoryMessages: string[]
     protected inspectorCol: number
     protected inspectorRow: number
+    private resizeHandler: Optional<() => void>
+    private debugCategoryMessages: string[]
 
     constructor() {
         super()
@@ -96,13 +95,13 @@ class TerminalUI extends BaseUI {
         }
     }
 
-    getHasVisualUi() {
+    public getHasVisualUi() {
         return this.hasVisualUi
     }
-    setHasVisualUi(flag: boolean) {
+    public setHasVisualUi(flag: boolean) {
         this.hasVisualUi = flag
     }
-    setSmallTerminal(yesNo: boolean) {
+    public setSmallTerminal(yesNo: boolean) {
         if (yesNo) {
             this.PIXEL_WIDTH = 1 // number of characters in the terminal used to represent a pixel
             this.PIXEL_HEIGHT = .5
@@ -111,23 +110,10 @@ class TerminalUI extends BaseUI {
             this.PIXEL_HEIGHT = 1
         }
     }
-    private isLargeTerminal() {
-        return this.PIXEL_HEIGHT === 1
-    }
-    private clearLineAndWriteText(x: number, y: number, text: string) {
-        if (!this.hasVisualUi) {
-            console.log(`Writing text at [${y}][${x}]: "${text}"`)
-            return
-        }
-        writeFgColor('#ffffff')
-        writeBgColor('#000000')
-        clearLineAndWriteTextAt(x, y, text)
-        process.stdout.write(getRestoreCursor())
-    }
 
-    clearScreen() {
+    public clearScreen() {
         if (!this.hasVisualUi) {
-            console.log(`Clearing screen`)
+            console.log(`Clearing screen`) // tslint:disable-line:no-console
             return
         }
 
@@ -144,18 +130,18 @@ class TerminalUI extends BaseUI {
         clearScreen()
     }
 
-    dumpScreen() {
+    public dumpScreen() {
         // Used by unit tests when one of the games fails to complete or completes prematurely
         this.isDumpingScreen = true
         this.renderScreen(false)
         this.isDumpingScreen = false
 
         process.stdout.write('\n')
-        for (let y = 0; y < this.renderedPixels.length; y++) {
-            const row = this.renderedPixels[y]
+        for (const row of this.renderedPixels) {
             if (!row) { continue }
-            for (let x = 0; x < row.length; x++) {
-                let {hex, chars} = row[x]
+            for (const pixel of row) {
+                const { hex } = pixel
+                let { chars } = pixel
 
                 writeBgColor(hex)
                 if (chars.length === 1) { chars = ' ' + chars }
@@ -170,13 +156,129 @@ class TerminalUI extends BaseUI {
         process.stdout.write('\n')
     }
 
-    canShowMessageAsCells() {
+    public canShowMessageAsCells() {
         const screenWidth = 34
         const screenHeight = 13
 
-        const {columns, rows} = getTerminalSize()
+        const { columns, rows } = getTerminalSize()
 
-        return this.hasVisualUi && columns >= screenWidth * 5 * this.PIXEL_WIDTH && rows >= screenHeight * 5 * this.PIXEL_HEIGHT
+        return this.hasVisualUi &&
+            columns >= screenWidth * 5 * this.PIXEL_WIDTH &&
+            rows >= screenHeight * 5 * this.PIXEL_HEIGHT
+    }
+
+    public writeDebug(text: string, category: number) {
+        this.debugCategoryMessages[category] = text
+
+        if (!this.hasVisualUi) {
+            // console.log(`Writing Debug text "${text}"`)
+            return
+        }
+        if (!this.isDumpingScreen) {
+            this.clearLineAndWriteText(0, 0, `[${this.debugCategoryMessages.join(' | ')}]`)
+        }
+    }
+
+    public a11yWrite(text: string) {
+        if (this.hasVisualUi) {
+            this.writeDebug(text, 0)
+        } else {
+            console.log(text) // tslint:disable-line:no-console
+        }
+    }
+
+    public willAllLevelsFitOnScreen(gameData: GameData) {
+        let maxWidth = 0
+        let maxHeight = 0
+        const { flickscreen, zoomscreen } = gameData.metadata
+        if (flickscreen) {
+            maxWidth = flickscreen.width
+            maxHeight = flickscreen.height
+        } else if (zoomscreen) {
+            maxWidth = zoomscreen.width
+            maxHeight = zoomscreen.height
+        } else {
+            // loop through all the levels and find the largest one
+            for (const level of gameData.levels) {
+                if (level.isMap()) {
+                    maxWidth = Math.max(maxWidth, level.getWidth())
+                    maxHeight = Math.max(maxHeight, level.getHeight())
+                }
+            }
+        }
+        // Check to see if it fits in the terminal
+        const { spriteHeight, spriteWidth } = gameData.getSpriteSize()
+        const { columns, rows } = getTerminalSize()
+        const terminalWidth = Math.floor(columns / spriteWidth / this.PIXEL_WIDTH)
+        const terminalHeight = Math.floor(rows / spriteHeight / this.PIXEL_HEIGHT)
+
+        if (terminalWidth < maxWidth || terminalHeight < maxHeight) {
+            return false
+        } else {
+            return true
+        }
+    }
+
+    public _drawPixel(x: number, y: number, fgHex: string, bgHex: Optional<string>, chars: string) {
+        drawPixelChar(x, y, fgHex, bgHex, chars)
+    }
+
+    public moveInspectorTo(cell: Cell) {
+        if (!this.engine) {
+            throw new Error(`BUG: engine has not been assigned yet`)
+        }
+        const { rowIndex: newRow, colIndex: newCol } = cell
+        let canMove = false
+        if (newCol >= this.windowOffsetColStart && newRow >= this.windowOffsetRowStart) {
+            if (this.windowOffsetWidth && this.windowOffsetHeight) {
+                if (newCol <= this.windowOffsetColStart + this.windowOffsetWidth &&
+                    newRow <= this.windowOffsetRowStart + this.windowOffsetHeight) {
+
+                    canMove = true
+                }
+            } else {
+                canMove = true
+            }
+        }
+
+        if (canMove) {
+            let oldInspectorCell = null
+            const currentLevel = this.engine.getCurrentLevelCells()
+            if (currentLevel[this.inspectorRow] && currentLevel[this.inspectorRow][this.inspectorCol]) {
+                oldInspectorCell = this.engine.getCurrentLevelCells()[this.inspectorRow][this.inspectorCol]
+            }
+            const newInspectorCell = cell
+            // move
+            this.inspectorCol = newCol
+            this.inspectorRow = newRow
+            // draw the old cell (to remove the graphic artfact)
+            if (this.hasVisualUi && this.isLargeTerminal()) {
+                const cells = [newInspectorCell]
+                if (oldInspectorCell) {
+                    cells.push(oldInspectorCell)
+                }
+                // draw the new and old cells
+                this.drawCells(cells, false)
+            }
+
+            const spriteNames = cell.getSprites()
+            .filter((s) => !s.isBackground())
+            .map((s) => s.getName())
+            const msg = `${spriteNames.join(', ')} (${cell.rowIndex}, ${cell.colIndex})`
+            this.a11yWrite(msg)
+        }
+    }
+    public moveInspector(direction: RULE_DIRECTION) {
+        if (!this.engine) {
+            throw new Error(`BUG: engine has not been assigned yet`)
+        }
+        if (this.inspectorRow >= 0 && this.inspectorCol >= 0) {
+            const cell = this.engine.getCurrentLevelCells()[this.inspectorRow][this.inspectorCol]
+            const newCell = cell.getNeighbor(direction)
+            if (newCell) {
+                return this.moveInspectorTo(newCell)
+            }
+        }
     }
 
     protected renderLevelScreen(levelRows: Cell[][], renderScreenDepth: number) {
@@ -217,14 +319,19 @@ class TerminalUI extends BaseUI {
                 }
             }
 
-            console.log(`Level size is ${this.windowOffsetHeight || levelRows.length} high by ${this.windowOffsetWidth || levelRows[0].length} wide`)
-            console.log(`-------------------------`)
-            for (const collisionLayer of [...collisionLayerToSprites.keys()].sort((a, b) => /*reversed bc that is how they are rendered on screen*/b.id - a.id)) {
+            const levelHeight = this.windowOffsetHeight || levelRows.length
+            const levelWidth = this.windowOffsetWidth || levelRows[0].length
+            console.log(`Level size is ${levelHeight} high by ${levelWidth} wide`) // tslint:disable-line:no-console
+            console.log(`-------------------------`) // tslint:disable-line:no-console
+
+            /* Sprites are sorted in reverse order bc that is how they are rendered on screen */
+            for (const collisionLayer of [...collisionLayerToSprites.keys()].sort((a, b) => b.id - a.id)) {
                 const spriteToCells = collisionLayerToSprites.get(collisionLayer)
                 if (!spriteToCells) {
                     throw new Error(`BUG: could not find mapping to sprite map`)
                 }
-                console.log(`${chalk.greenBright(`START:`)} ${chalk.whiteBright(`${spriteToCells.size}`)} Sprites in same collision layer`)
+                // tslint:disable-next-line:no-console
+                console.log(`START: ${chalk.whiteBright(`${spriteToCells.size}`)} Sprites in same collision layer`)
                 for (const sprite of spriteToCells.keys()) {
                     const cells = spriteToCells.get(sprite)
 
@@ -232,19 +339,17 @@ class TerminalUI extends BaseUI {
                         throw new Error(`BUG: could not find mapping to cells`)
                     }
                     const msg = `    ${sprite.getName()} ${cells.length}`
-                    // this.writeDebug(msg, 0)
-                    console.log(msg)
+                    console.log(msg) // tslint:disable-line:no-console
                 }
             }
         }
     }
 
-
     protected setPixel(x: number, y: number, hex: string, fgHex: Optional<string>, chars: string) {
         const ret: string[] = []
-        const getColor = (y: number, x: number) => {
-            if (this.renderedPixels[y] && this.renderedPixels[y][x]) {
-                return this.renderedPixels[y][x].hex
+        const getColor = (cy: number, cx: number) => {
+            if (this.renderedPixels[cy] && this.renderedPixels[cy][cx]) {
+                return this.renderedPixels[cy][cx].hex
             } else {
                 return '#000000'
             }
@@ -261,7 +366,7 @@ class TerminalUI extends BaseUI {
         }
         const onScreenPixel = this.renderedPixels[y][x]
         if (!onScreenPixel || onScreenPixel.hex !== hex || onScreenPixel.chars !== chars) {
-            this.renderedPixels[y][x] = {hex, chars}
+            this.renderedPixels[y][x] = { hex, chars }
 
             if (this.isDumpingScreen) {
                 return '' // don't actually render the pixel
@@ -279,7 +384,9 @@ class TerminalUI extends BaseUI {
                     upperColor = getColor(y - 1, x)
                     lowerColor = hex
                 }
-                ret.push(drawPixelChar(x * this.PIXEL_WIDTH, Math.floor(y * this.PIXEL_HEIGHT) + 1/*titlebar*/, lowerColor, upperColor, '▄'))
+                const pixelX = x * this.PIXEL_WIDTH
+                const pixelY = Math.floor(y * this.PIXEL_HEIGHT) + 1/*titlebar*/
+                ret.push(drawPixelChar(pixelX, pixelY, lowerColor, upperColor, '▄'))
             }
         }
         return ret.join('')
@@ -296,21 +403,49 @@ class TerminalUI extends BaseUI {
         process.stdout.write(ret.join(''))
     }
 
+    protected checkIfCellCanBeDrawnOnScreen(cellStartX: number, cellStartY: number) {
+        // Check if the cell can be completely drawn on the screen. If not, print ellipses
+        const { columns, rows } = getTerminalSize()
+        const cellIsTooWide = (cellStartX + this.SPRITE_WIDTH) * this.PIXEL_WIDTH >= columns
+        const cellIsTooHigh = (cellStartY + this.SPRITE_HEIGHT) * this.PIXEL_HEIGHT >= rows
+
+        if (cellIsTooWide || cellIsTooHigh) {
+            // do not draw the cell
+            return false
+        }
+        return true
+    }
+
+    protected getMaxSize() {
+        return getTerminalSize()
+    }
+    private isLargeTerminal() {
+        return this.PIXEL_HEIGHT === 1
+    }
+    private clearLineAndWriteText(x: number, y: number, text: string) {
+        if (!this.hasVisualUi) {
+            console.log(`Writing text at [${y}][${x}]: "${text}"`) // tslint:disable-line:no-console
+            return
+        }
+        writeFgColor('#ffffff')
+        writeBgColor('#000000')
+        clearLineAndWriteTextAt(x, y, text)
+        process.stdout.write(getRestoreCursor())
+    }
+
     private _drawCell(cell: Cell, renderScreenDepth: number = 0) {
         const ret: string[] = []
         if (!this.gameData) {
             throw new Error(`BUG: gameData was not set yet`)
         }
         if (!this.hasVisualUi) {
-            // Commented just to reduce noise. Maybe it shoud be brought back
-            // console.log(`Updating cell [${cell.rowIndex}][${cell.colIndex}] to have sprites: [${cell.getSprites().map(sprite => sprite.getName())}]`)
             throw new Error(`BUG: Should not get to this point`)
         }
 
         // TODO: Also eventually filter out the Background ones when Background is an OR Tile
-        const spritesForDebugging = cell.getSprites().filter(s => !s.isBackground())
+        const spritesForDebugging = cell.getSprites().filter((s) => !s.isBackground())
 
-        let { isOnScreen, cellStartX, cellStartY } = this.cellPosToXY(cell)
+        const { isOnScreen, cellStartX, cellStartY } = this.cellPosToXY(cell)
 
         if (!isOnScreen) {
             return // no need to render because it is off-screen
@@ -329,9 +464,8 @@ class TerminalUI extends BaseUI {
                 if (spriteColor) {
                     if (!spriteColor.isTransparent()) {
                         color = spriteColor
-                    }
-                    else if (this.gameData.metadata.background_color) {
-                        color = this.gameData.metadata.background_color
+                    } else if (this.gameData.metadata.backgroundColor) {
+                        color = this.gameData.metadata.backgroundColor
                     } else {
                         color = null
                     }
@@ -342,6 +476,7 @@ class TerminalUI extends BaseUI {
                     const hex = color.toHex()
                     let fgHex = null
 
+                    // tslint:disable-line:prefer-conditional-expression
                     let chars = ' '
 
                     if (this.inspectorRow === cell.rowIndex && this.inspectorCol === cell.colIndex) {
@@ -350,7 +485,7 @@ class TerminalUI extends BaseUI {
 
                     // Print a debug number which contains the number of sprites in this cell
                     // Change the foreground color to be black if the color is light
-                    if (process.env['NODE_ENV'] === 'development') {
+                    if (process.env.NODE_ENV === 'development') {
                         if (r > 192 && g > 192 && b > 192) {
                             fgHex = '#000000'
                         } else {
@@ -385,7 +520,9 @@ class TerminalUI extends BaseUI {
                             }
                             spriteName = `${wantsToMove}${spriteName}`
                             if (spriteName.length > 10) {
-                                spriteName = `${spriteName.substring(0, this.SPRITE_WIDTH)}.${spriteName.substring(spriteName.length - this.SPRITE_WIDTH + 1)}`
+                                const beforeEllipses = spriteName.substring(0, this.SPRITE_WIDTH)
+                                const afterEllipses = spriteName.substring(spriteName.length - this.SPRITE_WIDTH + 1)
+                                spriteName = `${beforeEllipses}.${afterEllipses}`
                             }
                             const msg = `${spriteName.substring(spriteColIndex * 2, spriteColIndex * 2 + 2)}`
                             chars = msg.substring(0, 2)
@@ -398,7 +535,7 @@ class TerminalUI extends BaseUI {
                             }
                         }
                     }
-
+                    // tslint:enable:prefer-conditional-expression
 
                     ret.push(this.setPixel(x, y, hex, fgHex, chars))
 
@@ -409,137 +546,7 @@ class TerminalUI extends BaseUI {
         ret.push(getRestoreCursor())
         return ret.join('')
     }
-
-    writeDebug(text: string, category: number) {
-        this.debugCategoryMessages[category] = text
-
-        if (!this.hasVisualUi) {
-            // console.log(`Writing Debug text "${text}"`)
-            return
-        }
-        if (!this.isDumpingScreen) {
-            this.clearLineAndWriteText(0, 0, `[${this.debugCategoryMessages.join(' | ')}]`)
-        }
-    }
-
-    a11yWrite(text: string) {
-        if (this.hasVisualUi) {
-            this.writeDebug(text, 0)
-        } else {
-            console.log(text)
-        }
-    }
-
-    willAllLevelsFitOnScreen(gameData: GameData) {
-        let maxWidth = 0
-        let maxHeight = 0
-        const {flickscreen, zoomscreen} = gameData.metadata
-        if (flickscreen) {
-            maxWidth = flickscreen.width
-            maxHeight = flickscreen.height
-        } else if (zoomscreen) {
-            maxWidth = zoomscreen.width
-            maxHeight = zoomscreen.height
-        } else {
-            // loop through all the levels and find the largest one
-            for (const level of gameData.levels) {
-                if (level.isMap()) {
-                    maxWidth = Math.max(maxWidth, level.getWidth())
-                    maxHeight = Math.max(maxHeight, level.getHeight())
-                }
-            }
-        }
-        // Check to see if it fits in the terminal
-        const {spriteHeight, spriteWidth} = gameData.getSpriteSize()
-        const {columns, rows} = getTerminalSize()
-        const terminalWidth = Math.floor(columns / spriteWidth / this.PIXEL_WIDTH)
-        const terminalHeight = Math.floor(rows / spriteHeight / this.PIXEL_HEIGHT)
-
-        if (terminalWidth < maxWidth || terminalHeight < maxHeight) {
-            return false
-        } else {
-            return true
-        }
-    }
-
-    _drawPixel(x: number, y: number, fgHex: string, bgHex: Optional<string>, chars: string) {
-        drawPixelChar(x, y, fgHex, bgHex, chars)
-    }
-
-    moveInspectorTo(cell: Cell) {
-        if (!this.engine) {
-            throw new Error(`BUG: engine has not been assigned yet`)
-        }
-        const {rowIndex: newRow, colIndex: newCol} = cell
-        let canMove = false
-        if (newCol >= this.windowOffsetColStart && newRow >= this.windowOffsetRowStart) {
-            if (this.windowOffsetWidth && this.windowOffsetHeight) {
-                if (newCol <= this.windowOffsetColStart + this.windowOffsetWidth && newRow <= this.windowOffsetRowStart + this.windowOffsetHeight) {
-                    canMove = true
-                }
-            } else {
-                canMove = true
-            }
-        }
-
-        if (canMove) {
-            let oldInspectorCell = null
-            const currentLevel = this.engine.getCurrentLevelCells()
-            if (currentLevel[this.inspectorRow] && currentLevel[this.inspectorRow][this.inspectorCol]) {
-                oldInspectorCell = this.engine.getCurrentLevelCells()[this.inspectorRow][this.inspectorCol]
-            }
-            const newInspectorCell = cell
-            // move
-            this.inspectorCol = newCol
-            this.inspectorRow = newRow
-            // draw the old cell (to remove the graphic artfact)
-            if (this.hasVisualUi && this.isLargeTerminal()) {
-                const cells = [newInspectorCell]
-                if (oldInspectorCell) {
-                    cells.push(oldInspectorCell)
-                }
-                // draw the new and old cells
-                this.drawCells(cells, false)
-            }
-
-            const spriteNames = cell.getSprites()
-            .filter(s => !s.isBackground())
-            .map(s => s.getName())
-            const msg = `${spriteNames.join(', ')} (${cell.rowIndex}, ${cell.colIndex})`
-            this.a11yWrite(msg)
-        }
-    }
-    moveInspector(direction: RULE_DIRECTION) {
-        if (!this.engine) {
-            throw new Error(`BUG: engine has not been assigned yet`)
-        }
-        if (this.inspectorRow >= 0 && this.inspectorCol >= 0) {
-            const cell = this.engine.getCurrentLevelCells()[this.inspectorRow][this.inspectorCol]
-            const newCell = cell.getNeighbor(direction)
-            if (newCell) {
-                return this.moveInspectorTo(newCell)
-            }
-        }
-    }
-
-    protected checkIfCellCanBeDrawnOnScreen(cellStartX: number, cellStartY: number) {
-        // Check if the cell can be completely drawn on the screen. If not, print ellipses
-        const {columns, rows} = getTerminalSize()
-        const cellIsTooWide = (cellStartX + this.SPRITE_WIDTH) * this.PIXEL_WIDTH >= columns
-        const cellIsTooHigh = (cellStartY + this.SPRITE_HEIGHT) * this.PIXEL_HEIGHT >= rows
-
-        if (cellIsTooWide || cellIsTooHigh) {
-            // do not draw the cell
-            return false
-        }
-        return true
-    }
-
-    protected getMaxSize() {
-        return getTerminalSize()
-    }
 }
-
 
 // TypeScript does not like that columns and rows might be null
 export function getTerminalSize() {
@@ -550,14 +557,13 @@ export function getTerminalSize() {
 }
 
 function getRestoreCursor() {
-    const {columns, rows} = getTerminalSize()
+    const { columns, rows } = getTerminalSize()
     return [
         setFgColor('#ffffff'),
         setBgColor('#000000'),
         setMoveTo(columns, rows)
     ].join('')
 }
-
 
 export default new TerminalUI()
 
