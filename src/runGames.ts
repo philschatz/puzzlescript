@@ -69,7 +69,7 @@ async function run() {
                         if (recording && data.levels[index].isMap()) {
                             keypressesStr = recording.partial || recording.solution || ''
                             // Trim the keypresses down so the game does not take too long to run
-                            keypressesStr = keypressesStr.substring(0, 500)
+                            keypressesStr = keypressesStr.substring(0, 150)
                             currentLevel = data.levels[index]
                         }
                     })

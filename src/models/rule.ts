@@ -1206,10 +1206,18 @@ export class SimpleEllipsisBracket extends ISimpleBracket {
         this.checkInvariants()
     }
 
-    public getMatches(level: Level, actionBracket: SimpleEllipsisBracket): MatchedCellsForRule[] {
+    public getMatches(level: Level, actionBracket: Optional<SimpleEllipsisBracket>): MatchedCellsForRule[] {
         const ret: MatchedCellsForRule[] = []
-        const beforeMatches = this.beforeEllipsisBracket.getMatches(level, actionBracket.beforeEllipsisBracket)
-        const afterMatches = this.afterEllipsisBracket.getMatches(level, actionBracket.afterEllipsisBracket)
+        let beforeMatches
+        let afterMatches
+        if (actionBracket) {
+            beforeMatches = this.beforeEllipsisBracket.getMatches(level, actionBracket.beforeEllipsisBracket)
+            afterMatches = this.afterEllipsisBracket.getMatches(level, actionBracket.afterEllipsisBracket)
+        } else {
+            beforeMatches = this.beforeEllipsisBracket.getMatches(level, null)
+            afterMatches = this.afterEllipsisBracket.getMatches(level, null)
+        }
+
         const beforeMatchesByIndex = new MultiMap<number, MatchedCellsForRule>()
 
         if (beforeMatches.length === 0 || afterMatches.length === 0) {
