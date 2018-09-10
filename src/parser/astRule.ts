@@ -5,7 +5,6 @@ import {
     ISimpleBracket,
     SIMPLE_DIRECTION_DIRECTIONS,
     SimpleBracket,
-    SimpleBracketConditionOnly,
     SimpleEllipsisBracket,
     SimpleNeighbor,
     SimpleRule,
@@ -24,6 +23,7 @@ export enum AST_RULE_MODIFIER {
     VERTICAL = 'VERTICAL',
     HORIZONTAL = 'HORIZONTAL',
     ORTHOGONAL = 'ORTHOGONAL',
+    PERPENDICULAR = 'PERPENDICULAR',
     PARALLEL = 'PARALLEL',
     MOVING = 'MOVING',
     LATE = 'LATE',
@@ -153,18 +153,10 @@ export class ASTRule extends BaseForLines {
         const actionBrackets = this.actionBrackets.map((x) => x.toSimple(directions[0], ruleCache, bracketCache, neighborCache, tileCache))
 
         for (let index = 0; index < conditionBrackets.length; index++) {
-            const condition = conditionBrackets[index]
             const action = actionBrackets[index]
             // Skip rules with no action bracket `[ > Player ] -> CHECKPOINT`
             if (!action) {
                 continue
-            }
-
-            // Optimization. Brackets that are only used for testing conditions
-            // can be optimized out so they do not need to be evaluated.
-            if (condition === action || condition.toKey(true/*ignoreDebugFlag*/) === action.toKey(true)) {
-                conditionBrackets[index] = new SimpleBracketConditionOnly(condition, action)
-                // actionBrackets[index] = null
             }
         }
         return cacheSetAndGet(ruleCache, new SimpleRule(this.__source, directions[0], conditionBrackets, actionBrackets, this.commands, this.isLate(), this.isRigid(), this.debugFlag))
@@ -184,10 +176,11 @@ export class ASTRule extends BaseForLines {
         expandModifiers.set(AST_RULE_MODIFIER.VERTICAL, [RULE_DIRECTION.UP, RULE_DIRECTION.DOWN])
         expandModifiers.set(AST_RULE_MODIFIER.MOVING, [RULE_DIRECTION.UP, RULE_DIRECTION.DOWN, RULE_DIRECTION.LEFT, RULE_DIRECTION.RIGHT, RULE_DIRECTION.ACTION])
 
-        let didExpand
+        let didExpandRulesToConvert
         do {
-            didExpand = false
+            didExpandRulesToConvert = false
             for (const rule of rulesToConvert) {
+                let didExpand = false
                 const direction = rule.getDirectionModifiers()[0]
                 if (rule.getDirectionModifiers().length !== 1) {
                     throw new Error(`BUG: should have already expanded the rule to only contian one direction`)
@@ -197,30 +190,32 @@ export class ASTRule extends BaseForLines {
                         for (const variation of variations) {
                             convertedRules.push(rule.clone(direction, nameToExpand, variation))
                             didExpand = true
+                            didExpandRulesToConvert = true
                         }
                     }
                 }
                 if (!didExpand) {
                     // Try expanding PARALLEL and ORTHOGONAL (since they depend on the rule direction)
-                    let orthogonals
+                    let perpendiculars
                     let parallels
                     switch (direction) {
                         case RULE_DIRECTION.UP:
                         case RULE_DIRECTION.DOWN:
-                            orthogonals = [RULE_DIRECTION.LEFT, RULE_DIRECTION.RIGHT]
+                            perpendiculars = [RULE_DIRECTION.LEFT, RULE_DIRECTION.RIGHT]
                             parallels = [RULE_DIRECTION.UP, RULE_DIRECTION.DOWN]
                             break
                         case RULE_DIRECTION.LEFT:
                         case RULE_DIRECTION.RIGHT:
-                            orthogonals = [RULE_DIRECTION.UP, RULE_DIRECTION.DOWN]
+                            perpendiculars = [RULE_DIRECTION.UP, RULE_DIRECTION.DOWN]
                             parallels = [RULE_DIRECTION.LEFT, RULE_DIRECTION.RIGHT]
                             break
                         default:
                             throw new Error(`BUG: There must be some direction`)
                     }
-                    if (orthogonals && parallels) {
+                    if (perpendiculars && parallels) {
                         const orthoParallels = [
-                            { nameToExpand: AST_RULE_MODIFIER.ORTHOGONAL, variations: orthogonals },
+                            { nameToExpand: AST_RULE_MODIFIER.ORTHOGONAL, variations: perpendiculars },
+                            { nameToExpand: AST_RULE_MODIFIER.PERPENDICULAR, variations: perpendiculars },
                             { nameToExpand: AST_RULE_MODIFIER.PARALLEL, variations: parallels }
                         ]
                         for (const { nameToExpand, variations } of orthoParallels) {
@@ -229,6 +224,7 @@ export class ASTRule extends BaseForLines {
                                 for (const variation of variations) {
                                     convertedRules.push(rule.clone(direction, nameToExpand, variation))
                                     didExpand = true
+                                    didExpandRulesToConvert = true
                                 }
                             }
                         }
@@ -243,7 +239,7 @@ export class ASTRule extends BaseForLines {
             }
             rulesToConvert = convertedRules
             convertedRules = []
-        } while (didExpand)
+        } while (didExpandRulesToConvert)
 
         return rulesToConvert
     }

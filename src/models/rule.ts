@@ -914,6 +914,10 @@ export class SimpleBracket extends ISimpleBracket {
         return matches
     }
 
+    public getFirstCells() {
+        return this.firstCells
+    }
+
     protected _removeFirstCell(firstCell: Cell) {
         if (this.firstCells.has(firstCell)) {
             if (process.env.NODE_ENV === 'development' && this.debugFlag === DEBUG_FLAG.BREAKPOINT_REMOVE) {
@@ -1025,23 +1029,6 @@ export class SimpleBracket extends ISimpleBracket {
         if (this.neighbors[0].matchesCellSimple(cell) && this.matchesDownstream(cell, 0)) {
             this.addToCellMatches(matches, cell, actionBracket)
         }
-    }
-
-}
-
-export class SimpleBracketConditionOnly extends SimpleBracket {
-    constructor(bracket: ISimpleBracket, actionBracket: ISimpleBracket) {
-        super(bracket.__source, bracket.direction, bracket._getAllNeighbors(), bracket.debugFlag)
-        this.actionDebugFlag = actionBracket.debugFlag
-    }
-    public prepareAction() {
-        // nothing to do since it is only a Condition
-    }
-    public evaluate(): IMutation[] {
-        if (process.env.NODE_ENV === 'development' && this.actionDebugFlag === DEBUG_FLAG.BREAKPOINT) {
-            if (process.stdout) { TerminalUI.debugRenderScreen() } debugger // tslint:disable-line:no-debugger // pausing here because it is in the code
-        }
-        return []
     }
 }
 
@@ -1187,7 +1174,37 @@ export class SimpleEllipsisBracket extends ISimpleBracket {
     }
 
     public addFirstCell(bracket: SimpleBracket, firstCell: Cell, token: BEFORE_OR_AFTER) {
-        // do nothing
+        // // check to see if the new cell is in line with any firstCells in the other bracket. If so, we have a match!
+        // let firstBeforeCells
+        // let firstAfterCells
+        // if (bracket == this.beforeEllipsisBracket) {
+        //     firstBeforeCells = new Set([firstCell])
+        //     // search for a matching afterCell
+        //     firstAfterCells = this.findMatching(firstCell, this.direction, this.afterEllipsisBracket)
+        // } else if (bracket === this.afterEllipsisBracket) {
+        //     firstAfterCells = new Set([firstCell])
+        //     // search for a matching beforeCell
+        //     firstBeforeCells = this.findMatching(firstCell, opposite(this.direction), this.beforeEllipsisBracket)
+        // } else {
+        //     throw new Error(`BUG: Bracket should only ever be the before-ellipsis or after-ellipsis one`)
+        // }
+
+        // for (const firstBeforeCell of firstBeforeCells) {
+        //     for (const firstAfterCell of firstAfterCells) {
+        //         this.checkInvariants()
+        //         // Check if we need to actually change anything first. Becauase the !doesEvaluationOrderMatter case
+        //         // keeps iterating on the set of firstCells but if they keep flipping then it's a problem because it
+        //         // runs in an infinite loop
+        //         // Delete any mapping that may have existed before
+        //         if (this.linkages.has(firstBeforeCell, firstAfterCell)) {
+        //             // nothing to do. we already have those entries
+        //         } else {
+        //             this.linkages.add(firstBeforeCell, firstAfterCell)
+        //             this.firstCells.add(firstBeforeCell)
+        //         }
+        //         this.checkInvariants()
+        //     }
+        // }
     }
     public removeFirstCell(bracket: SimpleBracket, firstCell: Cell, token: BEFORE_OR_AFTER) {
         // Figure out the 1st cell for us and remove it (by maybe looking at the matching bracket)
@@ -1210,6 +1227,37 @@ export class SimpleEllipsisBracket extends ISimpleBracket {
         }
         this.checkInvariants()
     }
+
+    // private findMatching(cell: Cell, direction: RULE_DIRECTION, inBracket: SimpleBracket) {
+    //     const matches = new Set()
+    //     for (const inBracketCell of inBracket.getFirstCells()) {
+    //         switch (direction) {
+    //             case RULE_DIRECTION.UP:
+    //                 if (cell.colIndex === inBracketCell.colIndex && cell.rowIndex > inBracketCell.rowIndex) {
+    //                     matches.add(inBracketCell)
+    //                 }
+    //                 break
+    //             case RULE_DIRECTION.DOWN:
+    //                 if (cell.colIndex === inBracketCell.colIndex && cell.rowIndex < inBracketCell.rowIndex) {
+    //                     matches.add(inBracketCell)
+    //                 }
+    //                 break
+    //             case RULE_DIRECTION.LEFT:
+    //                 if (cell.colIndex > inBracketCell.colIndex && cell.rowIndex === inBracketCell.rowIndex) {
+    //                     matches.add(inBracketCell)
+    //                 }
+    //                 break
+    //             case RULE_DIRECTION.RIGHT:
+    //                 if (cell.colIndex < inBracketCell.colIndex && cell.rowIndex === inBracketCell.rowIndex) {
+    //                     matches.add(inBracketCell)
+    //                 }
+    //                 break
+    //             default:
+    //                 throw new Error(`BUG: Invalid direction`)
+    //         }
+    //     }
+    //     return matches
+    // }
 
     public getMatches(level: Level, actionBracket: Optional<SimpleEllipsisBracket>): MatchedCellsForRule[] {
         const ret: MatchedCellsForRule[] = []

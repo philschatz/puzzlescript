@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "solutions": [
+    {
+      "solution": "X"
+    },
+    {
+      "solution": ".ADWWWWWWSAAAAADDDDDDDDSSSSSSDDDDAAAS"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": ".WDWDDDAAAWWSSAADDSDWD"
+    }
+  ],
+  "title": "2D Whale World",
+  "totalLevels": 17,
+  "totalMapLevels": 8
+}
