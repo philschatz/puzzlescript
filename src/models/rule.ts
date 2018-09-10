@@ -365,6 +365,11 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
                 }
 
                 for (const x of permutation) {
+                    if (!x.doesStillMatch()) {
+                        // part of the rule not longer matches so stop. (Test if that is the correct behavior)
+                        // E.g. [ Player ] [ Player ] [ ] -> [ ] [ ] [ SeeIfThisIsExecuted ]
+                        continue
+                    }
                     allMutations.push(x.evaluate(magicOrTiles))
                     if (process.env.NODE_ENV === 'development') {
                         this.__incrementCoverage()

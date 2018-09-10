@@ -228,6 +228,23 @@ Array [
 ]
 `;
 
+exports[`engine supports matching the same cells in multiple brackets and executes correctly if one of those brackets no longer matches 1`] = `
+Array [
+  Array [
+    Array [
+      "STATIONARY Background",
+      "STATIONARY Crate",
+    ],
+    Array [
+      "STATIONARY Background",
+    ],
+    Array [
+      "STATIONARY Background",
+    ],
+  ],
+]
+`;
+
 exports[`engine supports partially matching an OR tile (e.g. [ LEFT Movable ] when the cell says [ STATIONARY Player LEFT Island ] 1`] = `
 Array [
   Array [

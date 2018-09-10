@@ -31,7 +31,7 @@ async function run() {
         console.log(`Parsing took ${Date.now() - startTime}ms`)
 
         if (error && trace) {
-            console.log(trace.toString())
+            // console.log(trace.toString())
             console.log(error.message)
             throw new Error(filename)
         } else {

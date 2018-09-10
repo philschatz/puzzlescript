@@ -2905,4 +2905,93 @@ describe('engine', () => {
         // Check that the rule executed
         expect(engine.currentLevel.getCells()[0][0].getSpritesAsSet().has(correct)).toBe(true)
     })
+
+    it('supports matching the same cells in multiple brackets and executes correctly if one of those brackets no longer matches', () => {
+        const { engine, data } = parseEngine(`title Test multimatch
+
+        ========
+        OBJECTS
+        ========
+
+        Background
+        LIGHTGREEN GREEN
+        11111
+        01111
+        11101
+        11111
+        10111
+
+
+        Wall
+        BROWN DARKBROWN
+        00010
+        11111
+        01000
+        11111
+        00010
+
+        Player
+        Black Orange White Blue
+        .000.
+        .111.
+        22222
+        .333.
+        .3.3.
+
+        Crate
+        Orange Yellow
+        00000
+        0...0
+        0...0
+        0...0
+        00000
+
+
+        =======
+        LEGEND
+        =======
+
+        . = Background
+        P = Player
+
+
+        =======
+        SOUNDS
+        =======
+
+        ================
+        COLLISIONLAYERS
+        ================
+
+        Background
+        Player, Wall, Crate
+
+        ======
+        RULES
+        ======
+
+        [ Player ] [ Player ] [ ] -> [ ] [ Wall ] [ Crate ]
+
+        ==============
+        WINCONDITIONS
+        ==============
+
+        =======
+        LEVELS
+        =======
+
+
+        ..P
+    `) // end game definition
+
+        const player = data._getSpriteByName('player')
+        const crate = data._getSpriteByName('crate')
+        const wall = data._getSpriteByName('wall')
+        engine.tick()
+        expect(engine.toSnapshot()).toMatchSnapshot()
+
+        expect(player.getCellsThatMatch().size).toBe(0)
+        expect(crate.getCellsThatMatch().size).toBe(1)
+        // expect(wall.getCellsThatMatch().size).toBe(1)
+    })
 })
