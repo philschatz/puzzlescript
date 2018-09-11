@@ -21,4 +21,4 @@ install:
   - yarn install --ignore-optional # Ignore the speaker
 script:
   - npm run-script ci
-  - npm run-script ci-codecov
+  - npm run-script ci:codecov
