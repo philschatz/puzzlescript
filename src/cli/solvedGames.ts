@@ -106,6 +106,7 @@ export default new Set([
     `Coin Counter`,
     `2D Whale World`,
     `Garten der Medusen`,
+    `Modality`,
     `Multi-word Dictionary Game`,
     `Explod`,
     `Vacuum`,

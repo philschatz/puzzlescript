@@ -63,6 +63,12 @@ function createTests (moduloNumber, moduloTotal) {
                         continue // skip message-only levels or levels that do not have a solution
                     }
 
+                    // Some games (like Fish Friend) are a bunch of dialog and do not actually need to run
+                    // so if they only contain a "X" then skip them
+                    if (recording.solution.replace(/,/g, '').replace(/\./g, '') === 'X') {
+                        continue
+                    }
+
                     engine.setLevel(index)
 
                     // UI.setGame(engine)
