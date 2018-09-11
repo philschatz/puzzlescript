@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "solutions": [
+    null,
+    {
+      "solution": "AAAA,,,,DDDDDDD,,DDDDDD,,DDDDDD,,,,AAA"
+    },
+    {
+      "solution": "DDDDDD,,,,,,,,,DD,,,,AAAAA,,,,,,,,,W,,,,DDD,,,,AA"
+    },
+    {
+      "solution": "DDDD,,,,AAS,,,,,,DD,,,,AAAAAAAAW,,,,AAA,,,AAAAA,,,,DDDD,,DWWWW,,DDD"
+    },
+    {
+      "solution": "DDD,,,,,,DDD,,WWW,,,,WWWW,,,,,S,,AA,,,,,AAA,,,,,,AAA,,WWW,,,,WW,,,,W"
+    }
+  ],
+  "title": "Miss Direction",
+  "totalLevels": 25,
+  "totalMapLevels": 20
+}
