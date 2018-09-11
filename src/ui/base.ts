@@ -405,10 +405,10 @@ abstract class BaseUI {
         const titleImage = this.createMessageTextScreen(messageStr)
 
         // Now, convert the string array into cells
-        const cells: Set<GameSprite>[][] = []
+        const cells: Array<Set<GameSprite>>[] = []
         for (let rowIndex = 0; rowIndex < titleImage.length; rowIndex++) {
             const row = titleImage[rowIndex]
-            const cellsRow: Set<GameSprite>[] = []
+            const cellsRow: Array<Set<GameSprite>> = []
             cells.push(cellsRow)
             for (let colIndex = 0; colIndex < row.length; colIndex++) {
                 const char = row[colIndex]

@@ -4,11 +4,11 @@ import * as glob from 'glob'
 import * as path from 'path'
 import * as pify from 'pify'
 
-import { GameEngine, Parser, RULE_DIRECTION } from '.'
+import { GameEngine, Parser, RULE_DIRECTION } from '..'
+import { saveCoverageFile } from '../recordCoverage'
+import { closeSounds } from '../sounds'
+import TerminalUI from '../ui/terminal'
 import { ILevelRecording } from './playGame'
-import { saveCoverageFile } from './recordCoverage'
-import { closeSounds } from './sounds'
-import TerminalUI from './ui/terminal'
 
 async function sleep(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms))
@@ -58,7 +58,7 @@ async function run() {
                 'SWWS',
                 'DAAD'
             ].join('').split('').join('.')
-            const recordingsPath = path.join(__dirname, `../gist-solutions/${gistId}.json`)
+            const recordingsPath = path.join(__dirname, `../../gist-solutions/${gistId}.json`)
             if (existsSync(recordingsPath)) {
                 const recordings: ILevelRecording[] = JSON.parse(readFileSync(recordingsPath, 'utf-8')).solutions
                 // TODO: Use the following rules for finding which recording to play:

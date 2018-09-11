@@ -63,4 +63,3 @@ declare module 'font-ascii' {
 
     export default f
 }
-

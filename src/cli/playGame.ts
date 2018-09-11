@@ -1,7 +1,7 @@
 // tslint:disable:no-console
 import chalk from 'chalk'
-import fontAscii from 'font-ascii'
 import * as commander from 'commander'
+import fontAscii from 'font-ascii'
 import { createReadStream, existsSync, readFileSync, writeFileSync } from 'fs'
 import * as glob from 'glob'
 import * as inquirer from 'inquirer'
@@ -10,9 +10,14 @@ import * as path from 'path'
 import * as pify from 'pify'
 import * as supportsColor from 'supports-color'
 
-import { closeSounds, GameData, GameEngine, ILoadingCellsEvent, Optional, Parser, playSound, RULE_DIRECTION } from '.'
-import { saveCoverageFile } from './recordCoverage'
-import TerminalUI, { getTerminalSize } from './ui/terminal'
+import { closeSounds, GameData, GameEngine, ILoadingCellsEvent, Optional, Parser, playSound, RULE_DIRECTION } from '..'
+import { saveCoverageFile } from '../recordCoverage'
+import TerminalUI, { getTerminalSize } from '../ui/terminal'
+import SOLVED_GAMES from './solvedGames'
+import TITLE_FONTS from './titleFonts'
+
+SOLVED_GAMES.add(`Skipping Stones to Lonely Homes`)
+SOLVED_GAMES.add(`Spikes 'n' Stuff`)
 
 export interface IGameRecording {
     version: number,
@@ -44,72 +49,7 @@ interface ICliOptions {
 }
 
 // Use require instead of import so we can load JSON files
-const pkg: IPackage = require('../package.json') as IPackage // tslint:disable-line:no-var-requires
-
-const TITLE_FONTS = [
-    // {name: 'Impossible', minWidth: 211},
-    // {name: 'SubZero', minWidth: 135},
-    // {name: 'FireFonts', minWidth: 100},
-    // {name: 'Small', minWidth: 85},
-    // {name: 'Avatar', minWidth: 73},
-
-    {name: 'Acrobatic', minWidth: 185},
-    // {name: 'Alpha'},
-    {name: 'Avatar', minWidth: 73},
-    {name: 'Big', minWidth: 110},
-    {name: 'BigMoneyne', minWidth: 125},
-    {name: 'BigMoneynw', minWidth: 125},
-    {name: 'BigMoneyse', minWidth: 125},
-    {name: 'BigMoneysw', minWidth: 125},
-    // {name: 'Blocks', minWidth: 240},
-    {name: 'Bulbhead', minWidth: 80},
-    // {name: 'Cards', minWidth: 100},
-    {name: 'Chiseled', minWidth: 160},
-    {name: 'Crawford2', minWidth: 87},
-    {name: 'Crazy', minWidth: 175},
-    {name: 'DancingFont', minWidth: 125},
-    {name: 'Diagonal3d', minWidth: 170},
-    // {name: 'Doh'},
-    {name: 'Doom', minWidth: 85},
-    // {name: 'EftiWall'},
-    {name: 'Epic', minWidth: 110},
-    // // {name: 'Firefontk'},
-    {name: 'FireFonts', minWidth: 100},
-    {name: 'FlowerPower', minWidth: 155},
-    {name: 'FunFace', minWidth: 125},
-    {name: 'FunFaces', minWidth: 125},
-    {name: 'Ghost', minWidth: 140},
-    {name: 'Graceful', minWidth: 72},
-    // {name: 'Graffiti', minWidth: 130},
-    {name: 'Impossible', minWidth: 211},
-    {name: 'Isometric1', minWidth: 165},
-    {name: 'Isometric2', minWidth: 170},
-    {name: 'Isometric3', minWidth: 170},
-    {name: 'Isometric4', minWidth: 165},
-    {name: 'JSBracketLetters', minWidth: 85},
-    {name: 'LilDevil', minWidth: 130},
-    {name: 'Merlin1', minWidth: 150},
-    // {name: 'Modular', minWidth: 110},
-    {name: 'Ogre', minWidth: 80},
-    {name: 'PatorjkCheese', minWidth: 185},
-    {name: 'PatorjkHeX', minWidth: 230},
-    {name: 'Rectangles', minWidth: 85},
-    // {name: 'Slant', minWidth: 105},
-    // {name: 'SlantRelief'},
-    {name: 'Small', minWidth: 85},
-    {name: 'SmallIsometric1', minWidth: 120},
-    {name: 'SmallSlant', minWidth: 85},
-    {name: 'Soft', minWidth: 117},
-    {name: 'Standard', minWidth: 100},
-    {name: 'StarWars', minWidth: 135},
-    {name: 'SubZero', minWidth: 135},
-    {name: 'SwampLand', minWidth: 160},
-    {name: 'Sweet', minWidth: 125},
-    {name: 'Train', minWidth: 110},
-    {name: 'Twisted', minWidth: 135},
-    {name: 'Varsity', minWidth: 150},
-    {name: 'WetLetts', minWidth: 110},
-]
+const pkg: IPackage = require('../../package.json') as IPackage // tslint:disable-line:no-var-requires
 
 async function sleep(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms))
@@ -181,7 +121,7 @@ run().then(() => { process.exit(0) }, (err) => {
 
 async function run() {
     inquirer.registerPrompt('autocomplete', autocomplete as PromptModule)
-    const gists = await pify(glob)(path.join(__dirname, '../gists/*/script.txt'))
+    const gists = await pify(glob)(path.join(__dirname, '../../gists/*/script.txt'))
     const cliOptions: ICliOptions = commander.opts() as ICliOptions
     const { ui: cliUi, game: cliGameTitle, nosound } = cliOptions
     let { level: cliLevel, resume: cliResume } = cliOptions
@@ -215,13 +155,13 @@ async function run() {
     }
 
     if (!cliGameTitle) {
-        const possibleFonts = TITLE_FONTS.filter(({minWidth}) => minWidth <= (process.stdout.columns || 80))
+        const possibleFonts = TITLE_FONTS.filter(({ minWidth }) => minWidth <= (process.stdout.columns || 80))
         const font = possibleFonts[Math.floor(Math.random() * possibleFonts.length)] // pick a random one
         console.log(``)
         console.log(`Let's play some`)
         console.log(``)
         if (font) {
-            fontAscii('Puzzle Games', {typeface: font.name})
+            fontAscii('Puzzle Games', { typeface: font.name })
         } else {
             console.log('Puzzle Games')
         }
@@ -285,7 +225,7 @@ async function startPromptsAndPlayGame(gamePath: string, gistId: Optional<string
         await promptPixelSize(data, cliUi ? cliSpriteSize : CLI_SPRITE_SIZE.SMALL)
 
         // Load the solutions file (if it exists) so we can append to it
-        const solutionsPath = path.join(__dirname, `../gist-solutions/${gistId}.json`)
+        const solutionsPath = path.join(__dirname, `../../gist-solutions/${gistId}.json`)
         let recordings: { version: number, solutions: ILevelRecording[], title: string, totalLevels: number, totalMapLevels: number }
         if (gistId && existsSync(solutionsPath)) {
             recordings = JSON.parse(readFileSync(solutionsPath, 'utf-8'))
@@ -872,11 +812,11 @@ function shuffleArray<T>(array: T[]) {
 }
 
 function percentComplete(game: IGameInfo) {
-    const solutionsPath = path.join(__dirname, `../gist-solutions/${game.id}.json`)
+    const solutionsPath = path.join(__dirname, `../../gist-solutions/${game.id}.json`)
     let message = chalk.bold.red('unstarted')
     if (existsSync(solutionsPath)) {
         const recordings: { version: number, solutions: ILevelRecording[], title: string, totalLevels: number, totalMapLevels: number } = JSON.parse(readFileSync(solutionsPath, 'utf-8'))
-        const numerator = recordings.solutions.filter(s => s && s.solution && s.solution.length > 1).length
+        const numerator = recordings.solutions.filter((s) => s && s.solution && s.solution.length > 1).length
         const denominator = recordings.totalMapLevels
         const percent = 100 * numerator / denominator
         let colorFn = chalk.bold.red
@@ -973,130 +913,6 @@ async function promptGame(games: IGameInfo[], cliGameTitle: Optional<string>) {
         'Count Mover',
         'ESL Puzzle Game -- CHALLENGE MODE アダムのパズルゲーム'
     ]
-    const gamesWithSolutions = new Set([
-        `1-2-3-Ban`,
-        `Alien Disco`,
-        `Boxes Love Bloxing Gloves`,
-        `Cyber-Lasso`,
-        `Easy Enigma`,
-        `Element Walkers`,
-        `Entanglement - Chapter One`,
-        `Hack the Net`,
-        `Linked`,
-        `Mirror Isles`,
-        `out of bounds [lite demo v2]`,
-        `Fatigued square maze`,
-        `Pot Wash Panic`,
-        `Roll those Sixes`,
-        `bomb n ice`,
-        `climbing cubes`,
-        `Covering holes`,
-        `Cubes barrier`,
-        `cubes medusa`,
-        `Directional`,
-        `duality`,
-        `dup-block`,
-        `Extra lives`,
-        `fire in winter`,
-        `Grouping`,
-        `Hue change`,
-        `Ice path`,
-        `Islands`,
-        `Magnetized`,
-        `monster mess`,
-        `Moving target`,
-        `Outward force`,
-        `Overstep`,
-        `Path lines`,
-        `Pathmaker`,
-        `Positional`,
-        `purple`,
-        `rows and columns`,
-        `skippa`,
-        `Some pits`,
-        `square colours`,
-        `sticky`,
-        `swap`,
-        `Symbols`,
-        `the art of cloning`,
-        `The art of storage`,
-        `the big dig`,
-        `the copying`,
-        `The fire calls`,
-        `the laser`,
-        `The packing crate`,
-        `the switch`,
-        `Then another`,
-        `To nothing and back`,
-        `triple match`,
-        `Wall-bonding`,
-        `wall shuffle`,
-        `White Pillars`,
-        `Separation`,
-        `Sleepy players`,
-        `Slime Swap`,
-        `A Sneeze A Day Keeps The Crates Away`,
-        `Spacekoban`,
-        `Spooky Pumpkin Game`,
-        `Stairs`,
-        `Tiaradventur`,
-        `Train`,
-        `Season Finale`,
-        `Botsket Ball`,
-        `magnetic`,
-        `Slidings`,
-        `Aaaah! I'm Being Attacked by a Giant Tentacle!`,
-        `🍡 -ooo- 🍡`,
-        `Beam Islands`,
-        `Collapse`,
-        `MC Escher's Equestrian Armageddon`,
-        `Mowing`,
-        `Midas`,
-        `Pants, Shirt, Cap`,
-        `Flying Kick`,
-        `Sokoboros`,
-        `Lime Rick`,
-        `Fish Friend`,
-        `Manic Ammo`,
-        `Microban`,
-        `pretender to the crown`,
-        `Gobble Rush!`,
-        `Rock, Paper, Scissors`,
-        `Memories Of Castlemouse`,
-        `Tidy the Cafe!`,
-        `Magik`,
-        `Life is Hard`,
-        `Tunnel Rat`,
-        `PUSH`,
-        `Bubble Butler: CMD REORGANIZE`,
-        `Stand Off`,
-        `Collapsable Sokoban`,
-        `Coin Counter`,
-        `2D Whale World`,
-        `Garten der Medusen`,
-        `Multi-word Dictionary Game`,
-        `Explod`,
-        `Vacuum`,
-        `Spider's Hollow`,
-        `Dang I'm Huge`,
-        `Some lines were meant to be crossed`,
-        `Telefrag`,
-        `Dangerous Dungeon`,
-        `Kettle`,
-        `PrograMaze`,
-        `Pushcat Jr`,
-        `Enqueue`,
-        `Out There`,
-        `ESL Puzzle Game -- アダムのパズルゲーム`,
-        `SwapBot`,
-        `Boxes & Balloons`,
-        `IceCrates`,
-        `Unconventional Guns`,
-        `MazezaM`
-    ])
-    gamesWithSolutions.add(`Skipping Stones to Lonely Homes`)
-    gamesWithSolutions.add(`Spikes 'n' Stuff`)
-
 
     function getGameIndexForSort(gameInfo: IGameInfo) {
         let gameIndex = firstGames.indexOf(gameInfo.title)
@@ -1128,7 +944,7 @@ async function promptGame(games: IGameInfo[], cliGameTitle: Optional<string>) {
                 const index = firstGames.indexOf(game.title)
                 if (index <= 10) {
                     return chalk.bold.whiteBright(`\u2063${game.title}\u2063 ${percentComplete(game)}`)
-                } else if (gamesWithSolutions.has(game.title)) {
+                } else if (SOLVED_GAMES.has(game.title)) {
                     // add an invisible unicode character so we can unescape the title later
                     return chalk.white(`\u2063${game.title}\u2063 ${percentComplete(game)}`)
                 } else {
