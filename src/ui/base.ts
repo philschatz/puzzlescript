@@ -240,8 +240,13 @@ abstract class BaseUI {
             this.windowOffsetWidth = screenWidth
             this.clearScreen()
 
-            const cells = this.createMessageCells(message)
-            this.drawCells(_flatten(cells), false)
+            if (this.engine) {
+                const sprites = this.createMessageSprites(message)
+                this.engine.setMessageLevel(sprites)
+                // this.renderScreen(false)
+                this.drawCellsAfterRecentering(_flatten(this.getCurrentLevelCells()), 0)
+                this.engine.restoreFromMessageLevel()
+            }
 
             this.windowOffsetColStart = windowOffsetColStart
             this.windowOffsetRowStart = windowOffsetRowStart
@@ -390,7 +395,7 @@ abstract class BaseUI {
         return titleImage
     }
 
-    protected createMessageCells(messageStr: string) {
+    protected createMessageSprites(messageStr: string) {
         if (!this.gameData) {
             throw new Error(`BUG: gameData was not set yet`)
         }
@@ -400,16 +405,15 @@ abstract class BaseUI {
         const titleImage = this.createMessageTextScreen(messageStr)
 
         // Now, convert the string array into cells
-        const cells: Cell[][] = []
+        const cells: Set<GameSprite>[][] = []
         for (let rowIndex = 0; rowIndex < titleImage.length; rowIndex++) {
             const row = titleImage[rowIndex]
-            const cellsRow: Cell[] = []
+            const cellsRow: Set<GameSprite>[] = []
             cells.push(cellsRow)
             for (let colIndex = 0; colIndex < row.length; colIndex++) {
                 const char = row[colIndex]
                 const sprite = this.gameData.getLetterSprite(char)
-                const letterCell = new Cell(null, new Set([sprite]), rowIndex, colIndex)
-                cellsRow.push(letterCell)
+                cellsRow.push(new Set([sprite]))
             }
         }
         return cells

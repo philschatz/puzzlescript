@@ -56,6 +56,7 @@ export class GameData {
         this.objects.forEach((sprite, index) => {
             sprite.allSpritesBitSetIndex = index
         })
+        let spriteIndexCounter = this.objects.length // 1 more than all the game sprites
 
         const ruleCache = new Map()
         const bracketCache = new Map()
@@ -80,6 +81,9 @@ export class GameData {
 
         // Create a collisionlayer for the letter sprites
         this.letterSprites = getLetterSprites(source)
+        for (const letterSprite of this.letterSprites.values()) {
+            letterSprite.allSpritesBitSetIndex = spriteIndexCounter++
+        }
         const letterCollisionLayer = new CollisionLayer(source, [...this.letterSprites.values()], () => {
             throw new Error(`BUG: Letter collision layers should not have a problem`)
         })

@@ -71,9 +71,13 @@ export class Cell {
         this._setState(collisionLayer, sprite, wantsToMove)
         // call replaceSprite only **after** we updated the Cell
         if (cellSprite !== sprite) {
-            this.getLevel().replaceSprite(this, cellSprite, sprite)
+            this.replaceSpriteInLevel(cellSprite, sprite)
         }
         return didActuallyChangeSprite || didActuallyChangeDir
+    }
+    // This method is replaced by LetterCells (because they are not boud to a level)
+    protected replaceSpriteInLevel(cellSprite: Optional<GameSprite>, newSprite: GameSprite) {
+        this.getLevel().replaceSprite(this, cellSprite, newSprite)
     }
     public _deleteWantsToMove(sprite: GameSprite) {
         // There may be other sprites in the same ... oh wait, no that's not possible.
@@ -362,6 +366,7 @@ export class LevelEngine extends EventEmitter2 {
     public pendingPlayerWantsToMove: Optional<RULE_DIRECTION>
     public hasAgainThatNeedsToRun: boolean
     private currentLevel: Optional<Level>
+    private tempOldLevel: Optional<Level>
     private undoStack: Snapshot[]
 
     constructor(gameData: GameData) {
@@ -383,47 +388,78 @@ export class LevelEngine extends EventEmitter2 {
             levelData.__incrementCoverage()
         }
         resetRandomSeed()
-        // Clone the board because we will be modifying it
-        const level = new Level()
-        this.currentLevel = level
-        level.setCells(levelData.getRows().map((row, rowIndex) => {
-            return row.map((col, colIndex) => {
+
+        const sprites = levelData.getRows().map(row => {
+            return row.map(col => {
                 const sprites = new Set(col.getSprites())
+                const backgroundSprite = this.gameData.getMagicBackgroundSprite()
+                if (backgroundSprite) {
+                    sprites.add(backgroundSprite)
+                }
+                return sprites
+            })
+        })
+
+        // Clone the board because we will be modifying it
+        this._setLevel(sprites)
+
+        this.takeSnapshot(this.createSnapshot())
+
+        // Return the cells so the UI can listen to when they change
+        return this.getCells()
+    }
+
+    public setMessageLevel(sprites: Set<GameSprite>[][]) {
+        this.tempOldLevel = this.currentLevel
+        this._setLevel(sprites)
+    }
+
+    public restoreFromMessageLevel() {
+        this.currentLevel = this.tempOldLevel
+        this.tempOldLevel = null
+        // this.setLevel(this.tempOldLevel)
+    }
+
+
+    private _setLevel(sprites: Set<GameSprite>[][]) {
+        const level = new Level();
+        this.currentLevel = level;
+        const cells = sprites.map((row, rowIndex) => {
+            return row.map((sprites, colIndex) => {
                 const backgroundSprite = this.gameData.getMagicBackgroundSprite()
                 if (backgroundSprite) {
                     sprites.add(backgroundSprite)
                 }
                 return new Cell(level, sprites, rowIndex, colIndex)
             })
-        }))
-
+        })
+        level.setCells(cells);
         // link up all the cells. Loop over all the sprites
         // in case they are NO tiles (so the cell is included)
-        const batchCells: Map<string, Cell[]> = new Map()
+        const batchCells: Map<string, Cell[]> = new Map();
         function spriteSetToKey(sprites: Set<GameSprite>) {
-            const key = []
+            const key = [];
             for (const spriteName of [...sprites].map((sprite) => sprite.getName()).sort()) {
-                key.push(spriteName)
+                key.push(spriteName);
             }
-            return key.join(' ')
+            return key.join(' ');
         }
-        const allCells = this.getCells()
+        const allCells = this.getCells();
         // But first, fill up any empty condition brackets with ALL THE CELLS
         for (const rule of this.gameData.rules) {
-            rule.addCellsToEmptyRules(allCells)
+            rule.addCellsToEmptyRules(allCells);
         }
         for (const cell of allCells) {
-            const key = spriteSetToKey(cell.getSpritesAsSet())
-            let batch = batchCells.get(key)
+            const key = spriteSetToKey(cell.getSpritesAsSet());
+            let batch = batchCells.get(key);
             if (!batch) {
-                batch = []
-                batchCells.set(key, batch)
+                batch = [];
+                batchCells.set(key, batch);
             }
-            batch.push(cell)
+            batch.push(cell);
         }
-
         // Print progress while loading up the Cells
-        let i = 0
+        let i = 0;
         for (const [key, cells] of batchCells) {
             if ((batchCells.size > 100 && i % 10 === 0) || cells.length > 100) {
                 this.emit('loading-cells', {
@@ -431,28 +467,26 @@ export class LevelEngine extends EventEmitter2 {
                     cellEnd: i + cells.length,
                     cellTotal: allCells.length,
                     key
-                })
+                });
             }
             // All Cells contain the same set of sprites so just pull out the 1st one
             for (const sprite of this.gameData.objects) {
-                const cellSprites = cells[0].getSpritesAsSet()
-                const hasSprite = cellSprites.has(sprite)
+                const cellSprites = cells[0].getSpritesAsSet();
+                const hasSprite = cellSprites.has(sprite);
                 if (hasSprite || sprite.hasNegationTileWithModifier()) {
                     if (hasSprite) {
-                        sprite.addCells(sprite, cells, RULE_DIRECTION.STATIONARY)
-                    } else {
-                        sprite.removeCells(sprite, cells)
+                        sprite.addCells(sprite, cells, RULE_DIRECTION.STATIONARY);
+                    }
+                    else {
+                        sprite.removeCells(sprite, cells);
                     }
                 }
             }
-            i += cells.length
+            i += cells.length;
         }
-
-        this.takeSnapshot(this.createSnapshot())
-
-        // Return the cells so the UI can listen to when they change
-        return this.getCells()
+        return level;
     }
+
     public getCurrentLevel() {
         if (this.currentLevel) {
             return this.currentLevel
@@ -1014,4 +1048,13 @@ export class GameEngine {
             })
         })
     }
+
+    public setMessageLevel(sprites: Set<GameSprite>[][]) {
+        this.levelEngine.setMessageLevel(sprites)
+    }
+
+    public restoreFromMessageLevel() {
+        this.levelEngine.restoreFromMessageLevel()
+    }
+
 }

@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "solutions": [
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "WWWWW"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "WDDWWDSASDWSASSDWAWDDDSS"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "WWWWDWDDDDWWDDSDDWDDSDDWDDSDDSSAAAAASSDAASSDAAAWWWWAAADSSSSWWWWAAWWWW"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "DDDDDDDWWWWWWWWWWWAAAAAAASSSSSSASDWASSDSWWDWSASDSDWWSAAWDSWDDAWSAAWDSWDDWSAWDAWWWSSSSAAWWWWWWWW"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "X"
+    }
+  ],
+  "title": "Dungeon Janitor",
+  "totalLevels": 12,
+  "totalMapLevels": 4
+}

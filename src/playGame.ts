@@ -1,5 +1,6 @@
 // tslint:disable:no-console
 import chalk from 'chalk'
+import fontAscii from 'font-ascii'
 import * as commander from 'commander'
 import { createReadStream, existsSync, readFileSync, writeFileSync } from 'fs'
 import * as glob from 'glob'
@@ -44,6 +45,71 @@ interface ICliOptions {
 
 // Use require instead of import so we can load JSON files
 const pkg: IPackage = require('../package.json') as IPackage // tslint:disable-line:no-var-requires
+
+const TITLE_FONTS = [
+    // {name: 'Impossible', minWidth: 211},
+    // {name: 'SubZero', minWidth: 135},
+    // {name: 'FireFonts', minWidth: 100},
+    // {name: 'Small', minWidth: 85},
+    // {name: 'Avatar', minWidth: 73},
+
+    {name: 'Acrobatic', minWidth: 185},
+    // {name: 'Alpha'},
+    {name: 'Avatar', minWidth: 73},
+    {name: 'Big', minWidth: 110},
+    {name: 'BigMoneyne', minWidth: 125},
+    {name: 'BigMoneynw', minWidth: 125},
+    {name: 'BigMoneyse', minWidth: 125},
+    {name: 'BigMoneysw', minWidth: 125},
+    // {name: 'Blocks', minWidth: 240},
+    {name: 'Bulbhead', minWidth: 80},
+    // {name: 'Cards', minWidth: 100},
+    {name: 'Chiseled', minWidth: 160},
+    {name: 'Crawford2', minWidth: 87},
+    {name: 'Crazy', minWidth: 175},
+    {name: 'DancingFont', minWidth: 125},
+    {name: 'Diagonal3d', minWidth: 170},
+    // {name: 'Doh'},
+    {name: 'Doom', minWidth: 85},
+    // {name: 'EftiWall'},
+    {name: 'Epic', minWidth: 110},
+    // // {name: 'Firefontk'},
+    {name: 'FireFonts', minWidth: 100},
+    {name: 'FlowerPower', minWidth: 155},
+    {name: 'FunFace', minWidth: 125},
+    {name: 'FunFaces', minWidth: 125},
+    {name: 'Ghost', minWidth: 140},
+    {name: 'Graceful', minWidth: 72},
+    // {name: 'Graffiti', minWidth: 130},
+    {name: 'Impossible', minWidth: 211},
+    {name: 'Isometric1', minWidth: 165},
+    {name: 'Isometric2', minWidth: 170},
+    {name: 'Isometric3', minWidth: 170},
+    {name: 'Isometric4', minWidth: 165},
+    {name: 'JSBracketLetters', minWidth: 85},
+    {name: 'LilDevil', minWidth: 130},
+    {name: 'Merlin1', minWidth: 150},
+    // {name: 'Modular', minWidth: 110},
+    {name: 'Ogre', minWidth: 80},
+    {name: 'PatorjkCheese', minWidth: 185},
+    {name: 'PatorjkHeX', minWidth: 230},
+    {name: 'Rectangles', minWidth: 85},
+    // {name: 'Slant', minWidth: 105},
+    // {name: 'SlantRelief'},
+    {name: 'Small', minWidth: 85},
+    {name: 'SmallIsometric1', minWidth: 120},
+    {name: 'SmallSlant', minWidth: 85},
+    {name: 'Soft', minWidth: 117},
+    {name: 'Standard', minWidth: 100},
+    {name: 'StarWars', minWidth: 135},
+    {name: 'SubZero', minWidth: 135},
+    {name: 'SwampLand', minWidth: 160},
+    {name: 'Sweet', minWidth: 125},
+    {name: 'Train', minWidth: 110},
+    {name: 'Twisted', minWidth: 135},
+    {name: 'Varsity', minWidth: 150},
+    {name: 'WetLetts', minWidth: 110},
+]
 
 async function sleep(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms))
@@ -149,10 +215,18 @@ async function run() {
     }
 
     if (!cliGameTitle) {
+        const possibleFonts = TITLE_FONTS.filter(({minWidth}) => minWidth <= (process.stdout.columns || 80))
+        const font = possibleFonts[Math.floor(Math.random() * possibleFonts.length)] // pick a random one
         console.log(``)
+        console.log(`Let's play some`)
         console.log(``)
-        console.log(`Let's play some ${chalk.bold.redBright('P')}${chalk.bold.greenBright('U')}${chalk.bold.blueBright('Z')}${chalk.bold.yellowBright('Z')}${chalk.bold.cyanBright('L')}${chalk.bold.magentaBright('E')}${chalk.bold.whiteBright('S')}!`) // tslint:disable-line:max-line-length
-        console.log(`(${chalk.bold.whiteBright(`${games.length}`)} to choose from)`)
+        if (font) {
+            fontAscii('Puzzle Games', {typeface: font.name})
+        } else {
+            console.log('Puzzle Games')
+        }
+        console.log(``)
+        console.log(`(${chalk.bold.whiteBright(`${games.length}`)} games to choose from)`)
         console.log(``)
         console.log(``)
         console.log(`${chalk.dim('Games that are')} ${chalk.bold.whiteBright('white')} ${chalk.dim('are great to start out,')} ${chalk.bold.white('gray')} ${chalk.dim('are fun and run, and')} ${chalk.bold.dim('dark')} ${chalk.dim('may or may not run.')}`) // tslint:disable-line:max-line-length
@@ -797,6 +871,30 @@ function shuffleArray<T>(array: T[]) {
     return array
 }
 
+function percentComplete(game: IGameInfo) {
+    const solutionsPath = path.join(__dirname, `../gist-solutions/${game.id}.json`)
+    let message = chalk.bold.red('unstarted')
+    if (existsSync(solutionsPath)) {
+        const recordings: { version: number, solutions: ILevelRecording[], title: string, totalLevels: number, totalMapLevels: number } = JSON.parse(readFileSync(solutionsPath, 'utf-8'))
+        const numerator = recordings.solutions.filter(s => s && s.solution && s.solution.length > 1).length
+        const denominator = recordings.totalMapLevels
+        const percent = 100 * numerator / denominator
+        let colorFn = chalk.bold.red
+        if (numerator === denominator) {
+            colorFn = chalk.blueBright
+        } else if (percent > 75) {
+            colorFn = chalk.greenBright
+        } else if (percent > 25) {
+            colorFn = chalk.yellowBright
+        } else if (percent > 0) {
+            colorFn = chalk.redBright
+        }
+
+        message = colorFn(`${numerator}/${denominator}`)
+    }
+    return chalk.gray(`(${message})`)
+}
+
 async function promptGame(games: IGameInfo[], cliGameTitle: Optional<string>) {
     // Sort games by games that are fun and should be played first
     const firstGames = [
@@ -1029,13 +1127,13 @@ async function promptGame(games: IGameInfo[], cliGameTitle: Optional<string>) {
                 // dim the games that are not recommended
                 const index = firstGames.indexOf(game.title)
                 if (index <= 10) {
-                    return chalk.bold.whiteBright('\u2063' + game.title + '\u2063')
+                    return chalk.bold.whiteBright(`\u2063${game.title}\u2063 ${percentComplete(game)}`)
                 } else if (gamesWithSolutions.has(game.title)) {
                     // add an invisible unicode character so we can unescape the title later
-                    return chalk.white('\u2063' + game.title + '\u2063')
+                    return chalk.white(`\u2063${game.title}\u2063 ${percentComplete(game)}`)
                 } else {
                     // add an invisible unicode character so we can unescape the title later
-                    return chalk.dim('\u2063' + game.title + '\u2063')
+                    return chalk.dim(`\u2063${game.title}\u2063 ${percentComplete(game)}`)
                 }
             }))
         }
