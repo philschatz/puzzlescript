@@ -389,7 +389,7 @@ export class LevelEngine extends EventEmitter2 {
         }
         resetRandomSeed()
 
-        const sprites = levelData.getRows().map((row) => {
+        const levelSprites = levelData.getRows().map((row) => {
             return row.map((col) => {
                 const sprites = new Set(col.getSprites())
                 const backgroundSprite = this.gameData.getMagicBackgroundSprite()
@@ -401,7 +401,7 @@ export class LevelEngine extends EventEmitter2 {
         })
 
         // Clone the board because we will be modifying it
-        this._setLevel(sprites)
+        this._setLevel(levelSprites)
 
         this.takeSnapshot(this.createSnapshot())
 
@@ -409,7 +409,7 @@ export class LevelEngine extends EventEmitter2 {
         return this.getCells()
     }
 
-    public setMessageLevel(sprites: Array<Set<GameSprite>>[]) {
+    public setMessageLevel(sprites: Array<Array<Set<GameSprite>>>) {
         this.tempOldLevel = this.currentLevel
         this._setLevel(sprites)
     }
@@ -523,10 +523,10 @@ export class LevelEngine extends EventEmitter2 {
         }
     }
 
-    private _setLevel(sprites: Array<Set<GameSprite>>[]) {
+    private _setLevel(levelSprites: Array<Array<Set<GameSprite>>>) {
         const level = new Level()
         this.currentLevel = level
-        const cells = sprites.map((row, rowIndex) => {
+        const spriteCells = levelSprites.map((row, rowIndex) => {
             return row.map((sprites, colIndex) => {
                 const backgroundSprite = this.gameData.getMagicBackgroundSprite()
                 if (backgroundSprite) {
@@ -535,7 +535,7 @@ export class LevelEngine extends EventEmitter2 {
                 return new Cell(level, sprites, rowIndex, colIndex)
             })
         })
-        level.setCells(cells)
+        level.setCells(spriteCells)
         // link up all the cells. Loop over all the sprites
         // in case they are NO tiles (so the cell is included)
         const batchCells: Map<string, Cell[]> = new Map()
@@ -1047,7 +1047,7 @@ export class GameEngine {
         })
     }
 
-    public setMessageLevel(sprites: Array<Set<GameSprite>>[]) {
+    public setMessageLevel(sprites: Array<Array<Set<GameSprite>>>) {
         this.levelEngine.setMessageLevel(sprites)
     }
 
