@@ -813,7 +813,7 @@ function shuffleArray<T>(array: T[]) {
 
 function percentComplete(game: IGameInfo) {
     const solutionsPath = path.join(__dirname, `../../gist-solutions/${game.id}.json`)
-    let message = chalk.bold.red('unstarted')
+    let message = process.env.NODE_ENV === 'development' ? chalk.bold.red('(unstarted)') : ''
     if (existsSync(solutionsPath)) {
         const recordings: { version: number, solutions: ILevelRecording[], title: string, totalLevels: number, totalMapLevels: number } = JSON.parse(readFileSync(solutionsPath, 'utf-8'))
         const numerator = recordings.solutions.filter((s) => s && s.solution && s.solution.length > 1).length
@@ -830,9 +830,9 @@ function percentComplete(game: IGameInfo) {
             colorFn = chalk.redBright
         }
 
-        message = colorFn(`${numerator}/${denominator}`)
+        message = chalk.gray(`(${colorFn(`${numerator}/${denominator}`)})`)
     }
-    return chalk.gray(`(${message})`)
+    return message
 }
 
 async function promptGame(games: IGameInfo[], cliGameTitle: Optional<string>) {
