@@ -40,6 +40,7 @@ export default new Set([
     `Positional`,
     `purple`,
     `rows and columns`,
+    `Scaling walls`,
     `skippa`,
     `Some pits`,
     `square colours`,
@@ -126,5 +127,5 @@ export default new Set([
     `Boxes & Balloons`,
     `IceCrates`,
     `Unconventional Guns`,
-    `MazezaM`
+    `MazezaM`,
 ])
