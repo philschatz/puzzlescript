@@ -110,18 +110,15 @@ nonVarChar -> whitespaceChar | newline | "[" | "]" | "(" | ")" | "|" | "."
 
 
 
-# words -> word:+
 decimal ->
     decimalWithLeadingNumber
     | decimalWithLeadingPeriod
 decimalWithLeadingNumber -> digit:+ ("." digit:+):?
 decimalWithLeadingPeriod -> "." digit:+
 
-# colorTransparent -> t_TRANSPARENT
 colorHex6 -> "#" hexDigit hexDigit hexDigit hexDigit hexDigit hexDigit  {% (a) => { return {type:'HEX6', value: a.join('')} } %}
 colorHex3 -> "#" hexDigit hexDigit hexDigit                             {% (a) => { return {type:'HEX3', value: a.join('')} } %}
 colorNameOrHex ->
-      # colorTransparent
       colorHex6
     | colorHex3
     | colorName
@@ -327,13 +324,13 @@ OptionalMetaData
 
 Title -> t_TITLE __ words       {% ([_1, _2, words]) => { return {type:'TITLE', value: words} } %}
 Author -> t_AUTHOR __ words     {% ([_1, _2, words]) => { return {type:'AUTHOR', value: words} } %}
-Homepage -> t_HOMEPAGE __ words {% ([_1, _2, words]) => { return {type:'HOMEPAGE', value: words} } %}
-Youtube -> t_YOUTUBE __ words
+Homepage -> t_HOMEPAGE __ word  {% ([_1, _2, words]) => { return {type:'HOMEPAGE', value: words} } %}
+Youtube -> t_YOUTUBE __ word
 Zoomscreen -> t_ZOOMSCREEN __ widthAndHeight
 Flickscreen -> t_FLICKSCREEN __ widthAndHeight
 RequirePlayerMovement -> t_REQUIRE_PLAYER_MOVEMENT (__ "off"):?
 RunRulesOnLevelStart -> t_RUN_RULES_ON_LEVEL_START (__ "true"):?
-ColorPalette -> t_COLOR_PALETTE __ words
+ColorPalette -> t_COLOR_PALETTE __ word
 BackgroundColor -> t_BACKGROUND_COLOR __ colorNameOrHex
 TextColor -> t_TEXT_COLOR __ colorNameOrHex
 RealtimeInterval -> t_REALTIME_INTERVAL __ decimal
@@ -393,15 +390,15 @@ LookupLegendVarName -> LegendVarNameDefn
 # all of them are at https:#www.puzzlescript.net/Documentation/sounds.html
 SoundItem -> _ SoundItemInner lineTerminator:+
 
-SoundItemInner
-    -> SoundItemEnum
+SoundItemInner ->
+      SoundItemEnum
     | SoundItemSfx
     | SoundItemMoveDirection
     | SoundItemMoveSimple
     | SoundItemNormal
 
-soundItemSimpleOptions
-    -> t_RESTART
+soundItemSimpleOptions ->
+      t_RESTART
     | t_UNDO
     | t_TITLESCREEN
     | t_STARTGAME
@@ -417,20 +414,20 @@ SoundItemMoveDirection -> lookupRuleVariableName __ t_MOVE __ soundItemActionMov
 SoundItemMoveSimple -> lookupRuleVariableName __ t_MOVE __ integer
 SoundItemNormal -> lookupRuleVariableName __ SoundItemAction __ integer
 
-SoundItemAction
-    -> t_CREATE
+SoundItemAction ->
+      t_CREATE
     | t_DESTROY
     | t_CANTMOVE
 
-soundItemActionMoveArg
-    -> t_UP
+soundItemActionMoveArg ->
+      t_UP
     | t_DOWN
     | t_LEFT
     | t_RIGHT
     | t_HORIZONTAL
     | t_VERTICAL
 
-
+# collision layers are separated by a space or a comma (and some games and with a comma)
 CollisionLayerItem -> _ nonemptyListOf[lookupCollisionVariableName, (_ "," _ | __)] ",":? lineTerminator:+
 
 
@@ -444,7 +441,7 @@ Rule ->
     | RuleWithMessage
 
 RuleWithoutMessage -> _ nonemptyListOf[LeftModifiers RuleBracket, _] _ "->" ((_ RuleModifier):? _ RuleBracket):* (_ RuleCommand):* lineTerminator:+
-RuleWithMessage ->   _ nonemptyListOf[LeftModifiers RuleBracket, _] _ "->" ((_ RuleModifier):? _ RuleBracket):* (_ RuleCommand):* _ MessageCommand lineTerminator:*
+RuleWithMessage ->    _ nonemptyListOf[LeftModifiers RuleBracket, _] _ "->" ((_ RuleModifier):? _ RuleBracket):* (_ RuleCommand):* _ MessageCommand lineTerminator:*
 
 LeftModifiers ->
       nonemptyListOf[RuleModifierLeft, __] _
@@ -458,25 +455,20 @@ NormalRuleBracket -> "[" nonemptyListOf[RuleBracketNeighbor, "|"] (t_AGAIN _):? 
 EllipsisRuleBracket -> "[" nonemptyListOf[RuleBracketNeighbor, "|"] "|" _ t_ELLIPSIS _ "|" nonemptyListOf[RuleBracketNeighbor, "|"] "]" (_ t_DEBUGGER):?
 
 RuleBracketNeighbor ->
-    #   HackTileNameIsSFX1 # to parse '... -] [ SFX1 ]' (they should be commands)
-    # | HackTileNameIsSFX2 # to parse '... -] [ tilename SFX1 ]'
-    # | RuleBracketNoEllipsisNeighbor
+    #   HackTileNameIsSFX1 # to parse '... -> [ SFX1 ]' (they should be commands)
+    # | HackTileNameIsSFX2 # to parse '... -> [ tilename SFX1 ]'
       RuleBracketNoEllipsisNeighbor
     | RuleBracketEmptyNeighbor
 
 RuleBracketNoEllipsisNeighbor ->
-      _ nonemptyListOf[TileWithModifierMaybe ,__] (_ t_DEBUGGER):? _
+      _ nonemptyListOf[TileWithModifier ,__] (_ t_DEBUGGER):? _
 
 RuleBracketEmptyNeighbor -> _ # Matches `[]` as well as `[ ]`
 
-TileWithModifierMaybe ->
-      TileWithModifier
-    | TileWithoutModifier
 # Force-check that there is whitespace after the cellLayerModifier so things
 # like "STATIONARYZ" or "NOZ" are not parsed as a modifier
 # (they are a variable that happens to begin with the same text as a modifier)
-TileWithModifier -> tileModifier __ lookupRuleVariableName  {% ([modifier, _2, varName]) => { return {type: 'TILE_WITH_MODIFIER', modifier: modifier, varName: varName} } %}
-TileWithoutModifier -> lookupRuleVariableName               {% ([varName]) => { return {type: 'TILE_WITHOUT_MODIFIER', varName: varName} } %}
+TileWithModifier -> (tileModifier __):? lookupRuleVariableName  {% ([modifier, varName]) => { return {type: 'TILE_WITH_MODIFIER', modifier: modifier, varName: varName} } %}
 
 # tileModifier -> tileModifierInner {% debugRule('TILEMODIFIER') %}
 
@@ -496,8 +488,7 @@ tileModifier ->
     | t_PERPENDICULAR
     | t_PARALLEL
     | t_ORTHOGONAL
-    # This can be a "v" so it needs to go at the end (behind t_VERTICAL)
-    | t_ARROW_ANY
+    | t_ARROW_ANY # NOTE: This can be a "v"
 
 RuleModifier ->
       t_RANDOM
@@ -535,8 +526,8 @@ RuleGroup ->
     Rule
     (_ t_GROUP_RULE_PLUS Rule):+ {% ([_1, isRandom, firstRule, otherRules]) => { return {type:'RULE_GROUP', firstRule: firstRule, otherRules: otherRules} } %}
 
-HackTileNameIsSFX1 -> t_SFX __ t_DEBUGGER:?
-HackTileNameIsSFX2 -> lookupRuleVariableName __ t_SFX __ t_DEBUGGER:?
+# HackTileNameIsSFX1 -> t_SFX __ t_DEBUGGER:?
+# HackTileNameIsSFX2 -> lookupRuleVariableName __ t_SFX __ t_DEBUGGER:?
 
 
 WinConditionItem
@@ -546,8 +537,8 @@ WinConditionItem
 WinConditionItemSimple -> _ winConditionItemPrefix __ lookupRuleVariableName lineTerminator:+
 WinConditionItemOn -> _ winConditionItemPrefix __ lookupRuleVariableName __ t_ON __ lookupRuleVariableName lineTerminator:+
 
-winConditionItemPrefix
-    -> t_NO
+winConditionItemPrefix ->
+      t_NO
     | t_ALL
     | t_ANY
     | t_SOME
@@ -561,6 +552,7 @@ LevelItem ->
 
 # Ensure we collect characters up to the last non-whitespace
 GameMessageLevel -> _ t_MESSAGE messageLine {% ([_0, messageWords]) => { return {type: 'LEVEL_MESSAGE', messageWords } } %}
+# This does not use a lineTerminator because it needs to consume parentheses
 messageLine -> [^\n]:* [\n]
 levelMapRow -> _ [^\n \t\(]:+ lineTerminator {% ([_0, cols], offset, reject) => {
   const str = cols.join('')
