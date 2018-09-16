@@ -128,7 +128,7 @@ digit -> [0-9]          {% id %}
 hexDigit -> [0-9a-fA-F] {% id %}
 letter -> [^\n \(\)]    {% id %}
 
-integer -> digit:+      {% concatChars %}
+integer -> digit:+      {% ([chars]) => parseInt(chars.join(''), 10) %}
 word -> [^\n \(]:+      {% toDebug('WORD') || concatChars %}
 
 words -> nonemptyListOf[word, whitespaceChar:+] {% toDebug('WORDS') || function ([a]) { return extractFirst(a).join(' ') } %}
@@ -397,7 +397,7 @@ pixelDigit ->
 legendShortcutChar -> [^\n ] {% id %}
 
 # Support at least 5x5 sprites (so we can disambiguate from single-color definitions)
-PixelRows -> pixelRow pixelRow pixelRow pixelRow pixelRow:+
+PixelRows -> pixelRow pixelRow pixelRow pixelRow pixelRow:+     {% ([r1, r2, r3, r4, rest]) => [r1, r2, r3, r4].concat(rest) %}
 
 
 LegendTile ->
@@ -420,44 +420,44 @@ LookupLegendVarName -> LegendVarNameDefn {% toDebug('LookupLegendVarName') || id
 
 # TODO: Handle tokens like sfx0 and explicit args instead of just varName (like "Player CantMove up")
 # all of them are at https:#www.puzzlescript.net/Documentation/sounds.html
-SoundItem -> _ SoundItemInner lineTerminator:+
+SoundItem -> _ SoundItemInner lineTerminator:+      {% ([_0, sound, _2]) => sound %}
 
 SoundItemInner ->
-      SoundItemEnum
-    | SoundItemSfx
-    | SoundItemMoveDirection
-    | SoundItemMoveSimple
-    | SoundItemNormal
+      SoundItemEnum             {% id %}
+    | SoundItemSfx              {% id %}
+    | SoundItemMoveDirection    {% id %}
+    | SoundItemMoveSimple       {% id %}
+    | SoundItemNormal           {% id %}
 
 soundItemSimpleOptions ->
-      t_RESTART
-    | t_UNDO
-    | t_TITLESCREEN
-    | t_STARTGAME
-    | t_STARTLEVEL
-    | t_ENDLEVEL
-    | t_ENDGAME
-    | t_SHOWMESSAGE
-    | t_CLOSEMESSAGE
+      t_RESTART         {% id %}
+    | t_UNDO            {% id %}
+    | t_TITLESCREEN     {% id %}
+    | t_STARTGAME       {% id %}
+    | t_STARTLEVEL      {% id %}
+    | t_ENDLEVEL        {% id %}
+    | t_ENDGAME         {% id %}
+    | t_SHOWMESSAGE     {% id %}
+    | t_CLOSEMESSAGE    {% id %}
 
-SoundItemEnum -> soundItemSimpleOptions __ integer
-SoundItemSfx -> t_SFX __ integer
-SoundItemMoveDirection -> lookupRuleVariableName __ t_MOVE __ soundItemActionMoveArg __ integer
-SoundItemMoveSimple -> lookupRuleVariableName __ t_MOVE __ integer
-SoundItemNormal -> lookupRuleVariableName __ SoundItemAction __ integer
+SoundItemEnum -> soundItemSimpleOptions __ integer      {% ([soundEnum, _1, soundCode]) => { return {type: 'SOUND_ENUM', soundEnum, soundCode} } %}
+SoundItemSfx -> t_SFX __ integer                        {% ([soundSfx, _1, soundCode]) => { return {type: 'SOUND_SFX', soundSfx, soundCode} } %}
+SoundItemMoveDirection -> lookupRuleVariableName __ t_MOVE __ soundItemActionMoveArg __ integer     {% ([spriteName, _1, _2, _3, direction, _5, soundCode]) => { return {type: 'SOUND_MOVE_DIRECTION', spriteName, direction, soundCode} } %}
+SoundItemMoveSimple -> lookupRuleVariableName __ t_MOVE __ integer  {% ([spriteName, _1, _2, _3, soundCode]) => { return {type: 'SOUND_MOVE_SIMPLE', spriteName, soundCode} } %}
+SoundItemNormal -> lookupRuleVariableName __ SoundItemAction __ integer     {% ([spriteName, _1, eventEnum, _3, soundCode]) => { return {type: 'SOUND_SPRITE_EVENT', spriteName, eventEnum, soundCode} } %}
 
 SoundItemAction ->
-      t_CREATE
-    | t_DESTROY
-    | t_CANTMOVE
+      t_CREATE      {% id %}
+    | t_DESTROY     {% id %}
+    | t_CANTMOVE    {% id %}
 
 soundItemActionMoveArg ->
-      t_UP
-    | t_DOWN
-    | t_LEFT
-    | t_RIGHT
-    | t_HORIZONTAL
-    | t_VERTICAL
+      t_UP          {% id %}
+    | t_DOWN        {% id %}
+    | t_LEFT        {% id %}
+    | t_RIGHT       {% id %}
+    | t_HORIZONTAL  {% id %}
+    | t_VERTICAL    {% id %}
 
 # collision layers are separated by a space or a comma (and some games and with a comma)
 CollisionLayerItem -> _ nonemptyListOf[lookupCollisionVariableName, (_ "," _ | __)] ",":? lineTerminator:+      {% toDebug('CollisionLayerItem') || function ([_0, spriteNames, _2]) { return extractFirst(spriteNames) } %}
@@ -552,7 +552,7 @@ RuleCommand ->
     | t_CHECKPOINT  {% () => { return {type: 'RULE_COMMAND_CHECKPOINT'} } %}
     | t_RESTART     {% () => { return {type: 'RULE_COMMAND_RESTART'} } %}
     | t_WIN         {% () => { return {type: 'RULE_COMMAND_WIN'} } %}
-    | t_SFX         {% ([a]) => { return {type: 'RULE_COMMAND_SFX', value: a[0][0]} } %}
+    | t_SFX         {% ([a]) => { return {type: 'RULE_COMMAND_SFX', value: a} } %}
 
 MessageCommand -> t_MESSAGE messageLine {% ([_1, message]) => { return {type:'MESSAGE_COMAMND', message} } %}
 
