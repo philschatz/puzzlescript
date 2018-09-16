@@ -28,6 +28,13 @@ const extractFirst = (ary) => ary.map(subArray => {
         return subArray[0]
     }
 })
+const extractSecond = (ary) => ary.map(subArray => {
+    if (subArray.length < 2) {
+        throw new Error(`BUG: Expected items to have at least 2 elements (usually used in listOf[...])`)
+    } else {
+        return subArray[1]
+    }
+})
 const extractThird = (ary) => ary.map(subArray => {
     if (subArray.length < 3) {
         throw new Error(`BUG: Expected items to have at least 3 elements (usually used in listOf[...])`)
@@ -457,27 +464,35 @@ CollisionLayerItem -> _ nonemptyListOf[lookupCollisionVariableName, (_ "," _ | _
 
 
 RuleItem ->
-      RuleLoop
-    | RuleGroup # Do this before Rule because we need to look for a "+" on the following Rule
+      RuleLoop  {% id %}
+    | RuleGroup {% id %}
 
 Rule ->
-      RuleWithoutMessage
-    | RuleWithMessage
+      RuleWithoutMessage    {% id %}
+    | RuleWithMessage       {% id %}
 
-RuleWithoutMessage -> _ nonemptyListOf[LeftModifiers RuleBracket, _] _ "->" ((_ RuleModifier):? _ RuleBracket):* (_ RuleCommand):* lineTerminator:+
-RuleWithMessage ->    _ nonemptyListOf[LeftModifiers RuleBracket, _] _ "->" ((_ RuleModifier):? _ RuleBracket):* (_ RuleCommand):* _ MessageCommand lineTerminator:*
+RuleWithoutMessage -> _ nonemptyListOf[ConditionBracket, _] _ "->" (ActionBracket):* (_ RuleCommand):* lineTerminator:+                     {% toDebug('RuleWithoutMessage') || function([_0, conditionBrackets, _2, _3, actionBrackets, commands, _6])                 { return {type: 'RULE', conditions: extractFirst(conditionBrackets), actions: extractFirst(actionBrackets), commands: extractSecond(commands)} } %}
+RuleWithMessage ->    _ nonemptyListOf[ConditionBracket, _] _ "->" (ActionBracket):* (_ RuleCommand):* _ MessageCommand lineTerminator:*    {% toDebug('RuleWithoutMessage') || function([_0, conditionBrackets, _2, _3, actionBrackets, commands, _6, message, _7])    { return {type: 'RULE', conditions: extractFirst(conditionBrackets), actions: extractFirst(actionBrackets), commands: extractSecond(commands), message} } %}
+
+ConditionBracket ->
+      LeftModifiers NormalRuleBracket    {% ([modifiers, {neighbors, againHack, debugFlag}]) => { return {type:'CONDITION_BRACKET', modifiers, neighbors, againHack, debugFlag} } %}
+    | LeftModifiers EllipsisRuleBracket  {% ([modifiers, {beforeNeighbors, afterNeighbors, debugFlag}]) => { return {type:'CONDITION_ELLIPSIS_BRACKET', modifiers, beforeNeighbors, afterNeighbors, debugFlag} } %}
+
+ActionBracket ->
+      (_ RuleModifier):* _ NormalRuleBracket    {% ([modifiers, _1, {neighbors, againHack, debugFlag}]) => { return {type:'ACTION_BRACKET', modifiers: extractSecond(modifiers), neighbors, againHack, debugFlag} } %}
+    | (_ RuleModifier):* _ EllipsisRuleBracket  {% ([modifiers, _1, {beforeNeighbors, afterNeighbors, debugFlag}]) => { return {type:'ACTION_ELLIPSIS_BRACKET', modifiers: extractSecond(modifiers), beforeNeighbors, afterNeighbors, debugFlag} } %}
 
 LeftModifiers ->
-      nonemptyListOf[RuleModifierLeft, __] _
-    | null
+      nonemptyListOf[RuleModifierLeft, __] _    {% ([a]) => extractFirst(a) %}
+    | null                                      {% () => [] /* No modifiers */ %}
 
 RuleBracket ->
       EllipsisRuleBracket {% id %}
     | NormalRuleBracket   {% id %}
 
 # t_AGAIN is a HACK. It should be in the list of commands but it's not.
-NormalRuleBracket -> "[" nonemptyListOf[RuleBracketNeighbor, "|"] (t_AGAIN _):? "]" (_ t_DEBUGGER):?                                                        {% toDebug('NormalRuleBracket') || function([_0, neighbors, againHack, _3, debugFlag]) { return {type: 'BRACKET', neighbors: extractFirst(neighbors), againHack: againHack ? true : false, debugFlag: debugFlag ? debugFlag[1] : null } } %}
-EllipsisRuleBracket -> "[" nonemptyListOf[RuleBracketNeighbor, "|"] "|" _ t_ELLIPSIS _ "|" nonemptyListOf[RuleBracketNeighbor, "|"] "]" (_ t_DEBUGGER):?    {% toDebug('EllipsisRuleBracket') || function([_0, beforeNeighbors, _2, _3, _4, _5, _6, afterNeighbors, _8, debugFlag]) { return {type: 'ELLIPSIS_BRACKET', beforeNeighbors: extractFirst(beforeNeighbors), afterNeighbors: extractFirst(afterNeighbors), debugFlag: debugFlag ? debugFlag[1] : null } } %}
+NormalRuleBracket -> "[" nonemptyListOf[RuleBracketNeighbor, "|"] (t_AGAIN _):? "]" (_ t_DEBUGGER):?                                                        {% toDebug('NormalRuleBracket') || function([_0, neighbors, againHack, _3, debugFlag]) { return {type: '_INNER_BRACKET', neighbors: extractFirst(neighbors), againHack: againHack ? true : false, debugFlag: debugFlag ? debugFlag[1] : null } } %}
+EllipsisRuleBracket -> "[" nonemptyListOf[RuleBracketNeighbor, "|"] "|" _ t_ELLIPSIS _ "|" nonemptyListOf[RuleBracketNeighbor, "|"] "]" (_ t_DEBUGGER):?    {% toDebug('EllipsisRuleBracket') || function([_0, beforeNeighbors, _2, _3, _4, _5, _6, afterNeighbors, _8, debugFlag]) { return {type: '_INNER_ELLIPSIS_BRACKET', beforeNeighbors: extractFirst(beforeNeighbors), afterNeighbors: extractFirst(afterNeighbors), debugFlag: debugFlag ? debugFlag[1] : null } } %}
 
 RuleBracketNeighbor ->
     #   HackTileNameIsSFX1 # to parse '... -> [ SFX1 ]' (they should be commands)
@@ -494,52 +509,52 @@ RuleBracketEmptyNeighbor -> _       {% toDebug('RuleBracketEmptyNeighbor') || fu
 # Force-check that there is whitespace after the cellLayerModifier so things
 # like "STATIONARYZ" or "NOZ" are not parsed as a modifier
 # (they are a variable that happens to begin with the same text as a modifier)
-TileWithModifier -> (tileModifier __):? lookupRuleVariableName  {% toDebug('TileWithModifier') || function([modifier, tileName]) { return {type: 'TILE_WITH_MODIFIER', modifier: modifier ? modifier[0][0] : null, tileName} } %}
+TileWithModifier -> (tileModifier __):? lookupRuleVariableName  {% toDebug('TileWithModifier') || function([modifier, tileName]) { return {type: 'TILE_WITH_MODIFIER', modifier: modifier ? modifier[0] : null, tileName} } %}
 
 # tileModifier -> tileModifierInner {% debugRule('TILEMODIFIER') %}
 
 tileModifier ->
-      t_NO
-    | t_LEFT
-    | t_RIGHT
-    | t_UP
-    | t_DOWN
-    | t_RANDOMDIR
-    | t_RANDOM
-    | t_STATIONARY
-    | t_MOVING
-    | t_ACTION
-    | t_VERTICAL
-    | t_HORIZONTAL
-    | t_PERPENDICULAR
-    | t_PARALLEL
-    | t_ORTHOGONAL
-    | t_ARROW_ANY # NOTE: This can be a "v"
+      t_NO              {% id %}
+    | t_LEFT            {% id %}
+    | t_RIGHT           {% id %}
+    | t_UP              {% id %}
+    | t_DOWN            {% id %}
+    | t_RANDOMDIR       {% id %}
+    | t_RANDOM          {% id %}
+    | t_STATIONARY      {% id %}
+    | t_MOVING          {% id %}
+    | t_ACTION          {% id %}
+    | t_VERTICAL        {% id %}
+    | t_HORIZONTAL      {% id %}
+    | t_PERPENDICULAR   {% id %}
+    | t_PARALLEL        {% id %}
+    | t_ORTHOGONAL      {% id %}
+    | t_ARROW_ANY       {% id %} # NOTE: This can be a "v"
 
 RuleModifier ->
-      t_RANDOM
-    | t_UP
-    | t_DOWN
-    | t_LEFT
-    | t_RIGHT
-    | t_VERTICAL
-    | t_HORIZONTAL
-    | t_ORTHOGONAL
+      t_RANDOM      {% id %}
+    | t_UP          {% id %}
+    | t_DOWN        {% id %}
+    | t_LEFT        {% id %}
+    | t_RIGHT       {% id %}
+    | t_VERTICAL    {% id %}
+    | t_HORIZONTAL  {% id %}
+    | t_ORTHOGONAL  {% id %}
 
 RuleModifierLeft ->
-      RuleModifier # Sometimes people write "RIGHT LATE [..." instead of "LATE RIGHT [..."
-    | t_LATE
-    | t_RIGID
+      RuleModifier  {% id %} # Sometimes people write "RIGHT LATE [..." instead of "LATE RIGHT [..."
+    | t_LATE        {% id %}
+    | t_RIGID       {% id %}
 
 RuleCommand ->
-      t_AGAIN
+      t_AGAIN       {% () => { return {type: 'RULE_COMMAND_AGAIN'} } %}
     | t_CANCEL      {% () => { return {type: 'RULE_COMMAND_CANCEL'} } %}
-    | t_CHECKPOINT
-    | t_RESTART
-    | t_WIN
+    | t_CHECKPOINT  {% () => { return {type: 'RULE_COMMAND_CHECKPOINT'} } %}
+    | t_RESTART     {% () => { return {type: 'RULE_COMMAND_RESTART'} } %}
+    | t_WIN         {% () => { return {type: 'RULE_COMMAND_WIN'} } %}
     | t_SFX         {% ([a]) => { return {type: 'RULE_COMMAND_SFX', value: a[0][0]} } %}
 
-MessageCommand -> t_MESSAGE messageLine {% ([_1, _2, message]) => { return {type:'MESSAGE_COMAMND_WORDS', message} } %}
+MessageCommand -> t_MESSAGE messageLine {% ([_1, message]) => { return {type:'MESSAGE_COMAMND', message} } %}
 
 RuleLoop ->
     _
@@ -550,7 +565,7 @@ RuleLoop ->
 
 RuleGroup ->
     Rule
-    (_ t_GROUP_RULE_PLUS Rule):* {% ([firstRule, otherRules]) => { return {type:'RULE_GROUP', firstRule: firstRule, otherRules: extractThird(otherRules)} } %}
+    (_ t_GROUP_RULE_PLUS Rule):* {% ([firstRule, otherRules]) => { return {type:'RULE_GROUP', rules: [firstRule].concat(extractThird(otherRules))} } %}
 
 # HackTileNameIsSFX1 -> t_SFX __ t_DEBUGGER:?
 # HackTileNameIsSFX2 -> lookupRuleVariableName __ t_SFX __ t_DEBUGGER:?
