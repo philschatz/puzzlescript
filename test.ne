@@ -1,9 +1,27 @@
 @{%
 
-const toDebug = (name) => {
-    if (process.env.NODE_ENV == 'debug') {
-        return (args) => {
-            return {type: name, args: args}
+const debugBlackList = new Set([])
+const debugWhiteList = new Set(['Section'])
+
+const toDebug = (name, keys) => {
+    if (process.env.NODE_ENV == 'debug' || debugWhiteList.has(name)) {
+        // Skip debug mode for any items on the blacklist
+        if (debugBlackList.has(name)) {
+            return null
+        }
+        if (keys) {
+            // Only show the keys relevant for debugging
+            return (args) => {
+                const ret = {type: name}
+                for (const index of Object.keys(keys)) {
+                    ret[keys[index]] = args[index]
+                }
+                return ret
+            }
+        } else {
+            return (args) => {
+                return {type: name, args: args}
+            }
         }
     } else {
         return null // use the non-debug function
@@ -13,6 +31,7 @@ const toDebug = (name) => {
 const nuller = (a) => null
 const debugRule = (msg) => (a) => { debugger; console.log(msg, a); return a }
 const concatChars = ([a]) => a.join('')
+const concatCharsWithSpace = ([a]) => a.join(' ')
 
 const TILE_MODIFIERS = new Set([
     '...', // This one isn't a modifier but we do not allow it so that we match ellipsis rules in a different rule
@@ -44,10 +63,10 @@ const TILE_MODIFIERS = new Set([
 # @lexer lexer
 # @builtin "whitespace.ne"
 
-NonemptyListOf[Child, Separator] -> $Child (_ $Separator _ $Child):*  {% ([a, b]) => { return a.concat(b.map(([whitespace1, separator, whitespace2, child]) => child)) } %}
-AtLeast2ListOf[Child, Separator] -> $Child (_ $Separator _ $Child):+  {% ([a, b]) => { return a.concat(b.map(([whitespace1, separator, whitespace2, child]) => child)) } %}
-atLeast2ListOf[Child, Separator] -> $Child ($Separator $Child):+      {% ([a, b]) => { return a.concat(b.map(([separator, child]) => child)) } %}
-nonemptyListOf[Child, Separator] -> $Child ($Separator $Child):*      {% ([a, b]) => { return a.concat(b.map(([separator, child]) => child)) } %}
+NonemptyListOf[Child, Separator] -> $Child (_ $Separator _ $Child):*  {% toDebug('NonemptyListOf') || function ([a, b]) { return a.concat(b.map(([whitespace1, separator, whitespace2, child]) => child)) } %}
+AtLeast2ListOf[Child, Separator] -> $Child (_ $Separator _ $Child):+  {% toDebug('AtLeast2ListOf') || function ([a, b]) { return a.concat(b.map(([whitespace1, separator, whitespace2, child]) => child)) } %}
+atLeast2ListOf[Child, Separator] -> $Child ($Separator $Child):+      {% toDebug('atLeast2ListOf') || function ([a, b]) { return a.concat(b.map(([separator, child]) => child)) } %}
+nonemptyListOf[Child, Separator] -> $Child ($Separator $Child):*      {% toDebug('nonemptyListOf') || function ([a, b]) { return a.concat(b.map(([separator, child]) => { if (child.length !== 1) {throw new Error(`BUG: Expected only 1 child`)} return child[0]})) } %}
 
 ListOf[Child, Separator] -> NonemptyListOf[$Child, $Separator]:?
 listOf[Child, Separator] -> nonemptyListOf[$Child, $Separator]:?
@@ -59,7 +78,7 @@ Section[Name, ItemExpr] ->
     _ "=":+ lineTerminator
     _ $Name lineTerminator
     _ "=":+ lineTerminator:+
-    ($ItemExpr):*         # {% ([_0, _1, _2, name, _3, _4, _5, items]) => { return { type: 'SECTION', name: name[0][0], items: items } } %}
+    ($ItemExpr):*           {% toDebug('Section', {4: 'name', 9: 'items'}) || function ([_0, _1, _2, _3, name, _5, _6, _7, _8, items]) { return items } %}
 
 # Levels start with multiple linebreaks to handle end-of-file case when we don't have 2 linefeeds
 # So we need to remove linefeeds from the section to remove ambiguity
@@ -67,7 +86,7 @@ SectionSingleTerminator[Name, ItemExpr] ->
     _ "=":+ lineTerminator
     _ $Name lineTerminator
     _ "=":+ lineTerminator
-    ($ItemExpr):*         # {% ([_0, _1, _2, name, _4, _5, _6, items]) => { return { type: 'SECTION', name: name[0][0], items: items } } %}
+    ($ItemExpr):*           {% toDebug('Section', {4: 'name', 9: 'items'}) || function ([_0, _1, _2, _3, name, _5, _6, _7, _8, items]) { return items } %}
 
 
 main ->
@@ -83,10 +102,10 @@ main ->
     SectionSingleTerminator[t_LEVELS, LevelItem]:?
 
 
-_ -> ( whitespaceChar | multiLineComment ):* {% nuller %}
-__ -> ( whitespaceChar | multiLineComment ):+ {% nuller %}
+_ -> ( whitespaceChar | multiLineComment ):* {% toDebug('whitespace') || nuller %}
+__ -> ( whitespaceChar | multiLineComment ):+ {% toDebug('whitespace') || nuller %}
 
-multiLineComment -> "(" textOrComment:* ")" {% nuller %}
+multiLineComment -> "(" textOrComment:* ")" {% toDebug('multiLineComment') || nuller %}
 textOrComment ->
       multiLineComment
     | [^\(\)]
@@ -101,9 +120,9 @@ letter -> [^\n \(\)]    {% id %}
 integer -> digit:+      {% concatChars %}
 word -> [^\n \(]:+      {% toDebug('WORD') || concatChars %}
 
-words -> NonemptyListOf[word, whitespaceChar:+] {% toDebug('WORDS') || function ([a]) { return {type: 'WORDS', words: a} } %}
+words -> nonemptyListOf[word, whitespaceChar:+] {% toDebug('WORDS') || concatCharsWithSpace %}
 
-lineTerminator -> _ newline {% ([a, _2]) => { return {type: 'LINE_TERMINATOR', space: a} } %}
+lineTerminator -> _ newline {% toDebug('lineTerminator') || nuller %}
 sourceCharacter -> [^\n ]
 
 nonVarChar -> whitespaceChar | newline | "[" | "]" | "(" | ")" | "|" | "."
@@ -124,7 +143,7 @@ colorNameOrHex ->
     | colorName
 # Exclude `#` to ensure it does not conflict with the hex colors
 # Exclude 0-9 because those are pixel colors
-colorName -> [^\n #\(0-9\.] word {% (a) => { return {type:'COLOR_NAME', value: a}} %}
+colorName -> [^\n #\(0-9\.] word {% toDebug('COLOR_NAME') || function (a) { return {type:'COLOR_NAME', value: a}} %}
 
 
 # ----------------
