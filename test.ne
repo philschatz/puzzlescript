@@ -1,27 +1,17 @@
 @{%
 
 const debugBlackList = new Set([])
-const debugWhiteList = new Set(['Section'])
+const debugWhiteList = new Set(['word', '', 'Section'])
 
-const toDebug = (name, keys) => {
+const toDebug = (name, fn) => {
     if (process.env.NODE_ENV == 'debug' || debugWhiteList.has(name)) {
         // Skip debug mode for any items on the blacklist
         if (debugBlackList.has(name)) {
             return null
         }
-        if (keys) {
-            // Only show the keys relevant for debugging
-            return (args) => {
-                const ret = {type: name}
-                for (const index of Object.keys(keys)) {
-                    ret[keys[index]] = args[index]
-                }
-                return ret
-            }
-        } else {
-            return (args) => {
-                return {type: name, args: args}
-            }
+        // return either the custom function provided, or the default one for debugging
+        return fn || function (args) {
+            return {type: name, args: args}
         }
     } else {
         return null // use the non-debug function
@@ -31,7 +21,13 @@ const toDebug = (name, keys) => {
 const nuller = (a) => null
 const debugRule = (msg) => (a) => { debugger; console.log(msg, a); return a }
 const concatChars = ([a]) => a.join('')
-const concatCharsWithSpace = ([a]) => a.join(' ')
+const extractFirst = (ary) => ary.map(subArray => {
+    if (subArray.length !== 1) {
+        throw new Error(`BUG: Expected items to only have one element (usually used in listOf[...])`)
+    } else {
+        return subArray[0]
+    }
+})
 
 const TILE_MODIFIERS = new Set([
     '...', // This one isn't a modifier but we do not allow it so that we match ellipsis rules in a different rule
@@ -63,10 +59,10 @@ const TILE_MODIFIERS = new Set([
 # @lexer lexer
 # @builtin "whitespace.ne"
 
-NonemptyListOf[Child, Separator] -> $Child (_ $Separator _ $Child):*  {% toDebug('NonemptyListOf') || function ([a, b]) { return a.concat(b.map(([whitespace1, separator, whitespace2, child]) => child)) } %}
-AtLeast2ListOf[Child, Separator] -> $Child (_ $Separator _ $Child):+  {% toDebug('AtLeast2ListOf') || function ([a, b]) { return a.concat(b.map(([whitespace1, separator, whitespace2, child]) => child)) } %}
-atLeast2ListOf[Child, Separator] -> $Child ($Separator $Child):+      {% toDebug('atLeast2ListOf') || function ([a, b]) { return a.concat(b.map(([separator, child]) => child)) } %}
-nonemptyListOf[Child, Separator] -> $Child ($Separator $Child):*      {% toDebug('nonemptyListOf') || function ([a, b]) { return a.concat(b.map(([separator, child]) => { if (child.length !== 1) {throw new Error(`BUG: Expected only 1 child`)} return child[0]})) } %}
+NonemptyListOf[Child, Separator] -> $Child (_ $Separator _ $Child):*  {% toDebug('NonemptyListOf') || function ([first, rest]) { return [first].concat(rest.map(([whitespace1, separator, whitespace2, child]) => child)) } %}
+AtLeast2ListOf[Child, Separator] -> $Child (_ $Separator _ $Child):+  {% toDebug('AtLeast2ListOf') || function ([first, rest]) { return [first].concat(rest.map(([whitespace1, separator, whitespace2, child]) => child)) } %}
+atLeast2ListOf[Child, Separator] -> $Child ($Separator $Child):+      {% toDebug('atLeast2ListOf') || function ([first, rest]) { return [first].concat(rest.map(([separator, child]) => child ) ) } %}
+nonemptyListOf[Child, Separator] -> $Child ($Separator $Child):*      {% toDebug('nonemptyListOf') || function ([first, rest]) { return [first].concat(rest.map(([separator, child]) => child ) ) } %}
 
 ListOf[Child, Separator] -> NonemptyListOf[$Child, $Separator]:?
 listOf[Child, Separator] -> nonemptyListOf[$Child, $Separator]:?
@@ -78,7 +74,7 @@ Section[Name, ItemExpr] ->
     _ "=":+ lineTerminator
     _ $Name lineTerminator
     _ "=":+ lineTerminator:+
-    ($ItemExpr):*           {% toDebug('Section', {4: 'name', 9: 'items'}) || function ([_0, _1, _2, _3, name, _5, _6, _7, _8, items]) { return items } %}
+    ($ItemExpr):*           {% toDebug('Section', function ([_0, _1, _2, _3, name, _5, _6, _7, _8, items]) { return {type: 'SECTION', name: name, items: extractFirst(extractFirst(items)) } }) %}
 
 # Levels start with multiple linebreaks to handle end-of-file case when we don't have 2 linefeeds
 # So we need to remove linefeeds from the section to remove ambiguity
@@ -86,7 +82,7 @@ SectionSingleTerminator[Name, ItemExpr] ->
     _ "=":+ lineTerminator
     _ $Name lineTerminator
     _ "=":+ lineTerminator
-    ($ItemExpr):*           {% toDebug('Section', {4: 'name', 9: 'items'}) || function ([_0, _1, _2, _3, name, _5, _6, _7, _8, items]) { return items } %}
+    ($ItemExpr):*           {% toDebug('Section', function ([_0, _1, _2, _3, name, _5, _6, _7, _8, items]) { return {type: 'SECTION', name: name, items: extractFirst(extractFirst(items)) } }) %}
 
 
 main ->
@@ -120,7 +116,7 @@ letter -> [^\n \(\)]    {% id %}
 integer -> digit:+      {% concatChars %}
 word -> [^\n \(]:+      {% toDebug('WORD') || concatChars %}
 
-words -> nonemptyListOf[word, whitespaceChar:+] {% toDebug('WORDS') || concatCharsWithSpace %}
+words -> nonemptyListOf[word, whitespaceChar:+] {% toDebug('WORDS') || function ([a]) { return extractFirst(a).join(' ') } %}
 
 lineTerminator -> _ newline {% toDebug('lineTerminator') || nuller %}
 sourceCharacter -> [^\n ]
@@ -180,144 +176,143 @@ lookupCollisionVariableName -> collisionVariableName
 
 
 # special flag that can appear before rules so the debugger pauses before the rule is evaluated
-t_DEBUGGER
-    -> t_DEBUGGER_ADD
-    | t_DEBUGGER_REMOVE
-    | t_DEBUGGER_DEFAULT
-t_DEBUGGER_DEFAULT -> "DEBUGGER"i
-t_DEBUGGER_ADD -> "DEBUGGER_ADD"i
-t_DEBUGGER_REMOVE -> "DEBUGGER_REMOVE"i
+t_DEBUGGER ->
+      t_DEBUGGER_ADD {% id %}
+    | t_DEBUGGER_REMOVE {% id %}
+    | t_DEBUGGER_DEFAULT {% id %}
+t_DEBUGGER_DEFAULT -> "DEBUGGER"i {% id %}
+t_DEBUGGER_ADD -> "DEBUGGER_ADD"i {% id %}
+t_DEBUGGER_REMOVE -> "DEBUGGER_REMOVE"i {% id %}
 
 
 # Section titles
-t_OBJECTS -> "OBJECTS"i
-t_LEGEND -> "LEGEND"i
-t_SOUNDS -> "SOUNDS"i
-t_COLLISIONLAYERS -> "COLLISIONLAYERS"i
-t_RULES -> "RULES"i
-t_WINCONDITIONS -> "WINCONDITIONS"i
-t_LEVELS -> "LEVELS"i
+t_OBJECTS -> "OBJECTS"i {% id %}
+t_LEGEND -> "LEGEND"i {% id %}
+t_SOUNDS -> "SOUNDS"i {% id %}
+t_COLLISIONLAYERS -> "COLLISIONLAYERS"i {% id %}
+t_RULES -> "RULES"i {% id %}
+t_WINCONDITIONS -> "WINCONDITIONS"i {% id %}
+t_LEVELS -> "LEVELS"i {% id %}
 
 # Modifier tokens
-t_RIGID -> "RIGID"i
-t_LATE -> "LATE"i
-t_RANDOM -> "RANDOM"i
-t_RANDOMDIR -> "RANDOMDIR"i
-t_ACTION -> "ACTION"i
-t_STARTLOOP -> "STARTLOOP"i
-t_ENDLOOP -> "ENDLOOP"i
+t_RIGID -> "RIGID"i {% id %}
+t_LATE -> "LATE"i {% id %}
+t_RANDOM -> "RANDOM"i {% id %}
+t_RANDOMDIR -> "RANDOMDIR"i {% id %}
+t_ACTION -> "ACTION"i {% id %}
+t_STARTLOOP -> "STARTLOOP"i {% id %}
+t_ENDLOOP -> "ENDLOOP"i {% id %}
 
 # Movement tokens
-t_UP -> "UP"i
-t_DOWN -> "DOWN"i
-t_LEFT -> "LEFT"i
-t_RIGHT -> "RIGHT"i
-t_ARROW_UP -> "^"
-t_ARROW_DOWN -> "V"i
-t_ARROW_LEFT -> "<"
-t_ARROW_RIGHT -> ">"
-t_MOVING -> "MOVING"i
-t_ORTHOGONAL -> "ORTHOGONAL"i
-t_PERPENDICULAR -> "PERPENDICULAR"i
-t_PARALLEL -> "PARALLEL"i
-t_STATIONARY -> "STATIONARY"i
-t_HORIZONTAL -> "HORIZONTAL"i
-t_VERTICAL -> "VERTICAL"i
+t_UP -> "UP"i {% id %}
+t_DOWN -> "DOWN"i {% id %}
+t_LEFT -> "LEFT"i {% id %}
+t_RIGHT -> "RIGHT"i {% id %}
+t_ARROW_UP -> "^"i {% id %}
+t_ARROW_DOWN -> "V"i {% id %}
+t_ARROW_LEFT -> "<"i {% id %}
+t_ARROW_RIGHT -> ">"i {% id %}
+t_MOVING -> "MOVING"i {% id %}
+t_ORTHOGONAL -> "ORTHOGONAL"i {% id %}
+t_PERPENDICULAR -> "PERPENDICULAR"i {% id %}
+t_PARALLEL -> "PARALLEL"i {% id %}
+t_STATIONARY -> "STATIONARY"i {% id %}
+t_HORIZONTAL -> "HORIZONTAL"i {% id %}
+t_VERTICAL -> "VERTICAL"i {% id %}
 
-t_ARROW_ANY
-    -> t_ARROW_UP
-    | t_ARROW_DOWN # Because of this, "v" can never be an Object or Legend variable. TODO: Ensure "v" is never an Object or Legend variable
-    | t_ARROW_LEFT
-    | t_ARROW_RIGHT
+t_ARROW_ANY -> t_ARROW_UP {% id %}
+    | t_ARROW_DOWN {% id %} # Because of this, "v" can never be an Object or Legend variable. TODO: Ensure "v" is never an Object or Legend variable
+    | t_ARROW_LEFT {% id %}
+    | t_ARROW_RIGHT {% id %}
 
 # Command tokens
-t_AGAIN -> "AGAIN"i
-t_CANCEL -> "CANCEL"i
-t_CHECKPOINT -> "CHECKPOINT"i
-t_RESTART -> "RESTART"i
-t_UNDO -> "UNDO"i
-t_WIN -> "WIN"i
-t_MESSAGE -> "MESSAGE"i
+t_AGAIN -> "AGAIN"i {% id %}
+t_CANCEL -> "CANCEL"i {% id %}
+t_CHECKPOINT -> "CHECKPOINT"i {% id %}
+t_RESTART -> "RESTART"i {% id %}
+t_UNDO -> "UNDO"i {% id %}
+t_WIN -> "WIN"i {% id %}
+t_MESSAGE -> "MESSAGE"i {% id %}
 
-t_ELLIPSIS -> "..."
+t_ELLIPSIS -> "..."i {% id %}
 
 # LEGEND tokens
-t_AND -> "AND"i
-t_OR -> "OR"i
+t_AND -> "AND"i {% id %}
+t_OR -> "OR"i {% id %}
 
 # SOUND tokens
-t_SFX0 -> "SFX0"i
-t_SFX1 -> "SFX1"i
-t_SFX2 -> "SFX2"i
-t_SFX3 -> "SFX3"i
-t_SFX4 -> "SFX4"i
-t_SFX5 -> "SFX5"i
-t_SFX6 -> "SFX6"i
-t_SFX7 -> "SFX7"i
-t_SFX8 -> "SFX8"i
-t_SFX9 -> "SFX9"i
-t_SFX10 -> "SFX10"i
+t_SFX0 -> "SFX0"i {% id %}
+t_SFX1 -> "SFX1"i {% id %}
+t_SFX2 -> "SFX2"i {% id %}
+t_SFX3 -> "SFX3"i {% id %}
+t_SFX4 -> "SFX4"i {% id %}
+t_SFX5 -> "SFX5"i {% id %}
+t_SFX6 -> "SFX6"i {% id %}
+t_SFX7 -> "SFX7"i {% id %}
+t_SFX8 -> "SFX8"i {% id %}
+t_SFX9 -> "SFX9"i {% id %}
+t_SFX10 -> "SFX10"i {% id %}
 t_SFX ->
-      t_SFX10 # needs to go 1st because of t_SFX1
-    | t_SFX0
-    | t_SFX1
-    | t_SFX2
-    | t_SFX3
-    | t_SFX4
-    | t_SFX5
-    | t_SFX6
-    | t_SFX7
-    | t_SFX8
-    | t_SFX9
+      t_SFX10 {% id %} # needs to go 1st because of t_SFX1
+    | t_SFX0 {% id %}
+    | t_SFX1 {% id %}
+    | t_SFX2 {% id %}
+    | t_SFX3 {% id %}
+    | t_SFX4 {% id %}
+    | t_SFX5 {% id %}
+    | t_SFX6 {% id %}
+    | t_SFX7 {% id %}
+    | t_SFX8 {% id %}
+    | t_SFX9 {% id %}
 
 # METADATA Tokens
-t_TITLE -> "TITLE"i
-t_AUTHOR -> "AUTHOR"i
-t_HOMEPAGE -> "HOMEPAGE"i
-t_YOUTUBE -> "YOUTUBE"i
-t_ZOOMSCREEN -> "ZOOMSCREEN"i
-t_FLICKSCREEN -> "FLICKSCREEN"i
-t_REQUIRE_PLAYER_MOVEMENT -> "REQUIRE_PLAYER_MOVEMENT"i
-t_RUN_RULES_ON_LEVEL_START -> "RUN_RULES_ON_LEVEL_START"i
-t_COLOR_PALETTE -> "COLOR_PALETTE"i
-t_BACKGROUND_COLOR -> "BACKGROUND_COLOR"i
-t_TEXT_COLOR -> "TEXT_COLOR"i
-t_REALTIME_INTERVAL -> "REALTIME_INTERVAL"i
-t_KEY_REPEAT_INTERVAL -> "KEY_REPEAT_INTERVAL"i
-t_AGAIN_INTERVAL -> "AGAIN_INTERVAL"i
+t_TITLE -> "TITLE"i {% id %}
+t_AUTHOR -> "AUTHOR"i {% id %}
+t_HOMEPAGE -> "HOMEPAGE"i {% id %}
+t_YOUTUBE -> "YOUTUBE"i {% id %}
+t_ZOOMSCREEN -> "ZOOMSCREEN"i {% id %}
+t_FLICKSCREEN -> "FLICKSCREEN"i {% id %}
+t_REQUIRE_PLAYER_MOVEMENT -> "REQUIRE_PLAYER_MOVEMENT"i {% id %}
+t_RUN_RULES_ON_LEVEL_START -> "RUN_RULES_ON_LEVEL_START"i {% id %}
+t_COLOR_PALETTE -> "COLOR_PALETTE"i {% id %}
+t_BACKGROUND_COLOR -> "BACKGROUND_COLOR"i {% id %}
+t_TEXT_COLOR -> "TEXT_COLOR"i {% id %}
+t_REALTIME_INTERVAL -> "REALTIME_INTERVAL"i {% id %}
+t_KEY_REPEAT_INTERVAL -> "KEY_REPEAT_INTERVAL"i {% id %}
+t_AGAIN_INTERVAL -> "AGAIN_INTERVAL"i {% id %}
 
 # These settings do not have a value so they need to be parsed slightly differently
-t_NOACTION -> "NOACTION"i
-t_NOUNDO -> "NOUNDO"i
-t_NORESTART -> "NORESTART"i
-t_THROTTLE_MOVEMENT -> "THROTTLE_MOVEMENT"i
-t_NOREPEAT_ACTION -> "NOREPEAT_ACTION"i
-t_VERBOSE_LOGGING -> "VERBOSE_LOGGING"i
+t_NOACTION -> "NOACTION"i {% id %}
+t_NOUNDO -> "NOUNDO"i {% id %}
+t_NORESTART -> "NORESTART"i {% id %}
+t_THROTTLE_MOVEMENT -> "THROTTLE_MOVEMENT"i {% id %}
+t_NOREPEAT_ACTION -> "NOREPEAT_ACTION"i {% id %}
+t_VERBOSE_LOGGING -> "VERBOSE_LOGGING"i {% id %}
 
 
-t_TRANSPARENT -> "TRANSPARENT"i
+t_TRANSPARENT -> "TRANSPARENT"i {% id %}
 
-t_MOVE -> "MOVE"i
-t_DESTROY -> "DESTROY"i
-t_CREATE -> "CREATE"i
-t_CANTMOVE -> "CANTMOVE"i
+t_MOVE -> "MOVE"i {% id %}
+t_DESTROY -> "DESTROY"i {% id %}
+t_CREATE -> "CREATE"i {% id %}
+t_CANTMOVE -> "CANTMOVE"i {% id %}
 
-t_TITLESCREEN -> "TITLESCREEN"i
-t_STARTGAME -> "STARTGAME"i
-t_STARTLEVEL -> "STARTLEVEL"i
-t_ENDLEVEL -> "ENDLEVEL"i
-t_ENDGAME -> "ENDGAME"i
-t_SHOWMESSAGE -> "SHOWMESSAGE"i
-t_CLOSEMESSAGE -> "CLOSEMESSAGE"i
+t_TITLESCREEN -> "TITLESCREEN"i {% id %}
+t_STARTGAME -> "STARTGAME"i {% id %}
+t_STARTLEVEL -> "STARTLEVEL"i {% id %}
+t_ENDLEVEL -> "ENDLEVEL"i {% id %}
+t_ENDGAME -> "ENDGAME"i {% id %}
+t_SHOWMESSAGE -> "SHOWMESSAGE"i {% id %}
+t_CLOSEMESSAGE -> "CLOSEMESSAGE"i {% id %}
 
-t_GROUP_RULE_PLUS -> "+"
+t_GROUP_RULE_PLUS -> "+"i {% id %}
 
 # WINCONDITIONS tokens
-t_ON -> "ON"i
-t_NO -> "NO"i
-t_ALL -> "ALL"i
-t_ANY -> "ANY"i
-t_SOME -> "SOME"i
+t_ON -> "ON"i {% id %}
+t_NO -> "NO"i {% id %}
+t_ALL -> "ALL"i {% id %}
+t_ANY -> "ANY"i {% id %}
+t_SOME -> "SOME"i {% id %}
 
 
 OptionalMetaData
@@ -388,21 +383,21 @@ PixelRows -> pixelRow pixelRow pixelRow pixelRow pixelRow:+
 
 
 LegendTile ->
-      LegendTileSimple
-    | LegendTileAnd
-    | LegendTileOr
+      LegendTileSimple {% id %}
+    | LegendTileAnd    {% id %}
+    | LegendTileOr     {% id %}
 
-LegendTileSimple -> _ LegendVarNameDefn _ "=" _ LookupLegendVarName lineTerminator:+                        {% ([legendName, _1, _2, _3, varName, _4]) => { return { type: 'LEGEND_ITEM_SIMPLE', varName: varName} } %}
+LegendTileSimple -> _ LegendVarNameDefn _ "=" _ LookupLegendVarName lineTerminator:+                                {% toDebug('LegendTileSimple') || function([_0, name, _2, _3, _4, value, _6, _7]) { return {type: 'LEGEND_ITEM_SIMPLE', name: name, value: value} } %}
 # Ensure there are spaces around AND or OR so we do not accidentally match CleANDishes
-LegendTileAnd ->    _ LegendVarNameDefn _ "=" _ atLeast2ListOf[LookupLegendVarName, __ t_AND __] lineTerminator:+
-LegendTileOr ->     _ LegendVarNameDefn _ "=" _ atLeast2ListOf[LookupLegendVarName, __ t_OR __] lineTerminator:+
+LegendTileAnd ->    _ LegendVarNameDefn _ "=" _ atLeast2ListOf[LookupLegendVarName, __ t_AND __] lineTerminator:+   {% toDebug('LegendTileAnd') || function([_0, name, _2, _3, _4, values, _6, _7]) { return {type: 'LEGEND_ITEM_AND', name: name, values: extractFirst(values)} } %}
+LegendTileOr ->     _ LegendVarNameDefn _ "=" _ atLeast2ListOf[LookupLegendVarName, __ t_OR __] lineTerminator:+    {% toDebug('LegendTileOr')  || function([_0, name, _2, _3, _4, values, _6, _7]) { return {type: 'LEGEND_ITEM_OR', name: name, values: extractFirst(values)} } %}
 
-LegendVarNameDefn -> word
+LegendVarNameDefn -> word {% toDebug('LegendVarNameDefn') || id %}
     # # If it is multiple characters then it needs to be a valid ruleVariableName. If it is one character then it needs to be a valid legendVariableChar
     #   (ruleVariableChar ruleVariableName) {% debugRule('aksjhdakjshdasd') %}
     # | legendVariableChar                  {% debugRule('OIUOIUOIU') %}
 
-LookupLegendVarName -> LegendVarNameDefn
+LookupLegendVarName -> LegendVarNameDefn {% toDebug('LookupLegendVarName') || id %}
 
 
 # TODO: Handle tokens like sfx0 and explicit args instead of just varName (like "Player CantMove up")
