@@ -28,10 +28,18 @@ const extractFirst = (ary) => ary.map(subArray => {
         return subArray[0]
     }
 })
+const extractThird = (ary) => ary.map(subArray => {
+    if (subArray.length < 3) {
+        throw new Error(`BUG: Expected items to have at least 3 elements (usually used in listOf[...])`)
+    } else {
+        return subArray[2]
+    }
+})
 
 const TILE_MODIFIERS = new Set([
     '...', // This one isn't a modifier but we do not allow it so that we match ellipsis rules in a different rule
     'AGAIN', // This is another hack. Some people write `[]->[AGAIN]` rather than `[]->[]AGAIN`
+    'DEBUGGER', // Another hack. Ensure that this is not accidentally used as a tile name
     'NO',
     'LEFT',
     'RIGHT',
@@ -451,7 +459,6 @@ CollisionLayerItem -> _ nonemptyListOf[lookupCollisionVariableName, (_ "," _ | _
 RuleItem ->
       RuleLoop
     | RuleGroup # Do this before Rule because we need to look for a "+" on the following Rule
-    | Rule
 
 Rule ->
       RuleWithoutMessage
@@ -465,27 +472,29 @@ LeftModifiers ->
     | null
 
 RuleBracket ->
-      EllipsisRuleBracket
-    | NormalRuleBracket
+      EllipsisRuleBracket {% id %}
+    | NormalRuleBracket   {% id %}
 
-NormalRuleBracket -> "[" nonemptyListOf[RuleBracketNeighbor, "|"] (t_AGAIN _):? "]" (_ t_DEBUGGER):? # t_AGAIN is a HACK. It should be in the list of commands but it's not.
-EllipsisRuleBracket -> "[" nonemptyListOf[RuleBracketNeighbor, "|"] "|" _ t_ELLIPSIS _ "|" nonemptyListOf[RuleBracketNeighbor, "|"] "]" (_ t_DEBUGGER):?
+# t_AGAIN is a HACK. It should be in the list of commands but it's not.
+NormalRuleBracket -> "[" nonemptyListOf[RuleBracketNeighbor, "|"] (t_AGAIN _):? "]" (_ t_DEBUGGER):?                                                        {% toDebug('NormalRuleBracket') || function([_0, neighbors, againHack, _3, debugFlag]) { return {type: 'BRACKET', neighbors: extractFirst(neighbors), againHack: againHack ? true : false, debugFlag: debugFlag ? debugFlag[1] : null } } %}
+EllipsisRuleBracket -> "[" nonemptyListOf[RuleBracketNeighbor, "|"] "|" _ t_ELLIPSIS _ "|" nonemptyListOf[RuleBracketNeighbor, "|"] "]" (_ t_DEBUGGER):?    {% toDebug('EllipsisRuleBracket') || function([_0, beforeNeighbors, _2, _3, _4, _5, _6, afterNeighbors, _8, debugFlag]) { return {type: 'ELLIPSIS_BRACKET', beforeNeighbors: extractFirst(beforeNeighbors), afterNeighbors: extractFirst(afterNeighbors), debugFlag: debugFlag ? debugFlag[1] : null } } %}
 
 RuleBracketNeighbor ->
     #   HackTileNameIsSFX1 # to parse '... -> [ SFX1 ]' (they should be commands)
     # | HackTileNameIsSFX2 # to parse '... -> [ tilename SFX1 ]'
-      RuleBracketNoEllipsisNeighbor
-    | RuleBracketEmptyNeighbor
+      RuleBracketNoEllipsisNeighbor {% id %}
+    | RuleBracketEmptyNeighbor      {% id %}
 
 RuleBracketNoEllipsisNeighbor ->
-      _ nonemptyListOf[TileWithModifier ,__] (_ t_DEBUGGER):? _
+      _ nonemptyListOf[TileWithModifier ,__] (_ t_DEBUGGER):? _     {% toDebug('RuleBracketNoEllipsisNeighbor') || function([_0, tilesWithModifiers, debugFlag, _3]) { return {type: 'NEIGHBOR', tilesWithModifiers: extractFirst(tilesWithModifiers), debugFlag: debugFlag ? debugFlag[1] : null } } %}
 
-RuleBracketEmptyNeighbor -> _ # Matches `[]` as well as `[ ]`
+# Matches `[]` as well as `[ ]`
+RuleBracketEmptyNeighbor -> _       {% toDebug('RuleBracketEmptyNeighbor') || function([_0]) { return {type: 'NEIGHBOR_EMPTY'} } %}
 
 # Force-check that there is whitespace after the cellLayerModifier so things
 # like "STATIONARYZ" or "NOZ" are not parsed as a modifier
 # (they are a variable that happens to begin with the same text as a modifier)
-TileWithModifier -> (tileModifier __):? lookupRuleVariableName  {% ([modifier, varName]) => { return {type: 'TILE_WITH_MODIFIER', modifier: modifier, varName: varName} } %}
+TileWithModifier -> (tileModifier __):? lookupRuleVariableName  {% toDebug('TileWithModifier') || function([modifier, tileName]) { return {type: 'TILE_WITH_MODIFIER', modifier: modifier ? modifier[0][0] : null, tileName} } %}
 
 # tileModifier -> tileModifierInner {% debugRule('TILEMODIFIER') %}
 
@@ -541,7 +550,7 @@ RuleLoop ->
 
 RuleGroup ->
     Rule
-    (_ t_GROUP_RULE_PLUS Rule):+ {% ([_1, isRandom, firstRule, otherRules]) => { return {type:'RULE_GROUP', firstRule: firstRule, otherRules: otherRules} } %}
+    (_ t_GROUP_RULE_PLUS Rule):* {% ([firstRule, otherRules]) => { return {type:'RULE_GROUP', firstRule: firstRule, otherRules: extractThird(otherRules)} } %}
 
 # HackTileNameIsSFX1 -> t_SFX __ t_DEBUGGER:?
 # HackTileNameIsSFX2 -> lookupRuleVariableName __ t_SFX __ t_DEBUGGER:?
