@@ -172,7 +172,7 @@ lookupRuleVariableName -> [^\n \=\[\]\|]:+ {% ([a], offset, reject) => {
 # "=" because it can occur inside a legend Variable
 collisionVariableChar -> [^(?=\.\.\.)\ \n\=\[\]\|\,] # -> (~__ ~newline ~"=" ~"[" ~"]" ~"|" ~"," ~t_ELLIPSIS %any)
 collisionVariableName -> collisionVariableChar:+ {% concatChars %}
-lookupCollisionVariableName -> collisionVariableName
+lookupCollisionVariableName -> collisionVariableName {% id %}
 
 
 # special flag that can appear before rules so the debugger pauses before the rule is evaluated
@@ -445,7 +445,7 @@ soundItemActionMoveArg ->
     | t_VERTICAL
 
 # collision layers are separated by a space or a comma (and some games and with a comma)
-CollisionLayerItem -> _ nonemptyListOf[lookupCollisionVariableName, (_ "," _ | __)] ",":? lineTerminator:+
+CollisionLayerItem -> _ nonemptyListOf[lookupCollisionVariableName, (_ "," _ | __)] ",":? lineTerminator:+      {% toDebug('CollisionLayerItem') || function ([_0, spriteNames, _2]) { return extractFirst(spriteNames) } %}
 
 
 RuleItem ->
