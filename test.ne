@@ -1,7 +1,7 @@
 @{%
 
 const debugBlackList = new Set([])
-const debugWhiteList = new Set(['word', '', 'Section'])
+const debugWhiteList = new Set(['word', '', 'SectionPHIL'])
 
 const toDebug = (name, fn) => {
     if (process.env.NODE_ENV == 'debug' || debugWhiteList.has(name)) {
@@ -42,6 +42,8 @@ const extractThird = (ary) => ary.map(subArray => {
         return subArray[2]
     }
 })
+
+const upperId = ([id]) => id.toUpperCase()
 
 const TILE_MODIFIERS = new Set([
     '...', // This one isn't a modifier but we do not allow it so that we match ellipsis rules in a different rule
@@ -89,7 +91,8 @@ Section[Name, ItemExpr] ->
     _ "=":+ lineTerminator
     _ $Name lineTerminator
     _ "=":+ lineTerminator:+
-    ($ItemExpr):*           {% toDebug('Section', function ([_0, _1, _2, _3, name, _5, _6, _7, _8, items]) { return {type: 'SECTION', name: name, items: extractFirst(extractFirst(items)) } }) %}
+    ($ItemExpr):*           {% toDebug('Section', function ([_0, _1, _2, _3, name, _5, _6, _7, _8, items]) { return {type: 'SECTION', name: name, items: extractFirst(extractFirst(items)) } }) ||
+                                                  function ([_0, _1, _2, _3, name, _5, _6, _7, _8, items]) { return extractFirst(extractFirst(items)) } %}
 
 # Levels start with multiple linebreaks to handle end-of-file case when we don't have 2 linefeeds
 # So we need to remove linefeeds from the section to remove ambiguity
@@ -97,20 +100,68 @@ SectionSingleTerminator[Name, ItemExpr] ->
     _ "=":+ lineTerminator
     _ $Name lineTerminator
     _ "=":+ lineTerminator
-    ($ItemExpr):*           {% toDebug('Section', function ([_0, _1, _2, _3, name, _5, _6, _7, _8, items]) { return {type: 'SECTION', name: name, items: extractFirst(extractFirst(items)) } }) %}
+    ($ItemExpr):*           {% toDebug('Section', function ([_0, _1, _2, _3, name, _5, _6, _7, _8, items]) { return {type: 'SECTION', name: name, items: extractFirst(extractFirst(items)) } }) ||
+                                                  function ([_0, _1, _2, _3, name, _5, _6, _7, _8, items]) { return extractFirst(extractFirst(items)) } %}
 
 
 main ->
     lineTerminator:* # Version information
     _ Title lineTerminator:+
-    (_ OptionalMetaData lineTerminator:+):*
+    OptionalMetaData
     Section[t_OBJECTS, Sprite]:?
     Section[t_LEGEND, LegendTile]:?
     Section[t_SOUNDS, SoundItem]:?
     Section[t_COLLISIONLAYERS, CollisionLayerItem]:?
     Section[t_RULES, RuleItem]:?
     Section[t_WINCONDITIONS, WinConditionItem]:?
-    SectionSingleTerminator[t_LEVELS, LevelItem]:?
+    SectionSingleTerminator[t_LEVELS, LevelItem]:? {% toDebug('Section') ||
+        function([_0, _1, title, _2, metadata, sprites, legendItems, sounds, collisionLayers, rules, winConditions, levelsAsSingleArray]) {
+            const levels = []
+            let currentMapLevel = null
+            for (const levelRowItem of levelsAsSingleArray || []) {
+                switch (levelRowItem.type) {
+                    case 'LEVEL_ROW':
+                        if (currentMapLevel) {
+                            currentMapLevel.push(levelRowItem.rowData)
+                        } else {
+                            currentMapLevel = [levelRowItem.rowData]
+                        }
+                        break
+                    case 'LEVEL_MESSAGE':
+                        if (currentMapLevel) {
+                            levels.push({type: 'LEVEL_MAP', value: currentMapLevel})
+                            currentMapLevel = null
+                        }
+                        levels.push(levelRowItem)
+                        break
+                    case 'LEVEL_SEPARATOR':
+                        if (currentMapLevel) {
+                            levels.push({type: 'LEVEL_MAP', value: currentMapLevel})
+                            currentMapLevel = null
+                        }
+                        break
+                    default:
+                        throw new Error(`BUG: Unsupported level row type "${levelRowItem.type}"`)
+                }
+            }
+            // add the last level
+            if (currentMapLevel) {
+                levels.push({type: 'LEVEL_MAP', value: currentMapLevel})
+                currentMapLevel = null
+            }
+            return {
+                title: title.value,
+                metadata: metadata.value,
+                sprites: sprites || [],
+                legendItems: legendItems || [],
+                sounds: sounds || [],
+                collisionLayers: collisionLayers || [],
+                rules: rules || [],
+                winConditions: winConditions || [],
+                levels: levels
+            }
+        }
+    %}
 
 
 _ -> ( whitespaceChar | multiLineComment ):* {% toDebug('whitespace') || nuller %}
@@ -195,178 +246,168 @@ t_DEBUGGER ->
       t_DEBUGGER_ADD {% id %}
     | t_DEBUGGER_REMOVE {% id %}
     | t_DEBUGGER_DEFAULT {% id %}
-t_DEBUGGER_DEFAULT -> "DEBUGGER"i {% id %}
-t_DEBUGGER_ADD -> "DEBUGGER_ADD"i {% id %}
-t_DEBUGGER_REMOVE -> "DEBUGGER_REMOVE"i {% id %}
+t_DEBUGGER_DEFAULT -> "DEBUGGER"i {% upperId %}
+t_DEBUGGER_ADD -> "DEBUGGER_ADD"i {% upperId %}
+t_DEBUGGER_REMOVE -> "DEBUGGER_REMOVE"i {% upperId %}
 
 
 # Section titles
-t_OBJECTS -> "OBJECTS"i {% id %}
-t_LEGEND -> "LEGEND"i {% id %}
-t_SOUNDS -> "SOUNDS"i {% id %}
-t_COLLISIONLAYERS -> "COLLISIONLAYERS"i {% id %}
-t_RULES -> "RULES"i {% id %}
-t_WINCONDITIONS -> "WINCONDITIONS"i {% id %}
-t_LEVELS -> "LEVELS"i {% id %}
+t_OBJECTS -> "OBJECTS"i {% upperId %}
+t_LEGEND -> "LEGEND"i {% upperId %}
+t_SOUNDS -> "SOUNDS"i {% upperId %}
+t_COLLISIONLAYERS -> "COLLISIONLAYERS"i {% upperId %}
+t_RULES -> "RULES"i {% upperId %}
+t_WINCONDITIONS -> "WINCONDITIONS"i {% upperId %}
+t_LEVELS -> "LEVELS"i {% upperId %}
 
 # Modifier tokens
-t_RIGID -> "RIGID"i {% id %}
-t_LATE -> "LATE"i {% id %}
-t_RANDOM -> "RANDOM"i {% id %}
-t_RANDOMDIR -> "RANDOMDIR"i {% id %}
-t_ACTION -> "ACTION"i {% id %}
-t_STARTLOOP -> "STARTLOOP"i {% id %}
-t_ENDLOOP -> "ENDLOOP"i {% id %}
+t_RIGID -> "RIGID"i {% upperId %}
+t_LATE -> "LATE"i {% upperId %}
+t_RANDOM -> "RANDOM"i {% upperId %}
+t_RANDOMDIR -> "RANDOMDIR"i {% upperId %}
+t_ACTION -> "ACTION"i {% upperId %}
+t_STARTLOOP -> "STARTLOOP"i {% upperId %}
+t_ENDLOOP -> "ENDLOOP"i {% upperId %}
 
 # Movement tokens
-t_UP -> "UP"i {% id %}
-t_DOWN -> "DOWN"i {% id %}
-t_LEFT -> "LEFT"i {% id %}
-t_RIGHT -> "RIGHT"i {% id %}
-t_ARROW_UP -> "^"i {% id %}
-t_ARROW_DOWN -> "V"i {% id %}
-t_ARROW_LEFT -> "<"i {% id %}
-t_ARROW_RIGHT -> ">"i {% id %}
-t_MOVING -> "MOVING"i {% id %}
-t_ORTHOGONAL -> "ORTHOGONAL"i {% id %}
-t_PERPENDICULAR -> "PERPENDICULAR"i {% id %}
-t_PARALLEL -> "PARALLEL"i {% id %}
-t_STATIONARY -> "STATIONARY"i {% id %}
-t_HORIZONTAL -> "HORIZONTAL"i {% id %}
-t_VERTICAL -> "VERTICAL"i {% id %}
+t_UP -> "UP"i {% upperId %}
+t_DOWN -> "DOWN"i {% upperId %}
+t_LEFT -> "LEFT"i {% upperId %}
+t_RIGHT -> "RIGHT"i {% upperId %}
+t_ARROW_UP -> "^"i {% upperId %}
+t_ARROW_DOWN -> "V"i {% upperId %}
+t_ARROW_LEFT -> "<"i {% upperId %}
+t_ARROW_RIGHT -> ">"i {% upperId %}
+t_MOVING -> "MOVING"i {% upperId %}
+t_ORTHOGONAL -> "ORTHOGONAL"i {% upperId %}
+t_PERPENDICULAR -> "PERPENDICULAR"i {% upperId %}
+t_PARALLEL -> "PARALLEL"i {% upperId %}
+t_STATIONARY -> "STATIONARY"i {% upperId %}
+t_HORIZONTAL -> "HORIZONTAL"i {% upperId %}
+t_VERTICAL -> "VERTICAL"i {% upperId %}
 
-t_ARROW_ANY -> t_ARROW_UP {% id %}
-    | t_ARROW_DOWN {% id %} # Because of this, "v" can never be an Object or Legend variable. TODO: Ensure "v" is never an Object or Legend variable
-    | t_ARROW_LEFT {% id %}
-    | t_ARROW_RIGHT {% id %}
+t_ARROW_ANY -> t_ARROW_UP {% upperId %}
+    | t_ARROW_DOWN {% upperId %} # Because of this, "v" can never be an Object or Legend variable. TODO: Ensure "v" is never an Object or Legend variable
+    | t_ARROW_LEFT {% upperId %}
+    | t_ARROW_RIGHT {% upperId %}
 
 # Command tokens
-t_AGAIN -> "AGAIN"i {% id %}
-t_CANCEL -> "CANCEL"i {% id %}
-t_CHECKPOINT -> "CHECKPOINT"i {% id %}
-t_RESTART -> "RESTART"i {% id %}
-t_UNDO -> "UNDO"i {% id %}
-t_WIN -> "WIN"i {% id %}
-t_MESSAGE -> "MESSAGE"i {% id %}
+t_AGAIN -> "AGAIN"i {% upperId %}
+t_CANCEL -> "CANCEL"i {% upperId %}
+t_CHECKPOINT -> "CHECKPOINT"i {% upperId %}
+t_RESTART -> "RESTART"i {% upperId %}
+t_UNDO -> "UNDO"i {% upperId %}
+t_WIN -> "WIN"i {% upperId %}
+t_MESSAGE -> "MESSAGE"i {% upperId %}
 
-t_ELLIPSIS -> "..."i {% id %}
+t_ELLIPSIS -> "..."i {% upperId %}
 
 # LEGEND tokens
-t_AND -> "AND"i {% id %}
-t_OR -> "OR"i {% id %}
+t_AND -> "AND"i {% upperId %}
+t_OR -> "OR"i {% upperId %}
 
 # SOUND tokens
-t_SFX0 -> "SFX0"i {% id %}
-t_SFX1 -> "SFX1"i {% id %}
-t_SFX2 -> "SFX2"i {% id %}
-t_SFX3 -> "SFX3"i {% id %}
-t_SFX4 -> "SFX4"i {% id %}
-t_SFX5 -> "SFX5"i {% id %}
-t_SFX6 -> "SFX6"i {% id %}
-t_SFX7 -> "SFX7"i {% id %}
-t_SFX8 -> "SFX8"i {% id %}
-t_SFX9 -> "SFX9"i {% id %}
-t_SFX10 -> "SFX10"i {% id %}
+t_SFX0 -> "SFX0"i {% upperId %}
+t_SFX1 -> "SFX1"i {% upperId %}
+t_SFX2 -> "SFX2"i {% upperId %}
+t_SFX3 -> "SFX3"i {% upperId %}
+t_SFX4 -> "SFX4"i {% upperId %}
+t_SFX5 -> "SFX5"i {% upperId %}
+t_SFX6 -> "SFX6"i {% upperId %}
+t_SFX7 -> "SFX7"i {% upperId %}
+t_SFX8 -> "SFX8"i {% upperId %}
+t_SFX9 -> "SFX9"i {% upperId %}
+t_SFX10 -> "SFX10"i {% upperId %}
 t_SFX ->
-      t_SFX10 {% id %} # needs to go 1st because of t_SFX1
-    | t_SFX0 {% id %}
-    | t_SFX1 {% id %}
-    | t_SFX2 {% id %}
-    | t_SFX3 {% id %}
-    | t_SFX4 {% id %}
-    | t_SFX5 {% id %}
-    | t_SFX6 {% id %}
-    | t_SFX7 {% id %}
-    | t_SFX8 {% id %}
-    | t_SFX9 {% id %}
+      t_SFX10 {% upperId %} # needs to go 1st because of t_SFX1
+    | t_SFX0 {% upperId %}
+    | t_SFX1 {% upperId %}
+    | t_SFX2 {% upperId %}
+    | t_SFX3 {% upperId %}
+    | t_SFX4 {% upperId %}
+    | t_SFX5 {% upperId %}
+    | t_SFX6 {% upperId %}
+    | t_SFX7 {% upperId %}
+    | t_SFX8 {% upperId %}
+    | t_SFX9 {% upperId %}
 
 # METADATA Tokens
-t_TITLE -> "TITLE"i {% id %}
-t_AUTHOR -> "AUTHOR"i {% id %}
-t_HOMEPAGE -> "HOMEPAGE"i {% id %}
-t_YOUTUBE -> "YOUTUBE"i {% id %}
-t_ZOOMSCREEN -> "ZOOMSCREEN"i {% id %}
-t_FLICKSCREEN -> "FLICKSCREEN"i {% id %}
-t_REQUIRE_PLAYER_MOVEMENT -> "REQUIRE_PLAYER_MOVEMENT"i {% id %}
-t_RUN_RULES_ON_LEVEL_START -> "RUN_RULES_ON_LEVEL_START"i {% id %}
-t_COLOR_PALETTE -> "COLOR_PALETTE"i {% id %}
-t_BACKGROUND_COLOR -> "BACKGROUND_COLOR"i {% id %}
-t_TEXT_COLOR -> "TEXT_COLOR"i {% id %}
-t_REALTIME_INTERVAL -> "REALTIME_INTERVAL"i {% id %}
-t_KEY_REPEAT_INTERVAL -> "KEY_REPEAT_INTERVAL"i {% id %}
-t_AGAIN_INTERVAL -> "AGAIN_INTERVAL"i {% id %}
+t_TITLE -> "TITLE"i {% upperId %}
+t_AUTHOR -> "AUTHOR"i {% upperId %}
+t_HOMEPAGE -> "HOMEPAGE"i {% upperId %}
+t_YOUTUBE -> "YOUTUBE"i {% upperId %}
+t_ZOOMSCREEN -> "ZOOMSCREEN"i {% upperId %}
+t_FLICKSCREEN -> "FLICKSCREEN"i {% upperId %}
+t_REQUIRE_PLAYER_MOVEMENT -> "REQUIRE_PLAYER_MOVEMENT"i {% upperId %}
+t_RUN_RULES_ON_LEVEL_START -> "RUN_RULES_ON_LEVEL_START"i {% upperId %}
+t_COLOR_PALETTE -> "COLOR_PALETTE"i {% upperId %}
+t_BACKGROUND_COLOR -> "BACKGROUND_COLOR"i {% upperId %}
+t_TEXT_COLOR -> "TEXT_COLOR"i {% upperId %}
+t_REALTIME_INTERVAL -> "REALTIME_INTERVAL"i {% upperId %}
+t_KEY_REPEAT_INTERVAL -> "KEY_REPEAT_INTERVAL"i {% upperId %}
+t_AGAIN_INTERVAL -> "AGAIN_INTERVAL"i {% upperId %}
 
 # These settings do not have a value so they need to be parsed slightly differently
-t_NOACTION -> "NOACTION"i {% id %}
-t_NOUNDO -> "NOUNDO"i {% id %}
-t_NORESTART -> "NORESTART"i {% id %}
-t_THROTTLE_MOVEMENT -> "THROTTLE_MOVEMENT"i {% id %}
-t_NOREPEAT_ACTION -> "NOREPEAT_ACTION"i {% id %}
-t_VERBOSE_LOGGING -> "VERBOSE_LOGGING"i {% id %}
+t_NOACTION -> "NOACTION"i {% upperId %}
+t_NOUNDO -> "NOUNDO"i {% upperId %}
+t_NORESTART -> "NORESTART"i {% upperId %}
+t_THROTTLE_MOVEMENT -> "THROTTLE_MOVEMENT"i {% upperId %}
+t_NOREPEAT_ACTION -> "NOREPEAT_ACTION"i {% upperId %}
+t_VERBOSE_LOGGING -> "VERBOSE_LOGGING"i {% upperId %}
 
 
-t_TRANSPARENT -> "TRANSPARENT"i {% id %}
+t_TRANSPARENT -> "TRANSPARENT"i {% upperId %}
 
-t_MOVE -> "MOVE"i {% id %}
-t_DESTROY -> "DESTROY"i {% id %}
-t_CREATE -> "CREATE"i {% id %}
-t_CANTMOVE -> "CANTMOVE"i {% id %}
+t_MOVE -> "MOVE"i {% upperId %}
+t_DESTROY -> "DESTROY"i {% upperId %}
+t_CREATE -> "CREATE"i {% upperId %}
+t_CANTMOVE -> "CANTMOVE"i {% upperId %}
 
-t_TITLESCREEN -> "TITLESCREEN"i {% id %}
-t_STARTGAME -> "STARTGAME"i {% id %}
-t_STARTLEVEL -> "STARTLEVEL"i {% id %}
-t_ENDLEVEL -> "ENDLEVEL"i {% id %}
-t_ENDGAME -> "ENDGAME"i {% id %}
-t_SHOWMESSAGE -> "SHOWMESSAGE"i {% id %}
-t_CLOSEMESSAGE -> "CLOSEMESSAGE"i {% id %}
+t_TITLESCREEN -> "TITLESCREEN"i {% upperId %}
+t_STARTGAME -> "STARTGAME"i {% upperId %}
+t_STARTLEVEL -> "STARTLEVEL"i {% upperId %}
+t_ENDLEVEL -> "ENDLEVEL"i {% upperId %}
+t_ENDGAME -> "ENDGAME"i {% upperId %}
+t_SHOWMESSAGE -> "SHOWMESSAGE"i {% upperId %}
+t_CLOSEMESSAGE -> "CLOSEMESSAGE"i {% upperId %}
 
-t_GROUP_RULE_PLUS -> "+"i {% id %}
+t_GROUP_RULE_PLUS -> "+"i {% upperId %}
 
 # WINCONDITIONS tokens
-t_ON -> "ON"i {% id %}
-t_NO -> "NO"i {% id %}
-t_ALL -> "ALL"i {% id %}
-t_ANY -> "ANY"i {% id %}
-t_SOME -> "SOME"i {% id %}
+t_ON -> "ON"i {% upperId %}
+t_NO -> "NO"i {% upperId %}
+t_ALL -> "ALL"i {% upperId %}
+t_ANY -> "ANY"i {% upperId %}
+t_SOME -> "SOME"i {% upperId %}
 
 
-OptionalMetaData
-    -> Author
-    | Homepage
-    | Youtube
-    | Zoomscreen
-    | Flickscreen
-    | RequirePlayerMovement
-    | RunRulesOnLevelStart
-    | ColorPalette
-    | BackgroundColor
-    | TextColor
-    | RealtimeInterval
-    | KeyRepeatInterval
-    | AgainInterval
-    | t_NOACTION
-    | t_NOUNDO
-    | t_NOREPEAT_ACTION
-    | t_THROTTLE_MOVEMENT
-    | t_NORESTART
-    | t_VERBOSE_LOGGING
+Title -> t_TITLE __ words          {% ([_1, _2, value]) => { return {type:'TITLE', value} } %}
 
-Title -> t_TITLE __ words       {% ([_1, _2, words]) => { return {type:'TITLE', value: words} } %}
-Author -> t_AUTHOR __ words     {% ([_1, _2, words]) => { return {type:'AUTHOR', value: words} } %}
-Homepage -> t_HOMEPAGE __ word  {% ([_1, _2, words]) => { return {type:'HOMEPAGE', value: words} } %}
-Youtube -> t_YOUTUBE __ word
-Zoomscreen -> t_ZOOMSCREEN __ widthAndHeight
-Flickscreen -> t_FLICKSCREEN __ widthAndHeight
-RequirePlayerMovement -> t_REQUIRE_PLAYER_MOVEMENT (__ "off"):?
-RunRulesOnLevelStart -> t_RUN_RULES_ON_LEVEL_START (__ "true"):?
-ColorPalette -> t_COLOR_PALETTE __ word
-BackgroundColor -> t_BACKGROUND_COLOR __ colorNameOrHex
-TextColor -> t_TEXT_COLOR __ colorNameOrHex
-RealtimeInterval -> t_REALTIME_INTERVAL __ decimal
-KeyRepeatInterval -> t_KEY_REPEAT_INTERVAL __ decimal
-AgainInterval -> t_AGAIN_INTERVAL __ decimal
+OptionalMetaData -> (_ OptionalMetaDataItem lineTerminator:+):*     {% ([vals]) => { return {type: 'METADATA', value: extractSecond(vals)} } %}
 
-widthAndHeight -> integer "x" integer
+OptionalMetaDataItem ->
+      t_AUTHOR __ words                         {% ([_1, _2, value]) => { return {type:'AUTHOR', value} } %}
+    | t_HOMEPAGE __ word                        {% ([_1, _2, value]) => { return {type:'HOMEPAGE', value} } %}
+    | t_YOUTUBE __ word                         {% ([_1, _2, value]) => { return {type:'YOUTUBE', value} } %}
+    | t_ZOOMSCREEN __ widthAndHeight            {% ([_1, _2, value]) => { return {type:'ZOOMSCREEN', value} } %}
+    | t_FLICKSCREEN __ widthAndHeight           {% ([_1, _2, value]) => { return {type:'FLICKSCREEN', value} } %}
+    | t_REQUIRE_PLAYER_MOVEMENT (__ "off"):?    {% ([_1, _2, value]) => { return {type:'REQUIRE_PLAYER_MOVEMENT', value: !!value} } %}
+    | t_RUN_RULES_ON_LEVEL_START (__ "true"):?  {% ([_1, _2, value]) => { return {type:'RUN_RULES_ON_LEVEL_START', value: true} } %}
+    | t_COLOR_PALETTE __ word                   {% ([_1, _2, value]) => { return {type:'COLOR_PALETTE', value} } %}
+    | t_BACKGROUND_COLOR __ colorNameOrHex      {% ([_1, _2, value]) => { return {type:'BACKGROUND_COLOR', value} } %}
+    | t_TEXT_COLOR __ colorNameOrHex            {% ([_1, _2, value]) => { return {type:'TEXT_COLOR', value} } %}
+    | t_REALTIME_INTERVAL __ decimal            {% ([_1, _2, value]) => { return {type:'REALTIME_INTERVAL', value} } %}
+    | t_KEY_REPEAT_INTERVAL __ decimal          {% ([_1, _2, value]) => { return {type:'KEY_REPEAT_INTERVAL', value} } %}
+    | t_AGAIN_INTERVAL __ decimal               {% ([_1, _2, value]) => { return {type:'AGAIN_INTERVAL', value} } %}
+    | t_NOACTION                                {% () => { return {type:'NO_ACTION', value: true} } %}
+    | t_NOUNDO                                  {% () => { return {type:'NO_UNDO', value: true} } %}
+    | t_NOREPEAT_ACTION                         {% () => { return {type:'NO_REPEAT_ACTION', value: true} } %}
+    | t_THROTTLE_MOVEMENT                       {% () => { return {type:'THROTTLE_MOVEMENT', value: true} } %}
+    | t_NORESTART                               {% () => { return {type:'NO_RESTART', value: true} } %}
+    | t_VERBOSE_LOGGING                         {% () => { return {type:'VERBOSE_LOGGING', value: true} } %}
+
+
+widthAndHeight -> integer "x" integer   {% ([width, _1, height]) => { return {type: 'WIDTH_AND_HEIGHT', width, height} } %}
 
 
 Sprite ->
@@ -430,15 +471,15 @@ SoundItemInner ->
     | SoundItemNormal           {% id %}
 
 soundItemSimpleOptions ->
-      t_RESTART         {% id %}
-    | t_UNDO            {% id %}
-    | t_TITLESCREEN     {% id %}
-    | t_STARTGAME       {% id %}
-    | t_STARTLEVEL      {% id %}
-    | t_ENDLEVEL        {% id %}
-    | t_ENDGAME         {% id %}
-    | t_SHOWMESSAGE     {% id %}
-    | t_CLOSEMESSAGE    {% id %}
+      t_RESTART         {% upperId %}
+    | t_UNDO            {% upperId %}
+    | t_TITLESCREEN     {% upperId %}
+    | t_STARTGAME       {% upperId %}
+    | t_STARTLEVEL      {% upperId %}
+    | t_ENDLEVEL        {% upperId %}
+    | t_ENDGAME         {% upperId %}
+    | t_SHOWMESSAGE     {% upperId %}
+    | t_CLOSEMESSAGE    {% upperId %}
 
 SoundItemEnum -> soundItemSimpleOptions __ integer      {% ([soundEnum, _1, soundCode]) => { return {type: 'SOUND_ENUM', soundEnum, soundCode} } %}
 SoundItemSfx -> t_SFX __ integer                        {% ([soundSfx, _1, soundCode]) => { return {type: 'SOUND_SFX', soundSfx, soundCode} } %}
@@ -447,17 +488,17 @@ SoundItemMoveSimple -> lookupRuleVariableName __ t_MOVE __ integer  {% ([spriteN
 SoundItemNormal -> lookupRuleVariableName __ SoundItemAction __ integer     {% ([spriteName, _1, eventEnum, _3, soundCode]) => { return {type: 'SOUND_SPRITE_EVENT', spriteName, eventEnum, soundCode} } %}
 
 SoundItemAction ->
-      t_CREATE      {% id %}
-    | t_DESTROY     {% id %}
-    | t_CANTMOVE    {% id %}
+      t_CREATE      {% upperId %}
+    | t_DESTROY     {% upperId %}
+    | t_CANTMOVE    {% upperId %}
 
 soundItemActionMoveArg ->
-      t_UP          {% id %}
-    | t_DOWN        {% id %}
-    | t_LEFT        {% id %}
-    | t_RIGHT       {% id %}
-    | t_HORIZONTAL  {% id %}
-    | t_VERTICAL    {% id %}
+      t_UP          {% upperId %}
+    | t_DOWN        {% upperId %}
+    | t_LEFT        {% upperId %}
+    | t_RIGHT       {% upperId %}
+    | t_HORIZONTAL  {% upperId %}
+    | t_VERTICAL    {% upperId %}
 
 # collision layers are separated by a space or a comma (and some games and with a comma)
 CollisionLayerItem -> _ nonemptyListOf[lookupCollisionVariableName, (_ "," _ | __)] ",":? lineTerminator:+      {% toDebug('CollisionLayerItem') || function ([_0, spriteNames, _2]) { return extractFirst(spriteNames) } %}
@@ -514,37 +555,37 @@ TileWithModifier -> (tileModifier __):? lookupRuleVariableName  {% toDebug('Tile
 # tileModifier -> tileModifierInner {% debugRule('TILEMODIFIER') %}
 
 tileModifier ->
-      t_NO              {% id %}
-    | t_LEFT            {% id %}
-    | t_RIGHT           {% id %}
-    | t_UP              {% id %}
-    | t_DOWN            {% id %}
-    | t_RANDOMDIR       {% id %}
-    | t_RANDOM          {% id %}
-    | t_STATIONARY      {% id %}
-    | t_MOVING          {% id %}
-    | t_ACTION          {% id %}
-    | t_VERTICAL        {% id %}
-    | t_HORIZONTAL      {% id %}
-    | t_PERPENDICULAR   {% id %}
-    | t_PARALLEL        {% id %}
-    | t_ORTHOGONAL      {% id %}
-    | t_ARROW_ANY       {% id %} # NOTE: This can be a "v"
+      t_NO              {% upperId %}
+    | t_LEFT            {% upperId %}
+    | t_RIGHT           {% upperId %}
+    | t_UP              {% upperId %}
+    | t_DOWN            {% upperId %}
+    | t_RANDOMDIR       {% upperId %}
+    | t_RANDOM          {% upperId %}
+    | t_STATIONARY      {% upperId %}
+    | t_MOVING          {% upperId %}
+    | t_ACTION          {% upperId %}
+    | t_VERTICAL        {% upperId %}
+    | t_HORIZONTAL      {% upperId %}
+    | t_PERPENDICULAR   {% upperId %}
+    | t_PARALLEL        {% upperId %}
+    | t_ORTHOGONAL      {% upperId %}
+    | t_ARROW_ANY       {% upperId %} # NOTE: This can be a "v"
 
 RuleModifier ->
-      t_RANDOM      {% id %}
-    | t_UP          {% id %}
-    | t_DOWN        {% id %}
-    | t_LEFT        {% id %}
-    | t_RIGHT       {% id %}
-    | t_VERTICAL    {% id %}
-    | t_HORIZONTAL  {% id %}
-    | t_ORTHOGONAL  {% id %}
+      t_RANDOM      {% upperId %}
+    | t_UP          {% upperId %}
+    | t_DOWN        {% upperId %}
+    | t_LEFT        {% upperId %}
+    | t_RIGHT       {% upperId %}
+    | t_VERTICAL    {% upperId %}
+    | t_HORIZONTAL  {% upperId %}
+    | t_ORTHOGONAL  {% upperId %}
 
 RuleModifierLeft ->
       RuleModifier  {% id %} # Sometimes people write "RIGHT LATE [..." instead of "LATE RIGHT [..."
-    | t_LATE        {% id %}
-    | t_RIGID       {% id %}
+    | t_LATE        {% upperId %}
+    | t_RIGID       {% upperId %}
 
 RuleCommand ->
       t_AGAIN       {% () => { return {type: 'RULE_COMMAND_AGAIN'} } %}
@@ -571,24 +612,21 @@ RuleGroup ->
 # HackTileNameIsSFX2 -> lookupRuleVariableName __ t_SFX __ t_DEBUGGER:?
 
 
-WinConditionItem
-    -> WinConditionItemSimple
-    | WinConditionItemOn
-
-WinConditionItemSimple -> _ winConditionItemPrefix __ lookupRuleVariableName lineTerminator:+
-WinConditionItemOn -> _ winConditionItemPrefix __ lookupRuleVariableName __ t_ON __ lookupRuleVariableName lineTerminator:+
+WinConditionItem ->
+      _ winConditionItemPrefix __ lookupRuleVariableName lineTerminator:+       {% toDebug('WinConditionItem') || function([_0, prefix, _1, spriteName, _2]) { return {type: 'WINCONDITION_SIMPLE', prefix, spriteName} } %}
+    | _ winConditionItemPrefix __ lookupRuleVariableName __ t_ON __ lookupRuleVariableName lineTerminator:+     {% toDebug('WinConditionItem') || function([_0, prefix, _1, spriteName, _2, _3, _4, lookupSpriteName, _5]) { return {type: 'WINCONDITION_ON', prefix, spriteName, lookupSpriteName} } %}
 
 winConditionItemPrefix ->
-      t_NO
-    | t_ALL
-    | t_ANY
-    | t_SOME
+      t_NO      {% id %}
+    | t_ALL     {% id %}
+    | t_ANY     {% id %}
+    | t_SOME    {% id %}
 
 
 LevelItem ->
-      GameMessageLevel {% id %}
-    | levelMapRow {% id %}
-    | SeparatorLine {% id %}
+      GameMessageLevel  {% id %}
+    | levelMapRow       {% id %}
+    | SeparatorLine     {% id %}
 
 
 # Ensure we collect characters up to the last non-whitespace
