@@ -56,46 +56,39 @@ listOf[Child, Separator] -> nonemptyListOf[$Child, $Separator]:?
 # SECTION_NAME
 # ================
 Section[Name, ItemExpr] ->
-    "=":+ lineTerminator
+    _ "=":+ lineTerminator
     _ $Name lineTerminator
-    "=":+ lineTerminator:+
-    (_ $ItemExpr):*         {% ([_0, _1, _2, name, _3, _4, _5, items]) => { return { type: 'SECTION', name: name[0][0], items: items } } %}
-    # lineTerminator:*
+    _ "=":+ lineTerminator:+
+    ($ItemExpr):*         # {% ([_0, _1, _2, name, _3, _4, _5, items]) => { return { type: 'SECTION', name: name[0][0], items: items } } %}
 
 # Levels start with multiple linebreaks to handle end-of-file case when we don't have 2 linefeeds
 # So we need to remove linefeeds from the section to remove ambiguity
-Section2[Name, ItemExpr] ->
-    "=":+ lineTerminator
+SectionSingleTerminator[Name, ItemExpr] ->
+    _ "=":+ lineTerminator
     _ $Name lineTerminator
-    "=":+ lineTerminator
-    ($ItemExpr):*         {% ([_0, _1, _2, name, _4, _5, _6, items]) => { return { type: 'SECTION', name: name[0][0], items: items } } %}
-    # lineTerminator:*
+    _ "=":+ lineTerminator
+    ($ItemExpr):*         # {% ([_0, _1, _2, name, _4, _5, _6, items]) => { return { type: 'SECTION', name: name[0][0], items: items } } %}
 
 
 main ->
     lineTerminator:* # Version information
-    Title lineTerminator:+
-    (OptionalMetaData lineTerminator:+):*
+    _ Title lineTerminator:+
+    (_ OptionalMetaData lineTerminator:+):*
     Section[t_OBJECTS, Sprite]:?
     Section[t_LEGEND, LegendTile]:?
     Section[t_SOUNDS, SoundItem]:?
     Section[t_COLLISIONLAYERS, CollisionLayerItem]:?
     Section[t_RULES, RuleItem]:?
     Section[t_WINCONDITIONS, WinConditionItem]:?
-    Section2[t_LEVELS, LevelItem]:?
-    # lineTerminator:*  // since there is a SeparatorLine rule
+    SectionSingleTerminator[t_LEVELS, LevelItem]:?
 
 
 _ -> ( whitespaceChar | multiLineComment ):* {% nuller %}
 __ -> ( whitespaceChar | multiLineComment ):+ {% nuller %}
-# comment -> "(" commentInner ")"
-# commentInner -> %COMMENT_CONTENTS
-#     | %COMMENT_CONTENTS:* %PAREN_OPEN commentInner %PAREN_CLOSE %COMMENT_CONTENTS:*
 
-multiLineComment -> "(" textOrComment:* ")" {% nuller %}  # The + is because some games have an extra `)`
-multiLineCommentInner -> "(" textOrComment:* ")" {% nuller %} # The reason this is different is because the root rule consumes extra `)`
+multiLineComment -> "(" textOrComment:* ")" {% nuller %}
 textOrComment ->
-      multiLineCommentInner
+      multiLineComment
     | [^\(\)]
 
 
@@ -106,7 +99,7 @@ hexDigit -> [0-9a-fA-F] {% id %}
 letter -> [^\n \(\)]    {% id %}
 
 integer -> digit:+      {% concatChars %}
-word -> [^\n \(]:+      {% ([a]) => { return {type: 'WORD', chars: a.join('')} } %} # {% concatChars %}
+word -> [^\n \(]:+      {% toDebug('WORD') || concatChars %}
 
 words -> NonemptyListOf[word, whitespaceChar:+] {% toDebug('WORDS') || function ([a]) { return {type: 'WORDS', words: a} } %}
 
@@ -355,11 +348,11 @@ Sprite ->
     | SpriteNoPixels
 
 SpriteNoPixels ->
-    spriteName (__ legendShortcutChar):? lineTerminator:+ # Some sprites have their colors commented out so we need more than one newline
+    _ spriteName (__ legendShortcutChar):? lineTerminator:+ # Some sprites have their colors commented out so we need more than one newline
     _ colorDefinitions lineTerminator:+ {% ([name, shortcut, _2, _3, colors, _5]) => { return {type: 'SPRITE_NO_PIXELS', name: name, colors: colors} } %}
 
 SpritePixels ->
-    spriteName (__ legendShortcutChar):? lineTerminator:+ # Some sprites have their colors commented out so we need more than one newline
+    _ spriteName (__ legendShortcutChar):? lineTerminator:+ # Some sprites have their colors commented out so we need more than one newline
     _ colorDefinitions lineTerminator:+
     PixelRows
     lineTerminator:*                                      {% ([name, shortcut, _2, _3, colors, _5, pixels, _7]) => { return {type: 'SPRITE_WITH_PIXELS', name: name, shortcutAndSpace: shortcut, colors: colors, pixels: pixels} } %}
@@ -370,7 +363,7 @@ colorDefinitions ->
 
 
 spriteName -> ruleVariableName
-pixelRow -> pixelDigit:+ lineTerminator
+pixelRow -> _ pixelDigit:+ lineTerminator
 pixelDigit -> digit | "."
 legendShortcutChar -> [^\n ] # -> (~lineTerminator %any)
 
@@ -383,10 +376,10 @@ LegendTile ->
     | LegendTileAnd
     | LegendTileOr
 
-LegendTileSimple -> LegendVarNameDefn _ "=" _ LookupLegendVarName lineTerminator:+                        {% ([legendName, _1, _2, _3, varName, _4]) => { return { type: 'LEGEND_ITEM_SIMPLE', varName: varName} } %}
+LegendTileSimple -> _ LegendVarNameDefn _ "=" _ LookupLegendVarName lineTerminator:+                        {% ([legendName, _1, _2, _3, varName, _4]) => { return { type: 'LEGEND_ITEM_SIMPLE', varName: varName} } %}
 # Ensure there are spaces around AND or OR so we do not accidentally match CleANDishes
-LegendTileAnd ->    LegendVarNameDefn _ "=" _ atLeast2ListOf[LookupLegendVarName, __ t_AND __] lineTerminator:+
-LegendTileOr ->     LegendVarNameDefn _ "=" _ atLeast2ListOf[LookupLegendVarName, __ t_OR __] lineTerminator:+
+LegendTileAnd ->    _ LegendVarNameDefn _ "=" _ atLeast2ListOf[LookupLegendVarName, __ t_AND __] lineTerminator:+
+LegendTileOr ->     _ LegendVarNameDefn _ "=" _ atLeast2ListOf[LookupLegendVarName, __ t_OR __] lineTerminator:+
 
 LegendVarNameDefn -> word
     # # If it is multiple characters then it needs to be a valid ruleVariableName. If it is one character then it needs to be a valid legendVariableChar
@@ -398,7 +391,7 @@ LookupLegendVarName -> LegendVarNameDefn
 
 # TODO: Handle tokens like sfx0 and explicit args instead of just varName (like "Player CantMove up")
 # all of them are at https:#www.puzzlescript.net/Documentation/sounds.html
-SoundItem -> SoundItemInner lineTerminator:+
+SoundItem -> _ SoundItemInner lineTerminator:+
 
 SoundItemInner
     -> SoundItemEnum
@@ -438,7 +431,7 @@ soundItemActionMoveArg
     | t_VERTICAL
 
 
-CollisionLayerItem -> nonemptyListOf[lookupCollisionVariableName, (_ "," _ | __)] ",":? lineTerminator:+
+CollisionLayerItem -> _ nonemptyListOf[lookupCollisionVariableName, (_ "," _ | __)] ",":? lineTerminator:+
 
 
 RuleItem ->
@@ -450,8 +443,8 @@ Rule ->
       RuleWithoutMessage
     | RuleWithMessage
 
-RuleWithoutMessage -> nonemptyListOf[LeftModifiers RuleBracket, _] _ "->" ((_ RuleModifier):? _ RuleBracket):* (_ RuleCommand):* lineTerminator:+
-RuleWithMessage ->   nonemptyListOf[LeftModifiers RuleBracket, _] _ "->" ((_ RuleModifier):? _ RuleBracket):* (_ RuleCommand):* _ MessageCommand lineTerminator:*
+RuleWithoutMessage -> _ nonemptyListOf[LeftModifiers RuleBracket, _] _ "->" ((_ RuleModifier):? _ RuleBracket):* (_ RuleCommand):* lineTerminator:+
+RuleWithMessage ->   _ nonemptyListOf[LeftModifiers RuleBracket, _] _ "->" ((_ RuleModifier):? _ RuleBracket):* (_ RuleCommand):* _ MessageCommand lineTerminator:*
 
 LeftModifiers ->
       nonemptyListOf[RuleModifierLeft, __] _
@@ -532,16 +525,15 @@ RuleCommand ->
 MessageCommand -> t_MESSAGE messageLine {% ([_1, _2, message]) => { return {type:'MESSAGE_COMAMND_WORDS', message} } %}
 
 RuleLoop ->
+    _
     t_DEBUGGER:?
     t_STARTLOOP lineTerminator:+
-    (_ RuleItem):+
+    (RuleItem):+
     t_ENDLOOP lineTerminator:+
 
 RuleGroup ->
-    t_DEBUGGER:?
-    # t_RANDOM:? Check if the 1st rule has this set
     Rule
-    (_ t_GROUP_RULE_PLUS _ Rule):+ {% ([_1, isRandom, firstRule, otherRules]) => { return {type:'RULE_GROUP', firstRule: firstRule, otherRules: otherRules} } %}
+    (_ t_GROUP_RULE_PLUS Rule):+ {% ([_1, isRandom, firstRule, otherRules]) => { return {type:'RULE_GROUP', firstRule: firstRule, otherRules: otherRules} } %}
 
 HackTileNameIsSFX1 -> t_SFX __ t_DEBUGGER:?
 HackTileNameIsSFX2 -> lookupRuleVariableName __ t_SFX __ t_DEBUGGER:?
@@ -551,8 +543,8 @@ WinConditionItem
     -> WinConditionItemSimple
     | WinConditionItemOn
 
-WinConditionItemSimple -> winConditionItemPrefix __ lookupRuleVariableName lineTerminator:+
-WinConditionItemOn -> winConditionItemPrefix __ lookupRuleVariableName __ t_ON __ lookupRuleVariableName lineTerminator:+
+WinConditionItemSimple -> _ winConditionItemPrefix __ lookupRuleVariableName lineTerminator:+
+WinConditionItemOn -> _ winConditionItemPrefix __ lookupRuleVariableName __ t_ON __ lookupRuleVariableName lineTerminator:+
 
 winConditionItemPrefix
     -> t_NO
@@ -570,7 +562,7 @@ LevelItem ->
 # Ensure we collect characters up to the last non-whitespace
 GameMessageLevel -> _ t_MESSAGE messageLine {% ([_0, messageWords]) => { return {type: 'LEVEL_MESSAGE', messageWords } } %}
 messageLine -> [^\n]:* [\n]
-levelMapRow -> [^\n \t\(]:+ lineTerminator {% ([cols], offset, reject) => {
+levelMapRow -> _ [^\n \t\(]:+ lineTerminator {% ([_0, cols], offset, reject) => {
   const str = cols.join('')
   if (str.toUpperCase().startsWith('MESSAGE')) {
     return reject
