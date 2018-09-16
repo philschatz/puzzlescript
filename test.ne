@@ -122,21 +122,21 @@ main ->
                 switch (levelRowItem.type) {
                     case 'LEVEL_ROW':
                         if (currentMapLevel) {
-                            currentMapLevel.push(levelRowItem.rowData)
+                            currentMapLevel.push(levelRowItem)
                         } else {
-                            currentMapLevel = [levelRowItem.rowData]
+                            currentMapLevel = [levelRowItem]
                         }
                         break
                     case 'LEVEL_MESSAGE':
                         if (currentMapLevel) {
-                            levels.push({type: 'LEVEL_MAP', value: currentMapLevel})
+                            levels.push({type: 'LEVEL_MAP', value: currentMapLevel.map(row => row.rowData), sourceOffset: currentMapLevel[0].sourceOffset})
                             currentMapLevel = null
                         }
                         levels.push(levelRowItem)
                         break
                     case 'LEVEL_SEPARATOR':
                         if (currentMapLevel) {
-                            levels.push({type: 'LEVEL_MAP', value: currentMapLevel})
+                            levels.push({type: 'LEVEL_MAP', value: currentMapLevel.map(row => row.rowData), sourceOffset: currentMapLevel[0].sourceOffset})
                             currentMapLevel = null
                         }
                         break
@@ -146,7 +146,7 @@ main ->
             }
             // add the last level
             if (currentMapLevel) {
-                levels.push({type: 'LEVEL_MAP', value: currentMapLevel})
+                levels.push({type: 'LEVEL_MAP', value: currentMapLevel.map(row => row.rowData), sourceOffset: currentMapLevel[0].sourceOffset})
                 currentMapLevel = null
             }
             return {
@@ -197,15 +197,15 @@ decimal ->
 decimalWithLeadingNumber -> digit:+ ("." digit:+):?
 decimalWithLeadingPeriod -> "." digit:+
 
-colorHex6 -> "#" hexDigit hexDigit hexDigit hexDigit hexDigit hexDigit  {% (a) => { return {type:'HEX6', value: a.join('')} } %}
-colorHex3 -> "#" hexDigit hexDigit hexDigit                             {% (a) => { return {type:'HEX3', value: a.join('')} } %}
+colorHex6 -> "#" hexDigit hexDigit hexDigit hexDigit hexDigit hexDigit  {% (a, sourceOffset) => { return {type:'HEX6', value: a.join('')}, sourceOffset} %}
+colorHex3 -> "#" hexDigit hexDigit hexDigit                             {% (a, sourceOffset) => { return {type:'HEX3', value: a.join('')}, sourceOffset} %}
 colorNameOrHex ->
       colorHex6 {% id %}
     | colorHex3 {% id %}
     | colorName {% id %}
 # Exclude `#` to ensure it does not conflict with the hex colors
 # Exclude 0-9 because those are pixel colors
-colorName -> [^\n #\(0-9\.] word {% toDebug('COLOR_NAME') || function ([first, rest]) { return {type:'COLOR_NAME', value: [first].concat(rest).join('')} } %}
+colorName -> [^\n #\(0-9\.] word {% toDebug('COLOR_NAME') || function ([first, rest], sourceOffset) { return {type:'COLOR_NAME', value: [first].concat(rest).join(''), sourceOffset} } %}
 
 
 # ----------------
@@ -381,24 +381,24 @@ t_ANY -> "ANY"i {% upperId %}
 t_SOME -> "SOME"i {% upperId %}
 
 
-Title -> t_TITLE __ words          {% ([_1, _2, value]) => { return {type:'TITLE', value} } %}
+Title -> t_TITLE __ words          {% ([_1, _2, value], sourceOffset) => { return {type:'TITLE', value, sourceOffset} } %}
 
 OptionalMetaData -> (_ OptionalMetaDataItem lineTerminator:+):*     {% ([vals]) => { return {type: 'METADATA', value: extractSecond(vals)} } %}
 
 OptionalMetaDataItem ->
-      t_AUTHOR __ words                         {% ([_1, _2, value]) => { return {type:'AUTHOR', value} } %}
-    | t_HOMEPAGE __ word                        {% ([_1, _2, value]) => { return {type:'HOMEPAGE', value} } %}
-    | t_YOUTUBE __ word                         {% ([_1, _2, value]) => { return {type:'YOUTUBE', value} } %}
-    | t_ZOOMSCREEN __ widthAndHeight            {% ([_1, _2, value]) => { return {type:'ZOOMSCREEN', value} } %}
-    | t_FLICKSCREEN __ widthAndHeight           {% ([_1, _2, value]) => { return {type:'FLICKSCREEN', value} } %}
-    | t_REQUIRE_PLAYER_MOVEMENT (__ "off"):?    {% ([_1, _2, value]) => { return {type:'REQUIRE_PLAYER_MOVEMENT', value: !!value} } %}
-    | t_RUN_RULES_ON_LEVEL_START (__ "true"):?  {% ([_1, _2, value]) => { return {type:'RUN_RULES_ON_LEVEL_START', value: true} } %}
-    | t_COLOR_PALETTE __ word                   {% ([_1, _2, value]) => { return {type:'COLOR_PALETTE', value} } %}
-    | t_BACKGROUND_COLOR __ colorNameOrHex      {% ([_1, _2, value]) => { return {type:'BACKGROUND_COLOR', value} } %}
-    | t_TEXT_COLOR __ colorNameOrHex            {% ([_1, _2, value]) => { return {type:'TEXT_COLOR', value} } %}
-    | t_REALTIME_INTERVAL __ decimal            {% ([_1, _2, value]) => { return {type:'REALTIME_INTERVAL', value} } %}
-    | t_KEY_REPEAT_INTERVAL __ decimal          {% ([_1, _2, value]) => { return {type:'KEY_REPEAT_INTERVAL', value} } %}
-    | t_AGAIN_INTERVAL __ decimal               {% ([_1, _2, value]) => { return {type:'AGAIN_INTERVAL', value} } %}
+      t_AUTHOR __ words                         {% ([_1, _2, value], sourceOffset) => { return {type:'AUTHOR', value, sourceOffset} } %}
+    | t_HOMEPAGE __ word                        {% ([_1, _2, value], sourceOffset) => { return {type:'HOMEPAGE', value, sourceOffset} } %}
+    | t_YOUTUBE __ word                         {% ([_1, _2, value], sourceOffset) => { return {type:'YOUTUBE', value, sourceOffset} } %}
+    | t_ZOOMSCREEN __ widthAndHeight            {% ([_1, _2, value], sourceOffset) => { return {type:'ZOOMSCREEN', value, sourceOffset} } %}
+    | t_FLICKSCREEN __ widthAndHeight           {% ([_1, _2, value], sourceOffset) => { return {type:'FLICKSCREEN', value, sourceOffset} } %}
+    | t_REQUIRE_PLAYER_MOVEMENT (__ "off"):?    {% ([_1, _2, value], sourceOffset) => { return {type:'REQUIRE_PLAYER_MOVEMENT', value: !!value, sourceOffset} } %}
+    | t_RUN_RULES_ON_LEVEL_START (__ "true"):?  {% ([_1, _2, value], sourceOffset) => { return {type:'RUN_RULES_ON_LEVEL_START', value: true, sourceOffset} } %}
+    | t_COLOR_PALETTE __ word                   {% ([_1, _2, value], sourceOffset) => { return {type:'COLOR_PALETTE', value, sourceOffset} } %}
+    | t_BACKGROUND_COLOR __ colorNameOrHex      {% ([_1, _2, value], sourceOffset) => { return {type:'BACKGROUND_COLOR', value, sourceOffset} } %}
+    | t_TEXT_COLOR __ colorNameOrHex            {% ([_1, _2, value], sourceOffset) => { return {type:'TEXT_COLOR', value, sourceOffset} } %}
+    | t_REALTIME_INTERVAL __ decimal            {% ([_1, _2, value], sourceOffset) => { return {type:'REALTIME_INTERVAL', value, sourceOffset} } %}
+    | t_KEY_REPEAT_INTERVAL __ decimal          {% ([_1, _2, value], sourceOffset) => { return {type:'KEY_REPEAT_INTERVAL', value, sourceOffset} } %}
+    | t_AGAIN_INTERVAL __ decimal               {% ([_1, _2, value], sourceOffset) => { return {type:'AGAIN_INTERVAL', value, sourceOffset} } %}
     | t_NOACTION                                {% () => { return {type:'NO_ACTION', value: true} } %}
     | t_NOUNDO                                  {% () => { return {type:'NO_UNDO', value: true} } %}
     | t_NOREPEAT_ACTION                         {% () => { return {type:'NO_REPEAT_ACTION', value: true} } %}
@@ -416,13 +416,13 @@ Sprite ->
 
 SpriteNoPixels ->
     _ spriteName (__ legendShortcutChar):? lineTerminator:+ # Some sprites have their colors commented out so we need more than one newline
-    _ colorDefinitions lineTerminator:+ {% toDebug('SpriteNoPixels') || function ([_0, name, mapCharOpt, _2, _3, colors, _5]) { return {type: 'SPRITE_NO_PIXELS', name: name, mapChar: mapCharOpt ? mapCharOpt[1] : null, colors: colors} } %}
+    _ colorDefinitions lineTerminator:+ {% toDebug('SpriteNoPixels') || function ([_0, name, mapCharOpt, _2, _3, colors, _5], sourceOffset) { return {type: 'SPRITE_NO_PIXELS', name: name, mapChar: mapCharOpt ? mapCharOpt[1] : null, colors, sourceOffset} } %}
 
 SpritePixels ->
     _ spriteName (__ legendShortcutChar):? lineTerminator:+ # Some sprites have their colors commented out so we need more than one newline
     _ colorDefinitions lineTerminator:+
     PixelRows
-    lineTerminator:*                     {% toDebug('SpritePixels') || function ([_0, name, mapCharOpt, _2, _3, colors, _5, pixels, _7]) { return {type: 'SPRITE_WITH_PIXELS', name: name, mapChar: mapCharOpt ? mapCharOpt[1] : null, colors: colors, pixels: pixels} } %}
+    lineTerminator:*                     {% toDebug('SpritePixels') || function ([_0, name, mapCharOpt, _2, _3, colors, _5, pixels, _7], sourceOffset) { return {type: 'SPRITE_WITH_PIXELS', name: name, mapChar: mapCharOpt ? mapCharOpt[1] : null, colors, pixels, sourceOffset} } %}
 
 colorDefinitions ->
       nonemptyListOf[colorNameOrHex, __] {% ([a]) => extractFirst(a) %}
@@ -446,10 +446,10 @@ LegendTile ->
     | LegendTileAnd    {% id %}
     | LegendTileOr     {% id %}
 
-LegendTileSimple -> _ LegendVarNameDefn _ "=" _ LookupLegendVarName lineTerminator:+                                {% toDebug('LegendTileSimple') || function([_0, name, _2, _3, _4, value, _6, _7]) { return {type: 'LEGEND_ITEM_SIMPLE', name: name, value: value} } %}
+LegendTileSimple -> _ LegendVarNameDefn _ "=" _ LookupLegendVarName lineTerminator:+                                {% toDebug('LegendTileSimple') || function([_0, name, _2, _3, _4, value, _6, _7], sourceOffset) { return {type: 'LEGEND_ITEM_SIMPLE', name, value, sourceOffset} } %}
 # Ensure there are spaces around AND or OR so we do not accidentally match CleANDishes
-LegendTileAnd ->    _ LegendVarNameDefn _ "=" _ atLeast2ListOf[LookupLegendVarName, __ t_AND __] lineTerminator:+   {% toDebug('LegendTileAnd') || function([_0, name, _2, _3, _4, values, _6, _7]) { return {type: 'LEGEND_ITEM_AND', name: name, values: extractFirst(values)} } %}
-LegendTileOr ->     _ LegendVarNameDefn _ "=" _ atLeast2ListOf[LookupLegendVarName, __ t_OR __] lineTerminator:+    {% toDebug('LegendTileOr')  || function([_0, name, _2, _3, _4, values, _6, _7]) { return {type: 'LEGEND_ITEM_OR', name: name, values: extractFirst(values)} } %}
+LegendTileAnd ->    _ LegendVarNameDefn _ "=" _ atLeast2ListOf[LookupLegendVarName, __ t_AND __] lineTerminator:+   {% toDebug('LegendTileAnd') || function([_0, name, _2, _3, _4, values, _6, _7], sourceOffset) { return {type: 'LEGEND_ITEM_AND', name, values: extractFirst(values), sourceOffset} } %}
+LegendTileOr ->     _ LegendVarNameDefn _ "=" _ atLeast2ListOf[LookupLegendVarName, __ t_OR __] lineTerminator:+    {% toDebug('LegendTileOr')  || function([_0, name, _2, _3, _4, values, _6, _7], sourceOffset) { return {type: 'LEGEND_ITEM_OR', name, values: extractFirst(values), sourceOffset} } %}
 
 LegendVarNameDefn -> word {% toDebug('LegendVarNameDefn') || id %}
     # # If it is multiple characters then it needs to be a valid ruleVariableName. If it is one character then it needs to be a valid legendVariableChar
@@ -481,11 +481,11 @@ soundItemSimpleOptions ->
     | t_SHOWMESSAGE     {% upperId %}
     | t_CLOSEMESSAGE    {% upperId %}
 
-SoundItemEnum -> soundItemSimpleOptions __ integer      {% ([soundEnum, _1, soundCode]) => { return {type: 'SOUND_ENUM', soundEnum, soundCode} } %}
-SoundItemSfx -> t_SFX __ integer                        {% ([soundSfx, _1, soundCode]) => { return {type: 'SOUND_SFX', soundSfx, soundCode} } %}
-SoundItemMoveDirection -> lookupRuleVariableName __ t_MOVE __ soundItemActionMoveArg __ integer     {% ([spriteName, _1, _2, _3, direction, _5, soundCode]) => { return {type: 'SOUND_MOVE_DIRECTION', spriteName, direction, soundCode} } %}
-SoundItemMoveSimple -> lookupRuleVariableName __ t_MOVE __ integer  {% ([spriteName, _1, _2, _3, soundCode]) => { return {type: 'SOUND_MOVE_SIMPLE', spriteName, soundCode} } %}
-SoundItemNormal -> lookupRuleVariableName __ SoundItemAction __ integer     {% ([spriteName, _1, eventEnum, _3, soundCode]) => { return {type: 'SOUND_SPRITE_EVENT', spriteName, eventEnum, soundCode} } %}
+SoundItemEnum -> soundItemSimpleOptions __ integer      {% ([soundEnum, _1, soundCode], sourceOffset) => { return {type: 'SOUND_ENUM', soundEnum, soundCode, sourceOffset} } %}
+SoundItemSfx -> t_SFX __ integer                        {% ([soundSfx, _1, soundCode], sourceOffset) => { return {type: 'SOUND_SFX', soundSfx, soundCode, sourceOffset} } %}
+SoundItemMoveDirection -> lookupRuleVariableName __ t_MOVE __ soundItemActionMoveArg __ integer     {% ([spriteName, _1, _2, _3, direction, _5, soundCode], sourceOffset) => { return {type: 'SOUND_MOVE_DIRECTION', spriteName, direction, soundCode, sourceOffset} } %}
+SoundItemMoveSimple -> lookupRuleVariableName __ t_MOVE __ integer  {% ([spriteName, _1, _2, _3, soundCode], sourceOffset) => { return {type: 'SOUND_MOVE_SIMPLE', spriteName, soundCode, sourceOffset} } %}
+SoundItemNormal -> lookupRuleVariableName __ SoundItemAction __ integer     {% ([spriteName, _1, eventEnum, _3, soundCode], sourceOffset) => { return {type: 'SOUND_SPRITE_EVENT', spriteName, eventEnum, soundCode, sourceOffset} } %}
 
 SoundItemAction ->
       t_CREATE      {% upperId %}
@@ -501,7 +501,7 @@ soundItemActionMoveArg ->
     | t_VERTICAL    {% upperId %}
 
 # collision layers are separated by a space or a comma (and some games and with a comma)
-CollisionLayerItem -> _ nonemptyListOf[lookupCollisionVariableName, (_ "," _ | __)] ",":? lineTerminator:+      {% toDebug('CollisionLayerItem') || function ([_0, spriteNames, _2]) { return extractFirst(spriteNames) } %}
+CollisionLayerItem -> _ nonemptyListOf[lookupCollisionVariableName, (_ "," _ | __)] ",":? lineTerminator:+      {% toDebug('CollisionLayerItem') || function ([_0, spriteNames, _2], sourceOffset) { return {type: 'COLLISION_LAYER', tiles: extractFirst(spriteNames), sourceOffset} } %}
 
 
 RuleItem ->
@@ -512,16 +512,16 @@ Rule ->
       RuleWithoutMessage    {% id %}
     | RuleWithMessage       {% id %}
 
-RuleWithoutMessage -> _ nonemptyListOf[ConditionBracket, _] _ "->" (ActionBracket):* (_ RuleCommand):* lineTerminator:+                     {% toDebug('RuleWithoutMessage') || function([_0, conditionBrackets, _2, _3, actionBrackets, commands, _6])                 { return {type: 'RULE', conditions: extractFirst(conditionBrackets), actions: extractFirst(actionBrackets), commands: extractSecond(commands)} } %}
-RuleWithMessage ->    _ nonemptyListOf[ConditionBracket, _] _ "->" (ActionBracket):* (_ RuleCommand):* _ MessageCommand lineTerminator:*    {% toDebug('RuleWithoutMessage') || function([_0, conditionBrackets, _2, _3, actionBrackets, commands, _6, message, _7])    { return {type: 'RULE', conditions: extractFirst(conditionBrackets), actions: extractFirst(actionBrackets), commands: extractSecond(commands), message} } %}
+RuleWithoutMessage -> _ nonemptyListOf[ConditionBracket, _] _ "->" (ActionBracket):* (_ RuleCommand):* lineTerminator:+                     {% toDebug('RuleWithoutMessage') || function([_0, conditionBrackets, _2, _3, actionBrackets, commands, _6], sourceOffset)                 { return {type: 'RULE', conditions: extractFirst(conditionBrackets), actions: extractFirst(actionBrackets), commands: extractSecond(commands), sourceOffset} } %}
+RuleWithMessage ->    _ nonemptyListOf[ConditionBracket, _] _ "->" (ActionBracket):* (_ RuleCommand):* _ MessageCommand lineTerminator:*    {% toDebug('RuleWithoutMessage') || function([_0, conditionBrackets, _2, _3, actionBrackets, commands, _6, message, _7], sourceOffset)    { return {type: 'RULE', conditions: extractFirst(conditionBrackets), actions: extractFirst(actionBrackets), commands: extractSecond(commands), message, sourceOffset} } %}
 
 ConditionBracket ->
-      LeftModifiers NormalRuleBracket    {% ([modifiers, {neighbors, againHack, debugFlag}]) => { return {type:'CONDITION_BRACKET', modifiers, neighbors, againHack, debugFlag} } %}
-    | LeftModifiers EllipsisRuleBracket  {% ([modifiers, {beforeNeighbors, afterNeighbors, debugFlag}]) => { return {type:'CONDITION_ELLIPSIS_BRACKET', modifiers, beforeNeighbors, afterNeighbors, debugFlag} } %}
+      LeftModifiers NormalRuleBracket    {% ([modifiers, {neighbors, againHack, debugFlag}], sourceOffset) => { return {type:'CONDITION_BRACKET', modifiers, neighbors, againHack, debugFlag, sourceOffset} } %}
+    | LeftModifiers EllipsisRuleBracket  {% ([modifiers, {beforeNeighbors, afterNeighbors, debugFlag}], sourceOffset) => { return {type:'CONDITION_ELLIPSIS_BRACKET', modifiers, beforeNeighbors, afterNeighbors, debugFlag, sourceOffset} } %}
 
 ActionBracket ->
-      (_ RuleModifier):* _ NormalRuleBracket    {% ([modifiers, _1, {neighbors, againHack, debugFlag}]) => { return {type:'ACTION_BRACKET', modifiers: extractSecond(modifiers), neighbors, againHack, debugFlag} } %}
-    | (_ RuleModifier):* _ EllipsisRuleBracket  {% ([modifiers, _1, {beforeNeighbors, afterNeighbors, debugFlag}]) => { return {type:'ACTION_ELLIPSIS_BRACKET', modifiers: extractSecond(modifiers), beforeNeighbors, afterNeighbors, debugFlag} } %}
+      (_ RuleModifier):* _ NormalRuleBracket    {% ([modifiers, _1, {neighbors, againHack, debugFlag}], sourceOffset) => { return {type:'ACTION_BRACKET', modifiers: extractSecond(modifiers), neighbors, againHack, debugFlag, sourceOffset} } %}
+    | (_ RuleModifier):* _ EllipsisRuleBracket  {% ([modifiers, _1, {beforeNeighbors, afterNeighbors, debugFlag}], sourceOffset) => { return {type:'ACTION_ELLIPSIS_BRACKET', modifiers: extractSecond(modifiers), beforeNeighbors, afterNeighbors, debugFlag, sourceOffset} } %}
 
 LeftModifiers ->
       nonemptyListOf[RuleModifierLeft, __] _    {% ([a]) => extractFirst(a) %}
@@ -532,8 +532,8 @@ RuleBracket ->
     | NormalRuleBracket   {% id %}
 
 # t_AGAIN is a HACK. It should be in the list of commands but it's not.
-NormalRuleBracket -> "[" nonemptyListOf[RuleBracketNeighbor, "|"] (t_AGAIN _):? "]" (_ t_DEBUGGER):?                                                        {% toDebug('NormalRuleBracket') || function([_0, neighbors, againHack, _3, debugFlag]) { return {type: '_INNER_BRACKET', neighbors: extractFirst(neighbors), againHack: againHack ? true : false, debugFlag: debugFlag ? debugFlag[1] : null } } %}
-EllipsisRuleBracket -> "[" nonemptyListOf[RuleBracketNeighbor, "|"] "|" _ t_ELLIPSIS _ "|" nonemptyListOf[RuleBracketNeighbor, "|"] "]" (_ t_DEBUGGER):?    {% toDebug('EllipsisRuleBracket') || function([_0, beforeNeighbors, _2, _3, _4, _5, _6, afterNeighbors, _8, debugFlag]) { return {type: '_INNER_ELLIPSIS_BRACKET', beforeNeighbors: extractFirst(beforeNeighbors), afterNeighbors: extractFirst(afterNeighbors), debugFlag: debugFlag ? debugFlag[1] : null } } %}
+NormalRuleBracket -> "[" nonemptyListOf[RuleBracketNeighbor, "|"] (t_AGAIN _):? "]" (_ t_DEBUGGER):?                                                        {% toDebug('NormalRuleBracket') || function([_0, neighbors, againHack, _3, debugFlag], sourceOffset) { return {type: '_INNER_BRACKET', neighbors: extractFirst(neighbors), againHack: againHack ? true : false, debugFlag: debugFlag ? debugFlag[1] : null, sourceOffset} } %}
+EllipsisRuleBracket -> "[" nonemptyListOf[RuleBracketNeighbor, "|"] "|" _ t_ELLIPSIS _ "|" nonemptyListOf[RuleBracketNeighbor, "|"] "]" (_ t_DEBUGGER):?    {% toDebug('EllipsisRuleBracket') || function([_0, beforeNeighbors, _2, _3, _4, _5, _6, afterNeighbors, _8, debugFlag], sourceOffset) { return {type: '_INNER_ELLIPSIS_BRACKET', beforeNeighbors: extractFirst(beforeNeighbors), afterNeighbors: extractFirst(afterNeighbors), debugFlag: debugFlag ? debugFlag[1] : null, sourceOffset} } %}
 
 RuleBracketNeighbor ->
     #   HackTileNameIsSFX1 # to parse '... -> [ SFX1 ]' (they should be commands)
@@ -542,15 +542,15 @@ RuleBracketNeighbor ->
     | RuleBracketEmptyNeighbor      {% id %}
 
 RuleBracketNoEllipsisNeighbor ->
-      _ nonemptyListOf[TileWithModifier ,__] (_ t_DEBUGGER):? _     {% toDebug('RuleBracketNoEllipsisNeighbor') || function([_0, tilesWithModifiers, debugFlag, _3]) { return {type: 'NEIGHBOR', tilesWithModifiers: extractFirst(tilesWithModifiers), debugFlag: debugFlag ? debugFlag[1] : null } } %}
+      _ nonemptyListOf[TileWithModifier ,__] (_ t_DEBUGGER):? _     {% toDebug('RuleBracketNoEllipsisNeighbor') || function([_0, tilesWithModifiers, debugFlag, _3], sourceOffset) { return {type: 'NEIGHBOR', tilesWithModifiers: extractFirst(tilesWithModifiers), debugFlag: debugFlag ? debugFlag[1] : null, sourceOffset} } %}
 
 # Matches `[]` as well as `[ ]`
-RuleBracketEmptyNeighbor -> _       {% toDebug('RuleBracketEmptyNeighbor') || function([_0]) { return {type: 'NEIGHBOR_EMPTY'} } %}
+RuleBracketEmptyNeighbor -> _       {% toDebug('RuleBracketEmptyNeighbor') || function([_0], sourceOffset) { return {type: 'NEIGHBOR_EMPTY', sourceOffset} } %}
 
 # Force-check that there is whitespace after the cellLayerModifier so things
 # like "STATIONARYZ" or "NOZ" are not parsed as a modifier
 # (they are a variable that happens to begin with the same text as a modifier)
-TileWithModifier -> (tileModifier __):? lookupRuleVariableName  {% toDebug('TileWithModifier') || function([modifier, tileName]) { return {type: 'TILE_WITH_MODIFIER', modifier: modifier ? modifier[0] : null, tileName} } %}
+TileWithModifier -> (tileModifier __):? lookupRuleVariableName  {% toDebug('TileWithModifier') || function([modifier, tileName], sourceOffset) { return {type: 'TILE_WITH_MODIFIER', modifier: modifier ? modifier[0] : null, tileName, sourceOffset} } %}
 
 # tileModifier -> tileModifierInner {% debugRule('TILEMODIFIER') %}
 
@@ -588,14 +588,14 @@ RuleModifierLeft ->
     | t_RIGID       {% upperId %}
 
 RuleCommand ->
-      t_AGAIN       {% () => { return {type: 'RULE_COMMAND_AGAIN'} } %}
-    | t_CANCEL      {% () => { return {type: 'RULE_COMMAND_CANCEL'} } %}
-    | t_CHECKPOINT  {% () => { return {type: 'RULE_COMMAND_CHECKPOINT'} } %}
-    | t_RESTART     {% () => { return {type: 'RULE_COMMAND_RESTART'} } %}
-    | t_WIN         {% () => { return {type: 'RULE_COMMAND_WIN'} } %}
-    | t_SFX         {% ([a]) => { return {type: 'RULE_COMMAND_SFX', value: a} } %}
+      t_AGAIN       {% (_0, sourceOffset) => { return {type: 'RULE_COMMAND_AGAIN', sourceOffset} } %}
+    | t_CANCEL      {% (_0, sourceOffset) => { return {type: 'RULE_COMMAND_CANCEL', sourceOffset} } %}
+    | t_CHECKPOINT  {% (_0, sourceOffset) => { return {type: 'RULE_COMMAND_CHECKPOINT', sourceOffset} } %}
+    | t_RESTART     {% (_0, sourceOffset) => { return {type: 'RULE_COMMAND_RESTART', sourceOffset} } %}
+    | t_WIN         {% (_0, sourceOffset) => { return {type: 'RULE_COMMAND_WIN', sourceOffset} } %}
+    | t_SFX         {% ([a], sourceOffset) => { return {type: 'RULE_COMMAND_SFX', value: a, sourceOffset} } %}
 
-MessageCommand -> t_MESSAGE messageLine {% ([_1, message]) => { return {type:'MESSAGE_COMAMND', message} } %}
+MessageCommand -> t_MESSAGE messageLine {% ([_1, message], sourceOffset) => { return {type:'MESSAGE_COMAMND', message, sourceOffset} } %}
 
 RuleLoop ->
     _
@@ -606,15 +606,15 @@ RuleLoop ->
 
 RuleGroup ->
     Rule
-    (_ t_GROUP_RULE_PLUS Rule):* {% ([firstRule, otherRules]) => { return {type:'RULE_GROUP', rules: [firstRule].concat(extractThird(otherRules))} } %}
+    (_ t_GROUP_RULE_PLUS Rule):* {% ([firstRule, otherRules], sourceOffset) => { return {type:'RULE_GROUP', rules: [firstRule].concat(extractThird(otherRules)), sourceOffset} } %}
 
 # HackTileNameIsSFX1 -> t_SFX __ t_DEBUGGER:?
 # HackTileNameIsSFX2 -> lookupRuleVariableName __ t_SFX __ t_DEBUGGER:?
 
 
 WinConditionItem ->
-      _ winConditionItemPrefix __ lookupRuleVariableName lineTerminator:+       {% toDebug('WinConditionItem') || function([_0, prefix, _1, spriteName, _2]) { return {type: 'WINCONDITION_SIMPLE', prefix, spriteName} } %}
-    | _ winConditionItemPrefix __ lookupRuleVariableName __ t_ON __ lookupRuleVariableName lineTerminator:+     {% toDebug('WinConditionItem') || function([_0, prefix, _1, spriteName, _2, _3, _4, lookupSpriteName, _5]) { return {type: 'WINCONDITION_ON', prefix, spriteName, lookupSpriteName} } %}
+      _ winConditionItemPrefix __ lookupRuleVariableName lineTerminator:+       {% toDebug('WinConditionItem') || function([_0, prefix, _1, spriteName, _2], sourceOffset) { return {type: 'WINCONDITION_SIMPLE', prefix, spriteName, sourceOffset} } %}
+    | _ winConditionItemPrefix __ lookupRuleVariableName __ t_ON __ lookupRuleVariableName lineTerminator:+     {% toDebug('WinConditionItem') || function([_0, prefix, _1, spriteName, _2, _3, _4, lookupSpriteName, _5], sourceOffset) { return {type: 'WINCONDITION_ON', prefix, spriteName, lookupSpriteName, sourceOffset} } %}
 
 winConditionItemPrefix ->
       t_NO      {% id %}
@@ -630,17 +630,17 @@ LevelItem ->
 
 
 # Ensure we collect characters up to the last non-whitespace
-GameMessageLevel -> _ t_MESSAGE messageLine {% ([_0, _1, message]) => { return {type: 'LEVEL_MESSAGE', message } } %}
+GameMessageLevel -> _ t_MESSAGE messageLine {% ([_0, _1, message], sourceOffset) => { return {type: 'LEVEL_MESSAGE', message, sourceOffset} } %}
 # This does not use a lineTerminator because it needs to consume parentheses
 messageLine -> [^\n]:* [\n] {% toDebug('messageLine') || function([message, _2]) { return message.join('').trim() } %}
-levelMapRow -> _ [^\n \t\(]:+ lineTerminator {% ([_0, cols], offset, reject) => {
+levelMapRow -> _ [^\n \t\(]:+ lineTerminator {% ([_0, cols], sourceOffset, reject) => {
   const str = cols.join('')
   if (str.toUpperCase().startsWith('MESSAGE')) {
     return reject
   } else {
-    return {type: 'LEVEL_ROW', rowData: cols.map(([char]) => char[0])}
+    return {type: 'LEVEL_ROW', rowData: cols.map(([char]) => char[0]), sourceOffset}
   }
 }
 %}
 
-SeparatorLine -> lineTerminator {% () => { return {type:'LEVEL_SEPARATOR'} } %}
+SeparatorLine -> lineTerminator {% (_0, sourceOffset) => { return {type:'LEVEL_SEPARATOR', sourceOffset} } %}
