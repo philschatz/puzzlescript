@@ -562,15 +562,15 @@ winConditionItemPrefix ->
 
 
 LevelItem ->
-      GameMessageLevel
-    | levelMapRow
-    | SeparatorLine
+      GameMessageLevel {% id %}
+    | levelMapRow {% id %}
+    | SeparatorLine {% id %}
 
 
 # Ensure we collect characters up to the last non-whitespace
-GameMessageLevel -> _ t_MESSAGE messageLine {% ([_0, messageWords]) => { return {type: 'LEVEL_MESSAGE', messageWords } } %}
+GameMessageLevel -> _ t_MESSAGE messageLine {% ([_0, _1, message]) => { return {type: 'LEVEL_MESSAGE', message } } %}
 # This does not use a lineTerminator because it needs to consume parentheses
-messageLine -> [^\n]:* [\n]
+messageLine -> [^\n]:* [\n] {% toDebug('messageLine') || function([message, _2]) { return message.join('').trim() } %}
 levelMapRow -> _ [^\n \t\(]:+ lineTerminator {% ([_0, cols], offset, reject) => {
   const str = cols.join('')
   if (str.toUpperCase().startsWith('MESSAGE')) {
