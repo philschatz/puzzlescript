@@ -134,12 +134,12 @@ decimalWithLeadingPeriod -> "." digit:+
 colorHex6 -> "#" hexDigit hexDigit hexDigit hexDigit hexDigit hexDigit  {% (a) => { return {type:'HEX6', value: a.join('')} } %}
 colorHex3 -> "#" hexDigit hexDigit hexDigit                             {% (a) => { return {type:'HEX3', value: a.join('')} } %}
 colorNameOrHex ->
-      colorHex6
-    | colorHex3
-    | colorName
+      colorHex6 {% id %}
+    | colorHex3 {% id %}
+    | colorName {% id %}
 # Exclude `#` to ensure it does not conflict with the hex colors
 # Exclude 0-9 because those are pixel colors
-colorName -> [^\n #\(0-9\.] word {% toDebug('COLOR_NAME') || function (a) { return {type:'COLOR_NAME', value: a}} %}
+colorName -> [^\n #\(0-9\.] word {% toDebug('COLOR_NAME') || function ([first, rest]) { return {type:'COLOR_NAME', value: [first].concat(rest).join('')} } %}
 
 
 # ----------------
@@ -355,28 +355,31 @@ widthAndHeight -> integer "x" integer
 
 
 Sprite ->
-      SpritePixels
-    | SpriteNoPixels
+      SpritePixels      {% id %}
+    | SpriteNoPixels    {% id %}
 
 SpriteNoPixels ->
     _ spriteName (__ legendShortcutChar):? lineTerminator:+ # Some sprites have their colors commented out so we need more than one newline
-    _ colorDefinitions lineTerminator:+ {% ([name, shortcut, _2, _3, colors, _5]) => { return {type: 'SPRITE_NO_PIXELS', name: name, colors: colors} } %}
+    _ colorDefinitions lineTerminator:+ {% toDebug('SpriteNoPixels') || function ([_0, name, mapCharOpt, _2, _3, colors, _5]) { return {type: 'SPRITE_NO_PIXELS', name: name, mapChar: mapCharOpt ? mapCharOpt[1] : null, colors: colors} } %}
 
 SpritePixels ->
     _ spriteName (__ legendShortcutChar):? lineTerminator:+ # Some sprites have their colors commented out so we need more than one newline
     _ colorDefinitions lineTerminator:+
     PixelRows
-    lineTerminator:*                                      {% ([name, shortcut, _2, _3, colors, _5, pixels, _7]) => { return {type: 'SPRITE_WITH_PIXELS', name: name, shortcutAndSpace: shortcut, colors: colors, pixels: pixels} } %}
+    lineTerminator:*                     {% toDebug('SpritePixels') || function ([_0, name, mapCharOpt, _2, _3, colors, _5, pixels, _7]) { return {type: 'SPRITE_WITH_PIXELS', name: name, mapChar: mapCharOpt ? mapCharOpt[1] : null, colors: colors, pixels: pixels} } %}
 
 colorDefinitions ->
-      nonemptyListOf[colorNameOrHex, __]
-    | nonemptyListOf[colorHex6, __] nonemptyListOf[colorHex6, __] # Some games jsut have `#123456#789abc #def012` (no space before the next hex number)
+      nonemptyListOf[colorNameOrHex, __] {% ([a]) => extractFirst(a) %}
+    # Some games just have `#123456#789abc #def012` (no space before the next hex number)
+    | nonemptyListOf[colorHex6, __] nonemptyListOf[colorHex6, __]  {% ([a, b]) => extractFirst(a.concat(b)) %}
 
 
-spriteName -> ruleVariableName
-pixelRow -> _ pixelDigit:+ lineTerminator
-pixelDigit -> digit | "."
-legendShortcutChar -> [^\n ] # -> (~lineTerminator %any)
+spriteName -> ruleVariableName              {% id %}
+pixelRow -> _ pixelDigit:+ lineTerminator   {% toDebug('pixelRow', function ([_0, entries, _2]) { return {type: 'PIXEL_ROW', entries: entries} }) || function ([_0, entries, _2]) { return entries } %}
+pixelDigit ->
+      digit {% id %}
+    | "."   {% id %}
+legendShortcutChar -> [^\n ] {% id %}
 
 # Support at least 5x5 sprites (so we can disambiguate from single-color definitions)
 PixelRows -> pixelRow pixelRow pixelRow pixelRow pixelRow:+
