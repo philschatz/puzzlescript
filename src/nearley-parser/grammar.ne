@@ -1,5 +1,6 @@
+# This file is a https://github.com/kach/nearley file and it generates the ./grammar.js file
+# @preprocessor typescript
 @{%
-
 const debugBlackList = new Set([])
 const debugWhiteList = new Set(['word', '', 'SectionPHIL'])
 

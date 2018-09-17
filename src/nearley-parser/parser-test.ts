@@ -1,20 +1,15 @@
-const fs = require('fs')
-const glob = require('glob')
+import * as fs from 'fs'
+import * as nearley from 'nearley'
+import * as compiledGrammar from './grammar'
 
-const nearley = require("nearley")
-const grammar = require("./grammar")
+const parser = new nearley.Parser(nearley.Grammar.fromCompiled(compiledGrammar as nearley.CompiledRules))
 
 const filename = process.argv[2]
 if (!filename) {
   throw new Error(`Missing filename argument`)
 }
 
-// console.log(`READING "${filename}"`)
-
-const parser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar))
-
 const content = fs.readFileSync(filename, 'utf-8')
-debugger
 parser.feed(content)
 
 if (content[content.length - 1] !== '\n') {
