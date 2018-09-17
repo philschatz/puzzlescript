@@ -13,7 +13,7 @@ if [[ $2 ]]; then
   if [[ ${command_prefix} == '' ]]; then
     command_prefix='node'
   fi
-  ${command_prefix} ./lib/nearley-parser/parser-test.js "$1"
+  ${command_prefix} ./lib/nearley-parser/parserTest.js "$1"
 else
   PHIL_DEBUG=1 ${command_prefix} $(npm bin)/nearley-test --quiet ./src/nearley-parser/grammar.js < $1
 fi

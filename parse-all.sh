@@ -2,7 +2,7 @@ npm run-script compile || (echo "failed to compile" && exit 111)
 
 run_test() {
   filename=$1
-  node ./lib/nearley-parser/parser-test.js "${filename}" 2> /dev/null
+  node ./lib/nearley-parser/parserTest.js "${filename}" 2> /dev/null
   if [[ $? == 1 ]]; then
     echo "STACKTRACE ${filename}"
   elif [[ $? == 111 ]]; then
