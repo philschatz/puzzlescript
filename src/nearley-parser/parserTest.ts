@@ -19,7 +19,7 @@ if (content[content.length - 1] !== '\n') {
 }
 parser.finish()
 
-const results = parser.results as ASTGame[]
+const results = parser.results as ASTGame<string>[]
 
 if (results.length === 1) {
     console.log(`UNIQUE PARSE: ${filename}. Rules=${results[0].rules.length}`)

@@ -34,11 +34,48 @@ export enum BRACKET_MODIFIER {
     RIGID = 'RIGID',
 }
 
+export enum SOUND_WHEN {
+    RESTART = 'RESTART',
+    UNDO = 'UNDO',
+    TITLESCREEN = 'TITLESCREEN',
+    STARTGAME = 'STARTGAME',
+    STARTLEVEL = 'STARTLEVEL',
+    ENDLEVEL = 'ENDLEVEL',
+    ENDGAME = 'ENDGAME',
+    SHOWMESSAGE = 'SHOWMESSAGE',
+    CLOSEMESSAGE = 'CLOSEMESSAGE',
+}
+
+export enum SOUND_SPRITE_DIRECTION {
+    UP = 'UP',
+    DOWN = 'DOWN',
+    LEFT = 'LEFT',
+    RIGHT = 'RIGHT',
+    HORIZONTAL = 'HORIZONTAL',
+    VERTICAL = 'VERTICAL',
+}
+
+export enum SOUND_SPRITE_EVENT {
+    CREATE = 'CREATE',
+    DESTROY = 'DESTROY',
+    CANTMOVE = 'CANTMOVE',
+}
+
+export enum WIN_CONDITION {
+    ON = 'ON',
+    NO = 'NO',
+    ALL = 'ALL',
+    ANY = 'ANY',
+    SOME = 'SOME',
+}
+
+
 export type ASTNode = {
     type: string
     sourceOffset: number
 }
 export type IColor = ASTNode & {
+    value: string
 }
 
 export type ColorHex3 = IColor & {
@@ -58,6 +95,8 @@ export type AbstractSprite = ASTNode & {
     name: string
     mapChar: Optional<string>
     colors: IColor[]
+    // Subclass values
+    pixels: Optional<(number | '.')[][]>
 }
 export type SpriteNoPixels = AbstractSprite & {
     type: 'SPRITE_NO_PIXELS'
@@ -69,79 +108,70 @@ export type SpriteWithPixels = AbstractSprite & {
 }
 
 
-export type AbstractLegendItem = ASTNode & {
+export type AbstractLegendItem<TileRef> = ASTNode & {
     name: string
+    // Subclass values
+    value: Optional<TileRef>
+    values: Optional<TileRef[]>
 }
 
-export type SimpleLegendItem = AbstractLegendItem & {
+export type SimpleLegendItem<TileRef> = AbstractLegendItem<TileRef> & {
     type: 'LEGEND_ITEM_SIMPLE'
-    value: string
+    value: TileRef
 }
 
-export type OrLegendItem = AbstractLegendItem & {
+export type OrLegendItem<TileRef> = AbstractLegendItem<TileRef> & {
     type: 'LEGEND_ITEM_OR'
-    values: string[]
+    values: TileRef[]
 }
 
-export type AndLegendItem = AbstractLegendItem & {
+export type AndLegendItem<TileRef> = AbstractLegendItem<TileRef> & {
     type: 'LEGEND_ITEM_AND'
-    values: string[]
+    values: TileRef[]
 }
 
 
-export type AbstractSound = ASTNode & {
+export type AbstractSound<TileRef> = ASTNode & {
     soundCode: number
+    // Subclass values
+    when: Optional<SOUND_WHEN>
+    sfx: Optional<string>
+    sprite: Optional<TileRef>
+    spriteDirection: Optional<SOUND_SPRITE_DIRECTION>
+    spriteEvent: Optional<SOUND_SPRITE_EVENT>
 }
 
-export type SoundEnum = AbstractSound & {
+export type SoundEnum<TileRef> = AbstractSound<TileRef> & {
     type: 'SOUND_ENUM'
-    enum:
-      'RESTART'
-    | 'UNDO'
-    | 'TITLESCREEN'
-    | 'STARTGAME'
-    | 'STARTLEVEL'
-    | 'ENDLEVEL'
-    | 'ENDGAME'
-    | 'SHOWMESSAGE'
-    | 'CLOSEMESSAGE'
+    when: SOUND_WHEN
 }
 
-export type SoundSfx = AbstractSound & {
+export type SoundSfx<TileRef> = AbstractSound<TileRef> & {
     type: 'SOUND_SFX'
     sfx: string
 }
 
-export type SoundMoveDirection = AbstractSound & {
+export type SoundMoveDirection<TileRef> = AbstractSound<TileRef> & {
     type: 'SOUND_MOVE_DIRECTION'
-    sprite: string
-    direction:
-      'UP'
-    | 'DOWN'
-    | 'LEFT'
-    | 'RIGHT'
-    | 'HORIZONTAL'
-    | 'VERTICAL'
+    sprite: TileRef
+    spriteDirection: SOUND_SPRITE_DIRECTION
 }
 
-export type SoundMoveSimple = AbstractSound & {
+export type SoundMoveSimple<TileRef> = AbstractSound<TileRef> & {
     type: 'SOUND_MOVE_SIMPLE'
-    sprite: string
+    sprite: TileRef
 }
 
-export type SoundSpriteEvent = AbstractSound & {
+export type SoundSpriteEvent<TileRef> = AbstractSound<TileRef> & {
     type: 'SOUND_SPRITE_EVENT'
-    sprite: string
-    event:
-      'CREATE'
-    | 'DESTROY'
-    | 'CANTMOVE'
+    sprite: TileRef
+    spriteEvent: SOUND_SPRITE_EVENT
 }
 
 
-export type CollisionLayer = ASTNode & {
+export type CollisionLayer<TileRef> = ASTNode & {
     type: 'COLLISION_LAYER'
-    tiles: string[]
+    tiles: TileRef[]
 }
 
 // Rules have an optional debugFlag
@@ -149,54 +179,69 @@ export type Debuggable = ASTNode & {
     debugFlag: Optional<DEBUG_FLAG>
 }
 
-export type AbstractRule = ASTNode & { }
+export type AbstractRule<TileRef> = Debuggable & {
+    // Subclass values
+    rules: Optional<AbstractRule<TileRef>[]>
+    conditions: Optional<AbstractBracket<TileRef>[]>
+    actions: Optional<AbstractBracket<TileRef>[]>
+    commands: Optional<AbstractCommand[]>
+    message: Optional<MessageCommand>
+}
 
-export type RuleGroup = AbstractRule & {
+export type RuleGroup<TileRef> = AbstractRule<TileRef> & {
     type: 'RULE_GROUP'
-    rules: SimpleRule[]
+    rules: Rule<TileRef>[]
 }
 
-export type RuleLoop = AbstractRule & {
+export type RuleLoop<TileRef> = AbstractRule<TileRef> & {
     type: 'RULE_LOOP'
-    rules: RuleGroup[]
+    rules: RuleGroup<TileRef>[]
 }
 
-export type SimpleRule = Debuggable & {
+export type Rule<TileRef> = AbstractRule<TileRef> & {
     type: 'RULE'
-    conditions: AbstractBracket[]
-    actions: AbstractBracket[]
+    conditions: AbstractBracket<TileRef>[]
+    actions: AbstractBracket<TileRef>[]
     commands: AbstractCommand[]
     message: Optional<MessageCommand>
 }
 
-export type AbstractBracket = Debuggable & {
+export type AbstractBracket<TileRef> = Debuggable & {
     modifiers: BRACKET_MODIFIER[]
+    // Subclass values
+    neighbors: Optional<Neighbor<TileRef>[]>
+    beforeNeighbors: Optional<Neighbor<TileRef>[]>
+    afterNeighbors: Optional<Neighbor<TileRef>[]>
 }
 
-export type SimpleBracket = AbstractBracket & {
+export type SimpleBracket<TileRef> = AbstractBracket<TileRef> & {
     type: 'SIMPLE_BRACKET'
-    neighbors: Neighbor[]
+    neighbors: Neighbor<TileRef>[]
 }
 
-export type EllipsisBracket = AbstractBracket & {
+export type EllipsisBracket<TileRef> = AbstractBracket<TileRef> & {
     type: 'ELLIPSIS_BRACKET'
-    beforeNeighbors: Neighbor[]
-    afterNeighbors: Neighbor[]
+    beforeNeighbors: Neighbor<TileRef>[]
+    afterNeighbors: Neighbor<TileRef>[]
 }
 
-export type Neighbor = Debuggable & {
+export type Neighbor<TileRef> = Debuggable & {
     type: 'NEIGHBOR'
-    tilesWithModifier: TileWithModifier[]
+    tilesWithModifier: TileWithModifier<TileRef>[]
 }
 
-export type TileWithModifier = Debuggable & {
+export type TileWithModifier<TileRef> = Debuggable & {
     type: 'TILE_WITH_MODIFIER'
     modifier: Optional<TILE_MODIFIER>
-    tile: string
+    tile: TileRef
 }
 
 
-export type AbstractCommand = ASTNode & { }
+export type AbstractCommand = ASTNode & {
+    // Subclass values
+    message: Optional<string>
+    sfx: Optional<string>
+}
 
 export type MessageCommand = AbstractCommand & {
     type: 'COMMAND_MESSAGE'
@@ -228,38 +273,45 @@ export type SFXCommand = AbstractCommand & {
     sfx: string
 }
 
-export type AbstractWinCondition = ASTNode & {
-    prefix: string
-    sprite: string
+export type AbstractWinCondition<TileRef> = ASTNode & {
+    condition: WIN_CONDITION
+    sprite: TileRef
+    // Subclass values
+    onSprite: Optional<TileRef>
 }
 
-export type WinConditionSimple = AbstractWinCondition & {
+export type WinConditionSimple<TileRef> = AbstractWinCondition<TileRef> & {
     type: 'WINCONDITION_SIMPLE'
 }
 
-export type WinConditionOn = AbstractWinCondition & {
+export type WinConditionOn<TileRef> = AbstractWinCondition<TileRef> & {
     type: 'WINCONDITION_ON'
-    onSprite: string
+    onSprite: TileRef
 }
 
-export type AbstractLevel = ASTNode & { }
+export type AbstractLevel<TileRef> = ASTNode & {
+    // Subclass values
+    message: Optional<string>
+    rowData: TileRef[][]
+}
 
-export type LevelMessage = AbstractLevel & {
+export type LevelMessage<TileRef> = AbstractLevel<TileRef> & {
     type: 'LEVEL_MESSAGE'
     message: string
 }
 
-export type LevelMap = AbstractLevel & {
+export type LevelMap<TileRef> = AbstractLevel<TileRef> & {
     type: 'LEVEL_MAP'
-    rowData: string[][]
+    rowData: TileRef[][]
 }
 
 
-export type ASTGame = {
+export type ASTGame<TileRef> = {
     sprites: AbstractSprite[]
-    legendItems: AbstractLegendItem[]
-    collisionLayers: CollisionLayer[]
-    rules: AbstractRule[]
-    winConditions: AbstractWinCondition[]
-    levels: AbstractLevel[]
+    legendItems: AbstractLegendItem<TileRef>[]
+    collisionLayers: CollisionLayer<TileRef>[]
+    sounds: AbstractSound<TileRef>[]
+    rules: AbstractRule<TileRef>[]
+    winConditions: AbstractWinCondition<TileRef>[]
+    levels: AbstractLevel<TileRef>[]
 }
