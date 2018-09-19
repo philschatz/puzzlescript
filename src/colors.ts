@@ -402,6 +402,6 @@ export function lookupColorPalette(alias: string, colorName: string) {
     if (!map) {
         throw new Error(`BUG: Invalid color palette name or number: "${alias}" "${aliasStr}"`)
     }
-    const colorValue = map[colorName]
+    const colorValue = map[colorName.toLowerCase()]
     return colorValue
 }

@@ -66,4 +66,4 @@ test/webpack-output.js.map
 gists/__test/script.txt
 game-runtimes.csv
 *.cpuprofile
-src/nearley-parser/grammar.js
+src/nearley-parser/grammar.ts

@@ -41,7 +41,6 @@ export class LookupHelper {
         key = key.toLowerCase()
         const value = this._allObjects.get(key) || this._allLegendTiles.get(key)
         if (!value) {
-            console.error(source.getLineAndColumnMessage()) // tslint:disable-line:no-console
             throw new Error(`ERROR: Could not look up "${key}". Has it been defined in the Objects section or the Legend section?`)
         }
         return value

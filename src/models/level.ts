@@ -7,12 +7,15 @@ export interface ILevel {
     isMap: () => boolean
     getRows: () => IGameTile[][]
     getMessage: () => string
+    __incrementCoverage: () => void
+    getWidth(): number
+    getHeight(): number
 }
 
 export class LevelMap extends BaseForLines implements ILevel {
     private rows: IGameTile[][]
 
-    constructor(source: IGameCode, rows: any[][]) {
+    constructor(source: IGameCode, rows: IGameTile[][]) {
         super(source)
         this.rows = rows
     }
@@ -58,5 +61,11 @@ export class MessageLevel extends BaseForLines implements ILevel {
     }
     public getMessage() {
         return this.message
+    }
+    public getWidth(): number {
+        throw new Error(`BUG: Should have checked isMap first`)
+    }
+    public getHeight(): number {
+        throw new Error(`BUG: Should have checked isMap first`)
     }
 }

@@ -1,9 +1,9 @@
 import { getLetterSprites } from '../letters'
-import { ASTRule } from '../parser/astRule'
+import { AbstractRuleish } from '../parser/astRule'
 import { Optional } from '../util'
 import { IGameCode } from './BaseForLines'
 import { CollisionLayer } from './collisionLayer'
-import { LevelMap } from './level'
+import { ILevel } from './level'
 import { GameMetadata } from './metadata'
 import { IRule } from './rule'
 import { GameSound } from './sound'
@@ -11,11 +11,12 @@ import { GameLegendTileSimple, GameSprite, IGameTile } from './tile'
 import { WinConditionSimple } from './winCondition'
 
 export interface IGameNode {
-    __getSourceLineAndColumn: () => { lineNum: number, colNum: number }
-    __getLineAndColumnRange: () => { start: { line: number, col: number }, end: { line: number, col: number } }
+    __source: {code: string, sourceOffset: number}
+    __getSourceLineAndColumn(): { lineNum: number, colNum: number }
+    __getLineAndColumnRange(): { start: { line: number, col: number }, end: { line: number, col: number } }
     __coverageCount: Optional<number>
-    toString: () => string
-    toSourceString: () => string
+    toString(): string
+    toSourceString(): string
 }
 
 export class GameData {
@@ -27,7 +28,7 @@ export class GameData {
     public readonly collisionLayers: CollisionLayer[]
     public readonly rules: IRule[]
     public readonly winConditions: WinConditionSimple[]
-    public readonly levels: LevelMap[]
+    public readonly levels: ILevel[]
     private readonly cacheSpriteSize: {spriteHeight: number, spriteWidth: number}
     private readonly letterSprites: Map<string, GameSprite>
 
@@ -39,9 +40,9 @@ export class GameData {
         legends: GameLegendTileSimple[],
         sounds: GameSound[],
         collisionLayers: CollisionLayer[],
-        rules: ASTRule[],
+        rules: AbstractRuleish[],
         winConditions: WinConditionSimple[],
-        levels: LevelMap[]
+        levels: ILevel[]
     ) {
         this.title = title
         this.metadata = metadata

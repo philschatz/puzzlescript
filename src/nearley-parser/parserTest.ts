@@ -1,7 +1,8 @@
 import * as fs from 'fs'
 import * as nearley from 'nearley'
+import { IASTGame } from './astTypes'
 import * as compiledGrammar from './grammar'
-import { ASTGame } from './astTypes';
+import parser2 from './parser'
 
 const grammar = nearley.Grammar.fromCompiled(compiledGrammar as nearley.CompiledRules)
 const parser = new nearley.Parser(grammar)
@@ -19,14 +20,15 @@ if (content[content.length - 1] !== '\n') {
 }
 parser.finish()
 
-const results = parser.results as ASTGame<string>[]
+const results = parser.results as Array<IASTGame<string>>
 
 if (results.length === 1) {
-    console.log(`UNIQUE PARSE: ${filename}. Rules=${results[0].rules.length}`)
+    parser2.parse(content + '\n')
+    // console.log(data)
 } else if (results.length === 0) {
-    console.log(`ERROR: Could not parse ${filename}`)
+    console.log(`ERROR: Could not parse ${filename}`) // tslint:disable-line:no-console
     process.exit(111)
 } else {
-    console.log(`AMBIGUOUS: "${filename}" has ${results.length} results`)
+    console.log(`AMBIGUOUS: "${filename}" has ${results.length} results`) // tslint:disable-line:no-console
     process.exit(112)
 }

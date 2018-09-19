@@ -145,13 +145,9 @@ abstract class BaseUI {
     }
 
     public setGame(gameData: string) {
-        const { data, error } = Parser.parse(gameData)
+        const { data } = Parser.parse(gameData)
         if (!data) {
-            if (error) {
-                throw error
-            } else {
-                throw new Error(`BUG: Could not parse gameData and did not find an error`)
-            }
+            throw new Error(`BUG: Could not parse gameData and did not find an error`)
         }
         this.setGameEngine(new GameEngine(data))
     }

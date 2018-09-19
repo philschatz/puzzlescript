@@ -20,6 +20,7 @@ export abstract class AbstractCommand extends BaseForLines {
     public getMessage(): string {
         throw new Error(`BUG: Check getType() first`)
     }
+    public abstract toKey(): string
 }
 
 export class MessageCommand extends AbstractCommand {
@@ -40,6 +41,7 @@ export class MessageCommand extends AbstractCommand {
     public isMap() {
         return false
     }
+    public toKey() { return `[MESSAGE:"${this.message}"]` }
 }
 
 export class SoundCommand extends AbstractCommand {
@@ -56,6 +58,7 @@ export class SoundCommand extends AbstractCommand {
     public getSound() {
         return this.sound
     }
+    public toKey() { return `[SOUND:${this.sound.soundCode}]` }
 }
 
 export class CancelCommand extends AbstractCommand {
@@ -63,6 +66,7 @@ export class CancelCommand extends AbstractCommand {
         super(source)
     }
     public getType() { return COMMAND_TYPE.CANCEL }
+    public toKey() { return `[CANCEL]` }
 }
 
 export class CheckpointCommand extends AbstractCommand {
@@ -70,6 +74,7 @@ export class CheckpointCommand extends AbstractCommand {
         super(source)
     }
     public getType() { return COMMAND_TYPE.CHECKPOINT }
+    public toKey() { return `[CHECKPOINT]` }
 }
 
 export class RestartCommand extends AbstractCommand {
@@ -77,6 +82,7 @@ export class RestartCommand extends AbstractCommand {
         super(source)
     }
     public getType() { return COMMAND_TYPE.RESTART }
+    public toKey() { return `[RESTART]` }
 }
 
 export class WinCommand extends AbstractCommand {
@@ -84,6 +90,7 @@ export class WinCommand extends AbstractCommand {
         super(source)
     }
     public getType() { return COMMAND_TYPE.WIN }
+    public toKey() { return `[WIN]` }
 }
 
 export class AgainCommand extends AbstractCommand {
@@ -91,4 +98,5 @@ export class AgainCommand extends AbstractCommand {
         super(source)
     }
     public getType() { return COMMAND_TYPE.AGAIN }
+    public toKey() { return `[AGAIN]` }
 }

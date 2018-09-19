@@ -49,6 +49,7 @@ export interface IRule extends IGameNode {
 
     totalTimeMs?: number
     timesRan?: number
+    toKey(): string
 
 }
 
@@ -224,6 +225,9 @@ export class SimpleRuleGroup extends BaseForLines implements IRule {
             rule.addCellsToEmptyRules(cells)
         }
     }
+    public toKey() {
+        return this.rules.map((r) => r.toKey()).join('\n')
+    }
 }
 
 export class SimpleRuleLoop extends SimpleRuleGroup {
@@ -247,11 +251,11 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
     private _isLate: boolean
     private readonly isRigid: boolean
     private isSubscribedToCellChanges: boolean
-    private debugFlag: DEBUG_FLAG
+    private debugFlag: Optional<DEBUG_FLAG>
 
     constructor(source: IGameCode, evaluationDirection: RULE_DIRECTION,
                 conditionBrackets: ISimpleBracket[], actionBrackets: ISimpleBracket[],
-                commands: AbstractCommand[], isLate: boolean, isRigid: boolean, debugFlag: DEBUG_FLAG) {
+                commands: AbstractCommand[], isLate: boolean, isRigid: boolean, debugFlag: Optional<DEBUG_FLAG>) {
 
         super(source)
         this.evaluationDirection = evaluationDirection
@@ -273,7 +277,8 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
         const dir = this.dependsOnDirection() ? this.evaluationDirection : ''
         const conditions = this.conditionBrackets.map((x) => x.toKey())
         const actions = this.actionBrackets.map((x) => x.toKey())
-        return `{Late?${this._isLate}} {Rigid?${this.isRigid}}  ${dir} ${conditions} -> ${actions} ${this.commands.join(' ')} {debugger?${this.debugFlag}}`
+        const commands = this.commands.map((c) => c.toKey())
+        return `{Late?${this._isLate}} {Rigid?${this.isRigid}}  ${dir} ${conditions} -> ${actions} ${commands.join(' ')} {debugger?${this.debugFlag}}`
     }
     public getChildRules(): IRule[] {
         return []
@@ -441,11 +446,11 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
     public readonly _isRandom: boolean
     public readonly _direction: Optional<RULE_DIRECTION>
     public readonly _tile: IGameTile
-    public readonly _debugFlag: DEBUG_FLAG
+    public readonly _debugFlag: Optional<DEBUG_FLAG>
     private neighbors: Set<SimpleNeighbor>
     private trickleCells: Set<Cell>
 
-    constructor(source: IGameCode, isNegated: boolean, isRandom: boolean, direction: Optional<RULE_DIRECTION>, tile: IGameTile, debugFlag: DEBUG_FLAG) {
+    constructor(source: IGameCode, isNegated: boolean, isRandom: boolean, direction: Optional<RULE_DIRECTION>, tile: IGameTile, debugFlag: Optional<DEBUG_FLAG>) {
         super(source)
         this._isNegated = isNegated
         this._isRandom = isRandom
@@ -457,10 +462,11 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
     }
 
     public toKey(ignoreDebugFlag?: boolean) {
+        const sprites = this._tile.getSprites().map((sprite) => sprite.getName()).sort()
         if (ignoreDebugFlag) {
-            return `{-?${this._isNegated}} {#?${this._isRandom}} dir="${this._direction}" [${this._tile.getSprites().map((sprite) => sprite.getName()).sort().join(' ')}]`
+            return `{-?${this._isNegated}} {#?${this._isRandom}} dir="${this._direction}" [${sprites.join(' ')}]`
         } else {
-            return `{-?${this._isNegated}} {#?${this._isRandom}} dir="${this._direction}" [${this._tile.getSprites().map((sprite) => sprite.getName()).sort().join(' ')}]{debugging?${this._debugFlag}}`
+            return `{-?${this._isNegated}} {#?${this._isRandom}} dir="${this._direction}" [${sprites.join(' ')}]{debugging?${!!this._debugFlag}}`
         }
     }
 
@@ -617,11 +623,11 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
 }
 
 export abstract class ISimpleBracket extends BaseForLines implements ICacheable {
-    public readonly debugFlag: DEBUG_FLAG
+    public readonly debugFlag: Optional<DEBUG_FLAG>
     public readonly direction: RULE_DIRECTION
     protected firstCells: Set<Cell>
     private allNeighbors: SimpleNeighbor[]
-    constructor(source: IGameCode, direction: RULE_DIRECTION, allNeighbors: SimpleNeighbor[], debugFlag: DEBUG_FLAG) {
+    constructor(source: IGameCode, direction: RULE_DIRECTION, allNeighbors: SimpleNeighbor[], debugFlag: Optional<DEBUG_FLAG>) {
         super(source)
         this.direction = direction
         this.debugFlag = debugFlag
@@ -718,7 +724,7 @@ export class SimpleBracket extends ISimpleBracket {
     private readonly spritesPresentInRowOrColumn: SpriteBitSet
     private readonly anySpritesPresentInRowOrColumn: SpriteBitSet
 
-    constructor(source: IGameCode, direction: RULE_DIRECTION, neighbors: SimpleNeighbor[], debugFlag: DEBUG_FLAG) {
+    constructor(source: IGameCode, direction: RULE_DIRECTION, neighbors: SimpleNeighbor[], debugFlag: Optional<DEBUG_FLAG>) {
         super(source, direction, neighbors, debugFlag)
         this.neighbors = neighbors
         this.ellipsisBracketListeners = new Map()
@@ -738,7 +744,7 @@ export class SimpleBracket extends ISimpleBracket {
         if (ignoreDebugFlag) {
             return `{${dir}[${this.neighbors.map((n) => n.toKey(ignoreDebugFlag)).join('|')}]}`
         } else {
-            return `{${dir}[${this.neighbors.map((n) => n.toKey(ignoreDebugFlag)).join('|')}]{debugging?${this.debugFlag}}}`
+            return `{${dir}[${this.neighbors.map((n) => n.toKey(ignoreDebugFlag)).join('|')}]{debugging?${!!this.debugFlag}}}`
         }
     }
 
@@ -1126,7 +1132,7 @@ export class SimpleEllipsisBracket extends ISimpleBracket {
     private beforeEllipsisBracket: SimpleBracket
     private afterEllipsisBracket: SimpleBracket
     private linkages: MultiMap<Cell, Cell> // 1 before may have many afters
-    constructor(source: IGameCode, direction: RULE_DIRECTION, beforeEllipsisNeighbors: SimpleNeighbor[], afterEllipsisNeighbors: SimpleNeighbor[], debugFlag: DEBUG_FLAG) {
+    constructor(source: IGameCode, direction: RULE_DIRECTION, beforeEllipsisNeighbors: SimpleNeighbor[], afterEllipsisNeighbors: SimpleNeighbor[], debugFlag: Optional<DEBUG_FLAG>) {
         super(source, direction, [...beforeEllipsisNeighbors, ...afterEllipsisNeighbors], debugFlag)
         this.beforeEllipsisBracket = new SimpleBracket(source, direction, beforeEllipsisNeighbors, debugFlag)
         this.afterEllipsisBracket = new SimpleBracket(source, direction, afterEllipsisNeighbors, debugFlag)
@@ -1497,7 +1503,7 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
     public spritesPresent: SpriteBitSet
     public anySpritesPresent: Set<SpriteBitSet>
     private brackets: Map<ISimpleBracket, Set<number>>
-    private debugFlag: DEBUG_FLAG
+    private debugFlag: Optional<DEBUG_FLAG>
 
     private staticCache: Map<SimpleNeighbor, {replaceTiles: Set<ReplaceTile>, replaceDirections: Set<ReplaceDirection>}>
     private cacheYesBitSets: Map<CollisionLayer, BitSet>
@@ -1510,7 +1516,7 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
     private lruCache: LruCache<string, boolean>
     private trickleCells: Set<Cell>
 
-    constructor(source: IGameCode, tilesWithModifier: Set<SimpleTileWithModifier>, debugFlag: DEBUG_FLAG) {
+    constructor(source: IGameCode, tilesWithModifier: Set<SimpleTileWithModifier>, debugFlag: Optional<DEBUG_FLAG>) {
         super(source)
         // this.alreadyReportedMismatch = false
         this._tilesWithModifier = tilesWithModifier
@@ -1605,7 +1611,7 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
         if (ignoreDebugFlag) {
             return `{${[...this._tilesWithModifier].map((t) => t.toKey(ignoreDebugFlag)).sort().join(' ')}}`
         } else {
-            return `{${[...this._tilesWithModifier].map((t) => t.toKey(ignoreDebugFlag)).sort().join(' ')} debugging?${this.debugFlag}}`
+            return `{${[...this._tilesWithModifier].map((t) => t.toKey(ignoreDebugFlag)).sort().join(' ')} debugging?${!!this.debugFlag}}`
         }
     }
 

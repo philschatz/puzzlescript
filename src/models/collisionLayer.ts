@@ -1,7 +1,7 @@
-import { AddValidationFunc, ValidationLevel } from '../parser/parser'
 import { _flatten } from '../util'
 import { BaseForLines, IGameCode } from './BaseForLines'
 import { GameSprite, IGameTile } from './tile'
+import { AddValidationFunc, ValidationMessage, ValidationLevel } from '../nearley-parser/parser';
 
 let collisionIdCounter = 0
 export class CollisionLayer extends BaseForLines {
@@ -15,12 +15,12 @@ export class CollisionLayer extends BaseForLines {
         // Map all the Objects to the layer
         tiles.forEach((tile: IGameTile) => {
             if (tile.hasCollisionLayer()) {
-                addValidationMessage(tile, ValidationLevel.WARNING, 'An Object should not belong to more than one collision layer')
+                addValidationMessage(new ValidationMessage(tile.__source, ValidationLevel.WARNING, 'An Object should not belong to more than one collision layer'))
             }
             tile.setCollisionLayer(this)
             tile._getDescendantTiles().forEach((subTile) => {
                 if (subTile.hasCollisionLayer()) {
-                    addValidationMessage(subTile, ValidationLevel.WARNING, 'An Object should not belong to more than one collision layer. This item was referenced indirectly by a LEGEND entry')
+                    addValidationMessage(new ValidationMessage(subTile.__source, ValidationLevel.WARNING, 'An Object should not belong to more than one collision layer. This item was referenced indirectly by a LEGEND entry'))
                 }
                 subTile.setCollisionLayer(this)
             })
@@ -42,6 +42,10 @@ export class CollisionLayer extends BaseForLines {
             throw new Error(`BUG: Sprite is not in this CollisionLayer`)
         }
         return index
+    }
+
+    public toKey() {
+        return this.sprites.map((s) => s.getName()).join(' ')
     }
 
     // bitSetToSprites(bitSet: BitSet) {

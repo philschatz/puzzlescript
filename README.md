@@ -79,7 +79,7 @@ The goal of this project is to do 3 things:
 This is a remake of PuzzleScript that has the following features:
 
 - There is [documentation](https://philschatz.com/puzzlescript-cli/docs/) for using the [NPM package](https://www.npmjs.com/package/puzzlescript-cli)
-- There is a [Grammar](https://en.wikipedia.org/wiki/Parsing_expression_grammar) file that parses the game file (uses [ohm](https://github.com/harc/ohm))
+- There is a [Grammar](https://en.wikipedia.org/wiki/Parsing_expression_grammar) file that parses the game file (uses [nearley](https://github.com/kach/nearley))
 - The interpreter is a separate component
 - The rendering code is abstracted out so folks can add a different renderer (the example uses ASCII in the Terminal to show the game)
   - This allows for fun things like adding an accessible-friendly interface to play the games

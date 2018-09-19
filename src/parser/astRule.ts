@@ -2,6 +2,7 @@ import { Cell } from '../engine'
 import { BaseForLines, IGameCode } from '../models/BaseForLines'
 import { AbstractCommand } from '../models/command'
 import {
+    IRule,
     ISimpleBracket,
     SIMPLE_DIRECTION_DIRECTIONS,
     SimpleBracket,
@@ -10,7 +11,7 @@ import {
     SimpleRule,
     SimpleRuleGroup,
     SimpleRuleLoop,
-    SimpleTileWithModifier } from '../models/rule'
+    SimpleTileWithModifier} from '../models/rule'
 import { IGameTile } from '../models/tile'
 import { DEBUG_FLAG, ICacheable, Optional, RULE_DIRECTION, setIntersection } from '../util'
 
@@ -76,11 +77,11 @@ function cacheSetAndGet<A extends ICacheable>(cache: Map<string, A>, obj: A) {
 export class ASTRule extends BaseForLines {
     private readonly modifiers: AST_RULE_MODIFIER[]
     private readonly commands: AbstractCommand[]
-    private readonly brackets: ASTRuleBracket[]
-    private readonly actionBrackets: ASTRuleBracket[]
-    private readonly debugFlag: DEBUG_FLAG // Used for setting a breakpoint when evaluating the rule
+    private readonly brackets: IASTRuleBracket[]
+    private readonly actionBrackets: IASTRuleBracket[]
+    private readonly debugFlag: Optional<DEBUG_FLAG> // Used for setting a breakpoint when evaluating the rule
 
-    constructor(source: IGameCode, modifiers: AST_RULE_MODIFIER[], conditions: ASTRuleBracket[], actions: ASTRuleBracket[], commands: AbstractCommand[], debugFlag: DEBUG_FLAG) {
+    constructor(source: IGameCode, modifiers: AST_RULE_MODIFIER[], conditions: IASTRuleBracket[], actions: IASTRuleBracket[], commands: AbstractCommand[], debugFlag: Optional<DEBUG_FLAG>) {
         super(source)
         this.modifiers = modifiers
         this.commands = commands
@@ -329,9 +330,9 @@ export interface IASTRuleBracket extends ICacheable {
 export class ASTRuleBracket extends BaseForLines implements IASTRuleBracket {
     private readonly neighbors: ASTRuleBracketNeighbor[]
     private readonly firstCellsInEachDirection: Map<RULE_DIRECTION, Set<Cell>>
-    private readonly debugFlag: DEBUG_FLAG
+    private readonly debugFlag: Optional<DEBUG_FLAG>
 
-    constructor(source: IGameCode, neighbors: ASTRuleBracketNeighbor[], hack: Optional<string>, debugFlag: DEBUG_FLAG) {
+    constructor(source: IGameCode, neighbors: ASTRuleBracketNeighbor[], hack: Optional<string>, debugFlag: Optional<DEBUG_FLAG>) {
         super(source)
         this.neighbors = neighbors
         this.debugFlag = debugFlag
@@ -367,9 +368,9 @@ export class ASTRuleBracket extends BaseForLines implements IASTRuleBracket {
 export class ASTRuleBracketEllipsis extends BaseForLines implements IASTRuleBracket {
     private readonly beforeEllipsisNeighbors: ASTRuleBracketNeighbor[]
     private readonly afterEllipsisNeighbors: ASTRuleBracketNeighbor[]
-    private readonly debugFlag: DEBUG_FLAG
+    private readonly debugFlag: Optional<DEBUG_FLAG>
 
-    constructor(source: IGameCode, beforeEllipsisNeighbors: ASTRuleBracketNeighbor[], afterEllipsisNeighbors: ASTRuleBracketNeighbor[], debugFlag: DEBUG_FLAG) {
+    constructor(source: IGameCode, beforeEllipsisNeighbors: ASTRuleBracketNeighbor[], afterEllipsisNeighbors: ASTRuleBracketNeighbor[], debugFlag: Optional<DEBUG_FLAG>) {
         super(source)
         this.beforeEllipsisNeighbors = beforeEllipsisNeighbors
         this.afterEllipsisNeighbors = afterEllipsisNeighbors
@@ -402,9 +403,9 @@ export class ASTRuleBracketEllipsis extends BaseForLines implements IASTRuleBrac
 
 export class ASTRuleBracketNeighbor extends BaseForLines implements ICacheable {
     public readonly tilesWithModifier: ASTTileWithModifier[]
-    private readonly debugFlag: DEBUG_FLAG
+    private readonly debugFlag: Optional<DEBUG_FLAG>
 
-    constructor(source: IGameCode, tilesWithModifier: ASTTileWithModifier[], debugFlag: DEBUG_FLAG) {
+    constructor(source: IGameCode, tilesWithModifier: ASTTileWithModifier[], debugFlag: Optional<DEBUG_FLAG>) {
         super(source)
         this.debugFlag = debugFlag
 
@@ -424,7 +425,7 @@ export class ASTRuleBracketNeighbor extends BaseForLines implements ICacheable {
     }
 
     public toKey() {
-        return `{${this.tilesWithModifier.map((t) => t.toKey()).sort().join(' ')} debugging?${this.debugFlag}}`
+        return `{${this.tilesWithModifier.map((t) => t.toKey()).sort().join(' ')} debugging?${!!this.debugFlag}}`
     }
 
     public clone(direction: RULE_DIRECTION, nameToExpand: Optional<AST_RULE_MODIFIER>, newName: Optional<RULE_DIRECTION>) {
@@ -442,9 +443,9 @@ const M_NO = 'NO'
 export class ASTTileWithModifier extends BaseForLines implements ICacheable {
     public readonly modifier: Optional<string>
     public readonly tile: IGameTile
-    private readonly debugFlag: DEBUG_FLAG
+    private readonly debugFlag: Optional<DEBUG_FLAG>
 
-    constructor(source: IGameCode, modifier: Optional<string>, tile: IGameTile, debugFlag: DEBUG_FLAG) {
+    constructor(source: IGameCode, modifier: Optional<string>, tile: IGameTile, debugFlag: Optional<DEBUG_FLAG>) {
         super(source)
         this.modifier = modifier
         this.tile = tile
@@ -452,7 +453,7 @@ export class ASTTileWithModifier extends BaseForLines implements ICacheable {
     }
 
     public toKey() {
-        return `${this.modifier || ''} ${this.tile ? this.tile.getSprites().map((sprite) => sprite.getName()) : '|||(notile)|||'}{debugging?${this.debugFlag}}`
+        return `${this.modifier || ''} ${this.tile ? this.tile.getSprites().map((sprite) => sprite.getName()) : '|||(notile)|||'}{debugging?${!!this.debugFlag}}`
     }
 
     public clone(direction: RULE_DIRECTION, nameToExpand: Optional<AST_RULE_MODIFIER>, newName: Optional<RULE_DIRECTION>) {
@@ -513,10 +514,17 @@ export class ASTRuleBracketNeighborHack extends ASTRuleBracketNeighbor {
     }
 }
 
-export class ASTRuleLoop extends BaseForLines {
-    private readonly rules: ASTRule[]
+export abstract class AbstractRuleish extends BaseForLines {
 
-    constructor(source: IGameCode, rules: ASTRule[], debugFlag: DEBUG_FLAG) {
+    public abstract simplify(ruleCache: Map<string, SimpleRule>,
+                             bracketCache: Map<string, ISimpleBracket>, neighborCache: Map<string, SimpleNeighbor>,
+                             tileCache: Map<string, SimpleTileWithModifier>): IRule
+}
+
+export class ASTRuleLoop extends AbstractRuleish {
+    private readonly rules: AbstractRuleish[]
+
+    constructor(source: IGameCode, rules: AbstractRuleish[], debugFlag: Optional<DEBUG_FLAG>) {
         super(source)
         this.rules = rules
     }
@@ -528,8 +536,8 @@ export class ASTRuleLoop extends BaseForLines {
 
 export class ASTRuleGroup extends BaseForLines {
     private isRandom: boolean
-    private readonly rules: ASTRule[]
-    constructor(source: IGameCode, isRandom: boolean, rules: ASTRule[], debugFlag: DEBUG_FLAG) {
+    private readonly rules: AbstractRuleish[]
+    constructor(source: IGameCode, isRandom: boolean, rules: AbstractRuleish[], debugFlag: Optional<DEBUG_FLAG>) {
         super(source)
         this.isRandom = isRandom
         this.rules = rules

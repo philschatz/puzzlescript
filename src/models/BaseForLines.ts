@@ -1,8 +1,11 @@
-import * as ohm from 'ohm-js'
 import { Optional } from '../util'
 
-export type IGameCode = ohm.Interval
-export interface IGameCodeWithSource extends ohm.Interval {
+export type IGameCode = {
+    code: string
+    sourceOffset: number
+}
+
+export interface IGameCodeWithSource {
     sourceString: string
 }
 // Return an object with the line and column information for the given
@@ -65,7 +68,7 @@ export class BaseForLines {
     public readonly __source: IGameCode // tslint:disable-line:variable-name
     public __coverageCount: Optional<number> // tslint:disable-line:variable-name
     constructor(source: IGameCode) {
-        if (!source || !source.getLineAndColumnMessage) {
+        if (!source) {
             throw new Error(`BUG: failed to provide the source when constructing this object`)
         }
         this.__source = source
@@ -75,25 +78,26 @@ export class BaseForLines {
         }
     }
     public __getSourceLineAndColumn() {
-        const s = this.__source as IGameCodeWithSource
-        return getLineAndColumn(s.sourceString, this.__source.startIdx)
+        const s = this.__source
+        return getLineAndColumn(s.code, s.sourceOffset)
     }
     public toString() {
-        const s = this.__source as IGameCodeWithSource
-        return s.getLineAndColumnMessage()
+        const s = this.__source
+        const { lineNum } = getLineAndColumn(s.code, s.sourceOffset)
+        return s.code.split('\n')[lineNum - 1]
     }
     public toSourceString() {
-        const s = this.__source as IGameCodeWithSource
-        return s.trimmed().contents
+        const s = this.__source
+        const { lineNum } = getLineAndColumn(s.code, s.sourceOffset)
+        return s.code.split('\n')[lineNum - 1]
     }
     // This is mostly used for creating code coverage for the games. So we know which Rules (or objects) are not being matched
     public __getLineAndColumnRange() {
-        const s = this.__source as IGameCodeWithSource
-        const start = getLineAndColumn(s.sourceString, this.__source.startIdx)
-        const end = getLineAndColumn(s.sourceString, this.__source.endIdx - 1) // subtract one to hopefully get the previous line
+        const s = this.__source
+        const { lineNum, colNum } = getLineAndColumn(s.code, s.sourceOffset)
         return {
-            start: { line: start.lineNum, col: start.colNum },
-            end: { line: end.lineNum, col: end.colNum }
+            start: { line: lineNum, col: colNum },
+            end: { line: lineNum, col: colNum + 1 }
         }
     }
     public __incrementCoverage() {

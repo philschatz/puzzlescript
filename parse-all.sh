@@ -2,8 +2,10 @@ npm run-script compile || (echo "failed to compile" && exit 111)
 
 run_test() {
   filename=$1
-  node ./lib/nearley-parser/parserTest.js "${filename}" 2> /dev/null
-  if [[ $? == 1 ]]; then
+  node ./lib/nearley-parser/parserTest.js "${filename}"
+  if [[ $? == 0 ]]; then
+    echo "UNIQUE PARSE ${filename}"
+  elif [[ $? == 1 ]]; then
     echo "STACKTRACE ${filename}"
   elif [[ $? == 111 ]]; then
     echo "UNABLE_TO_PARSE (zero reults) ${filename}"
