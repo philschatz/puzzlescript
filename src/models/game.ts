@@ -30,6 +30,7 @@ export class GameData {
     public readonly winConditions: WinConditionSimple[]
     public readonly levels: ILevel[]
     private readonly cacheSpriteSize: {spriteHeight: number, spriteWidth: number}
+    private cachedBackgroundSprite: Optional<GameSprite>
     private readonly letterSprites: Map<string, GameSprite>
 
     constructor(
@@ -99,21 +100,26 @@ export class GameData {
     }
 
     public getMagicBackgroundSprite() {
-        const background: Optional<GameSprite> = this._getSpriteByName('background')
-        if (!background) {
-            const legendBackground = this.legends.find((tile) => tile.spriteNameOrLevelChar.toLocaleLowerCase() === 'background')
-            if (legendBackground) {
-                if (legendBackground.isOr()) {
-                    return null
-                } else {
-                    return legendBackground.getSprites()[0]
+        if (this.cachedBackgroundSprite) {
+            return this.cachedBackgroundSprite
+        } else {
+            const background: Optional<GameSprite> = this._getSpriteByName('background')
+            if (!background) {
+                const legendBackground = this.legends.find((tile) => tile.spriteNameOrLevelChar.toLocaleLowerCase() === 'background')
+                if (legendBackground) {
+                    if (legendBackground.isOr()) {
+                        return null
+                    } else {
+                        return legendBackground.getSprites()[0]
+                    }
                 }
             }
+            if (!background) {
+                throw new Error(`ERROR: Game does not have a Background Sprite or Tile`)
+            }
+            this.cachedBackgroundSprite = background
+            return background
         }
-        if (!background) {
-            throw new Error(`ERROR: Game does not have a Background Sprite or Tile`)
-        }
-        return background
     }
     public getPlayer(): IGameTile {
         const player = this._getSpriteByName('player') || this.legends.find((tile) => tile.spriteNameOrLevelChar.toLocaleLowerCase() === 'player')

@@ -1,0 +1,42 @@
+table.ps-table {
+    /* width: 90%; */
+    width: 400px;
+
+    border-spacing: 10px;
+    border-collapse: collapse;
+}
+table tr td.ps-cell {
+    position: relative;
+}
+td.ps-cell::after {
+    content: '';
+    display: block;
+    margin-top: 100%;
+}
+.ps-cell-label {
+    /* Move it off-screen so screenreaders read it but users do not see it */
+    position: absolute;
+    left:-9999px;
+}
+
+.ps-sprite-whole {
+    /* to make it square (depends on styling for "ps-cell") */
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    width: 100%;
+    height: 100%;
+}
+.ps-sprite-row {
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+    flex-wrap: nowrap
+}
+.ps-sprite-pixel { flex-grow: 1 }

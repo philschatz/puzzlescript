@@ -4,12 +4,20 @@ import { GameData } from '../models/game'
 import { _flatten, Optional, RULE_DIRECTION } from '../util'
 import BaseUI from './base'
 
+interface ITableCell {
+    td: HTMLTableCellElement,
+    label: HTMLSpanElement,
+    pixels: HTMLSpanElement[][]
+}
+
 class TableUI extends BaseUI {
     private readonly table: HTMLElement
+    private tableCells: ITableCell[][]
 
     constructor(table: HTMLElement) {
         super()
         this.table = table
+        this.tableCells = []
         table.classList.add('ps-table')
         this.markAcceptingInput(false)
     }
@@ -43,10 +51,15 @@ class TableUI extends BaseUI {
         const levelCells = this.getCurrentLevelCells()
         // Draw the level
         // Draw the empty table
-        for (const levelRow of levelCells) {
+        this.tableCells = []
+        const gameData = this.getGameData()
+        const { width, height } = gameData.metadata.flickscreen || gameData.metadata.zoomscreen || { width: levelCells[0].length, height: levelCells.length }
+        for (let currentY = 0; currentY < height; currentY++) {
             const tr = document.createElement('tr')
-            for (const _cell of levelRow) {
+            const tableRow = []
+            for (let currentX = 0; currentX < width; currentX++) {
                 const td = document.createElement('td')
+                const tableCellPixels = []
                 td.classList.add('ps-cell')
                 td.setAttribute('tabindex', '0')
 
@@ -61,18 +74,23 @@ class TableUI extends BaseUI {
                 for (let row = 0; row < this.SPRITE_HEIGHT; row++) {
                     const spriteRow = document.createElement('div')
                     spriteRow.classList.add('ps-sprite-row')
+                    const pixelRow = []
 
                     for (let col = 0; col < this.SPRITE_WIDTH; col++) {
                         const spritePixel = document.createElement('span')
                         spritePixel.classList.add('ps-sprite-pixel')
                         spriteRow.appendChild(spritePixel)
+                        pixelRow.push(spritePixel)
                     }
                     sprite.appendChild(spriteRow)
+                    tableCellPixels.push(pixelRow)
                 }
                 td.appendChild(sprite)
                 tr.appendChild(td)
+                tableRow.push({ td, label: cellLabel, pixels: tableCellPixels })
             }
             this.table.appendChild(tr)
+            this.tableCells.push(tableRow)
         }
 
         for (const row of levelCells) {
@@ -99,10 +117,7 @@ class TableUI extends BaseUI {
         const pixelY = y % this.SPRITE_HEIGHT
         const pixelX = x % this.SPRITE_WIDTH
 
-        const sel = `tr:nth-of-type(${rowIndex + 1}) td:nth-of-type(${colIndex + 1})
-                        .ps-sprite-row:nth-of-type(${pixelY + 1})
-                        .ps-sprite-pixel:nth-of-type(${pixelX + 1})`
-        const pixel = this.table.querySelector(sel)
+        const pixel = this.tableCells[rowIndex][colIndex].pixels[pixelY][pixelX]
         if (!pixel) {
             throw new Error(`BUG: Could not set pixel because table is too small`)
         }
@@ -116,7 +131,9 @@ class TableUI extends BaseUI {
 
     public clearScreen() {
         super.clearScreen()
-        this.table.innerHTML = '' // clear all the rows
+        // clear all the rows
+        this.table.innerHTML = ''
+        this.tableCells = []
     }
 
     protected renderLevelScreen(levelRows: Cell[][], renderScreenDepth: number) {
@@ -129,10 +146,7 @@ class TableUI extends BaseUI {
         const pixelY = y % this.SPRITE_HEIGHT
         const pixelX = x % this.SPRITE_WIDTH
 
-        const sel = `tr:nth-of-type(${rowIndex + 1}) td:nth-of-type(${colIndex + 1})
-                        .ps-sprite-row:nth-of-type(${pixelY + 1})
-                        .ps-sprite-pixel:nth-of-type(${pixelX + 1})`
-        const pixel = this.table.querySelector(sel)
+        const pixel = this.tableCells[rowIndex][colIndex].pixels[pixelY][pixelX]
         if (!pixel) {
             throw new Error(`BUG: Could not set pixel because table is too small`)
         }
@@ -196,10 +210,9 @@ class TableUI extends BaseUI {
         }
 
         // Inject the set of sprites for a11y
-        const sel = `tr:nth-of-type(${cell.rowIndex + 1}) td.ps-cell:nth-of-type(${cell.colIndex + 1}) .ps-cell-label`
-        const cellLabel = this.table.querySelector(sel)
+        const cellLabel = this.tableCells[cell.rowIndex - this.windowOffsetRowStart][cell.colIndex - this.windowOffsetColStart].label
         if (!cellLabel) {
-            throw new Error(`BUG: Could not find cell in the table`)
+            throw new Error(`BUG: Could not find cell in the table: [${cell.rowIndex} - ${this.windowOffsetRowStart}][${cell.colIndex} - ${this.windowOffsetColStart}]`)
         }
         if (spritesForDebugging.length > 0) {
             cellLabel.textContent = spritesForDebugging.map((s) => s.getName()).join(', ')
