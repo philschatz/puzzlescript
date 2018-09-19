@@ -1,5 +1,5 @@
 /* eslint-env jasmine */
-const { default: Parser } = require('../lib/nearley-parser/parser')
+const { default: Parser } = require('../lib/parser/parser')
 const { lookupColorPalette } = require('../lib/colors')
 
 function checkGrammar(code) {

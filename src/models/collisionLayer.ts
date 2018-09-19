@@ -1,7 +1,7 @@
 import { _flatten } from '../util'
 import { BaseForLines, IGameCode } from './BaseForLines'
 import { GameSprite, IGameTile } from './tile'
-import { AddValidationFunc, ValidationMessage, ValidationLevel } from '../nearley-parser/parser';
+import { AddValidationFunc, ValidationMessage, ValidationLevel } from '../parser/parser';
 
 let collisionIdCounter = 0
 export class CollisionLayer extends BaseForLines {
