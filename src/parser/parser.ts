@@ -1,6 +1,7 @@
 import * as nearley from 'nearley'
 import { lookupColorPalette } from '../colors'
 import { Optional } from '../index-browser'
+import { IGameCode } from '../models/BaseForLines'
 import { CollisionLayer } from '../models/collisionLayer'
 import { HexColor, TransparentColor } from '../models/colors'
 import { AgainCommand, CancelCommand, CheckpointCommand, MessageCommand, RestartCommand, SoundCommand, WinCommand } from '../models/command'
@@ -13,7 +14,6 @@ import { WinConditionOn, WinConditionSimple } from '../models/winCondition'
 import { AbstractRuleish, AST_RULE_MODIFIER, ASTRule, ASTRuleBracket, ASTRuleBracketEllipsis, ASTRuleBracketNeighbor, ASTRuleGroup, ASTRuleLoop, ASTTileWithModifier } from './astRule'
 import * as ast from './astTypes'
 import * as compiledGrammar from './grammar'
-import { IGameCode } from '../models/BaseForLines';
 
 function removeNulls<T>(ary: Array<T | null>) {
     // return ary.filter(a => !!a)
@@ -38,7 +38,7 @@ export class ValidationMessage {
         this.message = message
     }
 
-    toKey() {
+    public toKey() {
         return `[${this.source.toString()}] [${this.level}] [${this.message}]`
     }
 }
@@ -106,7 +106,7 @@ class AstBuilder {
         const levels = root.levels.map((n) => this.buildLevel(n))
         const gameData = new GameData(source, root.title, metadata, sprites, legendItems, sounds, collisionLayers, rules, winConditions, levels)
         const validationMessages = this.getValidationMessages()
-        return {gameData, validationMessages}
+        return { gameData, validationMessages }
     }
 
     public buildSprite(node: ast.AbstractSprite, colorPalette: Optional<string>) {
@@ -436,7 +436,7 @@ class Parser {
         const node = this.parseToAST(code)
 
         const builder = new AstBuilder(code)
-        const {gameData, validationMessages} = builder.build(node)
+        const { gameData, validationMessages } = builder.build(node)
 
         return { data: gameData, validationMessages }
     }

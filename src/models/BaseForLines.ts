@@ -1,6 +1,6 @@
 import { Optional } from '../util'
 
-export type IGameCode = {
+export interface IGameCode {
     code: string
     sourceOffset: number
 }

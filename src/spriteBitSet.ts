@@ -81,16 +81,6 @@ export class SpriteBitSet extends CustomBitSet<GameSprite> {
         return item.allSpritesBitSetIndex
     }
 
-    private getSprites(gameData: GameData) {
-        const sprites = new Set<GameSprite>()
-        for (const sprite of gameData.objects) {
-            if (this.has(sprite)) {
-                sprites.add(sprite)
-            }
-        }
-        return sprites
-    }
-
     public toString(gameData: GameData) {
         const str = []
         for (const sprite of this.getSprites(gameData)) {
@@ -105,6 +95,16 @@ export class SpriteBitSet extends CustomBitSet<GameSprite> {
             ret = ret.or(bitSet)
         }
         return ret
+    }
+
+    private getSprites(gameData: GameData) {
+        const sprites = new Set<GameSprite>()
+        for (const sprite of gameData.objects) {
+            if (this.has(sprite)) {
+                sprites.add(sprite)
+            }
+        }
+        return sprites
     }
 
     private or(bitSet: SpriteBitSet) {

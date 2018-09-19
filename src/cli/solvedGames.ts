@@ -127,5 +127,5 @@ export default new Set([
     `Boxes & Balloons`,
     `IceCrates`,
     `Unconventional Guns`,
-    `MazezaM`,
+    `MazezaM`
 ])

@@ -12,9 +12,9 @@ import { WinConditionSimple } from './winCondition'
 
 export interface IGameNode {
     __source: {code: string, sourceOffset: number}
+    __coverageCount: Optional<number>
     __getSourceLineAndColumn(): { lineNum: number, colNum: number }
     __getLineAndColumnRange(): { start: { line: number, col: number }, end: { line: number, col: number } }
-    __coverageCount: Optional<number>
     toString(): string
     toSourceString(): string
 }

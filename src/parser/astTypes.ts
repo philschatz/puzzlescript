@@ -1,7 +1,7 @@
 import { Optional } from '..'
 import { WIN_QUALIFIER } from '../models/winCondition'
-import { AST_RULE_MODIFIER } from './astRule'
 import { DEBUG_FLAG } from '../util'
+import { AST_RULE_MODIFIER } from './astRule'
 
 export enum TILE_MODIFIER {
     NO = 'NO',

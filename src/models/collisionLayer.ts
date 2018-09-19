@@ -1,7 +1,7 @@
+import { AddValidationFunc, ValidationLevel, ValidationMessage } from '../parser/parser'
 import { _flatten } from '../util'
 import { BaseForLines, IGameCode } from './BaseForLines'
 import { GameSprite, IGameTile } from './tile'
-import { AddValidationFunc, ValidationMessage, ValidationLevel } from '../parser/parser';
 
 let collisionIdCounter = 0
 export class CollisionLayer extends BaseForLines {
@@ -20,7 +20,8 @@ export class CollisionLayer extends BaseForLines {
             tile.setCollisionLayer(this)
             tile._getDescendantTiles().forEach((subTile) => {
                 if (subTile.hasCollisionLayer()) {
-                    addValidationMessage(new ValidationMessage(subTile.__source, ValidationLevel.WARNING, 'An Object should not belong to more than one collision layer. This item was referenced indirectly by a LEGEND entry'))
+                    addValidationMessage(new ValidationMessage(subTile.__source, ValidationLevel.WARNING,
+                        'An Object should not belong to more than one collision layer. This item was referenced indirectly by a LEGEND entry'))
                 }
                 subTile.setCollisionLayer(this)
             })

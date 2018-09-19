@@ -5,11 +5,11 @@ import * as path from 'path'
 import * as pify from 'pify'
 
 import { GameEngine, Parser, RULE_DIRECTION } from '..'
+import { getLineAndColumn } from '../models/BaseForLines'
 import { saveCoverageFile } from '../recordCoverage'
 import { closeSounds } from '../sounds'
 import TerminalUI from '../ui/terminal'
 import { ILevelRecording } from './playGame'
-import { getLineAndColumn } from '../models/BaseForLines';
 
 async function sleep(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms))
