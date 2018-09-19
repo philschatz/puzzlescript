@@ -7,7 +7,8 @@ async function sleep(ms) {
 
 async function pressKeys(page, keys) {
     for (const key of keys) {
-        await sleep(500/*Math.ceil(1000/60)*/) // enough for requestAnimationFrame to run (60fps)
+        await page.waitFor(`.ps-accepting-input`)
+        // await sleep(500/*Math.ceil(1000/60)*/) // enough for requestAnimationFrame to run (60fps)
         await page.keyboard.press(`Key${key}`)
     }
 }

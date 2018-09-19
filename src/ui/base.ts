@@ -1,6 +1,7 @@
 import chalk from 'chalk'
 
 import { Cell, GameData, GameEngine, Optional } from '..'
+import { RULE_DIRECTION } from '../index'
 import { IColor } from '../models/colors'
 import { GameSprite } from '../models/tile'
 import Parser from '../parser/parser'
@@ -158,30 +159,25 @@ abstract class BaseUI {
         return this.engine.getGameData()
     }
 
-    public pressUp() {
+    public press(dir: RULE_DIRECTION) {
         if (this.engine) {
-            this.engine.pressUp()
+            this.engine.press(dir)
         }
+    }
+    public pressUp() {
+        this.press(RULE_DIRECTION.UP)
     }
     public pressDown() {
-        if (this.engine) {
-            this.engine.pressDown()
-        }
+        this.press(RULE_DIRECTION.DOWN)
     }
     public pressLeft() {
-        if (this.engine) {
-            this.engine.pressLeft()
-        }
+        this.press(RULE_DIRECTION.LEFT)
     }
     public pressRight() {
-        if (this.engine) {
-            this.engine.pressRight()
-        }
+        this.press(RULE_DIRECTION.RIGHT)
     }
     public pressAction() {
-        if (this.engine) {
-            this.engine.pressAction()
-        }
+        this.press(RULE_DIRECTION.ACTION)
     }
     public pressUndo() {
         if (this.engine) {
@@ -472,6 +468,13 @@ abstract class BaseUI {
 
     protected clearScreen() {
         this.renderedPixels = []
+    }
+
+    protected hasAgainThatNeedsToRun() {
+        if (!this.engine) {
+            throw new Error(`BUG: Engine has not been set yet`)
+        }
+        return this.engine.hasAgain()
     }
 
     // Returns true if the window was moved (so we can re-render the screen)

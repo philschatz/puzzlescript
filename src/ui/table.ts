@@ -11,9 +11,32 @@ class TableUI extends BaseUI {
         super()
         this.table = table
         table.classList.add('ps-table')
+        this.markAcceptingInput(false)
+    }
+    public tick() {
+        this.markAcceptingInput(false)
+        const ret = super.tick()
+        this.markAcceptingInput(!super.hasAgainThatNeedsToRun())
+        return ret
+    }
+
+    public press(dir: RULE_DIRECTION) {
+        this.markAcceptingInput(false)
+        super.press(dir)
+    }
+
+    public pressUndo() {
+        this.markAcceptingInput(false)
+        super.pressUndo()
+    }
+
+    public pressRestart() {
+        this.markAcceptingInput(false)
+        super.pressRestart()
     }
 
     public setLevel(levelNum: number) {
+        this.markAcceptingInput(false)
         super.setLevel(levelNum)
         this.clearScreen()
 
@@ -56,6 +79,10 @@ class TableUI extends BaseUI {
             this.drawCells(row, false)
         }
 
+        if (this.getGameData().metadata.runRulesOnLevelStart) {
+            this.tick()
+        }
+        this.markAcceptingInput(true)
     }
 
     public canShowMessageAsCells() {
@@ -140,6 +167,14 @@ class TableUI extends BaseUI {
         return {
             columns: 1000,
             rows: 1000
+        }
+    }
+
+    private markAcceptingInput(flag: boolean) {
+        if (flag) {
+            this.table.classList.add('ps-accepting-input')
+        } else {
+            this.table.classList.remove('ps-accepting-input')
         }
     }
 
