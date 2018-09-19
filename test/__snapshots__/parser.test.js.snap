@@ -1,5 +1,1432 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`rules Cell Modifiers parses a rule with a variable that begins with the name of a modifier 1`] = `
+Object {
+  "collisionLayers": Array [],
+  "legendItems": Array [],
+  "levels": Array [],
+  "metadata": Array [],
+  "rules": Array [
+    Object {
+      "actions": Array [
+        Object {
+          "againHack": false,
+          "debugFlag": null,
+          "neighbors": Array [
+            Object {
+              "debugFlag": null,
+              "sourceOffset": 54,
+              "tilesWithModifier": Array [
+                Object {
+                  "modifier": null,
+                  "sourceOffset": 55,
+                  "tile": "stationaryz",
+                  "type": "TILE_WITH_MODIFIER",
+                },
+              ],
+              "type": "NEIGHBOR",
+            },
+          ],
+          "sourceOffset": 52,
+          "type": "BRACKET",
+        },
+      ],
+      "commands": Array [],
+      "conditions": Array [
+        Object {
+          "againHack": false,
+          "debugFlag": null,
+          "neighbors": Array [
+            Object {
+              "debugFlag": null,
+              "sourceOffset": 35,
+              "tilesWithModifier": Array [
+                Object {
+                  "modifier": null,
+                  "sourceOffset": 36,
+                  "tile": "stationaryz",
+                  "type": "TILE_WITH_MODIFIER",
+                },
+              ],
+              "type": "NEIGHBOR",
+            },
+          ],
+          "sourceOffset": 34,
+          "type": "BRACKET",
+        },
+      ],
+      "modifiers": Array [],
+      "sourceOffset": 34,
+      "type": "RULE",
+    },
+  ],
+  "sounds": Array [],
+  "sprites": Array [],
+  "title": "checkGrammar",
+  "winConditions": Array [],
+}
+`;
+
+exports[`rules Cell Modifiers parses a rule with directions 1`] = `
+Object {
+  "collisionLayers": Array [],
+  "legendItems": Array [],
+  "levels": Array [],
+  "metadata": Array [],
+  "rules": Array [
+    Object {
+      "actions": Array [
+        Object {
+          "againHack": false,
+          "debugFlag": null,
+          "neighbors": Array [
+            Object {
+              "sourceOffset": 50,
+              "tilesWithModifier": Array [],
+              "type": "NEIGHBOR",
+            },
+          ],
+          "sourceOffset": 48,
+          "type": "BRACKET",
+        },
+      ],
+      "commands": Array [],
+      "conditions": Array [
+        Object {
+          "againHack": false,
+          "debugFlag": null,
+          "neighbors": Array [
+            Object {
+              "debugFlag": null,
+              "sourceOffset": 35,
+              "tilesWithModifier": Array [
+                Object {
+                  "modifier": "ACTION",
+                  "sourceOffset": 35,
+                  "tile": "z",
+                  "type": "TILE_WITH_MODIFIER",
+                },
+              ],
+              "type": "NEIGHBOR",
+            },
+          ],
+          "sourceOffset": 34,
+          "type": "BRACKET",
+        },
+      ],
+      "modifiers": Array [],
+      "sourceOffset": 34,
+      "type": "RULE",
+    },
+  ],
+  "sounds": Array [],
+  "sprites": Array [],
+  "title": "checkGrammar",
+  "winConditions": Array [],
+}
+`;
+
+exports[`rules Cell Modifiers parses a rule with directions 2`] = `
+Object {
+  "collisionLayers": Array [],
+  "legendItems": Array [],
+  "levels": Array [],
+  "metadata": Array [],
+  "rules": Array [
+    Object {
+      "actions": Array [
+        Object {
+          "againHack": false,
+          "debugFlag": null,
+          "neighbors": Array [
+            Object {
+              "sourceOffset": 45,
+              "tilesWithModifier": Array [],
+              "type": "NEIGHBOR",
+            },
+          ],
+          "sourceOffset": 43,
+          "type": "BRACKET",
+        },
+      ],
+      "commands": Array [],
+      "conditions": Array [
+        Object {
+          "againHack": false,
+          "debugFlag": null,
+          "neighbors": Array [
+            Object {
+              "debugFlag": null,
+              "sourceOffset": 35,
+              "tilesWithModifier": Array [
+                Object {
+                  "modifier": "^",
+                  "sourceOffset": 35,
+                  "tile": "z",
+                  "type": "TILE_WITH_MODIFIER",
+                },
+              ],
+              "type": "NEIGHBOR",
+            },
+          ],
+          "sourceOffset": 34,
+          "type": "BRACKET",
+        },
+      ],
+      "modifiers": Array [],
+      "sourceOffset": 34,
+      "type": "RULE",
+    },
+  ],
+  "sounds": Array [],
+  "sprites": Array [],
+  "title": "checkGrammar",
+  "winConditions": Array [],
+}
+`;
+
+exports[`rules Cell Modifiers parses a rule with directions 3`] = `
+Object {
+  "collisionLayers": Array [],
+  "legendItems": Array [],
+  "levels": Array [],
+  "metadata": Array [],
+  "rules": Array [
+    Object {
+      "actions": Array [
+        Object {
+          "againHack": false,
+          "debugFlag": null,
+          "neighbors": Array [
+            Object {
+              "sourceOffset": 45,
+              "tilesWithModifier": Array [],
+              "type": "NEIGHBOR",
+            },
+          ],
+          "sourceOffset": 43,
+          "type": "BRACKET",
+        },
+      ],
+      "commands": Array [],
+      "conditions": Array [
+        Object {
+          "againHack": false,
+          "debugFlag": null,
+          "neighbors": Array [
+            Object {
+              "debugFlag": null,
+              "sourceOffset": 35,
+              "tilesWithModifier": Array [
+                Object {
+                  "modifier": "V",
+                  "sourceOffset": 35,
+                  "tile": "z",
+                  "type": "TILE_WITH_MODIFIER",
+                },
+              ],
+              "type": "NEIGHBOR",
+            },
+          ],
+          "sourceOffset": 34,
+          "type": "BRACKET",
+        },
+      ],
+      "modifiers": Array [],
+      "sourceOffset": 34,
+      "type": "RULE",
+    },
+  ],
+  "sounds": Array [],
+  "sprites": Array [],
+  "title": "checkGrammar",
+  "winConditions": Array [],
+}
+`;
+
+exports[`rules Cell Modifiers parses a rule with directions 4`] = `
+Object {
+  "collisionLayers": Array [],
+  "legendItems": Array [],
+  "levels": Array [],
+  "metadata": Array [],
+  "rules": Array [
+    Object {
+      "actions": Array [
+        Object {
+          "againHack": false,
+          "debugFlag": null,
+          "neighbors": Array [
+            Object {
+              "sourceOffset": 45,
+              "tilesWithModifier": Array [],
+              "type": "NEIGHBOR",
+            },
+          ],
+          "sourceOffset": 43,
+          "type": "BRACKET",
+        },
+      ],
+      "commands": Array [],
+      "conditions": Array [
+        Object {
+          "againHack": false,
+          "debugFlag": null,
+          "neighbors": Array [
+            Object {
+              "debugFlag": null,
+              "sourceOffset": 35,
+              "tilesWithModifier": Array [
+                Object {
+                  "modifier": ">",
+                  "sourceOffset": 35,
+                  "tile": "z",
+                  "type": "TILE_WITH_MODIFIER",
+                },
+              ],
+              "type": "NEIGHBOR",
+            },
+          ],
+          "sourceOffset": 34,
+          "type": "BRACKET",
+        },
+      ],
+      "modifiers": Array [],
+      "sourceOffset": 34,
+      "type": "RULE",
+    },
+  ],
+  "sounds": Array [],
+  "sprites": Array [],
+  "title": "checkGrammar",
+  "winConditions": Array [],
+}
+`;
+
+exports[`rules Cell Modifiers parses a rule with directions 5`] = `
+Object {
+  "collisionLayers": Array [],
+  "legendItems": Array [],
+  "levels": Array [],
+  "metadata": Array [],
+  "rules": Array [
+    Object {
+      "actions": Array [
+        Object {
+          "againHack": false,
+          "debugFlag": null,
+          "neighbors": Array [
+            Object {
+              "sourceOffset": 45,
+              "tilesWithModifier": Array [],
+              "type": "NEIGHBOR",
+            },
+          ],
+          "sourceOffset": 43,
+          "type": "BRACKET",
+        },
+      ],
+      "commands": Array [],
+      "conditions": Array [
+        Object {
+          "againHack": false,
+          "debugFlag": null,
+          "neighbors": Array [
+            Object {
+              "debugFlag": null,
+              "sourceOffset": 35,
+              "tilesWithModifier": Array [
+                Object {
+                  "modifier": "<",
+                  "sourceOffset": 35,
+                  "tile": "z",
+                  "type": "TILE_WITH_MODIFIER",
+                },
+              ],
+              "type": "NEIGHBOR",
+            },
+          ],
+          "sourceOffset": 34,
+          "type": "BRACKET",
+        },
+      ],
+      "modifiers": Array [],
+      "sourceOffset": 34,
+      "type": "RULE",
+    },
+  ],
+  "sounds": Array [],
+  "sprites": Array [],
+  "title": "checkGrammar",
+  "winConditions": Array [],
+}
+`;
+
+exports[`rules Cell Modifiers parses a rule with directions 6`] = `
+Object {
+  "collisionLayers": Array [],
+  "legendItems": Array [],
+  "levels": Array [],
+  "metadata": Array [],
+  "rules": Array [
+    Object {
+      "actions": Array [
+        Object {
+          "againHack": false,
+          "debugFlag": null,
+          "neighbors": Array [
+            Object {
+              "sourceOffset": 48,
+              "tilesWithModifier": Array [],
+              "type": "NEIGHBOR",
+            },
+          ],
+          "sourceOffset": 46,
+          "type": "BRACKET",
+        },
+      ],
+      "commands": Array [],
+      "conditions": Array [
+        Object {
+          "againHack": false,
+          "debugFlag": null,
+          "neighbors": Array [
+            Object {
+              "debugFlag": null,
+              "sourceOffset": 35,
+              "tilesWithModifier": Array [
+                Object {
+                  "modifier": "LEFT",
+                  "sourceOffset": 35,
+                  "tile": "z",
+                  "type": "TILE_WITH_MODIFIER",
+                },
+              ],
+              "type": "NEIGHBOR",
+            },
+          ],
+          "sourceOffset": 34,
+          "type": "BRACKET",
+        },
+      ],
+      "modifiers": Array [],
+      "sourceOffset": 34,
+      "type": "RULE",
+    },
+  ],
+  "sounds": Array [],
+  "sprites": Array [],
+  "title": "checkGrammar",
+  "winConditions": Array [],
+}
+`;
+
+exports[`rules Cell Modifiers parses a rule with directions 7`] = `
+Object {
+  "collisionLayers": Array [],
+  "legendItems": Array [],
+  "levels": Array [],
+  "metadata": Array [],
+  "rules": Array [
+    Object {
+      "actions": Array [
+        Object {
+          "againHack": false,
+          "debugFlag": null,
+          "neighbors": Array [
+            Object {
+              "sourceOffset": 49,
+              "tilesWithModifier": Array [],
+              "type": "NEIGHBOR",
+            },
+          ],
+          "sourceOffset": 47,
+          "type": "BRACKET",
+        },
+      ],
+      "commands": Array [],
+      "conditions": Array [
+        Object {
+          "againHack": false,
+          "debugFlag": null,
+          "neighbors": Array [
+            Object {
+              "debugFlag": null,
+              "sourceOffset": 35,
+              "tilesWithModifier": Array [
+                Object {
+                  "modifier": "RIGHT",
+                  "sourceOffset": 35,
+                  "tile": "z",
+                  "type": "TILE_WITH_MODIFIER",
+                },
+              ],
+              "type": "NEIGHBOR",
+            },
+          ],
+          "sourceOffset": 34,
+          "type": "BRACKET",
+        },
+      ],
+      "modifiers": Array [],
+      "sourceOffset": 34,
+      "type": "RULE",
+    },
+  ],
+  "sounds": Array [],
+  "sprites": Array [],
+  "title": "checkGrammar",
+  "winConditions": Array [],
+}
+`;
+
+exports[`rules Cell Modifiers parses a rule with directions 8`] = `
+Object {
+  "collisionLayers": Array [],
+  "legendItems": Array [],
+  "levels": Array [],
+  "metadata": Array [],
+  "rules": Array [
+    Object {
+      "actions": Array [
+        Object {
+          "againHack": false,
+          "debugFlag": null,
+          "neighbors": Array [
+            Object {
+              "sourceOffset": 46,
+              "tilesWithModifier": Array [],
+              "type": "NEIGHBOR",
+            },
+          ],
+          "sourceOffset": 44,
+          "type": "BRACKET",
+        },
+      ],
+      "commands": Array [],
+      "conditions": Array [
+        Object {
+          "againHack": false,
+          "debugFlag": null,
+          "neighbors": Array [
+            Object {
+              "debugFlag": null,
+              "sourceOffset": 35,
+              "tilesWithModifier": Array [
+                Object {
+                  "modifier": "UP",
+                  "sourceOffset": 35,
+                  "tile": "z",
+                  "type": "TILE_WITH_MODIFIER",
+                },
+              ],
+              "type": "NEIGHBOR",
+            },
+          ],
+          "sourceOffset": 34,
+          "type": "BRACKET",
+        },
+      ],
+      "modifiers": Array [],
+      "sourceOffset": 34,
+      "type": "RULE",
+    },
+  ],
+  "sounds": Array [],
+  "sprites": Array [],
+  "title": "checkGrammar",
+  "winConditions": Array [],
+}
+`;
+
+exports[`rules Cell Modifiers parses a rule with directions 9`] = `
+Object {
+  "collisionLayers": Array [],
+  "legendItems": Array [],
+  "levels": Array [],
+  "metadata": Array [],
+  "rules": Array [
+    Object {
+      "actions": Array [
+        Object {
+          "againHack": false,
+          "debugFlag": null,
+          "neighbors": Array [
+            Object {
+              "sourceOffset": 48,
+              "tilesWithModifier": Array [],
+              "type": "NEIGHBOR",
+            },
+          ],
+          "sourceOffset": 46,
+          "type": "BRACKET",
+        },
+      ],
+      "commands": Array [],
+      "conditions": Array [
+        Object {
+          "againHack": false,
+          "debugFlag": null,
+          "neighbors": Array [
+            Object {
+              "debugFlag": null,
+              "sourceOffset": 35,
+              "tilesWithModifier": Array [
+                Object {
+                  "modifier": "DOWN",
+                  "sourceOffset": 35,
+                  "tile": "z",
+                  "type": "TILE_WITH_MODIFIER",
+                },
+              ],
+              "type": "NEIGHBOR",
+            },
+          ],
+          "sourceOffset": 34,
+          "type": "BRACKET",
+        },
+      ],
+      "modifiers": Array [],
+      "sourceOffset": 34,
+      "type": "RULE",
+    },
+  ],
+  "sounds": Array [],
+  "sprites": Array [],
+  "title": "checkGrammar",
+  "winConditions": Array [],
+}
+`;
+
+exports[`rules Cell Modifiers parses a rule with directions 10`] = `
+Object {
+  "collisionLayers": Array [],
+  "legendItems": Array [],
+  "levels": Array [],
+  "metadata": Array [],
+  "rules": Array [
+    Object {
+      "actions": Array [
+        Object {
+          "againHack": false,
+          "debugFlag": null,
+          "neighbors": Array [
+            Object {
+              "sourceOffset": 54,
+              "tilesWithModifier": Array [],
+              "type": "NEIGHBOR",
+            },
+          ],
+          "sourceOffset": 52,
+          "type": "BRACKET",
+        },
+      ],
+      "commands": Array [],
+      "conditions": Array [
+        Object {
+          "againHack": false,
+          "debugFlag": null,
+          "neighbors": Array [
+            Object {
+              "debugFlag": null,
+              "sourceOffset": 35,
+              "tilesWithModifier": Array [
+                Object {
+                  "modifier": "STATIONARY",
+                  "sourceOffset": 35,
+                  "tile": "z",
+                  "type": "TILE_WITH_MODIFIER",
+                },
+              ],
+              "type": "NEIGHBOR",
+            },
+          ],
+          "sourceOffset": 34,
+          "type": "BRACKET",
+        },
+      ],
+      "modifiers": Array [],
+      "sourceOffset": 34,
+      "type": "RULE",
+    },
+  ],
+  "sounds": Array [],
+  "sprites": Array [],
+  "title": "checkGrammar",
+  "winConditions": Array [],
+}
+`;
+
+exports[`rules Cell Modifiers parses a rule with directions 11`] = `
+Object {
+  "collisionLayers": Array [],
+  "legendItems": Array [],
+  "levels": Array [],
+  "metadata": Array [],
+  "rules": Array [
+    Object {
+      "actions": Array [
+        Object {
+          "againHack": false,
+          "debugFlag": null,
+          "neighbors": Array [
+            Object {
+              "sourceOffset": 50,
+              "tilesWithModifier": Array [],
+              "type": "NEIGHBOR",
+            },
+          ],
+          "sourceOffset": 48,
+          "type": "BRACKET",
+        },
+      ],
+      "commands": Array [],
+      "conditions": Array [
+        Object {
+          "againHack": false,
+          "debugFlag": null,
+          "neighbors": Array [
+            Object {
+              "debugFlag": null,
+              "sourceOffset": 35,
+              "tilesWithModifier": Array [
+                Object {
+                  "modifier": "MOVING",
+                  "sourceOffset": 35,
+                  "tile": "z",
+                  "type": "TILE_WITH_MODIFIER",
+                },
+              ],
+              "type": "NEIGHBOR",
+            },
+          ],
+          "sourceOffset": 34,
+          "type": "BRACKET",
+        },
+      ],
+      "modifiers": Array [],
+      "sourceOffset": 34,
+      "type": "RULE",
+    },
+  ],
+  "sounds": Array [],
+  "sprites": Array [],
+  "title": "checkGrammar",
+  "winConditions": Array [],
+}
+`;
+
+exports[`rules Cell Modifiers parses a rule with directions 12`] = `
+Object {
+  "collisionLayers": Array [],
+  "legendItems": Array [],
+  "levels": Array [],
+  "metadata": Array [],
+  "rules": Array [
+    Object {
+      "actions": Array [
+        Object {
+          "againHack": false,
+          "debugFlag": null,
+          "neighbors": Array [
+            Object {
+              "sourceOffset": 52,
+              "tilesWithModifier": Array [],
+              "type": "NEIGHBOR",
+            },
+          ],
+          "sourceOffset": 50,
+          "type": "BRACKET",
+        },
+      ],
+      "commands": Array [],
+      "conditions": Array [
+        Object {
+          "againHack": false,
+          "debugFlag": null,
+          "neighbors": Array [
+            Object {
+              "debugFlag": null,
+              "sourceOffset": 35,
+              "tilesWithModifier": Array [
+                Object {
+                  "modifier": "VERTICAL",
+                  "sourceOffset": 35,
+                  "tile": "z",
+                  "type": "TILE_WITH_MODIFIER",
+                },
+              ],
+              "type": "NEIGHBOR",
+            },
+          ],
+          "sourceOffset": 34,
+          "type": "BRACKET",
+        },
+      ],
+      "modifiers": Array [],
+      "sourceOffset": 34,
+      "type": "RULE",
+    },
+  ],
+  "sounds": Array [],
+  "sprites": Array [],
+  "title": "checkGrammar",
+  "winConditions": Array [],
+}
+`;
+
+exports[`rules Cell Modifiers parses a rule with directions 13`] = `
+Object {
+  "collisionLayers": Array [],
+  "legendItems": Array [],
+  "levels": Array [],
+  "metadata": Array [],
+  "rules": Array [
+    Object {
+      "actions": Array [
+        Object {
+          "againHack": false,
+          "debugFlag": null,
+          "neighbors": Array [
+            Object {
+              "sourceOffset": 54,
+              "tilesWithModifier": Array [],
+              "type": "NEIGHBOR",
+            },
+          ],
+          "sourceOffset": 52,
+          "type": "BRACKET",
+        },
+      ],
+      "commands": Array [],
+      "conditions": Array [
+        Object {
+          "againHack": false,
+          "debugFlag": null,
+          "neighbors": Array [
+            Object {
+              "debugFlag": null,
+              "sourceOffset": 35,
+              "tilesWithModifier": Array [
+                Object {
+                  "modifier": "HORIZONTAL",
+                  "sourceOffset": 35,
+                  "tile": "z",
+                  "type": "TILE_WITH_MODIFIER",
+                },
+              ],
+              "type": "NEIGHBOR",
+            },
+          ],
+          "sourceOffset": 34,
+          "type": "BRACKET",
+        },
+      ],
+      "modifiers": Array [],
+      "sourceOffset": 34,
+      "type": "RULE",
+    },
+  ],
+  "sounds": Array [],
+  "sprites": Array [],
+  "title": "checkGrammar",
+  "winConditions": Array [],
+}
+`;
+
+exports[`rules Cell Modifiers parses a rule with directions 14`] = `
+Object {
+  "collisionLayers": Array [],
+  "legendItems": Array [],
+  "levels": Array [],
+  "metadata": Array [],
+  "rules": Array [
+    Object {
+      "actions": Array [
+        Object {
+          "againHack": false,
+          "debugFlag": null,
+          "neighbors": Array [
+            Object {
+              "sourceOffset": 57,
+              "tilesWithModifier": Array [],
+              "type": "NEIGHBOR",
+            },
+          ],
+          "sourceOffset": 55,
+          "type": "BRACKET",
+        },
+      ],
+      "commands": Array [],
+      "conditions": Array [
+        Object {
+          "againHack": false,
+          "debugFlag": null,
+          "neighbors": Array [
+            Object {
+              "debugFlag": null,
+              "sourceOffset": 35,
+              "tilesWithModifier": Array [
+                Object {
+                  "modifier": "PERPENDICULAR",
+                  "sourceOffset": 35,
+                  "tile": "z",
+                  "type": "TILE_WITH_MODIFIER",
+                },
+              ],
+              "type": "NEIGHBOR",
+            },
+          ],
+          "sourceOffset": 34,
+          "type": "BRACKET",
+        },
+      ],
+      "modifiers": Array [],
+      "sourceOffset": 34,
+      "type": "RULE",
+    },
+  ],
+  "sounds": Array [],
+  "sprites": Array [],
+  "title": "checkGrammar",
+  "winConditions": Array [],
+}
+`;
+
+exports[`rules Cell Modifiers parses a rule with directions 15`] = `
+Object {
+  "collisionLayers": Array [],
+  "legendItems": Array [],
+  "levels": Array [],
+  "metadata": Array [],
+  "rules": Array [
+    Object {
+      "actions": Array [
+        Object {
+          "againHack": false,
+          "debugFlag": null,
+          "neighbors": Array [
+            Object {
+              "sourceOffset": 54,
+              "tilesWithModifier": Array [],
+              "type": "NEIGHBOR",
+            },
+          ],
+          "sourceOffset": 52,
+          "type": "BRACKET",
+        },
+      ],
+      "commands": Array [],
+      "conditions": Array [
+        Object {
+          "againHack": false,
+          "debugFlag": null,
+          "neighbors": Array [
+            Object {
+              "debugFlag": null,
+              "sourceOffset": 35,
+              "tilesWithModifier": Array [
+                Object {
+                  "modifier": "ORTHOGONAL",
+                  "sourceOffset": 35,
+                  "tile": "z",
+                  "type": "TILE_WITH_MODIFIER",
+                },
+              ],
+              "type": "NEIGHBOR",
+            },
+          ],
+          "sourceOffset": 34,
+          "type": "BRACKET",
+        },
+      ],
+      "modifiers": Array [],
+      "sourceOffset": 34,
+      "type": "RULE",
+    },
+  ],
+  "sounds": Array [],
+  "sprites": Array [],
+  "title": "checkGrammar",
+  "winConditions": Array [],
+}
+`;
+
+exports[`rules Cell Modifiers parses a rule with directions 16`] = `
+Object {
+  "collisionLayers": Array [],
+  "legendItems": Array [],
+  "levels": Array [],
+  "metadata": Array [],
+  "rules": Array [
+    Object {
+      "actions": Array [
+        Object {
+          "againHack": false,
+          "debugFlag": null,
+          "neighbors": Array [
+            Object {
+              "sourceOffset": 53,
+              "tilesWithModifier": Array [],
+              "type": "NEIGHBOR",
+            },
+          ],
+          "sourceOffset": 51,
+          "type": "BRACKET",
+        },
+      ],
+      "commands": Array [],
+      "conditions": Array [
+        Object {
+          "againHack": false,
+          "debugFlag": null,
+          "neighbors": Array [
+            Object {
+              "debugFlag": null,
+              "sourceOffset": 35,
+              "tilesWithModifier": Array [
+                Object {
+                  "modifier": "RANDOMDIR",
+                  "sourceOffset": 35,
+                  "tile": "z",
+                  "type": "TILE_WITH_MODIFIER",
+                },
+              ],
+              "type": "NEIGHBOR",
+            },
+          ],
+          "sourceOffset": 34,
+          "type": "BRACKET",
+        },
+      ],
+      "modifiers": Array [],
+      "sourceOffset": 34,
+      "type": "RULE",
+    },
+  ],
+  "sounds": Array [],
+  "sprites": Array [],
+  "title": "checkGrammar",
+  "winConditions": Array [],
+}
+`;
+
+exports[`rules Cell Modifiers parses a rule with modifiers 1`] = `
+Object {
+  "collisionLayers": Array [],
+  "legendItems": Array [],
+  "levels": Array [],
+  "metadata": Array [],
+  "rules": Array [
+    Object {
+      "actions": Array [
+        Object {
+          "againHack": false,
+          "debugFlag": null,
+          "neighbors": Array [
+            Object {
+              "sourceOffset": 47,
+              "tilesWithModifier": Array [],
+              "type": "NEIGHBOR",
+            },
+          ],
+          "sourceOffset": 45,
+          "type": "BRACKET",
+        },
+      ],
+      "commands": Array [],
+      "conditions": Array [
+        Object {
+          "againHack": false,
+          "debugFlag": null,
+          "neighbors": Array [
+            Object {
+              "debugFlag": null,
+              "sourceOffset": 35,
+              "tilesWithModifier": Array [
+                Object {
+                  "modifier": "NO",
+                  "sourceOffset": 36,
+                  "tile": "z",
+                  "type": "TILE_WITH_MODIFIER",
+                },
+              ],
+              "type": "NEIGHBOR",
+            },
+          ],
+          "sourceOffset": 34,
+          "type": "BRACKET",
+        },
+      ],
+      "modifiers": Array [],
+      "sourceOffset": 34,
+      "type": "RULE",
+    },
+  ],
+  "sounds": Array [],
+  "sprites": Array [],
+  "title": "checkGrammar",
+  "winConditions": Array [],
+}
+`;
+
+exports[`rules Cell Modifiers parses a rule with modifiers 2 1`] = `
+Object {
+  "collisionLayers": Array [],
+  "legendItems": Array [],
+  "levels": Array [],
+  "metadata": Array [],
+  "rules": Array [
+    Object {
+      "actions": Array [
+        Object {
+          "againHack": false,
+          "debugFlag": null,
+          "neighbors": Array [
+            Object {
+              "debugFlag": null,
+              "sourceOffset": 55,
+              "tilesWithModifier": Array [
+                Object {
+                  "modifier": null,
+                  "sourceOffset": 56,
+                  "tile": "z",
+                  "type": "TILE_WITH_MODIFIER",
+                },
+              ],
+              "type": "NEIGHBOR",
+            },
+          ],
+          "sourceOffset": 53,
+          "type": "BRACKET",
+        },
+      ],
+      "commands": Array [],
+      "conditions": Array [
+        Object {
+          "againHack": false,
+          "debugFlag": null,
+          "neighbors": Array [
+            Object {
+              "debugFlag": null,
+              "sourceOffset": 35,
+              "tilesWithModifier": Array [
+                Object {
+                  "modifier": "STATIONARY",
+                  "sourceOffset": 36,
+                  "tile": "z",
+                  "type": "TILE_WITH_MODIFIER",
+                },
+              ],
+              "type": "NEIGHBOR",
+            },
+          ],
+          "sourceOffset": 34,
+          "type": "BRACKET",
+        },
+      ],
+      "modifiers": Array [],
+      "sourceOffset": 34,
+      "type": "RULE",
+    },
+  ],
+  "sounds": Array [],
+  "sprites": Array [],
+  "title": "checkGrammar",
+  "winConditions": Array [],
+}
+`;
+
+exports[`rules Commands parses a rule with a command inside the brackets (these should be moved up to the Action Commands) 1`] = `
+Object {
+  "collisionLayers": Array [],
+  "legendItems": Array [],
+  "levels": Array [],
+  "metadata": Array [],
+  "rules": Array [
+    Object {
+      "actions": Array [
+        Object {
+          "againHack": false,
+          "debugFlag": null,
+          "neighbors": Array [
+            Object {
+              "debugFlag": null,
+              "sourceOffset": 40,
+              "tilesWithModifier": Array [
+                Object {
+                  "modifier": null,
+                  "sourceOffset": 40,
+                  "tile": "SFX0",
+                  "type": "TILE_WITH_MODIFIER",
+                },
+              ],
+              "type": "NEIGHBOR",
+            },
+          ],
+          "sourceOffset": 39,
+          "type": "BRACKET",
+        },
+      ],
+      "commands": Array [],
+      "conditions": Array [
+        Object {
+          "againHack": false,
+          "debugFlag": null,
+          "neighbors": Array [
+            Object {
+              "debugFlag": null,
+              "sourceOffset": 35,
+              "tilesWithModifier": Array [
+                Object {
+                  "modifier": null,
+                  "sourceOffset": 35,
+                  "tile": "z",
+                  "type": "TILE_WITH_MODIFIER",
+                },
+              ],
+              "type": "NEIGHBOR",
+            },
+          ],
+          "sourceOffset": 34,
+          "type": "BRACKET",
+        },
+      ],
+      "modifiers": Array [],
+      "sourceOffset": 34,
+      "type": "RULE",
+    },
+  ],
+  "sounds": Array [],
+  "sprites": Array [],
+  "title": "checkGrammar",
+  "winConditions": Array [],
+}
+`;
+
+exports[`rules Commands parses a rule with a command inside the brackets (these should be moved up to the Action Commands) 2`] = `
+Object {
+  "collisionLayers": Array [],
+  "legendItems": Array [],
+  "levels": Array [],
+  "metadata": Array [],
+  "rules": Array [
+    Object {
+      "actions": Array [
+        Object {
+          "againHack": false,
+          "debugFlag": null,
+          "neighbors": Array [
+            Object {
+              "debugFlag": null,
+              "sourceOffset": 40,
+              "tilesWithModifier": Array [
+                Object {
+                  "modifier": null,
+                  "sourceOffset": 40,
+                  "tile": "z",
+                  "type": "TILE_WITH_MODIFIER",
+                },
+                Object {
+                  "modifier": null,
+                  "sourceOffset": 42,
+                  "tile": "SFX1",
+                  "type": "TILE_WITH_MODIFIER",
+                },
+              ],
+              "type": "NEIGHBOR",
+            },
+          ],
+          "sourceOffset": 39,
+          "type": "BRACKET",
+        },
+      ],
+      "commands": Array [],
+      "conditions": Array [
+        Object {
+          "againHack": false,
+          "debugFlag": null,
+          "neighbors": Array [
+            Object {
+              "debugFlag": null,
+              "sourceOffset": 35,
+              "tilesWithModifier": Array [
+                Object {
+                  "modifier": null,
+                  "sourceOffset": 35,
+                  "tile": "z",
+                  "type": "TILE_WITH_MODIFIER",
+                },
+              ],
+              "type": "NEIGHBOR",
+            },
+          ],
+          "sourceOffset": 34,
+          "type": "BRACKET",
+        },
+      ],
+      "modifiers": Array [],
+      "sourceOffset": 34,
+      "type": "RULE",
+    },
+  ],
+  "sounds": Array [],
+  "sprites": Array [],
+  "title": "checkGrammar",
+  "winConditions": Array [],
+}
+`;
+
+exports[`rules Commands parses a rule with a command inside the brackets (these should be moved up to the Action Commands) 3`] = `
+Object {
+  "collisionLayers": Array [],
+  "legendItems": Array [],
+  "levels": Array [],
+  "metadata": Array [],
+  "rules": Array [
+    Object {
+      "actions": Array [
+        Object {
+          "againHack": false,
+          "debugFlag": null,
+          "neighbors": Array [
+            Object {
+              "debugFlag": null,
+              "sourceOffset": 40,
+              "tilesWithModifier": Array [
+                Object {
+                  "modifier": null,
+                  "sourceOffset": 40,
+                  "tile": "z",
+                  "type": "TILE_WITH_MODIFIER",
+                },
+                Object {
+                  "modifier": null,
+                  "sourceOffset": 42,
+                  "tile": "winter",
+                  "type": "TILE_WITH_MODIFIER",
+                },
+              ],
+              "type": "NEIGHBOR",
+            },
+          ],
+          "sourceOffset": 39,
+          "type": "BRACKET",
+        },
+      ],
+      "commands": Array [],
+      "conditions": Array [
+        Object {
+          "againHack": false,
+          "debugFlag": null,
+          "neighbors": Array [
+            Object {
+              "debugFlag": null,
+              "sourceOffset": 35,
+              "tilesWithModifier": Array [
+                Object {
+                  "modifier": null,
+                  "sourceOffset": 35,
+                  "tile": "z",
+                  "type": "TILE_WITH_MODIFIER",
+                },
+              ],
+              "type": "NEIGHBOR",
+            },
+          ],
+          "sourceOffset": 34,
+          "type": "BRACKET",
+        },
+      ],
+      "modifiers": Array [],
+      "sourceOffset": 34,
+      "type": "RULE",
+    },
+  ],
+  "sounds": Array [],
+  "sprites": Array [],
+  "title": "checkGrammar",
+  "winConditions": Array [],
+}
+`;
+
+exports[`rules Commands parses a rule with a command inside the brackets (these should be moved up to the Action Commands) 4`] = `
+Object {
+  "collisionLayers": Array [],
+  "legendItems": Array [],
+  "levels": Array [],
+  "metadata": Array [],
+  "rules": Array [
+    Object {
+      "actions": Array [
+        Object {
+          "againHack": true,
+          "debugFlag": null,
+          "neighbors": Array [
+            Object {
+              "sourceOffset": 43,
+              "tilesWithModifier": Array [],
+              "type": "NEIGHBOR",
+            },
+            Object {
+              "debugFlag": null,
+              "sourceOffset": 44,
+              "tilesWithModifier": Array [
+                Object {
+                  "modifier": null,
+                  "sourceOffset": 44,
+                  "tile": "z",
+                  "type": "TILE_WITH_MODIFIER",
+                },
+              ],
+              "type": "NEIGHBOR",
+            },
+          ],
+          "sourceOffset": 41,
+          "type": "BRACKET",
+        },
+      ],
+      "commands": Array [],
+      "conditions": Array [
+        Object {
+          "againHack": false,
+          "debugFlag": null,
+          "neighbors": Array [
+            Object {
+              "debugFlag": null,
+              "sourceOffset": 35,
+              "tilesWithModifier": Array [
+                Object {
+                  "modifier": null,
+                  "sourceOffset": 35,
+                  "tile": "z",
+                  "type": "TILE_WITH_MODIFIER",
+                },
+              ],
+              "type": "NEIGHBOR",
+            },
+            Object {
+              "sourceOffset": 37,
+              "tilesWithModifier": Array [],
+              "type": "NEIGHBOR",
+            },
+          ],
+          "sourceOffset": 34,
+          "type": "BRACKET",
+        },
+      ],
+      "modifiers": Array [],
+      "sourceOffset": 34,
+      "type": "RULE",
+    },
+  ],
+  "sounds": Array [],
+  "sprites": Array [],
+  "title": "checkGrammar",
+  "winConditions": Array [],
+}
+`;
+
 exports[`rules General Formatting Correctly parses weird variable names 1`] = `
 Object {
   "collisionLayers": Array [],
@@ -128,6 +1555,668 @@ Object {
   "sounds": Array [],
   "sprites": Array [],
   "title": "foo",
+  "winConditions": Array [],
+}
+`;
+
+exports[`rules RANDOM keyword propagation does not mark a rule Loop as being RANDOM 1`] = `
+Object {
+  "collisionLayers": Array [],
+  "legendItems": Array [],
+  "levels": Array [],
+  "metadata": Array [],
+  "rules": Array [
+    Object {
+      "rules": Array [
+        Object {
+          "rules": Array [
+            Object {
+              "actions": Array [
+                Object {
+                  "againHack": false,
+                  "debugFlag": null,
+                  "neighbors": Array [
+                    Object {
+                      "sourceOffset": 60,
+                      "tilesWithModifier": Array [],
+                      "type": "NEIGHBOR",
+                    },
+                  ],
+                  "sourceOffset": 58,
+                  "type": "BRACKET",
+                },
+              ],
+              "commands": Array [],
+              "conditions": Array [
+                Object {
+                  "againHack": false,
+                  "debugFlag": null,
+                  "neighbors": Array [
+                    Object {
+                      "debugFlag": null,
+                      "sourceOffset": 53,
+                      "tilesWithModifier": Array [
+                        Object {
+                          "modifier": null,
+                          "sourceOffset": 53,
+                          "tile": ".",
+                          "type": "TILE_WITH_MODIFIER",
+                        },
+                      ],
+                      "type": "NEIGHBOR",
+                    },
+                  ],
+                  "sourceOffset": 52,
+                  "type": "BRACKET",
+                },
+              ],
+              "modifiers": Array [
+                "RANDOM",
+              ],
+              "sourceOffset": 45,
+              "type": "RULE",
+            },
+            Object {
+              "actions": Array [
+                Object {
+                  "againHack": false,
+                  "debugFlag": null,
+                  "neighbors": Array [
+                    Object {
+                      "sourceOffset": 77,
+                      "tilesWithModifier": Array [],
+                      "type": "NEIGHBOR",
+                    },
+                  ],
+                  "sourceOffset": 75,
+                  "type": "BRACKET",
+                },
+              ],
+              "commands": Array [],
+              "conditions": Array [
+                Object {
+                  "againHack": false,
+                  "debugFlag": null,
+                  "neighbors": Array [
+                    Object {
+                      "debugFlag": null,
+                      "sourceOffset": 65,
+                      "tilesWithModifier": Array [
+                        Object {
+                          "modifier": null,
+                          "sourceOffset": 65,
+                          "tile": "Player",
+                          "type": "TILE_WITH_MODIFIER",
+                        },
+                      ],
+                      "type": "NEIGHBOR",
+                    },
+                  ],
+                  "sourceOffset": 64,
+                  "type": "BRACKET",
+                },
+              ],
+              "modifiers": Array [],
+              "sourceOffset": 63,
+              "type": "RULE",
+            },
+          ],
+          "sourceOffset": 45,
+          "type": "RULE_GROUP",
+        },
+      ],
+      "type": "RULE_LOOP",
+    },
+  ],
+  "sounds": Array [],
+  "sprites": Array [],
+  "title": "checkGrammar",
+  "winConditions": Array [],
+}
+`;
+
+exports[`rules RANDOM keyword propagation marks a rule Group as being RANDOM 1`] = `
+Object {
+  "collisionLayers": Array [],
+  "legendItems": Array [],
+  "levels": Array [],
+  "metadata": Array [],
+  "rules": Array [
+    Object {
+      "rules": Array [
+        Object {
+          "actions": Array [
+            Object {
+              "againHack": false,
+              "debugFlag": null,
+              "neighbors": Array [
+                Object {
+                  "sourceOffset": 50,
+                  "tilesWithModifier": Array [],
+                  "type": "NEIGHBOR",
+                },
+              ],
+              "sourceOffset": 48,
+              "type": "BRACKET",
+            },
+          ],
+          "commands": Array [],
+          "conditions": Array [
+            Object {
+              "againHack": false,
+              "debugFlag": null,
+              "neighbors": Array [
+                Object {
+                  "debugFlag": null,
+                  "sourceOffset": 43,
+                  "tilesWithModifier": Array [
+                    Object {
+                      "modifier": null,
+                      "sourceOffset": 43,
+                      "tile": ".",
+                      "type": "TILE_WITH_MODIFIER",
+                    },
+                  ],
+                  "type": "NEIGHBOR",
+                },
+              ],
+              "sourceOffset": 42,
+              "type": "BRACKET",
+            },
+          ],
+          "modifiers": Array [
+            "RANDOM",
+          ],
+          "sourceOffset": 35,
+          "type": "RULE",
+        },
+        Object {
+          "actions": Array [
+            Object {
+              "againHack": false,
+              "debugFlag": null,
+              "neighbors": Array [
+                Object {
+                  "sourceOffset": 67,
+                  "tilesWithModifier": Array [],
+                  "type": "NEIGHBOR",
+                },
+              ],
+              "sourceOffset": 65,
+              "type": "BRACKET",
+            },
+          ],
+          "commands": Array [],
+          "conditions": Array [
+            Object {
+              "againHack": false,
+              "debugFlag": null,
+              "neighbors": Array [
+                Object {
+                  "debugFlag": null,
+                  "sourceOffset": 55,
+                  "tilesWithModifier": Array [
+                    Object {
+                      "modifier": null,
+                      "sourceOffset": 55,
+                      "tile": "Player",
+                      "type": "TILE_WITH_MODIFIER",
+                    },
+                  ],
+                  "type": "NEIGHBOR",
+                },
+              ],
+              "sourceOffset": 54,
+              "type": "BRACKET",
+            },
+          ],
+          "modifiers": Array [],
+          "sourceOffset": 53,
+          "type": "RULE",
+        },
+      ],
+      "sourceOffset": 35,
+      "type": "RULE_GROUP",
+    },
+  ],
+  "sounds": Array [],
+  "sprites": Array [],
+  "title": "checkGrammar",
+  "winConditions": Array [],
+}
+`;
+
+exports[`rules RANDOM keyword propagation marks a rule as being RANDOM 1`] = `
+Object {
+  "collisionLayers": Array [],
+  "legendItems": Array [],
+  "levels": Array [],
+  "metadata": Array [],
+  "rules": Array [
+    Object {
+      "actions": Array [
+        Object {
+          "againHack": false,
+          "debugFlag": null,
+          "neighbors": Array [
+            Object {
+              "sourceOffset": 49,
+              "tilesWithModifier": Array [],
+              "type": "NEIGHBOR",
+            },
+          ],
+          "sourceOffset": 47,
+          "type": "BRACKET",
+        },
+      ],
+      "commands": Array [],
+      "conditions": Array [
+        Object {
+          "againHack": false,
+          "debugFlag": null,
+          "neighbors": Array [
+            Object {
+              "debugFlag": null,
+              "sourceOffset": 42,
+              "tilesWithModifier": Array [
+                Object {
+                  "modifier": null,
+                  "sourceOffset": 42,
+                  "tile": ".",
+                  "type": "TILE_WITH_MODIFIER",
+                },
+              ],
+              "type": "NEIGHBOR",
+            },
+          ],
+          "sourceOffset": 41,
+          "type": "BRACKET",
+        },
+      ],
+      "modifiers": Array [
+        "RANDOM",
+      ],
+      "sourceOffset": 34,
+      "type": "RULE",
+    },
+  ],
+  "sounds": Array [],
+  "sprites": Array [],
+  "title": "checkGrammar",
+  "winConditions": Array [],
+}
+`;
+
+exports[`rules RANDOM keyword propagation properly groups loops and groups 1`] = `
+Object {
+  "collisionLayers": Array [],
+  "legendItems": Array [],
+  "levels": Array [],
+  "metadata": Array [],
+  "rules": Array [
+    Object {
+      "actions": Array [
+        Object {
+          "againHack": false,
+          "debugFlag": null,
+          "neighbors": Array [
+            Object {
+              "sourceOffset": 49,
+              "tilesWithModifier": Array [],
+              "type": "NEIGHBOR",
+            },
+          ],
+          "sourceOffset": 47,
+          "type": "BRACKET",
+        },
+      ],
+      "commands": Array [],
+      "conditions": Array [
+        Object {
+          "againHack": false,
+          "debugFlag": null,
+          "neighbors": Array [
+            Object {
+              "sourceOffset": 42,
+              "tilesWithModifier": Array [],
+              "type": "NEIGHBOR",
+            },
+          ],
+          "sourceOffset": 41,
+          "type": "BRACKET",
+        },
+      ],
+      "modifiers": Array [
+        "RIGHT",
+      ],
+      "sourceOffset": 35,
+      "type": "RULE",
+    },
+    Object {
+      "rules": Array [
+        Object {
+          "rules": Array [
+            Object {
+              "actions": Array [
+                Object {
+                  "againHack": false,
+                  "debugFlag": null,
+                  "neighbors": Array [
+                    Object {
+                      "sourceOffset": 92,
+                      "tilesWithModifier": Array [],
+                      "type": "NEIGHBOR",
+                    },
+                  ],
+                  "sourceOffset": 90,
+                  "type": "BRACKET",
+                },
+              ],
+              "commands": Array [],
+              "conditions": Array [
+                Object {
+                  "againHack": false,
+                  "debugFlag": null,
+                  "neighbors": Array [
+                    Object {
+                      "sourceOffset": 85,
+                      "tilesWithModifier": Array [],
+                      "type": "NEIGHBOR",
+                    },
+                  ],
+                  "sourceOffset": 84,
+                  "type": "BRACKET",
+                },
+              ],
+              "modifiers": Array [
+                "RIGHT",
+              ],
+              "sourceOffset": 78,
+              "type": "RULE",
+            },
+            Object {
+              "actions": Array [
+                Object {
+                  "againHack": false,
+                  "debugFlag": null,
+                  "neighbors": Array [
+                    Object {
+                      "sourceOffset": 111,
+                      "tilesWithModifier": Array [],
+                      "type": "NEIGHBOR",
+                    },
+                  ],
+                  "sourceOffset": 109,
+                  "type": "BRACKET",
+                },
+              ],
+              "commands": Array [],
+              "conditions": Array [
+                Object {
+                  "againHack": false,
+                  "debugFlag": null,
+                  "neighbors": Array [
+                    Object {
+                      "sourceOffset": 104,
+                      "tilesWithModifier": Array [],
+                      "type": "NEIGHBOR",
+                    },
+                  ],
+                  "sourceOffset": 103,
+                  "type": "BRACKET",
+                },
+              ],
+              "modifiers": Array [
+                "RIGHT",
+              ],
+              "sourceOffset": 96,
+              "type": "RULE",
+            },
+            Object {
+              "actions": Array [
+                Object {
+                  "againHack": false,
+                  "debugFlag": null,
+                  "neighbors": Array [
+                    Object {
+                      "sourceOffset": 130,
+                      "tilesWithModifier": Array [],
+                      "type": "NEIGHBOR",
+                    },
+                  ],
+                  "sourceOffset": 128,
+                  "type": "BRACKET",
+                },
+              ],
+              "commands": Array [],
+              "conditions": Array [
+                Object {
+                  "againHack": false,
+                  "debugFlag": null,
+                  "neighbors": Array [
+                    Object {
+                      "sourceOffset": 123,
+                      "tilesWithModifier": Array [],
+                      "type": "NEIGHBOR",
+                    },
+                  ],
+                  "sourceOffset": 122,
+                  "type": "BRACKET",
+                },
+              ],
+              "modifiers": Array [
+                "RIGHT",
+              ],
+              "sourceOffset": 115,
+              "type": "RULE",
+            },
+            Object {
+              "actions": Array [
+                Object {
+                  "againHack": false,
+                  "debugFlag": null,
+                  "neighbors": Array [
+                    Object {
+                      "sourceOffset": 150,
+                      "tilesWithModifier": Array [],
+                      "type": "NEIGHBOR",
+                    },
+                  ],
+                  "sourceOffset": 148,
+                  "type": "BRACKET",
+                },
+              ],
+              "commands": Array [],
+              "conditions": Array [
+                Object {
+                  "againHack": false,
+                  "debugFlag": null,
+                  "neighbors": Array [
+                    Object {
+                      "sourceOffset": 143,
+                      "tilesWithModifier": Array [],
+                      "type": "NEIGHBOR",
+                    },
+                  ],
+                  "sourceOffset": 142,
+                  "type": "BRACKET",
+                },
+              ],
+              "modifiers": Array [
+                "RIGHT",
+              ],
+              "sourceOffset": 135,
+              "type": "RULE",
+            },
+          ],
+          "sourceOffset": 78,
+          "type": "RULE_GROUP",
+        },
+        Object {
+          "rules": Array [
+            Object {
+              "actions": Array [
+                Object {
+                  "againHack": false,
+                  "debugFlag": null,
+                  "neighbors": Array [
+                    Object {
+                      "sourceOffset": 185,
+                      "tilesWithModifier": Array [],
+                      "type": "NEIGHBOR",
+                    },
+                  ],
+                  "sourceOffset": 183,
+                  "type": "BRACKET",
+                },
+              ],
+              "commands": Array [],
+              "conditions": Array [
+                Object {
+                  "againHack": false,
+                  "debugFlag": null,
+                  "neighbors": Array [
+                    Object {
+                      "sourceOffset": 178,
+                      "tilesWithModifier": Array [],
+                      "type": "NEIGHBOR",
+                    },
+                  ],
+                  "sourceOffset": 177,
+                  "type": "BRACKET",
+                },
+              ],
+              "modifiers": Array [
+                "RIGHT",
+              ],
+              "sourceOffset": 171,
+              "type": "RULE",
+            },
+            Object {
+              "actions": Array [
+                Object {
+                  "againHack": false,
+                  "debugFlag": null,
+                  "neighbors": Array [
+                    Object {
+                      "sourceOffset": 204,
+                      "tilesWithModifier": Array [],
+                      "type": "NEIGHBOR",
+                    },
+                  ],
+                  "sourceOffset": 202,
+                  "type": "BRACKET",
+                },
+              ],
+              "commands": Array [],
+              "conditions": Array [
+                Object {
+                  "againHack": false,
+                  "debugFlag": null,
+                  "neighbors": Array [
+                    Object {
+                      "sourceOffset": 197,
+                      "tilesWithModifier": Array [],
+                      "type": "NEIGHBOR",
+                    },
+                  ],
+                  "sourceOffset": 196,
+                  "type": "BRACKET",
+                },
+              ],
+              "modifiers": Array [
+                "RIGHT",
+              ],
+              "sourceOffset": 189,
+              "type": "RULE",
+            },
+          ],
+          "sourceOffset": 171,
+          "type": "RULE_GROUP",
+        },
+        Object {
+          "actions": Array [
+            Object {
+              "againHack": false,
+              "debugFlag": null,
+              "neighbors": Array [
+                Object {
+                  "sourceOffset": 222,
+                  "tilesWithModifier": Array [],
+                  "type": "NEIGHBOR",
+                },
+              ],
+              "sourceOffset": 220,
+              "type": "BRACKET",
+            },
+          ],
+          "commands": Array [],
+          "conditions": Array [
+            Object {
+              "againHack": false,
+              "debugFlag": null,
+              "neighbors": Array [
+                Object {
+                  "sourceOffset": 215,
+                  "tilesWithModifier": Array [],
+                  "type": "NEIGHBOR",
+                },
+              ],
+              "sourceOffset": 214,
+              "type": "BRACKET",
+            },
+          ],
+          "modifiers": Array [
+            "RIGHT",
+          ],
+          "sourceOffset": 208,
+          "type": "RULE",
+        },
+      ],
+      "type": "RULE_LOOP",
+    },
+    Object {
+      "actions": Array [
+        Object {
+          "againHack": false,
+          "debugFlag": null,
+          "neighbors": Array [
+            Object {
+              "sourceOffset": 247,
+              "tilesWithModifier": Array [],
+              "type": "NEIGHBOR",
+            },
+          ],
+          "sourceOffset": 245,
+          "type": "BRACKET",
+        },
+      ],
+      "commands": Array [],
+      "conditions": Array [
+        Object {
+          "againHack": false,
+          "debugFlag": null,
+          "neighbors": Array [
+            Object {
+              "sourceOffset": 240,
+              "tilesWithModifier": Array [],
+              "type": "NEIGHBOR",
+            },
+          ],
+          "sourceOffset": 239,
+          "type": "BRACKET",
+        },
+      ],
+      "modifiers": Array [
+        "RIGHT",
+      ],
+      "sourceOffset": 233,
+      "type": "RULE",
+    },
+  ],
+  "sounds": Array [],
+  "sprites": Array [],
+  "title": "checkGrammar",
   "winConditions": Array [],
 }
 `;

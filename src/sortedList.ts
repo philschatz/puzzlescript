@@ -29,19 +29,19 @@ export class SortedArray<T> implements Iterable<T> {
         }
     }
 
-    public has(item: T) {
-        return this.indexOf(item) >= 0
-    }
-
-    public isEmpty() {
-        return this.ary.length === 0
-    }
     public size() {
         return this.ary.length
     }
-    public clear() {
-        this.ary = []
-    }
+    // Unused
+    // public has(item: T) {
+    //     return this.indexOf(item) >= 0
+    // }
+    // public isEmpty() {
+    //     return this.ary.length === 0
+    // }
+    // public clear() {
+    //     this.ary = []
+    // }
 
     private indexOf(theItem: T) {
         return this.ary.indexOf(theItem)
@@ -178,9 +178,10 @@ export class SortedList<T> implements Iterable<T> {
         }
     }
 
-    public has(item: T) {
-        return !!this.findNode(item)
-    }
+    // Unused
+    // public has(item: T) {
+    //     return !!this.findNode(item)
+    // }
 
     public isEmpty() {
         return !this.head
@@ -192,16 +193,20 @@ export class SortedList<T> implements Iterable<T> {
         }
         return size
     }
-    public clear() {
-        this.head = null
-    }
-    public first() {
-        if (this.head) {
-            return this.head.item
-        } else {
-            throw new Error(`BUG: List was empty so cannot get first cell`)
-        }
-    }
+
+    // Unused
+    // public clear() {
+    //     this.head = null
+    // }
+
+    // Unused
+    // public first() {
+    //     if (this.head) {
+    //         return this.head.item
+    //     } else {
+    //         throw new Error(`BUG: List was empty so cannot get first cell`)
+    //     }
+    // }
 
     private findNode(item: T) {
         let current = this.head

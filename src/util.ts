@@ -15,23 +15,23 @@ export function _flatten<T>(arrays: T[][]) {
     return [].concat.apply([], arrays) as T[]
 }
 
-export function _zip<T1, T2>(array1: T1[], array2: T2[]) {
-    if (array1.length < array2.length) {
-        throw new Error(`BUG: Zip array length mismatch ${array1.length} != ${array2.length}`)
-    }
-    return array1.map((v1, index) => {
-        return [v1, array2[index]]
-    })
-}
+// export function _zip<T1, T2>(array1: T1[], array2: T2[]) {
+//     if (array1.length < array2.length) {
+//         throw new Error(`BUG: Zip array length mismatch ${array1.length} != ${array2.length}`)
+//     }
+//     return array1.map((v1, index) => {
+//         return [v1, array2[index]]
+//     })
+// }
 
-export function _extend(dest: any, ...rest: any[]) {
-    for (const obj of rest) {
-        for (const key of Object.keys(obj)) {
-            dest[key] = obj[key]
-        }
-    }
-    return dest
-}
+// export function _extend(dest: any, ...rest: any[]) {
+//     for (const obj of rest) {
+//         for (const key of Object.keys(obj)) {
+//             dest[key] = obj[key]
+//         }
+//     }
+//     return dest
+// }
 
 export function _debounce(callback: () => any) {
     let timeout: NodeJS.Timer
