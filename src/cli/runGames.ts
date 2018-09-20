@@ -29,13 +29,10 @@ async function run() {
         const code = readFileSync(filename, 'utf-8')
         let startTime = Date.now()
         const { data, validationMessages } = Parser.parse(code)
-        console.log(`Parsing took ${Date.now() - startTime}ms`)
 
         if (!data) {
             throw new Error(`BUG: gameData was not set yet`)
         }
-            // console.log(data.title)
-        // return
 
         if (validationMessages) {
             validationMessages.forEach(({ source, level, message }) => {
@@ -98,7 +95,6 @@ async function run() {
 
             startTime = Date.now()
 
-            let maxTickAndRenderTime = -1
             for (let i = 0; i < keypressesStr.length; i++) {
                 switch (keypressesStr[i]) {
                     case 'W':
@@ -130,9 +126,6 @@ async function run() {
 
                 // Draw any cells that moved
                 TerminalUI.drawCells(changedCells, false)
-                if (i > 1) { // Skip the 1st couple because they might be cleaning up the level
-                    maxTickAndRenderTime = Math.max(maxTickAndRenderTime, Date.now() - startTime)
-                }
 
                 const msg = `Tick ${i} of "${data.title}" (took ${Date.now() - startTime}ms)`
                 TerminalUI.writeDebug(msg.substring(0, 160), 0)
@@ -148,7 +141,6 @@ async function run() {
                 // }
 
             }
-            console.log('Max tickAndRender Time (ms):', maxTickAndRenderTime)
 
             const absPath = path.resolve(filename)
             const gistName = path.basename(path.dirname(filename))

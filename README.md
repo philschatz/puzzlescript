@@ -90,10 +90,10 @@ This is a remake of PuzzleScript that has the following features:
 ## Commands
 
 - `npm run docs` generates docs in the `./docs/` directory
-- `npm run play` runs a game in the [./gists/](./gists/) directory without debugging info (10x faster) (uses `NODE_ENV=production`)
-- `npm run play:dev` runs a game in the [./gists/](./gists/) directory with sprite info (useful for debugging)
-- `npm run play:debug` runs a game in the [./gists/](./gists/) directory with a Chrome Debugger open so you can set breakpoints
-- `npm start` runs all of the games in the [./gists/](./gists/) directory with a few sample moves (up/down/left/right/action)
+- `npm start` runs a game in the [./gists/](./gists/) directory without debugging info (10x faster) (uses `NODE_ENV=production`)
+- `npm run start:dev` runs a game in the [./gists/](./gists/) directory with sprite info (useful for debugging)
+- `npm run start:debug` runs a game in the [./gists/](./gists/) directory with a Chrome Debugger open so you can set breakpoints
+- `npm demo` runs all of the games in the [./gists/](./gists/) directory with a few sample moves (up/down/left/right/action)
 - `npm test` runs all of the unit tests (including solutions in the [./gist-solutions/](./gist-solutions/) directory)
 - `npm run watch` Run the tests and when you update the source, it re-runs the tests
 - `npm run test:debug` Run the tests but opens a debugger (remember to add a `debugger` line into the JavaScript)
