@@ -1,9 +1,9 @@
 {
   "scripts": {
     "lint": "npm run-script lint:js && npm run-script lint:ts",
-    "lint:js": "standardx --fix preprocessor.js ./test/**/*.js",
+    "lint:js": "standardx --fix ./test/**/*.js",
     "lint:ts": "tslint --fix --config ./tslint.json --project ./ --format stylish",
-    "compile": "npm run-script compile-grammar && npm run-script compile:ts",
+    "compile": "npm run-script compile:grammar && npm run-script compile:ts",
     "compile:grammar": "nearleyc ./src/parser/grammar.ne > ./src/parser/grammar.ts",
     "compile:ts": "tsc && cp ./src/sound/sfxr.js ./lib/sound/ && cp ./src/sound/sfxr-browser.js ./lib/sound/",
     "preci": "npm run-script compile",

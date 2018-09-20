@@ -1,3 +1,4 @@
+// This updates the set of Playtested files (so they show up white in the list of games)
 const fs = require('fs')
 const path = require('path')
 const glob = require('glob')
