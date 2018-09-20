@@ -109,7 +109,7 @@
       }
     },
     "testMatch": [
-      "**/test/**.test.+(ts|tsx|js)"
+      "**/test/**/*.test.+(ts|tsx|js)"
     ]
   },
   "standard": {
