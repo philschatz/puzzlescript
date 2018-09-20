@@ -5,7 +5,7 @@ node_js:
 
 cache: yarn
 
-# enable building the "speaker" package
+# enable building the "speaker" package and puppeteer
 # https://github.com/TooTallNate/node-speaker/blob/master/.travis.yml#L3
 env:
   - CXX=g++-4.8
@@ -21,4 +21,3 @@ install:
   - yarn install --ignore-optional # Ignore the speaker
 script:
   - npm run-script ci
-  - npm run-script ci:codecov

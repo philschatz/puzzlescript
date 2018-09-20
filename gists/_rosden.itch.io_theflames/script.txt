@@ -450,7 +450,7 @@ RULES
 
 ([> player][ player1] -> [> player] [> player1])
 
-(Horizontal [< player] -> [< player1]))
+(Horizontal [< player] -> [< player1])
 
 [flametrigger|player] [ woodwallx] ->[flametrigger|player] [fireper1x]
 

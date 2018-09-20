@@ -42,7 +42,7 @@ export class GameMetadata {
     }
 
     public _setValue(key: string, value: boolean | string | Dimension | IColor) {
-        switch (key) {
+        switch (key.toLowerCase()) {
             case 'author': this.author = value as string; break
             case 'homepage': this.homepage = value as string; break
             case 'youtube': this.youtube = value as string; break

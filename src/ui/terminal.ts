@@ -167,6 +167,28 @@ class TerminalUI extends BaseUI {
             rows >= screenHeight * 5 * this.PIXEL_HEIGHT
     }
 
+    public renderMessageScreen(message: string) {
+        const screenWidth = 34 // width of messages
+
+        const { columns } = this.getMaxSize()
+        if (this.canShowMessageAsCells()) {
+            super.renderMessageScreen(message)
+        } else {
+            this.clearScreen()
+            const messageScreen = this.createMessageTextScreen(message)
+            for (const messageRow of messageScreen) {
+                const line = chalk.bold.whiteBright(messageRow)
+                // add some horizontal space if the terminal is wide
+                let padding = ''
+                if (columns > screenWidth) {
+                    padding = ' '.repeat(Math.floor((columns - screenWidth) / 2))
+                }
+                console.log(`${padding}${line}`) // tslint:disable-line:no-console
+            }
+        }
+
+    }
+
     public writeDebug(text: string, category: number) {
         this.debugCategoryMessages[category] = text
 

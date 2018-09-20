@@ -1,5 +1,4 @@
 import BitSet from 'bitset'
-import { CollisionLayer } from './models/collisionLayer'
 import { GameData } from './models/game'
 import { GameSprite } from './models/tile'
 // BitSet does not export a default so import does not work in webpack-built file
@@ -19,9 +18,10 @@ abstract class CustomBitSet<T> {
         }
     }
 
-    public clear() {
-        this.bitSet.clear()
-    }
+    // Unused
+    // public clear() {
+    //     this.bitSet.clear()
+    // }
 
     public isEmpty() {
         return this.bitSet.isEmpty()
@@ -33,11 +33,12 @@ abstract class CustomBitSet<T> {
         }
     }
 
-    public removeAll(items: Iterable<T>) {
-        for (const sprite of items) {
-            this.remove(sprite)
-        }
-    }
+    // Unused
+    // public removeAll(items: Iterable<T>) {
+    //     for (const sprite of items) {
+    //         this.remove(sprite)
+    //     }
+    // }
 
     public add(item: T) {
         this.bitSet.set(this._indexOf(item))
@@ -80,16 +81,6 @@ export class SpriteBitSet extends CustomBitSet<GameSprite> {
         return item.allSpritesBitSetIndex
     }
 
-    public getSprites(gameData: GameData) {
-        const sprites = new Set<GameSprite>()
-        for (const sprite of gameData.objects) {
-            if (this.has(sprite)) {
-                sprites.add(sprite)
-            }
-        }
-        return sprites
-    }
-
     public toString(gameData: GameData) {
         const str = []
         for (const sprite of this.getSprites(gameData)) {
@@ -106,15 +97,18 @@ export class SpriteBitSet extends CustomBitSet<GameSprite> {
         return ret
     }
 
+    private getSprites(gameData: GameData) {
+        const sprites = new Set<GameSprite>()
+        for (const sprite of gameData.objects) {
+            if (this.has(sprite)) {
+                sprites.add(sprite)
+            }
+        }
+        return sprites
+    }
+
     private or(bitSet: SpriteBitSet) {
         return new SpriteBitSet(undefined, this.bitSet.or(bitSet.bitSet))
     }
 
-}
-
-export class CollisionLayerBitSet extends CustomBitSet<CollisionLayer> {
-
-    public indexOf(item: CollisionLayer) {
-        return item.id
-    }
 }

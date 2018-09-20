@@ -1,9 +1,9 @@
 import BitSet from 'bitset'
 import { Cell } from '../engine'
-import { _flatten, _zip, Optional, RULE_DIRECTION, setDifference, setIntersection } from '../util'
+import { _flatten, Optional, RULE_DIRECTION, setDifference, setIntersection } from '../util'
 import { BaseForLines, IGameCode } from './BaseForLines'
 import { CollisionLayer } from './collisionLayer'
-import { HexColor, IColor, TransparentColor } from './colors'
+import { IColor, TransparentColor } from './colors'
 import { IGameNode } from './game'
 import { SimpleTileWithModifier } from './rule'
 // BitSet does not export a default so import does not work in webpack-built file
@@ -101,7 +101,7 @@ export abstract class GameSprite extends BaseForLines implements IGameTile {
     }
     public getCollisionLayer() {
         if (!this.collisionLayer) {
-            throw new Error(`ERROR: This sprite was not in a Collision Layer\n${this.__source.getLineAndColumnMessage()}`)
+            throw new Error(`ERROR: This sprite was not in a Collision Layer\n${this.toString()}`)
         }
         return this.collisionLayer
     }
@@ -214,9 +214,9 @@ export abstract class GameSprite extends BaseForLines implements IGameTile {
 }
 
 export class GameSpriteSingleColor extends GameSprite {
-    private readonly color: HexColor
+    private readonly color: IColor
 
-    constructor(source: IGameCode, name: string, optionalLegendChar: string, colors: HexColor[]) {
+    constructor(source: IGameCode, name: string, optionalLegendChar: Optional<string>, colors: IColor[]) {
         super(source, name, optionalLegendChar)
         this.color = colors[0] // Ignore if the user added multiple colors (like `transparent yellow`)
     }
@@ -225,7 +225,7 @@ export class GameSpriteSingleColor extends GameSprite {
     }
     public getPixels(spriteHeight: number, spriteWidth: number) {
         // When there are no pixels then it means "color the whole thing in the same color"
-        const rows: HexColor[][] = []
+        const rows: IColor[][] = []
         for (let row = 0; row < spriteHeight; row++) {
             rows.push([])
             for (let col = 0; col < spriteWidth; col++) {
@@ -240,7 +240,7 @@ export class GameSpritePixels extends GameSprite {
     private readonly colors: IColor[]
     private readonly pixels: IColor[][]
 
-    constructor(source: IGameCode, name: string, optionalLegendChar: string, colors: HexColor[], pixels: Array<Array<'.' | number>>) {
+    constructor(source: IGameCode, name: string, optionalLegendChar: Optional<string>, colors: IColor[], pixels: Array<Array<'.' | number>>) {
         super(source, name, optionalLegendChar)
         this.colors = colors
         this.pixels = pixels.map((row) => {

@@ -21,9 +21,9 @@ export class GameSoundSfx extends GameSound {
 }
 
 export class GameSoundSimpleEnum extends GameSound {
-    public readonly simpleEventName: number
+    public readonly simpleEventName: string
 
-    constructor(source: IGameCode, simpleEventName: number, soundCode: number) {
+    constructor(source: IGameCode, simpleEventName: string, soundCode: number) {
         super(source, soundCode)
         this.simpleEventName = simpleEventName
     }

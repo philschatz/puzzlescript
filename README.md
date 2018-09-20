@@ -21,6 +21,16 @@ Also, it is **accessible**, meaning that [blind or visually impaired people can 
 
 See [./test/browser/html-table.xhtml](./test/browser/html-table.xhtml) for an example of embedding in a browser.
 
+```js
+// Include <script src="node_modules/puzzlescript/dist/puzzlescript.js"></script>
+// and then the following:
+table = document.querySelector('table') // selector to the <table> that will be used
+engine = new PuzzleScript.HTMLTableEngine(table)
+engine.setGame(gameSourceString, 0 /*startLevel*/)
+engine.startKeyboardListener()
+engine.startTickHandler()
+```
+
 # Screencaps
 
 Here are some screencaps of games being played.
@@ -79,7 +89,7 @@ The goal of this project is to do 3 things:
 This is a remake of PuzzleScript that has the following features:
 
 - There is [documentation](https://philschatz.com/puzzlescript-cli/docs/) for using the [NPM package](https://www.npmjs.com/package/puzzlescript-cli)
-- There is a [Grammar](https://en.wikipedia.org/wiki/Parsing_expression_grammar) file that parses the game file (uses [ohm](https://github.com/harc/ohm))
+- There is a [Grammar](https://en.wikipedia.org/wiki/Parsing_expression_grammar) file that parses the game file (uses [nearley](https://github.com/kach/nearley))
 - The interpreter is a separate component
 - The rendering code is abstracted out so folks can add a different renderer (the example uses ASCII in the Terminal to show the game)
   - This allows for fun things like adding an accessible-friendly interface to play the games
@@ -90,15 +100,16 @@ This is a remake of PuzzleScript that has the following features:
 ## Commands
 
 - `npm run docs` generates docs in the `./docs/` directory
-- `npm run play` runs a game in the [./gists/](./gists/) directory without debugging info (10x faster) (uses `NODE_ENV=production`)
-- `npm run play:dev` runs a game in the [./gists/](./gists/) directory with sprite info (useful for debugging)
-- `npm run play:debug` runs a game in the [./gists/](./gists/) directory with a Chrome Debugger open so you can set breakpoints
-- `npm start` runs all of the games in the [./gists/](./gists/) directory with a few sample moves (up/down/left/right/action)
+- `npm start` runs a game in the [./gists/](./gists/) directory without debugging info (10x faster) (uses `NODE_ENV=production`)
+- `npm run start:dev` runs a game in the [./gists/](./gists/) directory with sprite info (useful for debugging)
+- `npm run start:debug` runs a game in the [./gists/](./gists/) directory with a Chrome Debugger open so you can set breakpoints
+- `npm demo` runs all of the games in the [./gists/](./gists/) directory with a few sample moves (up/down/left/right/action)
 - `npm test` runs all of the unit tests (including solutions in the [./gist-solutions/](./gist-solutions/) directory)
 - `npm run watch` Run the tests and when you update the source, it re-runs the tests
 - `npm run test:debug` Run the tests but opens a debugger (remember to add a `debugger` line into the JavaScript)
 - `npm test; open coverage/lcov-report/index.html` to see test coverage
 - `npm run coverage` generates a coverage report which includes the JS code as well as any games that you ran in dev mode (using `npm run dev`)
+- See the module dependency tree by running `npm run build:stats` and then uploading `webpack-stats.json` to https://webpack.github.io/analyse/#modules
 
 ## Objects
 

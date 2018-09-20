@@ -4,7 +4,7 @@
     "lib": ["es2015", "dom"],
     "module": "commonjs",
     "moduleResolution": "node",
-    "inlineSourceMap": true,
+    "sourceMap": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "removeComments": false,

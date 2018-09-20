@@ -787,9 +787,9 @@ late down [spring][bunnyd no moved |no cre flower] -> [spring][|bunnyd moved eat
 
 
 late up [spring][bunnyu no moved |no cre no flower] ->[spring] [|bunnyu moved] 
-late left [spring][bunnyl no moved |no cre no flower] -> [[spring]|bunnyl moved] 
 late right [spring][bunnyr no moved |no cre no flower] -> [spring][|bunnyr moved] 
 late down [spring][bunnyd no moved |no cre no flower] -> [spring][|bunnyd moved] 
+late left [spring][bunnyl no moved |no cre no flower] -> [spring][|bunnyl moved]
 
 late right [|nodoor  spring][eaten] -> [spring|sdoor][eaten]
 late [spring][nodoor][eaten] -> [spring][sdoor][eaten]

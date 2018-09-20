@@ -1,6 +1,5 @@
-import chalk from 'chalk'
-
 import { Cell, GameData, GameEngine, Optional } from '..'
+import { RULE_DIRECTION } from '../index'
 import { IColor } from '../models/colors'
 import { GameSprite } from '../models/tile'
 import Parser from '../parser/parser'
@@ -145,13 +144,9 @@ abstract class BaseUI {
     }
 
     public setGame(gameData: string) {
-        const { data, error } = Parser.parse(gameData)
+        const { data } = Parser.parse(gameData)
         if (!data) {
-            if (error) {
-                throw error
-            } else {
-                throw new Error(`BUG: Could not parse gameData and did not find an error`)
-            }
+            throw new Error(`BUG: Could not parse gameData and did not find an error`)
         }
         this.setGameEngine(new GameEngine(data))
     }
@@ -162,30 +157,25 @@ abstract class BaseUI {
         return this.engine.getGameData()
     }
 
-    public pressUp() {
+    public press(dir: RULE_DIRECTION) {
         if (this.engine) {
-            this.engine.pressUp()
+            this.engine.press(dir)
         }
+    }
+    public pressUp() {
+        this.press(RULE_DIRECTION.UP)
     }
     public pressDown() {
-        if (this.engine) {
-            this.engine.pressDown()
-        }
+        this.press(RULE_DIRECTION.DOWN)
     }
     public pressLeft() {
-        if (this.engine) {
-            this.engine.pressLeft()
-        }
+        this.press(RULE_DIRECTION.LEFT)
     }
     public pressRight() {
-        if (this.engine) {
-            this.engine.pressRight()
-        }
+        this.press(RULE_DIRECTION.RIGHT)
     }
     public pressAction() {
-        if (this.engine) {
-            this.engine.pressAction()
-        }
+        this.press(RULE_DIRECTION.ACTION)
     }
     public pressUndo() {
         if (this.engine) {
@@ -227,45 +217,28 @@ abstract class BaseUI {
     public renderMessageScreen(message: string) {
         const screenWidth = 34
         const screenHeight = 13
+        // re-center the screen so we can show the message
+        // remember these values so we can restore them right after rendering the message
+        // tslint:disable-next-line:no-this-assignment
+        const { windowOffsetColStart, windowOffsetRowStart, windowOffsetHeight, windowOffsetWidth } = this
+        this.windowOffsetColStart = 0
+        this.windowOffsetRowStart = 0
+        this.windowOffsetHeight = screenHeight
+        this.windowOffsetWidth = screenWidth
+        this.clearScreen()
 
-        const { columns } = this.getMaxSize()
-        if (this.canShowMessageAsCells()) {
-            // re-center the screen so we can show the message
-            // remember these values so we can restore them right after rendering the message
-            // tslint:disable-next-line:no-this-assignment
-            const { windowOffsetColStart, windowOffsetRowStart, windowOffsetHeight, windowOffsetWidth } = this
-            this.windowOffsetColStart = 0
-            this.windowOffsetRowStart = 0
-            this.windowOffsetHeight = screenHeight
-            this.windowOffsetWidth = screenWidth
-            this.clearScreen()
-
-            if (this.engine) {
-                const sprites = this.createMessageSprites(message)
-                this.engine.setMessageLevel(sprites)
-                // this.renderScreen(false)
-                this.drawCellsAfterRecentering(_flatten(this.getCurrentLevelCells()), 0)
-                this.engine.restoreFromMessageLevel()
-            }
-
-            this.windowOffsetColStart = windowOffsetColStart
-            this.windowOffsetRowStart = windowOffsetRowStart
-            this.windowOffsetHeight = windowOffsetHeight
-            this.windowOffsetWidth = windowOffsetWidth
-
-        } else {
-            this.clearScreen()
-            const messageScreen = this.createMessageTextScreen(message)
-            for (const messageRow of messageScreen) {
-                const line = chalk.bold.whiteBright(messageRow)
-                // add some horizontal space if the terminal is wide
-                let padding = ''
-                if (columns > screenWidth) {
-                    padding = ' '.repeat(Math.floor((columns - screenWidth) / 2))
-                }
-                console.log(`${padding}${line}`) // tslint:disable-line:no-console
-            }
+        if (this.engine) {
+            const sprites = this.createMessageSprites(message)
+            this.engine.setMessageLevel(sprites)
+            // this.renderScreen(false)
+            this.drawCellsAfterRecentering(_flatten(this.getCurrentLevelCells()), 0)
+            this.engine.restoreFromMessageLevel()
         }
+
+        this.windowOffsetColStart = windowOffsetColStart
+        this.windowOffsetRowStart = windowOffsetRowStart
+        this.windowOffsetHeight = windowOffsetHeight
+        this.windowOffsetWidth = windowOffsetWidth
     }
 
     public renderScreen(clearCaches: boolean, renderScreenDepth: number = 0) {
@@ -417,8 +390,6 @@ abstract class BaseUI {
         return cells
     }
 
-    protected abstract canShowMessageAsCells(): boolean
-
     protected abstract renderLevelScreen(levelRows: Cell[][], renderScreenDepth: number): void
 
     protected abstract setPixel(x: number, y: number, hex: string, fgHex: Optional<string>, chars: string): void
@@ -476,6 +447,13 @@ abstract class BaseUI {
 
     protected clearScreen() {
         this.renderedPixels = []
+    }
+
+    protected hasAgainThatNeedsToRun() {
+        if (!this.engine) {
+            throw new Error(`BUG: Engine has not been set yet`)
+        }
+        return this.engine.hasAgain()
     }
 
     // Returns true if the window was moved (so we can re-render the screen)

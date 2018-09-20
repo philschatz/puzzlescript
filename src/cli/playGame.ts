@@ -206,67 +206,57 @@ async function startPromptsAndPlayGame(gamePath: string, gistId: Optional<string
 
     const absPath = path.resolve(gamePath)
     const code = readFileSync(absPath, 'utf-8')
-    const { data, error, trace } = Parser.parse(code)
+    const { data } = Parser.parse(code)
 
-    if (error && trace) {
-        console.log(trace.toString())
-        console.log(error.message)
-        throw new Error(error.message)
+    console.log('')
+    console.log(`Opened Game: "${chalk.blueBright(data.title)}"`)
+    console.log('')
+
+    showControls()
+    // check to see if the terminal is too small
+    await promptPixelSize(data, cliUi ? cliSpriteSize : CLI_SPRITE_SIZE.SMALL)
+
+    // Load the solutions file (if it exists) so we can append to it
+    const solutionsPath = path.join(__dirname, `../../gist-solutions/${gistId}.json`)
+    let recordings: { version: number, solutions: ILevelRecording[], title: string, totalLevels: number, totalMapLevels: number }
+    if (gistId && existsSync(solutionsPath)) {
+        recordings = JSON.parse(readFileSync(solutionsPath, 'utf-8'))
     } else {
-        if (!data) {
-            throw new Error(`BUG: did not load gameData`)
-        }
-        console.log('')
-        console.log(`Opened Game: "${chalk.blueBright(data.title)}"`)
-        console.log('')
-
-        showControls()
-        // check to see if the terminal is too small
-        await promptPixelSize(data, cliUi ? cliSpriteSize : CLI_SPRITE_SIZE.SMALL)
-
-        // Load the solutions file (if it exists) so we can append to it
-        const solutionsPath = path.join(__dirname, `../../gist-solutions/${gistId}.json`)
-        let recordings: { version: number, solutions: ILevelRecording[], title: string, totalLevels: number, totalMapLevels: number }
-        if (gistId && existsSync(solutionsPath)) {
-            recordings = JSON.parse(readFileSync(solutionsPath, 'utf-8'))
-        } else {
-            recordings = { version: 1, solutions: [], title: data.title, totalLevels: data.levels.length, totalMapLevels: data.levels.filter((l) => l.isMap()).length } // default
-        }
-
-        const currentLevelNum = await promptChooseLevel(recordings, data, cliNewGame ? 0 : cliLevel)
-
-        // Allow the user to resume from where they left off
-        let ticksToRunFirst = ''
-        if (recordings.solutions[currentLevelNum] && (recordings.solutions[currentLevelNum].partial || recordings.solutions[currentLevelNum].solution)) {
-            let shouldResume
-            if (cliResume !== undefined) {
-                shouldResume = cliResume
-            } else {
-                shouldResume = (await inquirer.prompt<{ shouldResume: boolean }>({
-                    type: 'confirm',
-                    name: 'shouldResume',
-                    message: 'Would you like to resume where you left off?'
-                })).shouldResume
-            }
-            if (shouldResume) {
-                ticksToRunFirst = recordings.solutions[currentLevelNum].partial || recordings.solutions[currentLevelNum].solution || ''
-            }
-        }
-
-        // Prepare the keyboard handler
-        if (process.stdin.setRawMode) {
-            process.stdin.setRawMode(true)
-        } else {
-            throw new Error(`ERROR: stdin does not allow setting setRawMode (we need that for keyboard input`)
-        }
-        process.stdin.resume()
-        process.stdin.setEncoding('utf8')
-
-        TerminalUI.clearScreen()
-
-        await playGame(data, currentLevelNum, recordings, ticksToRunFirst, absPath, solutionsPath, cliUi, cliLevel !== undefined /*only run one level if specified*/, nosound)
-
+        recordings = { version: 1, solutions: [], title: data.title, totalLevels: data.levels.length, totalMapLevels: data.levels.filter((l) => l.isMap()).length } // default
     }
+
+    const currentLevelNum = await promptChooseLevel(recordings, data, cliNewGame ? 0 : cliLevel)
+
+    // Allow the user to resume from where they left off
+    let ticksToRunFirst = ''
+    if (recordings.solutions[currentLevelNum] && (recordings.solutions[currentLevelNum].partial || recordings.solutions[currentLevelNum].solution)) {
+        let shouldResume
+        if (cliResume !== undefined) {
+            shouldResume = cliResume
+        } else {
+            shouldResume = (await inquirer.prompt<{ shouldResume: boolean }>({
+                type: 'confirm',
+                name: 'shouldResume',
+                message: 'Would you like to resume where you left off?'
+            })).shouldResume
+        }
+        if (shouldResume) {
+            ticksToRunFirst = recordings.solutions[currentLevelNum].partial || recordings.solutions[currentLevelNum].solution || ''
+        }
+    }
+
+    // Prepare the keyboard handler
+    if (process.stdin.setRawMode) {
+        process.stdin.setRawMode(true)
+    } else {
+        throw new Error(`ERROR: stdin does not allow setting setRawMode (we need that for keyboard input`)
+    }
+    process.stdin.resume()
+    process.stdin.setEncoding('utf8')
+
+    TerminalUI.clearScreen()
+
+    await playGame(data, currentLevelNum, recordings, ticksToRunFirst, absPath, solutionsPath, cliUi, cliLevel !== undefined /*only run one level if specified*/, nosound)
 }
 
 async function playGame(data: GameData, currentLevelNum: number, recordings: ISaveFile, ticksToRunFirst: string,

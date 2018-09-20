@@ -1,8 +1,0 @@
-title Test Game! foo
-
-===
-RULES
-===
-
-[X]->[Y] Message Watch out! The boobularity is sucking everything in with its mighty gravitational pull!
-random right [X][Y|Z] -> [X][|]

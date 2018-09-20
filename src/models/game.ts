@@ -1,9 +1,9 @@
 import { getLetterSprites } from '../letters'
-import { ASTRule } from '../parser/astRule'
+import { AbstractRuleish } from '../parser/astRule'
 import { Optional } from '../util'
 import { IGameCode } from './BaseForLines'
 import { CollisionLayer } from './collisionLayer'
-import { LevelMap } from './level'
+import { ILevel } from './level'
 import { GameMetadata } from './metadata'
 import { IRule } from './rule'
 import { GameSound } from './sound'
@@ -11,11 +11,12 @@ import { GameLegendTileSimple, GameSprite, IGameTile } from './tile'
 import { WinConditionSimple } from './winCondition'
 
 export interface IGameNode {
-    __getSourceLineAndColumn: () => { lineNum: number, colNum: number }
-    __getLineAndColumnRange: () => { start: { line: number, col: number }, end: { line: number, col: number } }
+    __source: {code: string, sourceOffset: number}
     __coverageCount: Optional<number>
-    toString: () => string
-    toSourceString: () => string
+    __getSourceLineAndColumn(): { lineNum: number, colNum: number }
+    __getLineAndColumnRange(): { start: { line: number, col: number }, end: { line: number, col: number } }
+    toString(): string
+    toSourceString(): string
 }
 
 export class GameData {
@@ -27,8 +28,9 @@ export class GameData {
     public readonly collisionLayers: CollisionLayer[]
     public readonly rules: IRule[]
     public readonly winConditions: WinConditionSimple[]
-    public readonly levels: LevelMap[]
+    public readonly levels: ILevel[]
     private readonly cacheSpriteSize: {spriteHeight: number, spriteWidth: number}
+    private cachedBackgroundSprite: Optional<GameSprite>
     private readonly letterSprites: Map<string, GameSprite>
 
     constructor(
@@ -39,9 +41,9 @@ export class GameData {
         legends: GameLegendTileSimple[],
         sounds: GameSound[],
         collisionLayers: CollisionLayer[],
-        rules: ASTRule[],
+        rules: AbstractRuleish[],
         winConditions: WinConditionSimple[],
-        levels: LevelMap[]
+        levels: ILevel[]
     ) {
         this.title = title
         this.metadata = metadata
@@ -98,21 +100,26 @@ export class GameData {
     }
 
     public getMagicBackgroundSprite() {
-        const background: Optional<GameSprite> = this._getSpriteByName('background')
-        if (!background) {
-            const legendBackground = this.legends.find((tile) => tile.spriteNameOrLevelChar.toLocaleLowerCase() === 'background')
-            if (legendBackground) {
-                if (legendBackground.isOr()) {
-                    return null
-                } else {
-                    return legendBackground.getSprites()[0]
+        if (this.cachedBackgroundSprite) {
+            return this.cachedBackgroundSprite
+        } else {
+            const background: Optional<GameSprite> = this._getSpriteByName('background')
+            if (!background) {
+                const legendBackground = this.legends.find((tile) => tile.spriteNameOrLevelChar.toLocaleLowerCase() === 'background')
+                if (legendBackground) {
+                    if (legendBackground.isOr()) {
+                        return null
+                    } else {
+                        return legendBackground.getSprites()[0]
+                    }
                 }
             }
+            if (!background) {
+                throw new Error(`ERROR: Game does not have a Background Sprite or Tile`)
+            }
+            this.cachedBackgroundSprite = background
+            return background
         }
-        if (!background) {
-            throw new Error(`ERROR: Game does not have a Background Sprite or Tile`)
-        }
-        return background
     }
     public getPlayer(): IGameTile {
         const player = this._getSpriteByName('player') || this.legends.find((tile) => tile.spriteNameOrLevelChar.toLocaleLowerCase() === 'player')

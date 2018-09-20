@@ -1,3 +1,4 @@
+// This updates the set of Playtested files (so they show up white in the list of games)
 const fs = require('fs')
 const path = require('path')
 const glob = require('glob')
@@ -19,12 +20,13 @@ async function run() {
     ]
 
     // const promises = []
+    const entries = []
     for (const f of gists) {
         const gistId = path.basename(f).replace('.json', '')
 
         const json = JSON.parse(fs.readFileSync(f, 'utf-8'))
         if (json.solutions && json.solutions.find(s => s && s.solution)) {
-            solutionsFileList.push(`    \`${json.title}\`,`)
+            entries.push(`    \`${json.title}\``)
         }
         // const promise = readFile(`./gists/${gistId}/script.txt`, 'utf-8').then(code => {
         //     console.log(`Parsing ${gistId}...`)
@@ -39,7 +41,8 @@ async function run() {
     }
     // await Promise.all(promises)
 
+    solutionsFileList.push(entries.join(',\n'))
     solutionsFileList.push(`])`)
 
-    fs.writeFileSync(`src/cli/solvedGames.ts`, solutionsFileList.join('\n'))
+    fs.writeFileSync(`src/cli/solvedGames.ts`, solutionsFileList.join('\n') + '\n')
 }

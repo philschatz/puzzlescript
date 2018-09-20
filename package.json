@@ -1,32 +1,33 @@
 {
   "scripts": {
     "lint": "npm run-script lint:js && npm run-script lint:ts",
-    "lint:js": "standardx --fix preprocessor.js ./test/**/*.js",
+    "lint:js": "standardx --fix ./test/**/*.js",
     "lint:ts": "tslint --fix --config ./tslint.json --project ./ --format stylish",
-    "prepublish": "NODE_ENV=production npm run-script tsc",
-    "preci": "npm run tsc",
+    "compile": "npm run-script compile:grammar && npm run-script compile:ts && npm run-script build",
+    "compile:grammar": "nearleyc ./src/parser/grammar.ne > ./src/parser/grammar.ts",
+    "compile:ts": "tsc && cp ./src/sound/sfxr.js ./lib/sound/ && cp ./src/sound/sfxr-browser.js ./lib/sound/",
     "ci": "npm run-script test",
-    "ci:codecov": "codecov",
-    "tsc": "tsc && cp ./src/sound/sfxr.js ./lib/sound/ && cp ./src/sound/sfxr-browser.js ./lib/sound/",
+    "postci": "codecov",
     "tsc:watch": "cp ./src/sound/sfxr.js ./lib/sound/ && cp ./src/sound/sfxr-browser.js ./lib/sound/ && tsc --watch",
     "docs": "typedoc --ignoreCompilerErrors --mode modules --excludePrivate --excludeExternals --theme minimal --readme ./README.md --out ./docs/ ./src/",
-    "play": "NODE_ENV=production node -r source-map-support/register ./bin/puzzlescript.js",
-    "play:only": "NODE_ENV=production node -r source-map-support/register ./bin/puzzlescript.js",
-    "play:debug": "node --inspect -r source-map-support/register ./bin/puzzlescript.js 2> ./play.log",
-    "play:dev": "LOG_LEVEL=debug NODE_ENV=development node -r source-map-support/register ./bin/puzzlescript.js 2> ./play.log",
-    "start": "NODE_ENV=production node -r source-map-support/register ./bin/puzzlescript-demo.js",
-    "start:dev": "LOG_LEVEL=debug NODE_ENV=development node -r source-map-support/register ./bin/puzzlescript-demo.js 2> ./start.log",
-    "start:coverage": "LOG_LEVEL=debug NODE_ENV=development istanbul cover -x '**/node_modules/**' ./bin/puzzlescript-demo.js 2> ./start.log",
-    "start:debug": "LOG_LEVEL=debug NODE_ENV=development node --inspect-brk ./bin/puzzlescript-demo.js 2> ./start.log",
-    "start:debug-cli": "LOG_LEVEL=debug NODE_ENV=development node inspect ./bin/puzzlescript-demo.js 2> ./start.log",
-    "poststart": "npm run-script coverage && echo 'Generated coverage. Type open ./coverage/lcov-html/index.html to see it'",
+    "start": "NODE_ENV=production node -r source-map-support/register ./bin/puzzlescript.js",
+    "start:only": "NODE_ENV=production node -r source-map-support/register ./bin/puzzlescript.js",
+    "start:debug": "node --inspect -r source-map-support/register ./bin/puzzlescript.js 2> ./play.log",
+    "start:dev": "LOG_LEVEL=debug NODE_ENV=development node -r source-map-support/register ./bin/puzzlescript.js 2> ./play.log",
+    "demo": "NODE_ENV=production node -r source-map-support/register ./bin/puzzlescript-demo.js",
+    "demo:dev": "LOG_LEVEL=debug NODE_ENV=development node -r source-map-support/register ./bin/puzzlescript-demo.js 2> ./start.log",
+    "demo:coverage": "LOG_LEVEL=debug NODE_ENV=development istanbul cover -x '**/node_modules/**' ./bin/puzzlescript-demo.js 2> ./start.log",
+    "demo:debug": "LOG_LEVEL=debug NODE_ENV=development node --inspect-brk ./bin/puzzlescript-demo.js 2> ./start.log",
+    "demo:debug-cli": "LOG_LEVEL=debug NODE_ENV=development node inspect ./bin/puzzlescript-demo.js 2> ./start.log",
     "coverage": "istanbul report --root ./coverage/ lcov",
-    "pretest": "node ./doBatchStuff.js && tsc && npm run-script build",
+    "pretest": "node ./doBatchStuff.js && npm run-script compile",
     "test": "VERIFY_MATCHES=1 NODE_ENV=development jest --coverage --updateSnapshot --verbose",
     "posttest": "npm run-script test:cli && npm run-script coverage && npm run-script lint",
     "test:debug": "NODE_ENV=development node --inspect-brk -r source-map-support/register $(npm bin)/jest -i --updateSnapshot $@",
     "test:cli": "./bin/puzzlescript.js --no-ui --game 'Beam Islands' --level 1 --size small --resume",
-    "build": "webpack-command ./lib/index-browser.js --target web --output-library PuzzleScript --output-library-target umd --mode development --devtool source-map --output ./test/webpack-output.js",
+    "build": "webpack",
+    "build:dev": "webpack --mode development",
+    "build:stats": "webpack --profile --json > ./webpack-stats.json",
     "watch": "jest --updateSnapshot --watch",
     "debug": "VERIFY_MATCHES=1 LOG_LEVEL=debug NODE_ENV=development node --inspect -r source-map-support/register ./bin/puzzlescript.js 2> ./play.log"
   },
@@ -46,15 +47,10 @@
     "glob": "^7.1.2",
     "inquirer": "6.1.0",
     "inquirer-autocomplete-prompt": "^1.0.1",
-    "jest": "^23.3.0",
     "keymaster": "^1.6.2",
-    "ohm-js": "^0.14.0",
     "pify": "^4.0.0",
     "quick-lru": "^1.1.0",
-    "standardx": "^2.1.0",
     "supports-color": "^5.4.0",
-    "tslint-config-prettier": "^1.15.0",
-    "tslint-config-standard": "^7.1.0",
     "update-notifier": "^2.5.0",
     "web-audio-api": "^0.2.2"
   },
@@ -64,44 +60,53 @@
     "@types/glob": "^5.0.35",
     "@types/inquirer": "0.0.43",
     "@types/keymaster": "^1.6.28",
+    "@types/nearley": "^2.11.0",
     "@types/pify": "^3.0.2",
     "@types/quick-lru": "^1.1.0",
     "@types/supports-color": "^5.3.0",
+    "awesome-typescript-loader": "^5.2.1",
     "codecov": "^3.0.2",
-    "concurrently": "^3.6.0",
+    "hard-source-webpack-plugin": "^0.12.0",
     "http-server": "^0.11.1",
     "istanbul": "^0.4.5",
     "jest": "^23.3.0",
-    "jest-watch-typeahead": "^0.2.0",
     "mkdirp": "^0.5.1",
+    "nearley": "^2.15.1",
     "node-fetch": "^2.1.2",
     "puppeteer": "^1.7.0",
+    "source-map-loader": "^0.2.4",
     "source-map-support": "^0.5.6",
     "standard": "^12.0.0",
+    "standardx": "^2.1.0",
+    "ts-jest": "^23.10.0",
     "tslint": "^5.11.0",
+    "tslint-config-prettier": "^1.15.0",
+    "tslint-config-standard": "^7.1.0",
     "typedoc": "^0.12.0",
     "typescript": "^3.0.1",
     "webpack": "^4.16.2",
-    "webpack-command": "^0.4.1"
+    "webpack-cli": "^3.1.0"
   },
   "optionalDependencies": {
     "speaker": "github:philschatz/node-speaker#cac7c5b7c434b52619bfbbd9530ab0871156e815"
   },
   "jest": {
-    "watchPlugins": [
-      "jest-watch-typeahead/filename",
-      "jest-watch-typeahead/testname"
-    ],
     "moduleFileExtensions": [
-      "json",
       "ts",
-      "js"
+      "tsx",
+      "js",
+      "json"
     ],
     "transform": {
-      ".ts": "<rootDir>/preprocessor.js"
+      "^.+\\.(ts|tsx)$": "ts-jest"
+    },
+    "globals": {
+      "ts-jest": {
+        "tsConfigFile": "tsconfig.json"
+      }
     },
     "testMatch": [
-      "**/test/**/*.test.+(ts|js)"
+      "**/test/**/*.test.+(ts|tsx|js)"
     ]
   },
   "standard": {
