@@ -36,6 +36,16 @@ async function startBrowser() {
         args: puppeteerArgs
     })
     const page = await browser.newPage()
+
+    // redirect browser console messages to the terminal
+    page.on('console', (consoleMessage) => {
+        const type = consoleMessage.type()
+        const text = consoleMessage.text()
+
+        const fn = console[type] || console.log
+        fn.apply(console, [text])
+    })
+
     await page.goto(url)
 
     return {page, browser}
@@ -57,27 +67,21 @@ describeFn('Browser', () => {
 
         const {page, browser} = await startBrowser()
         const source = fs.readFileSync(path.join(__dirname, '../gists/_pot-wash-panic_itch/script.txt'), 'utf-8')
-        const startLevel = 1
+        const startLevel = 3
 
+        await sleep(500) // wait long enough for the JS to load maybe?
         await page.evaluate(({source, startLevel}) => {
-            window.HackTableUIStartGame(source, startLevel)
+            window.HackTableStart(source, startLevel)
         }, {source, startLevel})
 
-        // send some keystrokes to play level 1
-        pressKeys(page, 'DDDDDD'.split('')) // just press right 6 times
-        await sleep(2000) // wait for level 2 to load
-
         return new Promise( async (resolve) => {
-            // page.on('dialog', async dialog => {
-            //     expect(dialog.message()).toBe('You Won!')
-            //     await dialog.dismiss()
-            //     await stopBrowser(browser)
-            //     resolve()
-            // })
+            page.on('dialog', async dialog => {
+                expect(dialog.message()).toBe('Congratulations! You completed the level.')
+                await dialog.dismiss()
+                await stopBrowser(browser)
+                resolve()
+            })
             await pressKeys(page, 'SAAASASDDDWDDDDWDDSAAASASAW'.split(''))
-            // Verify that the "You Won!" alert box showed up
-            await stopBrowser(browser)
-            resolve()
         })
     })
 
@@ -94,7 +98,7 @@ describeFn('Browser', () => {
 
         await sleep(500) // wait for the browser JS to execute
         await page.evaluate(({source, startLevel}) => {
-            window.HackTableUIStartGame(source, startLevel)
+            window.HackTableStart(source, startLevel)
         }, {source, startLevel})
 
         await pressKeys(page, partial.split(''))
