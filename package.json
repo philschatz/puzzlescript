@@ -45,7 +45,7 @@
     "firstline": "^2.0.2",
     "font-ascii": "^1.1.16",
     "glob": "^7.1.2",
-    "inquirer": "6.1.0",
+    "inquirer": "6.2.0",
     "inquirer-autocomplete-prompt": "^1.0.1",
     "keymaster": "^1.6.2",
     "nearley": "^2.15.1",
