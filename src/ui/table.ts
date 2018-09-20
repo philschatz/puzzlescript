@@ -22,7 +22,6 @@ class TableUI extends BaseUI {
         this.markAcceptingInput(false)
     }
     public tick() {
-        this.markAcceptingInput(false)
         const ret = super.tick()
         this.markAcceptingInput(!super.hasAgainThatNeedsToRun())
         return ret

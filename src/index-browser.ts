@@ -78,6 +78,7 @@ export class TableEngine {
                 this.tableUI.setLevel(this.currentLevel)
             } else if (messageToShow) {
                 alert(messageToShow)
+                this.tableUI.pressAction()
             }
             this.timer = window.requestAnimationFrame(runLoop)
         }
