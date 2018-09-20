@@ -1,5 +1,3 @@
-import chalk from 'chalk'
-
 import { Cell, GameData, GameEngine, Optional } from '..'
 import { RULE_DIRECTION } from '../index'
 import { IColor } from '../models/colors'
@@ -219,45 +217,28 @@ abstract class BaseUI {
     public renderMessageScreen(message: string) {
         const screenWidth = 34
         const screenHeight = 13
+        // re-center the screen so we can show the message
+        // remember these values so we can restore them right after rendering the message
+        // tslint:disable-next-line:no-this-assignment
+        const { windowOffsetColStart, windowOffsetRowStart, windowOffsetHeight, windowOffsetWidth } = this
+        this.windowOffsetColStart = 0
+        this.windowOffsetRowStart = 0
+        this.windowOffsetHeight = screenHeight
+        this.windowOffsetWidth = screenWidth
+        this.clearScreen()
 
-        const { columns } = this.getMaxSize()
-        if (this.canShowMessageAsCells()) {
-            // re-center the screen so we can show the message
-            // remember these values so we can restore them right after rendering the message
-            // tslint:disable-next-line:no-this-assignment
-            const { windowOffsetColStart, windowOffsetRowStart, windowOffsetHeight, windowOffsetWidth } = this
-            this.windowOffsetColStart = 0
-            this.windowOffsetRowStart = 0
-            this.windowOffsetHeight = screenHeight
-            this.windowOffsetWidth = screenWidth
-            this.clearScreen()
-
-            if (this.engine) {
-                const sprites = this.createMessageSprites(message)
-                this.engine.setMessageLevel(sprites)
-                // this.renderScreen(false)
-                this.drawCellsAfterRecentering(_flatten(this.getCurrentLevelCells()), 0)
-                this.engine.restoreFromMessageLevel()
-            }
-
-            this.windowOffsetColStart = windowOffsetColStart
-            this.windowOffsetRowStart = windowOffsetRowStart
-            this.windowOffsetHeight = windowOffsetHeight
-            this.windowOffsetWidth = windowOffsetWidth
-
-        } else {
-            this.clearScreen()
-            const messageScreen = this.createMessageTextScreen(message)
-            for (const messageRow of messageScreen) {
-                const line = chalk.bold.whiteBright(messageRow)
-                // add some horizontal space if the terminal is wide
-                let padding = ''
-                if (columns > screenWidth) {
-                    padding = ' '.repeat(Math.floor((columns - screenWidth) / 2))
-                }
-                console.log(`${padding}${line}`) // tslint:disable-line:no-console
-            }
+        if (this.engine) {
+            const sprites = this.createMessageSprites(message)
+            this.engine.setMessageLevel(sprites)
+            // this.renderScreen(false)
+            this.drawCellsAfterRecentering(_flatten(this.getCurrentLevelCells()), 0)
+            this.engine.restoreFromMessageLevel()
         }
+
+        this.windowOffsetColStart = windowOffsetColStart
+        this.windowOffsetRowStart = windowOffsetRowStart
+        this.windowOffsetHeight = windowOffsetHeight
+        this.windowOffsetWidth = windowOffsetWidth
     }
 
     public renderScreen(clearCaches: boolean, renderScreenDepth: number = 0) {
@@ -408,8 +389,6 @@ abstract class BaseUI {
         }
         return cells
     }
-
-    protected abstract canShowMessageAsCells(): boolean
 
     protected abstract renderLevelScreen(levelRows: Cell[][], renderScreenDepth: number): void
 

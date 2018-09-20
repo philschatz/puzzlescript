@@ -34,7 +34,7 @@ export function _flatten<T>(arrays: T[][]) {
 // }
 
 export function _debounce(callback: () => any) {
-    let timeout: NodeJS.Timer
+    let timeout: any// NodeJS.Timer
     return () => {
         if (timeout) {
             clearTimeout(timeout)

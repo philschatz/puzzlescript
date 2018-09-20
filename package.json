@@ -27,7 +27,8 @@
     "posttest": "npm run-script test:cli && npm run-script coverage && npm run-script lint",
     "test:debug": "NODE_ENV=development node --inspect-brk -r source-map-support/register $(npm bin)/jest -i --updateSnapshot $@",
     "test:cli": "./bin/puzzlescript.js --no-ui --game 'Beam Islands' --level 1 --size small --resume",
-    "build": "webpack-command ./lib/index-browser.js --target web --output-library PuzzleScript --output-library-target umd --mode development --devtool source-map --output ./test/webpack-output.js",
+    "build": "webpack --mode development",
+    "build:stats": "webpack --profile --json > ./webpack-stats.json",
     "watch": "jest --updateSnapshot --watch",
     "debug": "VERIFY_MATCHES=1 LOG_LEVEL=debug NODE_ENV=development node --inspect -r source-map-support/register ./bin/puzzlescript.js 2> ./play.log"
   },
@@ -69,41 +70,46 @@
     "@types/pify": "^3.0.2",
     "@types/quick-lru": "^1.1.0",
     "@types/supports-color": "^5.3.0",
+    "awesome-typescript-loader": "^5.2.1",
     "codecov": "^3.0.2",
     "concurrently": "^3.6.0",
+    "hard-source-webpack-plugin": "^0.12.0",
     "http-server": "^0.11.1",
     "istanbul": "^0.4.5",
     "jest": "^23.3.0",
-    "jest-watch-typeahead": "^0.2.0",
     "mkdirp": "^0.5.1",
     "node-fetch": "^2.1.2",
     "puppeteer": "^1.7.0",
+    "source-map-loader": "^0.2.4",
     "source-map-support": "^0.5.6",
     "standard": "^12.0.0",
+    "ts-jest": "^23.10.0",
     "tslint": "^5.11.0",
     "typedoc": "^0.12.0",
     "typescript": "^3.0.1",
     "webpack": "^4.16.2",
-    "webpack-command": "^0.4.1"
+    "webpack-cli": "^3.1.0"
   },
   "optionalDependencies": {
     "speaker": "github:philschatz/node-speaker#cac7c5b7c434b52619bfbbd9530ab0871156e815"
   },
   "jest": {
-    "watchPlugins": [
-      "jest-watch-typeahead/filename",
-      "jest-watch-typeahead/testname"
-    ],
     "moduleFileExtensions": [
-      "json",
       "ts",
-      "js"
+      "tsx",
+      "js",
+      "json"
     ],
     "transform": {
-      ".ts": "<rootDir>/preprocessor.js"
+      "^.+\\.(ts|tsx)$": "ts-jest"
+    },
+    "globals": {
+      "ts-jest": {
+        "tsConfigFile": "tsconfig.json"
+      }
     },
     "testMatch": [
-      "**/test/**/*.test.+(ts|js)"
+      "**/test/**.test.+(ts|tsx|js)"
     ]
   },
   "standard": {

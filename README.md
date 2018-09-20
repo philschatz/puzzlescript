@@ -99,6 +99,7 @@ This is a remake of PuzzleScript that has the following features:
 - `npm run test:debug` Run the tests but opens a debugger (remember to add a `debugger` line into the JavaScript)
 - `npm test; open coverage/lcov-report/index.html` to see test coverage
 - `npm run coverage` generates a coverage report which includes the JS code as well as any games that you ran in dev mode (using `npm run dev`)
+- See the module dependency tree by running `npm run build:stats` and then uploading `webpack-stats.json` to https://webpack.github.io/analyse/#modules
 
 ## Objects
 

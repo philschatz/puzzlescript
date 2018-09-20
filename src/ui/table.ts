@@ -102,10 +102,6 @@ class TableUI extends BaseUI {
         this.markAcceptingInput(true)
     }
 
-    public canShowMessageAsCells() {
-        return true
-    }
-
     public willAllLevelsFitOnScreen(gameData: GameData) {
         return true
     }
