@@ -21,6 +21,16 @@ Also, it is **accessible**, meaning that [blind or visually impaired people can 
 
 See [./test/browser/html-table.xhtml](./test/browser/html-table.xhtml) for an example of embedding in a browser.
 
+```js
+// Include <script src="node_modules/puzzlescript/dist/puzzlescript.js"></script>
+// and then the following:
+table = document.querySelector('table') // selector to the <table> that will be used
+engine = new PuzzleScript.HTMLTableEngine(table)
+engine.setGame(gameSourceString, 0 /*startLevel*/)
+engine.startKeyboardListener()
+engine.startTickHandler()
+```
+
 # Screencaps
 
 Here are some screencaps of games being played.
