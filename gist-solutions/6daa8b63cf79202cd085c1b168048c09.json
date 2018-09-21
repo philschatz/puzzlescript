@@ -1,9 +1,29 @@
 {
   "version": 1,
   "solutions": [
-    null,
+    {
+      "solution": "X"
+    },
     {
       "solution": "WWWWDDDSDWDDWDDSAADSSDSSAWASAASAWA"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": ".WWWWDDWDDDSADSASSADWWDDSSDSDAWAWWAAWWAAAASSS"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": ".WWWAWWDDSDDWDDSDDAAWAASDSSASSDWWWWSSSDASWDDWSSASWDDSWAAWAWWWA"
+    },
+    {
+      "solution": "X"
     }
   ],
   "title": "Rock, Paper, Scissors",
