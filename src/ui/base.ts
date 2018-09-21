@@ -97,6 +97,7 @@ abstract class BaseUI {
     protected SPRITE_HEIGHT: number
     protected hasVisualUi: boolean
     private readonly cellColorCache: CellColorCache
+    private lastTick: number
 
     constructor() {
         this.cellColorCache = new CellColorCache()
@@ -111,6 +112,7 @@ abstract class BaseUI {
         this.SPRITE_WIDTH = 5
 
         this.hasVisualUi = true
+        this.lastTick = 0
     }
     public setGameEngine(engine: GameEngine) {
         this.engine = engine
@@ -203,9 +205,27 @@ abstract class BaseUI {
         if (!this.engine) {
             throw new Error(`BUG: Game has not been specified yet`)
         }
-        const ret = this.engine.tick()
-        this.drawCells(ret.changedCells, false)
-        return ret
+        const now = Date.now()
+        const gameData = this.getGameData()
+        let minTime = Math.min(gameData.metadata.realtimeInterval || 1000, gameData.metadata.keyRepeatInterval || 1000, gameData.metadata.againInterval || 1000)
+        if (minTime > 100 || Number.isNaN(minTime)) {
+            minTime = .01
+        }
+        if ((now - this.lastTick) >= (minTime * 1000)) {
+            this.lastTick = now
+            const ret = this.engine.tick()
+            this.drawCells(ret.changedCells, false)
+            return ret
+        } else {
+            return {
+                changedCells: new Set<Cell>(),
+                soundToPlay: null,
+                messageToShow: null,
+                didWinGame: false,
+                didLevelChange: false,
+                wasAgainTick: false
+            }
+        }
     }
 
     public debugRenderScreen() {

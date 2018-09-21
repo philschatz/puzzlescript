@@ -19,9 +19,9 @@ export class GameMetadata {
     public colorPalette?: string
     public backgroundColor?: IColor
     public textColor?: IColor
-    public realtimeInterval?: string
-    public keyRepeatInterval?: string
-    public againInterval?: string
+    public realtimeInterval?: number
+    public keyRepeatInterval?: number
+    public againInterval?: number
     public noAction: boolean
     public noUndo: boolean
     public runRulesOnLevelStart?: string
@@ -41,7 +41,7 @@ export class GameMetadata {
         this.verboseLogging = false
     }
 
-    public _setValue(key: string, value: boolean | string | Dimension | IColor) {
+    public _setValue(key: string, value: boolean | number | string | Dimension | IColor) {
         switch (key.toLowerCase()) {
             case 'author': this.author = value as string; break
             case 'homepage': this.homepage = value as string; break
@@ -51,9 +51,9 @@ export class GameMetadata {
             case 'color_palette': this.colorPalette = value as string; break
             case 'background_color': this.backgroundColor = value as IColor; break
             case 'text_color': this.textColor = value as IColor; break
-            case 'realtime_interval': this.realtimeInterval = value as string; break
-            case 'key_repeat_interval': this.keyRepeatInterval = value as string; break
-            case 'again_interval': this.againInterval = value as string; break
+            case 'realtime_interval': this.realtimeInterval = value as number; break
+            case 'key_repeat_interval': this.keyRepeatInterval = value as number; break
+            case 'again_interval': this.againInterval = value as number; break
             case 'noaction': this.noAction = value as boolean; break
             case 'noundo': this.noUndo = value as boolean; break
             case 'run_rules_on_level_start': this.runRulesOnLevelStart = value as string; break

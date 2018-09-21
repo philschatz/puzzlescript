@@ -198,8 +198,14 @@ nonVarChar -> whitespaceChar | newline | "[" | "]" | "(" | ")" | "|" | "."
 decimal ->
     decimalWithLeadingNumber
     | decimalWithLeadingPeriod
-decimalWithLeadingNumber -> digit:+ ("." digit:+):?
-decimalWithLeadingPeriod -> "." digit:+
+decimalWithLeadingNumber -> digit:+ ("." digit:+):?     {% ([firstDigit, rest]) => {
+    if (rest) {
+        return Number.parseFloat(`${firstDigit[0]}.${rest[1].join('')}`)
+    } else {
+        return Number.parseInt(firstDigit[0], 10)
+    }
+} %}
+decimalWithLeadingPeriod -> "." digit:+                 {% ([_1, digits]) => { return Number.parseInt(digits.join(''), 10) } %}
 
 colorHex6 -> "#" hexDigit hexDigit hexDigit hexDigit hexDigit hexDigit  {% (a, sourceOffset) => { return {type:'COLOR_HEX6', value: a.join(''), sourceOffset} } %}
 colorHex3 -> "#" hexDigit hexDigit hexDigit                             {% (a, sourceOffset) => { return {type:'COLOR_HEX3', value: a.join(''), sourceOffset} } %}
