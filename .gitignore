@@ -61,8 +61,6 @@ typings/
 /docs/
 
 
-test/webpack-output.js
-test/webpack-output.js.map
 gists/__test/script.txt
 game-runtimes.csv
 *.cpuprofile

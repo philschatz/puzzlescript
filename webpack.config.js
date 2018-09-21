@@ -5,7 +5,7 @@ module.exports = {
     mode: process.env['NODE_ENV'] || 'production',
     entry: './src/index-browser.ts',
     output: {
-        path: path.resolve(__dirname, './test/'),
+        path: path.resolve(__dirname, './lib/'),
         filename: 'webpack-output.js',
         library: 'PuzzleScript',
         libraryTarget: 'umd',
