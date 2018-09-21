@@ -43,61 +43,63 @@ class TableUI extends BaseUI {
     }
 
     public setLevel(levelNum: number) {
-        this.markAcceptingInput(false)
+        // this.markAcceptingInput(false)
         super.setLevel(levelNum)
         this.clearScreen()
 
-        const levelCells = this.getCurrentLevelCells()
-        // Draw the level
-        // Draw the empty table
-        this.tableCells = []
-        const gameData = this.getGameData()
-        const { width, height } = gameData.metadata.flickscreen || gameData.metadata.zoomscreen || { width: levelCells[0].length, height: levelCells.length }
-        for (let currentY = 0; currentY < height; currentY++) {
-            const tr = document.createElement('tr')
-            const tableRow = []
-            for (let currentX = 0; currentX < width; currentX++) {
-                const td = document.createElement('td')
-                const tableCellPixels = []
-                td.classList.add('ps-cell')
-                td.setAttribute('tabindex', '0')
+        if (!this.isCurrentLevelAMessage()) {
+            const levelCells = this.getCurrentLevelCells()
+            // Draw the level
+            // Draw the empty table
+            this.tableCells = []
+            const gameData = this.getGameData()
+            const { width, height } = gameData.metadata.flickscreen || gameData.metadata.zoomscreen || { width: levelCells[0].length, height: levelCells.length }
+            for (let currentY = 0; currentY < height; currentY++) {
+                const tr = document.createElement('tr')
+                const tableRow = []
+                for (let currentX = 0; currentX < width; currentX++) {
+                    const td = document.createElement('td')
+                    const tableCellPixels = []
+                    td.classList.add('ps-cell')
+                    td.setAttribute('tabindex', '0')
 
-                const cellLabel = document.createElement('span')
-                cellLabel.classList.add('ps-cell-label')
-                td.appendChild(cellLabel)
+                    const cellLabel = document.createElement('span')
+                    cellLabel.classList.add('ps-cell-label')
+                    td.appendChild(cellLabel)
 
-                const sprite = document.createElement('div')
-                sprite.classList.add('ps-sprite-whole')
-                sprite.setAttribute('aria-hidden', 'true')
+                    const sprite = document.createElement('div')
+                    sprite.classList.add('ps-sprite-whole')
+                    sprite.setAttribute('aria-hidden', 'true')
 
-                for (let row = 0; row < this.SPRITE_HEIGHT; row++) {
-                    const spriteRow = document.createElement('div')
-                    spriteRow.classList.add('ps-sprite-row')
-                    const pixelRow = []
+                    for (let row = 0; row < this.SPRITE_HEIGHT; row++) {
+                        const spriteRow = document.createElement('div')
+                        spriteRow.classList.add('ps-sprite-row')
+                        const pixelRow = []
 
-                    for (let col = 0; col < this.SPRITE_WIDTH; col++) {
-                        const spritePixel = document.createElement('span')
-                        spritePixel.classList.add('ps-sprite-pixel')
-                        spriteRow.appendChild(spritePixel)
-                        pixelRow.push(spritePixel)
+                        for (let col = 0; col < this.SPRITE_WIDTH; col++) {
+                            const spritePixel = document.createElement('span')
+                            spritePixel.classList.add('ps-sprite-pixel')
+                            spriteRow.appendChild(spritePixel)
+                            pixelRow.push(spritePixel)
+                        }
+                        sprite.appendChild(spriteRow)
+                        tableCellPixels.push(pixelRow)
                     }
-                    sprite.appendChild(spriteRow)
-                    tableCellPixels.push(pixelRow)
+                    td.appendChild(sprite)
+                    tr.appendChild(td)
+                    tableRow.push({ td, label: cellLabel, pixels: tableCellPixels })
                 }
-                td.appendChild(sprite)
-                tr.appendChild(td)
-                tableRow.push({ td, label: cellLabel, pixels: tableCellPixels })
+                this.table.appendChild(tr)
+                this.tableCells.push(tableRow)
             }
-            this.table.appendChild(tr)
-            this.tableCells.push(tableRow)
-        }
 
-        for (const row of levelCells) {
-            this.drawCells(row, false)
-        }
+            for (const row of levelCells) {
+                this.drawCells(row, false)
+            }
 
-        if (this.getGameData().metadata.runRulesOnLevelStart) {
-            this.tick()
+            if (this.getGameData().metadata.runRulesOnLevelStart) {
+                this.tick()
+            }
         }
         this.markAcceptingInput(true)
     }
@@ -301,6 +303,24 @@ class TableUI extends BaseUI {
                 }
             })
         })
+    }
+
+    isCurrentLevelAMessage() {
+        if (!this.engine) {
+            throw new Error(`BUG: engine has not been set yet`)
+        }
+        return !this.engine.getCurrentLevel().isMap()
+    }
+
+    getCurrentLevelMessage() {
+        if (!this.engine) {
+            throw new Error(`BUG: engine has not been set yet`)
+        }
+        const level = this.engine.getCurrentLevel()
+        if (level.isMap()) {
+            throw new Error(`BUG: current level is not a message level`)
+        }
+        return level.getMessage()
     }
 }
 

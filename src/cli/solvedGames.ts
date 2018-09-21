@@ -108,6 +108,7 @@ export default new Set([
     `2D Whale World`,
     `Garten der Medusen`,
     `Modality`,
+    `Newton's Crates`,
     `Multi-word Dictionary Game`,
     `Explod`,
     `Vacuum`,

@@ -56,6 +56,11 @@ export class TableEngine {
 
     public startTickHandler() {
         const runLoop = async() => {
+            while (this.tableUI.isCurrentLevelAMessage()) {
+                alert(this.tableUI.getCurrentLevelMessage())
+                this.currentLevel++
+                this.tableUI.setLevel(this.currentLevel)
+            }
             const {
                 // changedCells,
                 didLevelChange,
@@ -72,10 +77,13 @@ export class TableEngine {
             if (didWinGame) {
                 alert(`You Won!`)
                 cancelAnimationFrame(this.timer)
+                return // make sure we don't call window.requestAnimationFrame again
             } else if (didLevelChange) {
-                alert(`Congratulations! You completed the level.`)
                 this.currentLevel += 1
                 this.tableUI.setLevel(this.currentLevel)
+                if (!this.tableUI.isCurrentLevelAMessage()) {
+                    alert(`Congratulations! You completed the level.`)
+                }
             } else if (messageToShow) {
                 alert(messageToShow)
                 this.tableUI.pressAction()
