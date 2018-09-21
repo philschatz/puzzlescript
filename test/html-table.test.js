@@ -2,6 +2,7 @@
 const fs = require('fs')
 const path = require('path')
 const puppeteer = require('puppeteer')
+const mapStackTrace = require('sourcemapped-stacktrace-node').default
 
 async function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms))
@@ -24,6 +25,7 @@ async function pressKeys(page, keys) {
 
 async function startBrowser() {
     const url = `file://${__dirname}/browser/html-table.xhtml`
+    // const url = `http://localhost:8080/test/browser/html-table.xhtml`
 
     const puppeteerArgs = []
     // See https://github.com/GoogleChrome/puppeteer/blob/master/docs/troubleshooting.md#running-puppeteer-on-travis-ci
@@ -32,7 +34,7 @@ async function startBrowser() {
     }
 
     const browser = await puppeteer.launch({
-        devtools: process.env.NODE_ENV === 'development',
+        devtools: true,
         args: puppeteerArgs
     })
     const page = await browser.newPage()
@@ -46,6 +48,11 @@ async function startBrowser() {
         fn.apply(console, [text])
     })
 
+    page.on('pageerror', async e => {
+        const newStack = await mapStackTrace(e.message, { isChromeOrEdge: true })
+        console.error(newStack)
+    })
+
     await page.goto(url)
 
     return {page, browser}
@@ -53,6 +60,19 @@ async function startBrowser() {
 
 async function stopBrowser(browser) {
     await browser.close()
+}
+
+async function evaluateWithStackTrace(page, fn, args) {
+    try {
+        return await page.evaluate(fn, args)
+    } catch (e) {
+        const stack = e.stack
+        const message = stack.split('\n')[0]
+        const newStack = await mapStackTrace(stack, { isChromeOrEdge: true })
+        console.error(`${message}\n${newStack}`)
+        e.stack = newStack
+        throw e
+    }
 }
 
 // Disable Browser tests on Travis for now
@@ -70,13 +90,13 @@ describeFn('Browser', () => {
         const startLevel = 3
 
         await sleep(500) // wait long enough for the JS to load maybe?
-        await page.evaluate(({source, startLevel}) => {
+        await evaluateWithStackTrace(page, ({source, startLevel}) => {
             window.HackTableStart(source, startLevel)
         }, {source, startLevel})
 
         return new Promise( async (resolve) => {
             page.on('dialog', async dialog => {
-                expect(dialog.message()).toBe('Congratulations! You completed the level.')
+                expect(dialog.message()).toBe('I want to see my face in them! Level 3/14')
                 await dialog.dismiss()
                 await stopBrowser(browser)
                 resolve()
