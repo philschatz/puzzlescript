@@ -4076,9 +4076,9 @@ natural-compare@^1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/natural-compare/-/natural-compare-1.4.0.tgz#4abebfeed7541f2c27acfb29bdbbd15c8d5ba4f7"
 
-nearley@^2.15.1:
+"nearley@github:philschatz/nearley#24685991e203fd6645a6f687198687aa42b7d6f2":
   version "2.15.1"
-  resolved "https://registry.yarnpkg.com/nearley/-/nearley-2.15.1.tgz#965e4e6ec9ed6b80fc81453e161efbcebb36d247"
+  resolved "https://codeload.github.com/philschatz/nearley/tar.gz/24685991e203fd6645a6f687198687aa42b7d6f2"
   dependencies:
     moo "^0.4.3"
     nomnom "~1.6.2"
