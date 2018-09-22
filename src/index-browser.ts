@@ -83,13 +83,13 @@ export class TableEngine {
     }
 
     public startKeyboardListener() {
-        keymaster('up, w', () => this.tableUI.pressUp())
-        keymaster('down, s', () => this.tableUI.pressDown())
-        keymaster('left, a', () => this.tableUI.pressLeft())
-        keymaster('right, d', () => this.tableUI.pressRight())
-        keymaster('space, x', () => this.tableUI.pressAction())
-        keymaster('z, u', () => this.tableUI.pressUndo())
-        keymaster('r', () => this.tableUI.pressRestart())
+        keymaster('up, w', (e) => { e.preventDefault(); this.tableUI.pressUp() })
+        keymaster('down, s', (e) => { e.preventDefault(); this.tableUI.pressDown() })
+        keymaster('left, a', (e) => { e.preventDefault(); this.tableUI.pressLeft() })
+        keymaster('right, d', (e) => { e.preventDefault(); this.tableUI.pressRight() })
+        keymaster('space, x', (e) => { e.preventDefault(); this.tableUI.pressAction() })
+        keymaster('z, u', (e) => { e.preventDefault(); this.tableUI.pressUndo() })
+        keymaster('r', (e) => { e.preventDefault(); this.tableUI.pressRestart() })
     }
 
     public startTickHandler() {
