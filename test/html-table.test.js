@@ -11,14 +11,17 @@ async function sleep(ms) {
 async function pressKeys(page, keys) {
     for (const key of keys) {
         if (key === ',') { continue }
-        await page.waitFor(`.ps-accepting-input`)
+        await page.waitFor(`table[data-ps-accepting-input='true']`)
         if (key === '.') {
             // wait long enough for a tick to occur
-            await sleep(70)
+            await sleep(100)
             continue
         }
         // await sleep(500/*Math.ceil(1000/60)*/) // enough for requestAnimationFrame to run (60fps)
         await page.keyboard.press(`Key${key}`)
+        // wait until the keypress was processed
+        await sleep(100)
+        // await page.waitFor(`table[data-ps-accepting-input='false']`)
     }
 }
 

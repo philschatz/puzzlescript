@@ -201,9 +201,9 @@ class TableUI extends BaseUI {
 
     private markAcceptingInput(flag: boolean) {
         if (flag) {
-            this.table.classList.add('ps-accepting-input')
+            this.table.setAttribute('data-ps-accepting-input', 'true')
         } else {
-            this.table.classList.remove('ps-accepting-input')
+            this.table.setAttribute('data-ps-accepting-input', 'false')
         }
     }
 
