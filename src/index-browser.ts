@@ -47,7 +47,7 @@ export class TableEngine {
         const defaultEventHandler = {
             onSound: (sound: GameSound) => {
                 // let sounds play while the game loads or player keeps moving
-                /* await */ playSound(sound) // tslint:disable-line:no-floating-promises
+                playSound(sound) // tslint:disable-line:no-floating-promises
                 return
             },
             onLevelComplete: () => {
