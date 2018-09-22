@@ -1,14 +1,32 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
-    <title>Game running in an HTML Table</title>
+    <title>Puzzlescript Game running in an HTML Table</title>
     <script src="./lib/webpack-output.js"></script>
     <link rel="stylesheet" href="./test/browser/html-table.css"/>
+    <style>
+        .light { opacity: .5 }
+        kbd {
+            font: 11px "SFMono-Regular",Consolas,"Liberation Mono",Menlo,Courier,monospace;
+            display: inline-block;
+            padding: 3px 5px;
+            font-size: 11px;
+            line-height: 10px;
+            color: #444d56;
+            vertical-align: middle;
+            background-color: #fafbfc;
+            border: solid 1px #c6cbd1;
+                border-bottom-color: rgb(198, 203, 209);
+            border-bottom-color: #959da5;
+            border-radius: 3px;
+            box-shadow: inset 0 -1px 0 #959da5;
+        }
+    </style>
 </head>
 
 <body>
     <h1>Example Game with HTML Tables</h1>
-    <p>To play: press <kbd>up</kbd>/<kbd>down</kbd>/<kbd>left</kbd>/<kbd>right</kbd>/<kbd>space</kbd> and <kbd>z</kbd>/<kbd>r</kbd> for undo/redo</p>
+    <p>To play: use the Arrow keys <span class="light">(or <kbd>W</kbd>, <kbd>S</kbd>, <kbd>A</kbd>, <kbd>D</kbd>)</span>, <kbd>space</kbd> <span class="light">(or <kbd>X</kbd>)</span>, and <kbd>Z</kbd> and <kbd>R</kbd> for undo/redo</p>
 
     <p>Or, choose another game!</p>
 
@@ -55,7 +73,11 @@
 
     <script>//<![CDATA[
         var table = document.querySelector('#thegamecanbeidentifiedbyselector')
-        var tableEngine = new window.PuzzleScript.TableEngine(table)
+        var gameId // used for loading and saving game progress
+
+        var tableEngine = new window.PuzzleScript.TableEngine(table, {onLevelComplete: function (newLevelNum) {
+            setStorage(gameId, newLevelNum)
+        }})
 
         var gameSelection = document.querySelector('#gameSelection')
         var loading = document.querySelector('#loading')
@@ -65,12 +87,14 @@
             loading.style.display = null // Show the "Loading..." text
 
             gameSelection.blur() // lose focus so we don't navigate it when pressing keys
-            var gameId = gameSelection.value
+            gameId = gameSelection.value
             fetch(`./gists/${gameId}/script.txt`)
             .then(resp => {
                 return resp.text().then(source => {
+                    // Look up if the user has already solved some of the levels
+                    // Load the game
+                    tableEngine.setGame(source, getStorage(gameId) || 0)
 
-                    tableEngine.setGame(source, 0)
                     // Hide the Loading... text
                     loading.style.display = 'none'
 
@@ -83,6 +107,26 @@
         playSelectedGame()
         gameSelection.addEventListener('change', playSelectedGame)
 
+
+        function getStorage(gameId) {
+            var storageStr = window.localStorage.getItem('puzzlescriptGameProgress')
+            if (storageStr) {
+                return JSON.parse(storageStr)[gameId]
+            } else {
+                return null
+            }
+        }
+        function setStorage(gameId, levelNum) {
+            var storageStr = window.localStorage.getItem('puzzlescriptGameProgress')
+            var storage
+            if (storageStr) {
+                storage = JSON.parse(storageStr)
+            } else {
+                storage = {}
+            }
+            storage[gameId] = levelNum
+            window.localStorage.setItem('puzzlescriptGameProgress', JSON.stringify(storage))
+        }
     // ]]></script>
 </body>
 
