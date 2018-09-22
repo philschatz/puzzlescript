@@ -809,15 +809,15 @@ function percentComplete(game: IGameInfo) {
         const numerator = recordings.solutions.filter((s) => s && s.solution && s.solution.length > 1).length
         const denominator = recordings.totalMapLevels
         const percent = 100 * numerator / denominator
-        let colorFn = chalk.bold.red
+        let colorFn = chalk.bold.green
         if (numerator === denominator) {
             colorFn = chalk.blueBright
         } else if (percent > 75) {
-            colorFn = chalk.greenBright
+            colorFn = chalk.redBright
         } else if (percent > 25) {
             colorFn = chalk.yellowBright
         } else if (percent > 0) {
-            colorFn = chalk.redBright
+            colorFn = chalk.greenBright
         }
 
         message = chalk.gray(`(${colorFn(`${numerator}/${denominator}`)})`)
