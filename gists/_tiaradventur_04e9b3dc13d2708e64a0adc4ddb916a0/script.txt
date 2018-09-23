@@ -3,7 +3,7 @@ author Pedro PSI
 homepage pedropsi.github.io
 (License: Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0))
 
-(last updated 28/08/2018)
+(last updated 04/09/2018)
 
 background_color #850026 (dark red)
 text_color #FFAE09 (bright gold)
@@ -1016,6 +1016,9 @@ BLUE
 .0.0.
 .....
 
+Defended
+TRANSPARENT
+
 (marks player for princess to follow)
 FollowTarget
 lightgreen
@@ -1074,6 +1077,8 @@ TRANSPARENT
 SwordWarn2
 TRANSPARENT
 
+WarnBurn
+TRANSPARENT
 WarnSwim
 TRANSPARENT
 
@@ -1091,10 +1096,6 @@ transparent
 
 Intro
 transparent
-
-Middle
-transparent
-
 Conclu
 transparent
 
@@ -1135,7 +1136,7 @@ TRANSPARENT
 (Game Win or restart)
 (---------------------------------------------------)
 
-FakeWall
+RestartWall
 #9F002D (red) #850026 (dark red)
 00000
 10000
@@ -1148,6 +1149,17 @@ FakeWallStor
 
 TalkWall
 #850026 (dark red)
+
+WinWall
+#FFAE09 (bright gold) #FF7809 (bright brown)
+00000
+10000
+11000
+11100
+11110
+
+SaveWall
+#FFAE09 (bright gold)
 
 WinGame
 TRANSPARENT
@@ -1174,7 +1186,10 @@ AllowAnimation
 transparent
 
 MapBoundary
-transparent
+TRANSPARENT
+
+MapBoundaryCorner
+TRANSPARENT
 
 TickPlayer "
 transparent (yellow
@@ -1270,10 +1285,15 @@ transparent
 (call princess to next area)
 Beckon
 TRANSPARENT
+Escaping
+TRANSPARENT
 
 (save game)
 Saved
 transparent
+Save
+TRANSPARENT
+
 
 =======
 LEGEND
@@ -1285,32 +1305,34 @@ LEGEND
 ~ = Water and StartGame
 # = Wall and StartGame
 
-? = MapBoundary and T0 and Wall and StartGame
+? =  T0 and Wall and StartGame
 § = TB0 and Wall and StartGame
 
-W# = Water or Wall
+.# = Soil  or Wall       (inner shore)
+W# = Water or Wall       (outer shore)
 
 P = Player and Soil and StartGame and TickTime
 R = Princess and Soil and StartGame
 F = WolfSleep and Soil and StartGame
 
 O = Crate and Soil and StartGame
-Õ = CrateW and Water and StartGame
-Ö = CrateW and Crate and Water and StartGame
-Ó = Crate and Flame and Soil and StartGame
+Õ = CrateW and Water and StartGame            (floating crate)
+Ö = CrateW and Crate and Water and StartGame  (crate on top of floating crate)
+(Ó = Crate and Flame and Soil and StartGame    burning crate)
 
 D = Boulder and Soil and StartGame
 L = Lamp and Soil and StartGame
 
-T = Soil and Seed and StartGame
+T = Soil and Seed and StartGame            (a random tree)
+Y = Soil and Tree and Treeee and StartGame (a small tree, non random)
 
 X = WarpDepart and Soil  and StartGame
 * = WarpArrive and Soil  and StartGame
 
-B = Beckon and Background and Soil and StartGame
+B = Beckon and Background and Soil and StartGame  (the princess goes there)
 
 A = Tiara and Soil and StartGame
-Q = Ring and Soil and StartGame and NextTiara
+Q = Ring and Soil and StartGame and NextTiara  (no tiara in area with ring)
 Z = Sword and Soil and StartGame
 
 (Graphics and Animation)
@@ -1414,10 +1436,10 @@ Unsafely = UnsafelyGiven or UnsafelyFound
 TiaraHandling = Unsafely or Safely or NextTiara
 
 
-(Story/level flow)
+(Story and dialogue)
 (---------------------------------------------------)
 
-Warnings = SwordWarn1 or SwordWarn2 or WarnSwim
+Warnings = SwordWarn1 or SwordWarn2 or WarnBurn or WarnSwim
 
 Dialog = Dialog1 or Dialog2 or Dialog3 or Dialog4 or Dialog5 or Dialog6 or Dialog7
 
@@ -1434,12 +1456,22 @@ Story = Story1 or Story2 or Story3 or Story4 or Story5 or Story6 or Story7 or St
 9 = Story9 and Intro and Soil and StartGame
 
 C = Conclu and Soil and StartGame
-M = Middle and Soil and StartGame
 
-Plot = Intro or Middle or Conclu
+Plot = Intro or Conclu
 Talks = Talk or TalkNervous or TalkSword or TalkWin
 
 DialogMarkers = Dialog or Plot
+
+(Master control)
+(---------------------------------------------------)
+
+» = AllowAnimation
+@ = InCurrentMap
+
+Allowances = AllowMove or AllowAnimation
+
+GameControl = RestartLevel or WinGame
+
 
 WarpReferences = Warp1 or Warp2 or Warp3 or Warp4 or Warp5 or Warp6 or Warp7 or Warp8 or Warp9
 
@@ -1447,14 +1479,8 @@ Warps = WarpDepart or WarpArrive
 WarpDir = WarpHoriz or WarpVerti
 
 
-» = AllowAnimation
-@ = InCurrentMap
+\ = MapBoundaryCorner and Wall and StartGame and MapBoundary (level boundary)
 
-Allowances = AllowMove or AllowAnimation
-
-GameControl = RestartLevel or WinGame or EndGame
-
-Boundariable = Wall or Warps
 
 TiaraCounters = T0 or T1 or T2 or T3 or T4 or T5 or T6 or T7
 TiaraBrokenCounters = TB0 or TB1 or TB2 or TB3 or TB4 or TB5 or TB6 or TB7
@@ -1462,6 +1488,9 @@ TiaraBrokenCounters = TB0 or TB1 or TB2 or TB3 or TB4 or TB5 or TB6 or TB7
 TC = TiaraCounters
 TBC = TiaraBrokenCounters
 
+FakeWall = WinWall or RestartWall
+
+Savings = Save or Saved
 
 (Pathfinding)
 (---------------------------------------------------)
@@ -1479,14 +1508,15 @@ BarrierPassThroughPrin = Wolf or Player or UnPushable or Pushable or Flame or Wa
 
 BarrierWolfSeek = Wolf or UnPushable or Pushable or Flame or Warps
 
-BarrierWolfEscape = Wolf or UnPushable or Pushable or Danger
+BarrierWolfEscape = Wolf or UnPushable or Pushable or Danger or Warps
 BarrierPrin = Human or UnPushable or Flame or Warps
 
 
 SwipeBlockExPrin = Player or UnPushable or Unbreakable
 SwipeBlock = Human or UnPushable or Pushable
 
-Target = FollowTarget or EscapeTarget or DefendTarget
+Target = FollowTarget or EscapeTarget or DefendTarget    (where to?)
+
 
 =======
 SOUNDS
@@ -1550,6 +1580,7 @@ FixedR
 FixedD
 
 GameControl
+EndGame
 
 
 Once
@@ -1576,6 +1607,7 @@ EscapeTarget
 DefendTarget
 FollowTarget
 
+Defended
 Unsafe
 
 Bitten
@@ -1598,6 +1630,7 @@ AllowAnimation
 
 TickTime, TickPlayer
 
+MapBoundaryCorner
 MapBoundary
 InCurrentMap
 
@@ -1607,14 +1640,15 @@ WarpPicker
 WarpDir
 
 Beckon
-Saved
+Savings
+Escaping
 
 TiaraCounters, TiaraBrokenCounters
 PlusOne
 
 FakeWallStor
 FakeWall
-TalkWall
+TalkWall, SaveWall
 
 StartGame
 ======
@@ -1702,7 +1736,7 @@ vertical   [WarpArrive|WarpArrive]->[WarpArrive WarpVerti|WarpArrive WarpVerti]
 (Master Control)
 (---------------------------------------------------)
 (---------------------------------------------------)
-[MapBoundary|Boundariable no MapBoundary]->[MapBoundary | Boundariable MapBoundary]
+[MapBoundaryCorner StartGame|...| no MapBoundary StartGame]->[MapBoundaryCorner StartGame|...| MapBoundary StartGame]
 
 (Level Map Boundary)
 (---------------------------------------------------)
@@ -1721,7 +1755,10 @@ horizontal [FakeWallStor|#]->[FakeWallStor|# FakeWallStor]
 [AllowMove]->[]
 
 [stationary Player]["]->[stationary Player][']
+[moving     Player]["]->[moving     Player][']
+
 [moving     Player][']->[moving     Player]["]
+[action     Player][']->[action     Player]["]
 
 ["][Character]->["][AllowMove Character]
 
@@ -1769,7 +1806,7 @@ up   [StoragePicker|Storage no Pickable]->[|StoragePicker Storage]
 left [StoragePicker|Storage no Pickable]->[|StoragePicker Storage]
 
 (Player Picks Special Items)
-[Player Ring][StoragePlay StoragePicker no Pickable]->[Player Ring][StoragePlay  Ring] message "A beautiful ring..."
+[Player Ring][StoragePlay StoragePicker no Pickable]->[Player Ring][StoragePlay  Ring] message "A beautiful ring!"
 [Player Sword][StoragePlay StoragePicker no Pickable][Story6 Read @]->[Player Sword TalkSword][StoragePlay StoragePicker Sword][Story6 Dialog1 Read @]
 
 (Player Picks)
@@ -1877,27 +1914,23 @@ random[Given]->[Given _]
 (Warnings)
 (---------------------------------------------------)
 [WarnSwim]->[] message This is no time for a swim!
+[WarnBurn]->[] message Hot! Hot! Ouch!
 
 
 (Story Progress)
 (---------------------------------------------------)
-[Middle | Story @]->[Middle |Middle Story @]
 [Conclu | Story @]->[Conclu |Conclu Story @]
 [Plot no Story]->[]
 
-[Human Story Intro  no Read @]->[Human Read Story Intro  Dialog1 @]
-[Human Story Middle no Read @]->[Human Read Story Middle Dialog1 @]
-[Human Story Conclu no Read @][NextTiara @]->[Human Read Story Conclu Dialog1 @][NextTiara @]
+[Human Story Intro  no Read @][Princess @]->[Human Read Story Intro  Dialog1 @][Princess @]
+[Human Story Conclu no Read @][NextTiara @][Princess @]->[Human Read Story Conclu Dialog1 @][NextTiara @][Princess @]
 
 
 [Story Read Intro  @][Story no Read Intro  @]->[Story Read Intro  @][]
-[Story Read Middle @][Story no Read Middle @]->[Story Read Middle @][]
 [Story Read Conclu @][Story no Read Conclu @]->[Story Read Conclu @][]
 
 (Dialogue - Tiara counting after ended level)
 (---------------------------------------------------)
-
-([Talk][Princess @][NextTiara @][T1][Conclu @]->[][Princess @][NextTiara @][][Conclu @])
 [Talk][Princess @][NextTiara @][T1]->[][Princess @][NextTiara @][T1] message Only six more to go!
 [Talk][Princess @][NextTiara @][T2]->[][Princess @][NextTiara @][T2] message Still five Tiaras remaining!
 [Talk][Princess @][NextTiara @][T3]->[][Princess @][NextTiara @][T3] message Four Tiaras yet to be found!
@@ -2019,7 +2052,7 @@ random[Given]->[Given _]
 
 (Talk to Princess - activate)
 (---------------------------------------------------)
-[> Player|Princess]->[Player | Princess Talk]
+[> Player|Princess]->[Player |Princess Talk]
 [Talk][Princess Unsafe @]->[TalkNervous][Princess Unsafe @]
 
 (smoother dialogue presentation)
@@ -2041,9 +2074,8 @@ late [Talks][]->[Talks][TalkWall]
 
 (Dialogue - Level introductions and conclusions, on stepping particular positions)
 (---------------------------------------------------)
-[Intro  @]->[Intro  @ Once]
-[Middle @]->[Middle @ Once]
-[Conclu @]->[Conclu @ Once]
+[Intro  Read @]->[Intro  Read @ Once]
+[Conclu Read @]->[Conclu Read @ Once]
 
 
 [Story1 Read Dialog1 Conclu @ Once]->[Story1 Read Dialog2 Conclu @] message Wait! Maybe you could help me...
@@ -2068,10 +2100,6 @@ late [Talks][]->[Talks][TalkWall]
 
 [Story5 Read Dialog1 Intro @ Once]->[Story5 Read Dialog2 Intro @] message Did you hear that howl?
 [Story5 Read Dialog2 Intro @ Once]->[Story5 Read Dialog1 @] message Wolves must not be far from us.
-
-[Story5 Read Dialog1 Middle @ Once]->[Story5 Read Dialog2 Middle @] message I remember there's a sword stashed somewhere...
-[Story5 Read Dialog2 Middle @ Once]->[Story5 Read Dialog3 Middle @] message ... be careful, one may easily get lost in this forest.
-[Story5 Read Dialog3 Middle @ Once]->[Story5 Read Dialog1 @] message Hey?! Where are you???
 
 
 [Story6 Read Dialog1 Intro @ Once]->[Story6 Read Dialog2 Intro @] message No, I'm not hiding!
@@ -2112,6 +2140,7 @@ late [Talks][]->[Talks][TalkWall]
 [Swiper]->[]
 [StoragePrin Sword][Princess @]->[StoragePrin Sword][Swiper Princess  @]
 [StoragePlay Sword][Player  ]->[StoragePlay Sword][Swiper Player]
+
 
 
 (Princess fearing wolves: Part I - find longest escape route)
@@ -2156,6 +2185,14 @@ endloop
 (to defend him with her equipped sword against wolves)
 [Sword StoragePrin][Princess @][Player ! no DefendTarget @]->[Sword StoragePrin][Princess @][Player ! DefendTarget @]
 
+
+[Sword StoragePrin][Princess @][Player no DefendTarget @][Wolf @][Defended @]->[Sword StoragePrin][Princess @][Player DefendTarget @][Wolf @][Defended @]
+
+[DefendTarget @]->[DefendTarget @ Defended]
+random [Defended no Princess]->[Defended _]
+[Defended no _]->[]
+[_]->[]
+
 (to go to next level(s) after retrieving a Tiara)
 [NextTiara @][Player]->[NextTiara @][Player FollowTarget]
 
@@ -2165,14 +2202,40 @@ endloop
 
 (Target Priorities)
 [DefendTarget @][EscapeTarget @]->[DefendTarget @][@]
+[DefendTarget @][FollowTarget @]->[DefendTarget @][@]
 [EscapeTarget @][FollowTarget @]->[EscapeTarget @][@]
+
+
+(at level end, before Player escaping to new area)
+[> Player|Warps][StoragePlay Tiaras][Princess no Unsafe @]->[stationary Player Escaping|Warps][StoragePlay Tiaras][Princess @]
+
+[Escaping @][Beckon @]->[Escaping @][@]
+[Escaping @][FollowTarget @]->[Escaping @][@]
+[Escaping @][Player ][Princess @]->[Escaping @][Player FollowTarget][Princess @ AllowMove]
+
+[Player Warps][Escaping @]->[Player Warps][@]
 
 (at level beginning, move princess faster, independently of player)
 [Beckon @ FollowTarget][Princess @ no Beckon]->[Beckon @ FollowTarget][Princess @ AllowMove]
 
-(save progress after new level)
-[Saved]->[]
-[Beckon Princess @ FollowTarget]->[Princess @ FollowTarget Saved] checkpoint
+
+(Save progress)
+(---------------------------------------------------)
+(Princess reaches save point)
+[Beckon Princess @ FollowTarget no Savings]->[Beckon Princess @ FollowTarget Save _]
+
+(lvl 4: save only after Lamp is there)
+[Save _][Story4 @]->[Save][Story4 @]
+[Save no _][Story4 @][Lamp @]->[Save _][Story4 @][Lamp @]
+
+(save game)
+[SaveWall]->[]
+[Save _]->[Save _ SaveWall]
+[SaveWall][no SaveWall]->[SaveWall][SaveWall]
+[Save _]->[Saved] checkpoint
+[_]->[]
+
+
 
 (Already reached)
 [Princess @ DefendTarget]->[Princess @]
@@ -2200,7 +2263,17 @@ Startloop
 endloop
 [ClearRoute]->[]
 
-(reset all targets)
+
+(Warning - Player cannot leave without princess following)
+(---------------------------------------------------)
+[Player FollowTarget][Princess @]->[Player FollowTarget Once][Princess @]
+[Princess @|Player Once]->[Princess @| Player]
+[> Player Once| Warps][Princess @]->[Player |Warps][Princess @ AllowMove] message Wait for me please!
+[Once]->[]
+
+
+(Reset all targets)
+(---------------------------------------------------)
 [Target]->[]
 
 
@@ -2281,6 +2354,12 @@ late down  [Swiper |no SwordSwipe no SwipeBlock| Wolf]->[Swiper |SwordSwipeD| Wo
 (---------------------------------------------------)
 [Princess no Bitten @|Wolf no SwordSwipe @]->[Princess Bitten RestartLevel @|Wolf RestartLevel @] message Bad wolf! Help! I'm fainting...
 [Player no Bitten|Wolf no SwordSwipe @]->[Player Bitten RestartLevel @|Wolf RestartLevel @] message Look out! Are you OK?
+
+
+(Prevent player swim)
+(---------------------------------------------------)
+[> Player | no Floor]->[Player |]
+
 
 
 (Moving / Collide / Transport loop)
@@ -2370,7 +2449,7 @@ late [CrateDestroy2]->[]
 (Displace properties with objects)
 (---------------------------------------------------)
 [> Flammmable stationary FlameAny]->[> Flammmable > FlameAny]
-[> Wolf WolfType]->[> Wolf > WolfType]
+([> Wolf WolfType]->[> Wolf > WolfType])
 
 (Stabilise last move direction)
 (---------------------------------------------------)
@@ -2391,6 +2470,7 @@ late [TreeType no Tree]->[] (destroy trees)
 late [WSplash]->[]
 late [Crate Water no Floater]->[CrateW Water WSplash]
 late [Player Water no Floater]->[ Water WSplash WarnSwim]
+late [Tiaras Water no Floater]->[ Water WSplash RestartLevel]
 late [Sinkable Water no Floater]->[ Water WSplash]
 
 
@@ -2405,6 +2485,11 @@ late [Flame Water no Floater]->[ Water ]
 late [Tiara Pushable]->[TiaraBroken Pushable] message Ouch! Tiaras are so fragile!
 
 
+(Warning - Player cannot leave princess alone with wolf)
+(---------------------------------------------------)
+[> Player| Warps][Princess Unsafe @]->[Player|Warps][Princess Unsafe @] message Don't leave me alone with the wolf!
+
+
 
 (Animations and Decorations)
 (---------------------------------------------------)
@@ -2413,17 +2498,17 @@ late [Tiara Pushable]->[TiaraBroken Pushable] message Ouch! Tiaras are so fragil
 (Initialisation - Main Elements)
 (---------------------------------------------------)
 [T]->[Tree random TreeType .]
-[# no WallOver]->[Wall random WallOver]
+[# no WallOver]->[# random WallOver   ]
 [. no SoilOver]->[. random SoilOver   ]
 [~ no W       ]->[~ random W          ]
 
 (Initialisation - Water margins)
 (---------------------------------------------------)
 [. no WX]-> [. WLXU WLXD WRXU WRXD]
-left [WXL|Soil StartGame]->[|Soil StartGame]
-up   [WXU|Soil StartGame]->[|Soil StartGame]
-right[WXR|Soil StartGame]->[|Soil StartGame]
-down [WXD|Soil StartGame]->[|Soil StartGame]
+left [WXL|.# StartGame]->[|.# StartGame]
+up   [WXU|.# StartGame]->[|.# StartGame]
+right[WXR|.# StartGame]->[|.# StartGame]
+down [WXD|.# StartGame]->[|.# StartGame]
 
 [~ no SX]-> [~ SLXU SLXD SRXU SRXD]
 left [SXL StartGame|W#]->[ StartGame|W#]
@@ -2431,7 +2516,10 @@ up   [SXU StartGame|W#]->[ StartGame|W#]
 right[SXR StartGame|W#]->[ StartGame|W#]
 down [SXD StartGame|W#]->[ StartGame|W#]
 
+(Initialisation - End)
+(---------------------------------------------------)
 [StartGame]->[]
+
 
 (Princess and wolf)
 (---------------------------------------------------)
@@ -2443,6 +2531,8 @@ late [Wolf MR @]->[Wolf WolfR MR]
 late [Wolf ML @]->[Wolf WolfL ML]
 late left [WolfR|]->[WolfR|WolfTailR]
 late right[WolfL|]->[WolfL|WolfTailL]
+
+late [Wolf no WolfType]->[Wolf WolfL]
 
 late [WolfType no Wolf]->[]
 late left [no WolfR|WolfTailR]->[|]
@@ -2465,6 +2555,12 @@ late up [Flame Fla12|]->[Flame Fla12|Fla22]
 late up [Flame Fla11|no OverFlame2]->[Flame Fla11|Fla21]
 
 late up [Flame Fla12|Fla22|no OverFlame3]->[Flame Fla12|Fla22|Fla32]
+
+(Flame burns)
+(---------------------------------------------------)
+late [Human Fla12]->[Fla12 WarnBurn]
+late [Wolf  Fla12]->[Fla12         ]
+
 
 (Perspective)
 (---------------------------------------------------)
@@ -2510,6 +2606,8 @@ late [» Sword _ no SwordShine]-> [» Sword SwordShine1]
 
 (Animation: Lamp: linear)
 (---------------------------------------------------)
+up [» Lamp|no »]->[» Lamp|»]
+
 late [» Lamp8 no _]->[» Lamp1 _]
 late [» Lamp7 no _]->[» Lamp8 _]
 late [» Lamp6 no _]->[» Lamp7 _]
@@ -2566,22 +2664,21 @@ late [ CW no CrateW]->[]
 
 (Animation: Win/Restart level)
 (---------------------------------------------------)
-[_]->[]
-
 [GameControl @]->[GameControl _ @]
-[GameControl _ @|no GameControl ]->[GameControl _ @|FakeWall GameControl no _ ]
+
+[RestartLevel _ @|no RestartLevel ]->[RestartLevel _ @|RestartWall RestartLevel no _ ]
+[     WinGame _ @|no      WinGame ]->[     WinGame _ @|    WinWall      WinGame no _ ]
 
 [GameControl _ @]->[GameControl @]
 
 [GameControl no FakeWall no _ @]->[GameControl no FakeWall _ @]
 [GameControl no FakeWall _ @][no GameControl @]->[GameControl no FakeWall @][no GameControl @]
 
-[RestartLevel no FakeWall _ @]->restart
 
+[RestartLevel no FakeWall _ @]->restart
 [WinGame no FakeWall _ @][Player no TalkWin no Dialog]->[WinGame no FakeWall _ @][Player TalkWin Dialog1]
 
-[_ @]->[ @]
-
+[_]->[]
 
 (End game)
 (---------------------------------------------------)
@@ -2597,63 +2694,64 @@ WINCONDITIONS
 =======
 LEVELS
 =======
+
 message My precious Tiara (sigh)...
 message ... forever lost!
 
-########################################################################
+\######################\\######################\\######################\
 #....TT..#######..#TTTT##TTTTT........TTTT~~T..##......................#
 #.TTD...A..TTTZ....TT..X#TTT.T.TTTTTT.....õõ...##......................#
-#..TDTTTDDDTTT#TOT.T...6*...TT......T..TTTT~TT.##......................#
+#..TDTTTDDDTTT#TOT.T...6*...TT......T..TTTY~TT.##......................#
 #T....TT.O..TTT#O#.T...X6....TTTTTT.TT...#T~~~.##......................#
-#TTTT.T#T#T...TTO..T..T#*...TTB.5M..TTT#..TTT~.##......................#
+#TTTT.T#T#T...TTO..T..T#*...TT......TTT#..TTT~.##......................#
 #TTT.....D.......#T..TT##TT....TTTT..TTT#...õ~.##......................#
-#6FF..T#T#T.#........TT##TTTTT.~~~~T.T.##.O..~T##......................#
-#TTTTT~~~~~~T###TTTT..~##~~~~~5F~~~~A........~~##......................#
+#6FF..T#T#T.#........TT##TTTTT.~~~~T.T.##.O..~Y##......................#
+#TYYTT~~~~~~T###TTTT..~##~~~~~5F~~~~A........~~##......................#
 #~~~~~~~~~~T~B......6.~##~~~~~~~~~~####555DD.~~##......................#
-#~~~~~~~~~~~.TTTTTTTT~~########~~~#..#...5...~~##......................#
+#~~~~~~~~~~~.YTTTTTTT~~########~~~#..#B..5...~~##......................#
 #~~~~~~~~T...~~~~~~~~~~######~~~~#...###~~~~~~~##......................#
 #~~~...~~..T~~~~~~~########~~~~~##......~~~~~~~##......................#
 #~~~......~~~~~~~#########~~~~~~##.......~~~~~~##......................#
 ####*7*###########################*5*############......................#
 #################################################......................#
 ###========##--------######========##--------####......................#
-########################################################################
-#7X7#############################################X5X####################
-#...7.......#~~~~~~~~~~##~~~~~~~~~~~~~~~##TTT####...4C##~~~~~~~~~~~~~~~#
-#7777~~~õ~õõ~...~~~~~~~##~~~~~~~.TTTTTT~DTT#T~.X#..44~~~~~~~~~TTTT~~~~~#
-#~..~.LTõõõ~O.F7~~~~~~~##~~~~~~~T.TTTT#.DATT.~.4###~~~~~~##~~TTDATT~~~~#
-#~~.B.~~õ~~~D~~~~.7F~~~##~~~~~~~..T..T..TT#TT~.X*.4...~~.OO...~~D#T~~~~#
-#~~~~~~~õ~~~D~~~~.#.~~~##~~~~~~~~~~~~T~~~TTTT###4.4...~~.~~~~~~TTTõ~~~~#
-#~~~~~~...~#D...~.T.~~~##~~~~~~~~...~~~~~~~#.###*.4...~~...~~~..õõõõ~~~#
-#~...........#...O..~~~##~~~~~~~~.OOL~~#~~~~.~###44...~~.DO~~~.Tõ~~õ~~~#
-#~.o.~~...~..T....#~.~~##~~~~~~~~~OOO.~~~~##O.~##......õõõõõ.....~~õ~~~#
-#~...~~~~~~~~T~O~##~D.~##~~~~~~~~~....~~~~~#..~##....O.~~~~õ~~~~~~~õ~~~#
-#~~~~~~...~#~...~~~A..~##~~~~~~~~~~õ~~~~~#~~.~~##.##B..~~~~õ~~õõõõõõ~~~#
-#~~~~~~.....#.##~~~~#~~##~~~~~~~~~~õ~~~~~~~..~~##.OOO####~~õõõõ.~~~~~~~#
-#~~~~~~~~~#.DD.#~~~~~~~##~~~##~~~~333~TTT...#~~##....#~~~~~~~...~~~~~~~#
-#~~~~~~~~##....##~~~~~~##~~####~~~...B....~~~~~######~~~~~~~~~~~~~~~~~~#
-##################################*3*###################################
+\######################\\######################\\######################\
+\7X7###################\\######################\\X5X###################\
+#...7.......#~~~~~~~~~~##~~~~~~~~~##TTT#####...X#...4C##~~~~~~~~~~~~~~~#
+#7777~~~õ~õõ~...~~~~~~~##~~TTTTTT~DTT#T.###....4#..44~~~~~~~~~TTTT~~~~~#
+#~..~BLTõõõ~O.F7~~~~~~~##~~.TTTT#.DATTT..###...X###~~~~~~##~~TTDATT~~~~#
+#~~...~~õ~~~D~~~~.7F~~~##~~.T..T..TY#T.#.####~~##44...~~.OO...~~D#T~~~~#
+#~~~~~~~õ~~~D~~~~.#.~~~##~~~~~~T~~~TTT...#..TOO#*.4...~~.~~~~~~TTTõ~~~~#
+#~~~~~~...~#D...~.T.~~~##~~...~~~~~~~~~#.DD.#..#4.4...~~...~~~..õõõõ~~~#
+#~...........#...O..~~~##~~.OOL~~#~~~~#..##.#.~#*.4...~~.DO~~~.Tõ~~õ~~~#
+#~.o.~~...~..T....#~.~~##~~~OOO.~~~~#~#.....#.~##44....õõõõõ.....~~õ~~~#
+#~...~~~~~~~~T~O~##~D.~##~~~....~~~~~~~###..#.~##....O.~~~~õ~~~~~~~õ~~~#
+#~~~~~~...~#~...~~~A..~##~~~~õ~~~~#~~~~~~~##T.~##.##B..~~~~õ~~õõõõõõ~~~#
+#~~~~~~.....#.##~~~~#~~##~~~~õ~~~~~~T.........~##.OOO####~~õõõõ.~~~~~~~#
+#~~~~~~~~~#.DD.#~~~~~~~##~~~333~TTT...T~~~~~~~~##....#~~~~~~~...~~~~~~~#
+#~~~~~~~~##....##~~~~~~##~~~...B....~~~~~~~~~~~######~~~~~~~~~~~~~~~~~~#
+############################*3*#########################################
 ########################################################################
 ###========##--------######========##--------######========##--------###
-########################################################################
-########X2X###########################X3X###############################
-#~~~~~~~.R.~~~~~~~~~~~~##~~~~~~~####~~...~~~~~~##~~~~~~~#~########T#####
-#TT~~~.....~~~~~~~~~~~~##~~##~~~~##~~T.....~~~~##~~~~~#~~~~~~~~~#####T##
+\######################\\######################\\######################\
+\#######X2X############\\#############X3X######\\######################\
+#~~~~~~~.R.~~~~~~~~~~~~##~~~~~TTTTTT.....~~~~~~##~~~~~~~#~########T#####
+#TT~~~.....~~~~~~~~~~~~##~~##~~TTT#~~T....~~~~~##~~~~~#~~~~~~~~~#####T##
 T#TTTT..TTT~~~~~~~~~~~~##~~##~~..~~~~~~~~~~~~~~##~~~#~~~~#~~~~~~~~~#####
-#TTTT..TT.T~~T.T~~~~~~~##~~~~~~~~~õ~OO~.A~..~~~##~#~~~~#~~~~~.....TT##T#
+#TTTT..TT.T~~T.T~~~~~~~##~~~~~~~~~õ~OO~A~...~~~##~#~~~~#~~~~~.....TT##T#
 T#.TT1TT..o~~OA.~~~~~~~##~~~~~...~~~~.~~~...~~~##~~~~#~~~~~~.OOO.TTTT###
 *TTTT..T.o.~~...~~~~~~~##~~~~~.OO~~~~~~~~~~~~~~##~~#~~~TTT~~.O.O.......X
-8T#TTT.To..~~~~~~~~~~TT##~~~~~.OO~~....~.~~~~~~###~~~~~TQT~~.O.O.......8
+8TT#TT.To..~~~~~~~~~~TT##~~~~~.OO~~....~.~~~~~~###~~~~~TQT~~...........8
 *TTTTTcT...~T.TT~~~...T##T~~~~...~..O.O..~~~~~~##~~#~~~TTT~~.O.O.......X
-T#T#TT1.B..~..o.......###TT~~~...~~~~~~~.~~~~~~##~~~~#~~~~~~.OOO.TTTT###
-#.TT.TTT...~T..P......###TT~~~T.T~~T.T~~~~~~~~~##~#~~~~#~~~~~.....TT##T#
-#TTT.#TT~~~~..........T##T~~~~...~~...~~~~~~~~~##~~~#~~~~#~~~~~~~~~#####
+T#TT#T1.B..~..o.......###TT~~~...~~~~~~~.~~~~~~##~~~~#~~~~~~.OOO.TTTT###
+#.TT.TTT...~Y..P......###TT~~~T.T~~T.T~~~~~~~~~##~#~~~~#~~~~~.....TT##T#
+#TTT.T#T~~~~..........T##T~~~~...~~...~~~~~~~~~##~~~#~~~~#~~~~~~~~~#####
 T#.TTTT~~~~~~...#...TT###~~~~~2222B.O.~~~~~~~~~##~~~~~#~~~~~~~~~#####T##
 T###~~~~~~~~~~~~TT.#T#T##~~~~~....~~~~~~~~~~~~~##~~~~~~~#~########T#####
 ##############################*2*#######################################
 ########################################################################
 ###========##--------######========##--------######========##--------###
-?§######################################################################
+\?§####################\\######################\\######################\
 
 
 message  ~ ~ ~ ~ ~  Tiaradventur  ~ ~ ~ ~ ~                                     ~ ~ ~ by  Pedro PSI 2018 ~ ~ ~
