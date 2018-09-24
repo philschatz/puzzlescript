@@ -539,7 +539,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: ISa
     keypresses = [...ticksToRunFirstAry]
 
     while (true) {
-        let maxSleepTime = 50
+        let maxSleepTime = process.env.NODE_ENV == 'development' ? 500 : 50
         // Exit the game if the user pressed escape
         if (shouldExitGame) {
             break // so we can detach key listeners
