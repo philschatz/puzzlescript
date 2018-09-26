@@ -2,7 +2,7 @@
   "version": 1,
   "solutions": [
     {
-      "partial": ".D,W.D,W,W,..A,A,A,A,,,,,,,,,,D,W,A,W,A,W,....."
+      "solution": ".,A,A,A,A,W,W,D,,,,,,,,W,W,A,W,W,,D,D,W,W,A,A,A,A,,,,,,,,,,D,W,A,W,A,W,D,,D,D,W,W,.W,W,W,W,W,W,W,W,W,W,.A,DSSSSSSSSAA,D,,,,,,,,,,,,,,,,,,,,,,,,,,DWWWWWAWAWAWWWDD,,,,,,,,,,,,,,,,,,,,,,,,,,WWWW"
     }
   ],
   "title": "Vines",
