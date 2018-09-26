@@ -15,6 +15,7 @@ import { saveCoverageFile } from '../recordCoverage'
 import TerminalUI, { getTerminalSize } from '../ui/terminal'
 import SOLVED_GAMES from './solvedGames'
 import TITLE_FONTS from './titleFonts'
+import { logger } from '../logger';
 
 SOLVED_GAMES.add(`Skipping Stones to Lonely Homes`)
 SOLVED_GAMES.add(`Spikes 'n' Stuff`)
@@ -262,9 +263,7 @@ async function startPromptsAndPlayGame(gamePath: string, gistId: Optional<string
 async function playGame(data: GameData, currentLevelNum: number, recordings: ISaveFile, ticksToRunFirst: string,
                         absPath: string, solutionsPath: string, cliUi: boolean, onlyOneLevel: boolean, nosound: Optional<boolean>) {
 
-    if (process.env.LOG_LEVEL === 'debug') {
-        console.error(`Start playing "${data.title}". Level ${currentLevelNum}`)
-    }
+    logger.debug(() => `Start playing "${data.title}". Level ${currentLevelNum}`)
 
     const ticksToRunFirstAry = ticksToRunFirst.split('')
 

@@ -10,6 +10,7 @@ import { saveCoverageFile } from '../recordCoverage'
 import { closeSounds } from '../sounds'
 import TerminalUI from '../ui/terminal'
 import { ILevelRecording } from './playGame'
+import { logger } from '../logger';
 
 async function sleep(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms))
@@ -77,12 +78,9 @@ async function run() {
             const engine = new GameEngine(data)
             const levelNum = data.levels.indexOf(currentLevel)
             engine.setLevel(levelNum)
-            if (process.env.LOG_LEVEL === 'debug') {
-                console.error('')
-                console.error('')
-                console.error(`Start playing "${data.title}". Level ${levelNum}`)
-            }
-            console.log(`Loading Cells into the level took ${Date.now() - startTime}ms`)
+            logger.debug(() => `\n\nStart playing "${data.title}". Level ${levelNum}`)
+
+            logger.info(() => `Loading Cells into the level took ${Date.now() - startTime}ms`)
 
             // engine.on('cell:updated', cell => {
             //   UI.drawCellAt(cell, cell.rowIndex, cell.colIndex, false)

@@ -9,6 +9,7 @@ import { CollisionLayer } from './collisionLayer'
 import { AbstractCommand } from './command'
 import { IGameNode } from './game'
 import { GameSprite, IGameTile } from './tile'
+import { logger, LOG_LEVEL } from '../logger';
 const BitSet2 = require('bitset') // tslint:disable-line:no-var-requires
 
 const MAX_ITERATIONS_IN_LOOP = 350 // Set by the Random World Generation game
@@ -121,7 +122,7 @@ export class SimpleRuleGroup extends BaseForLines implements IRule {
 
     public evaluate(level: Level, onlyEvaluateFirstMatch: boolean) {
         let start
-        if (process.env.LOG_LEVEL === 'debug') {
+        if (logger.isLevel(LOG_LEVEL.DEBUG)) {
             start = Date.now()
         }
         // Keep looping as long as one of the rules evaluated something
@@ -131,8 +132,8 @@ export class SimpleRuleGroup extends BaseForLines implements IRule {
             if (process.env.NODE_ENV === 'development' && iteration === MAX_ITERATIONS_IN_LOOP - 10) {
                 // Provide a breakpoint just before we run out of MAX_ITERATIONS_IN_LOOP
                 // so that we can step through the evaluations.
-                console.error(this.toString()) // tslint:disable-line:no-console
-                console.error('BUG: Iterated too many times in startloop or + (rule group)') // tslint:disable-line:no-console
+                logger.warn(this.toString())
+                logger.warn('BUG: Iterated too many times in startloop or + (rule group)')
                 if (process.stdout) { TerminalUI.debugRenderScreen() } debugger // tslint:disable-line:no-debugger
             }
             if (iteration === MAX_ITERATIONS_IN_LOOP - 1) {
@@ -176,12 +177,12 @@ export class SimpleRuleGroup extends BaseForLines implements IRule {
 
         }
 
-        if (process.env.LOG_LEVEL === 'debug') {
+        if (logger.isLevel(LOG_LEVEL.DEBUG)) {
             if (allMutations.length > 0) {
                 if (start && (Date.now() - start) > 30 /*only show times for rules that took a long time*/) {
-                    console.error(`Rule ${this.__getSourceLineAndColumn().lineNum} applied. ${iteration === 1 ? '' : `(x${iteration})`} [[${Date.now() - start}ms]]`) // tslint:disable-line:no-console
+                    logger.debug(`Rule ${this.__getSourceLineAndColumn().lineNum} applied. ${iteration === 1 ? '' : `(x${iteration})`} [[${Date.now() - start}ms]]`)
                 } else {
-                    console.error(`Rule ${this.__getSourceLineAndColumn().lineNum} applied. ${iteration === 1 ? '' : `(x${iteration})`}`) // tslint:disable-line:no-console
+                    logger.debug(`Rule ${this.__getSourceLineAndColumn().lineNum} applied. ${iteration === 1 ? '' : `(x${iteration})`}`)
                 }
             }
         }
@@ -330,7 +331,7 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
         let ret: IMutation[] = []
         if (process.env.NODE_ENV === 'development') {
             // A "DEBUGGER" flag was set in the game so we are pausing here
-            if (process.env.LOG_LEVEL === 'debug' && process.stdout) { TerminalUI.renderScreen(false) }
+            if ((logger.isLevel(LOG_LEVEL.TRACE) && process.stdout) || (logger.isLevel(LOG_LEVEL.DEBUG) && this.debugFlag === DEBUG_FLAG.BREAKPOINT)) { TerminalUI.renderScreen(false) }
             if (this.debugFlag === DEBUG_FLAG.BREAKPOINT) {
                 debugger // tslint:disable-line:no-debugger
             }

@@ -105,7 +105,7 @@ export class GameData {
         } else {
             const background: Optional<GameSprite> = this._getSpriteByName('background')
             if (!background) {
-                const legendBackground = this.legends.find((tile) => tile.spriteNameOrLevelChar.toLocaleLowerCase() === 'background')
+                const legendBackground = this.legends.find((tile) => tile.spriteNameOrLevelChar.toLowerCase() === 'background')
                 if (legendBackground) {
                     if (legendBackground.isOr()) {
                         return null

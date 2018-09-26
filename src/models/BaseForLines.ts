@@ -83,8 +83,8 @@ export class BaseForLines {
     }
     public toString() {
         const s = this.__source
-        const { lineNum } = getLineAndColumn(s.code, s.sourceOffset)
-        return s.code.split('\n')[lineNum - 1]
+        const { lineNum, colNum, line } = getLineAndColumn(s.code, s.sourceOffset)
+        return `${line}\nSource: ${lineNum}:${colNum}`
     }
     public toSourceString() {
         const s = this.__source

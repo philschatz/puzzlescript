@@ -8,7 +8,7 @@ const debugBlackList = new Set<string>([])
 const debugWhiteList = new Set<string>([])
 
 const toDebug = (name: string, fn?: (fields: any[]) => any) => {
-    if (process.env.NODE_ENV == 'debug' || debugWhiteList.has(name)) {
+    if (process.env.NODE_ENV == 'debug-parser' || debugWhiteList.has(name)) {
         // Skip debug mode for any items on the blacklist
         if (debugBlackList.has(name)) {
             return null
