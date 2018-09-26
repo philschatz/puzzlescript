@@ -663,9 +663,14 @@ interface IMatchedCellAndCorrespondingNeighbors {
 }
 
 class MatchedCellsForRule {
-    public readonly cellsAndNeighbors: Iterable<IMatchedCellAndCorrespondingNeighbors>
-    constructor(cellsAndNeighbors: Iterable<IMatchedCellAndCorrespondingNeighbors>) {
+    public readonly cellsAndNeighbors: IMatchedCellAndCorrespondingNeighbors[]
+    private cellKeys: Map<Cell, string>
+    constructor(cellsAndNeighbors: IMatchedCellAndCorrespondingNeighbors[]) {
         this.cellsAndNeighbors = cellsAndNeighbors
+        this.cellKeys = new Map()
+        for (const {cell} of this.cellsAndNeighbors) {
+            this.cellKeys.set(cell, cell.toKey())
+        }
     }
 
     public firstCell() {
@@ -688,9 +693,15 @@ class MatchedCellsForRule {
 
     public doesStillMatch() {
         for (const { cell, condition } of this.cellsAndNeighbors) {
+            // Check the cell key (cheap) to see if the cell still matches
+            if (cell.toKey() === this.cellKeys.get(cell)) {
+                continue
+            }
             if (!condition.matchesCellSimple(cell)) {
                 return false
             }
+            // if the cell updated but still matches then update the cellKey
+            this.cellKeys.set(cell, cell.toKey())
         }
         return true
     }
