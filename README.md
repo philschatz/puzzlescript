@@ -27,8 +27,7 @@ See [./test/browser/html-table.xhtml](./test/browser/html-table.xhtml) for an ex
 table = document.querySelector('table') // selector to the <table> that will be used
 engine = new PuzzleScript.HTMLTableEngine(table)
 engine.setGame(gameSourceString, 0 /*startLevel*/)
-engine.startKeyboardListener()
-engine.startTickHandler()
+engine.start()
 ```
 
 # Screencaps

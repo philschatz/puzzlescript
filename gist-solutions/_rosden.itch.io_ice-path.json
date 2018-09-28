@@ -11,7 +11,13 @@
       "solution": "X"
     },
     {
-      "partial": "S,W,W,D,S,S,D,D,W,A,W,D,W,,S,A,A,A,S,D,,,D,S,D,D,W,"
+      "solution": ".,S,D,D,D,W,A,W,D,W,,S,S,S,A,A,A,W,D,,,D,D,S,D,W,,"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": ".,A,S,S,D,S,A,S,S,D,D,W,D,W,W,A,W,D,,S,A,A,A,S,S,S,D,W,,,A,W,W,W,D,,,S,S,D,D,D,W,W,"
     },
     {
       "solution": "X"

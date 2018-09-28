@@ -495,6 +495,10 @@ export class LevelEngine extends EventEmitter2 {
         return this.hasAgainThatNeedsToRun
     }
 
+    public canUndo() {
+        return this.undoStack.length > 1
+    }
+
     public press(direction: RULE_DIRECTION) {
         // Should disable keypresses if `AGAIN` is running.
         // It is commented because the didSpritesChange logic is not correct.
@@ -863,6 +867,9 @@ export class GameEngine {
     }
     public hasAgain() {
         return this.levelEngine.hasAgain()
+    }
+    public canUndo() {
+        return this.levelEngine.canUndo()
     }
     public setLevel(levelNum: number) {
         this.messageShownAndWaitingForActionPress = false

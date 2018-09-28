@@ -5,6 +5,7 @@ const { GameEngine } = require('../../lib/engine')
 const { default: Parser } = require('../../lib/parser/parser')
 const { RULE_DIRECTION } = require('../../lib/util')
 const { saveCoverageFile } = require('../../lib/recordCoverage')
+const { default: TerminalUI } = require('../../lib/ui/terminal')
 
 // Just solve the last level of Cyber Lasso
 const CYBER_LASSO = '_cyber-lasso-e3e444f7c63fb21b6ec0'
@@ -112,6 +113,13 @@ function createTests (moduloNumber, moduloTotal) {
 
                     if (wonAtKeyIndex === DID_NOT_WIN || (wonAtKeyIndex !== keypresses.length - 1)) {
                         console.error('Screendump of level')
+                        TerminalUI.setGameEngine(engine)
+                        TerminalUI.dumpScreen()
+                        while(engine.canUndo()) {
+                            engine.pressUndo()
+                            engine.tick()
+                            TerminalUI.dumpScreen()
+                        }
                         // UI.setGame(engine)
                         // UI.dumpScreen()
                     }
