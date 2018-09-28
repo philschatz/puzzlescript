@@ -11,7 +11,7 @@ const LEVELS = [
     LOG_LEVEL.WARN,
     LOG_LEVEL.INFO,
     LOG_LEVEL.DEBUG,
-    LOG_LEVEL.TRACE,
+    LOG_LEVEL.TRACE
 ]
 
 function toNum(level: LOG_LEVEL) {
@@ -20,7 +20,7 @@ function toNum(level: LOG_LEVEL) {
 
 function toLevel(level?: string) {
     if (level) {
-        switch(level.toUpperCase()) {
+        switch (level.toUpperCase()) {
             case LOG_LEVEL.SEVERE: return LOG_LEVEL.SEVERE
             case LOG_LEVEL.DEBUG: return LOG_LEVEL.DEBUG
             case LOG_LEVEL.TRACE: return LOG_LEVEL.TRACE
@@ -34,17 +34,30 @@ function toLevel(level?: string) {
 
 type LogMessage = (() => any) | any
 
-export const logger = new class Logger {
+class Logger {
     private readonly currentLevelNum: number
     constructor() {
         this.currentLevelNum = toNum(toLevel(process.env.LOG_LEVEL))
     }
-    isLevel(level: LOG_LEVEL) {
+    public isLevel(level: LOG_LEVEL) {
         return toNum(level) <= this.currentLevelNum
+    }
+
+    public warn(message: LogMessage) {
+        this.log(LOG_LEVEL.WARN, message)
+    }
+    public info(message: LogMessage) {
+        this.log(LOG_LEVEL.INFO, message)
+    }
+    public debug(message: LogMessage) {
+        this.log(LOG_LEVEL.DEBUG, message)
+    }
+    public trace(message: LogMessage) {
+        this.log(LOG_LEVEL.TRACE, message)
     }
     private logFn(level: LOG_LEVEL, fn: () => string) {
         if (this.isLevel(level)) {
-            console.warn(fn())
+            console.warn(fn()) // tslint:disable-line:no-console
         }
     }
     private log(level: LOG_LEVEL, message: LogMessage) {
@@ -54,17 +67,6 @@ export const logger = new class Logger {
             this.logFn(level, message)
         }
     }
-
-    warn(message: LogMessage) {
-        this.log(LOG_LEVEL.WARN, message)
-    }
-    info(message: LogMessage) {
-        this.log(LOG_LEVEL.INFO, message)
-    }
-    debug(message: LogMessage) {
-        this.log(LOG_LEVEL.DEBUG, message)
-    }
-    trace(message: LogMessage) {
-        this.log(LOG_LEVEL.TRACE, message)
-    }
 }
+
+export const logger = new Logger()

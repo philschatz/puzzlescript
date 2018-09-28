@@ -11,11 +11,11 @@ import * as pify from 'pify'
 import * as supportsColor from 'supports-color'
 
 import { closeSounds, GameData, GameEngine, ILoadingCellsEvent, Optional, Parser, playSound, RULE_DIRECTION } from '..'
+import { logger } from '../logger'
 import { saveCoverageFile } from '../recordCoverage'
 import TerminalUI, { getTerminalSize } from '../ui/terminal'
 import SOLVED_GAMES from './solvedGames'
 import TITLE_FONTS from './titleFonts'
-import { logger } from '../logger';
 
 SOLVED_GAMES.add(`Skipping Stones to Lonely Homes`)
 SOLVED_GAMES.add(`Spikes 'n' Stuff`)
@@ -538,7 +538,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: ISa
     keypresses = [...ticksToRunFirstAry]
 
     while (true) {
-        let maxSleepTime = process.env.NODE_ENV == 'development' ? 500 : 50
+        let maxSleepTime = process.env.NODE_ENV === 'development' ? 500 : 50
         // Exit the game if the user pressed escape
         if (shouldExitGame) {
             break // so we can detach key listeners

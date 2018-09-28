@@ -1,5 +1,6 @@
 import BitSet from 'bitset'
 import { Cell, Level } from '../engine'
+import { LOG_LEVEL, logger } from '../logger'
 import LruCache from '../lruCache'
 import { SpriteBitSet } from '../spriteBitSet'
 import TerminalUI from '../ui/terminal'
@@ -9,7 +10,6 @@ import { CollisionLayer } from './collisionLayer'
 import { AbstractCommand } from './command'
 import { IGameNode } from './game'
 import { GameSprite, IGameTile } from './tile'
-import { logger, LOG_LEVEL } from '../logger';
 const BitSet2 = require('bitset') // tslint:disable-line:no-var-requires
 
 const MAX_ITERATIONS_IN_LOOP = 350 // Set by the Random World Generation game
@@ -668,7 +668,7 @@ class MatchedCellsForRule {
     constructor(cellsAndNeighbors: IMatchedCellAndCorrespondingNeighbors[]) {
         this.cellsAndNeighbors = cellsAndNeighbors
         this.cellKeys = new Map()
-        for (const {cell} of this.cellsAndNeighbors) {
+        for (const { cell } of this.cellsAndNeighbors) {
             this.cellKeys.set(cell, cell.toKey())
         }
     }

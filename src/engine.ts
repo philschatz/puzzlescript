@@ -1,4 +1,5 @@
 import { EventEmitter2, Listener } from 'eventemitter2'
+import { logger } from './logger'
 import { CollisionLayer } from './models/collisionLayer'
 import { AbstractCommand, COMMAND_TYPE } from './models/command'
 import { GameData } from './models/game'
@@ -7,7 +8,6 @@ import { GameSound } from './models/sound'
 import { GameSprite } from './models/tile'
 import { SpriteBitSet } from './spriteBitSet'
 import { _flatten, Optional, resetRandomSeed, RULE_DIRECTION, setAddAll, setDifference, setEquals } from './util'
-import { logger } from './logger';
 
 interface ICollisionLayerState {
     readonly wantsToMove: Optional<RULE_DIRECTION>
