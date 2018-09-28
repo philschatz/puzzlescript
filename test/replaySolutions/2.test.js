@@ -1,2 +1,2 @@
 const { createTests } = require('./helper')
-createTests(2, 10)
+createTests(2, 40)
