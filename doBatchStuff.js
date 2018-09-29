@@ -4,6 +4,7 @@ const path = require('path')
 const glob = require('glob')
 const pify = require('pify')
 const {default: Parser} = require('./lib/parser/parser')
+require('./test/replaySolutions/__buildTestFiles') // just requiring it is enough to regenerate the test files
 
 const readFile = pify(fs.readFile)
 
