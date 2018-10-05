@@ -11,6 +11,7 @@ import { saveCoverageFile } from '../recordCoverage'
 import { closeSounds } from '../sounds'
 import TerminalUI from '../ui/terminal'
 import { ILevelRecording } from './playGame'
+import Serializer from '../serializer';
 
 async function sleep(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms))
@@ -30,6 +31,9 @@ async function run() {
         const code = readFileSync(filename, 'utf-8')
         let startTime = Date.now()
         const { data, validationMessages } = Parser.parse(code)
+
+        // Check that we can serialize the game out to JSON
+        new Serializer(data).toJson()
 
         if (!data) {
             throw new Error(`BUG: gameData was not set yet`)

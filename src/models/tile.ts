@@ -23,6 +23,7 @@ export interface IGameTile extends IGameNode {
     hasSingleCollisionLayer: () => boolean
     setCollisionLayer: (collisionLayer: CollisionLayer) => void
     getCollisionLayer: () => CollisionLayer
+    getCollisionLayers(): CollisionLayer[]
     matchesCell: (cell: Cell) => boolean
     isOr: () => boolean
     getCellsThatMatch: () => Set<Cell>
@@ -104,6 +105,9 @@ export abstract class GameSprite extends BaseForLines implements IGameTile {
             throw new Error(`ERROR: This sprite was not in a Collision Layer\n${this.toString()}`)
         }
         return this.collisionLayer
+    }
+    public getCollisionLayers() {
+        return [this.getCollisionLayer()]
     }
     public isInvalid() {
         if (!this.collisionLayer) {
@@ -248,7 +252,7 @@ export class GameSpritePixels extends GameSprite {
                 if (col === '.') {
                     return new TransparentColor(this.__source)
                 } else {
-                    return this.colors[col]
+                    return this.colors[col] || new TransparentColor(this.__source)
                 }
             })
         }) // Pixel colors are 0-indexed.
@@ -370,6 +374,13 @@ export abstract class GameLegendTile extends BaseForLines implements IGameTile {
             }
         }
         return firstCollisionLayer
+    }
+    public getCollisionLayers() {
+        const layers = new Set()
+        for (const sprite of this.getSprites()) {
+            layers.add(sprite.getCollisionLayer())
+        }
+        return [...layers]
     }
 
     public getCellsThatMatch() {
