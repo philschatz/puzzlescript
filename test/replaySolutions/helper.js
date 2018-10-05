@@ -115,7 +115,7 @@ function createTests (moduloNumber, moduloTotal) {
                         console.error('Screendump of level')
                         TerminalUI.setGameEngine(engine)
                         TerminalUI.dumpScreen()
-                        while (engine.canUndo()) {
+                        while(engine.canUndo()) {
                             engine.pressUndo()
                             engine.tick()
                             TerminalUI.dumpScreen()
