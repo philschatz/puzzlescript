@@ -1,4 +1,5 @@
 import { existsSync, writeFileSync } from 'fs'
+import * as path from 'path'
 import { GameData, IGameNode } from './models/game'
 import { IRule } from './models/rule'
 
@@ -134,17 +135,19 @@ export function saveCoverageFile(data: GameData, absPath: string, coverageFilena
         }
     })
 
+    const relPath = path.relative(process.cwd(), absPath)
+
     const codeCoverageEntry: ICoverageEntry = {
         b: {},
         branchMap: {},
         f,
         fnMap,
-        path: absPath,
+        path: relPath,
         s,
         statementMap
     }
     const codeCoverageObj: { [path: string]: ICoverageEntry } = {}
-    codeCoverageObj[absPath] = codeCoverageEntry
+    codeCoverageObj[relPath] = codeCoverageEntry
     if (existsSync(`coverage`)) {
         writeFileSync(`coverage/coverage-${coverageFilenameSuffix}.json`,
             JSON.stringify(codeCoverageObj, null, 2)) // indent by 2 chars
