@@ -1,14 +1,14 @@
-import {GameData} from './models/game'
-import { Optional } from '.';
-import { GameSprite, IGameTile, GameLegendTileOr, GameLegendTileAnd, GameLegendTileSimple } from './models/tile';
-import { GameSound } from './models/sound';
-import { CollisionLayer } from './models/collisionLayer';
-import { IRule, SimpleRule, SimpleRuleGroup, SimpleRuleLoop, ISimpleBracket, SimpleBracket, SimpleEllipsisBracket, SimpleNeighbor, SimpleTileWithModifier } from './models/rule';
-import { RULE_DIRECTION } from './';
-import { AbstractCommand, MessageCommand, SoundCommand, CheckpointCommand, RestartCommand, CancelCommand, AgainCommand, WinCommand } from './models/command';
-import { ILevel, LevelMap, MessageLevel } from './models/level';
-import { Dimension } from './models/metadata';
-import { IColor } from './models/colors';
+import { Optional } from '.'
+import { RULE_DIRECTION } from './'
+import { CollisionLayer } from './models/collisionLayer'
+import { IColor } from './models/colors'
+import { AbstractCommand, AgainCommand, CancelCommand, CheckpointCommand, MessageCommand, RestartCommand, SoundCommand, WinCommand } from './models/command'
+import { GameData } from './models/game'
+import { ILevel, LevelMap, MessageLevel } from './models/level'
+import { Dimension } from './models/metadata'
+import { IRule, ISimpleBracket, SimpleBracket, SimpleEllipsisBracket, SimpleNeighbor, SimpleRule, SimpleRuleGroup, SimpleRuleLoop, SimpleTileWithModifier } from './models/rule'
+import { GameSound } from './models/sound'
+import { GameLegendTileAnd, GameLegendTileOr, GameLegendTileSimple, GameSprite, IGameTile } from './models/tile'
 
 // const EXAMPLE = {
 //     metadata: { author: 'Phil' },
@@ -85,14 +85,14 @@ type SoundId = string
 // type ActionMutationsId = string
 // type BracketPairId = string
 
-type GraphSprite = {
+interface IGraphSprite {
     name: string,
-    pixels: Optional<ColorId>[][],
+    pixels: Array<Array<Optional<ColorId>>>,
     collisionLayer: CollisionId,
     // sounds: {}
 }
-type GraphSound = { soundCode: number }
-type GraphCollisionLayer = {}
+interface IGraphSound { soundCode: number }
+type GraphCollisionLayer = 'COLLISIONLAYERTOKENREPLACEME'
 enum GraphDirection {
     UP = 'UP',
     DOWN = 'DOWN',
@@ -120,12 +120,12 @@ type GraphTile = {
     sprite: SpriteId
     collisionLayer: CollisionId
 }
-type GraphTileWithModifier = {
+interface IGraphTileWithModifier {
     direction: Optional<GraphDirection>
     negation: boolean,
     tile: TileId
 }
-type GraphNeighbor = {
+interface IGraphNeighbor {
     tileWithModifiers: TileWithModifierId[]
 }
 type GraphBracket = {
@@ -180,7 +180,7 @@ type GraphLevel = {
     message: string
 }
 
-type GraphGameMetadata = {
+interface IGraphGameMetadata {
     author: Optional<string>
     homepage: Optional<string>
     youtube: Optional<string>
@@ -203,7 +203,7 @@ type GraphGameMetadata = {
 }
 
 function toGraphDirection(dir: RULE_DIRECTION): GraphDirection {
-    switch(dir) {
+    switch (dir) {
         case RULE_DIRECTION.UP: return GraphDirection.UP
         case RULE_DIRECTION.DOWN: return GraphDirection.DOWN
         case RULE_DIRECTION.LEFT: return GraphDirection.LEFT
@@ -212,7 +212,7 @@ function toGraphDirection(dir: RULE_DIRECTION): GraphDirection {
         case RULE_DIRECTION.STATIONARY: return GraphDirection.STATIONARY
         case RULE_DIRECTION.RANDOMDIR: return GraphDirection.RANDOMDIR
         default:
-            debugger; throw new Error(`BUG: Unsupported direction "${dir}`)
+            debugger; throw new Error(`BUG: Unsupported direction "${dir}`) // tslint:disable-line:no-debugger
     }
 }
 
@@ -228,11 +228,7 @@ class MapWithId<T, TJson> {
         this.jsonMap = new Map()
     }
 
-    private freshId() {
-        return `${this.prefix}-${this.counter++}`
-    }
-
-    set(key: T, value: TJson) {
+    public set(key: T, value: TJson) {
         if (!this.idMap.has(key)) {
             this.idMap.set(key, this.freshId())
         }
@@ -240,50 +236,53 @@ class MapWithId<T, TJson> {
         return this.getId(key)
     }
 
-    get(key: T) {
+    public get(key: T) {
         const value = this.jsonMap.get(key)
         if (!value) {
-            debugger; throw new Error(`BUG: Element has not been added to the set`)
+            debugger; throw new Error(`BUG: Element has not been added to the set`) // tslint:disable-line:no-debugger
         }
         return value
     }
 
-    getId(key: T) {
+    public getId(key: T) {
         const value = this.idMap.get(key)
         if (!value) {
-            debugger; throw new Error(`BUG: Element has not been added to the set`)
+            debugger; throw new Error(`BUG: Element has not been added to the set`) // tslint:disable-line:no-debugger
         }
         return value
     }
 
-    toJson() {
+    public toJson() {
         const ret: {[key: string]: TJson} = {}
         for (const [obj, id] of this.idMap) {
             const json = this.jsonMap.get(obj)
             if (!json) {
-                debugger; throw new Error(`BUG: Could not find matching json representation for "${id}"`)
+                debugger; throw new Error(`BUG: Could not find matching json representation for "${id}"`) // tslint:disable-line:no-debugger
             }
             ret[id] = json
         }
         return ret
+    }
+
+    private freshId() {
+        return `${this.prefix}-${this.counter++}`
     }
 }
 
 export default class Serializer {
     private readonly game: GameData
     private readonly colorsMap: Map<string, ColorId>
-    private readonly spritesMap: MapWithId<GameSprite, GraphSprite>
-    private readonly soundMap: MapWithId<GameSound, GraphSound>
+    private readonly spritesMap: MapWithId<GameSprite, IGraphSprite>
+    private readonly soundMap: MapWithId<GameSound, IGraphSound>
     private readonly collisionLayerMap: MapWithId<CollisionLayer, GraphCollisionLayer>
     private readonly conditionBracketsMap: MapWithId<ISimpleBracket, GraphBracket>
-    private readonly neighborsMap: MapWithId<SimpleNeighbor, GraphNeighbor>
-    private readonly tileWithModifierMap: MapWithId<SimpleTileWithModifier, GraphTileWithModifier>
+    private readonly neighborsMap: MapWithId<SimpleNeighbor, IGraphNeighbor>
+    private readonly tileWithModifierMap: MapWithId<SimpleTileWithModifier, IGraphTileWithModifier>
     private readonly tileMap: MapWithId<IGameTile, GraphTile>
     private readonly ruleMap: MapWithId<IRule, GraphRule>
     private readonly commandMap: MapWithId<AbstractCommand, GraphCommand>
     private orderedRules: RuleId[]
     private levels: GraphLevel[]
-
 
     constructor(game: GameData) {
         this.game = game
@@ -299,22 +298,71 @@ export default class Serializer {
         this.commandMap = new MapWithId('command')
 
         // Load up the colors and sprites
-        this.game.collisionLayers.forEach(item => this.buildCollisionLayer(item))
-        this.game.sounds.forEach(item => {
+        this.game.collisionLayers.forEach((item) => this.buildCollisionLayer(item))
+        this.game.sounds.forEach((item) => {
             this.soundMap.set(item, this.soundToJson(item))
         })
-        this.game.objects.forEach(sprite => {
+        this.game.objects.forEach((sprite) => {
             this.buildSprite(sprite)
-        });
-        this.orderedRules = this.game.rules.map(item => this.recBuildRule(item))
+        })
+        this.orderedRules = this.game.rules.map((item) => this.recBuildRule(item))
 
-        this.levels = this.game.levels.map(item => this.buildLevel(item))
+        this.levels = this.game.levels.map((item) => this.buildLevel(item))
+    }
+    public buildCollisionLayer(item: CollisionLayer) {
+        return this.collisionLayerMap.set(item, 'COLLISIONLAYERTOKENREPLACEME')
+    }
+    public metadataToJson(): IGraphGameMetadata {
+        return {
+            author: this.game.metadata.author,
+            homepage: this.game.metadata.homepage,
+            youtube: this.game.metadata.youtube,
+            zoomscreen: this.game.metadata.zoomscreen,
+            flickscreen: this.game.metadata.flickscreen,
+            colorPalette: this.game.metadata.colorPalette,
+            backgroundColor: this.game.metadata.backgroundColor ? this.buildColor(this.game.metadata.backgroundColor) : undefined,
+            textColor: this.game.metadata.textColor ? this.buildColor(this.game.metadata.textColor) : undefined,
+            realtimeInterval: this.game.metadata.realtimeInterval,
+            keyRepeatInterval: this.game.metadata.keyRepeatInterval,
+            againInterval: this.game.metadata.againInterval,
+            noAction: this.game.metadata.noAction,
+            noUndo: this.game.metadata.noUndo,
+            runRulesOnLevelStart: this.game.metadata.runRulesOnLevelStart,
+            noRepeatAction: this.game.metadata.noRepeatAction,
+            throttleMovement: this.game.metadata.throttleMovement,
+            noRestart: this.game.metadata.noRestart,
+            requirePlayerMovement: this.game.metadata.requirePlayerMovement,
+            verboseLogging: this.game.metadata.verboseLogging
+        }
+    }
+    public toJson(): IGraphJson {
+        const colors: {[key: string]: string} = {}
+        for (const [key, value] of this.colorsMap) {
+            colors[key] = value
+        }
+        return {
+            version: 1,
+            title: this.game.title,
+            metadata: this.metadataToJson(),
+            colors,
+            sounds: this.soundMap.toJson(),
+            collisionLayers: this.collisionLayerMap.toJson(),
+            commands: this.commandMap.toJson(),
+            sprites: this.spritesMap.toJson(),
+            tiles: this.tileMap.toJson(),
+            tilesWithModifiers: this.tileWithModifierMap.toJson(),
+            neighbors: this.neighborsMap.toJson(),
+            brackets: this.conditionBracketsMap.toJson(),
+            ruleDefinitions: this.ruleMap.toJson(),
+            rules: this.orderedRules,
+            levels: this.levels
+        }
     }
     private buildLevel(level: ILevel): GraphLevel {
         if (level instanceof LevelMap) {
             return {
                 type: 'MAP',
-                cells: level.getRows().map(row => row.map(cell => this.buildTile(cell)))
+                cells: level.getRows().map((row) => row.map((cell) => this.buildTile(cell)))
             }
         } else if (level instanceof MessageLevel) {
             return {
@@ -322,29 +370,29 @@ export default class Serializer {
                 message: level.getMessage()
             }
         } else {
-            debugger; throw new Error(`BUG: Unsupported level subtype`)
+            debugger; throw new Error(`BUG: Unsupported level subtype`) // tslint:disable-line:no-debugger
         }
     }
     private recBuildRule(rule: IRule): string {
         if (rule instanceof SimpleRule) {
             return this.ruleMap.set(rule, {
                 type: 'SIMPLE',
-                conditionBrackets: rule.conditionBrackets.map(item => this.buildConditionBracket(item)),
-                actionBrackets: rule.actionBrackets.map(item => this.buildConditionBracket(item)),
-                commands: rule.commands.map(item => this.buildCommand(item))
+                conditionBrackets: rule.conditionBrackets.map((item) => this.buildConditionBracket(item)),
+                actionBrackets: rule.actionBrackets.map((item) => this.buildConditionBracket(item)),
+                commands: rule.commands.map((item) => this.buildCommand(item))
             })
         } else if (rule instanceof SimpleRuleGroup) {
             return this.ruleMap.set(rule, {
                 type: 'GROUP',
-                rules: rule.getChildRules().map(item => this.recBuildRule(item))
+                rules: rule.getChildRules().map((item) => this.recBuildRule(item))
             })
         } else if (rule instanceof SimpleRuleLoop) {
             return this.ruleMap.set(rule, {
                 type: 'LOOP',
-                rules: rule.getChildRules().map(item => this.recBuildRule(item))
+                rules: rule.getChildRules().map((item) => this.recBuildRule(item))
             })
         } else {
-            debugger; throw new Error(`BUG: Unsupported rule type`)
+            debugger; throw new Error(`BUG: Unsupported rule type`) // tslint:disable-line:no-debugger
         }
 
     }
@@ -380,12 +428,12 @@ export default class Serializer {
                 type: 'WIN'
             })
         } else {
-            debugger; throw new Error(`BUG: Unsupoprted command type`)
+            debugger; throw new Error(`BUG: Unsupoprted command type`) // tslint:disable-line:no-debugger
         }
     }
     private buildConditionBracket(bracket: ISimpleBracket): BracketId {
         if (bracket instanceof SimpleEllipsisBracket) {
-            const b = bracket as SimpleEllipsisBracket
+            const b = bracket
             const before = this.buildConditionBracket(b.beforeEllipsisBracket)
             const after = this.buildConditionBracket(b.afterEllipsisBracket)
             return this.conditionBracketsMap.set(bracket, {
@@ -398,15 +446,15 @@ export default class Serializer {
             return this.conditionBracketsMap.set(bracket, {
                 type: 'NORMAL',
                 direction: toGraphDirection(bracket.direction),
-                neighbors: bracket.getNeighbors().map(item => this.buildNeighbor(item))
+                neighbors: bracket.getNeighbors().map((item) => this.buildNeighbor(item))
             })
         } else {
-            debugger; throw new Error(`BUG: Unsupported bracket type`)
+            debugger; throw new Error(`BUG: Unsupported bracket type`) // tslint:disable-line:no-debugger
         }
     }
     private buildNeighbor(neighbor: SimpleNeighbor): NeighborId {
         return this.neighborsMap.set(neighbor, {
-            tileWithModifiers: [...neighbor._tilesWithModifier].map(item => this.buildTileWithModifier(item))
+            tileWithModifiers: [...neighbor._tilesWithModifier].map((item) => this.buildTileWithModifier(item))
         })
     }
     private buildTileWithModifier(t: SimpleTileWithModifier): TileWithModifierId {
@@ -420,20 +468,20 @@ export default class Serializer {
         if (tile instanceof GameLegendTileOr) {
             return this.tileMap.set(tile, {
                 type: 'OR',
-                sprites: tile.getSprites().map(item => this.buildSprite(item)),
-                collisionLayers: tile.getCollisionLayers().map(item => this.buildCollisionLayer(item))
+                sprites: tile.getSprites().map((item) => this.buildSprite(item)),
+                collisionLayers: tile.getCollisionLayers().map((item) => this.buildCollisionLayer(item))
             })
         } else if (tile instanceof GameLegendTileAnd) {
             return this.tileMap.set(tile, {
                 type: 'AND',
-                sprites: tile.getSprites().map(item => this.buildSprite(item)),
-                collisionLayers: tile.getCollisionLayers().map(item => this.buildCollisionLayer(item))
+                sprites: tile.getSprites().map((item) => this.buildSprite(item)),
+                collisionLayers: tile.getCollisionLayers().map((item) => this.buildCollisionLayer(item))
             })
         } else if (tile instanceof GameLegendTileSimple) {
             return this.tileMap.set(tile, {
                 type: 'SIMPLE',
                 sprite: this.buildSprite(tile.getSprites()[0]),
-                collisionLayers: tile.getCollisionLayers().map(item => this.buildCollisionLayer(item))
+                collisionLayers: tile.getCollisionLayers().map((item) => this.buildCollisionLayer(item))
             })
         } else if (tile instanceof GameSprite) {
             return this.tileMap.set(tile, {
@@ -442,23 +490,20 @@ export default class Serializer {
                 collisionLayer: this.buildCollisionLayer(tile.getCollisionLayer())
             })
         } else {
-            debugger; throw new Error(`BUG: Invalid tile type`)
+            debugger; throw new Error(`BUG: Invalid tile type`) // tslint:disable-line:no-debugger
         }
     }
-    buildCollisionLayer(item: CollisionLayer) {
-        return this.collisionLayerMap.set(item, 'COLLISIONLAYERTOKENREPLACEME')
-    }
-    private soundToJson(sound: GameSound): GraphSound {
+    private soundToJson(sound: GameSound): IGraphSound {
         return {
             soundCode: sound.soundCode
         }
     }
     private buildSprite(sprite: GameSprite): SpriteId {
-        const {spriteHeight, spriteWidth} = this.game.getSpriteSize()
+        const { spriteHeight, spriteWidth } = this.game.getSpriteSize()
         return this.spritesMap.set(sprite, {
             name: sprite.getName(),
             collisionLayer: this.collisionLayerMap.getId(sprite.getCollisionLayer()),
-            pixels: sprite.getPixels(spriteHeight, spriteWidth).map(row => row.map(pixel => {
+            pixels: sprite.getPixels(spriteHeight, spriteWidth).map((row) => row.map((pixel) => {
                 if (pixel.isTransparent()) {
                     return null
                 } else {
@@ -472,66 +517,20 @@ export default class Serializer {
         this.colorsMap.set(hex, hex)
         return hex
     }
-    metadataToJson(): GraphGameMetadata {
-        return {
-            author: this.game.metadata.author,
-            homepage: this.game.metadata.homepage,
-            youtube: this.game.metadata.youtube,
-            zoomscreen: this.game.metadata.zoomscreen,
-            flickscreen: this.game.metadata.flickscreen,
-            colorPalette: this.game.metadata.colorPalette,
-            backgroundColor: this.game.metadata.backgroundColor ? this.buildColor(this.game.metadata.backgroundColor) : undefined,
-            textColor: this.game.metadata.textColor ? this.buildColor(this.game.metadata.textColor) : undefined,
-            realtimeInterval: this.game.metadata.realtimeInterval,
-            keyRepeatInterval: this.game.metadata.keyRepeatInterval,
-            againInterval: this.game.metadata.againInterval,
-            noAction: this.game.metadata.noAction,
-            noUndo: this.game.metadata.noUndo,
-            runRulesOnLevelStart: this.game.metadata.runRulesOnLevelStart,
-            noRepeatAction: this.game.metadata.noRepeatAction,
-            throttleMovement: this.game.metadata.throttleMovement,
-            noRestart: this.game.metadata.noRestart,
-            requirePlayerMovement: this.game.metadata.requirePlayerMovement,
-            verboseLogging: this.game.metadata.verboseLogging,
-        }
-    }
-    toJson(): GraphJson {
-        const colors: {[key: string]: string} = {}
-        for (const [key, value] of this.colorsMap) {
-            colors[key] = value
-        }
-        return {
-            version: 1,
-            title: this.game.title,
-            metadata: this.metadataToJson(),
-            colors: colors,
-            sounds: this.soundMap.toJson(),
-            collisionLayers: this.collisionLayerMap.toJson(),
-            commands: this.commandMap.toJson(),
-            sprites: this.spritesMap.toJson(),
-            tiles: this.tileMap.toJson(),
-            tilesWithModifiers: this.tileWithModifierMap.toJson(),
-            neighbors: this.neighborsMap.toJson(),
-            brackets: this.conditionBracketsMap.toJson(),
-            ruleDefinitions: this.ruleMap.toJson(),
-            rules: this.orderedRules,
-            levels: this.levels
-        }
-    }
 }
 
-type GraphJson = {
+interface IGraphJson {
     version: number,
     title: string,
-    metadata: GraphGameMetadata,
+    metadata: IGraphGameMetadata,
     colors: {[key: string]: string},
-    sounds: {[key: string]: GraphSound},
+    sounds: {[key: string]: IGraphSound},
     collisionLayers: {[key: string]: GraphCollisionLayer},
     commands: {[key: string]: GraphCommand},
-    sprites: {[key: string]: GraphSprite},
+    sprites: {[key: string]: IGraphSprite},
     tiles: {[key: string]: GraphTile},
-    tilesWithModifiers: {[key: string]: GraphTileWithModifier},
-    neighbors: {[key: string]: GraphNeighbor},
+    tilesWithModifiers: {[key: string]: IGraphTileWithModifier},
+    neighbors: {[key: string]: IGraphNeighbor},
     brackets: {[key: string]: GraphBracket},
     ruleDefinitions: {[key: string]: GraphRule},
     rules: RuleId[],

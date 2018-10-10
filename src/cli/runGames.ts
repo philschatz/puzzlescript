@@ -8,10 +8,10 @@ import { GameEngine, Parser, RULE_DIRECTION } from '..'
 import { logger } from '../logger'
 import { getLineAndColumn } from '../models/BaseForLines'
 import { saveCoverageFile } from '../recordCoverage'
+import Serializer from '../serializer'
 import { closeSounds } from '../sounds'
 import TerminalUI from '../ui/terminal'
 import { ILevelRecording } from './playGame'
-import Serializer from '../serializer';
 
 async function sleep(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms))

@@ -23,13 +23,13 @@ export interface IGameTile extends IGameNode {
     hasSingleCollisionLayer: () => boolean
     setCollisionLayer: (collisionLayer: CollisionLayer) => void
     getCollisionLayer: () => CollisionLayer
-    getCollisionLayers(): CollisionLayer[]
     matchesCell: (cell: Cell) => boolean
     isOr: () => boolean
     getCellsThatMatch: () => Set<Cell>
     getSpritesThatMatch: (cell: Cell) => Set<GameSprite>
     getName: () => string
     equals: (t: IGameTile) => boolean
+    getCollisionLayers(): CollisionLayer[]
     hasCell(cell: Cell): boolean
 }
 

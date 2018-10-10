@@ -245,10 +245,10 @@ export class SimpleRuleLoop extends SimpleRuleGroup {
 // DOWN [ DOWN player LEFT cat RIGHT dog UP crate UP wall ] -> [ RIGHT crate RIGHT dog ]
 // DOWN [ DOWN player LEFT cat RIGHT dog UP crate DOWN wall ] -> [ RIGHT crate RIGHT dog ]
 export class SimpleRule extends BaseForLines implements ICacheable, IRule {
+    public conditionBrackets: ISimpleBracket[]
+    public actionBrackets: ISimpleBracket[]
+    public commands: AbstractCommand[]
     private evaluationDirection: RULE_DIRECTION
-    conditionBrackets: ISimpleBracket[]
-    actionBrackets: ISimpleBracket[]
-    commands: AbstractCommand[]
     private _isLate: boolean
     private readonly isRigid: boolean
     private isSubscribedToCellChanges: boolean
@@ -1141,8 +1141,8 @@ class MultiMap<A, B> {
 }
 
 export class SimpleEllipsisBracket extends ISimpleBracket {
-    beforeEllipsisBracket: SimpleBracket
-    afterEllipsisBracket: SimpleBracket
+    public beforeEllipsisBracket: SimpleBracket
+    public afterEllipsisBracket: SimpleBracket
     private linkages: MultiMap<Cell, Cell> // 1 before may have many afters
     constructor(source: IGameCode, direction: RULE_DIRECTION, beforeEllipsisNeighbors: SimpleNeighbor[], afterEllipsisNeighbors: SimpleNeighbor[], debugFlag: Optional<DEBUG_FLAG>) {
         super(source, direction, [...beforeEllipsisNeighbors, ...afterEllipsisNeighbors], debugFlag)
