@@ -18,6 +18,7 @@ cache: yarn
 #       - libasound2-dev
 
 install:
+  - mkdir ./coverage/ # to ensure code coverage of the games are created
   - yarn install --ignore-optional # Ignore the speaker
 script:
   - npm run-script ci

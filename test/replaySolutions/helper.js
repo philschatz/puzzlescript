@@ -7,8 +7,8 @@ const { RULE_DIRECTION } = require('../../lib/util')
 const { saveCoverageFile } = require('../../lib/recordCoverage')
 const { default: TerminalUI } = require('../../lib/ui/terminal')
 
-// Just solve the last level of Cyber Lasso
-const CYBER_LASSO = '_cyber-lasso-e3e444f7c63fb21b6ec0'
+const CI_MAX_SOLUTION_LENGTH = 238 // The length of 1 level of cyber-lasso
+const describeFn = process.env.SKIP_SOLUTIONS ? describe.skip : describe
 
 const SOLUTION_ROOT = path.join(__dirname, '../../gist-solutions/')
 const solutionFiles = fs.readdirSync(SOLUTION_ROOT)
@@ -29,7 +29,7 @@ function createTests (moduloNumber, moduloTotal) {
         console.log('Skipping Replay tests')
         return
     }
-    describe('replays levels of games', () => {
+    describeFn('replays levels of games', () => {
         solutionFiles.forEach((solutionFilename, solutionIndex) => {
             // Skip the README.md file
             if (!solutionFilename.endsWith('.json')) {
@@ -40,25 +40,19 @@ function createTests (moduloNumber, moduloTotal) {
                 return
             }
 
-            let itOrSkip = it
-            if (process.env['ONLY_SOLUTIONS'] && parseInt(process.env['ONLY_SOLUTIONS']) !== moduloNumber) {
-                itOrSkip = it.skip
-            }
-
             const GIST_ID = path.basename(solutionFilename).replace('.json', '')
 
-            itOrSkip(`plays the solved levels of ${GIST_ID} ${GIST_ID === CYBER_LASSO ? '(just the last level)' : ''}`, async () => {
+            it(`plays ${process.env.CI === 'true' ? '*a single level*' : '_the solved levels_'} of ${GIST_ID}`, async () => {
                 const gistFilename = path.join(__dirname, `../../gists/${GIST_ID}/script.txt`)
                 const { engine, data } = parseEngine(fs.readFileSync(gistFilename, 'utf-8'))
                 let recordings = JSON.parse(fs.readFileSync(path.join(SOLUTION_ROOT, solutionFilename), 'utf-8')).solutions
 
-                // In the interest of speed, just test the last level of CyberLasso because it is so long
-                if (GIST_ID === CYBER_LASSO) {
-                    recordings = [recordings[0]]
-                }
+                let numPlayed = 0
+                let hasAtLeastOneSolution = 0
+
                 // play games in reverse order because it is likely that the harder levels will fail first
-                // for (let index = recordings.length - 1; index >= 0; index--) {
-                for (let index = 0; index < recordings.length; index++) {
+                for (let index = recordings.length - 1; index >= 0; index--) {
+                // for (let index = 0; index < recordings.length; index++) {
                     const recording = recordings[index]
                     if (!recording || !recording.solution) {
                         continue // skip message-only levels or levels that do not have a solution
@@ -69,6 +63,19 @@ function createTests (moduloNumber, moduloTotal) {
                     if (recording.solution.replace(/,/g, '').replace(/\./g, '') === 'X') {
                         continue
                     }
+
+                    hasAtLeastOneSolution++
+
+                    if (process.env.CI === 'true' && recording.solution.length > CI_MAX_SOLUTION_LENGTH) {
+                        console.log(`CI-SKIP: Because the solution is too long: ${recording.solution.length} > ${CI_MAX_SOLUTION_LENGTH}. "${GIST_ID}"`)
+                        continue
+                    }
+
+                    if (process.env.CI === 'true' && numPlayed > 0) {
+                        break
+                    }
+
+                    numPlayed++
 
                     engine.setLevel(index)
 
@@ -126,6 +133,11 @@ function createTests (moduloNumber, moduloTotal) {
 
                     expect({ title: data.title, levelNumber: index, wonAtKeyIndex }).toEqual({ title: data.title, levelNumber: index, wonAtKeyIndex: keypresses.length - 1 })
                 }
+
+                if (hasAtLeastOneSolution > 1) {
+                    expect(numPlayed).toBeGreaterThanOrEqual(1)
+                }
+
                 saveCoverageFile(data, gistFilename, `${GIST_ID}-playgame`)
             })
         })

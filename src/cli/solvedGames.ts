@@ -11,6 +11,7 @@ export default new Set([
     `Entanglement - Chapter One`,
     `Hack the Net`,
     `Linked`,
+    `Maera Public Works`,
     `Mirror Isles`,
     `out of bounds [lite demo v2]`,
     `Fatigued square maze`,
