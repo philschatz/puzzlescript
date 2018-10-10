@@ -1,5 +1,4 @@
 import { getLetterSprites } from '../letters'
-import { AbstractRuleish } from '../parser/astRule'
 import { Optional } from '../util'
 import { IGameCode } from './BaseForLines'
 import { CollisionLayer } from './collisionLayer'
@@ -7,7 +6,7 @@ import { ILevel } from './level'
 import { GameMetadata } from './metadata'
 import { IRule } from './rule'
 import { GameSound } from './sound'
-import { GameLegendTileSimple, GameSprite, IGameTile } from './tile'
+import { GameSprite, IGameTile } from './tile'
 import { WinConditionSimple } from './winCondition'
 
 export interface IGameNode {
@@ -23,7 +22,7 @@ export class GameData {
     public readonly title: string
     public readonly metadata: GameMetadata
     public readonly objects: GameSprite[]
-    public readonly legends: GameLegendTileSimple[]
+    public readonly legends: IGameTile[]
     public readonly sounds: GameSound[]
     public readonly collisionLayers: CollisionLayer[]
     public readonly rules: IRule[]
@@ -38,10 +37,10 @@ export class GameData {
         title: string,
         metadata: GameMetadata,
         objects: GameSprite[],
-        legends: GameLegendTileSimple[],
+        legends: IGameTile[],
         sounds: GameSound[],
         collisionLayers: CollisionLayer[],
-        rules: AbstractRuleish[],
+        rules: IRule[],
         winConditions: WinConditionSimple[],
         levels: ILevel[]
     ) {
@@ -53,18 +52,7 @@ export class GameData {
         this.collisionLayers = collisionLayers
         this.winConditions = winConditions
         this.levels = levels
-
-        // assign an index to each GameSprite
-        this.objects.forEach((sprite, index) => {
-            sprite.allSpritesBitSetIndex = index
-        })
-        let spriteIndexCounter = this.objects.length // 1 more than all the game sprites
-
-        const ruleCache = new Map()
-        const bracketCache = new Map()
-        const neighborCache = new Map()
-        const tileCache = new Map()
-        this.rules = rules.map((rule) => rule.simplify(ruleCache, bracketCache, neighborCache, tileCache))
+        this.rules = rules
 
         const firstSpriteWithPixels = this.objects.filter((sprite) => sprite.hasPixels())[0]
         if (firstSpriteWithPixels) {
@@ -82,6 +70,8 @@ export class GameData {
         }
 
         // Create a collisionlayer for the letter sprites
+        let spriteIndexCounter = this.objects.length // 1 more than all the game sprites
+
         this.letterSprites = getLetterSprites(source)
         for (const letterSprite of this.letterSprites.values()) {
             letterSprite.allSpritesBitSetIndex = spriteIndexCounter++
@@ -105,7 +95,7 @@ export class GameData {
         } else {
             const background: Optional<GameSprite> = this._getSpriteByName('background')
             if (!background) {
-                const legendBackground = this.legends.find((tile) => tile.spriteNameOrLevelChar.toLowerCase() === 'background')
+                const legendBackground = this.legends.find((tile) => tile.getName().toLowerCase() === 'background')
                 if (legendBackground) {
                     if (legendBackground.isOr()) {
                         return null
@@ -122,7 +112,7 @@ export class GameData {
         }
     }
     public getPlayer(): IGameTile {
-        const player = this._getSpriteByName('player') || this.legends.find((tile) => tile.spriteNameOrLevelChar.toLocaleLowerCase() === 'player')
+        const player = this._getSpriteByName('player') || this.legends.find((tile) => tile.getName().toLowerCase() === 'player')
         if (!player) {
             throw new Error(`BUG: Could not find the Player sprite or tile in the game`)
         }

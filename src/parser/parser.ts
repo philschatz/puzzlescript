@@ -104,7 +104,20 @@ class AstBuilder {
         const rules = root.rules.map((n) => this.buildRuleCollection(n))
         const winConditions = root.winConditions.map((n) => this.buildWinConditon(n))
         const levels = root.levels.map((n) => this.buildLevel(n))
-        const gameData = new GameData(source, root.title, metadata, sprites, legendItems, sounds, collisionLayers, rules, winConditions, levels)
+
+        // assign an index to each GameSprite
+        sprites.forEach((sprite, index) => {
+            sprite.allSpritesBitSetIndex = index
+        })
+
+        // Simplify the rules by de-duplicating them
+        const ruleCache = new Map()
+        const bracketCache = new Map()
+        const neighborCache = new Map()
+        const tileCache = new Map()
+        const simpleRules = rules.map((rule) => rule.simplify(ruleCache, bracketCache, neighborCache, tileCache))
+
+        const gameData = new GameData(source, root.title, metadata, sprites, legendItems, sounds, collisionLayers, simpleRules, winConditions, levels)
         const validationMessages = this.getValidationMessages()
         return { gameData, validationMessages }
     }
@@ -112,7 +125,19 @@ class AstBuilder {
     public buildSprite(node: ast.AbstractSprite, colorPalette: Optional<string>) {
         let ret: GameSprite
         if (node.pixels) {
-            ret = new GameSpritePixels(this.toSource(node), node.name, node.mapChar, node.colors.map((n) => this.buildColor(n, colorPalette)), node.pixels)
+            const source = this.toSource(node)
+            const colors = node.colors.map((n) => this.buildColor(n, colorPalette))
+            const pixels = node.pixels.map((row) => {
+                return row.map((col) => {
+                    if (col === '.') {
+                        return new TransparentColor(source)
+                    } else {
+                        return colors[col] || new TransparentColor(source)
+                    }
+                })
+            }) // Pixel colors are 0-indexed.
+
+            ret = new GameSpritePixels(source, node.name, node.mapChar, pixels)
         } else {
             ret = new GameSpriteSingleColor(this.toSource(node), node.name, node.mapChar, node.colors.map((n) => this.buildColor(n, colorPalette)))
         }

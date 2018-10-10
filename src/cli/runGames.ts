@@ -30,10 +30,12 @@ async function run() {
 
         const code = readFileSync(filename, 'utf-8')
         let startTime = Date.now()
-        const { data, validationMessages } = Parser.parse(code)
+        const { data: originalData, validationMessages } = Parser.parse(code)
 
         // Check that we can serialize the game out to JSON
-        new Serializer(data).toJson()
+        const json = new Serializer(originalData).toJson()
+        const data2 = Serializer.fromJson(json, originalData.getPlayer().__source.code)
+        const data = data2
 
         if (!data) {
             throw new Error(`BUG: gameData was not set yet`)

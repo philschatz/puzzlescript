@@ -3,7 +3,7 @@ import { Cell } from '../engine'
 import { _flatten, Optional, RULE_DIRECTION, setDifference, setIntersection } from '../util'
 import { BaseForLines, IGameCode } from './BaseForLines'
 import { CollisionLayer } from './collisionLayer'
-import { IColor, TransparentColor } from './colors'
+import { IColor } from './colors'
 import { IGameNode } from './game'
 import { SimpleTileWithModifier } from './rule'
 // BitSet does not export a default so import does not work in webpack-built file
@@ -241,43 +241,11 @@ export class GameSpriteSingleColor extends GameSprite {
 }
 
 export class GameSpritePixels extends GameSprite {
-    private readonly colors: IColor[]
     private readonly pixels: IColor[][]
 
-    constructor(source: IGameCode, name: string, optionalLegendChar: Optional<string>, colors: IColor[], pixels: Array<Array<'.' | number>>) {
+    constructor(source: IGameCode, name: string, optionalLegendChar: Optional<string>, pixels: IColor[][]) {
         super(source, name, optionalLegendChar)
-        this.colors = colors
-        this.pixels = pixels.map((row) => {
-            return row.map((col) => {
-                if (col === '.') {
-                    return new TransparentColor(this.__source)
-                } else {
-                    return this.colors[col] || new TransparentColor(this.__source)
-                }
-            })
-        }) // Pixel colors are 0-indexed.
-    }
-    public isInvalid() {
-        if (super.isInvalid()) {
-            return super.isInvalid()
-        }
-        let isInvalid = null
-        const colorLen = this.colors.length
-        const rowLen = this.pixels[0].length
-        this.pixels.forEach((row: any[]) => {
-            if (row.length !== rowLen) {
-                isInvalid = `Row lengths do not match. Expected ${rowLen} but got ${row.length}. Row: ${row}`
-            }
-            // Check that only '.' or a digit that is less than the number of colors is present
-            row.forEach((pixel) => {
-                if (pixel !== '.') {
-                    if (pixel >= colorLen) {
-                        isInvalid = `Pixel number is too high (${pixel}). There are only ${colorLen} colors defined`
-                    }
-                }
-            })
-        })
-        return isInvalid
+        this.pixels = pixels
     }
     public getSprites() {
         // to match the signature of LegendTile

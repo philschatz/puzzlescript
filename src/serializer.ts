@@ -1,14 +1,16 @@
 import { Optional } from '.'
 import { RULE_DIRECTION } from './'
 import { CollisionLayer } from './models/collisionLayer'
-import { IColor } from './models/colors'
+import { HexColor, IColor, TransparentColor } from './models/colors'
 import { AbstractCommand, AgainCommand, CancelCommand, CheckpointCommand, MessageCommand, RestartCommand, SoundCommand, WinCommand } from './models/command'
 import { GameData } from './models/game'
 import { ILevel, LevelMap, MessageLevel } from './models/level'
-import { Dimension } from './models/metadata'
+import { Dimension, GameMetadata } from './models/metadata'
 import { IRule, ISimpleBracket, SimpleBracket, SimpleEllipsisBracket, SimpleNeighbor, SimpleRule, SimpleRuleGroup, SimpleRuleLoop, SimpleTileWithModifier } from './models/rule'
 import { GameSound } from './models/sound'
-import { GameLegendTileAnd, GameLegendTileOr, GameLegendTileSimple, GameSprite, IGameTile } from './models/tile'
+import { GameLegendTileAnd, GameLegendTileOr, GameLegendTileSimple, GameSprite, GameSpritePixels, IGameTile } from './models/tile'
+import { WIN_QUALIFIER, WinConditionOn, WinConditionSimple } from './models/winCondition'
+import { DEBUG_FLAG } from './util'
 
 // const EXAMPLE = {
 //     metadata: { author: 'Phil' },
@@ -85,99 +87,176 @@ type SoundId = string
 // type ActionMutationsId = string
 // type BracketPairId = string
 
-interface IGraphSprite {
+interface ISourceNode {
+    _sourceOffset: number
+}
+
+interface IGraphSprite extends ISourceNode {
     name: string,
     pixels: Array<Array<Optional<ColorId>>>,
     collisionLayer: CollisionId,
     // sounds: {}
 }
-interface IGraphSound { soundCode: number }
-type GraphCollisionLayer = 'COLLISIONLAYERTOKENREPLACEME'
-enum GraphDirection {
-    UP = 'UP',
-    DOWN = 'DOWN',
-    LEFT = 'LEFT',
-    RIGHT = 'RIGHT',
-    // These only apply to Tiles
-    ACTION = 'ACTION',
-    STATIONARY = 'STATIONARY',
-    RANDOMDIR = 'RANDOMDIR'
+interface IGraphSound extends ISourceNode { soundCode: number }
+// enum RULE_DIRECTION {
+//     UP = 'UP',
+//     DOWN = 'DOWN',
+//     LEFT = 'LEFT',
+//     RIGHT = 'RIGHT',
+//     // These only apply to Tiles
+//     ACTION = 'ACTION',
+//     STATIONARY = 'STATIONARY',
+//     RANDOMDIR = 'RANDOMDIR'
+// }
+enum TILE_TYPE {
+    OR = 'OR',
+    AND = 'AND',
+    SIMPLE = 'SIMPLE',
+    SPRITE = 'SPRITE'
 }
 type GraphTile = {
-    type: 'OR'
+    _sourceOffset: number
+    type: TILE_TYPE.OR
+    name: string
     sprites: SpriteId[]
     collisionLayers: CollisionId[]
 } | {
-    type: 'AND'
+    _sourceOffset: number
+    type: TILE_TYPE.AND
+    name: string
     sprites: SpriteId[]
     collisionLayers: CollisionId[]
 } | {
-    type: 'SIMPLE'
+    _sourceOffset: number
+    type: TILE_TYPE.SIMPLE
+    name: string
     sprite: SpriteId
     collisionLayers: CollisionId[]
 } | {
-    type: 'SPRITE'
+    _sourceOffset: number
+    type: TILE_TYPE.SPRITE
+    name: string
     sprite: SpriteId
     collisionLayer: CollisionId
 }
-interface IGraphTileWithModifier {
-    direction: Optional<GraphDirection>
-    negation: boolean,
+interface IGraphTileWithModifier extends ISourceNode {
+    direction: Optional<RULE_DIRECTION>
+    negation: boolean
     tile: TileId
+    debugFlag?: DEBUG_FLAG
 }
-interface IGraphNeighbor {
+interface IGraphNeighbor extends ISourceNode {
     tileWithModifiers: TileWithModifierId[]
+    debugFlag?: DEBUG_FLAG
 }
 type GraphBracket = {
+    _sourceOffset: number
     type: 'NORMAL',
-    direction: GraphDirection, // optional when only 1 neighbor
+    direction: RULE_DIRECTION, // optional when only 1 neighbor
     neighbors: NeighborId[]
+    debugFlag?: DEBUG_FLAG
 } | {
-    type: 'ELLIPSIS',
-    direction: GraphDirection,
-    beforeBracket: BracketId,
-    afterBracket: BracketId
+    _sourceOffset: number
+    type: 'ELLIPSIS'
+    direction: RULE_DIRECTION
+    beforeNeighbors: NeighborId[]
+    afterNeighbors: NeighborId[]
+    debugFlag?: DEBUG_FLAG
 }
 // type BracketPair = {
 //     conditionBracket: BracketId,
 //     actionMutations: BracketId, // ActionMutation
 //     commands: CommandId[]
 // }
+
+enum RULE_TYPE {
+    SIMPLE = 'SIMPLE',
+    GROUP = 'GROUP',
+    LOOP = 'LOOP'
+}
 type GraphRule = {
-    type: 'SIMPLE'
+    _sourceOffset: number
+    type: RULE_TYPE.SIMPLE
     conditionBrackets: BracketId[],
     actionBrackets: BracketId[],
+    isLate: boolean,
     commands: CommandId[]
+    debugFlag?: DEBUG_FLAG
 } | {
-    type: 'GROUP'
+    _sourceOffset: number
+    type: RULE_TYPE.GROUP
+    isRandom: boolean
     rules: RuleId[]
+    debugFlag?: DEBUG_FLAG
 } | {
-    type: 'LOOP'
+    _sourceOffset: number
+    type: RULE_TYPE.LOOP
+    isRandom: boolean
     rules: RuleId[]
+    debugFlag?: DEBUG_FLAG
+}
+
+enum COMMAND_TYPE {
+    MESSAGE = 'MESSAGE',
+    SOUND = 'SOUND',
+    CHECKPOINT = 'CHECKPOINT',
+    RESTART = 'RESTART',
+    CANCEL = 'CANCEL',
+    AGAIN = 'AGAIN',
+    WIN = 'WIN'
 }
 type GraphCommand = {
-    type: 'MESSAGE'
+    _sourceOffset: number
+    type: COMMAND_TYPE.MESSAGE
     message: string
 } | {
-    type: 'SOUND'
+    _sourceOffset: number
+    type: COMMAND_TYPE.SOUND
     sound: SoundId
 } | {
-    type: 'CHECKPOINT'
+    _sourceOffset: number
+    type: COMMAND_TYPE.CHECKPOINT
 } | {
-    type: 'RESTART'
+    _sourceOffset: number
+    type: COMMAND_TYPE.RESTART
 } | {
-    type: 'CANCEL'
+    _sourceOffset: number
+    type: COMMAND_TYPE.CANCEL
 } | {
-    type: 'AGAIN'
+    _sourceOffset: number
+    type: COMMAND_TYPE.AGAIN
 } | {
-    type: 'WIN'
+    _sourceOffset: number
+    type: COMMAND_TYPE.WIN
+}
+enum LEVEL_TYPE {
+    MAP = 'MAP',
+    MESSAGE = 'MESSAGE'
 }
 type GraphLevel = {
-    type: 'MAP'
+    _sourceOffset: number
+    type: LEVEL_TYPE.MAP
     cells: TileId[][]
 } | {
-    type: 'MESSAGE'
+    _sourceOffset: number
+    type: LEVEL_TYPE.MESSAGE
     message: string
+}
+enum WIN_TYPE {
+    SIMPLE = 'SIMPLE',
+    ON = 'ON'
+}
+type GraphWinCondition = {
+    _sourceOffset: number
+    type: WIN_TYPE.SIMPLE
+    qualifier: WIN_QUALIFIER,
+    tile: TileId
+} | {
+    _sourceOffset: number
+    type: WIN_TYPE.ON
+    qualifier: WIN_QUALIFIER,
+    tile: TileId,
+    onTile: TileId
 }
 
 interface IGraphGameMetadata {
@@ -202,18 +281,8 @@ interface IGraphGameMetadata {
     verboseLogging: boolean
 }
 
-function toGraphDirection(dir: RULE_DIRECTION): GraphDirection {
-    switch (dir) {
-        case RULE_DIRECTION.UP: return GraphDirection.UP
-        case RULE_DIRECTION.DOWN: return GraphDirection.DOWN
-        case RULE_DIRECTION.LEFT: return GraphDirection.LEFT
-        case RULE_DIRECTION.RIGHT: return GraphDirection.RIGHT
-        case RULE_DIRECTION.ACTION: return GraphDirection.ACTION
-        case RULE_DIRECTION.STATIONARY: return GraphDirection.STATIONARY
-        case RULE_DIRECTION.RANDOMDIR: return GraphDirection.RANDOMDIR
-        default:
-            debugger; throw new Error(`BUG: Unsupported direction "${dir}`) // tslint:disable-line:no-debugger
-    }
+function toRULE_DIRECTION(dir: RULE_DIRECTION): RULE_DIRECTION {
+    return dir
 }
 
 class MapWithId<T, TJson> {
@@ -228,9 +297,9 @@ class MapWithId<T, TJson> {
         this.jsonMap = new Map()
     }
 
-    public set(key: T, value: TJson) {
+    public set(key: T, value: TJson, id?: string) {
         if (!this.idMap.has(key)) {
-            this.idMap.set(key, this.freshId())
+            this.idMap.set(key, id || this.freshId())
         }
         this.jsonMap.set(key, value)
         return this.getId(key)
@@ -269,18 +338,225 @@ class MapWithId<T, TJson> {
     }
 }
 
+class DefiniteMap<K, V> extends Map<K, V> {
+    public get(key: K) {
+        const v = super.get(key)
+        if (!v) {
+            throw new Error(`ERROR: JSON is missing key "${key}". Should have already been added`)
+        }
+        return v
+    }
+}
+
 export default class Serializer {
+
+    public static fromJson(source: IGraphJson, code: string): GameData {
+        // First, build up all of the lookup maps
+        const colorMap: Map<string, IColor> = new Map()
+        const spritesMap: DefiniteMap<string, GameSprite> = new DefiniteMap()
+        const soundMap: DefiniteMap<string, GameSound> = new DefiniteMap()
+        const collisionLayerMap: DefiniteMap<string, CollisionLayer> = new DefiniteMap()
+        const bracketMap: DefiniteMap<string, ISimpleBracket> = new DefiniteMap()
+        const neighborsMap: DefiniteMap<string, SimpleNeighbor> = new DefiniteMap()
+        const tileWithModifierMap: DefiniteMap<string, SimpleTileWithModifier> = new DefiniteMap()
+        const tileMap: DefiniteMap<string, IGameTile> = new DefiniteMap()
+        const ruleMap: DefiniteMap<string, IRule> = new DefiniteMap()
+        const commandMap: DefiniteMap<string, AbstractCommand> = new DefiniteMap()
+
+        for (const [key, val] of Object.entries(source.colors)) {
+            colorMap.set(key, new HexColor({ code, sourceOffset: 0 }, val))
+        }
+        for (const [key, val] of Object.entries(source.sounds)) {
+            const { _sourceOffset: sourceOffset, soundCode } = val
+            soundMap.set(key, new GameSound({ code, sourceOffset }, soundCode))
+        }
+        for (const [key, val] of Object.entries(source.commands)) {
+            const { _sourceOffset: sourceOffset } = val
+            switch (val.type) {
+                case COMMAND_TYPE.MESSAGE:
+                    commandMap.set(key, new MessageCommand({ code, sourceOffset }, val.message))
+                    break
+                case COMMAND_TYPE.SOUND:
+                    commandMap.set(key, new SoundCommand({ code, sourceOffset }, soundMap.get(val.sound)))
+                    break
+                case COMMAND_TYPE.RESTART:
+                    commandMap.set(key, new RestartCommand({ code, sourceOffset }))
+                    break
+                case COMMAND_TYPE.AGAIN:
+                    commandMap.set(key, new AgainCommand({ code, sourceOffset }))
+                    break
+                case COMMAND_TYPE.CANCEL:
+                    commandMap.set(key, new CancelCommand({ code, sourceOffset }))
+                    break
+                case COMMAND_TYPE.CHECKPOINT:
+                    commandMap.set(key, new CheckpointCommand({ code, sourceOffset }))
+                    break
+                case COMMAND_TYPE.WIN:
+                    commandMap.set(key, new WinCommand({ code, sourceOffset }))
+                    break
+                default:
+                    throw new Error(`ERROR: Unsupported command type`)
+            }
+        }
+        const layers: DefiniteMap<string, IGameTile[]> = new DefiniteMap()
+        for (const [key] of Object.entries(source.collisionLayers)) {
+            layers.set(key, [])
+        }
+
+        const transparent = new TransparentColor({ code, sourceOffset: 0 })
+        let spriteIndex = 0
+        for (const [key, val] of Object.entries(source.sprites)) {
+            const { _sourceOffset: sourceOffset, name, pixels } = val
+            const sprite = new GameSpritePixels(
+                { code, sourceOffset },
+                name,
+                null,
+                pixels.map((row) => row.map((color) => {
+                    if (color) {
+                        return colorMap.get(color) || transparent
+                    } else {
+                        return transparent
+                    }
+                }))
+            )
+            // assign an index to each GameSprite
+            sprite.allSpritesBitSetIndex = spriteIndex
+
+            spriteIndex++
+            spritesMap.set(key, sprite)
+            layers.get(val.collisionLayer).push(sprite)
+        }
+
+        for (const [key, val] of Object.entries(source.tiles)) {
+            const { _sourceOffset: sourceOffset } = val
+            let tile
+            switch (val.type) {
+                case 'OR':
+                    tile = new GameLegendTileOr({ code, sourceOffset }, val.name, val.sprites.map((item) => spritesMap.get(item)))
+                    break
+                case 'AND':
+                    tile = new GameLegendTileAnd({ code, sourceOffset }, val.name, val.sprites.map((item) => spritesMap.get(item)))
+                    break
+                case 'SIMPLE':
+                    tile = new GameLegendTileSimple({ code, sourceOffset }, val.name, spritesMap.get(val.sprite))
+                    break
+                case 'SPRITE':
+                    tile = new GameLegendTileSimple({ code, sourceOffset }, val.name, spritesMap.get(val.sprite))
+                    break
+                default:
+                    throw new Error(`ERROR: Unsupported tile type`)
+            }
+            tileMap.set(key, tile)
+            // layers.get(val.collisionLayer).push(tile)
+        }
+
+        for (const [key, val] of Object.entries(source.collisionLayers)) {
+            const { _sourceOffset: sourceOffset } = val
+            collisionLayerMap.set(key, new CollisionLayer({ code, sourceOffset }, layers.get(key), () => null))
+        }
+
+        for (const [key, val] of Object.entries(source.tilesWithModifiers)) {
+            const { _sourceOffset: sourceOffset } = val
+            tileWithModifierMap.set(key, new SimpleTileWithModifier({ code, sourceOffset }, val.negation, false, val.direction, tileMap.get(val.tile), val.debugFlag))
+        }
+
+        for (const [key, val] of Object.entries(source.neighbors)) {
+            const { _sourceOffset: sourceOffset } = val
+            neighborsMap.set(key, new SimpleNeighbor({ code, sourceOffset }, new Set(val.tileWithModifiers.map((item) => tileWithModifierMap.get(item))), val.debugFlag))
+        }
+
+        for (const [key, val] of Object.entries(source.brackets)) {
+            const { _sourceOffset: sourceOffset } = val
+            switch (val.type) {
+                case 'NORMAL':
+                    bracketMap.set(key, new SimpleBracket({ code, sourceOffset }, val.direction, val.neighbors.map((item) => neighborsMap.get(item)), val.debugFlag))
+                    break
+                case 'ELLIPSIS':
+                    bracketMap.set(key, new SimpleEllipsisBracket(
+                        { code, sourceOffset },
+                        val.direction,
+                        val.beforeNeighbors.map((item) => neighborsMap.get(item)),
+                        val.afterNeighbors.map((item) => neighborsMap.get(item)),
+                        val.debugFlag))
+                    break
+                default:
+                    throw new Error(`ERROR: Unsupported bracket type`)
+            }
+        }
+
+        for (const [key, val] of Object.entries(source.ruleDefinitions)) {
+            const { _sourceOffset: sourceOffset } = val
+            switch (val.type) {
+                case RULE_TYPE.SIMPLE:
+                    ruleMap.set(key, new SimpleRule(
+                        { code, sourceOffset },
+                        RULE_DIRECTION.STATIONARY/*direction*/,
+                        val.conditionBrackets.map((item) => bracketMap.get(item)),
+                        val.actionBrackets.map((item) => bracketMap.get(item)),
+                        val.commands.map((item) => commandMap.get(item)),
+                        val.isLate, false/*isRigid*/,
+                        val.debugFlag))
+                    break
+                case RULE_TYPE.GROUP:
+                    ruleMap.set(key, new SimpleRuleGroup({ code, sourceOffset }, val.isRandom, val.rules.map((item) => ruleMap.get(item))))
+                    break
+                case RULE_TYPE.LOOP:
+                    ruleMap.set(key, new SimpleRuleLoop({ code, sourceOffset }, val.isRandom, val.rules.map((item) => ruleMap.get(item))))
+                    break
+                default:
+                    throw new Error(`ERROR: Unsupported rule type`)
+            }
+        }
+
+        const levels = source.levels.map((item) => {
+            const { _sourceOffset: sourceOffset } = item
+            switch (item.type) {
+                case LEVEL_TYPE.MESSAGE:
+                    return new MessageLevel({ code, sourceOffset }, item.message)
+                case LEVEL_TYPE.MAP:
+                    return new LevelMap({ code, sourceOffset }, item.cells.map((row) => row.map((tile) => tileMap.get(tile))))
+                default:
+                    throw new Error(`ERROR: Invalid level type`)
+            }
+        })
+
+        const winConditions = source.winConditions.map((item) => {
+            const { _sourceOffset: sourceOffset } = item
+            switch (item.type) {
+                case WIN_TYPE.SIMPLE:
+                    return new WinConditionSimple({ code, sourceOffset }, item.qualifier, tileMap.get(item.tile))
+                case WIN_TYPE.ON:
+                    return new WinConditionOn({ code, sourceOffset }, item.qualifier, tileMap.get(item.tile), tileMap.get(item.onTile))
+                default:
+                    throw new Error(`ERROR: Unsupported Win Condition type`)
+            }
+        })
+
+        const metadata = new GameMetadata()
+
+        return new GameData(
+            { code, sourceOffset: 0 },
+            source.title, metadata,
+            [...spritesMap.values()],
+            [...tileMap.values()],
+            [...soundMap.values()],
+            [...collisionLayerMap.values()],
+            source.rules.map((item) => ruleMap.get(item)),
+            winConditions, levels)
+    }
+
     private readonly game: GameData
     private readonly colorsMap: Map<string, ColorId>
     private readonly spritesMap: MapWithId<GameSprite, IGraphSprite>
     private readonly soundMap: MapWithId<GameSound, IGraphSound>
-    private readonly collisionLayerMap: MapWithId<CollisionLayer, GraphCollisionLayer>
+    private readonly collisionLayerMap: MapWithId<CollisionLayer, ISourceNode>
     private readonly conditionBracketsMap: MapWithId<ISimpleBracket, GraphBracket>
     private readonly neighborsMap: MapWithId<SimpleNeighbor, IGraphNeighbor>
     private readonly tileWithModifierMap: MapWithId<SimpleTileWithModifier, IGraphTileWithModifier>
     private readonly tileMap: MapWithId<IGameTile, GraphTile>
     private readonly ruleMap: MapWithId<IRule, GraphRule>
     private readonly commandMap: MapWithId<AbstractCommand, GraphCommand>
+    private readonly winConditions: GraphWinCondition[]
     private orderedRules: RuleId[]
     private levels: GraphLevel[]
 
@@ -307,10 +583,35 @@ export default class Serializer {
         })
         this.orderedRules = this.game.rules.map((item) => this.recBuildRule(item))
 
+        this.game.legends.forEach((tile) => {
+            this.buildTile(tile)
+        })
+
         this.levels = this.game.levels.map((item) => this.buildLevel(item))
+
+        this.winConditions = this.game.winConditions.map((item) => {
+            if (item instanceof WinConditionOn) {
+                const ret: GraphWinCondition = {
+                    _sourceOffset: item.__source.sourceOffset,
+                    type: WIN_TYPE.ON,
+                    qualifier: item.qualifier,
+                    tile: this.buildTile(item.tile),
+                    onTile: this.buildTile(item.onTile)
+                }
+                return ret
+            } else {
+                const ret: GraphWinCondition = {
+                    _sourceOffset: item.__source.sourceOffset,
+                    type: WIN_TYPE.SIMPLE,
+                    qualifier: item.qualifier,
+                    tile: this.buildTile(item.tile)
+                }
+                return ret
+            }
+        })
     }
     public buildCollisionLayer(item: CollisionLayer) {
-        return this.collisionLayerMap.set(item, 'COLLISIONLAYERTOKENREPLACEME')
+        return this.collisionLayerMap.set(item, { _sourceOffset: item.__source.sourceOffset })
     }
     public metadataToJson(): IGraphGameMetadata {
         return {
@@ -354,6 +655,7 @@ export default class Serializer {
             neighbors: this.neighborsMap.toJson(),
             brackets: this.conditionBracketsMap.toJson(),
             ruleDefinitions: this.ruleMap.toJson(),
+            winConditions: this.winConditions,
             rules: this.orderedRules,
             levels: this.levels
         }
@@ -361,13 +663,15 @@ export default class Serializer {
     private buildLevel(level: ILevel): GraphLevel {
         if (level instanceof LevelMap) {
             return {
-                type: 'MAP',
-                cells: level.getRows().map((row) => row.map((cell) => this.buildTile(cell)))
+                type: LEVEL_TYPE.MAP,
+                cells: level.getRows().map((row) => row.map((cell) => this.buildTile(cell))),
+                _sourceOffset: level.__source.sourceOffset
             }
         } else if (level instanceof MessageLevel) {
             return {
-                type: 'MESSAGE',
-                message: level.getMessage()
+                type: LEVEL_TYPE.MESSAGE,
+                message: level.getMessage(),
+                _sourceOffset: level.__source.sourceOffset
             }
         } else {
             debugger; throw new Error(`BUG: Unsupported level subtype`) // tslint:disable-line:no-debugger
@@ -376,20 +680,26 @@ export default class Serializer {
     private recBuildRule(rule: IRule): string {
         if (rule instanceof SimpleRule) {
             return this.ruleMap.set(rule, {
-                type: 'SIMPLE',
+                type: RULE_TYPE.SIMPLE,
                 conditionBrackets: rule.conditionBrackets.map((item) => this.buildConditionBracket(item)),
                 actionBrackets: rule.actionBrackets.map((item) => this.buildConditionBracket(item)),
-                commands: rule.commands.map((item) => this.buildCommand(item))
+                commands: rule.commands.map((item) => this.buildCommand(item)),
+                isLate: rule.isLate(),
+                _sourceOffset: rule.__source.sourceOffset
             })
         } else if (rule instanceof SimpleRuleGroup) {
             return this.ruleMap.set(rule, {
-                type: 'GROUP',
-                rules: rule.getChildRules().map((item) => this.recBuildRule(item))
+                type: RULE_TYPE.GROUP,
+                isRandom: rule.isRandom,
+                rules: rule.getChildRules().map((item) => this.recBuildRule(item)),
+                _sourceOffset: rule.__source.sourceOffset
             })
         } else if (rule instanceof SimpleRuleLoop) {
             return this.ruleMap.set(rule, {
-                type: 'LOOP',
-                rules: rule.getChildRules().map((item) => this.recBuildRule(item))
+                type: RULE_TYPE.LOOP,
+                isRandom: rule.isRandom,
+                rules: rule.getChildRules().map((item) => this.recBuildRule(item)),
+                _sourceOffset: rule.__source.sourceOffset
             })
         } else {
             debugger; throw new Error(`BUG: Unsupported rule type`) // tslint:disable-line:no-debugger
@@ -399,33 +709,40 @@ export default class Serializer {
     private buildCommand(command: AbstractCommand) {
         if (command instanceof MessageCommand) {
             return this.commandMap.set(command, {
-                type: 'MESSAGE',
-                message: command.getMessage()
+                type: COMMAND_TYPE.MESSAGE,
+                message: command.getMessage(),
+                _sourceOffset: command.__source.sourceOffset
             })
         } else if (command instanceof SoundCommand) {
             return this.commandMap.set(command, {
-                type: 'SOUND',
-                sound: this.soundMap.getId(command.getSound())
+                type: COMMAND_TYPE.SOUND,
+                sound: this.soundMap.getId(command.getSound()),
+                _sourceOffset: command.__source.sourceOffset
             })
         } else if (command instanceof CheckpointCommand) {
             return this.commandMap.set(command, {
-                type: 'CHECKPOINT'
+                type: COMMAND_TYPE.CHECKPOINT,
+                _sourceOffset: command.__source.sourceOffset
             })
         } else if (command instanceof RestartCommand) {
             return this.commandMap.set(command, {
-                type: 'RESTART'
+                type: COMMAND_TYPE.RESTART,
+                _sourceOffset: command.__source.sourceOffset
             })
         } else if (command instanceof CancelCommand) {
             return this.commandMap.set(command, {
-                type: 'CANCEL'
+                type: COMMAND_TYPE.CANCEL,
+                _sourceOffset: command.__source.sourceOffset
             })
         } else if (command instanceof AgainCommand) {
             return this.commandMap.set(command, {
-                type: 'AGAIN'
+                type: COMMAND_TYPE.AGAIN,
+                _sourceOffset: command.__source.sourceOffset
             })
         } else if (command instanceof WinCommand) {
             return this.commandMap.set(command, {
-                type: 'WIN'
+                type: COMMAND_TYPE.WIN,
+                _sourceOffset: command.__source.sourceOffset
             })
         } else {
             debugger; throw new Error(`BUG: Unsupoprted command type`) // tslint:disable-line:no-debugger
@@ -434,19 +751,21 @@ export default class Serializer {
     private buildConditionBracket(bracket: ISimpleBracket): BracketId {
         if (bracket instanceof SimpleEllipsisBracket) {
             const b = bracket
-            const before = this.buildConditionBracket(b.beforeEllipsisBracket)
-            const after = this.buildConditionBracket(b.afterEllipsisBracket)
+            const before = b.beforeEllipsisBracket.getNeighbors().map((item) => this.buildNeighbor(item)) // this.buildConditionBracket(b.beforeEllipsisBracket)
+            const after = b.afterEllipsisBracket.getNeighbors().map((item) => this.buildNeighbor(item)) // this.buildConditionBracket(b.afterEllipsisBracket)
             return this.conditionBracketsMap.set(bracket, {
                 type: 'ELLIPSIS',
-                direction: toGraphDirection(b.direction),
-                beforeBracket: before,
-                afterBracket: after
+                direction: toRULE_DIRECTION(b.direction),
+                beforeNeighbors: before,
+                afterNeighbors: after,
+                _sourceOffset: bracket.__source.sourceOffset
             })
         } else if (bracket instanceof SimpleBracket) {
             return this.conditionBracketsMap.set(bracket, {
                 type: 'NORMAL',
-                direction: toGraphDirection(bracket.direction),
-                neighbors: bracket.getNeighbors().map((item) => this.buildNeighbor(item))
+                direction: toRULE_DIRECTION(bracket.direction),
+                neighbors: bracket.getNeighbors().map((item) => this.buildNeighbor(item)),
+                _sourceOffset: bracket.__source.sourceOffset
             })
         } else {
             debugger; throw new Error(`BUG: Unsupported bracket type`) // tslint:disable-line:no-debugger
@@ -454,40 +773,50 @@ export default class Serializer {
     }
     private buildNeighbor(neighbor: SimpleNeighbor): NeighborId {
         return this.neighborsMap.set(neighbor, {
-            tileWithModifiers: [...neighbor._tilesWithModifier].map((item) => this.buildTileWithModifier(item))
+            tileWithModifiers: [...neighbor._tilesWithModifier].map((item) => this.buildTileWithModifier(item)),
+            _sourceOffset: neighbor.__source.sourceOffset
         })
     }
     private buildTileWithModifier(t: SimpleTileWithModifier): TileWithModifierId {
         return this.tileWithModifierMap.set(t, {
-            direction: t._direction ? toGraphDirection(t._direction) : null,
+            direction: t._direction ? toRULE_DIRECTION(t._direction) : null,
             negation: t._isNegated,
-            tile: this.buildTile(t._tile)
+            tile: this.buildTile(t._tile),
+            _sourceOffset: t.__source.sourceOffset
         })
     }
     private buildTile(tile: IGameTile): TileId {
         if (tile instanceof GameLegendTileOr) {
             return this.tileMap.set(tile, {
-                type: 'OR',
+                type: TILE_TYPE.OR,
+                name: tile.getName(),
                 sprites: tile.getSprites().map((item) => this.buildSprite(item)),
-                collisionLayers: tile.getCollisionLayers().map((item) => this.buildCollisionLayer(item))
+                collisionLayers: tile.getCollisionLayers().map((item) => this.buildCollisionLayer(item)),
+                _sourceOffset: tile.__source.sourceOffset
             })
         } else if (tile instanceof GameLegendTileAnd) {
             return this.tileMap.set(tile, {
-                type: 'AND',
+                type: TILE_TYPE.AND,
+                name: tile.getName(),
                 sprites: tile.getSprites().map((item) => this.buildSprite(item)),
-                collisionLayers: tile.getCollisionLayers().map((item) => this.buildCollisionLayer(item))
+                collisionLayers: tile.getCollisionLayers().map((item) => this.buildCollisionLayer(item)),
+                _sourceOffset: tile.__source.sourceOffset
             })
         } else if (tile instanceof GameLegendTileSimple) {
             return this.tileMap.set(tile, {
-                type: 'SIMPLE',
+                type: TILE_TYPE.SIMPLE,
+                name: tile.getName(),
                 sprite: this.buildSprite(tile.getSprites()[0]),
-                collisionLayers: tile.getCollisionLayers().map((item) => this.buildCollisionLayer(item))
+                collisionLayers: tile.getCollisionLayers().map((item) => this.buildCollisionLayer(item)),
+                _sourceOffset: tile.__source.sourceOffset
             })
         } else if (tile instanceof GameSprite) {
             return this.tileMap.set(tile, {
-                type: 'SPRITE',
+                type: TILE_TYPE.SPRITE,
+                name: tile.getName(),
                 sprite: this.buildSprite(tile),
-                collisionLayer: this.buildCollisionLayer(tile.getCollisionLayer())
+                collisionLayer: this.buildCollisionLayer(tile.getCollisionLayer()),
+                _sourceOffset: tile.__source.sourceOffset
             })
         } else {
             debugger; throw new Error(`BUG: Invalid tile type`) // tslint:disable-line:no-debugger
@@ -495,7 +824,8 @@ export default class Serializer {
     }
     private soundToJson(sound: GameSound): IGraphSound {
         return {
-            soundCode: sound.soundCode
+            soundCode: sound.soundCode,
+            _sourceOffset: sound.__source.sourceOffset
         }
     }
     private buildSprite(sprite: GameSprite): SpriteId {
@@ -509,7 +839,8 @@ export default class Serializer {
                 } else {
                     return this.buildColor(pixel)
                 }
-            }))
+            })),
+            _sourceOffset: sprite.__source.sourceOffset
         })
     }
     private buildColor(color: IColor) {
@@ -525,10 +856,11 @@ interface IGraphJson {
     metadata: IGraphGameMetadata,
     colors: {[key: string]: string},
     sounds: {[key: string]: IGraphSound},
-    collisionLayers: {[key: string]: GraphCollisionLayer},
+    collisionLayers: {[key: string]: ISourceNode},
     commands: {[key: string]: GraphCommand},
     sprites: {[key: string]: IGraphSprite},
     tiles: {[key: string]: GraphTile},
+    winConditions: GraphWinCondition[],
     tilesWithModifiers: {[key: string]: IGraphTileWithModifier},
     neighbors: {[key: string]: IGraphNeighbor},
     brackets: {[key: string]: GraphBracket},

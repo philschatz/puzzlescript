@@ -103,8 +103,8 @@ function buildPermutations<T>(cells: T[][]) {
 }
 
 export class SimpleRuleGroup extends BaseForLines implements IRule {
+    public isRandom: boolean
     private rules: IRule[]
-    private isRandom: boolean
     constructor(source: IGameCode, isRandom: boolean, rules: IRule[]) {
         super(source)
         this.rules = rules
