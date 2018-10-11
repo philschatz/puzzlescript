@@ -1,16 +1,16 @@
-import { Optional } from '.'
-import { RULE_DIRECTION } from './'
-import { CollisionLayer } from './models/collisionLayer'
-import { HexColor, IColor, TransparentColor } from './models/colors'
-import { AbstractCommand, AgainCommand, CancelCommand, CheckpointCommand, MessageCommand, RestartCommand, SoundCommand, WinCommand } from './models/command'
-import { GameData } from './models/game'
-import { ILevel, LevelMap, MessageLevel } from './models/level'
-import { Dimension, GameMetadata } from './models/metadata'
-import { IRule, ISimpleBracket, SimpleBracket, SimpleEllipsisBracket, SimpleNeighbor, SimpleRule, SimpleRuleGroup, SimpleRuleLoop, SimpleTileWithModifier } from './models/rule'
-import { GameSound } from './models/sound'
-import { GameLegendTileAnd, GameLegendTileOr, GameLegendTileSimple, GameSprite, GameSpritePixels, IGameTile } from './models/tile'
-import { WIN_QUALIFIER, WinConditionOn, WinConditionSimple } from './models/winCondition'
-import { DEBUG_FLAG } from './util'
+import { Optional } from '..'
+import { RULE_DIRECTION } from '..'
+import { CollisionLayer } from '../models/collisionLayer'
+import { HexColor, IColor, TransparentColor } from '../models/colors'
+import { AbstractCommand, AgainCommand, CancelCommand, CheckpointCommand, MessageCommand, RestartCommand, SoundCommand, WinCommand } from '../models/command'
+import { GameData } from '../models/game'
+import { ILevel, LevelMap, MessageLevel } from '../models/level'
+import { Dimension, GameMetadata } from '../models/metadata'
+import { IRule, ISimpleBracket, SimpleBracket, SimpleEllipsisBracket, SimpleNeighbor, SimpleRule, SimpleRuleGroup, SimpleRuleLoop, SimpleTileWithModifier } from '../models/rule'
+import { GameSound } from '../models/sound'
+import { GameLegendTileAnd, GameLegendTileOr, GameLegendTileSimple, GameSprite, GameSpritePixels, IGameTile } from '../models/tile'
+import { WIN_QUALIFIER, WinConditionOn, WinConditionSimple } from '../models/winCondition'
+import { DEBUG_FLAG } from '../util'
 
 // const EXAMPLE = {
 //     metadata: { author: 'Phil' },
@@ -142,6 +142,7 @@ type GraphTile = {
 interface IGraphTileWithModifier extends ISourceNode {
     direction: Optional<RULE_DIRECTION>
     negation: boolean
+    isRandom: boolean
     tile: TileId
     debugFlag?: DEBUG_FLAG
 }
@@ -180,6 +181,7 @@ type GraphRule = {
     conditionBrackets: BracketId[],
     actionBrackets: BracketId[],
     isLate: boolean,
+    isRigid: boolean,
     commands: CommandId[]
     debugFlag?: DEBUG_FLAG
 } | {
@@ -342,6 +344,7 @@ class DefiniteMap<K, V> extends Map<K, V> {
     public get(key: K) {
         const v = super.get(key)
         if (!v) {
+            debugger
             throw new Error(`ERROR: JSON is missing key "${key}". Should have already been added`)
         }
         return v
@@ -352,7 +355,7 @@ export default class Serializer {
 
     public static fromJson(source: IGraphJson, code: string): GameData {
         // First, build up all of the lookup maps
-        const colorMap: Map<string, IColor> = new Map()
+        const colorMap: DefiniteMap<string, IColor> = new DefiniteMap()
         const spritesMap: DefiniteMap<string, GameSprite> = new DefiniteMap()
         const soundMap: DefiniteMap<string, GameSound> = new DefiniteMap()
         const collisionLayerMap: DefiniteMap<string, CollisionLayer> = new DefiniteMap()
@@ -457,7 +460,7 @@ export default class Serializer {
 
         for (const [key, val] of Object.entries(source.tilesWithModifiers)) {
             const { _sourceOffset: sourceOffset } = val
-            tileWithModifierMap.set(key, new SimpleTileWithModifier({ code, sourceOffset }, val.negation, false, val.direction, tileMap.get(val.tile), val.debugFlag))
+            tileWithModifierMap.set(key, new SimpleTileWithModifier({ code, sourceOffset }, val.negation, val.isRandom, val.direction, tileMap.get(val.tile), val.debugFlag))
         }
 
         for (const [key, val] of Object.entries(source.neighbors)) {
@@ -490,11 +493,11 @@ export default class Serializer {
                 case RULE_TYPE.SIMPLE:
                     ruleMap.set(key, new SimpleRule(
                         { code, sourceOffset },
-                        RULE_DIRECTION.STATIONARY/*direction*/,
                         val.conditionBrackets.map((item) => bracketMap.get(item)),
                         val.actionBrackets.map((item) => bracketMap.get(item)),
                         val.commands.map((item) => commandMap.get(item)),
-                        val.isLate, false/*isRigid*/,
+                        val.isLate,
+                        val.isRigid,
                         val.debugFlag))
                     break
                 case RULE_TYPE.GROUP:
@@ -533,6 +536,23 @@ export default class Serializer {
         })
 
         const metadata = new GameMetadata()
+        for (const [key, val] of Object.entries(source.metadata)) {
+            if (val) {
+                switch (key) {
+                    case 'backgroundColor':
+                    case 'textColor':
+                        metadata._setValue(key, colorMap.get(val as string))
+                        break
+                    case 'zoomScreen':
+                    case 'flickScreen':
+                        debugger
+                        const { width, height } = val
+                        metadata._setValue(key, new Dimension(width, height))
+                    default:
+                        metadata._setValue(key, val)
+                }
+            }
+        }
 
         return new GameData(
             { code, sourceOffset: 0 },
@@ -573,6 +593,14 @@ export default class Serializer {
         this.ruleMap = new MapWithId('rule')
         this.commandMap = new MapWithId('command')
 
+        if (this.game.metadata.backgroundColor) {
+            const hex = this.game.metadata.backgroundColor.toHex()
+            this.colorsMap.set(hex, hex)
+        }
+        if (this.game.metadata.textColor) {
+            const hex = this.game.metadata.textColor.toHex()
+            this.colorsMap.set(hex, hex)
+        }
         // Load up the colors and sprites
         this.game.collisionLayers.forEach((item) => this.buildCollisionLayer(item))
         this.game.sounds.forEach((item) => {
@@ -685,6 +713,7 @@ export default class Serializer {
                 actionBrackets: rule.actionBrackets.map((item) => this.buildConditionBracket(item)),
                 commands: rule.commands.map((item) => this.buildCommand(item)),
                 isLate: rule.isLate(),
+                isRigid: rule.hasRigid(),
                 _sourceOffset: rule.__source.sourceOffset
             })
         } else if (rule instanceof SimpleRuleGroup) {
@@ -781,6 +810,7 @@ export default class Serializer {
         return this.tileWithModifierMap.set(t, {
             direction: t._direction ? toRULE_DIRECTION(t._direction) : null,
             negation: t._isNegated,
+            isRandom: t._isRandom,
             tile: this.buildTile(t._tile),
             _sourceOffset: t.__source.sourceOffset
         })

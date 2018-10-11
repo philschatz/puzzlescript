@@ -248,18 +248,18 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
     public conditionBrackets: ISimpleBracket[]
     public actionBrackets: ISimpleBracket[]
     public commands: AbstractCommand[]
-    private evaluationDirection: RULE_DIRECTION
+    // private evaluationDirection: RULE_DIRECTION
     private _isLate: boolean
     private readonly isRigid: boolean
     private isSubscribedToCellChanges: boolean
     private debugFlag: Optional<DEBUG_FLAG>
 
-    constructor(source: IGameCode, evaluationDirection: RULE_DIRECTION,
+    constructor(source: IGameCode,
                 conditionBrackets: ISimpleBracket[], actionBrackets: ISimpleBracket[],
                 commands: AbstractCommand[], isLate: boolean, isRigid: boolean, debugFlag: Optional<DEBUG_FLAG>) {
 
         super(source)
-        this.evaluationDirection = evaluationDirection
+        // this.evaluationDirection = evaluationDirection
         this.conditionBrackets = conditionBrackets
         this.actionBrackets = actionBrackets
         this.commands = commands
@@ -275,11 +275,11 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
         }
     }
     public toKey() {
-        const dir = this.dependsOnDirection() ? this.evaluationDirection : ''
+        // const dir = this.dependsOnDirection() ? this.evaluationDirection : ''
         const conditions = this.conditionBrackets.map((x) => x.toKey())
         const actions = this.actionBrackets.map((x) => x.toKey())
         const commands = this.commands.map((c) => c.toKey())
-        return `{Late?${this._isLate}} {Rigid?${this.isRigid}}  ${dir} ${conditions} -> ${actions} ${commands.join(' ')} {debugger?${this.debugFlag}}`
+        return `{Late?${this._isLate}} {Rigid?${this.isRigid}} ${conditions} -> ${actions} ${commands.join(' ')} {debugger?${this.debugFlag}}`
     }
     public getChildRules(): IRule[] {
         return []
@@ -436,10 +436,6 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
             bracket.addCellsToEmptyRules(cells)
         }
     }
-    private dependsOnDirection() {
-        return !!(this.conditionBrackets.find((b) => b.dependsOnDirection()) || this.actionBrackets.find((b) => b.dependsOnDirection()))
-    }
-
 }
 
 export class SimpleTileWithModifier extends BaseForLines implements ICacheable {

@@ -1,0 +1,387 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`serializer parses a simple game 1`] = `
+Object {
+  "brackets": Object {
+    "bracket-0": Object {
+      "_sourceOffset": 129,
+      "direction": "UP",
+      "neighbors": Array [
+        "neighbor-0",
+        "neighbor-1",
+      ],
+      "type": "NORMAL",
+    },
+    "bracket-1": Object {
+      "_sourceOffset": 158,
+      "direction": "UP",
+      "neighbors": Array [
+        "neighbor-2",
+        "neighbor-3",
+      ],
+      "type": "NORMAL",
+    },
+    "bracket-2": Object {
+      "_sourceOffset": 129,
+      "direction": "DOWN",
+      "neighbors": Array [
+        "neighbor-0",
+        "neighbor-1",
+      ],
+      "type": "NORMAL",
+    },
+    "bracket-3": Object {
+      "_sourceOffset": 158,
+      "direction": "DOWN",
+      "neighbors": Array [
+        "neighbor-2",
+        "neighbor-4",
+      ],
+      "type": "NORMAL",
+    },
+    "bracket-4": Object {
+      "_sourceOffset": 129,
+      "direction": "LEFT",
+      "neighbors": Array [
+        "neighbor-0",
+        "neighbor-1",
+      ],
+      "type": "NORMAL",
+    },
+    "bracket-5": Object {
+      "_sourceOffset": 158,
+      "direction": "LEFT",
+      "neighbors": Array [
+        "neighbor-2",
+        "neighbor-5",
+      ],
+      "type": "NORMAL",
+    },
+    "bracket-6": Object {
+      "_sourceOffset": 129,
+      "direction": "RIGHT",
+      "neighbors": Array [
+        "neighbor-0",
+        "neighbor-1",
+      ],
+      "type": "NORMAL",
+    },
+    "bracket-7": Object {
+      "_sourceOffset": 158,
+      "direction": "RIGHT",
+      "neighbors": Array [
+        "neighbor-2",
+        "neighbor-6",
+      ],
+      "type": "NORMAL",
+    },
+  },
+  "collisionLayers": Object {
+    "collision-0": Object {
+      "_sourceOffset": 95,
+    },
+    "collision-1": Object {
+      "_sourceOffset": 106,
+    },
+    "collision-2": Object {
+      "_sourceOffset": 0,
+    },
+  },
+  "colors": Object {
+    "#000000": "#000000",
+    "#f7e26b": "#f7e26b",
+  },
+  "commands": Object {},
+  "levels": Array [
+    Object {
+      "_sourceOffset": 209,
+      "message": "hello",
+      "type": "MESSAGE",
+    },
+    Object {
+      "_sourceOffset": 224,
+      "cells": Array [
+        Array [
+          "tile-1",
+          "tile-1",
+          "tile-0",
+          "tile-1",
+          "tile-1",
+        ],
+      ],
+      "type": "MAP",
+    },
+  ],
+  "metadata": Object {
+    "againInterval": undefined,
+    "author": undefined,
+    "backgroundColor": undefined,
+    "colorPalette": undefined,
+    "flickscreen": undefined,
+    "homepage": undefined,
+    "keyRepeatInterval": undefined,
+    "noAction": false,
+    "noRepeatAction": false,
+    "noRestart": false,
+    "noUndo": false,
+    "realtimeInterval": undefined,
+    "requirePlayerMovement": false,
+    "runRulesOnLevelStart": undefined,
+    "textColor": undefined,
+    "throttleMovement": false,
+    "verboseLogging": false,
+    "youtube": undefined,
+    "zoomscreen": undefined,
+  },
+  "neighbors": Object {
+    "neighbor-0": Object {
+      "_sourceOffset": 130,
+      "tileWithModifiers": Array [
+        "twm-0",
+      ],
+    },
+    "neighbor-1": Object {
+      "_sourceOffset": 142,
+      "tileWithModifiers": Array [
+        "twm-1",
+      ],
+    },
+    "neighbor-2": Object {
+      "_sourceOffset": 160,
+      "tileWithModifiers": Array [
+        "twm-2",
+      ],
+    },
+    "neighbor-3": Object {
+      "_sourceOffset": 176,
+      "tileWithModifiers": Array [
+        "twm-3",
+      ],
+    },
+    "neighbor-4": Object {
+      "_sourceOffset": 176,
+      "tileWithModifiers": Array [
+        "twm-4",
+      ],
+    },
+    "neighbor-5": Object {
+      "_sourceOffset": 176,
+      "tileWithModifiers": Array [
+        "twm-5",
+      ],
+    },
+    "neighbor-6": Object {
+      "_sourceOffset": 176,
+      "tileWithModifiers": Array [
+        "twm-6",
+      ],
+    },
+  },
+  "ruleDefinitions": Object {
+    "rule-0": Object {
+      "_sourceOffset": 129,
+      "actionBrackets": Array [
+        "bracket-1",
+      ],
+      "commands": Array [],
+      "conditionBrackets": Array [
+        "bracket-0",
+      ],
+      "isLate": false,
+      "isRigid": false,
+      "type": "SIMPLE",
+    },
+    "rule-1": Object {
+      "_sourceOffset": 129,
+      "actionBrackets": Array [
+        "bracket-3",
+      ],
+      "commands": Array [],
+      "conditionBrackets": Array [
+        "bracket-2",
+      ],
+      "isLate": false,
+      "isRigid": false,
+      "type": "SIMPLE",
+    },
+    "rule-2": Object {
+      "_sourceOffset": 129,
+      "actionBrackets": Array [
+        "bracket-5",
+      ],
+      "commands": Array [],
+      "conditionBrackets": Array [
+        "bracket-4",
+      ],
+      "isLate": false,
+      "isRigid": false,
+      "type": "SIMPLE",
+    },
+    "rule-3": Object {
+      "_sourceOffset": 129,
+      "actionBrackets": Array [
+        "bracket-7",
+      ],
+      "commands": Array [],
+      "conditionBrackets": Array [
+        "bracket-6",
+      ],
+      "isLate": false,
+      "isRigid": false,
+      "type": "SIMPLE",
+    },
+    "rule-4": Object {
+      "_sourceOffset": 129,
+      "isRandom": false,
+      "rules": Array [
+        "rule-0",
+        "rule-1",
+        "rule-2",
+        "rule-3",
+      ],
+      "type": "GROUP",
+    },
+  },
+  "rules": Array [
+    "rule-4",
+  ],
+  "sounds": Object {},
+  "sprites": Object {
+    "sprite-0": Object {
+      "_sourceOffset": 33,
+      "collisionLayer": "collision-0",
+      "name": "background",
+      "pixels": Array [
+        Array [
+          "#000000",
+        ],
+      ],
+    },
+    "sprite-1": Object {
+      "_sourceOffset": 53,
+      "collisionLayer": "collision-1",
+      "name": "player",
+      "pixels": Array [
+        Array [
+          "#f7e26b",
+        ],
+      ],
+    },
+  },
+  "tiles": Object {
+    "tile-0": Object {
+      "_sourceOffset": 53,
+      "collisionLayer": "collision-1",
+      "name": "player",
+      "sprite": "sprite-1",
+      "type": "SPRITE",
+    },
+    "tile-1": Object {
+      "_sourceOffset": 33,
+      "collisionLayer": "collision-0",
+      "name": "background",
+      "sprite": "sprite-0",
+      "type": "SPRITE",
+    },
+  },
+  "tilesWithModifiers": Object {
+    "twm-0": Object {
+      "_sourceOffset": 131,
+      "direction": null,
+      "isRandom": false,
+      "negation": true,
+      "tile": "tile-0",
+    },
+    "twm-1": Object {
+      "_sourceOffset": 143,
+      "direction": null,
+      "isRandom": false,
+      "negation": false,
+      "tile": "tile-1",
+    },
+    "twm-2": Object {
+      "_sourceOffset": 161,
+      "direction": null,
+      "isRandom": true,
+      "negation": false,
+      "tile": "tile-0",
+    },
+    "twm-3": Object {
+      "_sourceOffset": 177,
+      "direction": "UP",
+      "isRandom": false,
+      "negation": false,
+      "tile": "tile-1",
+    },
+    "twm-4": Object {
+      "_sourceOffset": 177,
+      "direction": "DOWN",
+      "isRandom": false,
+      "negation": false,
+      "tile": "tile-1",
+    },
+    "twm-5": Object {
+      "_sourceOffset": 177,
+      "direction": "LEFT",
+      "isRandom": false,
+      "negation": false,
+      "tile": "tile-1",
+    },
+    "twm-6": Object {
+      "_sourceOffset": 177,
+      "direction": "RIGHT",
+      "isRandom": false,
+      "negation": false,
+      "tile": "tile-1",
+    },
+  },
+  "title": "Test Game",
+  "version": 1,
+  "winConditions": Array [],
+}
+`;
+
+exports[`serializer parses an empty game 1`] = `
+Object {
+  "brackets": Object {},
+  "collisionLayers": Object {
+    "collision-0": Object {
+      "_sourceOffset": 0,
+    },
+  },
+  "colors": Object {},
+  "commands": Object {},
+  "levels": Array [],
+  "metadata": Object {
+    "againInterval": undefined,
+    "author": undefined,
+    "backgroundColor": undefined,
+    "colorPalette": undefined,
+    "flickscreen": undefined,
+    "homepage": undefined,
+    "keyRepeatInterval": undefined,
+    "noAction": false,
+    "noRepeatAction": false,
+    "noRestart": false,
+    "noUndo": false,
+    "realtimeInterval": undefined,
+    "requirePlayerMovement": false,
+    "runRulesOnLevelStart": undefined,
+    "textColor": undefined,
+    "throttleMovement": false,
+    "verboseLogging": false,
+    "youtube": undefined,
+    "zoomscreen": undefined,
+  },
+  "neighbors": Object {},
+  "ruleDefinitions": Object {},
+  "rules": Array [],
+  "sounds": Object {},
+  "sprites": Object {},
+  "tiles": Object {},
+  "tilesWithModifiers": Object {},
+  "title": "Test Game",
+  "version": 1,
+  "winConditions": Array [],
+}
+`;

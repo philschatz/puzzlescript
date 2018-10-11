@@ -160,7 +160,7 @@ export class ASTRule extends BaseForLines {
                 continue
             }
         }
-        return cacheSetAndGet(ruleCache, new SimpleRule(this.__source, directions[0], conditionBrackets, actionBrackets, this.commands, this.isLate(), this.isRigid(), this.debugFlag))
+        return cacheSetAndGet(ruleCache, new SimpleRule(this.__source, conditionBrackets, actionBrackets, this.commands, this.isLate(), this.isRigid(), this.debugFlag))
     }
 
     private convertToMultiple() {

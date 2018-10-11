@@ -8,7 +8,7 @@ import { GameEngine, Parser, RULE_DIRECTION } from '..'
 import { logger } from '../logger'
 import { getLineAndColumn } from '../models/BaseForLines'
 import { saveCoverageFile } from '../recordCoverage'
-import Serializer from '../serializer'
+import Serializer from '../parser/serializer'
 import { closeSounds } from '../sounds'
 import TerminalUI from '../ui/terminal'
 import { ILevelRecording } from './playGame'
@@ -35,6 +35,19 @@ async function run() {
         // Check that we can serialize the game out to JSON
         const json = new Serializer(originalData).toJson()
         const data2 = Serializer.fromJson(json, originalData.getPlayer().__source.code)
+
+        // // verify the toKey representation of all the rules is the same as before
+        // if (originalData.rules.length !== data2.rules.length) {
+        //     throw new Error(`BUG: rule lengths do not match`)
+        // }
+        // originalData.rules.forEach((rule, index) => {
+        //     const rule2 = data2.rules[index]
+        //     if (rule.toKey() !== rule2.toKey()) {
+        //         debugger
+        //         throw new Error(`BUG: rule.toKey mismatch.\norig=${rule.toKey()}\nnew =${rule2.toKey()}`)
+        //     }
+        // })
+
         const data = data2
 
         if (!data) {
