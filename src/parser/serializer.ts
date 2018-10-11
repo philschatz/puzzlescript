@@ -1,5 +1,4 @@
-import { Optional } from '..'
-import { RULE_DIRECTION } from '..'
+import { Optional, RULE_DIRECTION } from '..'
 import { CollisionLayer } from '../models/collisionLayer'
 import { HexColor, IColor, TransparentColor } from '../models/colors'
 import { AbstractCommand, AgainCommand, CancelCommand, CheckpointCommand, MessageCommand, RestartCommand, SoundCommand, WinCommand } from '../models/command'
@@ -344,7 +343,6 @@ class DefiniteMap<K, V> extends Map<K, V> {
     public get(key: K) {
         const v = super.get(key)
         if (!v) {
-            debugger
             throw new Error(`ERROR: JSON is missing key "${key}". Should have already been added`)
         }
         return v
@@ -545,9 +543,9 @@ export default class Serializer {
                         break
                     case 'zoomScreen':
                     case 'flickScreen':
-                        debugger
                         const { width, height } = val
                         metadata._setValue(key, new Dimension(width, height))
+                        break
                     default:
                         metadata._setValue(key, val)
                 }

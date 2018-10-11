@@ -68,7 +68,6 @@ export class GameMetadata {
             case 'norepeat_action': this.noRepeatAction = value as boolean; break
             case 'throttlemovement':
             case 'throttle_movement': this.throttleMovement = value as boolean; break
-            case 'norestart':
             case 'norestart': this.noRestart = value as boolean; break
             case 'requireplayermovement':
             case 'require_player_movement': this.requirePlayerMovement = value as boolean; break
