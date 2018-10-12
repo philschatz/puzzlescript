@@ -211,6 +211,12 @@ async function startPromptsAndPlayGame(gamePath: string, gistId: Optional<string
 
     console.log('')
     console.log(`Opened Game: "${chalk.blueBright(data.title)}"`)
+    if (data.metadata.author) {
+        console.log(`Author     : ${chalk.bold.whiteBright(data.metadata.author)}`)
+    }
+    if (data.metadata.homepage) {
+        console.log(`Homepage   : ${chalk.bold.underline.blueBright(data.metadata.homepage)}`)
+    }
     console.log('')
 
     showControls()
