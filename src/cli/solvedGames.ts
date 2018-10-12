@@ -34,6 +34,7 @@ export default new Set([
     `Grouping`,
     `Hue change`,
     `Ice path`,
+    `interconnection`,
     `Islands`,
     `Magnetized`,
     `monster mess`,
