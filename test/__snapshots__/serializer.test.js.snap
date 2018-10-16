@@ -5,75 +5,83 @@ Object {
   "brackets": Object {
     "bracket-0": Object {
       "_sourceOffset": 129,
+      "debugFlag": null,
       "direction": "UP",
       "neighbors": Array [
         "neighbor-0",
         "neighbor-1",
       ],
-      "type": "NORMAL",
+      "type": "BRACKET",
     },
     "bracket-1": Object {
       "_sourceOffset": 158,
+      "debugFlag": null,
       "direction": "UP",
       "neighbors": Array [
         "neighbor-2",
         "neighbor-3",
       ],
-      "type": "NORMAL",
+      "type": "BRACKET",
     },
     "bracket-2": Object {
       "_sourceOffset": 129,
+      "debugFlag": null,
       "direction": "DOWN",
       "neighbors": Array [
         "neighbor-0",
         "neighbor-1",
       ],
-      "type": "NORMAL",
+      "type": "BRACKET",
     },
     "bracket-3": Object {
       "_sourceOffset": 158,
+      "debugFlag": null,
       "direction": "DOWN",
       "neighbors": Array [
         "neighbor-2",
         "neighbor-4",
       ],
-      "type": "NORMAL",
+      "type": "BRACKET",
     },
     "bracket-4": Object {
       "_sourceOffset": 129,
+      "debugFlag": null,
       "direction": "LEFT",
       "neighbors": Array [
         "neighbor-0",
         "neighbor-1",
       ],
-      "type": "NORMAL",
+      "type": "BRACKET",
     },
     "bracket-5": Object {
       "_sourceOffset": 158,
+      "debugFlag": null,
       "direction": "LEFT",
       "neighbors": Array [
         "neighbor-2",
         "neighbor-5",
       ],
-      "type": "NORMAL",
+      "type": "BRACKET",
     },
     "bracket-6": Object {
       "_sourceOffset": 129,
+      "debugFlag": null,
       "direction": "RIGHT",
       "neighbors": Array [
         "neighbor-0",
         "neighbor-1",
       ],
-      "type": "NORMAL",
+      "type": "BRACKET",
     },
     "bracket-7": Object {
       "_sourceOffset": 158,
+      "debugFlag": null,
       "direction": "RIGHT",
       "neighbors": Array [
         "neighbor-2",
         "neighbor-6",
       ],
-      "type": "NORMAL",
+      "type": "BRACKET",
     },
   },
   "collisionLayers": Object {
@@ -96,7 +104,7 @@ Object {
     Object {
       "_sourceOffset": 209,
       "message": "hello",
-      "type": "MESSAGE",
+      "type": "LEVEL_MESSAGE",
     },
     Object {
       "_sourceOffset": 224,
@@ -109,7 +117,7 @@ Object {
           "tile-1",
         ],
       ],
-      "type": "MAP",
+      "type": "LEVEL_MAP",
     },
   ],
   "metadata": Object {
@@ -136,42 +144,49 @@ Object {
   "neighbors": Object {
     "neighbor-0": Object {
       "_sourceOffset": 130,
+      "debugFlag": null,
       "tileWithModifiers": Array [
         "twm-0",
       ],
     },
     "neighbor-1": Object {
       "_sourceOffset": 142,
+      "debugFlag": null,
       "tileWithModifiers": Array [
         "twm-1",
       ],
     },
     "neighbor-2": Object {
       "_sourceOffset": 160,
+      "debugFlag": null,
       "tileWithModifiers": Array [
         "twm-2",
       ],
     },
     "neighbor-3": Object {
       "_sourceOffset": 176,
+      "debugFlag": null,
       "tileWithModifiers": Array [
         "twm-3",
       ],
     },
     "neighbor-4": Object {
       "_sourceOffset": 176,
+      "debugFlag": null,
       "tileWithModifiers": Array [
         "twm-4",
       ],
     },
     "neighbor-5": Object {
       "_sourceOffset": 176,
+      "debugFlag": null,
       "tileWithModifiers": Array [
         "twm-5",
       ],
     },
     "neighbor-6": Object {
       "_sourceOffset": 176,
+      "debugFlag": null,
       "tileWithModifiers": Array [
         "twm-6",
       ],
@@ -287,51 +302,58 @@ Object {
   "tilesWithModifiers": Object {
     "twm-0": Object {
       "_sourceOffset": 131,
+      "debugFlag": undefined,
       "direction": null,
+      "isNegated": true,
       "isRandom": false,
-      "negation": true,
       "tile": "tile-0",
     },
     "twm-1": Object {
       "_sourceOffset": 143,
+      "debugFlag": undefined,
       "direction": null,
+      "isNegated": false,
       "isRandom": false,
-      "negation": false,
       "tile": "tile-1",
     },
     "twm-2": Object {
       "_sourceOffset": 161,
+      "debugFlag": undefined,
       "direction": null,
+      "isNegated": false,
       "isRandom": true,
-      "negation": false,
       "tile": "tile-0",
     },
     "twm-3": Object {
       "_sourceOffset": 177,
+      "debugFlag": undefined,
       "direction": "UP",
+      "isNegated": false,
       "isRandom": false,
-      "negation": false,
       "tile": "tile-1",
     },
     "twm-4": Object {
       "_sourceOffset": 177,
+      "debugFlag": undefined,
       "direction": "DOWN",
+      "isNegated": false,
       "isRandom": false,
-      "negation": false,
       "tile": "tile-1",
     },
     "twm-5": Object {
       "_sourceOffset": 177,
+      "debugFlag": undefined,
       "direction": "LEFT",
+      "isNegated": false,
       "isRandom": false,
-      "negation": false,
       "tile": "tile-1",
     },
     "twm-6": Object {
       "_sourceOffset": 177,
+      "debugFlag": undefined,
       "direction": "RIGHT",
+      "isNegated": false,
       "isRandom": false,
-      "negation": false,
       "tile": "tile-1",
     },
   },

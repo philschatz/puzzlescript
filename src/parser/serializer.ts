@@ -8,8 +8,9 @@ import { Dimension, GameMetadata } from '../models/metadata'
 import { IRule, ISimpleBracket, SimpleBracket, SimpleEllipsisBracket, SimpleNeighbor, SimpleRule, SimpleRuleGroup, SimpleRuleLoop, SimpleTileWithModifier } from '../models/rule'
 import { GameSound } from '../models/sound'
 import { GameLegendTileAnd, GameLegendTileOr, GameLegendTileSimple, GameSprite, GameSpritePixels, IGameTile } from '../models/tile'
-import { WIN_QUALIFIER, WinConditionOn, WinConditionSimple } from '../models/winCondition'
+import { WinConditionOn, WinConditionSimple } from '../models/winCondition'
 import { DEBUG_FLAG } from '../util'
+import * as ast from './astTypes'
 
 // const EXAMPLE = {
 //     metadata: { author: 'Phil' },
@@ -113,56 +114,28 @@ enum TILE_TYPE {
     SIMPLE = 'SIMPLE',
     SPRITE = 'SPRITE'
 }
-type GraphTile = {
-    _sourceOffset: number
+type GraphTile = ISourceNode & ({
     type: TILE_TYPE.OR
     name: string
     sprites: SpriteId[]
     collisionLayers: CollisionId[]
 } | {
-    _sourceOffset: number
     type: TILE_TYPE.AND
     name: string
     sprites: SpriteId[]
     collisionLayers: CollisionId[]
 } | {
-    _sourceOffset: number
     type: TILE_TYPE.SIMPLE
     name: string
     sprite: SpriteId
     collisionLayers: CollisionId[]
 } | {
-    _sourceOffset: number
     type: TILE_TYPE.SPRITE
     name: string
     sprite: SpriteId
     collisionLayer: CollisionId
-}
-interface IGraphTileWithModifier extends ISourceNode {
-    direction: Optional<RULE_DIRECTION>
-    negation: boolean
-    isRandom: boolean
-    tile: TileId
-    debugFlag?: DEBUG_FLAG
-}
-interface IGraphNeighbor extends ISourceNode {
-    tileWithModifiers: TileWithModifierId[]
-    debugFlag?: DEBUG_FLAG
-}
-type GraphBracket = {
-    _sourceOffset: number
-    type: 'NORMAL',
-    direction: RULE_DIRECTION, // optional when only 1 neighbor
-    neighbors: NeighborId[]
-    debugFlag?: DEBUG_FLAG
-} | {
-    _sourceOffset: number
-    type: 'ELLIPSIS'
-    direction: RULE_DIRECTION
-    beforeNeighbors: NeighborId[]
-    afterNeighbors: NeighborId[]
-    debugFlag?: DEBUG_FLAG
-}
+})
+
 // type BracketPair = {
 //     conditionBracket: BracketId,
 //     actionMutations: BracketId, // ActionMutation
@@ -174,8 +147,7 @@ enum RULE_TYPE {
     GROUP = 'GROUP',
     LOOP = 'LOOP'
 }
-type GraphRule = {
-    _sourceOffset: number
+type GraphRule = ISourceNode & ({
     type: RULE_TYPE.SIMPLE
     conditionBrackets: BracketId[],
     actionBrackets: BracketId[],
@@ -184,81 +156,16 @@ type GraphRule = {
     commands: CommandId[]
     debugFlag?: DEBUG_FLAG
 } | {
-    _sourceOffset: number
     type: RULE_TYPE.GROUP
     isRandom: boolean
     rules: RuleId[]
     debugFlag?: DEBUG_FLAG
 } | {
-    _sourceOffset: number
     type: RULE_TYPE.LOOP
     isRandom: boolean
     rules: RuleId[]
     debugFlag?: DEBUG_FLAG
-}
-
-enum COMMAND_TYPE {
-    MESSAGE = 'MESSAGE',
-    SOUND = 'SOUND',
-    CHECKPOINT = 'CHECKPOINT',
-    RESTART = 'RESTART',
-    CANCEL = 'CANCEL',
-    AGAIN = 'AGAIN',
-    WIN = 'WIN'
-}
-type GraphCommand = {
-    _sourceOffset: number
-    type: COMMAND_TYPE.MESSAGE
-    message: string
-} | {
-    _sourceOffset: number
-    type: COMMAND_TYPE.SOUND
-    sound: SoundId
-} | {
-    _sourceOffset: number
-    type: COMMAND_TYPE.CHECKPOINT
-} | {
-    _sourceOffset: number
-    type: COMMAND_TYPE.RESTART
-} | {
-    _sourceOffset: number
-    type: COMMAND_TYPE.CANCEL
-} | {
-    _sourceOffset: number
-    type: COMMAND_TYPE.AGAIN
-} | {
-    _sourceOffset: number
-    type: COMMAND_TYPE.WIN
-}
-enum LEVEL_TYPE {
-    MAP = 'MAP',
-    MESSAGE = 'MESSAGE'
-}
-type GraphLevel = {
-    _sourceOffset: number
-    type: LEVEL_TYPE.MAP
-    cells: TileId[][]
-} | {
-    _sourceOffset: number
-    type: LEVEL_TYPE.MESSAGE
-    message: string
-}
-enum WIN_TYPE {
-    SIMPLE = 'SIMPLE',
-    ON = 'ON'
-}
-type GraphWinCondition = {
-    _sourceOffset: number
-    type: WIN_TYPE.SIMPLE
-    qualifier: WIN_QUALIFIER,
-    tile: TileId
-} | {
-    _sourceOffset: number
-    type: WIN_TYPE.ON
-    qualifier: WIN_QUALIFIER,
-    tile: TileId,
-    onTile: TileId
-}
+})
 
 interface IGraphGameMetadata {
     author: Optional<string>
@@ -374,25 +281,25 @@ export default class Serializer {
         for (const [key, val] of Object.entries(source.commands)) {
             const { _sourceOffset: sourceOffset } = val
             switch (val.type) {
-                case COMMAND_TYPE.MESSAGE:
+                case ast.COMMAND_TYPE.MESSAGE:
                     commandMap.set(key, new MessageCommand({ code, sourceOffset }, val.message))
                     break
-                case COMMAND_TYPE.SOUND:
+                case ast.COMMAND_TYPE.SFX:
                     commandMap.set(key, new SoundCommand({ code, sourceOffset }, soundMap.get(val.sound)))
                     break
-                case COMMAND_TYPE.RESTART:
+                case ast.COMMAND_TYPE.RESTART:
                     commandMap.set(key, new RestartCommand({ code, sourceOffset }))
                     break
-                case COMMAND_TYPE.AGAIN:
+                case ast.COMMAND_TYPE.AGAIN:
                     commandMap.set(key, new AgainCommand({ code, sourceOffset }))
                     break
-                case COMMAND_TYPE.CANCEL:
+                case ast.COMMAND_TYPE.CANCEL:
                     commandMap.set(key, new CancelCommand({ code, sourceOffset }))
                     break
-                case COMMAND_TYPE.CHECKPOINT:
+                case ast.COMMAND_TYPE.CHECKPOINT:
                     commandMap.set(key, new CheckpointCommand({ code, sourceOffset }))
                     break
-                case COMMAND_TYPE.WIN:
+                case ast.COMMAND_TYPE.WIN:
                     commandMap.set(key, new WinCommand({ code, sourceOffset }))
                     break
                 default:
@@ -458,7 +365,7 @@ export default class Serializer {
 
         for (const [key, val] of Object.entries(source.tilesWithModifiers)) {
             const { _sourceOffset: sourceOffset } = val
-            tileWithModifierMap.set(key, new SimpleTileWithModifier({ code, sourceOffset }, val.negation, val.isRandom, val.direction, tileMap.get(val.tile), val.debugFlag))
+            tileWithModifierMap.set(key, new SimpleTileWithModifier({ code, sourceOffset }, val.isNegated, val.isRandom, val.direction, tileMap.get(val.tile), val.debugFlag))
         }
 
         for (const [key, val] of Object.entries(source.neighbors)) {
@@ -469,10 +376,10 @@ export default class Serializer {
         for (const [key, val] of Object.entries(source.brackets)) {
             const { _sourceOffset: sourceOffset } = val
             switch (val.type) {
-                case 'NORMAL':
+                case ast.BRACKET_TYPE.SIMPLE:
                     bracketMap.set(key, new SimpleBracket({ code, sourceOffset }, val.direction, val.neighbors.map((item) => neighborsMap.get(item)), val.debugFlag))
                     break
-                case 'ELLIPSIS':
+                case ast.BRACKET_TYPE.ELLIPSIS:
                     bracketMap.set(key, new SimpleEllipsisBracket(
                         { code, sourceOffset },
                         val.direction,
@@ -512,9 +419,9 @@ export default class Serializer {
         const levels = source.levels.map((item) => {
             const { _sourceOffset: sourceOffset } = item
             switch (item.type) {
-                case LEVEL_TYPE.MESSAGE:
+                case ast.LEVEL_TYPE.MESSAGE:
                     return new MessageLevel({ code, sourceOffset }, item.message)
-                case LEVEL_TYPE.MAP:
+                case ast.LEVEL_TYPE.MAP:
                     return new LevelMap({ code, sourceOffset }, item.cells.map((row) => row.map((tile) => tileMap.get(tile))))
                 default:
                     throw new Error(`ERROR: Invalid level type`)
@@ -524,9 +431,9 @@ export default class Serializer {
         const winConditions = source.winConditions.map((item) => {
             const { _sourceOffset: sourceOffset } = item
             switch (item.type) {
-                case WIN_TYPE.SIMPLE:
+                case ast.WIN_CONDITION_TYPE.SIMPLE:
                     return new WinConditionSimple({ code, sourceOffset }, item.qualifier, tileMap.get(item.tile))
-                case WIN_TYPE.ON:
+                case ast.WIN_CONDITION_TYPE.ON:
                     return new WinConditionOn({ code, sourceOffset }, item.qualifier, tileMap.get(item.tile), tileMap.get(item.onTile))
                 default:
                     throw new Error(`ERROR: Unsupported Win Condition type`)
@@ -568,15 +475,15 @@ export default class Serializer {
     private readonly spritesMap: MapWithId<GameSprite, IGraphSprite>
     private readonly soundMap: MapWithId<GameSound, IGraphSound>
     private readonly collisionLayerMap: MapWithId<CollisionLayer, ISourceNode>
-    private readonly conditionBracketsMap: MapWithId<ISimpleBracket, GraphBracket>
-    private readonly neighborsMap: MapWithId<SimpleNeighbor, IGraphNeighbor>
-    private readonly tileWithModifierMap: MapWithId<SimpleTileWithModifier, IGraphTileWithModifier>
+    private readonly conditionBracketsMap: MapWithId<ISimpleBracket, ast.Bracket<NeighborId>>
+    private readonly neighborsMap: MapWithId<SimpleNeighbor, ast.Neighbor<TileWithModifierId>>
+    private readonly tileWithModifierMap: MapWithId<SimpleTileWithModifier, ast.TileWithModifier<TileId>>
     private readonly tileMap: MapWithId<IGameTile, GraphTile>
     private readonly ruleMap: MapWithId<IRule, GraphRule>
-    private readonly commandMap: MapWithId<AbstractCommand, GraphCommand>
-    private readonly winConditions: GraphWinCondition[]
+    private readonly commandMap: MapWithId<AbstractCommand, ast.Command<SoundId>>
+    private readonly winConditions: Array<ast.WinCondition<TileId>>
     private orderedRules: RuleId[]
-    private levels: GraphLevel[]
+    private levels: Array<ast.Level<TileId>>
 
     constructor(game: GameData) {
         this.game = game
@@ -617,18 +524,18 @@ export default class Serializer {
 
         this.winConditions = this.game.winConditions.map((item) => {
             if (item instanceof WinConditionOn) {
-                const ret: GraphWinCondition = {
+                const ret: ast.WinCondition<TileId> = {
                     _sourceOffset: item.__source.sourceOffset,
-                    type: WIN_TYPE.ON,
+                    type: ast.WIN_CONDITION_TYPE.ON,
                     qualifier: item.qualifier,
                     tile: this.buildTile(item.tile),
                     onTile: this.buildTile(item.onTile)
                 }
                 return ret
             } else {
-                const ret: GraphWinCondition = {
+                const ret: ast.WinCondition<TileId> = {
                     _sourceOffset: item.__source.sourceOffset,
-                    type: WIN_TYPE.SIMPLE,
+                    type: ast.WIN_CONDITION_TYPE.SIMPLE,
                     qualifier: item.qualifier,
                     tile: this.buildTile(item.tile)
                 }
@@ -686,16 +593,16 @@ export default class Serializer {
             levels: this.levels
         }
     }
-    private buildLevel(level: ILevel): GraphLevel {
+    private buildLevel(level: ILevel): ast.Level<TileId> {
         if (level instanceof LevelMap) {
             return {
-                type: LEVEL_TYPE.MAP,
+                type: ast.LEVEL_TYPE.MAP,
                 cells: level.getRows().map((row) => row.map((cell) => this.buildTile(cell))),
                 _sourceOffset: level.__source.sourceOffset
             }
         } else if (level instanceof MessageLevel) {
             return {
-                type: LEVEL_TYPE.MESSAGE,
+                type: ast.LEVEL_TYPE.MESSAGE,
                 message: level.getMessage(),
                 _sourceOffset: level.__source.sourceOffset
             }
@@ -736,39 +643,39 @@ export default class Serializer {
     private buildCommand(command: AbstractCommand) {
         if (command instanceof MessageCommand) {
             return this.commandMap.set(command, {
-                type: COMMAND_TYPE.MESSAGE,
+                type: ast.COMMAND_TYPE.MESSAGE,
                 message: command.getMessage(),
                 _sourceOffset: command.__source.sourceOffset
             })
         } else if (command instanceof SoundCommand) {
             return this.commandMap.set(command, {
-                type: COMMAND_TYPE.SOUND,
+                type: ast.COMMAND_TYPE.SFX,
                 sound: this.soundMap.getId(command.getSound()),
                 _sourceOffset: command.__source.sourceOffset
             })
         } else if (command instanceof CheckpointCommand) {
             return this.commandMap.set(command, {
-                type: COMMAND_TYPE.CHECKPOINT,
+                type: ast.COMMAND_TYPE.CHECKPOINT,
                 _sourceOffset: command.__source.sourceOffset
             })
         } else if (command instanceof RestartCommand) {
             return this.commandMap.set(command, {
-                type: COMMAND_TYPE.RESTART,
+                type: ast.COMMAND_TYPE.RESTART,
                 _sourceOffset: command.__source.sourceOffset
             })
         } else if (command instanceof CancelCommand) {
             return this.commandMap.set(command, {
-                type: COMMAND_TYPE.CANCEL,
+                type: ast.COMMAND_TYPE.CANCEL,
                 _sourceOffset: command.__source.sourceOffset
             })
         } else if (command instanceof AgainCommand) {
             return this.commandMap.set(command, {
-                type: COMMAND_TYPE.AGAIN,
+                type: ast.COMMAND_TYPE.AGAIN,
                 _sourceOffset: command.__source.sourceOffset
             })
         } else if (command instanceof WinCommand) {
             return this.commandMap.set(command, {
-                type: COMMAND_TYPE.WIN,
+                type: ast.COMMAND_TYPE.WIN,
                 _sourceOffset: command.__source.sourceOffset
             })
         } else {
@@ -781,18 +688,20 @@ export default class Serializer {
             const before = b.beforeEllipsisBracket.getNeighbors().map((item) => this.buildNeighbor(item)) // this.buildConditionBracket(b.beforeEllipsisBracket)
             const after = b.afterEllipsisBracket.getNeighbors().map((item) => this.buildNeighbor(item)) // this.buildConditionBracket(b.afterEllipsisBracket)
             return this.conditionBracketsMap.set(bracket, {
-                type: 'ELLIPSIS',
+                type: ast.BRACKET_TYPE.ELLIPSIS,
                 direction: toRULE_DIRECTION(b.direction),
                 beforeNeighbors: before,
                 afterNeighbors: after,
-                _sourceOffset: bracket.__source.sourceOffset
+                _sourceOffset: bracket.__source.sourceOffset,
+                debugFlag: b.debugFlag
             })
         } else if (bracket instanceof SimpleBracket) {
             return this.conditionBracketsMap.set(bracket, {
-                type: 'NORMAL',
+                type: ast.BRACKET_TYPE.SIMPLE,
                 direction: toRULE_DIRECTION(bracket.direction),
                 neighbors: bracket.getNeighbors().map((item) => this.buildNeighbor(item)),
-                _sourceOffset: bracket.__source.sourceOffset
+                _sourceOffset: bracket.__source.sourceOffset,
+                debugFlag: bracket.debugFlag
             })
         } else {
             debugger; throw new Error(`BUG: Unsupported bracket type`) // tslint:disable-line:no-debugger
@@ -801,16 +710,18 @@ export default class Serializer {
     private buildNeighbor(neighbor: SimpleNeighbor): NeighborId {
         return this.neighborsMap.set(neighbor, {
             tileWithModifiers: [...neighbor._tilesWithModifier].map((item) => this.buildTileWithModifier(item)),
-            _sourceOffset: neighbor.__source.sourceOffset
+            _sourceOffset: neighbor.__source.sourceOffset,
+            debugFlag: null // TODO: Pull it out of the neighbor
         })
     }
     private buildTileWithModifier(t: SimpleTileWithModifier): TileWithModifierId {
         return this.tileWithModifierMap.set(t, {
             direction: t._direction ? toRULE_DIRECTION(t._direction) : null,
-            negation: t._isNegated,
+            isNegated: t._isNegated,
             isRandom: t._isRandom,
             tile: this.buildTile(t._tile),
-            _sourceOffset: t.__source.sourceOffset
+            _sourceOffset: t.__source.sourceOffset,
+            debugFlag: t._debugFlag
         })
     }
     private buildTile(tile: IGameTile): TileId {
@@ -885,14 +796,14 @@ interface IGraphJson {
     colors: {[key: string]: string},
     sounds: {[key: string]: IGraphSound},
     collisionLayers: {[key: string]: ISourceNode},
-    commands: {[key: string]: GraphCommand},
+    commands: {[key: string]: ast.Command<SoundId>},
     sprites: {[key: string]: IGraphSprite},
     tiles: {[key: string]: GraphTile},
-    winConditions: GraphWinCondition[],
-    tilesWithModifiers: {[key: string]: IGraphTileWithModifier},
-    neighbors: {[key: string]: IGraphNeighbor},
-    brackets: {[key: string]: GraphBracket},
+    winConditions: Array<ast.WinCondition<TileId>>,
+    tilesWithModifiers: {[key: string]: ast.TileWithModifier<TileId>},
+    neighbors: {[key: string]: ast.Neighbor<TileWithModifierId>},
+    brackets: {[key: string]: ast.Bracket<NeighborId>},
     ruleDefinitions: {[key: string]: GraphRule},
     rules: RuleId[],
-    levels: GraphLevel[]
+    levels: Array<ast.Level<TileId>>
 }

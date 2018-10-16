@@ -1,6 +1,6 @@
 import { Optional } from '..'
 import { WIN_QUALIFIER } from '../models/winCondition'
-import { DEBUG_FLAG } from '../util'
+import { DEBUG_FLAG, RULE_DIRECTION } from '../util'
 import { AST_RULE_MODIFIER } from './astRule'
 
 export enum TILE_MODIFIER {
@@ -64,100 +64,84 @@ export enum SOUND_SPRITE_EVENT {
 }
 
 export interface IASTNode {
-    type: string
-    sourceOffset: number
-}
-export type IColor = IASTNode & {
-    value: string
+    _sourceOffset: number // | undefined
 }
 
-export type ColorHex3 = IColor & {
-    type: 'COLOR_HEX3'
-    value: string
-}
-export type ColorHex6 = IColor & {
-    type: 'COLOR_HEX6'
-    value: string
-}
-export type ColorName = IColor & {
-    type: 'COLOR_NAME'
-    value: string
+export enum COLOR_TYPE {
+    HEX3 = 'HEX3',
+    HEX6 = 'HEX6',
+    NAME = 'NAME'
 }
 
-export type AbstractSprite = IASTNode & {
+export type IColor = IASTNode & ({
+    type: COLOR_TYPE.HEX3
+    value: string
+} | {
+    type: COLOR_TYPE.HEX6
+    value: string
+} | {
+    type: COLOR_TYPE.NAME
+    value: string
+})
+
+export enum SPRITE_TYPE {
+    NO_PIXELS = 'NO_PIXELS',
+    WITH_PIXELS = 'WITH_PIXELS'
+}
+
+export type Sprite<Pixel> = IASTNode & {
     name: string
     mapChar: Optional<string>
     colors: IColor[]
-    // Subclass values
-    pixels: Optional<Array<Array<number | '.'>>>
+} & ({
+    type: SPRITE_TYPE.NO_PIXELS
+} | {
+    type: SPRITE_TYPE.WITH_PIXELS
+    pixels: Pixel[][]
+})
+
+export enum TILE_TYPE {
+    SIMPLE = 'LEGEND_ITEM_SIMPLE',
+    OR = 'LEGEND_ITEM_OR',
+    AND = 'LEGEND_ITEM_AND'
 }
-export type SpriteNoPixels = AbstractSprite & {
-    type: 'SPRITE_NO_PIXELS'
+export type LegendItem<TileRef> = IASTNode & { name: string } & ({
+    type: TILE_TYPE.SIMPLE
+    tile: TileRef
+} | {
+    type: TILE_TYPE.OR
+    tiles: TileRef[]
+} | {
+    type: TILE_TYPE.AND
+    tiles: TileRef[]
+})
+
+export enum SOUND_TYPE {
+    WHEN = 'SOUND_WHEN',
+    SFX = 'SOUND_SFX',
+    SPRITE_DIRECTION = 'SOUND_SPRITE_DIRECTION',
+    SPRITE_MOVE = 'SOUND_SPRITE_MOVE',
+    SPRITE_EVENT = 'SOUND_SPRITE_EVENT'
 }
 
-export type SpriteWithPixels = AbstractSprite & {
-    type: 'SPRITE_WITH_PIXELS'
-    pixels: Array<Array<number | '.'>>
-}
-
-export type AbstractLegendItem<TileRef> = IASTNode & {
-    name: string
-    // Subclass values
-    value: Optional<TileRef>
-    values: Optional<TileRef[]>
-}
-
-export type SimpleLegendItem<TileRef> = AbstractLegendItem<TileRef> & {
-    type: 'LEGEND_ITEM_SIMPLE'
-    value: TileRef
-}
-
-export type OrLegendItem<TileRef> = AbstractLegendItem<TileRef> & {
-    type: 'LEGEND_ITEM_OR'
-    values: TileRef[]
-}
-
-export type AndLegendItem<TileRef> = AbstractLegendItem<TileRef> & {
-    type: 'LEGEND_ITEM_AND'
-    values: TileRef[]
-}
-
-export type AbstractSound<TileRef> = IASTNode & {
-    soundCode: number
-    // Subclass values
-    when: Optional<SOUND_WHEN>
-    sfx: Optional<string>
-    sprite: Optional<TileRef>
-    spriteDirection: Optional<SOUND_SPRITE_DIRECTION>
-    spriteEvent: Optional<SOUND_SPRITE_EVENT>
-}
-
-export type SoundWhen<TileRef> = AbstractSound<TileRef> & {
-    type: 'SOUND_WHEN'
+export type SoundItem<TileRef> = IASTNode & {soundCode: number} & ({
+    type: SOUND_TYPE.WHEN
     when: SOUND_WHEN
-}
-
-export type SoundSfx<TileRef> = AbstractSound<TileRef> & {
-    type: 'SOUND_SFX'
-    sfx: string
-}
-
-export type SoundSpriteMoveDirection<TileRef> = AbstractSound<TileRef> & {
-    type: 'SOUND_SPRITE_DIRECTION'
+} | {
+    type: SOUND_TYPE.SFX
+    soundEffect: string
+} | {
+    type: SOUND_TYPE.SPRITE_DIRECTION
     sprite: TileRef
     spriteDirection: SOUND_SPRITE_DIRECTION
-}
-
-export type SoundSpriteMove<TileRef> = AbstractSound<TileRef> & {
-    type: 'SOUND_SPRITE_MOVE'
+} | {
+    type: SOUND_TYPE.SPRITE_MOVE
     sprite: TileRef
-}
-
-export type SoundSpriteEvent<TileRef> = AbstractSound<TileRef> & {
-    type: 'SOUND_SPRITE_EVENT'
+} | {
+    type: SOUND_TYPE.SPRITE_EVENT
     sprite: TileRef
     spriteEvent: SOUND_SPRITE_EVENT
-}
+})
 
 export type CollisionLayer<TileRef> = IASTNode & {
     type: 'COLLISION_LAYER'
@@ -169,130 +153,130 @@ export type Debuggable = IASTNode & {
     debugFlag: Optional<DEBUG_FLAG>
 }
 
-export type AbstractRule<TileRef> = Debuggable & {
-    // Subclass values
-    rules: Optional<Array<AbstractRule<TileRef>>>
-    conditions: Optional<Array<AbstractBracket<TileRef>>>
-    actions: Optional<Array<AbstractBracket<TileRef>>>
-    commands: Optional<AbstractCommand[]>
-    message: Optional<MessageCommand>
+export enum RULE_TYPE {
+    GROUP = 'RULE_GROUP',
+    LOOP = 'RULE_LOOP',
+    SIMPLE = 'SIMPLE'
 }
 
-export type RuleGroup<TileRef> = AbstractRule<TileRef> & {
-    type: 'RULE_GROUP'
-    rules: Array<Rule<TileRef>>
+export type Rule<BracketRef, CommandRef> = RuleGroup<BracketRef, CommandRef> | RuleLoop<BracketRef, CommandRef> | SimpleRule<BracketRef, CommandRef>
+
+export type RuleGroup<BracketRef, CommandRef> = Debuggable & {
+    type: RULE_TYPE.GROUP
+    rules: Array<SimpleRule<BracketRef, CommandRef>>
+    isRandom: boolean
 }
 
-export type RuleLoop<TileRef> = AbstractRule<TileRef> & {
-    type: 'RULE_LOOP'
-    rules: Array<RuleGroup<TileRef>>
+export type RuleLoop<BracketRef, CommandRef> = Debuggable & {
+    type: RULE_TYPE.LOOP
+    rules: Array<RuleGroup<BracketRef, CommandRef>>
 }
 
-export type Rule<TileRef> = AbstractRule<TileRef> & {
-    type: 'RULE'
-    modifiers: AST_RULE_MODIFIER[]
-    conditions: Array<AbstractBracket<TileRef>>
-    actions: Array<AbstractBracket<TileRef>>
-    commands: AbstractCommand[]
-    message: Optional<MessageCommand>
+export type SimpleRule<BracketRef, CommandRef> = Debuggable & {
+    type: RULE_TYPE.SIMPLE
+    conditions: BracketRef[]
+    actions: BracketRef[]
+    commands: CommandRef[]
+    directions: AST_RULE_MODIFIER[]
+    isRandom: boolean
+    isLate: boolean
+    isRigid: boolean
 }
 
-export type AbstractBracket<TileRef> = Debuggable & {
-    // Subclass values
-    neighbors: Optional<Array<Neighbor<TileRef>>>
-    beforeNeighbors: Optional<Array<Neighbor<TileRef>>>
-    afterNeighbors: Optional<Array<Neighbor<TileRef>>>
+export enum BRACKET_TYPE {
+    SIMPLE = 'BRACKET',
+    ELLIPSIS = 'ELLIPSIS_BRACKET'
 }
+export type Bracket<NeighborRef> = Debuggable & ({
+    type: BRACKET_TYPE.SIMPLE
+    direction: RULE_DIRECTION
+    neighbors: NeighborRef[]
+} | {
+    type: BRACKET_TYPE.ELLIPSIS
+    direction: RULE_DIRECTION
+    beforeNeighbors: NeighborRef[]
+    afterNeighbors: NeighborRef[]
+})
 
-export type SimpleBracket<TileRef> = AbstractBracket<TileRef> & {
-    type: 'BRACKET'
-    neighbors: Array<Neighbor<TileRef>>
-}
-
-export type EllipsisBracket<TileRef> = AbstractBracket<TileRef> & {
-    type: 'ELLIPSIS_BRACKET'
-    beforeNeighbors: Array<Neighbor<TileRef>>
-    afterNeighbors: Array<Neighbor<TileRef>>
-}
-
-export type Neighbor<TileRef> = Debuggable & {
-    type: 'NEIGHBOR'
-    tilesWithModifier: Array<TileWithModifier<TileRef>>
+export type Neighbor<TileWithModifierRef> = Debuggable & {
+    tileWithModifiers: TileWithModifierRef[]
 }
 
 export type TileWithModifier<TileRef> = Debuggable & {
-    type: 'TILE_WITH_MODIFIER'
-    modifier: Optional<TILE_MODIFIER>
+    direction: Optional<RULE_DIRECTION>
+    isNegated: boolean
+    isRandom: boolean
     tile: TileRef
 }
 
-export type AbstractCommand = IASTNode & {
-    // Subclass values
-    message: Optional<string>
-    sfx: Optional<string>
+export enum COMMAND_TYPE {
+    MESSAGE = 'COMMAND_MESSAGE',
+    AGAIN = 'COMMAND_AGAIN',
+    CANCEL = 'COMMAND_CANCEL',
+    CHECKPOINT = 'COMMAND_CHECKPOINT',
+    RESTART = 'COMMAND_RESTART',
+    WIN = 'COMMAND_WIN',
+    SFX = 'COMMAND_SFX'
 }
+export type Command<SoundRef> = MessageCommand | AgainCommand | CancelCommand | CheckpointCommand | RestartCommand | WinCommand | SFXCommand<SoundRef>
 
-export type MessageCommand = AbstractCommand & {
-    type: 'COMMAND_MESSAGE'
+export type MessageCommand = IASTNode & {
+    type: COMMAND_TYPE.MESSAGE
     message: string
 }
 
-export type AgainCommand = AbstractCommand & {
-    type: 'COMMAND_AGAIN'
+export type AgainCommand = IASTNode & {
+    type: COMMAND_TYPE.AGAIN
 }
 
-export type CancelCommand = AbstractCommand & {
-    type: 'COMMAND_CANCEL'
+export type CancelCommand = IASTNode & {
+    type: COMMAND_TYPE.CANCEL
 }
 
-export type CheckpointCommand = AbstractCommand & {
-    type: 'COMMAND_CHECKPOINT'
+export type CheckpointCommand = IASTNode & {
+    type: COMMAND_TYPE.CHECKPOINT
 }
 
-export type RestartCommand = AbstractCommand & {
-    type: 'COMMAND_RESTART'
+export type RestartCommand = IASTNode & {
+    type: COMMAND_TYPE.RESTART
 }
 
-export type WinCommand = AbstractCommand & {
-    type: 'COMMAND_WIN'
+export type WinCommand = IASTNode & {
+    type: COMMAND_TYPE.WIN
 }
 
-export type SFXCommand = AbstractCommand & {
-    type: 'COMMAND_SFX'
-    sfx: string
+export type SFXCommand<SoundRef> = IASTNode & {
+    type: COMMAND_TYPE.SFX
+    sound: SoundRef
 }
 
-export type AbstractWinCondition<TileRef> = IASTNode & {
+export enum WIN_CONDITION_TYPE {
+    SIMPLE = 'WINCONDITION_SIMPLE',
+    ON = 'WINCONDITION_ON'
+}
+
+export type WinCondition<TileRef> = IASTNode & {
     qualifier: WIN_QUALIFIER
-    sprite: TileRef
-    // Subclass values
-    onSprite: Optional<TileRef>
+    tile: TileRef
+} & ({
+    type: WIN_CONDITION_TYPE.SIMPLE
+} | {
+    type: WIN_CONDITION_TYPE.ON
+    onTile: TileRef
+})
+
+export enum LEVEL_TYPE {
+    MESSAGE = 'LEVEL_MESSAGE',
+    MAP = 'LEVEL_MAP'
 }
 
-export type WinConditionSimple<TileRef> = AbstractWinCondition<TileRef> & {
-    type: 'WINCONDITION_SIMPLE'
-}
-
-export type WinConditionOn<TileRef> = AbstractWinCondition<TileRef> & {
-    type: 'WINCONDITION_ON'
-    onSprite: TileRef
-}
-
-export type AbstractLevel<TileRef> = IASTNode & {
-    // Subclass values
-    message: Optional<string>
-    rowData: TileRef[][]
-}
-
-export type LevelMessage<TileRef> = AbstractLevel<TileRef> & {
-    type: 'LEVEL_MESSAGE'
+export type Level<TileRef> = IASTNode & ({
+    type: LEVEL_TYPE.MESSAGE
     message: string
-}
-
-export type LevelMap<TileRef> = AbstractLevel<TileRef> & {
-    type: 'LEVEL_MAP'
-    rowData: TileRef[][]
-}
+} | {
+    type: LEVEL_TYPE.MAP
+    cells: TileRef[][]
+})
 
 export interface IDimension {
     type: 'WIDTH_AND_HEIGHT'
@@ -300,14 +284,14 @@ export interface IDimension {
     height: number
 }
 
-export interface IASTGame<TileRef> {
+export interface IASTGame<TileRef, SoundRef, PixelRef> {
     title: string
-    metadata: Array<{type: string, value: string | boolean | IDimension | ColorName | ColorHex3 | ColorHex6}>
-    sprites: AbstractSprite[]
-    legendItems: Array<AbstractLegendItem<TileRef>>
+    metadata: Array<{type: string, value: string | boolean | IDimension | IColor}>
+    sprites: Array<Sprite<PixelRef>>
+    legendItems: Array<LegendItem<TileRef>>
     collisionLayers: Array<CollisionLayer<TileRef>>
-    sounds: Array<AbstractSound<TileRef>>
-    rules: Array<AbstractRule<TileRef>>
-    winConditions: Array<AbstractWinCondition<TileRef>>
-    levels: Array<AbstractLevel<TileRef>>
+    sounds: Array<SoundItem<TileRef>>
+    rules: Array<Rule<Bracket<Neighbor<TileWithModifier<TileRef>>>, Command<SoundRef>>>
+    winConditions: Array<WinCondition<TileRef>>
+    levels: Array<Level<TileRef>>
 }

@@ -8,18 +8,22 @@ Object {
   "metadata": Array [],
   "rules": Array [
     Object {
+      "_sourceOffset": 34,
       "actions": Array [
         Object {
+          "_sourceOffset": 52,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
+              "_sourceOffset": 54,
               "debugFlag": null,
-              "sourceOffset": 54,
-              "tilesWithModifier": Array [
+              "tileWithModifiers": Array [
                 Object {
-                  "modifier": null,
-                  "sourceOffset": 55,
+                  "_sourceOffset": 55,
+                  "direction": null,
+                  "isNegated": false,
+                  "isRandom": false,
                   "tile": "stationaryz",
                   "type": "TILE_WITH_MODIFIER",
                 },
@@ -27,23 +31,25 @@ Object {
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 52,
           "type": "BRACKET",
         },
       ],
       "commands": Array [],
       "conditions": Array [
         Object {
+          "_sourceOffset": 34,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
+              "_sourceOffset": 35,
               "debugFlag": null,
-              "sourceOffset": 35,
-              "tilesWithModifier": Array [
+              "tileWithModifiers": Array [
                 Object {
-                  "modifier": null,
-                  "sourceOffset": 36,
+                  "_sourceOffset": 36,
+                  "direction": null,
+                  "isNegated": false,
+                  "isRandom": false,
                   "tile": "stationaryz",
                   "type": "TILE_WITH_MODIFIER",
                 },
@@ -51,13 +57,14 @@ Object {
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 34,
           "type": "BRACKET",
         },
       ],
-      "modifiers": Array [],
-      "sourceOffset": 34,
-      "type": "RULE",
+      "directions": Array [],
+      "isLate": false,
+      "isRandom": false,
+      "isRigid": false,
+      "type": "SIMPLE",
     },
   ],
   "sounds": Array [],
@@ -75,34 +82,38 @@ Object {
   "metadata": Array [],
   "rules": Array [
     Object {
+      "_sourceOffset": 34,
       "actions": Array [
         Object {
+          "_sourceOffset": 48,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
-              "sourceOffset": 50,
-              "tilesWithModifier": Array [],
+              "_sourceOffset": 50,
+              "tileWithModifiers": Array [],
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 48,
           "type": "BRACKET",
         },
       ],
       "commands": Array [],
       "conditions": Array [
         Object {
+          "_sourceOffset": 34,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
+              "_sourceOffset": 35,
               "debugFlag": null,
-              "sourceOffset": 35,
-              "tilesWithModifier": Array [
+              "tileWithModifiers": Array [
                 Object {
-                  "modifier": "ACTION",
-                  "sourceOffset": 35,
+                  "_sourceOffset": 35,
+                  "direction": "ACTION",
+                  "isNegated": false,
+                  "isRandom": false,
                   "tile": "z",
                   "type": "TILE_WITH_MODIFIER",
                 },
@@ -110,13 +121,14 @@ Object {
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 34,
           "type": "BRACKET",
         },
       ],
-      "modifiers": Array [],
-      "sourceOffset": 34,
-      "type": "RULE",
+      "directions": Array [],
+      "isLate": false,
+      "isRandom": false,
+      "isRigid": false,
+      "type": "SIMPLE",
     },
   ],
   "sounds": Array [],
@@ -134,34 +146,38 @@ Object {
   "metadata": Array [],
   "rules": Array [
     Object {
+      "_sourceOffset": 34,
       "actions": Array [
         Object {
+          "_sourceOffset": 43,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
-              "sourceOffset": 45,
-              "tilesWithModifier": Array [],
+              "_sourceOffset": 45,
+              "tileWithModifiers": Array [],
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 43,
           "type": "BRACKET",
         },
       ],
       "commands": Array [],
       "conditions": Array [
         Object {
+          "_sourceOffset": 34,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
+              "_sourceOffset": 35,
               "debugFlag": null,
-              "sourceOffset": 35,
-              "tilesWithModifier": Array [
+              "tileWithModifiers": Array [
                 Object {
-                  "modifier": "^",
-                  "sourceOffset": 35,
+                  "_sourceOffset": 35,
+                  "direction": "^",
+                  "isNegated": false,
+                  "isRandom": false,
                   "tile": "z",
                   "type": "TILE_WITH_MODIFIER",
                 },
@@ -169,13 +185,14 @@ Object {
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 34,
           "type": "BRACKET",
         },
       ],
-      "modifiers": Array [],
-      "sourceOffset": 34,
-      "type": "RULE",
+      "directions": Array [],
+      "isLate": false,
+      "isRandom": false,
+      "isRigid": false,
+      "type": "SIMPLE",
     },
   ],
   "sounds": Array [],
@@ -193,34 +210,38 @@ Object {
   "metadata": Array [],
   "rules": Array [
     Object {
+      "_sourceOffset": 34,
       "actions": Array [
         Object {
+          "_sourceOffset": 43,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
-              "sourceOffset": 45,
-              "tilesWithModifier": Array [],
+              "_sourceOffset": 45,
+              "tileWithModifiers": Array [],
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 43,
           "type": "BRACKET",
         },
       ],
       "commands": Array [],
       "conditions": Array [
         Object {
+          "_sourceOffset": 34,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
+              "_sourceOffset": 35,
               "debugFlag": null,
-              "sourceOffset": 35,
-              "tilesWithModifier": Array [
+              "tileWithModifiers": Array [
                 Object {
-                  "modifier": "V",
-                  "sourceOffset": 35,
+                  "_sourceOffset": 35,
+                  "direction": "V",
+                  "isNegated": false,
+                  "isRandom": false,
                   "tile": "z",
                   "type": "TILE_WITH_MODIFIER",
                 },
@@ -228,13 +249,14 @@ Object {
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 34,
           "type": "BRACKET",
         },
       ],
-      "modifiers": Array [],
-      "sourceOffset": 34,
-      "type": "RULE",
+      "directions": Array [],
+      "isLate": false,
+      "isRandom": false,
+      "isRigid": false,
+      "type": "SIMPLE",
     },
   ],
   "sounds": Array [],
@@ -252,34 +274,38 @@ Object {
   "metadata": Array [],
   "rules": Array [
     Object {
+      "_sourceOffset": 34,
       "actions": Array [
         Object {
+          "_sourceOffset": 43,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
-              "sourceOffset": 45,
-              "tilesWithModifier": Array [],
+              "_sourceOffset": 45,
+              "tileWithModifiers": Array [],
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 43,
           "type": "BRACKET",
         },
       ],
       "commands": Array [],
       "conditions": Array [
         Object {
+          "_sourceOffset": 34,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
+              "_sourceOffset": 35,
               "debugFlag": null,
-              "sourceOffset": 35,
-              "tilesWithModifier": Array [
+              "tileWithModifiers": Array [
                 Object {
-                  "modifier": ">",
-                  "sourceOffset": 35,
+                  "_sourceOffset": 35,
+                  "direction": ">",
+                  "isNegated": false,
+                  "isRandom": false,
                   "tile": "z",
                   "type": "TILE_WITH_MODIFIER",
                 },
@@ -287,13 +313,14 @@ Object {
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 34,
           "type": "BRACKET",
         },
       ],
-      "modifiers": Array [],
-      "sourceOffset": 34,
-      "type": "RULE",
+      "directions": Array [],
+      "isLate": false,
+      "isRandom": false,
+      "isRigid": false,
+      "type": "SIMPLE",
     },
   ],
   "sounds": Array [],
@@ -311,34 +338,38 @@ Object {
   "metadata": Array [],
   "rules": Array [
     Object {
+      "_sourceOffset": 34,
       "actions": Array [
         Object {
+          "_sourceOffset": 43,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
-              "sourceOffset": 45,
-              "tilesWithModifier": Array [],
+              "_sourceOffset": 45,
+              "tileWithModifiers": Array [],
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 43,
           "type": "BRACKET",
         },
       ],
       "commands": Array [],
       "conditions": Array [
         Object {
+          "_sourceOffset": 34,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
+              "_sourceOffset": 35,
               "debugFlag": null,
-              "sourceOffset": 35,
-              "tilesWithModifier": Array [
+              "tileWithModifiers": Array [
                 Object {
-                  "modifier": "<",
-                  "sourceOffset": 35,
+                  "_sourceOffset": 35,
+                  "direction": "<",
+                  "isNegated": false,
+                  "isRandom": false,
                   "tile": "z",
                   "type": "TILE_WITH_MODIFIER",
                 },
@@ -346,13 +377,14 @@ Object {
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 34,
           "type": "BRACKET",
         },
       ],
-      "modifiers": Array [],
-      "sourceOffset": 34,
-      "type": "RULE",
+      "directions": Array [],
+      "isLate": false,
+      "isRandom": false,
+      "isRigid": false,
+      "type": "SIMPLE",
     },
   ],
   "sounds": Array [],
@@ -370,34 +402,38 @@ Object {
   "metadata": Array [],
   "rules": Array [
     Object {
+      "_sourceOffset": 34,
       "actions": Array [
         Object {
+          "_sourceOffset": 46,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
-              "sourceOffset": 48,
-              "tilesWithModifier": Array [],
+              "_sourceOffset": 48,
+              "tileWithModifiers": Array [],
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 46,
           "type": "BRACKET",
         },
       ],
       "commands": Array [],
       "conditions": Array [
         Object {
+          "_sourceOffset": 34,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
+              "_sourceOffset": 35,
               "debugFlag": null,
-              "sourceOffset": 35,
-              "tilesWithModifier": Array [
+              "tileWithModifiers": Array [
                 Object {
-                  "modifier": "LEFT",
-                  "sourceOffset": 35,
+                  "_sourceOffset": 35,
+                  "direction": "LEFT",
+                  "isNegated": false,
+                  "isRandom": false,
                   "tile": "z",
                   "type": "TILE_WITH_MODIFIER",
                 },
@@ -405,13 +441,14 @@ Object {
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 34,
           "type": "BRACKET",
         },
       ],
-      "modifiers": Array [],
-      "sourceOffset": 34,
-      "type": "RULE",
+      "directions": Array [],
+      "isLate": false,
+      "isRandom": false,
+      "isRigid": false,
+      "type": "SIMPLE",
     },
   ],
   "sounds": Array [],
@@ -429,34 +466,38 @@ Object {
   "metadata": Array [],
   "rules": Array [
     Object {
+      "_sourceOffset": 34,
       "actions": Array [
         Object {
+          "_sourceOffset": 47,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
-              "sourceOffset": 49,
-              "tilesWithModifier": Array [],
+              "_sourceOffset": 49,
+              "tileWithModifiers": Array [],
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 47,
           "type": "BRACKET",
         },
       ],
       "commands": Array [],
       "conditions": Array [
         Object {
+          "_sourceOffset": 34,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
+              "_sourceOffset": 35,
               "debugFlag": null,
-              "sourceOffset": 35,
-              "tilesWithModifier": Array [
+              "tileWithModifiers": Array [
                 Object {
-                  "modifier": "RIGHT",
-                  "sourceOffset": 35,
+                  "_sourceOffset": 35,
+                  "direction": "RIGHT",
+                  "isNegated": false,
+                  "isRandom": false,
                   "tile": "z",
                   "type": "TILE_WITH_MODIFIER",
                 },
@@ -464,13 +505,14 @@ Object {
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 34,
           "type": "BRACKET",
         },
       ],
-      "modifiers": Array [],
-      "sourceOffset": 34,
-      "type": "RULE",
+      "directions": Array [],
+      "isLate": false,
+      "isRandom": false,
+      "isRigid": false,
+      "type": "SIMPLE",
     },
   ],
   "sounds": Array [],
@@ -488,34 +530,38 @@ Object {
   "metadata": Array [],
   "rules": Array [
     Object {
+      "_sourceOffset": 34,
       "actions": Array [
         Object {
+          "_sourceOffset": 44,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
-              "sourceOffset": 46,
-              "tilesWithModifier": Array [],
+              "_sourceOffset": 46,
+              "tileWithModifiers": Array [],
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 44,
           "type": "BRACKET",
         },
       ],
       "commands": Array [],
       "conditions": Array [
         Object {
+          "_sourceOffset": 34,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
+              "_sourceOffset": 35,
               "debugFlag": null,
-              "sourceOffset": 35,
-              "tilesWithModifier": Array [
+              "tileWithModifiers": Array [
                 Object {
-                  "modifier": "UP",
-                  "sourceOffset": 35,
+                  "_sourceOffset": 35,
+                  "direction": "UP",
+                  "isNegated": false,
+                  "isRandom": false,
                   "tile": "z",
                   "type": "TILE_WITH_MODIFIER",
                 },
@@ -523,13 +569,14 @@ Object {
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 34,
           "type": "BRACKET",
         },
       ],
-      "modifiers": Array [],
-      "sourceOffset": 34,
-      "type": "RULE",
+      "directions": Array [],
+      "isLate": false,
+      "isRandom": false,
+      "isRigid": false,
+      "type": "SIMPLE",
     },
   ],
   "sounds": Array [],
@@ -547,34 +594,38 @@ Object {
   "metadata": Array [],
   "rules": Array [
     Object {
+      "_sourceOffset": 34,
       "actions": Array [
         Object {
+          "_sourceOffset": 46,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
-              "sourceOffset": 48,
-              "tilesWithModifier": Array [],
+              "_sourceOffset": 48,
+              "tileWithModifiers": Array [],
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 46,
           "type": "BRACKET",
         },
       ],
       "commands": Array [],
       "conditions": Array [
         Object {
+          "_sourceOffset": 34,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
+              "_sourceOffset": 35,
               "debugFlag": null,
-              "sourceOffset": 35,
-              "tilesWithModifier": Array [
+              "tileWithModifiers": Array [
                 Object {
-                  "modifier": "DOWN",
-                  "sourceOffset": 35,
+                  "_sourceOffset": 35,
+                  "direction": "DOWN",
+                  "isNegated": false,
+                  "isRandom": false,
                   "tile": "z",
                   "type": "TILE_WITH_MODIFIER",
                 },
@@ -582,13 +633,14 @@ Object {
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 34,
           "type": "BRACKET",
         },
       ],
-      "modifiers": Array [],
-      "sourceOffset": 34,
-      "type": "RULE",
+      "directions": Array [],
+      "isLate": false,
+      "isRandom": false,
+      "isRigid": false,
+      "type": "SIMPLE",
     },
   ],
   "sounds": Array [],
@@ -606,34 +658,38 @@ Object {
   "metadata": Array [],
   "rules": Array [
     Object {
+      "_sourceOffset": 34,
       "actions": Array [
         Object {
+          "_sourceOffset": 52,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
-              "sourceOffset": 54,
-              "tilesWithModifier": Array [],
+              "_sourceOffset": 54,
+              "tileWithModifiers": Array [],
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 52,
           "type": "BRACKET",
         },
       ],
       "commands": Array [],
       "conditions": Array [
         Object {
+          "_sourceOffset": 34,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
+              "_sourceOffset": 35,
               "debugFlag": null,
-              "sourceOffset": 35,
-              "tilesWithModifier": Array [
+              "tileWithModifiers": Array [
                 Object {
-                  "modifier": "STATIONARY",
-                  "sourceOffset": 35,
+                  "_sourceOffset": 35,
+                  "direction": "STATIONARY",
+                  "isNegated": false,
+                  "isRandom": false,
                   "tile": "z",
                   "type": "TILE_WITH_MODIFIER",
                 },
@@ -641,13 +697,14 @@ Object {
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 34,
           "type": "BRACKET",
         },
       ],
-      "modifiers": Array [],
-      "sourceOffset": 34,
-      "type": "RULE",
+      "directions": Array [],
+      "isLate": false,
+      "isRandom": false,
+      "isRigid": false,
+      "type": "SIMPLE",
     },
   ],
   "sounds": Array [],
@@ -665,34 +722,38 @@ Object {
   "metadata": Array [],
   "rules": Array [
     Object {
+      "_sourceOffset": 34,
       "actions": Array [
         Object {
+          "_sourceOffset": 48,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
-              "sourceOffset": 50,
-              "tilesWithModifier": Array [],
+              "_sourceOffset": 50,
+              "tileWithModifiers": Array [],
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 48,
           "type": "BRACKET",
         },
       ],
       "commands": Array [],
       "conditions": Array [
         Object {
+          "_sourceOffset": 34,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
+              "_sourceOffset": 35,
               "debugFlag": null,
-              "sourceOffset": 35,
-              "tilesWithModifier": Array [
+              "tileWithModifiers": Array [
                 Object {
-                  "modifier": "MOVING",
-                  "sourceOffset": 35,
+                  "_sourceOffset": 35,
+                  "direction": "MOVING",
+                  "isNegated": false,
+                  "isRandom": false,
                   "tile": "z",
                   "type": "TILE_WITH_MODIFIER",
                 },
@@ -700,13 +761,14 @@ Object {
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 34,
           "type": "BRACKET",
         },
       ],
-      "modifiers": Array [],
-      "sourceOffset": 34,
-      "type": "RULE",
+      "directions": Array [],
+      "isLate": false,
+      "isRandom": false,
+      "isRigid": false,
+      "type": "SIMPLE",
     },
   ],
   "sounds": Array [],
@@ -724,34 +786,38 @@ Object {
   "metadata": Array [],
   "rules": Array [
     Object {
+      "_sourceOffset": 34,
       "actions": Array [
         Object {
+          "_sourceOffset": 50,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
-              "sourceOffset": 52,
-              "tilesWithModifier": Array [],
+              "_sourceOffset": 52,
+              "tileWithModifiers": Array [],
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 50,
           "type": "BRACKET",
         },
       ],
       "commands": Array [],
       "conditions": Array [
         Object {
+          "_sourceOffset": 34,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
+              "_sourceOffset": 35,
               "debugFlag": null,
-              "sourceOffset": 35,
-              "tilesWithModifier": Array [
+              "tileWithModifiers": Array [
                 Object {
-                  "modifier": "VERTICAL",
-                  "sourceOffset": 35,
+                  "_sourceOffset": 35,
+                  "direction": "VERTICAL",
+                  "isNegated": false,
+                  "isRandom": false,
                   "tile": "z",
                   "type": "TILE_WITH_MODIFIER",
                 },
@@ -759,13 +825,14 @@ Object {
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 34,
           "type": "BRACKET",
         },
       ],
-      "modifiers": Array [],
-      "sourceOffset": 34,
-      "type": "RULE",
+      "directions": Array [],
+      "isLate": false,
+      "isRandom": false,
+      "isRigid": false,
+      "type": "SIMPLE",
     },
   ],
   "sounds": Array [],
@@ -783,34 +850,38 @@ Object {
   "metadata": Array [],
   "rules": Array [
     Object {
+      "_sourceOffset": 34,
       "actions": Array [
         Object {
+          "_sourceOffset": 52,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
-              "sourceOffset": 54,
-              "tilesWithModifier": Array [],
+              "_sourceOffset": 54,
+              "tileWithModifiers": Array [],
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 52,
           "type": "BRACKET",
         },
       ],
       "commands": Array [],
       "conditions": Array [
         Object {
+          "_sourceOffset": 34,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
+              "_sourceOffset": 35,
               "debugFlag": null,
-              "sourceOffset": 35,
-              "tilesWithModifier": Array [
+              "tileWithModifiers": Array [
                 Object {
-                  "modifier": "HORIZONTAL",
-                  "sourceOffset": 35,
+                  "_sourceOffset": 35,
+                  "direction": "HORIZONTAL",
+                  "isNegated": false,
+                  "isRandom": false,
                   "tile": "z",
                   "type": "TILE_WITH_MODIFIER",
                 },
@@ -818,13 +889,14 @@ Object {
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 34,
           "type": "BRACKET",
         },
       ],
-      "modifiers": Array [],
-      "sourceOffset": 34,
-      "type": "RULE",
+      "directions": Array [],
+      "isLate": false,
+      "isRandom": false,
+      "isRigid": false,
+      "type": "SIMPLE",
     },
   ],
   "sounds": Array [],
@@ -842,34 +914,38 @@ Object {
   "metadata": Array [],
   "rules": Array [
     Object {
+      "_sourceOffset": 34,
       "actions": Array [
         Object {
+          "_sourceOffset": 55,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
-              "sourceOffset": 57,
-              "tilesWithModifier": Array [],
+              "_sourceOffset": 57,
+              "tileWithModifiers": Array [],
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 55,
           "type": "BRACKET",
         },
       ],
       "commands": Array [],
       "conditions": Array [
         Object {
+          "_sourceOffset": 34,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
+              "_sourceOffset": 35,
               "debugFlag": null,
-              "sourceOffset": 35,
-              "tilesWithModifier": Array [
+              "tileWithModifiers": Array [
                 Object {
-                  "modifier": "PERPENDICULAR",
-                  "sourceOffset": 35,
+                  "_sourceOffset": 35,
+                  "direction": "PERPENDICULAR",
+                  "isNegated": false,
+                  "isRandom": false,
                   "tile": "z",
                   "type": "TILE_WITH_MODIFIER",
                 },
@@ -877,13 +953,14 @@ Object {
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 34,
           "type": "BRACKET",
         },
       ],
-      "modifiers": Array [],
-      "sourceOffset": 34,
-      "type": "RULE",
+      "directions": Array [],
+      "isLate": false,
+      "isRandom": false,
+      "isRigid": false,
+      "type": "SIMPLE",
     },
   ],
   "sounds": Array [],
@@ -901,34 +978,38 @@ Object {
   "metadata": Array [],
   "rules": Array [
     Object {
+      "_sourceOffset": 34,
       "actions": Array [
         Object {
+          "_sourceOffset": 52,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
-              "sourceOffset": 54,
-              "tilesWithModifier": Array [],
+              "_sourceOffset": 54,
+              "tileWithModifiers": Array [],
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 52,
           "type": "BRACKET",
         },
       ],
       "commands": Array [],
       "conditions": Array [
         Object {
+          "_sourceOffset": 34,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
+              "_sourceOffset": 35,
               "debugFlag": null,
-              "sourceOffset": 35,
-              "tilesWithModifier": Array [
+              "tileWithModifiers": Array [
                 Object {
-                  "modifier": "ORTHOGONAL",
-                  "sourceOffset": 35,
+                  "_sourceOffset": 35,
+                  "direction": "ORTHOGONAL",
+                  "isNegated": false,
+                  "isRandom": false,
                   "tile": "z",
                   "type": "TILE_WITH_MODIFIER",
                 },
@@ -936,13 +1017,14 @@ Object {
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 34,
           "type": "BRACKET",
         },
       ],
-      "modifiers": Array [],
-      "sourceOffset": 34,
-      "type": "RULE",
+      "directions": Array [],
+      "isLate": false,
+      "isRandom": false,
+      "isRigid": false,
+      "type": "SIMPLE",
     },
   ],
   "sounds": Array [],
@@ -960,34 +1042,38 @@ Object {
   "metadata": Array [],
   "rules": Array [
     Object {
+      "_sourceOffset": 34,
       "actions": Array [
         Object {
+          "_sourceOffset": 51,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
-              "sourceOffset": 53,
-              "tilesWithModifier": Array [],
+              "_sourceOffset": 53,
+              "tileWithModifiers": Array [],
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 51,
           "type": "BRACKET",
         },
       ],
       "commands": Array [],
       "conditions": Array [
         Object {
+          "_sourceOffset": 34,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
+              "_sourceOffset": 35,
               "debugFlag": null,
-              "sourceOffset": 35,
-              "tilesWithModifier": Array [
+              "tileWithModifiers": Array [
                 Object {
-                  "modifier": "RANDOMDIR",
-                  "sourceOffset": 35,
+                  "_sourceOffset": 35,
+                  "direction": "RANDOMDIR",
+                  "isNegated": false,
+                  "isRandom": false,
                   "tile": "z",
                   "type": "TILE_WITH_MODIFIER",
                 },
@@ -995,13 +1081,14 @@ Object {
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 34,
           "type": "BRACKET",
         },
       ],
-      "modifiers": Array [],
-      "sourceOffset": 34,
-      "type": "RULE",
+      "directions": Array [],
+      "isLate": false,
+      "isRandom": false,
+      "isRigid": false,
+      "type": "SIMPLE",
     },
   ],
   "sounds": Array [],
@@ -1019,34 +1106,38 @@ Object {
   "metadata": Array [],
   "rules": Array [
     Object {
+      "_sourceOffset": 34,
       "actions": Array [
         Object {
+          "_sourceOffset": 45,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
-              "sourceOffset": 47,
-              "tilesWithModifier": Array [],
+              "_sourceOffset": 47,
+              "tileWithModifiers": Array [],
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 45,
           "type": "BRACKET",
         },
       ],
       "commands": Array [],
       "conditions": Array [
         Object {
+          "_sourceOffset": 34,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
+              "_sourceOffset": 35,
               "debugFlag": null,
-              "sourceOffset": 35,
-              "tilesWithModifier": Array [
+              "tileWithModifiers": Array [
                 Object {
-                  "modifier": "NO",
-                  "sourceOffset": 36,
+                  "_sourceOffset": 36,
+                  "direction": undefined,
+                  "isNegated": true,
+                  "isRandom": false,
                   "tile": "z",
                   "type": "TILE_WITH_MODIFIER",
                 },
@@ -1054,13 +1145,14 @@ Object {
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 34,
           "type": "BRACKET",
         },
       ],
-      "modifiers": Array [],
-      "sourceOffset": 34,
-      "type": "RULE",
+      "directions": Array [],
+      "isLate": false,
+      "isRandom": false,
+      "isRigid": false,
+      "type": "SIMPLE",
     },
   ],
   "sounds": Array [],
@@ -1078,18 +1170,22 @@ Object {
   "metadata": Array [],
   "rules": Array [
     Object {
+      "_sourceOffset": 34,
       "actions": Array [
         Object {
+          "_sourceOffset": 53,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
+              "_sourceOffset": 55,
               "debugFlag": null,
-              "sourceOffset": 55,
-              "tilesWithModifier": Array [
+              "tileWithModifiers": Array [
                 Object {
-                  "modifier": null,
-                  "sourceOffset": 56,
+                  "_sourceOffset": 56,
+                  "direction": null,
+                  "isNegated": false,
+                  "isRandom": false,
                   "tile": "z",
                   "type": "TILE_WITH_MODIFIER",
                 },
@@ -1097,23 +1193,25 @@ Object {
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 53,
           "type": "BRACKET",
         },
       ],
       "commands": Array [],
       "conditions": Array [
         Object {
+          "_sourceOffset": 34,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
+              "_sourceOffset": 35,
               "debugFlag": null,
-              "sourceOffset": 35,
-              "tilesWithModifier": Array [
+              "tileWithModifiers": Array [
                 Object {
-                  "modifier": "STATIONARY",
-                  "sourceOffset": 36,
+                  "_sourceOffset": 36,
+                  "direction": "STATIONARY",
+                  "isNegated": false,
+                  "isRandom": false,
                   "tile": "z",
                   "type": "TILE_WITH_MODIFIER",
                 },
@@ -1121,13 +1219,14 @@ Object {
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 34,
           "type": "BRACKET",
         },
       ],
-      "modifiers": Array [],
-      "sourceOffset": 34,
-      "type": "RULE",
+      "directions": Array [],
+      "isLate": false,
+      "isRandom": false,
+      "isRigid": false,
+      "type": "SIMPLE",
     },
   ],
   "sounds": Array [],
@@ -1145,18 +1244,22 @@ Object {
   "metadata": Array [],
   "rules": Array [
     Object {
+      "_sourceOffset": 34,
       "actions": Array [
         Object {
+          "_sourceOffset": 39,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
+              "_sourceOffset": 40,
               "debugFlag": null,
-              "sourceOffset": 40,
-              "tilesWithModifier": Array [
+              "tileWithModifiers": Array [
                 Object {
-                  "modifier": null,
-                  "sourceOffset": 40,
+                  "_sourceOffset": 40,
+                  "direction": null,
+                  "isNegated": false,
+                  "isRandom": false,
                   "tile": "SFX0",
                   "type": "TILE_WITH_MODIFIER",
                 },
@@ -1164,23 +1267,25 @@ Object {
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 39,
           "type": "BRACKET",
         },
       ],
       "commands": Array [],
       "conditions": Array [
         Object {
+          "_sourceOffset": 34,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
+              "_sourceOffset": 35,
               "debugFlag": null,
-              "sourceOffset": 35,
-              "tilesWithModifier": Array [
+              "tileWithModifiers": Array [
                 Object {
-                  "modifier": null,
-                  "sourceOffset": 35,
+                  "_sourceOffset": 35,
+                  "direction": null,
+                  "isNegated": false,
+                  "isRandom": false,
                   "tile": "z",
                   "type": "TILE_WITH_MODIFIER",
                 },
@@ -1188,13 +1293,14 @@ Object {
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 34,
           "type": "BRACKET",
         },
       ],
-      "modifiers": Array [],
-      "sourceOffset": 34,
-      "type": "RULE",
+      "directions": Array [],
+      "isLate": false,
+      "isRandom": false,
+      "isRigid": false,
+      "type": "SIMPLE",
     },
   ],
   "sounds": Array [],
@@ -1212,24 +1318,30 @@ Object {
   "metadata": Array [],
   "rules": Array [
     Object {
+      "_sourceOffset": 34,
       "actions": Array [
         Object {
+          "_sourceOffset": 39,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
+              "_sourceOffset": 40,
               "debugFlag": null,
-              "sourceOffset": 40,
-              "tilesWithModifier": Array [
+              "tileWithModifiers": Array [
                 Object {
-                  "modifier": null,
-                  "sourceOffset": 40,
+                  "_sourceOffset": 40,
+                  "direction": null,
+                  "isNegated": false,
+                  "isRandom": false,
                   "tile": "z",
                   "type": "TILE_WITH_MODIFIER",
                 },
                 Object {
-                  "modifier": null,
-                  "sourceOffset": 42,
+                  "_sourceOffset": 42,
+                  "direction": null,
+                  "isNegated": false,
+                  "isRandom": false,
                   "tile": "SFX1",
                   "type": "TILE_WITH_MODIFIER",
                 },
@@ -1237,23 +1349,25 @@ Object {
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 39,
           "type": "BRACKET",
         },
       ],
       "commands": Array [],
       "conditions": Array [
         Object {
+          "_sourceOffset": 34,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
+              "_sourceOffset": 35,
               "debugFlag": null,
-              "sourceOffset": 35,
-              "tilesWithModifier": Array [
+              "tileWithModifiers": Array [
                 Object {
-                  "modifier": null,
-                  "sourceOffset": 35,
+                  "_sourceOffset": 35,
+                  "direction": null,
+                  "isNegated": false,
+                  "isRandom": false,
                   "tile": "z",
                   "type": "TILE_WITH_MODIFIER",
                 },
@@ -1261,13 +1375,14 @@ Object {
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 34,
           "type": "BRACKET",
         },
       ],
-      "modifiers": Array [],
-      "sourceOffset": 34,
-      "type": "RULE",
+      "directions": Array [],
+      "isLate": false,
+      "isRandom": false,
+      "isRigid": false,
+      "type": "SIMPLE",
     },
   ],
   "sounds": Array [],
@@ -1285,24 +1400,30 @@ Object {
   "metadata": Array [],
   "rules": Array [
     Object {
+      "_sourceOffset": 34,
       "actions": Array [
         Object {
+          "_sourceOffset": 39,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
+              "_sourceOffset": 40,
               "debugFlag": null,
-              "sourceOffset": 40,
-              "tilesWithModifier": Array [
+              "tileWithModifiers": Array [
                 Object {
-                  "modifier": null,
-                  "sourceOffset": 40,
+                  "_sourceOffset": 40,
+                  "direction": null,
+                  "isNegated": false,
+                  "isRandom": false,
                   "tile": "z",
                   "type": "TILE_WITH_MODIFIER",
                 },
                 Object {
-                  "modifier": null,
-                  "sourceOffset": 42,
+                  "_sourceOffset": 42,
+                  "direction": null,
+                  "isNegated": false,
+                  "isRandom": false,
                   "tile": "winter",
                   "type": "TILE_WITH_MODIFIER",
                 },
@@ -1310,23 +1431,25 @@ Object {
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 39,
           "type": "BRACKET",
         },
       ],
       "commands": Array [],
       "conditions": Array [
         Object {
+          "_sourceOffset": 34,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
+              "_sourceOffset": 35,
               "debugFlag": null,
-              "sourceOffset": 35,
-              "tilesWithModifier": Array [
+              "tileWithModifiers": Array [
                 Object {
-                  "modifier": null,
-                  "sourceOffset": 35,
+                  "_sourceOffset": 35,
+                  "direction": null,
+                  "isNegated": false,
+                  "isRandom": false,
                   "tile": "z",
                   "type": "TILE_WITH_MODIFIER",
                 },
@@ -1334,13 +1457,14 @@ Object {
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 34,
           "type": "BRACKET",
         },
       ],
-      "modifiers": Array [],
-      "sourceOffset": 34,
-      "type": "RULE",
+      "directions": Array [],
+      "isLate": false,
+      "isRandom": false,
+      "isRigid": false,
+      "type": "SIMPLE",
     },
   ],
   "sounds": Array [],
@@ -1358,23 +1482,27 @@ Object {
   "metadata": Array [],
   "rules": Array [
     Object {
+      "_sourceOffset": 34,
       "actions": Array [
         Object {
+          "_sourceOffset": 41,
           "againHack": true,
           "debugFlag": null,
           "neighbors": Array [
             Object {
-              "sourceOffset": 43,
-              "tilesWithModifier": Array [],
+              "_sourceOffset": 43,
+              "tileWithModifiers": Array [],
               "type": "NEIGHBOR",
             },
             Object {
+              "_sourceOffset": 44,
               "debugFlag": null,
-              "sourceOffset": 44,
-              "tilesWithModifier": Array [
+              "tileWithModifiers": Array [
                 Object {
-                  "modifier": null,
-                  "sourceOffset": 44,
+                  "_sourceOffset": 44,
+                  "direction": null,
+                  "isNegated": false,
+                  "isRandom": false,
                   "tile": "z",
                   "type": "TILE_WITH_MODIFIER",
                 },
@@ -1382,23 +1510,25 @@ Object {
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 41,
           "type": "BRACKET",
         },
       ],
       "commands": Array [],
       "conditions": Array [
         Object {
+          "_sourceOffset": 34,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
+              "_sourceOffset": 35,
               "debugFlag": null,
-              "sourceOffset": 35,
-              "tilesWithModifier": Array [
+              "tileWithModifiers": Array [
                 Object {
-                  "modifier": null,
-                  "sourceOffset": 35,
+                  "_sourceOffset": 35,
+                  "direction": null,
+                  "isNegated": false,
+                  "isRandom": false,
                   "tile": "z",
                   "type": "TILE_WITH_MODIFIER",
                 },
@@ -1406,18 +1536,19 @@ Object {
               "type": "NEIGHBOR",
             },
             Object {
-              "sourceOffset": 37,
-              "tilesWithModifier": Array [],
+              "_sourceOffset": 37,
+              "tileWithModifiers": Array [],
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 34,
           "type": "BRACKET",
         },
       ],
-      "modifiers": Array [],
-      "sourceOffset": 34,
-      "type": "RULE",
+      "directions": Array [],
+      "isLate": false,
+      "isRandom": false,
+      "isRigid": false,
+      "type": "SIMPLE",
     },
   ],
   "sounds": Array [],
@@ -1432,34 +1563,38 @@ Object {
   "collisionLayers": Array [],
   "legendItems": Array [
     Object {
+      "_sourceOffset": 28,
       "name": "Bush?",
-      "sourceOffset": 28,
+      "tile": "Player",
       "type": "LEGEND_ITEM_SIMPLE",
-      "value": "Player",
     },
     Object {
+      "_sourceOffset": 43,
       "name": ".",
-      "sourceOffset": 43,
+      "tile": "Player",
       "type": "LEGEND_ITEM_SIMPLE",
-      "value": "Player",
     },
   ],
   "levels": Array [],
   "metadata": Array [],
   "rules": Array [
     Object {
+      "_sourceOffset": 73,
       "actions": Array [
         Object {
+          "_sourceOffset": 83,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
+              "_sourceOffset": 85,
               "debugFlag": null,
-              "sourceOffset": 85,
-              "tilesWithModifier": Array [
+              "tileWithModifiers": Array [
                 Object {
-                  "modifier": null,
-                  "sourceOffset": 85,
+                  "_sourceOffset": 85,
+                  "direction": null,
+                  "isNegated": false,
+                  "isRandom": false,
                   "tile": "Bush?",
                   "type": "TILE_WITH_MODIFIER",
                 },
@@ -1467,23 +1602,25 @@ Object {
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 83,
           "type": "BRACKET",
         },
       ],
       "commands": Array [],
       "conditions": Array [
         Object {
+          "_sourceOffset": 73,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
+              "_sourceOffset": 74,
               "debugFlag": null,
-              "sourceOffset": 74,
-              "tilesWithModifier": Array [
+              "tileWithModifiers": Array [
                 Object {
-                  "modifier": null,
-                  "sourceOffset": 74,
+                  "_sourceOffset": 74,
+                  "direction": null,
+                  "isNegated": false,
+                  "isRandom": false,
                   "tile": "Bush?",
                   "type": "TILE_WITH_MODIFIER",
                 },
@@ -1491,27 +1628,32 @@ Object {
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 73,
           "type": "BRACKET",
         },
       ],
-      "modifiers": Array [],
-      "sourceOffset": 73,
-      "type": "RULE",
+      "directions": Array [],
+      "isLate": false,
+      "isRandom": false,
+      "isRigid": false,
+      "type": "SIMPLE",
     },
     Object {
+      "_sourceOffset": 92,
       "actions": Array [
         Object {
+          "_sourceOffset": 98,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
+              "_sourceOffset": 100,
               "debugFlag": null,
-              "sourceOffset": 100,
-              "tilesWithModifier": Array [
+              "tileWithModifiers": Array [
                 Object {
-                  "modifier": null,
-                  "sourceOffset": 100,
+                  "_sourceOffset": 100,
+                  "direction": null,
+                  "isNegated": false,
+                  "isRandom": false,
                   "tile": ".",
                   "type": "TILE_WITH_MODIFIER",
                 },
@@ -1519,23 +1661,25 @@ Object {
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 98,
           "type": "BRACKET",
         },
       ],
       "commands": Array [],
       "conditions": Array [
         Object {
+          "_sourceOffset": 92,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
+              "_sourceOffset": 93,
               "debugFlag": null,
-              "sourceOffset": 93,
-              "tilesWithModifier": Array [
+              "tileWithModifiers": Array [
                 Object {
-                  "modifier": null,
-                  "sourceOffset": 93,
+                  "_sourceOffset": 93,
+                  "direction": null,
+                  "isNegated": false,
+                  "isRandom": false,
                   "tile": ".",
                   "type": "TILE_WITH_MODIFIER",
                 },
@@ -1543,13 +1687,14 @@ Object {
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 92,
           "type": "BRACKET",
         },
       ],
-      "modifiers": Array [],
-      "sourceOffset": 92,
-      "type": "RULE",
+      "directions": Array [],
+      "isLate": false,
+      "isRandom": false,
+      "isRigid": false,
+      "type": "SIMPLE",
     },
   ],
   "sounds": Array [],
@@ -1569,36 +1714,41 @@ Object {
     Object {
       "rules": Array [
         Object {
+          "_sourceOffset": 45,
           "rules": Array [
             Object {
+              "_sourceOffset": 45,
               "actions": Array [
                 Object {
+                  "_sourceOffset": 58,
                   "againHack": false,
                   "debugFlag": null,
                   "neighbors": Array [
                     Object {
-                      "sourceOffset": 60,
-                      "tilesWithModifier": Array [],
+                      "_sourceOffset": 60,
+                      "tileWithModifiers": Array [],
                       "type": "NEIGHBOR",
                     },
                   ],
-                  "sourceOffset": 58,
                   "type": "BRACKET",
                 },
               ],
               "commands": Array [],
               "conditions": Array [
                 Object {
+                  "_sourceOffset": 52,
                   "againHack": false,
                   "debugFlag": null,
                   "neighbors": Array [
                     Object {
+                      "_sourceOffset": 53,
                       "debugFlag": null,
-                      "sourceOffset": 53,
-                      "tilesWithModifier": Array [
+                      "tileWithModifiers": Array [
                         Object {
-                          "modifier": null,
-                          "sourceOffset": 53,
+                          "_sourceOffset": 53,
+                          "direction": null,
+                          "isNegated": false,
+                          "isRandom": false,
                           "tile": ".",
                           "type": "TILE_WITH_MODIFIER",
                         },
@@ -1606,45 +1756,48 @@ Object {
                       "type": "NEIGHBOR",
                     },
                   ],
-                  "sourceOffset": 52,
                   "type": "BRACKET",
                 },
               ],
-              "modifiers": Array [
-                "RANDOM",
-              ],
-              "sourceOffset": 45,
-              "type": "RULE",
+              "directions": Array [],
+              "isLate": false,
+              "isRandom": true,
+              "isRigid": false,
+              "type": "SIMPLE",
             },
             Object {
+              "_sourceOffset": 63,
               "actions": Array [
                 Object {
+                  "_sourceOffset": 75,
                   "againHack": false,
                   "debugFlag": null,
                   "neighbors": Array [
                     Object {
-                      "sourceOffset": 77,
-                      "tilesWithModifier": Array [],
+                      "_sourceOffset": 77,
+                      "tileWithModifiers": Array [],
                       "type": "NEIGHBOR",
                     },
                   ],
-                  "sourceOffset": 75,
                   "type": "BRACKET",
                 },
               ],
               "commands": Array [],
               "conditions": Array [
                 Object {
+                  "_sourceOffset": 64,
                   "againHack": false,
                   "debugFlag": null,
                   "neighbors": Array [
                     Object {
+                      "_sourceOffset": 65,
                       "debugFlag": null,
-                      "sourceOffset": 65,
-                      "tilesWithModifier": Array [
+                      "tileWithModifiers": Array [
                         Object {
-                          "modifier": null,
-                          "sourceOffset": 65,
+                          "_sourceOffset": 65,
+                          "direction": null,
+                          "isNegated": false,
+                          "isRandom": false,
                           "tile": "Player",
                           "type": "TILE_WITH_MODIFIER",
                         },
@@ -1652,16 +1805,16 @@ Object {
                       "type": "NEIGHBOR",
                     },
                   ],
-                  "sourceOffset": 64,
                   "type": "BRACKET",
                 },
               ],
-              "modifiers": Array [],
-              "sourceOffset": 63,
-              "type": "RULE",
+              "directions": Array [],
+              "isLate": false,
+              "isRandom": false,
+              "isRigid": false,
+              "type": "SIMPLE",
             },
           ],
-          "sourceOffset": 45,
           "type": "RULE_GROUP",
         },
       ],
@@ -1683,36 +1836,41 @@ Object {
   "metadata": Array [],
   "rules": Array [
     Object {
+      "_sourceOffset": 35,
       "rules": Array [
         Object {
+          "_sourceOffset": 35,
           "actions": Array [
             Object {
+              "_sourceOffset": 48,
               "againHack": false,
               "debugFlag": null,
               "neighbors": Array [
                 Object {
-                  "sourceOffset": 50,
-                  "tilesWithModifier": Array [],
+                  "_sourceOffset": 50,
+                  "tileWithModifiers": Array [],
                   "type": "NEIGHBOR",
                 },
               ],
-              "sourceOffset": 48,
               "type": "BRACKET",
             },
           ],
           "commands": Array [],
           "conditions": Array [
             Object {
+              "_sourceOffset": 42,
               "againHack": false,
               "debugFlag": null,
               "neighbors": Array [
                 Object {
+                  "_sourceOffset": 43,
                   "debugFlag": null,
-                  "sourceOffset": 43,
-                  "tilesWithModifier": Array [
+                  "tileWithModifiers": Array [
                     Object {
-                      "modifier": null,
-                      "sourceOffset": 43,
+                      "_sourceOffset": 43,
+                      "direction": null,
+                      "isNegated": false,
+                      "isRandom": false,
                       "tile": ".",
                       "type": "TILE_WITH_MODIFIER",
                     },
@@ -1720,45 +1878,48 @@ Object {
                   "type": "NEIGHBOR",
                 },
               ],
-              "sourceOffset": 42,
               "type": "BRACKET",
             },
           ],
-          "modifiers": Array [
-            "RANDOM",
-          ],
-          "sourceOffset": 35,
-          "type": "RULE",
+          "directions": Array [],
+          "isLate": false,
+          "isRandom": true,
+          "isRigid": false,
+          "type": "SIMPLE",
         },
         Object {
+          "_sourceOffset": 53,
           "actions": Array [
             Object {
+              "_sourceOffset": 65,
               "againHack": false,
               "debugFlag": null,
               "neighbors": Array [
                 Object {
-                  "sourceOffset": 67,
-                  "tilesWithModifier": Array [],
+                  "_sourceOffset": 67,
+                  "tileWithModifiers": Array [],
                   "type": "NEIGHBOR",
                 },
               ],
-              "sourceOffset": 65,
               "type": "BRACKET",
             },
           ],
           "commands": Array [],
           "conditions": Array [
             Object {
+              "_sourceOffset": 54,
               "againHack": false,
               "debugFlag": null,
               "neighbors": Array [
                 Object {
+                  "_sourceOffset": 55,
                   "debugFlag": null,
-                  "sourceOffset": 55,
-                  "tilesWithModifier": Array [
+                  "tileWithModifiers": Array [
                     Object {
-                      "modifier": null,
-                      "sourceOffset": 55,
+                      "_sourceOffset": 55,
+                      "direction": null,
+                      "isNegated": false,
+                      "isRandom": false,
                       "tile": "Player",
                       "type": "TILE_WITH_MODIFIER",
                     },
@@ -1766,16 +1927,16 @@ Object {
                   "type": "NEIGHBOR",
                 },
               ],
-              "sourceOffset": 54,
               "type": "BRACKET",
             },
           ],
-          "modifiers": Array [],
-          "sourceOffset": 53,
-          "type": "RULE",
+          "directions": Array [],
+          "isLate": false,
+          "isRandom": false,
+          "isRigid": false,
+          "type": "SIMPLE",
         },
       ],
-      "sourceOffset": 35,
       "type": "RULE_GROUP",
     },
   ],
@@ -1794,34 +1955,38 @@ Object {
   "metadata": Array [],
   "rules": Array [
     Object {
+      "_sourceOffset": 34,
       "actions": Array [
         Object {
+          "_sourceOffset": 47,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
-              "sourceOffset": 49,
-              "tilesWithModifier": Array [],
+              "_sourceOffset": 49,
+              "tileWithModifiers": Array [],
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 47,
           "type": "BRACKET",
         },
       ],
       "commands": Array [],
       "conditions": Array [
         Object {
+          "_sourceOffset": 41,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
+              "_sourceOffset": 42,
               "debugFlag": null,
-              "sourceOffset": 42,
-              "tilesWithModifier": Array [
+              "tileWithModifiers": Array [
                 Object {
-                  "modifier": null,
-                  "sourceOffset": 42,
+                  "_sourceOffset": 42,
+                  "direction": null,
+                  "isNegated": false,
+                  "isRandom": false,
                   "tile": ".",
                   "type": "TILE_WITH_MODIFIER",
                 },
@@ -1829,15 +1994,14 @@ Object {
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 41,
           "type": "BRACKET",
         },
       ],
-      "modifiers": Array [
-        "RANDOM",
-      ],
-      "sourceOffset": 34,
-      "type": "RULE",
+      "directions": Array [],
+      "isLate": false,
+      "isRandom": true,
+      "isRigid": false,
+      "type": "SIMPLE",
     },
   ],
   "sounds": Array [],
@@ -1855,363 +2019,390 @@ Object {
   "metadata": Array [],
   "rules": Array [
     Object {
+      "_sourceOffset": 35,
       "actions": Array [
         Object {
+          "_sourceOffset": 47,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
-              "sourceOffset": 49,
-              "tilesWithModifier": Array [],
+              "_sourceOffset": 49,
+              "tileWithModifiers": Array [],
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 47,
           "type": "BRACKET",
         },
       ],
       "commands": Array [],
       "conditions": Array [
         Object {
+          "_sourceOffset": 41,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
-              "sourceOffset": 42,
-              "tilesWithModifier": Array [],
+              "_sourceOffset": 42,
+              "tileWithModifiers": Array [],
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 41,
           "type": "BRACKET",
         },
       ],
-      "modifiers": Array [
+      "directions": Array [
         "RIGHT",
       ],
-      "sourceOffset": 35,
-      "type": "RULE",
+      "isLate": false,
+      "isRandom": false,
+      "isRigid": false,
+      "type": "SIMPLE",
     },
     Object {
       "rules": Array [
         Object {
+          "_sourceOffset": 78,
           "rules": Array [
             Object {
+              "_sourceOffset": 78,
               "actions": Array [
                 Object {
+                  "_sourceOffset": 90,
                   "againHack": false,
                   "debugFlag": null,
                   "neighbors": Array [
                     Object {
-                      "sourceOffset": 92,
-                      "tilesWithModifier": Array [],
+                      "_sourceOffset": 92,
+                      "tileWithModifiers": Array [],
                       "type": "NEIGHBOR",
                     },
                   ],
-                  "sourceOffset": 90,
                   "type": "BRACKET",
                 },
               ],
               "commands": Array [],
               "conditions": Array [
                 Object {
+                  "_sourceOffset": 84,
                   "againHack": false,
                   "debugFlag": null,
                   "neighbors": Array [
                     Object {
-                      "sourceOffset": 85,
-                      "tilesWithModifier": Array [],
+                      "_sourceOffset": 85,
+                      "tileWithModifiers": Array [],
                       "type": "NEIGHBOR",
                     },
                   ],
-                  "sourceOffset": 84,
                   "type": "BRACKET",
                 },
               ],
-              "modifiers": Array [
+              "directions": Array [
                 "RIGHT",
               ],
-              "sourceOffset": 78,
-              "type": "RULE",
+              "isLate": false,
+              "isRandom": false,
+              "isRigid": false,
+              "type": "SIMPLE",
             },
             Object {
+              "_sourceOffset": 96,
               "actions": Array [
                 Object {
+                  "_sourceOffset": 109,
                   "againHack": false,
                   "debugFlag": null,
                   "neighbors": Array [
                     Object {
-                      "sourceOffset": 111,
-                      "tilesWithModifier": Array [],
+                      "_sourceOffset": 111,
+                      "tileWithModifiers": Array [],
                       "type": "NEIGHBOR",
                     },
                   ],
-                  "sourceOffset": 109,
                   "type": "BRACKET",
                 },
               ],
               "commands": Array [],
               "conditions": Array [
                 Object {
+                  "_sourceOffset": 103,
                   "againHack": false,
                   "debugFlag": null,
                   "neighbors": Array [
                     Object {
-                      "sourceOffset": 104,
-                      "tilesWithModifier": Array [],
+                      "_sourceOffset": 104,
+                      "tileWithModifiers": Array [],
                       "type": "NEIGHBOR",
                     },
                   ],
-                  "sourceOffset": 103,
                   "type": "BRACKET",
                 },
               ],
-              "modifiers": Array [
+              "directions": Array [
                 "RIGHT",
               ],
-              "sourceOffset": 96,
-              "type": "RULE",
+              "isLate": false,
+              "isRandom": false,
+              "isRigid": false,
+              "type": "SIMPLE",
             },
             Object {
+              "_sourceOffset": 115,
               "actions": Array [
                 Object {
+                  "_sourceOffset": 128,
                   "againHack": false,
                   "debugFlag": null,
                   "neighbors": Array [
                     Object {
-                      "sourceOffset": 130,
-                      "tilesWithModifier": Array [],
+                      "_sourceOffset": 130,
+                      "tileWithModifiers": Array [],
                       "type": "NEIGHBOR",
                     },
                   ],
-                  "sourceOffset": 128,
                   "type": "BRACKET",
                 },
               ],
               "commands": Array [],
               "conditions": Array [
                 Object {
+                  "_sourceOffset": 122,
                   "againHack": false,
                   "debugFlag": null,
                   "neighbors": Array [
                     Object {
-                      "sourceOffset": 123,
-                      "tilesWithModifier": Array [],
+                      "_sourceOffset": 123,
+                      "tileWithModifiers": Array [],
                       "type": "NEIGHBOR",
                     },
                   ],
-                  "sourceOffset": 122,
                   "type": "BRACKET",
                 },
               ],
-              "modifiers": Array [
+              "directions": Array [
                 "RIGHT",
               ],
-              "sourceOffset": 115,
-              "type": "RULE",
+              "isLate": false,
+              "isRandom": false,
+              "isRigid": false,
+              "type": "SIMPLE",
             },
             Object {
+              "_sourceOffset": 135,
               "actions": Array [
                 Object {
+                  "_sourceOffset": 148,
                   "againHack": false,
                   "debugFlag": null,
                   "neighbors": Array [
                     Object {
-                      "sourceOffset": 150,
-                      "tilesWithModifier": Array [],
+                      "_sourceOffset": 150,
+                      "tileWithModifiers": Array [],
                       "type": "NEIGHBOR",
                     },
                   ],
-                  "sourceOffset": 148,
                   "type": "BRACKET",
                 },
               ],
               "commands": Array [],
               "conditions": Array [
                 Object {
+                  "_sourceOffset": 142,
                   "againHack": false,
                   "debugFlag": null,
                   "neighbors": Array [
                     Object {
-                      "sourceOffset": 143,
-                      "tilesWithModifier": Array [],
+                      "_sourceOffset": 143,
+                      "tileWithModifiers": Array [],
                       "type": "NEIGHBOR",
                     },
                   ],
-                  "sourceOffset": 142,
                   "type": "BRACKET",
                 },
               ],
-              "modifiers": Array [
+              "directions": Array [
                 "RIGHT",
               ],
-              "sourceOffset": 135,
-              "type": "RULE",
+              "isLate": false,
+              "isRandom": false,
+              "isRigid": false,
+              "type": "SIMPLE",
             },
           ],
-          "sourceOffset": 78,
           "type": "RULE_GROUP",
         },
         Object {
+          "_sourceOffset": 171,
           "rules": Array [
             Object {
+              "_sourceOffset": 171,
               "actions": Array [
                 Object {
+                  "_sourceOffset": 183,
                   "againHack": false,
                   "debugFlag": null,
                   "neighbors": Array [
                     Object {
-                      "sourceOffset": 185,
-                      "tilesWithModifier": Array [],
+                      "_sourceOffset": 185,
+                      "tileWithModifiers": Array [],
                       "type": "NEIGHBOR",
                     },
                   ],
-                  "sourceOffset": 183,
                   "type": "BRACKET",
                 },
               ],
               "commands": Array [],
               "conditions": Array [
                 Object {
+                  "_sourceOffset": 177,
                   "againHack": false,
                   "debugFlag": null,
                   "neighbors": Array [
                     Object {
-                      "sourceOffset": 178,
-                      "tilesWithModifier": Array [],
+                      "_sourceOffset": 178,
+                      "tileWithModifiers": Array [],
                       "type": "NEIGHBOR",
                     },
                   ],
-                  "sourceOffset": 177,
                   "type": "BRACKET",
                 },
               ],
-              "modifiers": Array [
+              "directions": Array [
                 "RIGHT",
               ],
-              "sourceOffset": 171,
-              "type": "RULE",
+              "isLate": false,
+              "isRandom": false,
+              "isRigid": false,
+              "type": "SIMPLE",
             },
             Object {
+              "_sourceOffset": 189,
               "actions": Array [
                 Object {
+                  "_sourceOffset": 202,
                   "againHack": false,
                   "debugFlag": null,
                   "neighbors": Array [
                     Object {
-                      "sourceOffset": 204,
-                      "tilesWithModifier": Array [],
+                      "_sourceOffset": 204,
+                      "tileWithModifiers": Array [],
                       "type": "NEIGHBOR",
                     },
                   ],
-                  "sourceOffset": 202,
                   "type": "BRACKET",
                 },
               ],
               "commands": Array [],
               "conditions": Array [
                 Object {
+                  "_sourceOffset": 196,
                   "againHack": false,
                   "debugFlag": null,
                   "neighbors": Array [
                     Object {
-                      "sourceOffset": 197,
-                      "tilesWithModifier": Array [],
+                      "_sourceOffset": 197,
+                      "tileWithModifiers": Array [],
                       "type": "NEIGHBOR",
                     },
                   ],
-                  "sourceOffset": 196,
                   "type": "BRACKET",
                 },
               ],
-              "modifiers": Array [
+              "directions": Array [
                 "RIGHT",
               ],
-              "sourceOffset": 189,
-              "type": "RULE",
+              "isLate": false,
+              "isRandom": false,
+              "isRigid": false,
+              "type": "SIMPLE",
             },
           ],
-          "sourceOffset": 171,
           "type": "RULE_GROUP",
         },
         Object {
+          "_sourceOffset": 208,
           "actions": Array [
             Object {
+              "_sourceOffset": 220,
               "againHack": false,
               "debugFlag": null,
               "neighbors": Array [
                 Object {
-                  "sourceOffset": 222,
-                  "tilesWithModifier": Array [],
+                  "_sourceOffset": 222,
+                  "tileWithModifiers": Array [],
                   "type": "NEIGHBOR",
                 },
               ],
-              "sourceOffset": 220,
               "type": "BRACKET",
             },
           ],
           "commands": Array [],
           "conditions": Array [
             Object {
+              "_sourceOffset": 214,
               "againHack": false,
               "debugFlag": null,
               "neighbors": Array [
                 Object {
-                  "sourceOffset": 215,
-                  "tilesWithModifier": Array [],
+                  "_sourceOffset": 215,
+                  "tileWithModifiers": Array [],
                   "type": "NEIGHBOR",
                 },
               ],
-              "sourceOffset": 214,
               "type": "BRACKET",
             },
           ],
-          "modifiers": Array [
+          "directions": Array [
             "RIGHT",
           ],
-          "sourceOffset": 208,
-          "type": "RULE",
+          "isLate": false,
+          "isRandom": false,
+          "isRigid": false,
+          "type": "SIMPLE",
         },
       ],
       "type": "RULE_LOOP",
     },
     Object {
+      "_sourceOffset": 233,
       "actions": Array [
         Object {
+          "_sourceOffset": 245,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
-              "sourceOffset": 247,
-              "tilesWithModifier": Array [],
+              "_sourceOffset": 247,
+              "tileWithModifiers": Array [],
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 245,
           "type": "BRACKET",
         },
       ],
       "commands": Array [],
       "conditions": Array [
         Object {
+          "_sourceOffset": 239,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
-              "sourceOffset": 240,
-              "tilesWithModifier": Array [],
+              "_sourceOffset": 240,
+              "tileWithModifiers": Array [],
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 239,
           "type": "BRACKET",
         },
       ],
-      "modifiers": Array [
+      "directions": Array [
         "RIGHT",
       ],
-      "sourceOffset": 233,
-      "type": "RULE",
+      "isLate": false,
+      "isRandom": false,
+      "isRigid": false,
+      "type": "SIMPLE",
     },
   ],
   "sounds": Array [],
@@ -2229,34 +2420,38 @@ Object {
   "metadata": Array [],
   "rules": Array [
     Object {
+      "_sourceOffset": 34,
       "actions": Array [
         Object {
+          "_sourceOffset": 42,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
-              "sourceOffset": 44,
-              "tilesWithModifier": Array [],
+              "_sourceOffset": 44,
+              "tileWithModifiers": Array [],
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 42,
           "type": "BRACKET",
         },
       ],
       "commands": Array [],
       "conditions": Array [
         Object {
+          "_sourceOffset": 34,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
+              "_sourceOffset": 35,
               "debugFlag": null,
-              "sourceOffset": 35,
-              "tilesWithModifier": Array [
+              "tileWithModifiers": Array [
                 Object {
-                  "modifier": null,
-                  "sourceOffset": 35,
+                  "_sourceOffset": 35,
+                  "direction": null,
+                  "isNegated": false,
+                  "isRandom": false,
                   "tile": "z_x",
                   "type": "TILE_WITH_MODIFIER",
                 },
@@ -2264,13 +2459,14 @@ Object {
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 34,
           "type": "BRACKET",
         },
       ],
-      "modifiers": Array [],
-      "sourceOffset": 34,
-      "type": "RULE",
+      "directions": Array [],
+      "isLate": false,
+      "isRandom": false,
+      "isRigid": false,
+      "type": "SIMPLE",
     },
   ],
   "sounds": Array [],
@@ -2288,34 +2484,38 @@ Object {
   "metadata": Array [],
   "rules": Array [
     Object {
+      "_sourceOffset": 34,
       "actions": Array [
         Object {
+          "_sourceOffset": 40,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
-              "sourceOffset": 42,
-              "tilesWithModifier": Array [],
+              "_sourceOffset": 42,
+              "tileWithModifiers": Array [],
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 40,
           "type": "BRACKET",
         },
       ],
       "commands": Array [],
       "conditions": Array [
         Object {
+          "_sourceOffset": 34,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
+              "_sourceOffset": 35,
               "debugFlag": null,
-              "sourceOffset": 35,
-              "tilesWithModifier": Array [
+              "tileWithModifiers": Array [
                 Object {
-                  "modifier": null,
-                  "sourceOffset": 35,
+                  "_sourceOffset": 35,
+                  "direction": null,
+                  "isNegated": false,
+                  "isRandom": false,
                   "tile": ".",
                   "type": "TILE_WITH_MODIFIER",
                 },
@@ -2323,13 +2523,14 @@ Object {
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 34,
           "type": "BRACKET",
         },
       ],
-      "modifiers": Array [],
-      "sourceOffset": 34,
-      "type": "RULE",
+      "directions": Array [],
+      "isLate": false,
+      "isRandom": false,
+      "isRigid": false,
+      "type": "SIMPLE",
     },
   ],
   "sounds": Array [],
@@ -2347,16 +2548,20 @@ Object {
   "metadata": Array [],
   "rules": Array [
     Object {
+      "_sourceOffset": 34,
       "actions": Array [
         Object {
+          "_sourceOffset": 56,
           "afterNeighbors": Array [
             Object {
+              "_sourceOffset": 75,
               "debugFlag": null,
-              "sourceOffset": 75,
-              "tilesWithModifier": Array [
+              "tileWithModifiers": Array [
                 Object {
-                  "modifier": null,
-                  "sourceOffset": 76,
+                  "_sourceOffset": 76,
+                  "direction": null,
+                  "isNegated": false,
+                  "isRandom": false,
                   "tile": "x",
                   "type": "TILE_WITH_MODIFIER",
                 },
@@ -2364,19 +2569,21 @@ Object {
               "type": "NEIGHBOR",
             },
             Object {
-              "sourceOffset": 79,
-              "tilesWithModifier": Array [],
+              "_sourceOffset": 79,
+              "tileWithModifiers": Array [],
               "type": "NEIGHBOR",
             },
           ],
           "beforeNeighbors": Array [
             Object {
+              "_sourceOffset": 58,
               "debugFlag": null,
-              "sourceOffset": 58,
-              "tilesWithModifier": Array [
+              "tileWithModifiers": Array [
                 Object {
-                  "modifier": "RANDOM",
-                  "sourceOffset": 59,
+                  "_sourceOffset": 59,
+                  "direction": undefined,
+                  "isNegated": false,
+                  "isRandom": true,
                   "tile": "z",
                   "type": "TILE_WITH_MODIFIER",
                 },
@@ -2385,21 +2592,23 @@ Object {
             },
           ],
           "debugFlag": null,
-          "sourceOffset": 56,
           "type": "ELLIPSIS_BRACKET",
         },
       ],
       "commands": Array [],
       "conditions": Array [
         Object {
+          "_sourceOffset": 34,
           "afterNeighbors": Array [
             Object {
+              "_sourceOffset": 45,
               "debugFlag": null,
-              "sourceOffset": 45,
-              "tilesWithModifier": Array [
+              "tileWithModifiers": Array [
                 Object {
-                  "modifier": null,
-                  "sourceOffset": 46,
+                  "_sourceOffset": 46,
+                  "direction": null,
+                  "isNegated": false,
+                  "isRandom": false,
                   "tile": "x",
                   "type": "TILE_WITH_MODIFIER",
                 },
@@ -2407,12 +2616,14 @@ Object {
               "type": "NEIGHBOR",
             },
             Object {
+              "_sourceOffset": 49,
               "debugFlag": null,
-              "sourceOffset": 49,
-              "tilesWithModifier": Array [
+              "tileWithModifiers": Array [
                 Object {
-                  "modifier": null,
-                  "sourceOffset": 50,
+                  "_sourceOffset": 50,
+                  "direction": null,
+                  "isNegated": false,
+                  "isRandom": false,
                   "tile": "z",
                   "type": "TILE_WITH_MODIFIER",
                 },
@@ -2422,12 +2633,14 @@ Object {
           ],
           "beforeNeighbors": Array [
             Object {
+              "_sourceOffset": 35,
               "debugFlag": null,
-              "sourceOffset": 35,
-              "tilesWithModifier": Array [
+              "tileWithModifiers": Array [
                 Object {
-                  "modifier": null,
-                  "sourceOffset": 36,
+                  "_sourceOffset": 36,
+                  "direction": null,
+                  "isNegated": false,
+                  "isRandom": false,
                   "tile": "z",
                   "type": "TILE_WITH_MODIFIER",
                 },
@@ -2436,13 +2649,14 @@ Object {
             },
           ],
           "debugFlag": null,
-          "sourceOffset": 34,
           "type": "ELLIPSIS_BRACKET",
         },
       ],
-      "modifiers": Array [],
-      "sourceOffset": 34,
-      "type": "RULE",
+      "directions": Array [],
+      "isLate": false,
+      "isRandom": false,
+      "isRigid": false,
+      "type": "SIMPLE",
     },
   ],
   "sounds": Array [],
@@ -2460,39 +2674,43 @@ Object {
   "metadata": Array [],
   "rules": Array [
     Object {
+      "_sourceOffset": 34,
       "actions": Array [
         Object {
+          "_sourceOffset": 46,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
-              "sourceOffset": 48,
-              "tilesWithModifier": Array [],
+              "_sourceOffset": 48,
+              "tileWithModifiers": Array [],
               "type": "NEIGHBOR",
             },
             Object {
-              "sourceOffset": 50,
-              "tilesWithModifier": Array [],
+              "_sourceOffset": 50,
+              "tileWithModifiers": Array [],
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 46,
           "type": "BRACKET",
         },
       ],
       "commands": Array [],
       "conditions": Array [
         Object {
+          "_sourceOffset": 34,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
+              "_sourceOffset": 35,
               "debugFlag": null,
-              "sourceOffset": 35,
-              "tilesWithModifier": Array [
+              "tileWithModifiers": Array [
                 Object {
-                  "modifier": null,
-                  "sourceOffset": 36,
+                  "_sourceOffset": 36,
+                  "direction": null,
+                  "isNegated": false,
+                  "isRandom": false,
                   "tile": "z",
                   "type": "TILE_WITH_MODIFIER",
                 },
@@ -2500,12 +2718,14 @@ Object {
               "type": "NEIGHBOR",
             },
             Object {
+              "_sourceOffset": 39,
               "debugFlag": null,
-              "sourceOffset": 39,
-              "tilesWithModifier": Array [
+              "tileWithModifiers": Array [
                 Object {
-                  "modifier": null,
-                  "sourceOffset": 40,
+                  "_sourceOffset": 40,
+                  "direction": null,
+                  "isNegated": false,
+                  "isRandom": false,
                   "tile": "x",
                   "type": "TILE_WITH_MODIFIER",
                 },
@@ -2513,13 +2733,14 @@ Object {
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 34,
           "type": "BRACKET",
         },
       ],
-      "modifiers": Array [],
-      "sourceOffset": 34,
-      "type": "RULE",
+      "directions": Array [],
+      "isLate": false,
+      "isRandom": false,
+      "isRigid": false,
+      "type": "SIMPLE",
     },
   ],
   "sounds": Array [],
@@ -2537,40 +2758,46 @@ Object {
   "metadata": Array [],
   "rules": Array [
     Object {
+      "_sourceOffset": 34,
       "actions": Array [
         Object {
+          "_sourceOffset": 44,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
-              "sourceOffset": 46,
-              "tilesWithModifier": Array [],
+              "_sourceOffset": 46,
+              "tileWithModifiers": Array [],
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 44,
           "type": "BRACKET",
         },
       ],
       "commands": Array [],
       "conditions": Array [
         Object {
+          "_sourceOffset": 34,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
+              "_sourceOffset": 35,
               "debugFlag": null,
-              "sourceOffset": 35,
-              "tilesWithModifier": Array [
+              "tileWithModifiers": Array [
                 Object {
-                  "modifier": null,
-                  "sourceOffset": 36,
+                  "_sourceOffset": 36,
+                  "direction": null,
+                  "isNegated": false,
+                  "isRandom": false,
                   "tile": "z",
                   "type": "TILE_WITH_MODIFIER",
                 },
                 Object {
-                  "modifier": null,
-                  "sourceOffset": 38,
+                  "_sourceOffset": 38,
+                  "direction": null,
+                  "isNegated": false,
+                  "isRandom": false,
                   "tile": "x",
                   "type": "TILE_WITH_MODIFIER",
                 },
@@ -2578,13 +2805,14 @@ Object {
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 34,
           "type": "BRACKET",
         },
       ],
-      "modifiers": Array [],
-      "sourceOffset": 34,
-      "type": "RULE",
+      "directions": Array [],
+      "isLate": false,
+      "isRandom": false,
+      "isRigid": false,
+      "type": "SIMPLE",
     },
   ],
   "sounds": Array [],
@@ -2602,34 +2830,38 @@ Object {
   "metadata": Array [],
   "rules": Array [
     Object {
+      "_sourceOffset": 34,
       "actions": Array [
         Object {
+          "_sourceOffset": 42,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
-              "sourceOffset": 44,
-              "tilesWithModifier": Array [],
+              "_sourceOffset": 44,
+              "tileWithModifiers": Array [],
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 42,
           "type": "BRACKET",
         },
       ],
       "commands": Array [],
       "conditions": Array [
         Object {
+          "_sourceOffset": 34,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
+              "_sourceOffset": 35,
               "debugFlag": null,
-              "sourceOffset": 35,
-              "tilesWithModifier": Array [
+              "tileWithModifiers": Array [
                 Object {
-                  "modifier": null,
-                  "sourceOffset": 36,
+                  "_sourceOffset": 36,
+                  "direction": null,
+                  "isNegated": false,
+                  "isRandom": false,
                   "tile": "z",
                   "type": "TILE_WITH_MODIFIER",
                 },
@@ -2637,13 +2869,14 @@ Object {
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 34,
           "type": "BRACKET",
         },
       ],
-      "modifiers": Array [],
-      "sourceOffset": 34,
-      "type": "RULE",
+      "directions": Array [],
+      "isLate": false,
+      "isRandom": false,
+      "isRigid": false,
+      "type": "SIMPLE",
     },
   ],
   "sounds": Array [],
@@ -2661,18 +2894,22 @@ Object {
   "metadata": Array [],
   "rules": Array [
     Object {
+      "_sourceOffset": 34,
       "actions": Array [
         Object {
+          "_sourceOffset": 42,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
+              "_sourceOffset": 44,
               "debugFlag": null,
-              "sourceOffset": 44,
-              "tilesWithModifier": Array [
+              "tileWithModifiers": Array [
                 Object {
-                  "modifier": null,
-                  "sourceOffset": 45,
+                  "_sourceOffset": 45,
+                  "direction": null,
+                  "isNegated": false,
+                  "isRandom": false,
                   "tile": "z",
                   "type": "TILE_WITH_MODIFIER",
                 },
@@ -2680,23 +2917,25 @@ Object {
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 42,
           "type": "BRACKET",
         },
       ],
       "commands": Array [],
       "conditions": Array [
         Object {
+          "_sourceOffset": 34,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
+              "_sourceOffset": 35,
               "debugFlag": null,
-              "sourceOffset": 35,
-              "tilesWithModifier": Array [
+              "tileWithModifiers": Array [
                 Object {
-                  "modifier": null,
-                  "sourceOffset": 36,
+                  "_sourceOffset": 36,
+                  "direction": null,
+                  "isNegated": false,
+                  "isRandom": false,
                   "tile": "z",
                   "type": "TILE_WITH_MODIFIER",
                 },
@@ -2704,13 +2943,14 @@ Object {
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 34,
           "type": "BRACKET",
         },
       ],
-      "modifiers": Array [],
-      "sourceOffset": 34,
-      "type": "RULE",
+      "directions": Array [],
+      "isLate": false,
+      "isRandom": false,
+      "isRigid": false,
+      "type": "SIMPLE",
     },
   ],
   "sounds": Array [],
@@ -2728,18 +2968,22 @@ Object {
   "metadata": Array [],
   "rules": Array [
     Object {
+      "_sourceOffset": 34,
       "actions": Array [
         Object {
+          "_sourceOffset": 39,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
+              "_sourceOffset": 40,
               "debugFlag": null,
-              "sourceOffset": 40,
-              "tilesWithModifier": Array [
+              "tileWithModifiers": Array [
                 Object {
-                  "modifier": null,
-                  "sourceOffset": 40,
+                  "_sourceOffset": 40,
+                  "direction": null,
+                  "isNegated": false,
+                  "isRandom": false,
                   "tile": "z",
                   "type": "TILE_WITH_MODIFIER",
                 },
@@ -2747,23 +2991,25 @@ Object {
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 39,
           "type": "BRACKET",
         },
       ],
       "commands": Array [],
       "conditions": Array [
         Object {
+          "_sourceOffset": 34,
           "againHack": false,
           "debugFlag": null,
           "neighbors": Array [
             Object {
+              "_sourceOffset": 35,
               "debugFlag": null,
-              "sourceOffset": 35,
-              "tilesWithModifier": Array [
+              "tileWithModifiers": Array [
                 Object {
-                  "modifier": null,
-                  "sourceOffset": 35,
+                  "_sourceOffset": 35,
+                  "direction": null,
+                  "isNegated": false,
+                  "isRandom": false,
                   "tile": "z",
                   "type": "TILE_WITH_MODIFIER",
                 },
@@ -2771,13 +3017,14 @@ Object {
               "type": "NEIGHBOR",
             },
           ],
-          "sourceOffset": 34,
           "type": "BRACKET",
         },
       ],
-      "modifiers": Array [],
-      "sourceOffset": 34,
-      "type": "RULE",
+      "directions": Array [],
+      "isLate": false,
+      "isRandom": false,
+      "isRigid": false,
+      "type": "SIMPLE",
     },
   ],
   "sounds": Array [],
