@@ -11,7 +11,7 @@ import { Dimension, GameMetadata } from '../models/metadata'
 import { GameSound, GameSoundMoveDirection, GameSoundMoveSimple, GameSoundNormal, GameSoundSimpleEnum } from '../models/sound'
 import { GameLegendTileAnd, GameLegendTileOr, GameLegendTileSimple, GameSprite, GameSpritePixels, GameSpriteSingleColor, IGameTile } from '../models/tile'
 import { WinConditionOn, WinConditionSimple } from '../models/winCondition'
-import { AbstractRuleish, AST_RULE_MODIFIER, ASTRule, ASTRuleBracket, ASTRuleBracketEllipsis, ASTRuleBracketNeighbor, ASTRuleGroup, ASTRuleLoop, ASTTileWithModifier } from './astRule'
+import { AbstractRuleish, ASTRule, ASTRuleBracket, ASTRuleBracketEllipsis, ASTRuleBracketNeighbor, ASTRuleGroup, ASTRuleLoop, ASTTileWithModifier } from './astRule'
 import * as ast from './astTypes'
 import * as compiledGrammar from './grammar'
 
@@ -62,21 +62,21 @@ class AstBuilder {
         this.soundCache = new Map()
         this.validationMessages = new Map()
     }
-    public build(root: ast.IASTGame<string>) {
+    public build(root: ast.IASTGame<string, string, number | '.'>) {
         this.validationMessages.clear() // clear because we are parsing
-        const source = this.toSource({ type: 'GAME', sourceOffset: 0 })
+        const source = this.toSource({ _sourceOffset: 0 })
 
         const metadata = new GameMetadata()
         root.metadata.forEach((pair) => {
             let value
             if (typeof pair.value === 'object' && pair.value.type) {
                 switch (pair.value.type) {
-                    case 'COLOR_HEX3':
-                    case 'COLOR_HEX6':
-                    case 'COLOR_NAME':
+                    case ast.COLOR_TYPE.HEX3:
+                    case ast.COLOR_TYPE.HEX6:
+                    case ast.COLOR_TYPE.NAME:
                         {
                             const v = pair.value
-                            value = this.buildColor(v as ast.ColorName, metadata.colorPalette)
+                            value = this.buildColor(v, metadata.colorPalette)
                         }
                         break
                     case 'WIDTH_AND_HEIGHT':
@@ -104,15 +104,40 @@ class AstBuilder {
         const rules = root.rules.map((n) => this.buildRuleCollection(n))
         const winConditions = root.winConditions.map((n) => this.buildWinConditon(n))
         const levels = root.levels.map((n) => this.buildLevel(n))
-        const gameData = new GameData(source, root.title, metadata, sprites, legendItems, sounds, collisionLayers, rules, winConditions, levels)
+
+        // assign an index to each GameSprite
+        sprites.forEach((sprite, index) => {
+            sprite.allSpritesBitSetIndex = index
+        })
+
+        // Simplify the rules by de-duplicating them
+        const ruleCache = new Map()
+        const bracketCache = new Map()
+        const neighborCache = new Map()
+        const tileCache = new Map()
+        const simpleRules = rules.map((rule) => rule.simplify(ruleCache, bracketCache, neighborCache, tileCache))
+
+        const gameData = new GameData(source, root.title, metadata, sprites, legendItems, sounds, collisionLayers, simpleRules, winConditions, levels)
         const validationMessages = this.getValidationMessages()
         return { gameData, validationMessages }
     }
 
-    public buildSprite(node: ast.AbstractSprite, colorPalette: Optional<string>) {
+    public buildSprite(node: ast.Sprite<number | '.'>, colorPalette: Optional<string>) {
         let ret: GameSprite
-        if (node.pixels) {
-            ret = new GameSpritePixels(this.toSource(node), node.name, node.mapChar, node.colors.map((n) => this.buildColor(n, colorPalette)), node.pixels)
+        if (node.type === ast.SPRITE_TYPE.WITH_PIXELS) {
+            const source = this.toSource(node)
+            const colors = node.colors.map((n) => this.buildColor(n, colorPalette))
+            const pixels = node.pixels.map((row) => {
+                return row.map((col) => {
+                    if (col === '.') {
+                        return new TransparentColor(source)
+                    } else {
+                        return colors[col] || new TransparentColor(source)
+                    }
+                })
+            }) // Pixel colors are 0-indexed.
+
+            ret = new GameSpritePixels(source, node.name, node.mapChar, pixels)
         } else {
             ret = new GameSpriteSingleColor(this.toSource(node), node.name, node.mapChar, node.colors.map((n) => this.buildColor(n, colorPalette)))
         }
@@ -127,10 +152,10 @@ class AstBuilder {
         const source = this.toSource(node)
         const currentColorPalette = colorPalette || 'arnecolors'
         switch (node.type) {
-            case 'COLOR_HEX6':
-            case 'COLOR_HEX3':
+            case ast.COLOR_TYPE.HEX6:
+            case ast.COLOR_TYPE.HEX3:
                 return new HexColor(source, node.value)
-            case 'COLOR_NAME':
+            case ast.COLOR_TYPE.NAME:
                 if (node.value.toUpperCase() === 'TRANSPARENT') {
                     return new TransparentColor(source)
                 } else {
@@ -144,36 +169,36 @@ class AstBuilder {
                     }
                 }
             default:
-                throw new Error(`Unsupported type ${node.type}`)
+                throw new Error(`Unsupported type ${node}`)
         }
     }
 
-    public buildLegendItem(node: ast.AbstractLegendItem<string>) {
+    public buildLegendItem(node: ast.LegendItem<string>) {
         const source = this.toSource(node)
         switch (node.type) {
-            case 'LEGEND_ITEM_SIMPLE':
-                if (!node.value) { throw new Error(`BUG!!!!!!`) }
+            case ast.TILE_TYPE.SIMPLE:
+                if (!node.tile) { throw new Error(`BUG!!!!!!`) }
                 {
-                    const ret = new GameLegendTileSimple(source, node.name, this.cacheGet(node.value) as GameSprite)
+                    const ret = new GameLegendTileSimple(source, node.name, this.cacheGet(node.tile) as GameSprite)
                     this.cacheAdd(node.name, ret)
                     return ret
                 }
-            case 'LEGEND_ITEM_AND':
-                if (!node.values) { throw new Error(`BUG!!!!!!`) }
+            case ast.TILE_TYPE.AND:
+                if (!node.tiles) { throw new Error(`BUG!!!!!!`) }
                 {
-                    const ret = new GameLegendTileAnd(source, node.name, node.values.map((n) => this.cacheGet(n)))
+                    const ret = new GameLegendTileAnd(source, node.name, node.tiles.map((n) => this.cacheGet(n)))
                     this.cacheAdd(node.name, ret)
                     return ret
                 }
-            case 'LEGEND_ITEM_OR':
-                if (!node.values) { throw new Error(`BUG!!!!!!`) }
+            case ast.TILE_TYPE.OR:
+                if (!node.tiles) { throw new Error(`BUG!!!!!!`) }
                 {
-                    const ret = new GameLegendTileOr(source, node.name, node.values.map((n) => this.cacheGet(n)))
+                    const ret = new GameLegendTileOr(source, node.name, node.tiles.map((n) => this.cacheGet(n)))
                     this.cacheAdd(node.name, ret)
                     return ret
                 }
             default:
-                throw new Error(`Unsupported type ${node.type}`)
+                throw new Error(`Unsupported type ${node}`)
         }
     }
 
@@ -185,95 +210,78 @@ class AstBuilder {
         return new CollisionLayer(source, node.tiles.map((n) => this.cacheGet(n)), addValidation)
     }
 
-    public buildSound(node: ast.AbstractSound<string>) {
+    public buildSound(node: ast.SoundItem<string>) {
         const source = this.toSource(node)
 
         switch (node.type) {
             case 'SOUND_SFX':
-                {
-                    const n = node as ast.SoundSfx<string>
-                    const ret = new GameSound(source, node.soundCode)
-                    this.soundCacheAdd(n.sfx, ret)
-                    return ret
-                }
+                const ret = new GameSound(source, node.soundCode)
+                this.soundCacheAdd(node.soundEffect, ret)
+                return ret
             case 'SOUND_WHEN':
-                {
-                    const n = node as ast.SoundWhen<string>
-                    return new GameSoundSimpleEnum(source, n.when, node.soundCode)
-                }
+                return new GameSoundSimpleEnum(source, node.when, node.soundCode)
             case 'SOUND_SPRITE_MOVE':
-                {
-                    const n = node as ast.SoundSpriteMove<string>
-                    return new GameSoundMoveSimple(source, this.cacheGet(n.sprite), node.soundCode)
-                }
+                return new GameSoundMoveSimple(source, this.cacheGet(node.sprite), node.soundCode)
             case 'SOUND_SPRITE_DIRECTION':
-                {
-                    const n = node as ast.SoundSpriteMoveDirection<string>
-                    return new GameSoundMoveDirection(source, this.cacheGet(n.sprite), n.spriteDirection, node.soundCode)
-                }
+                return new GameSoundMoveDirection(source, this.cacheGet(node.sprite), node.spriteDirection, node.soundCode)
             case 'SOUND_SPRITE_EVENT':
-                {
-                    const n = node as ast.SoundSpriteEvent<string>
-                    return new GameSoundNormal(source, this.cacheGet(n.sprite), n.spriteEvent, node.soundCode)
-                }
+                return new GameSoundNormal(source, this.cacheGet(node.sprite), node.spriteEvent, node.soundCode)
             default:
-                throw new Error(`Unsupported type ${node.type}`)
+                throw new Error(`Unsupported type ${node}`)
         }
     }
 
-    public buildRuleCollection(node: ast.AbstractRule<string>): AbstractRuleish {
+    public buildRuleCollection(node: ast.Rule<
+        ast.RuleGroup<
+            ast.SimpleRule<
+                ast.Bracket<ast.Neighbor<ast.TileWithModifier<string>>>,
+                ast.Command<string>
+            >
+        >,
+        ast.SimpleRule<
+            ast.Bracket<ast.Neighbor<ast.TileWithModifier<string>>>,
+            ast.Command<string>>,
+        ast.Bracket<ast.Neighbor<ast.TileWithModifier<string>>>, ast.Command<string>>): AbstractRuleish {
+
         const source = this.toSource(node)
         switch (node.type) {
-            case 'RULE_LOOP':
-                if (!node.rules) { throw new Error(`BUG!!!!!!`) }
+            case ast.RULE_TYPE.LOOP:
                 return new ASTRuleLoop(source, node.rules.map((n) => this.buildRuleCollection(n)), node.debugFlag)
-            case 'RULE_GROUP':
-                if (!node.rules) { throw new Error(`BUG!!!!!!`) }
+            case ast.RULE_TYPE.GROUP:
                 // Extra checks to make TypeScript happy
                 if (node.rules[0]) {
-                    const firstRule = node.rules[0] as ast.Rule<string>
-                    const isRandom = firstRule.modifiers.indexOf(AST_RULE_MODIFIER.RANDOM) >= 0
-                    return new ASTRuleGroup(source, isRandom, node.rules.map((n) => this.buildRuleCollection(n)), node.debugFlag)
+                    const firstRule = node.rules[0]
+                    const isRandom = firstRule.isRandom
+                    return new ASTRuleGroup(source, !!isRandom, node.rules.map((n) => this.buildRuleCollection(n)), node.debugFlag)
                 }
                 throw new Error(`BUG!!!!!!`)
-            case 'RULE':
-                const node2 = node as ast.Rule<string>
-                const commands = [...node2.commands]
-                // TODO: Maybe do this step in the parser. No need for message to be a separate field
-                if (node2.message) {
-                    commands.push(node2.message)
-                }
+            case ast.RULE_TYPE.SIMPLE:
+                const commands = [...node.commands]
 
-                return new ASTRule(source, node2.modifiers,
-                    node2.conditions.map((n) => this.buildBracket(n)),
-                    node2.actions.map((n) => this.buildBracket(n)),
+                return new ASTRule(source, node.directions, !!node.isRandom, node.isLate, node.isRigid,
+                    node.conditions.map((n) => this.buildBracket(n)),
+                    node.actions.map((n) => this.buildBracket(n)),
                     removeNulls(commands.map((n) => this.buildCommand(n))), node.debugFlag)
             default:
-                throw new Error(`Unsupported type ${node.type}`)
+                throw new Error(`Unsupported type ${node}`)
         }
     }
 
-    public buildBracket(node: ast.AbstractBracket<string>) {
+    public buildBracket(node: ast.Bracket<ast.Neighbor<ast.TileWithModifier<string>>>) {
         const source = this.toSource(node)
         switch (node.type) {
-            case 'BRACKET':
-                {
-                    const node2 = node as ast.SimpleBracket<string>
-                    return new ASTRuleBracket(source, node2.neighbors.map((n) => this.buildNeighbor(n)), null, node.debugFlag)
-                }
-            case 'ELLIPSIS_BRACKET':
-                {
-                    const node2 = node as ast.EllipsisBracket<string>
-                    return new ASTRuleBracketEllipsis(source, node2.beforeNeighbors.map((n) => this.buildNeighbor(n)), node2.afterNeighbors.map((n) => this.buildNeighbor(n)), node.debugFlag)
-                }
+            case ast.BRACKET_TYPE.SIMPLE:
+                return new ASTRuleBracket(source, node.neighbors.map((n) => this.buildNeighbor(n)), null, node.debugFlag)
+            case ast.BRACKET_TYPE.ELLIPSIS:
+                return new ASTRuleBracketEllipsis(source, node.beforeNeighbors.map((n) => this.buildNeighbor(n)), node.afterNeighbors.map((n) => this.buildNeighbor(n)), node.debugFlag)
             default:
-                throw new Error(`Unsupported type ${node.type}`)
+                throw new Error(`Unsupported type ${node}`)
         }
     }
 
-    public buildNeighbor(node: ast.Neighbor<string>) {
+    public buildNeighbor(node: ast.Neighbor<ast.TileWithModifier<string>>) {
         const source = this.toSource(node)
-        return new ASTRuleBracketNeighbor(source, removeNulls(node.tilesWithModifier.map((n) => this.buildTileWithModifier(n))), node.debugFlag)
+        return new ASTRuleBracketNeighbor(source, removeNulls(node.tileWithModifiers.map((n) => this.buildTileWithModifier(n))), node.debugFlag)
     }
 
     public buildTileWithModifier(node: ast.TileWithModifier<string>) {
@@ -282,81 +290,63 @@ class AstBuilder {
             this.addValidationMessage(source, ValidationLevel.ERROR, `Could not find tile named ${node.tile}`)
             return null
         }
-        return new ASTTileWithModifier(source, node.modifier, this.cacheGet(node.tile), node.debugFlag)
+        return new ASTTileWithModifier(source, node.direction, node.isNegated, node.isRandom, this.cacheGet(node.tile), node.debugFlag)
     }
 
-    public buildCommand(node: ast.AbstractCommand) {
+    public buildCommand(node: ast.Command<string>) {
         const source = this.toSource(node)
         switch (node.type) {
-            case 'COMMAND_MESSAGE':
-                {
-                    const n = node as ast.MessageCommand
-                    return new MessageCommand(source, n.message)
+            case ast.COMMAND_TYPE.MESSAGE:
+                return new MessageCommand(source, node.message)
+            case ast.COMMAND_TYPE.SFX:
+                if (!this.soundCacheHas(node.sound)) {
+                    this.addValidationMessage(source, ValidationLevel.ERROR, `Could not find sound named ${node.sound}`)
+                    return null
                 }
-            case 'COMMAND_SFX':
-                {
-                    const n = node as ast.SFXCommand
-                    if (!this.soundCacheHas(n.sfx)) {
-                        this.addValidationMessage(source, ValidationLevel.ERROR, `Could not find sound named ${n.sfx}`)
-                        return null
-                    }
-                    return new SoundCommand(source, this.soundCacheGet(n.sfx))
-                }
-            case 'COMMAND_CANCEL':
+                return new SoundCommand(source, this.soundCacheGet(node.sound))
+            case ast.COMMAND_TYPE.CANCEL:
                 return new CancelCommand(source)
-            case 'COMMAND_AGAIN':
+            case ast.COMMAND_TYPE.AGAIN:
                 return new AgainCommand(source)
-            case 'COMMAND_WIN':
+            case ast.COMMAND_TYPE.WIN:
                 return new WinCommand(source)
-            case 'COMMAND_RESTART':
+            case ast.COMMAND_TYPE.RESTART:
                 return new RestartCommand(source)
-            case 'COMMAND_CHECKPOINT':
+            case ast.COMMAND_TYPE.CHECKPOINT:
                 return new CheckpointCommand(source)
             default:
-                throw new Error(`Unsupported type ${node.type}`)
+                throw new Error(`Unsupported type ${node}`)
         }
     }
 
-    public buildWinConditon(node: ast.AbstractWinCondition<string>) {
+    public buildWinConditon(node: ast.WinCondition<string>) {
         const source = this.toSource(node)
         switch (node.type) {
-            case 'WINCONDITION_ON':
-                {
-                    const n = node as ast.WinConditionOn<string>
-                    return new WinConditionOn(source, n.qualifier, this.cacheGet(n.sprite), this.cacheGet(n.onSprite))
-                }
-            case 'WINCONDITION_SIMPLE':
-                {
-                    const n = node as ast.WinConditionSimple<string>
-                    return new WinConditionSimple(source, n.qualifier, this.cacheGet(n.sprite))
-                }
+            case ast.WIN_CONDITION_TYPE.ON:
+                return new WinConditionOn(source, node.qualifier, this.cacheGet(node.tile), this.cacheGet(node.onTile))
+            case ast.WIN_CONDITION_TYPE.SIMPLE:
+                return new WinConditionSimple(source, node.qualifier, this.cacheGet(node.tile))
             default:
-                throw new Error(`Unsupported type ${node.type}`)
+                throw new Error(`Unsupported type ${node}`)
         }
     }
 
-    public buildLevel(node: ast.AbstractLevel<string>) {
+    public buildLevel(node: ast.Level<string>) {
         const source = this.toSource(node)
         switch (node.type) {
-            case 'LEVEL_MESSAGE':
-                {
-                    const n = node as ast.LevelMessage<string>
-                    return new MessageLevel(source, n.message)
-                }
-            case 'LEVEL_MAP':
-                {
-                    const n = node as ast.LevelMap<string>
-                    return new LevelMap(source, n.rowData.map((row) => row.map((cell) => this.cacheGet(cell))))
-                }
+            case ast.LEVEL_TYPE.MESSAGE:
+                return new MessageLevel(source, node.message)
+            case ast.LEVEL_TYPE.MAP:
+                return new LevelMap(source, node.cells.map((row) => row.map((cell) => this.cacheGet(cell))))
             default:
-                throw new Error(`Unsupported type ${node.type}`)
+                throw new Error(`Unsupported type ${node}`)
         }
     }
 
     private toSource(node: ast.IASTNode) {
         return {
             code: this.code,
-            sourceOffset: node.sourceOffset
+            sourceOffset: node._sourceOffset
         }
     }
 
@@ -422,7 +412,7 @@ class Parser {
         parser.feed(code)
         parser.feed('\n')
         parser.finish()
-        const results = parser.results as Array<ast.IASTGame<string>>
+        const results = parser.results as Array<ast.IASTGame<string, string, number | '.'>>
         if (results.length === 1) {
             return results[0]
         } else if (results.length === 0) {

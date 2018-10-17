@@ -5,7 +5,16 @@ import { GameSpritePixels } from './models/tile'
 const letters: Map<string, number[][]> = new Map()
 
 function toSprite(source: IGameCode, char: string, pixels: number[][]) {
-    return new GameSpritePixels(source, `letterchar="${char}"`, '', [new HexColor(source, '#000000'), new HexColor(source, '#ffffff')], pixels)
+    const white = new HexColor(source, '#ffffff')
+    const black = new HexColor(source, '#000000')
+    const pixels2 = pixels.map((row) => row.map((index) => {
+        if (index === 0) {
+            return black
+        } else {
+            return white
+        }
+    }))
+    return new GameSpritePixels(source, `letterchar="${char}"`, '', pixels2)
 }
 function makeLetter(char: string, pixels: number[][]) {
     letters.set(char, pixels)

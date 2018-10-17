@@ -95,6 +95,20 @@ This is a remake of PuzzleScript that has the following features:
   - Inspired by https://askubuntu.com/questions/699159/ascii-animations-that-are-viewed-in-the-command-line#699161
 - The input code is abstracted out so gamepads, buttons, etc can easily be provided
   - This also allows computers to play the games!
+- The game can be imported/exported to JSON for research or other purposes
+
+## Research
+
+To convert a game to JSON, run the following:
+
+```js
+import { Parser } from 'puzzlescript'
+import Serializer from 'puzzlescript/lib/parser/serializer'
+
+const { data } = Parser.parse(gameSource)
+const json = new Serializer(data).toJson()
+const reparsedData = Serializer.fromJson(json, gameSource)
+```
 
 ## Commands
 

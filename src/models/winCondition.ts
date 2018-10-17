@@ -10,8 +10,8 @@ export enum WIN_QUALIFIER {
 }
 
 export class WinConditionSimple extends BaseForLines {
-    protected readonly qualifier: WIN_QUALIFIER
-    protected readonly tile: IGameTile
+    public readonly qualifier: WIN_QUALIFIER
+    public readonly tile: IGameTile
 
     constructor(source: IGameCode, qualifierEnum: WIN_QUALIFIER, tile: IGameTile) {
         super(source)
@@ -53,7 +53,7 @@ export class WinConditionSimple extends BaseForLines {
 }
 
 export class WinConditionOn extends WinConditionSimple {
-    private readonly onTile: IGameTile
+    public readonly onTile: IGameTile
 
     constructor(source: IGameCode, qualifierEnum: WIN_QUALIFIER, tile: IGameTile, onTile: IGameTile) {
         super(source, qualifierEnum, tile)

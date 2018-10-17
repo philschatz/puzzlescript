@@ -6,7 +6,7 @@
     "rules": {
         "ter-indent": [true, 4, { "SwitchCase": 1}],
         "space-before-function-paren": [true, "never"],
-        "interface-name": [true, "always-prefix"],
+        "interface-name": [false, "always-prefix"],
         "prefer-object-spread": false,
         "no-implicit-dependencies": [true],
         "object-literal-sort-keys": false,
