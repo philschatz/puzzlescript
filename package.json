@@ -117,7 +117,7 @@
       "typescript"
     ]
   },
-  "name": "puzzlescript-cli",
+  "name": "puzzlescript",
   "description": "Play PuzzleScript games in your terminal!",
   "version": "2.1.1",
   "main": "lib/index.js",
@@ -127,7 +127,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/philschatz/puzzlescript-cli.git"
+    "url": "git+https://github.com/philschatz/puzzlescript.git"
   },
   "keywords": [
     "puzzlescript",
@@ -141,7 +141,7 @@
   "author": "Philip Schatz",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/philschatz/puzzlescript-cli/issues"
+    "url": "https://github.com/philschatz/puzzlescript/issues"
   },
-  "homepage": "https://github.com/philschatz/puzzlescript-cli"
+  "homepage": "https://github.com/philschatz/puzzlescript"
 }

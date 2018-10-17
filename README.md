@@ -14,7 +14,7 @@ Also, it is **accessible**, meaning that [blind or visually impaired people can 
 
 ## Install
 
-1. Run `npm install -g puzzlescript-cli`
+1. Run `npm install -g puzzlescript`
 1. Run `puzzlescript` to start playing
 
 ### Embed in a Browser
@@ -78,7 +78,7 @@ This screencap is the **non-visual** version of the same steps as shown above. T
 
 The goal of this project is to do 3 things:
 
-1. make PuzzleScript easier to embed (like in 404 pages, easter eggs, etc). See [docs](https://philschatz.com/puzzlescript-cli/docs/classes/_engine_.gameengine.html)
+1. make PuzzleScript easier to embed (like in 404 pages, easter eggs, etc). See [docs](https://philschatz.com/puzzlescript/docs/classes/_engine_.gameengine.html)
 1. allow **blind people to play video games** (by passing the `--no-ui` argument)
 1. use the terminal as a GUI for playing games
 
@@ -87,7 +87,7 @@ The goal of this project is to do 3 things:
 
 This is a remake of PuzzleScript that has the following features:
 
-- There is [documentation](https://philschatz.com/puzzlescript-cli/docs/) for using the [NPM package](https://www.npmjs.com/package/puzzlescript-cli)
+- There is [documentation](https://philschatz.com/puzzlescript/docs/) for using the [NPM package](https://www.npmjs.com/package/puzzlescript)
 - There is a [Grammar](https://en.wikipedia.org/wiki/Parsing_expression_grammar) file that parses the game file (uses [nearley](https://github.com/kach/nearley))
 - The interpreter is a separate component
 - The rendering code is abstracted out so folks can add a different renderer (the example uses ASCII in the Terminal to show the game)
@@ -138,17 +138,17 @@ Want to help? Here is a roadmap of things that need to be implemented:
     - [x] improve `getMatches(level)` by storing a cache of all the sprites in each row/column so we can skip the row/column entirely if the necessary sprites are not available
 
 
-[kanban-image]: https://img.shields.io/github/issues/philschatz/puzzlescript-cli.svg?label=kanban%20board%20%28gh-board%29
-[kanban-url]: https://philschatz.com/gh-board/#/r/philschatz:puzzlescript-cli
-[npm-image]: https://img.shields.io/npm/v/puzzlescript-cli.svg
-[npm-url]: https://npmjs.org/package/puzzlescript-cli
-[downloads-image]: https://img.shields.io/npm/dm/puzzlescript-cli.svg
-[downloads-url]: https://npmjs.org/package/puzzlescript-cli
-[travis-image]: https://img.shields.io/travis/philschatz/puzzlescript-cli.svg
-[travis-url]: https://travis-ci.org/philschatz/puzzlescript-cli
-[dependency-image]: https://img.shields.io/david/philschatz/puzzlescript-cli.svg
-[dependency-url]: https://david-dm.org/philschatz/puzzlescript-cli
-[dev-dependency-image]: https://img.shields.io/david/dev/philschatz/puzzlescript-cli.svg
-[dev-dependency-url]: https://david-dm.org/philschatz/puzzlescript-cli#info=devDependencies
-[coverage-image]: https://img.shields.io/codecov/c/github/philschatz/puzzlescript-cli.svg
-[coverage-url]: https://codecov.io/gh/philschatz/puzzlescript-cli
+[kanban-image]: https://img.shields.io/github/issues/philschatz/puzzlescript.svg?label=kanban%20board%20%28gh-board%29
+[kanban-url]: https://philschatz.com/gh-board/#/r/philschatz:puzzlescript
+[npm-image]: https://img.shields.io/npm/v/puzzlescript.svg
+[npm-url]: https://npmjs.org/package/puzzlescript
+[downloads-image]: https://img.shields.io/npm/dm/puzzlescript.svg
+[downloads-url]: https://npmjs.org/package/puzzlescript
+[travis-image]: https://img.shields.io/travis/philschatz/puzzlescript.svg
+[travis-url]: https://travis-ci.org/philschatz/puzzlescript
+[dependency-image]: https://img.shields.io/david/philschatz/puzzlescript.svg
+[dependency-url]: https://david-dm.org/philschatz/puzzlescript
+[dev-dependency-image]: https://img.shields.io/david/dev/philschatz/puzzlescript.svg
+[dev-dependency-url]: https://david-dm.org/philschatz/puzzlescript#info=devDependencies
+[coverage-image]: https://img.shields.io/codecov/c/github/philschatz/puzzlescript.svg
+[coverage-url]: https://codecov.io/gh/philschatz/puzzlescript
