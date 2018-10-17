@@ -231,7 +231,18 @@ class AstBuilder {
         }
     }
 
-    public buildRuleCollection(node: ast.Rule<ast.Bracket<ast.Neighbor<ast.TileWithModifier<string>>>, ast.Command<string>>): AbstractRuleish {
+    public buildRuleCollection(node: ast.Rule<
+        ast.RuleGroup<
+            ast.SimpleRule<
+                ast.Bracket<ast.Neighbor<ast.TileWithModifier<string>>>,
+                ast.Command<string>
+            >
+        >,
+        ast.SimpleRule<
+            ast.Bracket<ast.Neighbor<ast.TileWithModifier<string>>>,
+            ast.Command<string>>,
+        ast.Bracket<ast.Neighbor<ast.TileWithModifier<string>>>, ast.Command<string>>): AbstractRuleish {
+
         const source = this.toSource(node)
         switch (node.type) {
             case ast.RULE_TYPE.LOOP:
@@ -241,13 +252,13 @@ class AstBuilder {
                 if (node.rules[0]) {
                     const firstRule = node.rules[0]
                     const isRandom = firstRule.isRandom
-                    return new ASTRuleGroup(source, isRandom, node.rules.map((n) => this.buildRuleCollection(n)), node.debugFlag)
+                    return new ASTRuleGroup(source, !!isRandom, node.rules.map((n) => this.buildRuleCollection(n)), node.debugFlag)
                 }
                 throw new Error(`BUG!!!!!!`)
             case ast.RULE_TYPE.SIMPLE:
                 const commands = [...node.commands]
 
-                return new ASTRule(source, node.directions, node.isRandom, node.isLate, node.isRigid,
+                return new ASTRule(source, node.directions, !!node.isRandom, node.isLate, node.isRigid,
                     node.conditions.map((n) => this.buildBracket(n)),
                     node.actions.map((n) => this.buildBracket(n)),
                     removeNulls(commands.map((n) => this.buildCommand(n))), node.debugFlag)

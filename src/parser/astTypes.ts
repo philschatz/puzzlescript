@@ -159,17 +159,17 @@ export enum RULE_TYPE {
     SIMPLE = 'SIMPLE'
 }
 
-export type Rule<BracketRef, CommandRef> = RuleGroup<BracketRef, CommandRef> | RuleLoop<BracketRef, CommandRef> | SimpleRule<BracketRef, CommandRef>
+export type Rule<RuleGroupRef, SimpleRuleRef, BracketRef, CommandRef> = RuleGroup<SimpleRuleRef> | RuleLoop<RuleGroupRef> | SimpleRule<BracketRef, CommandRef>
 
-export type RuleGroup<BracketRef, CommandRef> = Debuggable & {
+export type RuleGroup<SimpleRuleRef> = Debuggable & {
     type: RULE_TYPE.GROUP
-    rules: Array<SimpleRule<BracketRef, CommandRef>>
+    rules: SimpleRuleRef[]
     isRandom: boolean
 }
 
-export type RuleLoop<BracketRef, CommandRef> = Debuggable & {
+export type RuleLoop<RuleGroupRef> = Debuggable & {
     type: RULE_TYPE.LOOP
-    rules: Array<RuleGroup<BracketRef, CommandRef>>
+    rules: RuleGroupRef[]
 }
 
 export type SimpleRule<BracketRef, CommandRef> = Debuggable & {
@@ -178,7 +178,7 @@ export type SimpleRule<BracketRef, CommandRef> = Debuggable & {
     actions: BracketRef[]
     commands: CommandRef[]
     directions: AST_RULE_MODIFIER[]
-    isRandom: boolean
+    isRandom: Optional<boolean>
     isLate: boolean
     isRigid: boolean
 }
@@ -284,6 +284,8 @@ export interface IDimension {
     height: number
 }
 
+type B1<TileRef> = Bracket<Neighbor<TileWithModifier<TileRef>>>
+
 export interface IASTGame<TileRef, SoundRef, PixelRef> {
     title: string
     metadata: Array<{type: string, value: string | boolean | IDimension | IColor}>
@@ -291,7 +293,14 @@ export interface IASTGame<TileRef, SoundRef, PixelRef> {
     legendItems: Array<LegendItem<TileRef>>
     collisionLayers: Array<CollisionLayer<TileRef>>
     sounds: Array<SoundItem<TileRef>>
-    rules: Array<Rule<Bracket<Neighbor<TileWithModifier<TileRef>>>, Command<SoundRef>>>
+    rules: Array<
+        Rule<
+            RuleGroup<SimpleRule<B1<TileRef>, Command<SoundRef>>>,
+            SimpleRule<B1<TileRef>, Command<SoundRef>>,
+            B1<TileRef>,
+            Command<SoundRef>
+        >
+    >
     winConditions: Array<WinCondition<TileRef>>
     levels: Array<Level<TileRef>>
 }

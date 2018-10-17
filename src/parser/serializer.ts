@@ -9,7 +9,6 @@ import { IRule, ISimpleBracket, SimpleBracket, SimpleEllipsisBracket, SimpleNeig
 import { GameSound } from '../models/sound'
 import { GameLegendTileAnd, GameLegendTileOr, GameLegendTileSimple, GameSprite, GameSpritePixels, IGameTile } from '../models/tile'
 import { WinConditionOn, WinConditionSimple } from '../models/winCondition'
-import { DEBUG_FLAG } from '../util'
 import * as ast from './astTypes'
 
 // const EXAMPLE = {
@@ -39,7 +38,7 @@ import * as ast from './astTypes'
 //     neighbors: {
 //         567: { tilesWithModifiers: [456, 456]}
 //     },
-//     conditionBrackets: {
+//     conditions: {
 //         678: { type: 'NORMAL', direction: 'UP', neighbors: [567]}
 // //        6789: { type: 'ELLIPSIS', direction: 'UP', beforeNeighbors: [567], afterNeighbors: [567]}
 //     },
@@ -141,31 +140,6 @@ type GraphTile = ISourceNode & ({
 //     actionMutations: BracketId, // ActionMutation
 //     commands: CommandId[]
 // }
-
-enum RULE_TYPE {
-    SIMPLE = 'SIMPLE',
-    GROUP = 'GROUP',
-    LOOP = 'LOOP'
-}
-type GraphRule = ISourceNode & ({
-    type: RULE_TYPE.SIMPLE
-    conditionBrackets: BracketId[],
-    actionBrackets: BracketId[],
-    isLate: boolean,
-    isRigid: boolean,
-    commands: CommandId[]
-    debugFlag?: DEBUG_FLAG
-} | {
-    type: RULE_TYPE.GROUP
-    isRandom: boolean
-    rules: RuleId[]
-    debugFlag?: DEBUG_FLAG
-} | {
-    type: RULE_TYPE.LOOP
-    isRandom: boolean
-    rules: RuleId[]
-    debugFlag?: DEBUG_FLAG
-})
 
 interface IGraphGameMetadata {
     author: Optional<string>
@@ -395,21 +369,21 @@ export default class Serializer {
         for (const [key, val] of Object.entries(source.ruleDefinitions)) {
             const { _sourceOffset: sourceOffset } = val
             switch (val.type) {
-                case RULE_TYPE.SIMPLE:
+                case ast.RULE_TYPE.SIMPLE:
                     ruleMap.set(key, new SimpleRule(
                         { code, sourceOffset },
-                        val.conditionBrackets.map((item) => bracketMap.get(item)),
-                        val.actionBrackets.map((item) => bracketMap.get(item)),
+                        val.conditions.map((item) => bracketMap.get(item)),
+                        val.actions.map((item) => bracketMap.get(item)),
                         val.commands.map((item) => commandMap.get(item)),
                         val.isLate,
                         val.isRigid,
                         val.debugFlag))
                     break
-                case RULE_TYPE.GROUP:
+                case ast.RULE_TYPE.GROUP:
                     ruleMap.set(key, new SimpleRuleGroup({ code, sourceOffset }, val.isRandom, val.rules.map((item) => ruleMap.get(item))))
                     break
-                case RULE_TYPE.LOOP:
-                    ruleMap.set(key, new SimpleRuleLoop({ code, sourceOffset }, val.isRandom, val.rules.map((item) => ruleMap.get(item))))
+                case ast.RULE_TYPE.LOOP:
+                    ruleMap.set(key, new SimpleRuleLoop({ code, sourceOffset }, false/*TODO: Figure out if loops need isRandom*/, val.rules.map((item) => ruleMap.get(item))))
                     break
                 default:
                     throw new Error(`ERROR: Unsupported rule type`)
@@ -475,11 +449,11 @@ export default class Serializer {
     private readonly spritesMap: MapWithId<GameSprite, IGraphSprite>
     private readonly soundMap: MapWithId<GameSound, IGraphSound>
     private readonly collisionLayerMap: MapWithId<CollisionLayer, ISourceNode>
-    private readonly conditionBracketsMap: MapWithId<ISimpleBracket, ast.Bracket<NeighborId>>
+    private readonly conditionsMap: MapWithId<ISimpleBracket, ast.Bracket<NeighborId>>
     private readonly neighborsMap: MapWithId<SimpleNeighbor, ast.Neighbor<TileWithModifierId>>
     private readonly tileWithModifierMap: MapWithId<SimpleTileWithModifier, ast.TileWithModifier<TileId>>
     private readonly tileMap: MapWithId<IGameTile, GraphTile>
-    private readonly ruleMap: MapWithId<IRule, GraphRule>
+    private readonly ruleMap: MapWithId<IRule, ast.Rule<RuleId, RuleId, BracketId, CommandId>>
     private readonly commandMap: MapWithId<AbstractCommand, ast.Command<SoundId>>
     private readonly winConditions: Array<ast.WinCondition<TileId>>
     private orderedRules: RuleId[]
@@ -491,7 +465,7 @@ export default class Serializer {
         this.spritesMap = new MapWithId('sprite')
         this.soundMap = new MapWithId('sound')
         this.collisionLayerMap = new MapWithId('collision')
-        this.conditionBracketsMap = new MapWithId('bracket')
+        this.conditionsMap = new MapWithId('bracket')
         this.neighborsMap = new MapWithId('neighbor')
         this.tileWithModifierMap = new MapWithId('twm')
         this.tileMap = new MapWithId('tile')
@@ -586,7 +560,7 @@ export default class Serializer {
             tiles: this.tileMap.toJson(),
             tilesWithModifiers: this.tileWithModifierMap.toJson(),
             neighbors: this.neighborsMap.toJson(),
-            brackets: this.conditionBracketsMap.toJson(),
+            brackets: this.conditionsMap.toJson(),
             ruleDefinitions: this.ruleMap.toJson(),
             winConditions: this.winConditions,
             rules: this.orderedRules,
@@ -613,28 +587,34 @@ export default class Serializer {
     private recBuildRule(rule: IRule): string {
         if (rule instanceof SimpleRule) {
             return this.ruleMap.set(rule, {
-                type: RULE_TYPE.SIMPLE,
-                conditionBrackets: rule.conditionBrackets.map((item) => this.buildConditionBracket(item)),
-                actionBrackets: rule.actionBrackets.map((item) => this.buildConditionBracket(item)),
+                type: ast.RULE_TYPE.SIMPLE,
+                directions: [], // Simplified rules do not have directions
+                conditions: rule.conditionBrackets.map((item) => this.buildConditionBracket(item)),
+                actions: rule.actionBrackets.map((item) => this.buildConditionBracket(item)),
                 commands: rule.commands.map((item) => this.buildCommand(item)),
+                isRandom: null,
                 isLate: rule.isLate(),
                 isRigid: rule.hasRigid(),
-                _sourceOffset: rule.__source.sourceOffset
+                _sourceOffset: rule.__source.sourceOffset,
+                debugFlag: rule.debugFlag
             })
         } else if (rule instanceof SimpleRuleGroup) {
             return this.ruleMap.set(rule, {
-                type: RULE_TYPE.GROUP,
+                type: ast.RULE_TYPE.GROUP,
                 isRandom: rule.isRandom,
                 rules: rule.getChildRules().map((item) => this.recBuildRule(item)),
-                _sourceOffset: rule.__source.sourceOffset
+                _sourceOffset: rule.__source.sourceOffset,
+                debugFlag: undefined // TODO: Unhardcode me
             })
         } else if (rule instanceof SimpleRuleLoop) {
-            return this.ruleMap.set(rule, {
-                type: RULE_TYPE.LOOP,
-                isRandom: rule.isRandom,
+            const x: ast.RuleLoop<string> = {
+                type: ast.RULE_TYPE.LOOP,
+                // isRandom: rule.isRandom,
                 rules: rule.getChildRules().map((item) => this.recBuildRule(item)),
-                _sourceOffset: rule.__source.sourceOffset
-            })
+                _sourceOffset: rule.__source.sourceOffset,
+                debugFlag: undefined // TODO: unhardcode me
+            }
+            return this.ruleMap.set(rule, x)
         } else {
             debugger; throw new Error(`BUG: Unsupported rule type`) // tslint:disable-line:no-debugger
         }
@@ -687,7 +667,7 @@ export default class Serializer {
             const b = bracket
             const before = b.beforeEllipsisBracket.getNeighbors().map((item) => this.buildNeighbor(item)) // this.buildConditionBracket(b.beforeEllipsisBracket)
             const after = b.afterEllipsisBracket.getNeighbors().map((item) => this.buildNeighbor(item)) // this.buildConditionBracket(b.afterEllipsisBracket)
-            return this.conditionBracketsMap.set(bracket, {
+            return this.conditionsMap.set(bracket, {
                 type: ast.BRACKET_TYPE.ELLIPSIS,
                 direction: toRULE_DIRECTION(b.direction),
                 beforeNeighbors: before,
@@ -696,7 +676,7 @@ export default class Serializer {
                 debugFlag: b.debugFlag
             })
         } else if (bracket instanceof SimpleBracket) {
-            return this.conditionBracketsMap.set(bracket, {
+            return this.conditionsMap.set(bracket, {
                 type: ast.BRACKET_TYPE.SIMPLE,
                 direction: toRULE_DIRECTION(bracket.direction),
                 neighbors: bracket.getNeighbors().map((item) => this.buildNeighbor(item)),
@@ -803,7 +783,7 @@ interface IGraphJson {
     tilesWithModifiers: {[key: string]: ast.TileWithModifier<TileId>},
     neighbors: {[key: string]: ast.Neighbor<TileWithModifierId>},
     brackets: {[key: string]: ast.Bracket<NeighborId>},
-    ruleDefinitions: {[key: string]: GraphRule},
+    ruleDefinitions: {[key: string]: ast.Rule<RuleId, RuleId, BracketId, CommandId>},
     rules: RuleId[],
     levels: Array<ast.Level<TileId>>
 }

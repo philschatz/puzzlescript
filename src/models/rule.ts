@@ -248,11 +248,11 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
     public conditionBrackets: ISimpleBracket[]
     public actionBrackets: ISimpleBracket[]
     public commands: AbstractCommand[]
+    public debugFlag: Optional<DEBUG_FLAG>
     // private evaluationDirection: RULE_DIRECTION
     private _isLate: boolean
     private readonly isRigid: boolean
     private isSubscribedToCellChanges: boolean
-    private debugFlag: Optional<DEBUG_FLAG>
 
     constructor(source: IGameCode,
                 conditionBrackets: ISimpleBracket[], actionBrackets: ISimpleBracket[],

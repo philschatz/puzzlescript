@@ -1,5 +1,212 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`serializer parses a game with RANDOM, loops, and debug statements 1`] = `
+Object {
+  "brackets": Object {
+    "bracket-0": Object {
+      "_sourceOffset": 202,
+      "debugFlag": null,
+      "direction": "UP",
+      "neighbors": Array [
+        "neighbor-0",
+      ],
+      "type": "BRACKET",
+    },
+    "bracket-1": Object {
+      "_sourceOffset": 217,
+      "debugFlag": "DEBUGGER",
+      "direction": "UP",
+      "neighbors": Array [
+        "neighbor-1",
+      ],
+      "type": "BRACKET",
+    },
+  },
+  "collisionLayers": Object {
+    "collision-0": Object {
+      "_sourceOffset": 136,
+    },
+    "collision-1": Object {
+      "_sourceOffset": 147,
+    },
+    "collision-2": Object {
+      "_sourceOffset": 0,
+    },
+  },
+  "colors": Object {
+    "#000000": "#000000",
+    "#f7e26b": "#f7e26b",
+  },
+  "commands": Object {},
+  "levels": Array [
+    Object {
+      "_sourceOffset": 271,
+      "message": "hello",
+      "type": "LEVEL_MESSAGE",
+    },
+    Object {
+      "_sourceOffset": 286,
+      "cells": Array [
+        Array [
+          "tile-1",
+          "tile-2",
+        ],
+      ],
+      "type": "LEVEL_MAP",
+    },
+  ],
+  "metadata": Object {
+    "againInterval": undefined,
+    "author": undefined,
+    "backgroundColor": undefined,
+    "colorPalette": undefined,
+    "flickscreen": undefined,
+    "homepage": undefined,
+    "keyRepeatInterval": undefined,
+    "noAction": false,
+    "noRepeatAction": false,
+    "noRestart": false,
+    "noUndo": false,
+    "realtimeInterval": undefined,
+    "requirePlayerMovement": false,
+    "runRulesOnLevelStart": undefined,
+    "textColor": undefined,
+    "throttleMovement": false,
+    "verboseLogging": false,
+    "youtube": undefined,
+    "zoomscreen": undefined,
+  },
+  "neighbors": Object {
+    "neighbor-0": Object {
+      "_sourceOffset": 203,
+      "debugFlag": null,
+      "tileWithModifiers": Array [
+        "twm-0",
+      ],
+    },
+    "neighbor-1": Object {
+      "_sourceOffset": 219,
+      "debugFlag": null,
+      "tileWithModifiers": Array [
+        "twm-1",
+      ],
+    },
+  },
+  "ruleDefinitions": Object {
+    "rule-0": Object {
+      "_sourceOffset": 181,
+      "actions": Array [
+        "bracket-1",
+      ],
+      "commands": Array [],
+      "conditions": Array [
+        "bracket-0",
+      ],
+      "debugFlag": undefined,
+      "directions": Array [],
+      "isLate": true,
+      "isRandom": null,
+      "isRigid": true,
+      "type": "SIMPLE",
+    },
+    "rule-1": Object {
+      "_sourceOffset": 181,
+      "debugFlag": undefined,
+      "isRandom": true,
+      "rules": Array [
+        "rule-0",
+      ],
+      "type": "RULE_GROUP",
+    },
+    "rule-2": Object {
+      "_sourceOffset": undefined,
+      "debugFlag": undefined,
+      "isRandom": false,
+      "rules": Array [
+        "rule-1",
+      ],
+      "type": "RULE_GROUP",
+    },
+  },
+  "rules": Array [
+    "rule-2",
+  ],
+  "sounds": Object {},
+  "sprites": Object {
+    "sprite-0": Object {
+      "_sourceOffset": 33,
+      "collisionLayer": "collision-0",
+      "name": "background",
+      "pixels": Array [
+        Array [
+          "#000000",
+        ],
+      ],
+    },
+    "sprite-1": Object {
+      "_sourceOffset": 53,
+      "collisionLayer": "collision-1",
+      "name": "player",
+      "pixels": Array [
+        Array [
+          "#f7e26b",
+        ],
+      ],
+    },
+  },
+  "tiles": Object {
+    "tile-0": Object {
+      "_sourceOffset": 53,
+      "collisionLayer": "collision-1",
+      "name": "player",
+      "sprite": "sprite-1",
+      "type": "SPRITE",
+    },
+    "tile-1": Object {
+      "_sourceOffset": 84,
+      "collisionLayers": Array [
+        "collision-1",
+        "collision-0",
+      ],
+      "name": "P",
+      "sprites": Array [
+        "sprite-1",
+        "sprite-0",
+      ],
+      "type": "AND",
+    },
+    "tile-2": Object {
+      "_sourceOffset": 33,
+      "collisionLayer": "collision-0",
+      "name": "background",
+      "sprite": "sprite-0",
+      "type": "SPRITE",
+    },
+  },
+  "tilesWithModifiers": Object {
+    "twm-0": Object {
+      "_sourceOffset": 204,
+      "debugFlag": undefined,
+      "direction": "UP",
+      "isNegated": false,
+      "isRandom": false,
+      "tile": "tile-0",
+    },
+    "twm-1": Object {
+      "_sourceOffset": 220,
+      "debugFlag": undefined,
+      "direction": null,
+      "isNegated": false,
+      "isRandom": true,
+      "tile": "tile-0",
+    },
+  },
+  "title": "Test Game",
+  "version": 1,
+  "winConditions": Array [],
+}
+`;
+
 exports[`serializer parses a simple game 1`] = `
 Object {
   "brackets": Object {
@@ -195,58 +402,71 @@ Object {
   "ruleDefinitions": Object {
     "rule-0": Object {
       "_sourceOffset": 129,
-      "actionBrackets": Array [
+      "actions": Array [
         "bracket-1",
       ],
       "commands": Array [],
-      "conditionBrackets": Array [
+      "conditions": Array [
         "bracket-0",
       ],
+      "debugFlag": undefined,
+      "directions": Array [],
       "isLate": false,
+      "isRandom": null,
       "isRigid": false,
       "type": "SIMPLE",
     },
     "rule-1": Object {
       "_sourceOffset": 129,
-      "actionBrackets": Array [
+      "actions": Array [
         "bracket-3",
       ],
       "commands": Array [],
-      "conditionBrackets": Array [
+      "conditions": Array [
         "bracket-2",
       ],
+      "debugFlag": undefined,
+      "directions": Array [],
       "isLate": false,
+      "isRandom": null,
       "isRigid": false,
       "type": "SIMPLE",
     },
     "rule-2": Object {
       "_sourceOffset": 129,
-      "actionBrackets": Array [
+      "actions": Array [
         "bracket-5",
       ],
       "commands": Array [],
-      "conditionBrackets": Array [
+      "conditions": Array [
         "bracket-4",
       ],
+      "debugFlag": undefined,
+      "directions": Array [],
       "isLate": false,
+      "isRandom": null,
       "isRigid": false,
       "type": "SIMPLE",
     },
     "rule-3": Object {
       "_sourceOffset": 129,
-      "actionBrackets": Array [
+      "actions": Array [
         "bracket-7",
       ],
       "commands": Array [],
-      "conditionBrackets": Array [
+      "conditions": Array [
         "bracket-6",
       ],
+      "debugFlag": undefined,
+      "directions": Array [],
       "isLate": false,
+      "isRandom": null,
       "isRigid": false,
       "type": "SIMPLE",
     },
     "rule-4": Object {
       "_sourceOffset": 129,
+      "debugFlag": undefined,
       "isRandom": false,
       "rules": Array [
         "rule-0",
@@ -254,7 +474,7 @@ Object {
         "rule-2",
         "rule-3",
       ],
-      "type": "GROUP",
+      "type": "RULE_GROUP",
     },
   },
   "rules": Array [

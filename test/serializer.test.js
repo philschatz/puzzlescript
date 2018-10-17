@@ -67,4 +67,50 @@ MESSAGE hello
 
 `)
     })
+
+    it('parses a game with RANDOM, loops, and debug statements', () => {
+        checkGrammar(`title Test Game
+===
+OBJECTS
+===
+
+background .
+black
+
+player
+yellow
+
+===
+LEGEND
+===
+
+P = player AND background
+
+===
+COLLISIONLAYERS
+===
+
+background
+player
+
+===
+RULES
+===
+
+STARTLOOP
+
+RANDOM RIGID LATE UP [ > player ] -> [ RANDOM player ] DEBUGGER
+
+ENDLOOP
+
+===
+LEVELS
+===
+
+MESSAGE hello
+
+P.
+
+`)
+    })
 })
