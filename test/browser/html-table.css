@@ -1,25 +1,25 @@
-table.ps-table {
+table.ps-table:not(.ps-ui-disabled) {
     /* width: 90%; */
     width: 400px;
 
     border-spacing: 10px;
     border-collapse: collapse;
 }
-table tr td.ps-cell {
+table.ps-table:not(.ps-ui-disabled) tr td.ps-cell {
     position: relative;
 }
-td.ps-cell::after {
+table.ps-table:not(.ps-ui-disabled) td.ps-cell::after {
     content: '';
     display: block;
     margin-top: 100%;
 }
-.ps-cell-label {
+table.ps-table:not(.ps-ui-disabled) .ps-cell-label {
     /* Move it off-screen so screenreaders read it but users do not see it */
     position: absolute;
     left:-9999px;
 }
 
-.ps-sprite-whole {
+table.ps-table:not(.ps-ui-disabled) .ps-sprite-whole {
     /* to make it square (depends on styling for "ps-cell") */
     position: absolute;
     top: 0;
@@ -33,10 +33,10 @@ td.ps-cell::after {
     width: 100%;
     height: 100%;
 }
-.ps-sprite-row {
+table.ps-table:not(.ps-ui-disabled) .ps-sprite-row {
     display: flex;
     flex-direction: row;
     flex-grow: 1;
     flex-wrap: nowrap
 }
-.ps-sprite-pixel { flex-grow: 1 }
+table.ps-table:not(.ps-ui-disabled) .ps-sprite-pixel { flex-grow: 1 }

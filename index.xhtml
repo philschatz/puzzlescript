@@ -21,6 +21,13 @@
             border-radius: 3px;
             box-shadow: inset 0 -1px 0 #959da5;
         }
+        /* When the CSS is disabled then show a plain table with borders */
+        .ps-table.ps-ui-disabled {
+            width: 100%;
+        }
+        .ps-table.ps-ui-disabled td {
+            border: 1px solid #ccc;
+        }
     </style>
 </head>
 
@@ -70,6 +77,9 @@
 
     <table id="thegamecanbeidentifiedbyselector">
     </table>
+
+    <p>Disable the CSS to see what a non-sighted user would experience by unchecking the following:</p>
+    <input id="ui-enable" type="checkbox" checked="checked"/> <label for="ui-enable">Enable the CSS</label>
 
     <script>//<![CDATA[
         var table = document.querySelector('#thegamecanbeidentifiedbyselector')
@@ -127,6 +137,19 @@
             storage[gameId] = levelNum
             window.localStorage.setItem('puzzlescriptGameProgress', JSON.stringify(storage))
         }
+
+        // Support toggling the "Enable CSS" checkbox
+        const enableCss = document.querySelector('#ui-enable')
+        function setUi() {
+            if (enableCss.checked) {
+                table.classList.remove('ps-ui-disabled')
+            } else {
+                table.classList.add('ps-ui-disabled')
+            }
+        }
+        enableCss.addEventListener('change', setUi)
+        setUi()
+
     // ]]></script>
 </body>
 
