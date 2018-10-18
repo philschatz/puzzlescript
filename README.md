@@ -34,7 +34,16 @@ engine.start()
 
 Here are some screencaps of games being played.
 
+### Mirror Isles ([original](http://www.draknek.org/games/puzzlescript/mirrors.php))
+
+This screencast shows playing the game in a terminal using ASCII and ANSI colors.
+
+![mirror-isles](https://user-images.githubusercontent.com/253202/47133542-ce0d1700-d26e-11e8-851f-233d27aaf0b8.gif)
+
+
 ### Pot Wash Panic! ([original](https://hauntpun.itch.io/pot-wash-panic))
+
+(click to see the ascii screencast)
 
 <a href="https://asciinema.org/a/188014?t=25"><img width="300" alt="video of install and a couple games" src="https://asciinema.org/a/188014.png"/></a>
 
