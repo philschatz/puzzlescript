@@ -71,6 +71,9 @@ PuzzleScript lends itself nicely to be playable by people with low or no vision:
 1. the games do not require quick reflexes and have Undo built-in so it is easy to think and try different options
 1. we can just print to the terminal whenever something needs to be read (presumably the terminal is read aloud to the person)
 
+If you are blind, you can play the games by running `puzzlescript --no-ui` and use the <kbd>I</kbd>, <kbd>K</kbd>, <kbd>J</kbd>, <kbd>L</kbd>, and <kbd>P</kbd> keys to move the cursor to explore the level.
+
+If you want to experience what a non-sighted person would experience but still see the level, run `NODE_ENV=development puzzlescript` and use the <kbd>I</kbd>, <kbd>K</kbd>, <kbd>J</kbd>, <kbd>L</kbd>, and <kbd>P</kbd> keys to move the cursor to explore the level.
 
 ### Screencap
 
