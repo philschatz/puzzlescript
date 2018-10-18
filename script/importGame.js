@@ -12,7 +12,7 @@ const puppeteer = require('puppeteer')
 const URL_REGEXP = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/
 
 commander
-.version(require('./package.json').version)
+.version(require('../package.json').version)
 .usage('<url>')
 .parse(process.argv)
 
@@ -33,7 +33,7 @@ async function doImport() {
             const gist = await response.json()
 
             dirName = gistId
-            const outDir = path.join(__dirname, `gists`, dirName)
+            const outDir = path.join(__dirname, `../gists`, dirName)
             const outFile = path.join(outDir, `script.txt`)
 
             mkdirp.sync(outDir)
@@ -46,7 +46,7 @@ async function doImport() {
         } else {
             throw new Error(`BUG: Unsupported URL. Unsure how to name the game file`)
         }
-        const outDir = path.join(__dirname, `gists`, dirName)
+        const outDir = path.join(__dirname, `../gists`, dirName)
         const outFile = path.join(outDir, `script.txt`)
 
         const {sourceCode} = await getSourceFromUrl(page, gameUrl)

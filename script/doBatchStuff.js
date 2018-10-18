@@ -3,14 +3,16 @@ const fs = require('fs')
 const path = require('path')
 const glob = require('glob')
 const pify = require('pify')
-const {default: Parser} = require('./lib/parser/parser')
+// const {default: Parser} = require('../lib/parser/parser')
 
-const readFile = pify(fs.readFile)
+const SOLUTION_FILE = path.join(__dirname, `../src/cli/solvedGames.ts`)
+const SOLUTIONS_GLOB = path.join(__dirname, '../gist-solutions/*.json')
+// const readFile = pify(fs.readFile)
 
 run()
 
 async function run() {
-    const gists = await pify(glob)('./gist-solutions/*.json')
+    const gists = await pify(glob)(SOLUTIONS_GLOB)
 
     const solutionsFileList = [
         `//`,
@@ -44,5 +46,5 @@ async function run() {
     solutionsFileList.push(entries.join(',\n'))
     solutionsFileList.push(`])`)
 
-    fs.writeFileSync(`src/cli/solvedGames.ts`, solutionsFileList.join('\n') + '\n')
+    fs.writeFileSync(SOLUTION_FILE, solutionsFileList.join('\n') + '\n')
 }

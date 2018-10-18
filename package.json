@@ -20,7 +20,7 @@
     "demo:debug": "LOG_LEVEL=debug NODE_ENV=development node --inspect-brk ./bin/puzzlescript-demo.js 2> ./start.log",
     "demo:debug-cli": "LOG_LEVEL=debug NODE_ENV=development node inspect ./bin/puzzlescript-demo.js 2> ./start.log",
     "coverage": "remap-istanbul --exclude 'sfxr.js,helper.js' --input ./coverage/coverage-final.json --output ./coverage/coverage-final.json && istanbul report --root ./coverage/ lcov",
-    "pretest": "npm run-script compile && node ./doBatchStuff.js",
+    "pretest": "npm run-script compile && node ./script/doBatchStuff.js",
     "test": "VERIFY_MATCHES=1 NODE_ENV=development jest --coverage --updateSnapshot --verbose",
     "posttest": "npm run-script test:cli && npm run-script coverage && npm run-script lint",
     "test:debug": "NODE_ENV=development node --inspect-brk -r source-map-support/register $(npm bin)/jest -i --updateSnapshot $@",
