@@ -922,7 +922,7 @@ async function promptGame(games: IGameInfo[], cliGameTitle: Optional<string>) {
 
     const question: inquirer.Question = {
         type: 'autocomplete',
-        name: 'gameTitle',
+        name: 'selectedGameId',
         message: 'Which game would you like to play?',
         pageSize: Math.max(15, getTerminalSize().rows - 15),
         source: async(answers: void, input: string) => {
@@ -938,23 +938,23 @@ async function promptGame(games: IGameInfo[], cliGameTitle: Optional<string>) {
                 // dim the games that are not recommended
                 const index = firstGames.indexOf(game.title)
                 if (index <= 10) {
-                    return chalk.bold.whiteBright(`\u2063${game.title}\u2063 ${percentComplete(game)}`)
+                    return {
+                        name: chalk.bold.whiteBright(`${game.title} ${percentComplete(game)}`),
+                        value: game.id
+                    }
                 } else if (SOLVED_GAMES.has(game.title)) {
-                    // add an invisible unicode character so we can unescape the title later
-                    return chalk.white(`\u2063${game.title}\u2063 ${percentComplete(game)}`)
+                    return {
+                        name: chalk.white(`${game.title} ${percentComplete(game)}`),
+                        value: game.id
+                    }
                 } else {
-                    // add an invisible unicode character so we can unescape the title later
-                    return chalk.dim(`\u2063${game.title}\u2063 ${percentComplete(game)}`)
+                    return {
+                        name: chalk.dim(`${game.title} ${percentComplete(game)}`),
+                        value: game.id
+                    }
                 }
             }))
         }
-        // choices: games.map(({id, title, filePath}) => {
-        //     return {
-        //         name: `${title} ${chalk.dim(`(${id})`)}`,
-        //         value: filePath,
-        //         short: id,
-        //     }
-        // })
 
     // coercing because we use the autcomplete plugin and it defines a `source:` object
     } as inquirer.Question // tslint:disable-line:no-object-literal-type-assertion
@@ -981,20 +981,10 @@ async function promptGame(games: IGameInfo[], cliGameTitle: Optional<string>) {
             throw new Error('Could not find game')
         }
     } else {
-        const gameTitle = (await inquirer.prompt<{ gameTitle: string }>([question])).gameTitle
-        // Filter out the DIM escape codes (to give the game titles a color)
-        const firstInvisible = gameTitle.indexOf('\u2063')
-        const lastInvisible = gameTitle.lastIndexOf('\u2063')
-        let uncoloredGameTitle: string
-        if (firstInvisible >= 0) {
-            uncoloredGameTitle = gameTitle.substring(firstInvisible + 1, lastInvisible)
-        } else {
-            uncoloredGameTitle = gameTitle
-        }
-
-        chosenGame = games.filter((game) => game.title === uncoloredGameTitle)[0]
+        const {selectedGameId} = (await inquirer.prompt<{ selectedGameId: string }>([question]))
+        chosenGame = games.filter((game) => game.id === selectedGameId)[0]
         if (!chosenGame) {
-            throw new Error(`BUG: Could not find game "${uncoloredGameTitle}"`)
+            throw new Error(`BUG: Could not find game "${selectedGameId}"`)
         }
     }
 
