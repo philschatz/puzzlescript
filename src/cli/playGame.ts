@@ -16,6 +16,7 @@ import { saveCoverageFile } from '../recordCoverage'
 import TerminalUI, { getTerminalSize } from '../ui/terminal'
 import SOLVED_GAMES from './solvedGames'
 import TITLE_FONTS from './titleFonts'
+import { ensureDir } from 'fs-extra';
 
 SOLVED_GAMES.add(`Skipping Stones to Lonely Homes`)
 SOLVED_GAMES.add(`Spikes 'n' Stuff`)
@@ -51,6 +52,15 @@ interface ICliOptions {
 
 // Use require instead of import so we can load JSON files
 const pkg: IPackage = require('../../package.json') as IPackage // tslint:disable-line:no-var-requires
+
+let SOLUTION_ROOT = path.join(__dirname, '../../gist-solutions/')
+if (!existsSync(SOLUTION_ROOT)) {
+    const homeDir = process.env.HOME
+    if (!homeDir) {
+        throw new Error(`BUG: Could not determine home directory to save game solutions to`)
+    }
+    SOLUTION_ROOT = path.join(homeDir, '.local/puzzlescript/solutions')
+}
 
 async function sleep(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms))
@@ -113,6 +123,11 @@ commander
 .option('-l, --level <num>', 'play a specific level', ((arg) => parseInt(arg, 10)))
 .option('-r, --resume', 'resume the level from last save')
 .option('--nosound', 'disable sound')
+.on('--help', () => {
+    console.log('')
+    console.log('Note: saved game state is stored in ~/.local/puzzlescript/solutions/')
+    console.log('')
+})
 .parse(process.argv)
 
 run().then(() => { process.exit(0) }, (err) => {
@@ -224,10 +239,10 @@ async function startPromptsAndPlayGame(gamePath: string, gistId: Optional<string
     await promptPixelSize(data, cliUi ? cliSpriteSize : CLI_SPRITE_SIZE.SMALL)
 
     // Load the solutions file (if it exists) so we can append to it
-    const solutionsPath = path.join(__dirname, `../../gist-solutions/${gistId}.json`)
+    const solutionPath = path.join(SOLUTION_ROOT, `${gistId}.json`)
     let recordings: { version: number, solutions: ILevelRecording[], title: string, totalLevels: number, totalMapLevels: number }
-    if (gistId && existsSync(solutionsPath)) {
-        recordings = JSON.parse(readFileSync(solutionsPath, 'utf-8'))
+    if (gistId && existsSync(solutionPath)) {
+        recordings = JSON.parse(readFileSync(solutionPath, 'utf-8'))
     } else {
         recordings = { version: 1, solutions: [], title: data.title, totalLevels: data.levels.length, totalMapLevels: data.levels.filter((l) => l.isMap()).length } // default
     }
@@ -263,11 +278,11 @@ async function startPromptsAndPlayGame(gamePath: string, gistId: Optional<string
 
     TerminalUI.clearScreen()
 
-    await playGame(data, currentLevelNum, recordings, ticksToRunFirst, absPath, solutionsPath, cliUi, cliLevel !== undefined /*only run one level if specified*/, nosound)
+    await playGame(data, currentLevelNum, recordings, ticksToRunFirst, absPath, solutionPath, cliUi, cliLevel !== undefined /*only run one level if specified*/, nosound)
 }
 
 async function playGame(data: GameData, currentLevelNum: number, recordings: ISaveFile, ticksToRunFirst: string,
-                        absPath: string, solutionsPath: string, cliUi: boolean, onlyOneLevel: boolean, nosound: Optional<boolean>) {
+                        absPath: string, solutionPath: string, cliUi: boolean, onlyOneLevel: boolean, nosound: Optional<boolean>) {
 
     logger.debug(() => `Start playing "${data.title}". Level ${currentLevelNum}`)
 
@@ -317,7 +332,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: ISa
 
     // https://stackoverflow.com/a/30687420
     process.stdin.on('data', handleKeyPress)
-    function handleKeyPress(key: string) {
+    async function handleKeyPress(key: string) {
         if (process.env.NODE_ENV === 'developer' && !TerminalUI.getHasVisualUi()) {
             console.log(`${chalk.dim(`Pressed:`)} ${chalk.whiteBright(key)}`)
         }
@@ -400,7 +415,8 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: ISa
                 if (keypresses.join('').replace(/\./g, '').length > 0) { // skip just empty ticks
                     recordings.solutions[currentLevelNum] = recordings.solutions[currentLevelNum] || {}
                     recordings.solutions[currentLevelNum].partial = keypresses.join('')
-                    writeFileSync(solutionsPath, JSON.stringify(recordings, null, 2))
+                    await ensureDir(path.dirname(solutionPath))
+                    writeFileSync(solutionPath, JSON.stringify(recordings, null, 2))
                 }
                 closeSounds()
                 shouldExitGame = true
@@ -420,7 +436,8 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: ISa
                 if (process.env.NODE_ENV === 'development') {
                     const cellState = engine.saveSnapshotToJSON()
                     recordings.solutions[currentLevelNum].snapshot = { tickNum, cellState }
-                    writeFileSync(solutionsPath, JSON.stringify(recordings, null, 2))
+                    await ensureDir(path.dirname(solutionPath))
+                    writeFileSync(solutionPath, JSON.stringify(recordings, null, 2))
                 }
                 return
             case '0':
@@ -580,7 +597,8 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: ISa
 
             // Save the solution
             recordings.solutions[currentLevelNum] = { solution: keypresses.join('') }
-            writeFileSync(solutionsPath, JSON.stringify(recordings, null, 2))
+            await ensureDir(path.dirname(solutionPath))
+            writeFileSync(solutionPath, JSON.stringify(recordings, null, 2))
             keypresses = []
             pendingKey = null
             currentLevelNum = engine.getCurrentLevelNum()
@@ -807,7 +825,7 @@ function shuffleArray<T>(array: T[]) {
 }
 
 function percentComplete(game: IGameInfo) {
-    const solutionsPath = path.join(__dirname, `../../gist-solutions/${game.id}.json`)
+    const solutionsPath = path.join(SOLUTION_ROOT, `${game.id}.json`)
     let message = process.env.NODE_ENV === 'development' ? chalk.bold.red('(unstarted)') : ''
     if (existsSync(solutionsPath)) {
         const recordings: { version: number, solutions: ILevelRecording[], title: string, totalLevels: number, totalMapLevels: number } = JSON.parse(readFileSync(solutionsPath, 'utf-8'))
