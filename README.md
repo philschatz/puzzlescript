@@ -1,4 +1,4 @@
-# Terminal PuzzleScript
+# Accessible PuzzleScript
 [![gh-board][kanban-image]][kanban-url]
 [![NPM version][npm-image]][npm-url]
 [![Downloads][downloads-image]][downloads-url]
@@ -7,14 +7,14 @@
 [![dev dependency status][dev-dependency-image]][dev-dependency-url]
 [![code coverage][coverage-image]][coverage-url]
 
-This is a program that you can run in your terminal to play [PuzzleScript](https://puzzlescript.net) games.
+This is a program that allows people to play [PuzzleScript](https://puzzlescript.net) games in a browser **or** in a terminal.
 
 Also, it is **accessible**, meaning that [blind or visually impaired people can play these games](#video-games-that-blind-people-can-play) too!
 
 
-## Install
+## Play from the command line terminal
 
-1. Run `npm install -g puzzlescript`
+1. Run `npm install -g puzzlescript` to install
 1. Run `puzzlescript` to start playing
 
 ### Embed in a Browser

@@ -10,13 +10,13 @@ import * as path from 'path'
 import * as pify from 'pify'
 import * as supportsColor from 'supports-color'
 
+import { ensureDir } from 'fs-extra'
 import { closeSounds, GameData, GameEngine, ILoadingCellsEvent, Optional, Parser, playSound, RULE_DIRECTION } from '..'
 import { logger } from '../logger'
 import { saveCoverageFile } from '../recordCoverage'
 import TerminalUI, { getTerminalSize } from '../ui/terminal'
 import SOLVED_GAMES from './solvedGames'
 import TITLE_FONTS from './titleFonts'
-import { ensureDir } from 'fs-extra';
 
 SOLVED_GAMES.add(`Skipping Stones to Lonely Homes`)
 SOLVED_GAMES.add(`Spikes 'n' Stuff`)
@@ -999,7 +999,7 @@ async function promptGame(games: IGameInfo[], cliGameTitle: Optional<string>) {
             throw new Error('Could not find game')
         }
     } else {
-        const {selectedGameId} = (await inquirer.prompt<{ selectedGameId: string }>([question]))
+        const { selectedGameId } = (await inquirer.prompt<{ selectedGameId: string }>([question]))
         chosenGame = games.filter((game) => game.id === selectedGameId)[0]
         if (!chosenGame) {
             throw new Error(`BUG: Could not find game "${selectedGameId}"`)
