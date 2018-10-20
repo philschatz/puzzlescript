@@ -230,9 +230,15 @@ class TableUI extends BaseUI {
             throw new Error(`BUG: Could not find cell in the table: [${cell.rowIndex} - ${this.windowOffsetRowStart}][${cell.colIndex} - ${this.windowOffsetColStart}]`)
         }
         if (spritesForDebugging.length > 0) {
+            const player = this.gameData.getPlayer()
+            if (player.getSpritesThatMatch(cell).size > 0) {
+                cellLabel.classList.add('ps-player')
+            } else {
+                cellLabel.classList.remove('ps-player')
+            }
             cellLabel.textContent = spritesForDebugging.map((s) => s.getName()).join(', ')
         } else {
-            cellLabel.textContent = '(empty)'
+            cellLabel.textContent = ' ' // (empty)
         }
 
         const pixels: IColor[][] = this.getPixelsForCell(cell)
