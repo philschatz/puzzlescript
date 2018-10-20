@@ -1,15 +1,14 @@
 # Accessible PuzzleScript
-[![gh-board][kanban-image]][kanban-url]
 [![NPM version][npm-image]][npm-url]
 [![Downloads][downloads-image]][downloads-url]
-[![build status][travis-image]][travis-url]
-[![dependency status][dependency-image]][dependency-url]
-[![dev dependency status][dev-dependency-image]][dev-dependency-url]
-[![code coverage][coverage-image]][coverage-url]
+[![Build status][travis-image]][travis-url]
+[![Dependency status][dependency-image]][dependency-url]
+[![Dev dependency status][dev-dependency-image]][dev-dependency-url]
+[![Code coverage][coverage-image]][coverage-url]
 
 This is a program that allows people to play [PuzzleScript](https://puzzlescript.net) games in a browser **or** in a terminal.
 
-Also, it is **accessible**, meaning that [blind or visually impaired people can play these games](#video-games-that-blind-people-can-play) too!
+Also, it is **accessible**, meaning that [blind or visually impaired people can play these games](#video-games-that-blind-people-can-play) too! See [blog post](https://philschatz.com/2018/09/22/puzzlescript/) for more info or try the [demo](https://philschatz.com/puzzlescript/).
 
 
 ## Play from the command line terminal
@@ -164,8 +163,6 @@ Want to help? Here is a roadmap of things that need to be implemented:
     - [x] improve `getMatches(level)` by storing a cache of all the sprites in each row/column so we can skip the row/column entirely if the necessary sprites are not available
 
 
-[kanban-image]: https://img.shields.io/github/issues/philschatz/puzzlescript.svg?label=kanban%20board%20%28gh-board%29
-[kanban-url]: https://philschatz.com/gh-board/#/r/philschatz:puzzlescript
 [npm-image]: https://img.shields.io/npm/v/puzzlescript.svg
 [npm-url]: https://npmjs.org/package/puzzlescript
 [downloads-image]: https://img.shields.io/npm/dm/puzzlescript.svg
