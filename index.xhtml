@@ -39,25 +39,28 @@
 
 <body>
     <h1>Example Game with HTML Tables</h1>
+
+    <p><input id="ui-enable" type="checkbox" checked="checked"/> <label for="ui-enable">Enable CSS (uncheck to see what a non-sighted user would experience)</label></p>
+
     <p>To play: use the Arrow keys <span class="light">(or <kbd>W</kbd>, <kbd>S</kbd>, <kbd>A</kbd>, <kbd>D</kbd>)</span>, <kbd>space</kbd> <span class="light">(or <kbd>X</kbd>)</span>, and <kbd>Z</kbd> and <kbd>R</kbd> for undo/redo</p>
 
     <p>Or, choose another game!</p>
 
     <select id="gameSelection">
-        <option value="_hack-the-net_8b5eb39cb825277832d261b3142f084b" selected="selected">Hack the Net⁣</option>
-        <option value="_pot-wash-panic_itch">Pot Wash Panic</option>
-        <option value="7f4470ab80d9f7ffe4b9e28c83b26adc">PUSH⁣</option>
-        <option value="_mirror-isles_219a7db6511dad557b84">Mirror Isles⁣</option>
-        <option value="f0b9b8e95d0bc87c9fb9e411756daa23">IceCrates⁣</option>
-        <option value="_cyber-lasso-e3e444f7c63fb21b6ec0">Cyber-Lasso⁣</option>
         <option value="e13482e035a5f75e9b0e4d0b5f28f8b6">Pushcat Jr⁣</option>
+        <option value="7f4470ab80d9f7ffe4b9e28c83b26adc">PUSH⁣</option>
+        <option value="f0b9b8e95d0bc87c9fb9e411756daa23">IceCrates⁣</option>
+        <option value="_pot-wash-panic_itch">Pot Wash Panic</option>
+        <option value="_cyber-lasso-e3e444f7c63fb21b6ec0">Cyber-Lasso⁣</option>
         <option value="ee39bfe12012c774acfc5e3d32fb4f89">Boxes &amp; Balloons⁣</option>
-        <option value="_boxes-love-bloxing_c2d717a77f9aa02ecb1b793111f3a921">Boxes Love Bloxing Gloves⁣</option>
         <option value="457c6d8be68ffb6d921211d40ca48c15">Pants, Shirt, Cap⁣</option>
+        <option value="_mirror-isles_219a7db6511dad557b84">Mirror Isles⁣</option>
+        <option value="_boxes-love-bloxing_c2d717a77f9aa02ecb1b793111f3a921">Boxes Love Bloxing Gloves⁣</option>
         <!-- <option value="a4829564ab394e720a82cf25d6c9cd91">Garten der Medusen⁣</option> -->
         <option value="e86e1d6cf24307499c1cd1aaaa733a91">SwapBot⁣</option>
         <option value="_separation_itch">Separation⁣</option>
         <option value="_roll-those-sixes-itch">Roll those Sixes⁣</option>
+        <option value="_hack-the-net_8b5eb39cb825277832d261b3142f084b" selected="selected">Hack the Net⁣</option>
         <option value="_spacekoban_6a6c07f71d7039e4155e">Spacekoban⁣</option>
         <option value="_spikes-n-stuff_dc5c4a669e362e389e994025075f7d0b">Spikes 'n' Stuff⁣</option>
         <option value="6daa8b63cf79202cd085c1b168048c09">Rock, Paper, Scissors (v0.90 = v1.alpha)⁣</option>
@@ -83,9 +86,6 @@
 
     <table id="thegamecanbeidentifiedbyselector">
     </table>
-
-    <p>Disable the CSS to see what a non-sighted user would experience by unchecking the following:</p>
-    <input id="ui-enable" type="checkbox" checked="checked"/> <label for="ui-enable">Enable the CSS</label>
 
     <script>//<![CDATA[
         var table = document.querySelector('#thegamecanbeidentifiedbyselector')
