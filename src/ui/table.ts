@@ -54,6 +54,9 @@ class TableUI extends BaseUI {
             this.tableCells = []
             const gameData = this.getGameData()
             const { width, height } = gameData.metadata.flickscreen || gameData.metadata.zoomscreen || { width: levelCells[0].length, height: levelCells.length }
+
+            this.table.setAttribute('tabindex', '0')
+            const tbody = document.createElement('tbody')
             for (let currentY = 0; currentY < height; currentY++) {
                 const tr = document.createElement('tr')
                 const tableRow = []
@@ -88,9 +91,10 @@ class TableUI extends BaseUI {
                     tr.appendChild(td)
                     tableRow.push({ td, label: cellLabel, pixels: tableCellPixels })
                 }
-                this.table.appendChild(tr)
+                tbody.appendChild(tr)
                 this.tableCells.push(tableRow)
             }
+            this.table.appendChild(tbody)
 
             for (const row of levelCells) {
                 this.drawCells(row, false)
