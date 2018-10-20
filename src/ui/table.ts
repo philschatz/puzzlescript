@@ -61,7 +61,6 @@ class TableUI extends BaseUI {
                     const td = document.createElement('td')
                     const tableCellPixels = []
                     td.classList.add('ps-cell')
-                    td.setAttribute('tabindex', '0')
 
                     const cellLabel = document.createElement('span')
                     cellLabel.classList.add('ps-cell-label')
