@@ -44,7 +44,7 @@
     "eventemitter2": "^5.0.1",
     "firstline": "^2.0.2",
     "font-ascii": "^1.1.16",
-    "fs-extra": "^7.0.0",
+    "fs-extra": "^7.0.1",
     "glob": "^7.1.2",
     "inquirer": "6.2.0",
     "inquirer-autocomplete-prompt": "^1.0.1",
