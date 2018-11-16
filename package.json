@@ -38,7 +38,7 @@
   "dependencies": {
     "ansi-escapes": "^3.1.0",
     "ansi-styles": "^3.2.1",
-    "bitset": "^5.0.3",
+    "bitset": "^5.0.4",
     "chalk": "^2.4.1",
     "commander": "^2.16.0",
     "eventemitter2": "^5.0.1",
