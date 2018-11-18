@@ -29,6 +29,14 @@ function createTests (moduloNumber, moduloTotal) {
         console.log('Skipping Replay tests')
         return
     }
+
+    if (process.env['CI'] === 'true' && (moduloNumber === 7 || moduloNumber === 8)) {
+        describe.skip(`Skipping replaySolutions/${moduloNumber}.test because it causes Travis to time out`, () => {
+            it.skip('skipping tests')
+        })
+        return
+    }
+
     describeFn('replays levels of games', () => {
         solutionFiles.forEach((solutionFilename, solutionIndex) => {
             // Skip the README.md file
