@@ -5,7 +5,7 @@ const { GameEngine } = require('../../lib/engine')
 const { default: Parser } = require('../../lib/parser/parser')
 const { RULE_DIRECTION } = require('../../lib/util')
 const { saveCoverageFile } = require('../../lib/recordCoverage')
-const { default: TerminalUI } = require('../../lib/ui/terminal')
+// const { default: TerminalUI } = require('../../lib/ui/terminal')
 
 const CI_MAX_SOLUTION_LENGTH = 238 // The length of 1 level of cyber-lasso
 const describeFn = process.env.SKIP_SOLUTIONS ? describe.skip : describe
@@ -127,14 +127,14 @@ function createTests (moduloNumber, moduloTotal) {
                     }
 
                     if (wonAtKeyIndex === DID_NOT_WIN || (wonAtKeyIndex !== keypresses.length - 1)) {
-                        console.error('Screendump of level')
-                        TerminalUI.setGameEngine(engine)
-                        TerminalUI.dumpScreen()
-                        while (engine.canUndo()) {
-                            engine.pressUndo()
-                            engine.tick()
-                            TerminalUI.dumpScreen()
-                        }
+                        // console.error('Screendump of level')
+                        // TerminalUI.setGameEngine(engine)
+                        // TerminalUI.dumpScreen()
+                        // while (engine.canUndo()) {
+                        //     engine.pressUndo()
+                        //     engine.tick()
+                        //     TerminalUI.dumpScreen()
+                        // }
                         // UI.setGame(engine)
                         // UI.dumpScreen()
                     }
