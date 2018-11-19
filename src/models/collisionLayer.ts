@@ -1,4 +1,3 @@
-import { AddValidationFunc, ValidationLevel, ValidationMessage } from '../parser/parser'
 import { _flatten } from '../util'
 import { BaseForLines, IGameCode } from './BaseForLines'
 import { GameSprite, IGameTile } from './tile'
@@ -8,21 +7,14 @@ export class CollisionLayer extends BaseForLines {
     public readonly id: number // Used for sorting collision layers for rendering
     private sprites: GameSprite[]
 
-    constructor(source: IGameCode, tiles: IGameTile[], addValidationMessage: AddValidationFunc) {
+    constructor(source: IGameCode, tiles: IGameTile[]) {
         super(source)
         this.id = collisionIdCounter++
 
         // Map all the Objects to the layer
         tiles.forEach((tile: IGameTile) => {
-            if (tile.hasCollisionLayer()) {
-                addValidationMessage(new ValidationMessage(tile.__source, ValidationLevel.WARNING, 'An Object should not belong to more than one collision layer'))
-            }
             tile.setCollisionLayer(this)
             tile._getDescendantTiles().forEach((subTile) => {
-                if (subTile.hasCollisionLayer()) {
-                    addValidationMessage(new ValidationMessage(subTile.__source, ValidationLevel.WARNING,
-                        'An Object should not belong to more than one collision layer. This item was referenced indirectly by a LEGEND entry'))
-                }
                 subTile.setCollisionLayer(this)
             })
         })

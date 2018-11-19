@@ -76,9 +76,7 @@ export class GameData {
         for (const letterSprite of this.letterSprites.values()) {
             letterSprite.allSpritesBitSetIndex = spriteIndexCounter++
         }
-        const letterCollisionLayer = new CollisionLayer(source, [...this.letterSprites.values()], () => {
-            throw new Error(`BUG: Letter collision layers should not have a problem`)
-        })
+        const letterCollisionLayer = new CollisionLayer(source, [...this.letterSprites.values()])
         this.collisionLayers.push(letterCollisionLayer)
     }
 

@@ -308,7 +308,7 @@ yellow
     })
 
     it('Converts an invalid color to a Transparent one', () => {
-        const { data, validationMessages } = checkParse(`
+        const { data } = checkParse(`
     title foo
 
     ===
@@ -327,8 +327,6 @@ yellow
     `)
 
         expect(data.objects[0].getPixels(5, 5)[0][0].isTransparent()).toBe(true)
-        // expect(validationMessages.length).toBe(1)
-        // const { message, gameNode } = validationMessages[0]
         // expect(message).toBe('Invalid color name. "someinvalidcolorname" is not a valid color. Using "transparent" instead')
         // expect(gameNode.__getSourceLineAndColumn()).toBeTruthy()
     })
