@@ -75,7 +75,7 @@ function createTests (moduloNumber, moduloTotal) {
                     hasAtLeastOneSolution++
 
                     if (process.env.CI === 'true' && recording.solution.length > CI_MAX_SOLUTION_LENGTH) {
-                        console.log(`CI-SKIP: Because the solution is too long: ${recording.solution.length} > ${CI_MAX_SOLUTION_LENGTH}. "${GIST_ID}"`)
+                        console.log(`CI-SKIP: Solution group: [${moduloNumber}/${moduloTotal}]. Level=${index}. Because the solution is too long: ${recording.solution.length} > ${CI_MAX_SOLUTION_LENGTH}. "${GIST_ID}"`)
                         continue
                     }
 

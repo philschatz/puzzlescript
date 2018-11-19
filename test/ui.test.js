@@ -18,6 +18,12 @@ function parseAndReturnFirstSpritePixels(code) {
 }
 
 describe('UI', () => {
+
+    afterEach(() => {
+        // clean up memory leaks
+        UI.destroy()
+    })
+
     it('Renders a single sprite', () => {
         const { pixels } = parseAndReturnFirstSpritePixels(`
 title foo

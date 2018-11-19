@@ -6,9 +6,7 @@ const { default: Parser } = require('../lib/parser/parser')
 const GISTS_ROOT = path.join(__dirname, '../gists/')
 const GIST_SOLUTIONS_ROOT = path.join(__dirname, '../gist-solutions/')
 
-const describeFn = process.env.CI === 'true' ? describe.skip : describe
-
-describeFn('parsing files unambiguously', () => {
+describe('parsing files unambiguously', () => {
 
     const gistDirs = fs.readdirSync(GISTS_ROOT)
     // it('checks all files that they parse uniquely', () => {
