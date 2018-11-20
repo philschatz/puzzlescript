@@ -7,7 +7,7 @@ const { RULE_DIRECTION } = require('../../lib/util')
 const { saveCoverageFile } = require('../../lib/recordCoverage')
 // const { default: TerminalUI } = require('../../lib/ui/terminal')
 
-const CI_MAX_SOLUTION_LENGTH = 238 // The length of 1 level of cyber-lasso
+const CI_MAX_SOLUTION_LENGTH = 1000 // The length of 1 level of cyber-lasso
 const describeFn = process.env.SKIP_SOLUTIONS ? describe.skip : describe
 
 const SOLUTION_ROOT = path.join(__dirname, '../../gist-solutions/')
