@@ -97,7 +97,7 @@ class TerminalUI extends BaseUI {
 
     public destroy() {
         if (this.resizeHandler && process.stdout) {
-            process.stdout.off('resize', this.resizeHandler)
+            process.stdout.removeListener('resize', this.resizeHandler)
         }
         this.resizeHandler = null
         super.destroy()
