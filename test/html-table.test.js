@@ -67,11 +67,7 @@ async function evaluateWithStackTrace(page, fn, args) {
     // }
 }
 
-// Disable Browser tests on Travis for now
-// (results in "Failed to launch chrome. See https://github.com/GoogleChrome/puppeteer/blob/master/docs/troubleshooting.md")
-describeFn = process.env['CI'] === 'true' ? describe.skip : describe
-
-describeFn('Browser', () => {
+describe('Browser', () => {
 
     it('plays a game in the browser', async () => {
         // browser tests are slow. Headless is slower it seems (from jest watch mode)
