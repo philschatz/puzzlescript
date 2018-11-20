@@ -21,11 +21,12 @@
     "demo:debug-cli": "LOG_LEVEL=debug NODE_ENV=development node inspect ./bin/puzzlescript-demo.js 2> ./start.log",
     "coverage": "remap-istanbul --exclude 'sfxr.js,helper.js' --input ./coverage/coverage-final.json --output ./coverage/coverage-final.json && istanbul report --root ./coverage/ lcov",
     "pretest": "npm run-script compile && node ./script/doBatchStuff.js",
-    "test": "npm run-script test:only",
-    "test:only": "VERIFY_MATCHES=1 NODE_ENV=development jest --coverage --updateSnapshot --verbose",
+    "test": "npm run-script test:unit",
+    "test:unit": "VERIFY_MATCHES=1 NODE_ENV=development jest --coverage --updateSnapshot --verbose --detectLeaks --detectOpenHandles",
     "posttest": "npm run-script test:cli && npm run-script coverage && npm run-script lint",
-    "test:debug": "NODE_ENV=development node --inspect-brk -r source-map-support/register $(npm bin)/jest -i --updateSnapshot $@",
+    "test:debug": "NODE_ENV=development node --inspect-brk -r source-map-support/register $(npm bin)/jest -i --updateSnapshot --detectLeaks --detectOpenHandles",
     "test:cli": "./bin/puzzlescript.js --no-ui --game 'Beam Islands' --level 1 --size small --resume",
+    "test:server": "serve --listen 8000 .",
     "build": "webpack",
     "build:dev": "webpack --mode development",
     "build:stats": "webpack --profile --json > ./webpack-stats.json",
@@ -56,6 +57,7 @@
     "standardx": "^2.1.0",
     "supports-color": "^5.4.0",
     "update-notifier": "^2.5.0",
+    "weak": "^1.0.1",
     "web-audio-api": "^0.2.2"
   },
   "devDependencies": {
@@ -74,10 +76,12 @@
     "http-server": "^0.11.1",
     "istanbul": "^0.4.5",
     "jest": "^23.3.0",
+    "jest-puppeteer": "^3.5.1",
     "mkdirp": "^0.5.1",
     "node-fetch": "^2.1.2",
     "puppeteer": "^1.9.0",
     "remap-istanbul": "^0.12.0",
+    "serve": "^10.1.1",
     "source-map-loader": "^0.2.4",
     "source-map-support": "^0.5.9",
     "sourcemapped-stacktrace-node": "github:philschatz/sourcemapped-stacktrace-node#2a76787b5f9356b3798788942947e05a5bc8ecc2",
@@ -95,6 +99,7 @@
     "speaker": "github:philschatz/node-speaker#cac7c5b7c434b52619bfbbd9530ab0871156e815"
   },
   "jest": {
+    "preset": "jest-puppeteer",
     "moduleFileExtensions": [
       "ts",
       "tsx",

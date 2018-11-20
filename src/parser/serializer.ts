@@ -334,7 +334,7 @@ export default class Serializer {
 
         for (const [key, val] of Object.entries(source.collisionLayers)) {
             const { _sourceOffset: sourceOffset } = val
-            collisionLayerMap.set(key, new CollisionLayer({ code, sourceOffset }, layers.get(key), () => null))
+            collisionLayerMap.set(key, new CollisionLayer({ code, sourceOffset }, layers.get(key)))
         }
 
         for (const [key, val] of Object.entries(source.tilesWithModifiers)) {

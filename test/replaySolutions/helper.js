@@ -7,7 +7,7 @@ const { RULE_DIRECTION } = require('../../lib/util')
 const { saveCoverageFile } = require('../../lib/recordCoverage')
 // const { default: TerminalUI } = require('../../lib/ui/terminal')
 
-const CI_MAX_SOLUTION_LENGTH = 238 // The length of 1 level of cyber-lasso
+const CI_MAX_SOLUTION_LENGTH = 1000 // The length of 1 level of cyber-lasso
 const describeFn = process.env.SKIP_SOLUTIONS ? describe.skip : describe
 
 const SOLUTION_ROOT = path.join(__dirname, '../../gist-solutions/')
@@ -75,7 +75,7 @@ function createTests (moduloNumber, moduloTotal) {
                     hasAtLeastOneSolution++
 
                     if (process.env.CI === 'true' && recording.solution.length > CI_MAX_SOLUTION_LENGTH) {
-                        console.log(`CI-SKIP: Because the solution is too long: ${recording.solution.length} > ${CI_MAX_SOLUTION_LENGTH}. "${GIST_ID}"`)
+                        console.log(`CI-SKIP: Solution group: [${moduloNumber}/${moduloTotal}]. Level=${index}. Because the solution is too long: ${recording.solution.length} > ${CI_MAX_SOLUTION_LENGTH}. "${GIST_ID}"`)
                         continue
                     }
 

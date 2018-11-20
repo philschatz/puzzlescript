@@ -6,7 +6,6 @@ import * as pify from 'pify'
 
 import { GameEngine, Parser, RULE_DIRECTION } from '..'
 import { logger } from '../logger'
-import { getLineAndColumn } from '../models/BaseForLines'
 import Serializer from '../parser/serializer'
 import { saveCoverageFile } from '../recordCoverage'
 import { closeSounds } from '../sounds'
@@ -30,7 +29,7 @@ async function run() {
 
         const code = readFileSync(filename, 'utf-8')
         let startTime = Date.now()
-        const { data: originalData, validationMessages } = Parser.parse(code)
+        const { data: originalData } = Parser.parse(code)
 
         // Check that we can serialize the game out to JSON
         const json = new Serializer(originalData).toJson()
@@ -52,13 +51,6 @@ async function run() {
 
         if (!data) {
             throw new Error(`BUG: gameData was not set yet`)
-        }
-
-        if (validationMessages) {
-            validationMessages.forEach(({ source, level, message }) => {
-                const { lineNum, colNum } = getLineAndColumn(source.code, source.sourceOffset)
-                console.warn(`(${lineNum}:${colNum}) ${level} : ${message}`)
-            })
         }
 
         // Draw the "first" level (after the messages)

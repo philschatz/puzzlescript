@@ -1,7 +1,6 @@
 import * as nearley from 'nearley'
 import { lookupColorPalette } from '../colors'
 import { Optional } from '../index-browser'
-import { IGameCode } from '../models/BaseForLines'
 import { CollisionLayer } from '../models/collisionLayer'
 import { HexColor, TransparentColor } from '../models/colors'
 import { AgainCommand, CancelCommand, CheckpointCommand, MessageCommand, RestartCommand, SoundCommand, WinCommand } from '../models/command'
@@ -28,23 +27,6 @@ function removeNulls<T>(ary: Array<T | null>) {
     return ret
 }
 
-export class ValidationMessage {
-    public readonly source: IGameCode
-    public readonly level: ValidationLevel
-    public readonly message: string
-    constructor(source: IGameCode, level: ValidationLevel, message: string) {
-        this.source = source
-        this.level = level
-        this.message = message
-    }
-
-    public toKey() {
-        return `[${this.source.toString()}] [${this.level}] [${this.message}]`
-    }
-}
-
-export type AddValidationFunc = (message: ValidationMessage) => void
-
 export enum ValidationLevel {
     ERROR,
     WARNING,
@@ -52,7 +34,6 @@ export enum ValidationLevel {
 }
 
 class AstBuilder {
-    private validationMessages: Map<string, ValidationMessage>
     private readonly code: string
     private readonly tileCache: Map<string, IGameTile>
     private readonly soundCache: Map<string, GameSound>
@@ -60,10 +41,8 @@ class AstBuilder {
         this.code = code
         this.tileCache = new Map()
         this.soundCache = new Map()
-        this.validationMessages = new Map()
     }
     public build(root: ast.IASTGame<string, string, number | '.'>) {
-        this.validationMessages.clear() // clear because we are parsing
         const source = this.toSource({ _sourceOffset: 0 })
 
         const metadata = new GameMetadata()
@@ -118,8 +97,7 @@ class AstBuilder {
         const simpleRules = rules.map((rule) => rule.simplify(ruleCache, bracketCache, neighborCache, tileCache))
 
         const gameData = new GameData(source, root.title, metadata, sprites, legendItems, sounds, collisionLayers, simpleRules, winConditions, levels)
-        const validationMessages = this.getValidationMessages()
-        return { gameData, validationMessages }
+        return { gameData }
     }
 
     public buildSprite(node: ast.Sprite<number | '.'>, colorPalette: Optional<string>) {
@@ -164,7 +142,6 @@ class AstBuilder {
                     if (hex) {
                         return new HexColor(source, hex)
                     } else {
-                        this.addValidationMessage(source, ValidationLevel.WARNING, `ERROR: Invalid color name ${node.value}`)
                         return new TransparentColor(source)
                     }
                 }
@@ -204,10 +181,7 @@ class AstBuilder {
 
     public buildCollisionLayer(node: ast.CollisionLayer<string>) {
         const source = this.toSource(node)
-        const addValidation = (msg: ValidationMessage) => {
-            this.addValidationMessage(msg.source, msg.level, msg.message)
-        }
-        return new CollisionLayer(source, node.tiles.map((n) => this.cacheGet(n)), addValidation)
+        return new CollisionLayer(source, node.tiles.map((n) => this.cacheGet(n)))
     }
 
     public buildSound(node: ast.SoundItem<string>) {
@@ -287,7 +261,6 @@ class AstBuilder {
     public buildTileWithModifier(node: ast.TileWithModifier<string>) {
         const source = this.toSource(node)
         if (!this.cacheHas(node.tile)) {
-            this.addValidationMessage(source, ValidationLevel.ERROR, `Could not find tile named ${node.tile}`)
             return null
         }
         return new ASTTileWithModifier(source, node.direction, node.isNegated, node.isRandom, this.cacheGet(node.tile), node.debugFlag)
@@ -300,7 +273,6 @@ class AstBuilder {
                 return new MessageCommand(source, node.message)
             case ast.COMMAND_TYPE.SFX:
                 if (!this.soundCacheHas(node.sound)) {
-                    this.addValidationMessage(source, ValidationLevel.ERROR, `Could not find sound named ${node.sound}`)
                     return null
                 }
                 return new SoundCommand(source, this.soundCacheGet(node.sound))
@@ -348,17 +320,6 @@ class AstBuilder {
             code: this.code,
             sourceOffset: node._sourceOffset
         }
-    }
-
-    private addValidationMessage(source: IGameCode, level: ValidationLevel, message: string) {
-        const msg = new ValidationMessage(source, level, message)
-        if (!this.validationMessages.has(msg.toKey())) {
-            this.validationMessages.set(msg.toKey(), msg)
-        }
-    }
-
-    private getValidationMessages() {
-        return [...this.validationMessages.values()]
     }
 
     private cacheAdd(name: string, value: IGameTile) {
@@ -426,9 +387,9 @@ class Parser {
         const node = this.parseToAST(code)
 
         const builder = new AstBuilder(code)
-        const { gameData, validationMessages } = builder.build(node)
+        const { gameData } = builder.build(node)
 
-        return { data: gameData, validationMessages }
+        return { data: gameData }
     }
 }
 

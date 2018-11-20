@@ -331,7 +331,7 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
         let ret: IMutation[] = []
         if (process.env.NODE_ENV === 'development') {
             // A "DEBUGGER" flag was set in the game so we are pausing here
-            if ((logger.isLevel(LOG_LEVEL.TRACE) && process.stdout) || (logger.isLevel(LOG_LEVEL.DEBUG) && this.debugFlag === DEBUG_FLAG.BREAKPOINT)) { 
+            if ((logger.isLevel(LOG_LEVEL.TRACE) && process.stdout) || (logger.isLevel(LOG_LEVEL.DEBUG) && this.debugFlag === DEBUG_FLAG.BREAKPOINT)) {
                 // TerminalUI.renderScreen(false)
             }
             if (this.debugFlag === DEBUG_FLAG.BREAKPOINT) {
