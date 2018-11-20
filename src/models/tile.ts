@@ -18,8 +18,6 @@ export interface IGameTile extends IGameNode {
     _getDescendantTiles: () => IGameTile[]
     getSprites: () => GameSprite[]
     getSpritesForRuleAction: () => GameSprite[]
-    isInvalid: () => Optional<string>
-    hasCollisionLayer: () => boolean
     hasSingleCollisionLayer: () => boolean
     setCollisionLayer: (collisionLayer: CollisionLayer) => void
     getCollisionLayer: () => CollisionLayer
@@ -288,12 +286,6 @@ export abstract class GameLegendTile extends BaseForLines implements IGameTile {
     public isOr() {
         return false
     }
-    public isInvalid() {
-        if (!this.hasCollisionLayer()) {
-            return 'Missing collision layer'
-        }
-        return null
-    }
     public abstract matchesCell(cell: Cell): boolean
     public abstract getSpritesThatMatch(cell: Cell): Set<GameSprite>
     public abstract hasSingleCollisionLayer(): boolean
@@ -322,9 +314,6 @@ export abstract class GameLegendTile extends BaseForLines implements IGameTile {
             }).reverse()
         }
         return this.spritesCache
-    }
-    public hasCollisionLayer() {
-        return !!this.collisionLayer
     }
     public setCollisionLayer(collisionLayer: CollisionLayer) {
         this.collisionLayer = collisionLayer
