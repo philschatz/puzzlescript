@@ -53,7 +53,7 @@
     "keymaster": "^1.6.2",
     "nearley": "github:philschatz/nearley#24685991e203fd6645a6f687198687aa42b7d6f2",
     "pify": "^4.0.0",
-    "quick-lru": "^1.1.0",
+    "quick-lru": "^2.0.0",
     "standardx": "^2.1.0",
     "supports-color": "^5.4.0",
     "update-notifier": "^2.5.0",
