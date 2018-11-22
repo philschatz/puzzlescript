@@ -17,7 +17,6 @@ export interface IGameTile extends IGameNode {
     removeCells: (sprite: GameSprite, cells: Cell[]) => void
     _getDescendantTiles: () => IGameTile[]
     getSprites: () => GameSprite[]
-    getSpritesForRuleAction: () => GameSprite[]
     hasSingleCollisionLayer: () => boolean
     setCollisionLayer: (collisionLayer: CollisionLayer) => void
     getCollisionLayer: () => CollisionLayer
@@ -27,7 +26,6 @@ export interface IGameTile extends IGameNode {
     getSpritesThatMatch: (cell: Cell) => Set<GameSprite>
     getName: () => string
     equals: (t: IGameTile) => boolean
-    getCollisionLayers(): CollisionLayer[]
     hasCell(cell: Cell): boolean
 }
 
@@ -36,7 +34,6 @@ export abstract class GameSprite extends BaseForLines implements IGameTile {
     public readonly _optionalLegendChar: Optional<string>
     private readonly name: string
     private collisionLayer: Optional<CollisionLayer>
-    private collisionLayerIndex: Optional<number>
     private readonly trickleCells: Set<Cell>
     private readonly trickleTiles: Set<IGameTile>
     private readonly trickleTilesWithModifier: Set<SimpleTileWithModifier>
@@ -73,9 +70,6 @@ export abstract class GameSprite extends BaseForLines implements IGameTile {
         // to match the signature of LegendTile
         return [this]
     }
-    public getSpritesForRuleAction() {
-        return this.getSprites()
-    }
     public hasCollisionLayer() {
         return !!this.collisionLayer
     }
@@ -88,30 +82,14 @@ export abstract class GameSprite extends BaseForLines implements IGameTile {
     }
     public setCollisionLayerAndIndex(collisionLayer: CollisionLayer, bitSetIndex: number) {
         this.collisionLayer = collisionLayer
-        this.collisionLayerIndex = bitSetIndex
         this.bitSet = new BitSet2() as BitSet
         this.bitSet.set(bitSetIndex)
-    }
-    public getBitSet() {
-        return this.bitSet
-    }
-    public getBitSetIndex() {
-        return this.collisionLayerIndex
     }
     public getCollisionLayer() {
         if (!this.collisionLayer) {
             throw new Error(`ERROR: This sprite was not in a Collision Layer\n${this.toString()}`)
         }
         return this.collisionLayer
-    }
-    public getCollisionLayers() {
-        return [this.getCollisionLayer()]
-    }
-    public isInvalid() {
-        if (!this.collisionLayer) {
-            return 'This object does not have an entry in the COLLISIONLAYERS section.'
-        }
-        return null
     }
     public clearCaches() {
         this.trickleCells.clear()
@@ -174,13 +152,7 @@ export abstract class GameSprite extends BaseForLines implements IGameTile {
         }
     }
     public updateCells(sprite: GameSprite, cells: Cell[], wantsToMove: RULE_DIRECTION) {
-        // propagate up
-        for (const t of this.trickleTiles) {
-            t.updateCells(this, cells, wantsToMove)
-        }
-        for (const t of this.trickleTilesWithModifier) {
-            t.updateCells(this, cells, wantsToMove)
-        }
+        throw new Error(`BUG: Unreachable code`)
     }
     public removeCells(sprite: GameSprite, cells: Cell[]) {
         for (const cell of cells) {
@@ -292,9 +264,6 @@ export abstract class GameLegendTile extends BaseForLines implements IGameTile {
 
     public getName() {
         return this.spriteNameOrLevelChar
-    }
-    public getSpritesForRuleAction() {
-        return this.getSprites()
     }
     public _getDescendantTiles(): IGameTile[] {
         // recursively pull all the tiles out
@@ -446,19 +415,8 @@ export class GameLegendTileSimple extends GameLegendTile {
 }
 
 export class GameLegendTileAnd extends GameLegendTile {
-    public matchesCell(cell: Cell) {
-        // Update code coverage (Maybe only count the number of times it was true?)
-        if (process.env.NODE_ENV === 'development') {
-            this.__incrementCoverage()
-        }
-
-        // Check that the cell contains all of the tiles (AND)
-        for (const tile of this.tiles) {
-            if (!tile.matchesCell(cell)) {
-                return false
-            }
-        }
-        return true
+    public matchesCell(cell: Cell): boolean {
+        throw new Error(`BUG: Unreachable code`)
     }
 
     public getSpritesThatMatch(cell: Cell): Set<GameSprite> {

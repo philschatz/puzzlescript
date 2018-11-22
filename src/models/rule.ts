@@ -638,12 +638,10 @@ export abstract class ISimpleBracket extends BaseForLines implements ICacheable 
     public abstract toKey(ignoreDebugFlag?: boolean): string
     public abstract clearCaches(): void
     public abstract prepareAction(action: ISimpleBracket): void
-    public abstract getNeighbors(): SimpleNeighbor[]
     public abstract addCell(index: number, neighbor: SimpleNeighbor, t: SimpleTileWithModifier, sprite: GameSprite, cell: Cell, wantsToMove: Optional<RULE_DIRECTION>): void
     public abstract removeCell(index: number, neighbor: SimpleNeighbor, t: SimpleTileWithModifier, sprite: GameSprite, cell: Cell): void
     public abstract addCellsToEmptyRules(cells: Iterable<Cell>): void
     public abstract getMatches(level: Level, actionBracket: Optional<ISimpleBracket>): MatchedCellsForRule[]
-    public abstract dependsOnDirection(): boolean
 
     public _getAllNeighbors() {
         return this.allNeighbors
@@ -749,13 +747,9 @@ export class SimpleBracket extends ISimpleBracket {
         }
         this.anySpritesPresentInRowOrColumn = (new SpriteBitSet()).union(anySprites)
     }
-    public toKey(ignoreDebugFlag?: boolean) {
+    public toKey() {
         const dir = this.dependsOnDirection() ? this.direction : ''
-        if (ignoreDebugFlag) {
-            return `{${dir}[${this.neighbors.map((n) => n.toKey(ignoreDebugFlag)).join('|')}]}`
-        } else {
-            return `{${dir}[${this.neighbors.map((n) => n.toKey(ignoreDebugFlag)).join('|')}]{debugging?${!!this.debugFlag}}}`
-        }
+        return `{${dir}[${this.neighbors.map((n) => n.toKey()).join('|')}]{debugging?${!!this.debugFlag}}}`
     }
 
     public dependsOnDirection() {
@@ -930,10 +924,6 @@ export class SimpleBracket extends ISimpleBracket {
         return matches
     }
 
-    public getFirstCells() {
-        return this.firstCells
-    }
-
     protected _removeFirstCell(firstCell: Cell) {
         if (this.firstCells.has(firstCell)) {
             if (process.env.NODE_ENV === 'development' && this.debugFlag === DEBUG_FLAG.BREAKPOINT_REMOVE) {
@@ -1061,13 +1051,13 @@ class MultiMap<A, B> {
     public clear() {
         this.map.clear()
     }
-    public has(a: A, b: B) {
-        const set = this.map.get(a)
-        if (set) {
-            return set.has(b)
-        }
-        return false
-    }
+    // public has(a: A, b: B) {
+    //     const set = this.map.get(a)
+    //     if (set) {
+    //         return set.has(b)
+    //     }
+    //     return false
+    // }
     public getB(a: A) {
         return this.map.get(a)
     }
@@ -1099,43 +1089,43 @@ class MultiMap<A, B> {
         }
         return asRemoved
     }
-    public delete(a: A, b: B) {
-        const set = this.map.get(a)
-        if (set) {
-            if (!set.has(b)) {
-                throw new Error(`BUG: Invariant error. Link did not exist so nothing to remove`)
-            }
-            set.delete(b)
-        }
-    }
     public sizeA() {
         return this.map.size
     }
-    protected /*unused*/ hasA(a: A) {
-        return this.map.has(a)
-    }
-    protected /*unused*/ hasB(b: B) {
-        return !!this.getA(b)
-    }
-    protected /*unused*/ getA(b: B) {
-        const ret = new Set()
-        for (const [a, set] of this.map) {
-            if (set.has(b)) {
-                ret.add(a)
-            }
-        }
-        if (ret.size > 0) {
-            return ret
-        }
-        return undefined
-    }
-    protected /*unused*/ size() {
-        let size = 0
-        for (const set of this.map.values()) {
-            size += set.size
-        }
-        return size
-    }
+    // public delete(a: A, b: B) {
+    //     const set = this.map.get(a)
+    //     if (set) {
+    //         if (!set.has(b)) {
+    //             throw new Error(`BUG: Invariant error. Link did not exist so nothing to remove`)
+    //         }
+    //         set.delete(b)
+    //     }
+    // }
+    // public hasA(a: A) {
+    //     return this.map.has(a)
+    // }
+    // public hasB(b: B) {
+    //     return !!this.getA(b)
+    // }
+    // public getA(b: B) {
+    //     const ret = new Set()
+    //     for (const [a, set] of this.map) {
+    //         if (set.has(b)) {
+    //             ret.add(a)
+    //         }
+    //     }
+    //     if (ret.size > 0) {
+    //         return ret
+    //     }
+    //     return undefined
+    // }
+    // public size() {
+    //     let size = 0
+    //     for (const set of this.map.values()) {
+    //         size += set.size
+    //     }
+    //     return size
+    // }
 }
 
 export class SimpleEllipsisBracket extends ISimpleBracket {
@@ -1154,16 +1144,8 @@ export class SimpleEllipsisBracket extends ISimpleBracket {
         this.beforeEllipsisBracket.addEllipsisBracket(this, BEFORE_OR_AFTER.BEFORE)
         this.afterEllipsisBracket.addEllipsisBracket(this, BEFORE_OR_AFTER.AFTER)
     }
-    public toKey(ignoreDebugFlag?: boolean) {
-        return `[${this.direction} ${this.beforeEllipsisBracket.toKey(ignoreDebugFlag)} ... ${this.afterEllipsisBracket.toKey(ignoreDebugFlag)}]}`
-    }
-    public dependsOnDirection() {
-        return true
-    }
-
-    public getNeighbors() {
-        // throw new Error(`BUG: Should not be calling this method`)
-        return [] // TODO: Implement me
+    public toKey() {
+        return `[${this.direction} ${this.beforeEllipsisBracket.toKey()} ... ${this.afterEllipsisBracket.toKey()}]}`
     }
 
     public clearCaches() {
@@ -1228,15 +1210,12 @@ export class SimpleEllipsisBracket extends ISimpleBracket {
         if (bracket === this.beforeEllipsisBracket) {
             this.linkages.deleteAllA(firstCell)
             if (this.firstCells.has(firstCell)) {
-                this.firstCells.delete(firstCell)
-            } else {
-                // console.warn('Removing firstCell but it has already been removed')
-                // console.warn(this.toString())
+                throw new Error(`BUG: Unreachable code`)
             }
         } else if (bracket === this.afterEllipsisBracket) {
             const beforeCellsRemoved = this.linkages.deleteAllB(firstCell)
-            for (const b of beforeCellsRemoved) {
-                this.firstCells.delete(b)
+            if (beforeCellsRemoved.size > 0) {
+                throw new Error(`BUG: Unreachable code`)
             }
         } else {
             throw new Error(`BUG: Bracket should only ever be the before-ellipsis or after-ellipsis one`)
@@ -1595,7 +1574,7 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
                 for (const sprite of t._tile.getSprites()) {
                     const c = sprite.getCollisionLayer()
                     if (t._direction) {
-                        this.cacheDirections.set(c, t._direction)
+                        throw new Error(`BUG: Unreachable code`)
                     }
                     let noBitSet = this.cacheNoBitSets.get(c)
                     if (!noBitSet) {
@@ -1617,12 +1596,8 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
         }
 
     }
-    public toKey(ignoreDebugFlag?: boolean) {
-        if (ignoreDebugFlag) {
-            return `{${[...this._tilesWithModifier].map((t) => t.toKey(ignoreDebugFlag)).sort().join(' ')}}`
-        } else {
-            return `{${[...this._tilesWithModifier].map((t) => t.toKey(ignoreDebugFlag)).sort().join(' ')} debugging?${!!this.debugFlag}}`
-        }
+    public toKey() {
+        return `{${[...this._tilesWithModifier].map((t) => t.toKey()).sort().join(' ')} debugging?${!!this.debugFlag}}`
     }
 
     public dependsOnDirection() {
@@ -1738,8 +1713,7 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
                             if (p) {
                                 // just leave the action side as null (so it's removed)
                                 if (p.condition === t) {
-                                    // remove if both the condition and action are the same
-                                    pairsByCollisionLayer.delete(c)
+                                    throw new Error(`BUG: Unreachable code`)
                                 }
                             } else {
                                 // we need to set the condition side to be the tile so that it is removed
@@ -1810,11 +1784,7 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
             // if (process.stdout) { TerminalUI.debugRenderScreen() } debugger // tslint:disable-line:no-debugger
         }
 
-        let r = this.staticCache.get(actionNeighbor)
-        if (!r) {
-            this.prepareAction(actionNeighbor)
-            r = this.staticCache.get(actionNeighbor)
-        }
+        const r = this.staticCache.get(actionNeighbor)
         if (!r) {
             throw new Error('BUG: Missing actionNeighbor. Should have been prepared before')
         }
@@ -1890,15 +1860,7 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
                     }
                 }
             } else if (this.trickleCells.has(cell)) {
-                this.trickleCells.delete(cell)
-                // adding the Cell causes the set of Tiles to no longer match.
-                // If it previously matched, notify the bracket that it no longer matches
-                // (and delete it from our cache)
-                for (const [bracket, indexes] of this.brackets.entries()) {
-                    for (const index of indexes) {
-                        bracket.removeCell(index, this, t, sprite, cell)
-                    }
-                }
+                throw new Error(`BUG: Should be unreachable`)
             }
         }
     }

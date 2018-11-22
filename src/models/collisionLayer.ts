@@ -37,10 +37,6 @@ export class CollisionLayer extends BaseForLines {
         return index
     }
 
-    public toKey() {
-        return this.sprites.map((s) => s.getName()).join(' ')
-    }
-
     // bitSetToSprites(bitSet: BitSet) {
     //     const ret = []
     //     let index = 0

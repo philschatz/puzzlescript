@@ -1,4 +1,3 @@
-import { Optional } from '../util'
 import { BaseForLines, IGameCode } from './BaseForLines'
 import { GameSound } from './sound'
 
@@ -33,14 +32,6 @@ export class MessageCommand extends AbstractCommand {
 
     public getType() { return COMMAND_TYPE.MESSAGE }
     public getMessage() { return this.message }
-
-    // These are used by message levels. Maybe we should split this into 2 classes
-    public isInvalid(): Optional<string> {
-        return null
-    }
-    public isMap() {
-        return false
-    }
     public toKey() { return `[MESSAGE:"${this.message}"]` }
 }
 
