@@ -78,7 +78,7 @@
     "jest": "^23.3.0",
     "jest-puppeteer": "^3.5.1",
     "mkdirp": "^0.5.1",
-    "node-fetch": "^2.1.2",
+    "node-fetch": "^2.3.0",
     "puppeteer": "^1.10.0",
     "remap-istanbul": "^0.12.0",
     "serve": "^10.1.1",
