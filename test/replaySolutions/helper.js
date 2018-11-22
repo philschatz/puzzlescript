@@ -5,9 +5,9 @@ const { GameEngine } = require('../../lib/engine')
 const { default: Parser } = require('../../lib/parser/parser')
 const { RULE_DIRECTION } = require('../../lib/util')
 const { saveCoverageFile } = require('../../lib/recordCoverage')
-const { default: TerminalUI } = require('../../lib/ui/terminal')
+// const { default: TerminalUI } = require('../../lib/ui/terminal')
 
-const CI_MAX_SOLUTION_LENGTH = 238 // The length of 1 level of cyber-lasso
+const CI_MAX_SOLUTION_LENGTH = 1000 // The length of 1 level of cyber-lasso
 const describeFn = process.env.SKIP_SOLUTIONS ? describe.skip : describe
 
 const SOLUTION_ROOT = path.join(__dirname, '../../gist-solutions/')
@@ -29,6 +29,14 @@ function createTests (moduloNumber, moduloTotal) {
         console.log('Skipping Replay tests')
         return
     }
+
+    if (process.env['CI'] === 'true' && (moduloNumber === 7 || moduloNumber === 8)) {
+        describe.skip(`Skipping replaySolutions/${moduloNumber}.test because it causes Travis to time out`, () => {
+            it.skip('skipping tests')
+        })
+        return
+    }
+
     describeFn('replays levels of games', () => {
         solutionFiles.forEach((solutionFilename, solutionIndex) => {
             // Skip the README.md file
@@ -67,7 +75,7 @@ function createTests (moduloNumber, moduloTotal) {
                     hasAtLeastOneSolution++
 
                     if (process.env.CI === 'true' && recording.solution.length > CI_MAX_SOLUTION_LENGTH) {
-                        console.log(`CI-SKIP: Because the solution is too long: ${recording.solution.length} > ${CI_MAX_SOLUTION_LENGTH}. "${GIST_ID}"`)
+                        console.log(`CI-SKIP: Solution group: [${moduloNumber}/${moduloTotal}]. Level=${index}. Because the solution is too long: ${recording.solution.length} > ${CI_MAX_SOLUTION_LENGTH}. "${GIST_ID}"`)
                         continue
                     }
 
@@ -119,14 +127,14 @@ function createTests (moduloNumber, moduloTotal) {
                     }
 
                     if (wonAtKeyIndex === DID_NOT_WIN || (wonAtKeyIndex !== keypresses.length - 1)) {
-                        console.error('Screendump of level')
-                        TerminalUI.setGameEngine(engine)
-                        TerminalUI.dumpScreen()
-                        while (engine.canUndo()) {
-                            engine.pressUndo()
-                            engine.tick()
-                            TerminalUI.dumpScreen()
-                        }
+                        // console.error('Screendump of level')
+                        // TerminalUI.setGameEngine(engine)
+                        // TerminalUI.dumpScreen()
+                        // while (engine.canUndo()) {
+                        //     engine.pressUndo()
+                        //     engine.tick()
+                        //     TerminalUI.dumpScreen()
+                        // }
                         // UI.setGame(engine)
                         // UI.dumpScreen()
                     }

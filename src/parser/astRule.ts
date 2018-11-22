@@ -317,7 +317,7 @@ export class ASTRule extends BaseForLines {
     }
 }
 
-export interface IASTRuleBracket extends ICacheable {
+export interface IASTRuleBracket {
     clone: (direction: RULE_DIRECTION, nameToExpand: Optional<AST_RULE_MODIFIER>, newName: Optional<RULE_DIRECTION>) => IASTRuleBracket
     toSimple: (direction: RULE_DIRECTION, ruleCache: Map<string, SimpleRule>, bracketCache: Map<string, ISimpleBracket>,
                neighborCache: Map<string, SimpleNeighbor>, tileCache: Map<string, SimpleTileWithModifier>) => ISimpleBracket
@@ -340,10 +340,6 @@ export class ASTRuleBracket extends BaseForLines implements IASTRuleBracket {
             this.firstCellsInEachDirection.set(direction, new Set())
         }
         this.firstCellsInEachDirection.set(RULE_DIRECTION.ACTION, new Set())
-    }
-
-    public toKey() {
-        return this.neighbors.map((n) => n.toKey()).join('|')
     }
 
     public clone(direction: RULE_DIRECTION, nameToExpand: Optional<AST_RULE_MODIFIER>, newName: Optional<RULE_DIRECTION>) {
@@ -374,10 +370,6 @@ export class ASTRuleBracketEllipsis extends BaseForLines implements IASTRuleBrac
         this.debugFlag = debugFlag
     }
 
-    public toKey() {
-        return `${this.beforeEllipsisNeighbors.map((n) => n.toKey()).join('|')} ... ${this.afterEllipsisNeighbors.map((n) => n.toKey()).join('|')}`
-    }
-
     public clone(direction: RULE_DIRECTION, nameToExpand: Optional<AST_RULE_MODIFIER>, newName: Optional<RULE_DIRECTION>) {
         const beforeEllipsis = this.beforeEllipsisNeighbors.map((n) => n.clone(direction, nameToExpand, newName))
         const afterEllipsis = this.afterEllipsisNeighbors.map((n) => n.clone(direction, nameToExpand, newName))
@@ -398,7 +390,7 @@ export class ASTRuleBracketEllipsis extends BaseForLines implements IASTRuleBrac
     }
 }
 
-export class ASTRuleBracketNeighbor extends BaseForLines implements ICacheable {
+export class ASTRuleBracketNeighbor extends BaseForLines {
     public readonly tilesWithModifier: ASTTileWithModifier[]
     private readonly debugFlag: Optional<DEBUG_FLAG>
 
@@ -421,10 +413,6 @@ export class ASTRuleBracketNeighbor extends BaseForLines implements ICacheable {
         this.tilesWithModifier = [...tilesMap.values()]
     }
 
-    public toKey() {
-        return `{${this.tilesWithModifier.map((t) => t.toKey()).sort().join(' ')} debugging?${!!this.debugFlag}}`
-    }
-
     public clone(direction: RULE_DIRECTION, nameToExpand: Optional<AST_RULE_MODIFIER>, newName: Optional<RULE_DIRECTION>) {
         return new ASTRuleBracketNeighbor(this.__source, this.tilesWithModifier.map((t) => t.clone(direction, nameToExpand, newName)), this.debugFlag)
     }
@@ -435,7 +423,7 @@ export class ASTRuleBracketNeighbor extends BaseForLines implements ICacheable {
     }
 }
 
-export class ASTTileWithModifier extends BaseForLines implements ICacheable {
+export class ASTTileWithModifier extends BaseForLines {
     public readonly direction: Optional<string>
     public readonly tile: IGameTile
     public readonly isNegated: boolean
@@ -449,11 +437,6 @@ export class ASTTileWithModifier extends BaseForLines implements ICacheable {
         this.isRandom = isRandom
         this.tile = tile
         this.debugFlag = debugFlag
-    }
-
-    public toKey() {
-        const flags = `${this.direction || ''} neg?${this.isNegated} rnd?${this.isRandom}`
-        return `${flags} ${this.tile ? this.tile.getSprites().map((sprite) => sprite.getName()) : '|||(notile)|||'}{debugging?${!!this.debugFlag}}`
     }
 
     public clone(direction: RULE_DIRECTION, nameToExpand: Optional<AST_RULE_MODIFIER>, newName: Optional<RULE_DIRECTION>) {
@@ -493,21 +476,6 @@ export class ASTTileWithModifier extends BaseForLines implements ICacheable {
                 direction = null
         }
         return cacheSetAndGet(tileCache, new SimpleTileWithModifier(this.__source, this.isNegated, this.isRandom, direction, this.tile, this.debugFlag))
-    }
-
-    public isNo() {
-        return this.isNegated
-    }
-}
-
-// Extend RuleBracketNeighbor so that NeighborPair doesn't break
-export class ASTRuleBracketNeighborHack extends ASTRuleBracketNeighbor {
-    public fields: object
-
-    // These should be addressed as we write the interpreter
-    constructor(source: IGameCode, fields: object, debugFlag: DEBUG_FLAG) {
-        super(source, [], debugFlag)
-        this.fields = fields
     }
 }
 

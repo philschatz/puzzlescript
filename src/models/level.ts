@@ -1,9 +1,7 @@
-import { Optional } from '../util'
 import { BaseForLines, IGameCode } from './BaseForLines'
 import { IGameTile } from './tile'
 
 export interface ILevel {
-    isInvalid: () => Optional<string>
     isMap: () => boolean
     getRows: () => IGameTile[][]
     getMessage: () => string
@@ -18,16 +16,6 @@ export class LevelMap extends BaseForLines implements ILevel {
     constructor(source: IGameCode, rows: IGameTile[][]) {
         super(source)
         this.rows = rows
-    }
-    public isInvalid(): Optional<string> {
-        const firstRowLength = this.rows[0].length
-        let isInvalid = null
-        this.rows.forEach((row, index) => {
-            if (firstRowLength !== row.length) {
-                isInvalid = `Row ${index + 1} does not have the same column count as the first row. Expected ${firstRowLength} columns but found ${row.length}.`
-            }
-        })
-        return isInvalid
     }
     public isMap() {
         return true
@@ -52,7 +40,6 @@ export class MessageLevel extends BaseForLines implements ILevel {
         super(source)
         this.message = message
     }
-    public isInvalid(): Optional<string> { return null }
     public isMap() {
         return false
     }

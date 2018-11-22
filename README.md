@@ -57,7 +57,7 @@ This screencast shows playing the game in a terminal using ASCII and ANSI colors
 
 ### Entanglement ([original](http://www.richardlocke.co.uk/release/entanglement/chapter-1/))
 
-<a href="https://asciinema.org/a/189281?t=23"><img width="300" alt="video of the beginning of Entanglement" src="https://asciinema.org/a/189281.png"/></a>
+<a href="https://asciinema.org/a/212372?t=18"><img width="300" alt="video of the beginning of Entanglement" src="https://asciinema.org/a/212372.png"/></a>
 
 
 # Video games that blind people can play?

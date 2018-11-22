@@ -114,6 +114,13 @@ abstract class BaseUI {
         this.hasVisualUi = true
         this.lastTick = 0
     }
+
+    public destroy() {
+        this.gameData = null
+        this.engine = null
+        this.renderedPixels = []
+        this.cellColorCache.clear()
+    }
     public setGameEngine(engine: GameEngine) {
         this.engine = engine
         this.gameData = engine.getGameData()

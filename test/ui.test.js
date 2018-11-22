@@ -14,10 +14,18 @@ function parseAndReturnFirstSpritePixels(code) {
     const cell = engine.getCurrentLevelCells()[0][0]
     // console.log(cell.getSprites())
     UI.setGameEngine(engine)
-    return { pixels: UI.getPixelsForCell(cell), data }
+    const pixels = UI.getPixelsForCell(cell)
+    UI.destroy()
+    return { pixels: pixels, data }
 }
 
 describe('UI', () => {
+
+    afterEach(() => {
+        // clean up memory leaks
+        UI.destroy()
+    })
+
     it('Renders a single sprite', () => {
         const { pixels } = parseAndReturnFirstSpritePixels(`
 title foo

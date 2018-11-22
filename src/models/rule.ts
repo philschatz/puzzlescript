@@ -3,7 +3,7 @@ import { Cell, Level } from '../engine'
 import { LOG_LEVEL, logger } from '../logger'
 import LruCache from '../lruCache'
 import { SpriteBitSet } from '../spriteBitSet'
-import TerminalUI from '../ui/terminal'
+// import TerminalUI from '../ui/terminal'
 import { _flatten, DEBUG_FLAG, ICacheable, nextRandom, opposite, Optional, RULE_DIRECTION, setIntersection } from '../util'
 import { BaseForLines, IGameCode } from './BaseForLines'
 import { CollisionLayer } from './collisionLayer'
@@ -134,7 +134,7 @@ export class SimpleRuleGroup extends BaseForLines implements IRule {
                 // so that we can step through the evaluations.
                 logger.warn(this.toString())
                 logger.warn('BUG: Iterated too many times in startloop or + (rule group)')
-                if (process.stdout) { TerminalUI.debugRenderScreen() } debugger // tslint:disable-line:no-debugger
+                // if (process.stdout) { TerminalUI.debugRenderScreen() } debugger // tslint:disable-line:no-debugger
             }
             if (iteration === MAX_ITERATIONS_IN_LOOP - 1) {
                 throw new Error(`BUG: Iterated too many times in startloop or + (rule group)\n${this.toString()}`)
@@ -320,7 +320,7 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
         //     if (!condition.hasFirstCells()) {
         //         if (process.env['NODE_ENV'] === 'development' && this.debugFlag === DEBUG_FLAG.BREAKPOINT_REMOVE) {
         //             // A "DEBUGGER_REMOVE" flag was set in the game so we are pausing here
-        //             if (process.stdout) { TerminalUI.debugRenderScreen(); } debugger
+        //             // if (process.stdout) { TerminalUI.debugRenderScreen(); } debugger
         //         }
         //         return [] // Rule did not match, so nothing ran
         //     }
@@ -331,7 +331,9 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
         let ret: IMutation[] = []
         if (process.env.NODE_ENV === 'development') {
             // A "DEBUGGER" flag was set in the game so we are pausing here
-            if ((logger.isLevel(LOG_LEVEL.TRACE) && process.stdout) || (logger.isLevel(LOG_LEVEL.DEBUG) && this.debugFlag === DEBUG_FLAG.BREAKPOINT)) { TerminalUI.renderScreen(false) }
+            if ((logger.isLevel(LOG_LEVEL.TRACE) && process.stdout) || (logger.isLevel(LOG_LEVEL.DEBUG) && this.debugFlag === DEBUG_FLAG.BREAKPOINT)) {
+                // TerminalUI.renderScreen(false)
+            }
             if (this.debugFlag === DEBUG_FLAG.BREAKPOINT) {
                 debugger // tslint:disable-line:no-debugger
             }
@@ -500,7 +502,7 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
     public addCells(tile: IGameTile, sprite: GameSprite, cells: Cell[], wantsToMove: Optional<RULE_DIRECTION>) {
         if (process.env.NODE_ENV === 'development' && this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
             // Pause here because it was marked in the code
-            if (process.stdout) { TerminalUI.debugRenderScreen() } debugger // tslint:disable-line:no-debugger
+            // if (process.stdout) { TerminalUI.debugRenderScreen() } debugger // tslint:disable-line:no-debugger
         }
         // Cells all have the same sprites, so if the 1st matches, they all do.
         // Also, we only need to check that the direction matches (optimization),
@@ -540,7 +542,7 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
     public updateCells(sprite: GameSprite, cells: Cell[], wantsToMove: Optional<RULE_DIRECTION>) {
         if (process.env.NODE_ENV === 'development' && this._debugFlag === DEBUG_FLAG.BREAKPOINT) {
             // Pause here because it was marked in the code
-            if (process.stdout) { TerminalUI.debugRenderScreen() } debugger // tslint:disable-line:no-debugger
+            // if (process.stdout) { TerminalUI.debugRenderScreen() } debugger // tslint:disable-line:no-debugger
         }
         // Cells all have the same sprites, so if the 1st matches, they all do
         if (this.matchesFirstCell(cells, wantsToMove)) {
@@ -564,7 +566,7 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
     public removeCells(tile: IGameTile, sprite: GameSprite, cells: Cell[]) {
         if (process.env.NODE_ENV === 'development' && this._debugFlag === DEBUG_FLAG.BREAKPOINT_REMOVE) {
             // Pause here because it was marked in the code
-            if (process.stdout) { TerminalUI.debugRenderScreen() } debugger // tslint:disable-line:no-debugger
+            // if (process.stdout) { TerminalUI.debugRenderScreen() } debugger // tslint:disable-line:no-debugger
         }
         // Cells all have the same sprites, so if the 1st matches, they all do
         // OR Tiles need to be checked to see if the tile still matches.
@@ -636,12 +638,10 @@ export abstract class ISimpleBracket extends BaseForLines implements ICacheable 
     public abstract toKey(ignoreDebugFlag?: boolean): string
     public abstract clearCaches(): void
     public abstract prepareAction(action: ISimpleBracket): void
-    public abstract getNeighbors(): SimpleNeighbor[]
     public abstract addCell(index: number, neighbor: SimpleNeighbor, t: SimpleTileWithModifier, sprite: GameSprite, cell: Cell, wantsToMove: Optional<RULE_DIRECTION>): void
     public abstract removeCell(index: number, neighbor: SimpleNeighbor, t: SimpleTileWithModifier, sprite: GameSprite, cell: Cell): void
     public abstract addCellsToEmptyRules(cells: Iterable<Cell>): void
     public abstract getMatches(level: Level, actionBracket: Optional<ISimpleBracket>): MatchedCellsForRule[]
-    public abstract dependsOnDirection(): boolean
 
     public _getAllNeighbors() {
         return this.allNeighbors
@@ -747,13 +747,9 @@ export class SimpleBracket extends ISimpleBracket {
         }
         this.anySpritesPresentInRowOrColumn = (new SpriteBitSet()).union(anySprites)
     }
-    public toKey(ignoreDebugFlag?: boolean) {
+    public toKey() {
         const dir = this.dependsOnDirection() ? this.direction : ''
-        if (ignoreDebugFlag) {
-            return `{${dir}[${this.neighbors.map((n) => n.toKey(ignoreDebugFlag)).join('|')}]}`
-        } else {
-            return `{${dir}[${this.neighbors.map((n) => n.toKey(ignoreDebugFlag)).join('|')}]{debugging?${!!this.debugFlag}}}`
-        }
+        return `{${dir}[${this.neighbors.map((n) => n.toKey()).join('|')}]{debugging?${!!this.debugFlag}}}`
     }
 
     public dependsOnDirection() {
@@ -803,7 +799,7 @@ export class SimpleBracket extends ISimpleBracket {
     public _addFirstCell(firstCell: Cell) {
         if (process.env.NODE_ENV === 'development' && this.debugFlag === DEBUG_FLAG.BREAKPOINT) {
             // Pausing here because it was marked in the code
-            if (process.stdout) { TerminalUI.debugRenderScreen() } debugger // tslint:disable-line:no-debugger
+            // if (process.stdout) { TerminalUI.debugRenderScreen() } debugger // tslint:disable-line:no-debugger
         }
         this.firstCells.add(firstCell)
         for (const [ellipsisBracket, token] of this.ellipsisBracketListeners) {
@@ -905,7 +901,7 @@ export class SimpleBracket extends ISimpleBracket {
     public getMatches(level: Level, actionBracket: Optional<SimpleBracket>) {
         if (process.env.NODE_ENV === 'development' && this.debugFlag === DEBUG_FLAG.BREAKPOINT) {
             // A "DEBUGGER" flag was set in the game so we are pausing here
-            if (process.stdout) { TerminalUI.debugRenderScreen() } debugger // tslint:disable-line:no-debugger
+            // if (process.stdout) { TerminalUI.debugRenderScreen() } debugger // tslint:disable-line:no-debugger
         }
 
         let matches
@@ -928,15 +924,11 @@ export class SimpleBracket extends ISimpleBracket {
         return matches
     }
 
-    public getFirstCells() {
-        return this.firstCells
-    }
-
     protected _removeFirstCell(firstCell: Cell) {
         if (this.firstCells.has(firstCell)) {
             if (process.env.NODE_ENV === 'development' && this.debugFlag === DEBUG_FLAG.BREAKPOINT_REMOVE) {
                 // Pausing here because it was marked in the code
-                if (process.stdout) { TerminalUI.debugRenderScreen() } debugger // tslint:disable-line:no-debugger
+                // if (process.stdout) { TerminalUI.debugRenderScreen() } debugger // tslint:disable-line:no-debugger
             }
             this.firstCells.delete(firstCell)
             for (const [ellipsisBracket, token] of this.ellipsisBracketListeners) {
@@ -1059,13 +1051,13 @@ class MultiMap<A, B> {
     public clear() {
         this.map.clear()
     }
-    public has(a: A, b: B) {
-        const set = this.map.get(a)
-        if (set) {
-            return set.has(b)
-        }
-        return false
-    }
+    // public has(a: A, b: B) {
+    //     const set = this.map.get(a)
+    //     if (set) {
+    //         return set.has(b)
+    //     }
+    //     return false
+    // }
     public getB(a: A) {
         return this.map.get(a)
     }
@@ -1097,43 +1089,43 @@ class MultiMap<A, B> {
         }
         return asRemoved
     }
-    public delete(a: A, b: B) {
-        const set = this.map.get(a)
-        if (set) {
-            if (!set.has(b)) {
-                throw new Error(`BUG: Invariant error. Link did not exist so nothing to remove`)
-            }
-            set.delete(b)
-        }
-    }
     public sizeA() {
         return this.map.size
     }
-    protected /*unused*/ hasA(a: A) {
-        return this.map.has(a)
-    }
-    protected /*unused*/ hasB(b: B) {
-        return !!this.getA(b)
-    }
-    protected /*unused*/ getA(b: B) {
-        const ret = new Set()
-        for (const [a, set] of this.map) {
-            if (set.has(b)) {
-                ret.add(a)
-            }
-        }
-        if (ret.size > 0) {
-            return ret
-        }
-        return undefined
-    }
-    protected /*unused*/ size() {
-        let size = 0
-        for (const set of this.map.values()) {
-            size += set.size
-        }
-        return size
-    }
+    // public delete(a: A, b: B) {
+    //     const set = this.map.get(a)
+    //     if (set) {
+    //         if (!set.has(b)) {
+    //             throw new Error(`BUG: Invariant error. Link did not exist so nothing to remove`)
+    //         }
+    //         set.delete(b)
+    //     }
+    // }
+    // public hasA(a: A) {
+    //     return this.map.has(a)
+    // }
+    // public hasB(b: B) {
+    //     return !!this.getA(b)
+    // }
+    // public getA(b: B) {
+    //     const ret = new Set()
+    //     for (const [a, set] of this.map) {
+    //         if (set.has(b)) {
+    //             ret.add(a)
+    //         }
+    //     }
+    //     if (ret.size > 0) {
+    //         return ret
+    //     }
+    //     return undefined
+    // }
+    // public size() {
+    //     let size = 0
+    //     for (const set of this.map.values()) {
+    //         size += set.size
+    //     }
+    //     return size
+    // }
 }
 
 export class SimpleEllipsisBracket extends ISimpleBracket {
@@ -1152,16 +1144,8 @@ export class SimpleEllipsisBracket extends ISimpleBracket {
         this.beforeEllipsisBracket.addEllipsisBracket(this, BEFORE_OR_AFTER.BEFORE)
         this.afterEllipsisBracket.addEllipsisBracket(this, BEFORE_OR_AFTER.AFTER)
     }
-    public toKey(ignoreDebugFlag?: boolean) {
-        return `[${this.direction} ${this.beforeEllipsisBracket.toKey(ignoreDebugFlag)} ... ${this.afterEllipsisBracket.toKey(ignoreDebugFlag)}]}`
-    }
-    public dependsOnDirection() {
-        return true
-    }
-
-    public getNeighbors() {
-        // throw new Error(`BUG: Should not be calling this method`)
-        return [] // TODO: Implement me
+    public toKey() {
+        return `[${this.direction} ${this.beforeEllipsisBracket.toKey()} ... ${this.afterEllipsisBracket.toKey()}]}`
     }
 
     public clearCaches() {
@@ -1226,15 +1210,12 @@ export class SimpleEllipsisBracket extends ISimpleBracket {
         if (bracket === this.beforeEllipsisBracket) {
             this.linkages.deleteAllA(firstCell)
             if (this.firstCells.has(firstCell)) {
-                this.firstCells.delete(firstCell)
-            } else {
-                // console.warn('Removing firstCell but it has already been removed')
-                // console.warn(this.toString())
+                throw new Error(`BUG: Unreachable code`)
             }
         } else if (bracket === this.afterEllipsisBracket) {
             const beforeCellsRemoved = this.linkages.deleteAllB(firstCell)
-            for (const b of beforeCellsRemoved) {
-                this.firstCells.delete(b)
+            if (beforeCellsRemoved.size > 0) {
+                throw new Error(`BUG: Unreachable code`)
             }
         } else {
             throw new Error(`BUG: Bracket should only ever be the before-ellipsis or after-ellipsis one`)
@@ -1593,7 +1574,7 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
                 for (const sprite of t._tile.getSprites()) {
                     const c = sprite.getCollisionLayer()
                     if (t._direction) {
-                        this.cacheDirections.set(c, t._direction)
+                        throw new Error(`BUG: Unreachable code`)
                     }
                     let noBitSet = this.cacheNoBitSets.get(c)
                     if (!noBitSet) {
@@ -1615,12 +1596,8 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
         }
 
     }
-    public toKey(ignoreDebugFlag?: boolean) {
-        if (ignoreDebugFlag) {
-            return `{${[...this._tilesWithModifier].map((t) => t.toKey(ignoreDebugFlag)).sort().join(' ')}}`
-        } else {
-            return `{${[...this._tilesWithModifier].map((t) => t.toKey(ignoreDebugFlag)).sort().join(' ')} debugging?${!!this.debugFlag}}`
-        }
+    public toKey() {
+        return `{${[...this._tilesWithModifier].map((t) => t.toKey()).sort().join(' ')} debugging?${!!this.debugFlag}}`
     }
 
     public dependsOnDirection() {
@@ -1736,8 +1713,7 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
                             if (p) {
                                 // just leave the action side as null (so it's removed)
                                 if (p.condition === t) {
-                                    // remove if both the condition and action are the same
-                                    pairsByCollisionLayer.delete(c)
+                                    throw new Error(`BUG: Unreachable code`)
                                 }
                             } else {
                                 // we need to set the condition side to be the tile so that it is removed
@@ -1805,14 +1781,10 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
     public evaluate(actionNeighbor: SimpleNeighbor, cell: Cell, magicOrTiles: Map<IGameTile, Set<GameSprite>>) {
         if (process.env.NODE_ENV === 'development' && actionNeighbor.debugFlag === DEBUG_FLAG.BREAKPOINT) {
             // Pausing here because this breakpoint was marked in the game code
-            if (process.stdout) { TerminalUI.debugRenderScreen() } debugger // tslint:disable-line:no-debugger
+            // if (process.stdout) { TerminalUI.debugRenderScreen() } debugger // tslint:disable-line:no-debugger
         }
 
-        let r = this.staticCache.get(actionNeighbor)
-        if (!r) {
-            this.prepareAction(actionNeighbor)
-            r = this.staticCache.get(actionNeighbor)
-        }
+        const r = this.staticCache.get(actionNeighbor)
         if (!r) {
             throw new Error('BUG: Missing actionNeighbor. Should have been prepared before')
         }
@@ -1877,7 +1849,7 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
     public addCells(t: SimpleTileWithModifier, sprite: GameSprite, cells: Iterable<Cell>, wantsToMove: Optional<RULE_DIRECTION>) {
         if (process.env.NODE_ENV === 'development' && this.debugFlag === DEBUG_FLAG.BREAKPOINT) {
             // Pausing here because it was marked in the code
-            if (process.stdout) { TerminalUI.debugRenderScreen() } debugger // tslint:disable-line:no-debugger
+            // if (process.stdout) { TerminalUI.debugRenderScreen() } debugger // tslint:disable-line:no-debugger
         }
         for (const cell of cells) {
             if (this.matchesTiles(cell)) {
@@ -1888,15 +1860,7 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
                     }
                 }
             } else if (this.trickleCells.has(cell)) {
-                this.trickleCells.delete(cell)
-                // adding the Cell causes the set of Tiles to no longer match.
-                // If it previously matched, notify the bracket that it no longer matches
-                // (and delete it from our cache)
-                for (const [bracket, indexes] of this.brackets.entries()) {
-                    for (const index of indexes) {
-                        bracket.removeCell(index, this, t, sprite, cell)
-                    }
-                }
+                throw new Error(`BUG: Should be unreachable`)
             }
         }
     }
@@ -1906,7 +1870,7 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
     public removeCells(t: SimpleTileWithModifier, sprite: GameSprite, cells: Iterable<Cell>) {
         if (process.env.NODE_ENV === 'development' && this.debugFlag === DEBUG_FLAG.BREAKPOINT_REMOVE) {
             // Pausing here because it was marked in the code
-            if (process.stdout) { TerminalUI.debugRenderScreen() } debugger // tslint:disable-line:no-debugger
+            // if (process.stdout) { TerminalUI.debugRenderScreen() } debugger // tslint:disable-line:no-debugger
         }
         for (const cell of cells) {
             // Check if the cell still matches. If not, remove it from upstream

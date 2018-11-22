@@ -95,6 +95,14 @@ class TerminalUI extends BaseUI {
         }
     }
 
+    public destroy() {
+        if (this.resizeHandler && process.stdout) {
+            process.stdout.removeListener('resize', this.resizeHandler)
+        }
+        this.resizeHandler = null
+        super.destroy()
+    }
+
     public getHasVisualUi() {
         return this.hasVisualUi
     }
