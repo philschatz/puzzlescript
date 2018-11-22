@@ -1,26 +1,53 @@
 {
   "version": 1,
   "solutions": [
-    null,
+    {
+      "solution": "X"
+    },
     {
       "solution": "DDD"
     },
-    null,
-    null,
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "X"
+    },
     {
       "solution": "SSASD"
     },
-    null,
+    {
+      "solution": "X"
+    },
     {
       "solution": "DDAASWDDDSSWAAWASDASWDSWDASDWDSASA"
     },
-    null,
+    {
+      "solution": "X"
+    },
     {
       "solution": "SSDAWWDSASDDSDWWAAWDAASS"
     },
-    null,
+    {
+      "solution": "X"
+    },
     {
       "solution": "SSDSDDWWWASSASDAWAWDSDDWWASDSAAWAS"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "WWAWADSSSAAWDSDDWWAAWASDDSSAWDWASSAAWDDSDWWSAAWDWA"
+    },
+    {
+      "solution": "X"
+    },
+    {
+      "solution": "SSDAWDSDSSAWDWWAASDWDSSASDDAWWWDDSAWAASSDWWAWDD"
+    },
+    {
+      "solution": "X"
     }
   ],
   "title": "Roll those Sixes",
