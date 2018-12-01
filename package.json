@@ -48,7 +48,7 @@
     "font-ascii": "^1.1.16",
     "fs-extra": "^7.0.1",
     "glob": "^7.1.2",
-    "inquirer": "6.2.0",
+    "inquirer": "6.2.1",
     "inquirer-autocomplete-prompt": "^1.0.1",
     "keymaster": "^1.6.2",
     "nearley": "github:philschatz/nearley#24685991e203fd6645a6f687198687aa42b7d6f2",
