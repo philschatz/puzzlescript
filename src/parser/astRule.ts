@@ -1,10 +1,8 @@
-import { Cell } from '../engine'
 import { BaseForLines, IGameCode } from '../models/BaseForLines'
 import { AbstractCommand } from '../models/command'
 import {
     IRule,
     ISimpleBracket,
-    SIMPLE_DIRECTION_DIRECTIONS,
     SimpleBracket,
     SimpleEllipsisBracket,
     SimpleNeighbor,
@@ -326,20 +324,12 @@ export interface IASTRuleBracket {
 
 export class ASTRuleBracket extends BaseForLines implements IASTRuleBracket {
     private readonly neighbors: ASTRuleBracketNeighbor[]
-    private readonly firstCellsInEachDirection: Map<RULE_DIRECTION, Set<Cell>>
     private readonly debugFlag: Optional<DEBUG_FLAG>
 
     constructor(source: IGameCode, neighbors: ASTRuleBracketNeighbor[], hack: Optional<string>, debugFlag: Optional<DEBUG_FLAG>) {
         super(source)
         this.neighbors = neighbors
         this.debugFlag = debugFlag
-
-        // populate the cache
-        this.firstCellsInEachDirection = new Map()
-        for (const direction of SIMPLE_DIRECTION_DIRECTIONS) {
-            this.firstCellsInEachDirection.set(direction, new Set())
-        }
-        this.firstCellsInEachDirection.set(RULE_DIRECTION.ACTION, new Set())
     }
 
     public clone(direction: RULE_DIRECTION, nameToExpand: Optional<AST_RULE_MODIFIER>, newName: Optional<RULE_DIRECTION>) {
