@@ -54,34 +54,21 @@ export interface IRule extends IGameNode {
 
 }
 
-export interface IMutation {
-    hasCell: () => boolean
-    getCell: () => Cell
-    getCommand: () => AbstractCommand
+export enum MUTATION_TYPES {
+    CELL,
+    COMMAND
 }
 
-class CellMutation implements IMutation {
-    private cell: Cell
-    constructor(cell: Cell) {
-        this.cell = cell
-    }
-    public hasCell() { return true }
-    public getCell() { return this.cell }
-    public getCommand(): AbstractCommand {
-        throw new Error(`BUG: check hasCommand first`)
-    }
+export type IMutation = CellMutation | CommandMutation
+
+export interface CellMutation {
+    type: MUTATION_TYPES.CELL
+    cell: Cell
 }
 
-class CommandMutation implements IMutation {
-    private command: AbstractCommand
-    constructor(command: AbstractCommand) {
-        this.command = command
-    }
-    public getCommand() { return this.command }
-    public hasCell() { return false }
-    public getCell(): Cell {
-        throw new Error(`BUG: check hasCell first`)
-    }
+export interface CommandMutation {
+    type: MUTATION_TYPES.COMMAND
+    command: AbstractCommand
 }
 
 // Converts `[ [1,2], [a,b] ]` to:
@@ -161,7 +148,7 @@ export class SimpleRuleGroup extends BaseForLines implements IRule {
                     const ret = rule.evaluate(level, onlyEvaluateFirstMatch)
                     if (ret.length > 0) {
                         // filter because a Rule may have caused only command mutations
-                        if (ret.filter((m) => m.hasCell()).length > 0) {
+                        if (ret.filter((m) => m.type === MUTATION_TYPES.CELL).length > 0) {
                             evaluatedSomething = true
                         }
                         if (onlyEvaluateFirstMatch) {
@@ -396,7 +383,7 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
 
         // Append any Commands that need to be evaluated (only if the rule was evaluated at least once)
         for (const command of this.commands) {
-            ret.push(new CommandMutation(command))
+            ret.push({ type: MUTATION_TYPES.COMMAND, command })
         }
         return ret
     }
@@ -1804,7 +1791,7 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
 
         // TODO: Be better about recording when the cell actually updated
         if (didChangeSprites || didChangeDirection) {
-            return new CellMutation(cell)
+            return { cell } as CellMutation
         } else {
             return null
         }
