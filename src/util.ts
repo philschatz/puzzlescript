@@ -12,7 +12,14 @@ export enum RULE_DIRECTION {
 
 // From https://stackoverflow.com/questions/10865025/merge-flatten-an-array-of-arrays-in-javascript/39000004#39000004
 export function _flatten<T>(arrays: T[][]) {
-    return [].concat.apply([], arrays) as T[]
+    // return [].concat.apply([], arrays) as T[]
+    const ret: T[] = []
+    arrays.forEach(ary => {
+        ary.forEach(item => {
+            ret.push(item)
+        })
+    })
+    return ret
 }
 
 // export function _zip<T1, T2>(array1: T1[], array2: T2[]) {
