@@ -3,7 +3,7 @@ import { logger } from './logger'
 import { CollisionLayer } from './models/collisionLayer'
 import { AbstractCommand, COMMAND_TYPE } from './models/command'
 import { GameData } from './models/game'
-import { IMutation, IRule, MUTATION_TYPES } from './models/rule'
+import { IMutation, IRule } from './models/rule'
 import { GameSound } from './models/sound'
 import { GameSprite } from './models/tile'
 import { SpriteBitSet } from './spriteBitSet'
@@ -640,12 +640,10 @@ export class LevelEngine extends EventEmitter2 {
             // if (mutation.getDidSpritesChange()) {
             //     didSomeSpriteChange = true
             // }
-            if (mutation.type === MUTATION_TYPES.CELL) {
-                changedCells.add(mutation.cell)
-            } else if (mutation.type === MUTATION_TYPES.COMMAND) {
-                commands.add(mutation.command)
+            if (mutation.hasCell()) {
+                changedCells.add(mutation.getCell())
             } else {
-                throw new Error(`BUG: Invalid mutation type. Mutation=${mutation}`)
+                commands.add(mutation.getCommand())
             }
             // if (!changedCells.has(mutation.cell)) {
             //     changedCells.set(mutation.cell, mutation.didSpritesChange)
