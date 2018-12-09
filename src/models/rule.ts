@@ -1388,7 +1388,7 @@ class ReplaceTile {
             const tile = cell.getSpriteByCollisionLayer(this.collisionLayer)
             if (!tile && this.mightNotFindConditionButThatIsOk) {
                 // this occurs when there is just a -> [ NO Color ] on the action side (remove color if it exists)
-                return { actuallyDidChange: false }
+                return { didActuallyChange: false }
             }
             if (!tile) {
                 throw new Error(`BUG: No tile found`)
@@ -1454,7 +1454,7 @@ class ReplaceDirection {
         let direction = this.direction
         // It's OK if this sprite is not in the condition. This happens when an OR action tile has sprites that are in multiple collision layers
         if (this.mightNotFindConditionButThatIsOk && !cell.getSpriteByCollisionLayer(this.collisionLayer)) {
-            return false
+            return { didActuallyChange: false }
         }
 
         // Pick a random direction
@@ -1479,10 +1479,10 @@ class ReplaceDirection {
                 }
             } else {
                 // a direction was already set
-                return false
+                return { didActuallyChange: false }
             }
         }
-        return cell.setWantsToMoveCollisionLayer(this.collisionLayer, direction)
+        return { didActuallyChange: cell.setWantsToMoveCollisionLayer(this.collisionLayer, direction) }
     }
 }
 
@@ -1798,7 +1798,7 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
             didChangeSprites = didChangeSprites || didActuallyChange || false
         }
         for (const replaceDirection of replaceDirections) {
-            const didActuallyChange = replaceDirection.replace(cell)
+            const { didActuallyChange } = replaceDirection.replace(cell)
             didChangeDirection = didChangeDirection || didActuallyChange
         }
 
