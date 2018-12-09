@@ -1791,7 +1791,7 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
 
         // TODO: Be better about recording when the cell actually updated
         if (didChangeSprites || didChangeDirection) {
-            return { cell } as CellMutation
+            return { type: MUTATION_TYPES.CELL, cell } as CellMutation
         } else {
             return null
         }

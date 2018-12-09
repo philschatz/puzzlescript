@@ -642,8 +642,10 @@ export class LevelEngine extends EventEmitter2 {
             // }
             if (mutation.type === MUTATION_TYPES.CELL) {
                 changedCells.add(mutation.cell)
-            } else {
+            } else if (mutation.type === MUTATION_TYPES.COMMAND) {
                 commands.add(mutation.command)
+            } else {
+                throw new Error(`BUG: Invalid mutation type. Mutation=${mutation}`)
             }
             // if (!changedCells.has(mutation.cell)) {
             //     changedCells.set(mutation.cell, mutation.didSpritesChange)
