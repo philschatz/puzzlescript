@@ -241,7 +241,7 @@ class TableUI extends BaseUI {
             }
             cellLabel.textContent = spritesForDebugging.map((s) => s.getName()).join(', ')
         } else {
-            cellLabel.textContent = ' ' // (empty)
+            cellLabel.textContent = '(empty)' // (empty)
         }
 
         const pixels: IColor[][] = this.getPixelsForCell(cell)

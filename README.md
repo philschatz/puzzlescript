@@ -94,6 +94,10 @@ The goal of this project is to do 3 things:
 1. use the terminal as a GUI for playing games
 
 
+# Accessibility Notes
+
+To use https://chromevox.com, table navigation keys on the Mac are <kbd>Ctrl</kbd> + <kbd>Command</kbd> + <kbd>Up</kbd>.
+
 # Dev Notes
 
 This is a remake of PuzzleScript that has the following features:
