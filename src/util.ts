@@ -14,8 +14,8 @@ export enum RULE_DIRECTION {
 export function _flatten<T>(arrays: T[][]) {
     // return [].concat.apply([], arrays) as T[]
     const ret: T[] = []
-    arrays.forEach(ary => {
-        ary.forEach(item => {
+    arrays.forEach((ary) => {
+        ary.forEach((item) => {
             ret.push(item)
         })
     })
