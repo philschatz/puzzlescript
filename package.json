@@ -79,6 +79,7 @@
     "jest-puppeteer": "^3.5.1",
     "mkdirp": "^0.5.1",
     "node-fetch": "^2.3.0",
+    "process-nextick-args": "^2.0.0",
     "puppeteer": "^1.10.0",
     "remap-istanbul": "^0.12.0",
     "serve": "^10.1.1",
