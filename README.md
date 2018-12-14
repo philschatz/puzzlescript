@@ -176,6 +176,6 @@ Want to help? Here is a roadmap of things that need to be implemented:
 [dependency-image]: https://img.shields.io/david/philschatz/puzzlescript.svg
 [dependency-url]: https://david-dm.org/philschatz/puzzlescript
 [dev-dependency-image]: https://img.shields.io/david/dev/philschatz/puzzlescript.svg
-[dev-dependency-url]: https://david-dm.org/philschatz/puzzlescript#info=devDependencies
+[dev-dependency-url]: https://david-dm.org/philschatz/puzzlescript?type=dev
 [coverage-image]: https://img.shields.io/codecov/c/github/philschatz/puzzlescript.svg
 [coverage-url]: https://codecov.io/gh/philschatz/puzzlescript
