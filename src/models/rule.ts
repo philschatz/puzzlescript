@@ -599,7 +599,7 @@ export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
 
     private matchesCellWantsToMove(cell: Cell, wantsToMove: Optional<RULE_DIRECTION>) {
         const hasTile = this._tile.hasCell(cell)
-        const didMatch = this._isNegated !== (hasTile && (this._direction === wantsToMove || this._direction === null))
+        const didMatch = this._isNegated !== (hasTile && (this._direction === wantsToMove || !this._direction))
 
         if (didMatch) {
             return true
@@ -912,6 +912,7 @@ export class SimpleBracket extends ISimpleBracket {
                 const loopingMatches = this.getMatchesByLooping(level, actionBracket)
                 if (matches.length !== loopingMatches.length) {
                     debugger // tslint:disable-line:no-debugger
+                    this.getMatchesByTrickling(level, actionBracket) // run again so we can step through
                     this.getMatchesByLooping(level, actionBracket) // run again so we can step through
                     throw new Error(`Match lengths differ. Expected ${loopingMatches.length} but found ${matches.length}. \n${this.toString()}`)
                 }

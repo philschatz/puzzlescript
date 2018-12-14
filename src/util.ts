@@ -10,6 +10,15 @@ export enum RULE_DIRECTION {
     RANDOMDIR = 'RANDOMDIR'
 }
 
+export enum RULE_DIRECTION_RELATIVE {
+    RELATIVE_LEFT = '<',
+    RELATIVE_RIGHT = '>',
+    RELATIVE_UP = '^',
+    RELATIVE_DOWN = 'v'
+}
+
+export type RULE_DIRECTION_WITH_RELATIVE = RULE_DIRECTION | RULE_DIRECTION_RELATIVE
+
 // From https://stackoverflow.com/questions/10865025/merge-flatten-an-array-of-arrays-in-javascript/39000004#39000004
 export function _flatten<T>(arrays: T[][]) {
     // return [].concat.apply([], arrays) as T[]

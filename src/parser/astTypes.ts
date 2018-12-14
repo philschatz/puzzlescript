@@ -1,7 +1,22 @@
 import { Optional } from '..'
 import { WIN_QUALIFIER } from '../models/winCondition'
 import { DEBUG_FLAG, RULE_DIRECTION } from '../util'
-import { AST_RULE_MODIFIER } from './astRule'
+
+export enum RULE_MODIFIER {
+    RANDOM = 'RANDOM',
+    UP = 'UP',
+    DOWN = 'DOWN',
+    LEFT = 'LEFT',
+    RIGHT = 'RIGHT',
+    VERTICAL = 'VERTICAL',
+    HORIZONTAL = 'HORIZONTAL',
+    ORTHOGONAL = 'ORTHOGONAL',
+    PERPENDICULAR = 'PERPENDICULAR',
+    PARALLEL = 'PARALLEL',
+    MOVING = 'MOVING',
+    LATE = 'LATE',
+    RIGID = 'RIGID'
+}
 
 export enum TILE_MODIFIER {
     NO = 'NO',
@@ -177,7 +192,7 @@ export type SimpleRule<BracketRef, CommandRef> = Debuggable & {
     conditions: BracketRef[]
     actions: BracketRef[]
     commands: CommandRef[]
-    directions: AST_RULE_MODIFIER[]
+    directions: RULE_MODIFIER[]
     isRandom: Optional<boolean>
     isLate: boolean
     isRigid: boolean
@@ -202,8 +217,8 @@ export type Neighbor<TileWithModifierRef> = Debuggable & {
     tileWithModifiers: TileWithModifierRef[]
 }
 
-export type TileWithModifier<TileRef> = Debuggable & {
-    direction: Optional<RULE_DIRECTION>
+export type TileWithModifier<TileDirections, TileRef> = Debuggable & {
+    direction: Optional<TileDirections>
     isNegated: boolean
     isRandom: boolean
     tile: TileRef
@@ -284,9 +299,9 @@ export interface IDimension {
     height: number
 }
 
-type B1<TileRef> = Bracket<Neighbor<TileWithModifier<TileRef>>>
+type B1<TileDirections, TileRef> = Bracket<Neighbor<TileWithModifier<TileDirections, TileRef>>>
 
-export interface IASTGame<TileRef, SoundRef, PixelRef> {
+export interface IASTGame<TileDirections, TileRef, SoundRef, PixelRef> {
     title: string
     metadata: Array<{type: string, value: string | boolean | IDimension | IColor}>
     sprites: Array<Sprite<PixelRef>>
@@ -295,9 +310,9 @@ export interface IASTGame<TileRef, SoundRef, PixelRef> {
     sounds: Array<SoundItem<TileRef>>
     rules: Array<
         Rule<
-            RuleGroup<SimpleRule<B1<TileRef>, Command<SoundRef>>>,
-            SimpleRule<B1<TileRef>, Command<SoundRef>>,
-            B1<TileRef>,
+            RuleGroup<SimpleRule<B1<TileDirections, TileRef>, Command<SoundRef>>>,
+            SimpleRule<B1<TileDirections, TileRef>, Command<SoundRef>>,
+            B1<TileDirections, TileRef>,
             Command<SoundRef>
         >
     >

@@ -40,7 +40,7 @@ export class GameData {
         legends: IGameTile[],
         sounds: GameSound[],
         collisionLayers: CollisionLayer[],
-        rules: IRule[],
+        rules: IRule[], // Change to SimpleRuleGroup
         winConditions: WinConditionSimple[],
         levels: ILevel[]
     ) {
