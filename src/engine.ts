@@ -691,7 +691,7 @@ export class LevelEngine extends EventEmitter2 {
                             }
                             break
                         default:
-                            throw new Error(`BUG: wantsToMove should have been handled earlier`)
+                            throw new Error(`BUG: wantsToMove should have been handled earlier: ${wantsToMove}`)
                     }
                 }
             }
