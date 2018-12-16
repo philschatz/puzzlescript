@@ -4,8 +4,8 @@ import { CollisionLayer } from './models/collisionLayer'
 import { AbstractCommand, COMMAND_TYPE } from './models/command'
 import { GameData } from './models/game'
 import { IMutation, SimpleRuleGroup } from './models/rule'
-import { GameSound } from './models/sound'
-import { GameSprite } from './models/tile'
+import { GameSprite, IGameTile } from './models/tile'
+import { SoundItem } from './parser/astTypes'
 import { SpriteBitSet } from './spriteBitSet'
 import { _flatten, Optional, resetRandomSeed, RULE_DIRECTION, setAddAll, setDifference, setEquals } from './util'
 
@@ -16,7 +16,7 @@ interface ICollisionLayerState {
 
 interface ITickResult {
     changedCells: Set<Cell>,
-    soundToPlay: Optional<GameSound>,
+    soundToPlay: Optional<SoundItem<IGameTile>>,
     messageToShow: Optional<string>,
     didWinGame: boolean,
     didLevelChange: boolean,
@@ -450,7 +450,7 @@ export class LevelEngine extends EventEmitter2 {
         }
         const ret = this.tickNormal()
         // TODO: Handle the commands like RESTART, CANCEL, WIN at this point
-        let soundToPlay: Optional<GameSound> = null
+        let soundToPlay: Optional<SoundItem<IGameTile>> = null
         let messageToShow: Optional<string> = null
         let hasWinCommand = false
         let hasRestart = false

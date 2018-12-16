@@ -1,5 +1,6 @@
+import { SoundItem } from '../parser/astTypes'
 import { BaseForLines, IGameCode } from './BaseForLines'
-import { GameSound } from './sound'
+import { IGameTile } from './tile'
 
 export enum COMMAND_TYPE {
     SFX = 'SFX',
@@ -13,7 +14,7 @@ export enum COMMAND_TYPE {
 
 export abstract class AbstractCommand extends BaseForLines {
     public abstract getType(): COMMAND_TYPE
-    public getSound(): GameSound {
+    public getSound(): SoundItem<IGameTile> {
         throw new Error(`BUG: Check getType() first`)
     }
     public getMessage(): string {
@@ -36,8 +37,8 @@ export class MessageCommand extends AbstractCommand {
 }
 
 export class SoundCommand extends AbstractCommand {
-    private readonly sound: GameSound
-    constructor(source: IGameCode, sound: GameSound) {
+    private readonly sound: SoundItem<IGameTile>
+    constructor(source: IGameCode, sound: SoundItem<IGameTile>) {
         super(source)
         this.sound = sound
         if (!sound) {

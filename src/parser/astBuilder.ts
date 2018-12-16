@@ -6,7 +6,6 @@ import { GameData } from '../models/game'
 import { LevelMap, MessageLevel } from '../models/level'
 import { Dimension, GameMetadata } from '../models/metadata'
 import { ISimpleBracket, SimpleBracket, SimpleEllipsisBracket, SimpleNeighbor, SimpleRule, SimpleRuleGroup, SimpleRuleLoop, SimpleTileWithModifier } from '../models/rule'
-import { GameSound, GameSoundMoveDirection, GameSoundMoveSimple, GameSoundNormal, GameSoundSimpleEnum } from '../models/sound'
 import { GameLegendTileAnd, GameLegendTileOr, GameLegendTileSimple, GameSprite, GameSpritePixels, GameSpriteSingleColor, IGameTile } from '../models/tile'
 import { WinConditionOn, WinConditionSimple } from '../models/winCondition'
 import { ICacheable, Optional, RULE_DIRECTION, RULE_DIRECTION_RELATIVE, RULE_DIRECTION_WITH_RELATIVE } from '../util'
@@ -110,7 +109,7 @@ function relativeDirectionToAbsolute(currentDirection: RULE_DIRECTION, relativeM
 export class AstBuilder {
     private readonly code: string
     private readonly tileCache: Map<string, IGameTile>
-    private readonly soundCache: Map<string, GameSound>
+    private readonly soundCache: Map<string, ast.SoundItem<IGameTile>>
     constructor(code: string) {
         this.code = code
         this.tileCache = new Map()
@@ -251,22 +250,17 @@ export class AstBuilder {
         return new CollisionLayer(source, node.tiles.map((n) => this.cacheGet(n)))
     }
 
-    private buildSound(node: ast.SoundItem<string>) {
-        const source = this.toSource(node)
-
+    private buildSound(node: ast.SoundItem<string>): ast.SoundItem<IGameTile> {
         switch (node.type) {
             case 'SOUND_SFX':
-                const ret = new GameSound(source, node.soundCode)
-                this.soundCacheAdd(node.soundEffect, ret)
-                return ret
+                this.soundCacheAdd(node.soundEffect, node)
+                return node
             case 'SOUND_WHEN':
-                return new GameSoundSimpleEnum(source, node.when, node.soundCode)
+                return node
             case 'SOUND_SPRITE_MOVE':
-                return new GameSoundMoveSimple(source, this.cacheGet(node.sprite), node.soundCode)
             case 'SOUND_SPRITE_DIRECTION':
-                return new GameSoundMoveDirection(source, this.cacheGet(node.sprite), node.spriteDirection, node.soundCode)
             case 'SOUND_SPRITE_EVENT':
-                return new GameSoundNormal(source, this.cacheGet(node.sprite), node.spriteEvent, node.soundCode)
+                return { ...node, sprite: this.cacheGet(node.sprite) }
             default:
                 throw new Error(`Unsupported type ${node}`)
         }
@@ -726,7 +720,7 @@ export class AstBuilder {
         }
     }
 
-    private soundCacheAdd(name: string, value: GameSound) {
+    private soundCacheAdd(name: string, value: ast.SoundItem<IGameTile>) {
         if (this.soundCache.has(name.toLowerCase())) {
             throw new Error(`BUG??? duplicate definition of ${name}`)
         }

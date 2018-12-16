@@ -1,9 +1,9 @@
 import { IGameCode } from '../models/BaseForLines'
-import { GameSound, GameSoundSfx } from '../models/sound'
 import { GameLegendTileSimple, GameSprite, IGameTile } from '../models/tile'
+import { SfxSoundItem } from './astTypes'
 
 export class LookupHelper {
-    public _allSoundEffects: Map<string, GameSound>
+    public _allSoundEffects: Map<string, SfxSoundItem<IGameTile>>
     public _allObjects: Map<string, GameSprite>
     public _allLegendTiles: Map<string, IGameTile>
     public _allLevelChars: Map<string, IGameTile>
@@ -21,7 +21,7 @@ export class LookupHelper {
         }
         map.set(key, value)
     }
-    public addSoundEffect(key: string, soundEffect: GameSoundSfx) {
+    public addSoundEffect(key: string, soundEffect: SfxSoundItem<IGameTile>) {
         this._addToHelper(this._allSoundEffects, key.toLowerCase(), soundEffect)
     }
     public addToAllObjects(gameObject: GameSprite) {

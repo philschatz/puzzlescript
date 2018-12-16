@@ -139,12 +139,14 @@ export enum SOUND_TYPE {
     SPRITE_EVENT = 'SOUND_SPRITE_EVENT'
 }
 
+export interface SfxSoundItem<TileRef> {
+    type: SOUND_TYPE.SFX
+    soundEffect: string
+}
+
 export type SoundItem<TileRef> = IASTNode & {soundCode: number} & ({
     type: SOUND_TYPE.WHEN
     when: SOUND_WHEN
-} | {
-    type: SOUND_TYPE.SFX
-    soundEffect: string
 } | {
     type: SOUND_TYPE.SPRITE_DIRECTION
     sprite: TileRef
@@ -156,7 +158,7 @@ export type SoundItem<TileRef> = IASTNode & {soundCode: number} & ({
     type: SOUND_TYPE.SPRITE_EVENT
     sprite: TileRef
     spriteEvent: SOUND_SPRITE_EVENT
-})
+} | SfxSoundItem<TileRef>)
 
 export type CollisionLayer<TileRef> = IASTNode & {
     type: 'COLLISION_LAYER'
