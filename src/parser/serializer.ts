@@ -440,7 +440,7 @@ export default class Serializer {
             [...tileMap.values()],
             [...soundMap.values()],
             [...collisionLayerMap.values()],
-            source.rules.map((item) => ruleMap.get(item)),
+            source.rules.map((item) => ruleMap.get(item)) as SimpleRuleGroup[],
             winConditions, levels)
     }
 
@@ -451,7 +451,7 @@ export default class Serializer {
     private readonly collisionLayerMap: MapWithId<CollisionLayer, ISourceNode>
     private readonly conditionsMap: MapWithId<ISimpleBracket, ast.Bracket<NeighborId>>
     private readonly neighborsMap: MapWithId<SimpleNeighbor, ast.Neighbor<TileWithModifierId>>
-    private readonly tileWithModifierMap: MapWithId<SimpleTileWithModifier, ast.TileWithModifier<TileId>>
+    private readonly tileWithModifierMap: MapWithId<SimpleTileWithModifier, ast.TileWithModifier<RULE_DIRECTION, TileId>>
     private readonly tileMap: MapWithId<IGameTile, GraphTile>
     private readonly ruleMap: MapWithId<IRule, ast.Rule<RuleId, RuleId, BracketId, CommandId>>
     private readonly commandMap: MapWithId<AbstractCommand, ast.Command<SoundId>>
@@ -780,7 +780,7 @@ interface IGraphJson {
     sprites: {[key: string]: IGraphSprite},
     tiles: {[key: string]: GraphTile},
     winConditions: Array<ast.WinCondition<TileId>>,
-    tilesWithModifiers: {[key: string]: ast.TileWithModifier<TileId>},
+    tilesWithModifiers: {[key: string]: ast.TileWithModifier<RULE_DIRECTION, TileId>},
     neighbors: {[key: string]: ast.Neighbor<TileWithModifierId>},
     brackets: {[key: string]: ast.Bracket<NeighborId>},
     ruleDefinitions: {[key: string]: ast.Rule<RuleId, RuleId, BracketId, CommandId>},
