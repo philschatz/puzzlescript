@@ -440,7 +440,7 @@ export default class Serializer {
             [...tileMap.values()],
             [...soundMap.values()],
             [...collisionLayerMap.values()],
-            source.rules.map((item) => ruleMap.get(item)),
+            source.rules.map((item) => ruleMap.get(item)) as SimpleRuleGroup[],
             winConditions, levels)
     }
 

@@ -4,7 +4,7 @@ import { IGameCode } from './BaseForLines'
 import { CollisionLayer } from './collisionLayer'
 import { ILevel } from './level'
 import { GameMetadata } from './metadata'
-import { IRule } from './rule'
+import { SimpleRuleGroup } from './rule'
 import { GameSound } from './sound'
 import { GameSprite, IGameTile } from './tile'
 import { WinConditionSimple } from './winCondition'
@@ -25,7 +25,7 @@ export class GameData {
     public readonly legends: IGameTile[]
     public readonly sounds: GameSound[]
     public readonly collisionLayers: CollisionLayer[]
-    public readonly rules: IRule[]
+    public readonly rules: SimpleRuleGroup[]
     public readonly winConditions: WinConditionSimple[]
     public readonly levels: ILevel[]
     private readonly cacheSpriteSize: {spriteHeight: number, spriteWidth: number}
@@ -40,7 +40,7 @@ export class GameData {
         legends: IGameTile[],
         sounds: GameSound[],
         collisionLayers: CollisionLayer[],
-        rules: IRule[], // Change to SimpleRuleGroup
+        rules: SimpleRuleGroup[],
         winConditions: WinConditionSimple[],
         levels: ILevel[]
     ) {

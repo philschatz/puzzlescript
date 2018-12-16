@@ -3,7 +3,7 @@ import { logger } from './logger'
 import { CollisionLayer } from './models/collisionLayer'
 import { AbstractCommand, COMMAND_TYPE } from './models/command'
 import { GameData } from './models/game'
-import { IMutation, IRule } from './models/rule'
+import { IMutation, SimpleRuleGroup } from './models/rule'
 import { GameSound } from './models/sound'
 import { GameSprite } from './models/tile'
 import { SpriteBitSet } from './spriteBitSet'
@@ -605,9 +605,9 @@ export class LevelEngine extends EventEmitter2 {
         return this._tickUpdateCells(this.gameData.rules.filter((r) => r.isLate()))
     }
 
-    private _tickUpdateCells(rules: Iterable<IRule>) {
+    private _tickUpdateCells(rules: Iterable<SimpleRuleGroup>) {
         const changedMutations: Set<IMutation> = new Set()
-        const evaluatedRules: IRule[] = []
+        const evaluatedRules: SimpleRuleGroup[] = []
         if (!this.currentLevel) {
             throw new Error(`BUG: Level Cells do not exist yet`)
         }
