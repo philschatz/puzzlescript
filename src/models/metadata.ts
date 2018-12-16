@@ -1,3 +1,4 @@
+import { Optional } from '../util'
 import { IColor } from './colors'
 
 export class Dimension {
@@ -11,20 +12,20 @@ export class Dimension {
 }
 
 export class GameMetadata {
-    public author?: string
-    public homepage?: string
-    public youtube?: string
-    public zoomscreen?: Dimension
-    public flickscreen?: Dimension
-    public colorPalette?: string
-    public backgroundColor?: IColor
-    public textColor?: IColor
-    public realtimeInterval?: number
-    public keyRepeatInterval?: number
-    public againInterval?: number
+    public author: Optional<string>
+    public homepage: Optional<string>
+    public youtube: Optional<string>
+    public zoomscreen: Optional<Dimension>
+    public flickscreen: Optional<Dimension>
+    public colorPalette: Optional<string>
+    public backgroundColor: Optional<IColor>
+    public textColor: Optional<IColor>
+    public realtimeInterval: Optional<number>
+    public keyRepeatInterval: Optional<number>
+    public againInterval: Optional<number>
     public noAction: boolean
     public noUndo: boolean
-    public runRulesOnLevelStart?: string
+    public runRulesOnLevelStart: Optional<string>
     public noRepeatAction: boolean
     public throttleMovement: boolean
     public noRestart: boolean
@@ -39,6 +40,19 @@ export class GameMetadata {
         this.noRestart = false
         this.requirePlayerMovement = false
         this.verboseLogging = false
+
+        this.author = null
+        this.homepage = null
+        this.youtube = null
+        this.zoomscreen = null
+        this.flickscreen = null
+        this.colorPalette = null
+        this.backgroundColor = null
+        this.textColor = null
+        this.realtimeInterval = null
+        this.keyRepeatInterval = null
+        this.againInterval = null
+        this.runRulesOnLevelStart = null
     }
 
     public _setValue(key: string, value: boolean | number | string | Dimension | IColor) {

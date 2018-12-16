@@ -1,9 +1,9 @@
-import { Cell, GameData, GameEngine, Optional } from '..'
-import { RULE_DIRECTION } from '../index'
+import { Cell, GameEngine } from '../engine'
 import { IColor } from '../models/colors'
+import { GameData } from '../models/game'
 import { GameSprite } from '../models/tile'
 import Parser from '../parser/parser'
-import { _flatten } from '../util'
+import { _flatten, Optional, RULE_DIRECTION } from '../util'
 
 class CellColorCache {
     private readonly cache: Map<string, IColor[][]>
@@ -113,6 +113,11 @@ abstract class BaseUI {
 
         this.hasVisualUi = true
         this.lastTick = 0
+
+        this.gameData = null
+        this.engine = null
+        this.windowOffsetWidth = null
+        this.windowOffsetHeight = null
     }
 
     public destroy() {

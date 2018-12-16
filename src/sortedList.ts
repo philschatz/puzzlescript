@@ -104,6 +104,7 @@ export class SortedList<T> implements Iterable<T> {
     private head: Optional<ListItem<T>>
     constructor(comparator: Comparator<T>) {
         this.comparator = comparator
+        this.head = null
     }
     public [Symbol.iterator]() {
         return new ListIterator<T>(this.head)

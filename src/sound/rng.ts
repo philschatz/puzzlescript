@@ -148,9 +148,9 @@ class RNG {
      *
      */
     public random(n: Optional<number>, m: Optional<number>) {
-        if (n == null) {
+        if (n === null) {
             return this.uniform()
-        } else if (m == null) {
+        } else if (m === null) {
             m = n
             n = 0
         }

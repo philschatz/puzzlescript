@@ -294,6 +294,7 @@ export class Level {
     constructor() {
         this.rowCache = []
         this.colCache = []
+        this.cells = null
     }
     public setCells(cells: Cell[][]) {
         this.cells = cells
@@ -375,6 +376,9 @@ export class LevelEngine extends EventEmitter2 {
         this.gameData = gameData
         this.hasAgainThatNeedsToRun = false
         this.undoStack = []
+        this.pendingPlayerWantsToMove = null
+        this.currentLevel = null
+        this.tempOldLevel = null
     }
 
     public setLevel(levelNum: number) {

@@ -734,6 +734,7 @@ export class SimpleBracket extends ISimpleBracket {
 
     constructor(source: IGameCode, direction: RULE_DIRECTION, neighbors: SimpleNeighbor[], debugFlag: Optional<DEBUG_FLAG>) {
         super(source, direction, neighbors, debugFlag)
+        this.actionDebugFlag = null
         this.neighbors = neighbors
         this.ellipsisBracketListeners = new Map()
 
@@ -1014,10 +1015,10 @@ export class SimpleBracket extends ISimpleBracket {
                 break
             }
             const condition = this.neighbors[index]
-            let action
+            let action = null
             // Some rules only contain a condition bracket and a command
             if (actionBracket) {
-                action = actionBracket.neighbors[index]
+                action = actionBracket.neighbors[index] || null
             }
             const x: IMatchedCellAndCorrespondingNeighbors = {
                 cell: curCell,

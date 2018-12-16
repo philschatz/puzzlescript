@@ -42,12 +42,12 @@ interface ISaveFile { version: number, solutions: Array<{ solution?: string, par
 interface ICliOptions {
     version: string,
     ui: boolean,
-    game: Optional<string>,
-    size: Optional<CLI_SPRITE_SIZE>,
-    new: Optional<true>,
-    level: Optional<number>,
-    resume: Optional<boolean>,
-    nosound: Optional<boolean>
+    game: string | undefined,
+    size: CLI_SPRITE_SIZE | undefined,
+    new: true | undefined,
+    level: number | undefined,
+    resume: boolean | undefined,
+    nosound: boolean | undefined
 }
 
 // Use require instead of import so we can load JSON files
@@ -216,7 +216,7 @@ async function run() {
     }
 }
 
-async function startPromptsAndPlayGame(gamePath: string, gistId: Optional<string>, cliResume: Optional<boolean>, cliLevel: Optional<number>, nosound: Optional<boolean>) {
+async function startPromptsAndPlayGame(gamePath: string, gistId: Optional<string>, cliResume: boolean | undefined, cliLevel: number | undefined, nosound: boolean | undefined) {
     const cliOptions: ICliOptions = commander.opts() as ICliOptions
     const { ui: cliUi, size: cliSpriteSize, new: cliNewGame } = cliOptions
 
@@ -236,7 +236,7 @@ async function startPromptsAndPlayGame(gamePath: string, gistId: Optional<string
 
     showControls()
     // check to see if the terminal is too small
-    await promptPixelSize(data, cliUi ? cliSpriteSize : CLI_SPRITE_SIZE.SMALL)
+    await promptPixelSize(data, cliUi ? cliSpriteSize || null : CLI_SPRITE_SIZE.SMALL)
 
     // Load the solutions file (if it exists) so we can append to it
     const solutionPath = path.join(SOLUTION_ROOT, `${gistId}.json`)
@@ -247,7 +247,7 @@ async function startPromptsAndPlayGame(gamePath: string, gistId: Optional<string
         recordings = { version: 1, solutions: [], title: data.title, totalLevels: data.levels.length, totalMapLevels: data.levels.filter((l) => l.isMap()).length } // default
     }
 
-    const currentLevelNum = await promptChooseLevel(recordings, data, cliNewGame ? 0 : cliLevel)
+    const currentLevelNum = await promptChooseLevel(recordings, data, cliNewGame ? 0 : cliLevel || null)
 
     // Allow the user to resume from where they left off
     let ticksToRunFirst = ''
@@ -278,7 +278,7 @@ async function startPromptsAndPlayGame(gamePath: string, gistId: Optional<string
 
     TerminalUI.clearScreen()
 
-    await playGame(data, currentLevelNum, recordings, ticksToRunFirst, absPath, solutionPath, cliUi, cliLevel !== undefined /*only run one level if specified*/, nosound)
+    await playGame(data, currentLevelNum, recordings, ticksToRunFirst, absPath, solutionPath, cliUi, cliLevel !== undefined /*only run one level if specified*/, nosound || null)
 }
 
 async function playGame(data: GameData, currentLevelNum: number, recordings: ISaveFile, ticksToRunFirst: string,
@@ -667,7 +667,7 @@ async function promptChooseLevel(recordings: ISaveFile, data: GameData, cliLevel
             .filter((l, index) => !(recordings.solutions[index] && recordings.solutions[index].solution))[0]
         )
 
-    if (cliLevel !== undefined && cliLevel !== null) {
+    if (cliLevel) {
         return cliLevel
     }
     // First ask if they want to Continue, Start a new Game, or Choose a Level
@@ -848,7 +848,7 @@ function percentComplete(game: IGameInfo) {
     return message
 }
 
-async function promptGame(games: IGameInfo[], cliGameTitle: Optional<string>) {
+async function promptGame(games: IGameInfo[], cliGameTitle: string | undefined) {
     // Sort games by games that are fun and should be played first
     const firstGames = [
         'Pot Wash Panic',

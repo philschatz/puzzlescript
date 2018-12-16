@@ -528,8 +528,8 @@ export default class Serializer {
             zoomscreen: this.game.metadata.zoomscreen,
             flickscreen: this.game.metadata.flickscreen,
             colorPalette: this.game.metadata.colorPalette,
-            backgroundColor: this.game.metadata.backgroundColor ? this.buildColor(this.game.metadata.backgroundColor) : undefined,
-            textColor: this.game.metadata.textColor ? this.buildColor(this.game.metadata.textColor) : undefined,
+            backgroundColor: this.game.metadata.backgroundColor ? this.buildColor(this.game.metadata.backgroundColor) : null,
+            textColor: this.game.metadata.textColor ? this.buildColor(this.game.metadata.textColor) : null,
             realtimeInterval: this.game.metadata.realtimeInterval,
             keyRepeatInterval: this.game.metadata.keyRepeatInterval,
             againInterval: this.game.metadata.againInterval,
@@ -604,7 +604,7 @@ export default class Serializer {
                 isRandom: rule.isRandom,
                 rules: rule.getChildRules().map((item) => this.recBuildRule(item)),
                 _sourceOffset: rule.__source.sourceOffset,
-                debugFlag: undefined // TODO: Unhardcode me
+                debugFlag: null // TODO: Unhardcode me
             })
         } else if (rule instanceof SimpleRuleLoop) {
             const x: ast.RuleLoop<string> = {
@@ -612,7 +612,7 @@ export default class Serializer {
                 // isRandom: rule.isRandom,
                 rules: rule.getChildRules().map((item) => this.recBuildRule(item)),
                 _sourceOffset: rule.__source.sourceOffset,
-                debugFlag: undefined // TODO: unhardcode me
+                debugFlag: null // TODO: unhardcode me
             }
             return this.ruleMap.set(rule, x)
         } else {

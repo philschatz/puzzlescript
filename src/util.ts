@@ -1,4 +1,4 @@
-export type Optional<T> = T | null | undefined
+export type Optional<T> = T | null
 
 export enum RULE_DIRECTION {
     UP = 'UP',
