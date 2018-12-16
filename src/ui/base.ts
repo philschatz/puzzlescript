@@ -113,6 +113,11 @@ abstract class BaseUI {
 
         this.hasVisualUi = true
         this.lastTick = 0
+
+        this.gameData = null
+        this.engine = null
+        this.windowOffsetWidth = null
+        this.windowOffsetHeight = null
     }
 
     public destroy() {

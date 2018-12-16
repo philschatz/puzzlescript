@@ -72,6 +72,7 @@ export class BaseForLines {
             throw new Error(`BUG: failed to provide the source when constructing this object`)
         }
         this.__source = source
+        this.__coverageCount = null
         // This is only used for code coverage
         if (process.env.NODE_ENV === 'development') {
             this.__coverageCount = 0
