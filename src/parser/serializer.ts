@@ -1,7 +1,6 @@
 import { Optional, RULE_DIRECTION } from '..'
 import { CollisionLayer } from '../models/collisionLayer'
 import { HexColor, IColor, TransparentColor } from '../models/colors'
-import { AbstractCommand, AgainCommand, CancelCommand, CheckpointCommand, MessageCommand, RestartCommand, SoundCommand, WinCommand } from '../models/command'
 import { GameData } from '../models/game'
 import { ILevel, LevelMap, MessageLevel } from '../models/level'
 import { Dimension, GameMetadata } from '../models/metadata'
@@ -232,7 +231,7 @@ export default class Serializer {
         const tileWithModifierMap: DefiniteMap<string, SimpleTileWithModifier> = new DefiniteMap()
         const tileMap: DefiniteMap<string, IGameTile> = new DefiniteMap()
         const ruleMap: DefiniteMap<string, IRule> = new DefiniteMap()
-        const commandMap: DefiniteMap<string, AbstractCommand> = new DefiniteMap()
+        const commandMap: DefiniteMap<string, ast.Command<ast.SoundItem<IGameTile>>> = new DefiniteMap()
 
         for (const [key, val] of Object.entries(source.colors)) {
             colorMap.set(key, new HexColor({ code, sourceOffset: 0 }, val))
@@ -241,28 +240,19 @@ export default class Serializer {
             soundMap.set(key, val)
         }
         for (const [key, val] of Object.entries(source.commands)) {
-            const { _sourceOffset: sourceOffset } = val
             switch (val.type) {
                 case ast.COMMAND_TYPE.MESSAGE:
-                    commandMap.set(key, new MessageCommand({ code, sourceOffset }, val.message))
+                    commandMap.set(key, val)
                     break
                 case ast.COMMAND_TYPE.SFX:
-                    commandMap.set(key, new SoundCommand({ code, sourceOffset }, soundMap.get(val.sound)))
+                    commandMap.set(key, { ...val, sound: soundMap.get(val.sound) })
                     break
                 case ast.COMMAND_TYPE.RESTART:
-                    commandMap.set(key, new RestartCommand({ code, sourceOffset }))
-                    break
                 case ast.COMMAND_TYPE.AGAIN:
-                    commandMap.set(key, new AgainCommand({ code, sourceOffset }))
-                    break
                 case ast.COMMAND_TYPE.CANCEL:
-                    commandMap.set(key, new CancelCommand({ code, sourceOffset }))
-                    break
                 case ast.COMMAND_TYPE.CHECKPOINT:
-                    commandMap.set(key, new CheckpointCommand({ code, sourceOffset }))
-                    break
                 case ast.COMMAND_TYPE.WIN:
-                    commandMap.set(key, new WinCommand({ code, sourceOffset }))
+                    commandMap.set(key, val)
                     break
                 default:
                     throw new Error(`ERROR: Unsupported command type`)
@@ -442,7 +432,7 @@ export default class Serializer {
     private readonly tileWithModifierMap: MapWithId<SimpleTileWithModifier, ast.TileWithModifier<RULE_DIRECTION, TileId>>
     private readonly tileMap: MapWithId<IGameTile, GraphTile>
     private readonly ruleMap: MapWithId<IRule, ast.Rule<RuleId, RuleId, BracketId, CommandId>>
-    private readonly commandMap: MapWithId<AbstractCommand, ast.Command<SoundId>>
+    private readonly commandMap: MapWithId<ast.Command<ast.SoundItem<IGameTile>>, ast.Command<SoundId>>
     private readonly winConditions: Array<ast.WinCondition<TileId>>
     private orderedRules: RuleId[]
     private levels: Array<ast.Level<TileId>>
@@ -608,46 +598,19 @@ export default class Serializer {
         }
 
     }
-    private buildCommand(command: AbstractCommand) {
-        if (command instanceof MessageCommand) {
-            return this.commandMap.set(command, {
-                type: ast.COMMAND_TYPE.MESSAGE,
-                message: command.getMessage(),
-                _sourceOffset: command.__source.sourceOffset
-            })
-        } else if (command instanceof SoundCommand) {
-            return this.commandMap.set(command, {
-                type: ast.COMMAND_TYPE.SFX,
-                sound: this.soundMap.getId(command.getSound()),
-                _sourceOffset: command.__source.sourceOffset
-            })
-        } else if (command instanceof CheckpointCommand) {
-            return this.commandMap.set(command, {
-                type: ast.COMMAND_TYPE.CHECKPOINT,
-                _sourceOffset: command.__source.sourceOffset
-            })
-        } else if (command instanceof RestartCommand) {
-            return this.commandMap.set(command, {
-                type: ast.COMMAND_TYPE.RESTART,
-                _sourceOffset: command.__source.sourceOffset
-            })
-        } else if (command instanceof CancelCommand) {
-            return this.commandMap.set(command, {
-                type: ast.COMMAND_TYPE.CANCEL,
-                _sourceOffset: command.__source.sourceOffset
-            })
-        } else if (command instanceof AgainCommand) {
-            return this.commandMap.set(command, {
-                type: ast.COMMAND_TYPE.AGAIN,
-                _sourceOffset: command.__source.sourceOffset
-            })
-        } else if (command instanceof WinCommand) {
-            return this.commandMap.set(command, {
-                type: ast.COMMAND_TYPE.WIN,
-                _sourceOffset: command.__source.sourceOffset
-            })
-        } else {
-            debugger; throw new Error(`BUG: Unsupoprted command type`) // tslint:disable-line:no-debugger
+    private buildCommand(command: ast.Command<ast.SoundItem<IGameTile>>) {
+        switch (command.type) {
+            case ast.COMMAND_TYPE.SFX:
+                return this.commandMap.set(command, { ...command, sound: this.soundMap.getId(command.sound) })
+            case ast.COMMAND_TYPE.AGAIN:
+            case ast.COMMAND_TYPE.CANCEL:
+            case ast.COMMAND_TYPE.CHECKPOINT:
+            case ast.COMMAND_TYPE.MESSAGE:
+            case ast.COMMAND_TYPE.RESTART:
+            case ast.COMMAND_TYPE.WIN:
+                return this.commandMap.set(command, command)
+            default:
+                debugger; throw new Error(`BUG: Unsupoprted command type`) // tslint:disable-line:no-debugger
         }
     }
     private buildConditionBracket(bracket: ISimpleBracket): BracketId {

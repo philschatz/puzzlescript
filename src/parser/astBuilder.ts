@@ -1,7 +1,6 @@
 import { lookupColorPalette } from '../colors'
 import { CollisionLayer } from '../models/collisionLayer'
 import { HexColor, TransparentColor } from '../models/colors'
-import { AgainCommand, CancelCommand, CheckpointCommand, MessageCommand, RestartCommand, SoundCommand, WinCommand } from '../models/command'
 import { GameData } from '../models/game'
 import { LevelMap, MessageLevel } from '../models/level'
 import { Dimension, GameMetadata } from '../models/metadata'
@@ -36,11 +35,11 @@ const RULE_DIRECTION_LIST = [
 
 const RULE_DIRECTION_SET: Set<string> = new Set(RULE_DIRECTION_LIST)
 
-function removeNulls<T>(ary: Array<T | null>) {
+function removeNulls<T>(ary: Array<Optional<T>>) {
     // return ary.filter(a => !!a)
 
     // TypeScript-friendly version
-    const ret = []
+    const ret: T[] = []
     for (const item of ary) {
         if (item) {
             ret.push(item)
@@ -266,26 +265,21 @@ export class AstBuilder {
         }
     }
 
-    private buildCommand(node: ast.Command<string>) {
-        const source = this.toSource(node)
+    private buildCommand(node: ast.Command<string>): Optional<ast.Command<ast.SoundItem<IGameTile>>> {
         switch (node.type) {
-            case ast.COMMAND_TYPE.MESSAGE:
-                return new MessageCommand(source, node.message)
             case ast.COMMAND_TYPE.SFX:
                 if (!this.soundCacheHas(node.sound)) {
                     return null
                 }
-                return new SoundCommand(source, this.soundCacheGet(node.sound))
-            case ast.COMMAND_TYPE.CANCEL:
-                return new CancelCommand(source)
+                const sound = this.soundCacheGet(node.sound)
+                return { ...node, sound }
             case ast.COMMAND_TYPE.AGAIN:
-                return new AgainCommand(source)
-            case ast.COMMAND_TYPE.WIN:
-                return new WinCommand(source)
-            case ast.COMMAND_TYPE.RESTART:
-                return new RestartCommand(source)
+            case ast.COMMAND_TYPE.CANCEL:
+            case ast.COMMAND_TYPE.MESSAGE:
             case ast.COMMAND_TYPE.CHECKPOINT:
-                return new CheckpointCommand(source)
+            case ast.COMMAND_TYPE.RESTART:
+            case ast.COMMAND_TYPE.WIN:
+                return node
             default:
                 throw new Error(`Unsupported type ${node}`)
         }
