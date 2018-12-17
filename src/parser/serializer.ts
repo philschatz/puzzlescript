@@ -2,7 +2,6 @@ import { Optional, RULE_DIRECTION } from '..'
 import { CollisionLayer } from '../models/collisionLayer'
 import { HexColor, IColor, TransparentColor } from '../models/colors'
 import { GameData } from '../models/game'
-import { ILevel, LevelMap, MessageLevel } from '../models/level'
 import { Dimension, GameMetadata } from '../models/metadata'
 import { IRule, ISimpleBracket, SimpleBracket, SimpleEllipsisBracket, SimpleNeighbor, SimpleRule, SimpleRuleGroup, SimpleRuleLoop, SimpleTileWithModifier } from '../models/rule'
 import { GameLegendTileAnd, GameLegendTileOr, GameLegendTileSimple, GameSprite, GameSpritePixels, IGameTile } from '../models/tile'
@@ -369,12 +368,11 @@ export default class Serializer {
         }
 
         const levels = source.levels.map((item) => {
-            const { _sourceOffset: sourceOffset } = item
             switch (item.type) {
-                case ast.LEVEL_TYPE.MESSAGE:
-                    return new MessageLevel({ code, sourceOffset }, item.message)
                 case ast.LEVEL_TYPE.MAP:
-                    return new LevelMap({ code, sourceOffset }, item.cells.map((row) => row.map((tile) => tileMap.get(tile))))
+                    return { ...item, cells: item.cells.map((row) => row.map((tile) => tileMap.get(tile))) }
+                case ast.LEVEL_TYPE.MESSAGE:
+                    return item
                 default:
                     throw new Error(`ERROR: Invalid level type`)
             }
@@ -545,21 +543,14 @@ export default class Serializer {
             levels: this.levels
         }
     }
-    private buildLevel(level: ILevel): ast.Level<TileId> {
-        if (level instanceof LevelMap) {
-            return {
-                type: ast.LEVEL_TYPE.MAP,
-                cells: level.getRows().map((row) => row.map((cell) => this.buildTile(cell))),
-                _sourceOffset: level.__source.sourceOffset
-            }
-        } else if (level instanceof MessageLevel) {
-            return {
-                type: ast.LEVEL_TYPE.MESSAGE,
-                message: level.getMessage(),
-                _sourceOffset: level.__source.sourceOffset
-            }
-        } else {
-            debugger; throw new Error(`BUG: Unsupported level subtype`) // tslint:disable-line:no-debugger
+    private buildLevel(level: ast.Level<IGameTile>): ast.Level<TileId> {
+        switch (level.type) {
+            case ast.LEVEL_TYPE.MAP:
+                return { ...level, cells: level.cells.map((row) => row.map((cell) => this.buildTile(cell))) }
+            case ast.LEVEL_TYPE.MESSAGE:
+                return level
+            default:
+                debugger; throw new Error(`BUG: Unsupported level subtype`) // tslint:disable-line:no-debugger
         }
     }
     private recBuildRule(rule: IRule): string {

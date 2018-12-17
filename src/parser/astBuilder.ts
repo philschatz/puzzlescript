@@ -2,7 +2,6 @@ import { lookupColorPalette } from '../colors'
 import { CollisionLayer } from '../models/collisionLayer'
 import { HexColor, TransparentColor } from '../models/colors'
 import { GameData } from '../models/game'
-import { LevelMap, MessageLevel } from '../models/level'
 import { Dimension, GameMetadata } from '../models/metadata'
 import { ISimpleBracket, SimpleBracket, SimpleEllipsisBracket, SimpleNeighbor, SimpleRule, SimpleRuleGroup, SimpleRuleLoop, SimpleTileWithModifier } from '../models/rule'
 import { GameLegendTileAnd, GameLegendTileOr, GameLegendTileSimple, GameSprite, GameSpritePixels, GameSpriteSingleColor, IGameTile } from '../models/tile'
@@ -298,12 +297,11 @@ export class AstBuilder {
     }
 
     private buildLevel(node: ast.Level<string>) {
-        const source = this.toSource(node)
         switch (node.type) {
             case ast.LEVEL_TYPE.MESSAGE:
-                return new MessageLevel(source, node.message)
+                return node
             case ast.LEVEL_TYPE.MAP:
-                return new LevelMap(source, node.cells.map((row) => row.map((cell) => this.cacheGet(cell))))
+                return { ...node, cells: node.cells.map((row) => row.map((cell) => this.cacheGet(cell))) }
             default:
                 throw new Error(`Unsupported type ${node}`)
         }

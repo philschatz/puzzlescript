@@ -4,7 +4,7 @@ import { CollisionLayer } from './models/collisionLayer'
 import { GameData } from './models/game'
 import { IMutation, SimpleRuleGroup } from './models/rule'
 import { GameSprite, IGameTile } from './models/tile'
-import { Command, COMMAND_TYPE, SoundItem } from './parser/astTypes'
+import { Command, COMMAND_TYPE, LEVEL_TYPE, SoundItem } from './parser/astTypes'
 import { SpriteBitSet } from './spriteBitSet'
 import { _flatten, Optional, resetRandomSeed, RULE_DIRECTION, setAddAll, setDifference, setEquals } from './util'
 
@@ -384,29 +384,30 @@ export class LevelEngine extends EventEmitter2 {
         if (!levelData) {
             throw new Error(`Invalid levelNum: ${levelNum}`)
         }
-        if (process.env.NODE_ENV === 'development') {
-            levelData.__incrementCoverage()
-        }
-        resetRandomSeed()
+        if (levelData.type === LEVEL_TYPE.MAP) {
+            resetRandomSeed()
 
-        const levelSprites = levelData.getRows().map((row) => {
-            return row.map((col) => {
-                const sprites = new Set(col.getSprites())
-                const backgroundSprite = this.gameData.getMagicBackgroundSprite()
-                if (backgroundSprite) {
-                    sprites.add(backgroundSprite)
-                }
-                return sprites
+            const levelSprites = levelData.cells.map((row) => {
+                return row.map((col) => {
+                    const sprites = new Set(col.getSprites())
+                    const backgroundSprite = this.gameData.getMagicBackgroundSprite()
+                    if (backgroundSprite) {
+                        sprites.add(backgroundSprite)
+                    }
+                    return sprites
+                })
             })
-        })
 
-        // Clone the board because we will be modifying it
-        this._setLevel(levelSprites)
+            // Clone the board because we will be modifying it
+            this._setLevel(levelSprites)
 
-        this.takeSnapshot(this.createSnapshot())
+            this.takeSnapshot(this.createSnapshot())
 
-        // Return the cells so the UI can listen to when they change
-        return this.getCells()
+            // Return the cells so the UI can listen to when they change
+            return this.getCells()
+        } else {
+            throw new Error(`BUG: LEVEL_MESSAGE should not reach this point`)
+        }
     }
 
     public setMessageLevel(sprites: Array<Array<Set<GameSprite>>>) {
@@ -873,7 +874,7 @@ export class GameEngine {
     public setLevel(levelNum: number) {
         this.messageShownAndWaitingForActionPress = false
         this.levelEngine.hasAgainThatNeedsToRun = false // clear this so the user can press "X"
-        if (this.getGameData().levels[levelNum].isMap()) {
+        if (this.getGameData().levels[levelNum].type === LEVEL_TYPE.MAP) {
             this.isFirstTick = true
             this.levelEngine.setLevel(levelNum)
         } else {
@@ -883,7 +884,7 @@ export class GameEngine {
     }
     public tick(): ITickResult {
         // When the current level is a Message, wait until the user presses ACTION
-        if (!this.getCurrentLevel().isMap()) {
+        if (this.getCurrentLevel().type === LEVEL_TYPE.MESSAGE) {
             // Wait until the user presses "X" (ACTION)
             let didWinGameInMessage = false
             let didLevelChange = false

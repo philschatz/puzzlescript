@@ -7,6 +7,7 @@ import { Cell, GameData, Optional, RULE_DIRECTION } from '..'
 import { CollisionLayer } from '../models/collisionLayer'
 import { IColor } from '../models/colors'
 import { GameSprite } from '../models/tile'
+import { LEVEL_TYPE } from '../parser/astTypes'
 import { _debounce, _flatten } from '../util'
 import BaseUI from './base'
 
@@ -230,9 +231,9 @@ class TerminalUI extends BaseUI {
         } else {
             // loop through all the levels and find the largest one
             for (const level of gameData.levels) {
-                if (level.isMap()) {
-                    maxWidth = Math.max(maxWidth, level.getWidth())
-                    maxHeight = Math.max(maxHeight, level.getHeight())
+                if (level.type === LEVEL_TYPE.MAP) {
+                    maxWidth = Math.max(maxWidth, level.cells[0].length)
+                    maxHeight = Math.max(maxHeight, level.cells.length)
                 }
             }
         }

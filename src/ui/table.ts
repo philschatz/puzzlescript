@@ -1,6 +1,7 @@
 import { Cell } from '../engine'
 import { IColor } from '../models/colors'
 import { GameData } from '../models/game'
+import { LEVEL_TYPE } from '../parser/astTypes'
 import { _flatten, Optional, RULE_DIRECTION } from '../util'
 import BaseUI from './base'
 
@@ -140,7 +141,7 @@ class TableUI extends BaseUI {
         if (!this.engine) {
             throw new Error(`BUG: engine has not been set yet`)
         }
-        return !this.engine.getCurrentLevel().isMap()
+        return this.engine.getCurrentLevel().type === LEVEL_TYPE.MESSAGE
     }
 
     public getCurrentLevelMessage() {
@@ -148,10 +149,10 @@ class TableUI extends BaseUI {
             throw new Error(`BUG: engine has not been set yet`)
         }
         const level = this.engine.getCurrentLevel()
-        if (level.isMap()) {
+        if (level.type === LEVEL_TYPE.MAP) {
             throw new Error(`BUG: current level is not a message level`)
         }
-        return level.getMessage()
+        return level.message
     }
 
     protected renderLevelScreen(levelRows: Cell[][], renderScreenDepth: number) {

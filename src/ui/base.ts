@@ -2,6 +2,7 @@ import { Cell, GameData, GameEngine, Optional } from '..'
 import { RULE_DIRECTION } from '../index'
 import { IColor } from '../models/colors'
 import { GameSprite } from '../models/tile'
+import { LEVEL_TYPE } from '../parser/astTypes'
 import Parser from '../parser/parser'
 import { _flatten } from '../util'
 
@@ -277,8 +278,8 @@ abstract class BaseUI {
         }
 
         const level = this.engine.getCurrentLevel()
-        if (!level.isMap()) {
-            this.renderMessageScreen(level.getMessage())
+        if (level.type !== LEVEL_TYPE.MAP) {
+            this.renderMessageScreen(level.message)
             return
         }
 

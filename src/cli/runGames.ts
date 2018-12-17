@@ -6,6 +6,7 @@ import * as pify from 'pify'
 
 import { GameEngine, Parser, RULE_DIRECTION } from '..'
 import { logger } from '../logger'
+import { LEVEL_TYPE } from '../parser/astTypes'
 import Serializer from '../parser/serializer'
 import { saveCoverageFile } from '../recordCoverage'
 import { closeSounds } from '../sounds'
@@ -54,7 +55,7 @@ async function run() {
         }
 
         // Draw the "first" level (after the messages)
-        let currentLevel = data.levels.filter((level) => level.isMap())[0]
+        let currentLevel = data.levels.filter((level) => level.type === LEVEL_TYPE.MAP)[0]
         // have some default keypresses but load the most-recent partial if available
         let keypressesStr = [
             'WSSW',
@@ -71,7 +72,7 @@ async function run() {
             // - pick the first Map
             if (recordings) {
                 recordings.forEach((recording, index) => {
-                    if (recording && data.levels[index].isMap()) {
+                    if (recording && data.levels[index].type === LEVEL_TYPE.MAP) {
                         keypressesStr = recording.partial || recording.solution || ''
                         // Trim the keypresses down so the game does not take too long to run
                         keypressesStr = keypressesStr.substring(0, 150)
@@ -79,7 +80,7 @@ async function run() {
                     }
                 })
             } else {
-                currentLevel = data.levels.filter((l) => l.isMap())[0]
+                currentLevel = data.levels.filter((l) => l.type === LEVEL_TYPE.MAP)[0]
             }
         }
 
