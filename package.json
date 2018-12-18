@@ -56,7 +56,6 @@
     "standardx": "^3.0.1",
     "supports-color": "^5.5.0",
     "update-notifier": "^2.5.0",
-    "weak": "^1.0.1",
     "web-audio-api": "^0.2.2"
   },
   "devDependencies": {
@@ -74,13 +73,11 @@
     "@types/pify": "^3.0.2",
     "@types/quick-lru": "^1.1.0",
     "@types/supports-color": "^5.3.0",
-    "awesome-typescript-loader": "^5.2.1",
     "babel-core": "7.0.0-bridge.0",
     "babel-jest": "^23.6.0",
     "babel-loader": "^8.0.4",
     "babel-polyfill": "^6.26.0",
     "codecov": "^3.1.0",
-    "http-server": "^0.11.1",
     "istanbul": "^0.4.5",
     "jest": "^23.6.0",
     "jest-pnp-resolver": "^1.0.2",
@@ -91,7 +88,6 @@
     "process-nextick-args": "^2.0.0",
     "puppeteer": "^1.10.0",
     "serve": "^10.1.1",
-    "source-map-loader": "^0.2.4",
     "source-map-support": "^0.5.9",
     "sourcemapped-stacktrace-node": "github:philschatz/sourcemapped-stacktrace-node#2a76787b5f9356b3798788942947e05a5bc8ecc2",
     "tslint": "^5.11.0",
@@ -99,6 +95,7 @@
     "tslint-config-standard": "^8.0.1",
     "typedoc": "^0.13.0",
     "typescript": "^3.2.2",
+    "weak": "^1.0.1",
     "webpack": "^4.27.1",
     "webpack-cli": "^3.1.2"
   },
