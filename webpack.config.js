@@ -1,5 +1,4 @@
 const path = require('path');
-const HardSourceWebpackPlugin = require('hard-source-webpack-plugin')
 
 module.exports = {
     mode: process.env['NODE_ENV'] || 'production',
@@ -15,7 +14,7 @@ module.exports = {
         // Add '.ts' and '.tsx' as resolvable extensions.
         extensions: ['.ts', '.tsx', '.js', '.json'],
         alias: {
-            './sound/sfxr': path.resolve(__dirname, './lib/sound/sfxr-browser'),
+            './sound/sfxr': path.resolve(__dirname, './src/sound/sfxr-browser'),
             '../ui/terminal': path.resolve(__dirname, './src/ui/terminalBrowserShim.js')
         }
     },
@@ -25,6 +24,7 @@ module.exports = {
                 test: /\.(js|mjs|jsx|ts|tsx)$/,
                 loader: require.resolve('babel-loader'),
                 options: {
+                    presets: ['@babel/preset-env'],
                     cacheDirectory: true,
                     // Save disk space when time isn't as important
                     cacheCompression: true,
@@ -35,8 +35,5 @@ module.exports = {
     },
     // Only report errors to stdout, not the bundle stats (like compression)
     // stats: "errors-only"
-    stats: {maxModules: Infinity, exclude: undefined},
-    plugins: [
-        new HardSourceWebpackPlugin()
-    ]
+    stats: {maxModules: Infinity, exclude: undefined}
 }
