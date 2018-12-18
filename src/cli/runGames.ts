@@ -1,6 +1,6 @@
 // tslint:disable:no-console
 import { existsSync, readFileSync } from 'fs'
-import * as glob from 'glob'
+import glob from 'glob'
 import * as path from 'path'
 import pify from 'pify'
 
@@ -56,7 +56,7 @@ async function run() {
         // Draw the "first" level (after the messages)
         let currentLevel = data.levels.filter((level) => level.isMap())[0]
         // have some default keypresses but load the most-recent partial if available
-        let keypressesStr = [
+        let keypressesStr = '.' + [ // ensure that games that need a tick at the beginning have one
             'WSSW',
             'ADDDA',
             'X',
