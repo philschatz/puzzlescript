@@ -1,7 +1,7 @@
 /* eslint-env jasmine */
 const fs = require('fs')
 const path = require('path')
-const { default: Parser } = require('../lib/parser/parser')
+const { default: Parser } = require('../src/parser/parser')
 
 const GISTS_ROOT = path.join(__dirname, '../gists/')
 const GIST_SOLUTIONS_ROOT = path.join(__dirname, '../gist-solutions/')

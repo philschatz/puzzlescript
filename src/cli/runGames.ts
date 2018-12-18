@@ -2,7 +2,7 @@
 import { existsSync, readFileSync } from 'fs'
 import * as glob from 'glob'
 import * as path from 'path'
-import * as pify from 'pify'
+import pify from 'pify'
 
 import { GameEngine, Parser, RULE_DIRECTION } from '..'
 import { logger } from '../logger'

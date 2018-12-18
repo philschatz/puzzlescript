@@ -1,4 +1,4 @@
-import * as keymaster from 'keymaster'
+import keymaster from 'keymaster'
 import { Cell, GameEngine, ILoadingCellsEvent } from './engine'
 import { GameData } from './models/game'
 import { GameSound } from './models/sound'

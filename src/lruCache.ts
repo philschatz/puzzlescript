@@ -1,4 +1,4 @@
-import * as QuickLru from 'quick-lru'
+import QuickLru from 'quick-lru'
 
 export default class LruCache<Key, Value> {
     private lru: QuickLru<Key, Value>

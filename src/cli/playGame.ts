@@ -1,13 +1,13 @@
 // tslint:disable:no-console
 import chalk from 'chalk'
-import * as commander from 'commander'
+import commander from 'commander'
 import fontAscii from 'font-ascii'
 import { createReadStream, existsSync, readFileSync, writeFileSync } from 'fs'
-import * as glob from 'glob'
+import glob from 'glob'
 import * as inquirer from 'inquirer'
-import PromptModule, * as autocomplete from 'inquirer-autocomplete-prompt'
+import PromptModule from 'inquirer-autocomplete-prompt'
 import * as path from 'path'
-import * as pify from 'pify'
+import pify from 'pify'
 import * as supportsColor from 'supports-color'
 
 import { ensureDir } from 'fs-extra'
@@ -136,7 +136,7 @@ run().then(() => { process.exit(0) }, (err) => {
 })
 
 async function run() {
-    inquirer.registerPrompt('autocomplete', autocomplete as PromptModule)
+    inquirer.registerPrompt('autocomplete', PromptModule)
     const gists = await pify(glob)(path.join(__dirname, '../../gists/*/script.txt'))
     const cliOptions: ICliOptions = commander.opts() as ICliOptions
     const { ui: cliUi, game: cliGameTitle, nosound } = cliOptions

@@ -1,8 +1,8 @@
 /* eslint-env jasmine */
-const { default: Parser } = require('../lib/parser/parser')
-const { GameEngine } = require('../lib/engine')
-const { default: UI } = require('../lib/ui/terminal')
-const { lookupColorPalette } = require('../lib/colors')
+const { default: Parser } = require('../src/parser/parser')
+const { GameEngine } = require('../src/engine')
+const { default: UI } = require('../src/ui/terminal')
+const { lookupColorPalette } = require('../src/colors')
 
 const C_WHITE = { r: 255, g: 255, b: 255 }
 const C_BLACK = { r: 0, g: 0, b: 0 }

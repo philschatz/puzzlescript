@@ -1,6 +1,6 @@
 /* eslint-env jasmine */
-const { default: Parser } = require('../lib/parser/parser')
-const { default: Serializer } = require('../lib/parser/serializer')
+const { default: Parser } = require('../src/parser/parser')
+const { default: Serializer } = require('../src/parser/serializer')
 
 function checkGrammar(code) {
     // check that it does not throw an Error

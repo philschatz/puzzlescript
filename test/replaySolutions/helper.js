@@ -1,11 +1,11 @@
 /* eslint-env jasmine */
 const fs = require('fs')
 const path = require('path')
-const { GameEngine } = require('../../lib/engine')
-const { default: Parser } = require('../../lib/parser/parser')
-const { RULE_DIRECTION } = require('../../lib/util')
-const { saveCoverageFile } = require('../../lib/recordCoverage')
-// const { default: TerminalUI } = require('../../lib/ui/terminal')
+const { GameEngine } = require('../../src/engine')
+const { default: Parser } = require('../../src/parser/parser')
+const { RULE_DIRECTION } = require('../../src/util')
+const { saveCoverageFile } = require('../../src/recordCoverage')
+// const { default: TerminalUI } = require('../../src/ui/terminal')
 
 const CI_MAX_SOLUTION_LENGTH = 1000 // The length of 1 level of cyber-lasso
 const describeFn = process.env.SKIP_SOLUTIONS ? describe.skip : describe

@@ -1,7 +1,7 @@
 /* eslint-env jasmine */
-const { LevelEngine } = require('../lib/engine')
-const { default: Parser } = require('../lib/parser/parser')
-const { RULE_DIRECTION } = require('../lib/util')
+const { LevelEngine } = require('../src/engine')
+const { default: Parser } = require('../src/parser/parser')
+const { RULE_DIRECTION } = require('../src/util')
 
 
 const EMPTY_GAME = `

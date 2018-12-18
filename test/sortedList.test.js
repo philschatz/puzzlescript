@@ -1,4 +1,4 @@
-const {SortedList, SortedArray} = require('../lib/sortedList')
+const {SortedList, SortedArray} = require('../src/sortedList')
 
 function numberComparator(a, b) {
     return a - b
