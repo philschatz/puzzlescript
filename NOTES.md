@@ -31,11 +31,3 @@ Added: Bat
 
 [ ] -> [ Marker ]
 [ Marker ] -> [ ] (should result in nothing)
-
-
-TODO: 
-
-- [x] rubber window sticky
-- [ ] clean through clothes
-- [ ] clean my bedroom corner
-- [x] watch "Get me Roger Stone"
