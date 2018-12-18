@@ -1,5 +1,5 @@
-import * as ansiEscapes from 'ansi-escapes'
-import * as ansiStylesHack from 'ansi-styles'
+import ansiEscapes from 'ansi-escapes'
+import ansiStyles from 'ansi-styles'
 import chalk from 'chalk'
 import * as supportsColor from 'supports-color'
 
@@ -13,8 +13,6 @@ import BaseUI from './base'
 // Determine if this
 // 'truecolor' if this terminal supports 16m colors. 256 colors otherwise
 const supports16mColors = process.env.COLORTERM === 'truecolor'
-
-const ansiStyles: typeof ansiStylesHack = (ansiStylesHack as any).default
 
 function setBgColor(hex: string) {
     if (supports16mColors) {
