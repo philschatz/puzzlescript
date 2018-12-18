@@ -19,7 +19,7 @@
     "demo:debug": "LOG_LEVEL=debug NODE_ENV=development node --inspect-brk ./bin/puzzlescript-demo.js 2> ./start.log",
     "demo:debug-cli": "LOG_LEVEL=debug NODE_ENV=development node inspect ./bin/puzzlescript-demo.js 2> ./start.log",
     "coverage": "istanbul report --root ./coverage/ lcov",
-    "pretest": "npm run-script build && node ./script/doBatchStuff.js",
+    "pretest": "npm run-script compile:grammar && npm run-script build && node ./script/doBatchStuff.js",
     "test": "npm run-script test:unit",
     "test:unit": "VERIFY_MATCHES=true NODE_ENV=development jest --coverage --updateSnapshot --verbose --detectLeaks --detectOpenHandles",
     "posttest": "npm run-script compile:ts && npm run-script test:cli && npm run-script coverage && npm run-script lint",
