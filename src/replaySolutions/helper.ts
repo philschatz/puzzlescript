@@ -7,7 +7,7 @@ import { saveCoverageFile } from '../../src/recordCoverage'
 import { RULE_DIRECTION } from '../../src/util'
 // import TerminalUI from '../../src/ui/terminal'
 
-const CI_MAX_SOLUTION_LENGTH = 1000 // The length of 1 level of cyber-lasso
+const CI_MAX_SOLUTION_LENGTH = 2138 // The length of Spikes-n-Stuff
 const describeFn = process.env.SKIP_SOLUTIONS ? describe.skip : describe
 
 const SOLUTION_ROOT = path.join(__dirname, '../../gist-solutions/')
