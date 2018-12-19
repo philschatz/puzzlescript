@@ -1,13 +1,13 @@
 /* eslint-env jasmine */
-const { default: Parser } = require('../src/parser/parser')
-const { GameEngine } = require('../src/engine')
-const { default: UI } = require('../src/ui/terminal')
-const { lookupColorPalette } = require('../src/colors')
+import { lookupColorPalette } from './colors'
+import { GameEngine } from './engine'
+import Parser from './parser/parser'
+import UI from './ui/terminal'
 
 const C_WHITE = { r: 255, g: 255, b: 255 }
 const C_BLACK = { r: 0, g: 0, b: 0 }
 
-function parseAndReturnFirstSpritePixels(code) {
+function parseAndReturnFirstSpritePixels(code: string) {
     const { data } = Parser.parse(code)
     const engine = new GameEngine(data)
     engine.setLevel(0)
@@ -16,7 +16,7 @@ function parseAndReturnFirstSpritePixels(code) {
     UI.setGameEngine(engine)
     const pixels = UI.getPixelsForCell(cell)
     UI.destroy()
-    return { pixels: pixels, data }
+    return { pixels, data }
 }
 
 describe('UI', () => {
@@ -160,7 +160,11 @@ LEVELS
 P
 
 `)
-        expect(data.getMagicBackgroundSprite().getPixels(5, 5)[0][0].toRgb()).toEqual(C_WHITE)
+        const background = data.getMagicBackgroundSprite()
+        if (!background) {
+            throw new Error(`BUG: Background sprite not found`)
+        }
+        expect(background.getPixels(5, 5)[0][0].toRgb()).toEqual(C_WHITE)
         expect(pixels[0][0].toRgb()).toEqual(C_WHITE)
         expect(pixels[0][2].toRgb()).toEqual(C_BLACK)
     })

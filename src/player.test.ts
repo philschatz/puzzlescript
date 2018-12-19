@@ -1,14 +1,12 @@
 /* eslint-env jasmine */
-const fs = require('fs')
-const path = require('path')
-const { LevelEngine } = require('../src/engine')
-const { default: Parser } = require('../src/parser/parser')
-const { RULE_DIRECTION } = require('../src/util')
+import fs from 'fs'
+import path from 'path'
+import { LevelEngine } from './engine'
+import Parser from './parser/parser'
+import { RULE_DIRECTION } from './util'
 
-
-function parseEngine(code, levelNum = 0) {
-    const { data, error } = Parser.parse(code)
-    expect(error && error.message).toBeFalsy() // Use && so the error messages are shorter
+function parseEngine(code: string, levelNum = 0) {
+    const { data } = Parser.parse(code)
 
     const engine = new LevelEngine(data)
     engine.setLevel(levelNum)
@@ -71,13 +69,12 @@ describe('player movement', () => {
 
         `) // end game
 
-        const player = data.getPlayer()
-        const playerSprite = data._getSpriteByName('player')
+        const playerSprite = data.getSpriteByName('player')
         engine.press(RULE_DIRECTION.RIGHT)
         engine.tick()
 
-        expect(engine.currentLevel.getCells()[0][1].getSpritesAsSet().has(playerSprite)).toBe(true)
-        expect(engine.currentLevel.getCells()[0][0].getSpritesAsSet().has(playerSprite)).toBe(false)
+        expect(engine.getCurrentLevel().getCells()[0][1].getSpritesAsSet().has(playerSprite)).toBe(true)
+        expect(engine.getCurrentLevel().getCells()[0][0].getSpritesAsSet().has(playerSprite)).toBe(false)
     })
 
     it('players next to each other should move in unison', () => {
@@ -134,25 +131,23 @@ describe('player movement', () => {
 
         `) // end game
 
-        const player = data.getPlayer()
-        const playerSprite = data._getSpriteByName('player')
+        const playerSprite = data.getSpriteByName('player')
         engine.press(RULE_DIRECTION.RIGHT)
         engine.tick()
 
-        expect(engine.currentLevel.getCells()[0][0].getSpritesAsSet().has(playerSprite)).toBe(false)
-        expect(engine.currentLevel.getCells()[0][1].getSpritesAsSet().has(playerSprite)).toBe(true)
-        expect(engine.currentLevel.getCells()[0][2].getSpritesAsSet().has(playerSprite)).toBe(true)
-        expect(engine.currentLevel.getCells()[0][3].getSpritesAsSet().has(playerSprite)).toBe(false)
+        expect(engine.getCurrentLevel().getCells()[0][0].getSpritesAsSet().has(playerSprite)).toBe(false)
+        expect(engine.getCurrentLevel().getCells()[0][1].getSpritesAsSet().has(playerSprite)).toBe(true)
+        expect(engine.getCurrentLevel().getCells()[0][2].getSpritesAsSet().has(playerSprite)).toBe(true)
+        expect(engine.getCurrentLevel().getCells()[0][3].getSpritesAsSet().has(playerSprite)).toBe(false)
 
         engine.press(RULE_DIRECTION.RIGHT)
         engine.tick()
 
-        expect(engine.currentLevel.getCells()[0][0].getSpritesAsSet().has(playerSprite)).toBe(false)
-        expect(engine.currentLevel.getCells()[0][1].getSpritesAsSet().has(playerSprite)).toBe(false)
-        expect(engine.currentLevel.getCells()[0][2].getSpritesAsSet().has(playerSprite)).toBe(true)
-        expect(engine.currentLevel.getCells()[0][3].getSpritesAsSet().has(playerSprite)).toBe(true)
+        expect(engine.getCurrentLevel().getCells()[0][0].getSpritesAsSet().has(playerSprite)).toBe(false)
+        expect(engine.getCurrentLevel().getCells()[0][1].getSpritesAsSet().has(playerSprite)).toBe(false)
+        expect(engine.getCurrentLevel().getCells()[0][2].getSpritesAsSet().has(playerSprite)).toBe(true)
+        expect(engine.getCurrentLevel().getCells()[0][3].getSpritesAsSet().has(playerSprite)).toBe(true)
     })
-
 
     it('wantsToMove should become applied to sprites in another bracket', () => {
         const { engine, data } = parseEngine(`title foo
@@ -216,17 +211,16 @@ describe('player movement', () => {
 
         `) // end game
 
-        const player = data.getPlayer()
-        const playerSprite = data._getSpriteByName('player')
-        const shadowSprite = data._getSpriteByName('shadow')
+        const playerSprite = data.getSpriteByName('player')
+        const shadowSprite = data.getSpriteByName('shadow')
         engine.press(RULE_DIRECTION.RIGHT)
         engine.tick()
 
-        expect(engine.currentLevel.getCells()[0][0].getSpritesAsSet().has(playerSprite)).toBe(false)
-        expect(engine.currentLevel.getCells()[0][1].getSpritesAsSet().has(playerSprite)).toBe(true)
+        expect(engine.getCurrentLevel().getCells()[0][0].getSpritesAsSet().has(playerSprite)).toBe(false)
+        expect(engine.getCurrentLevel().getCells()[0][1].getSpritesAsSet().has(playerSprite)).toBe(true)
 
-        expect(engine.currentLevel.getCells()[1][0].getSpritesAsSet().has(shadowSprite)).toBe(false)
-        expect(engine.currentLevel.getCells()[1][1].getSpritesAsSet().has(shadowSprite)).toBe(true)
+        expect(engine.getCurrentLevel().getCells()[1][0].getSpritesAsSet().has(shadowSprite)).toBe(false)
+        expect(engine.getCurrentLevel().getCells()[1][1].getSpritesAsSet().has(shadowSprite)).toBe(true)
     })
 
     it('wantsToMove should remain when updating sprites', () => {
@@ -285,13 +279,12 @@ describe('player movement', () => {
 
         `) // end game
 
-        const player = data.getPlayer()
-        const playerSprite = data._getSpriteByName('player')
+        const playerSprite = data.getSpriteByName('player')
         engine.press(RULE_DIRECTION.RIGHT)
         engine.tick()
 
-        expect(engine.currentLevel.getCells()[0][0].getSpritesAsSet().has(playerSprite)).toBe(false)
-        expect(engine.currentLevel.getCells()[0][1].getSpritesAsSet().has(playerSprite)).toBe(true)
+        expect(engine.getCurrentLevel().getCells()[0][0].getSpritesAsSet().has(playerSprite)).toBe(false)
+        expect(engine.getCurrentLevel().getCells()[0][1].getSpritesAsSet().has(playerSprite)).toBe(true)
     })
 
     it('wantsToMove should be removed when the condition has a direction but the right does not', () => {
@@ -350,13 +343,12 @@ describe('player movement', () => {
 
         `) // end game
 
-        const player = data.getPlayer()
-        const playerSprite = data._getSpriteByName('player')
+        const playerSprite = data.getSpriteByName('player')
         engine.press(RULE_DIRECTION.RIGHT)
         engine.tick()
 
-        expect(engine.currentLevel.getCells()[0][0].getSpritesAsSet().has(playerSprite)).toBe(true)
-        expect(engine.currentLevel.getCells()[0][1].getSpritesAsSet().has(playerSprite)).toBe(false)
+        expect(engine.getCurrentLevel().getCells()[0][0].getSpritesAsSet().has(playerSprite)).toBe(true)
+        expect(engine.getCurrentLevel().getCells()[0][1].getSpritesAsSet().has(playerSprite)).toBe(false)
     })
 
     it('only creates one Player when Player is an OR tile', () => {
@@ -410,14 +402,14 @@ describe('player movement', () => {
 
         `) // end game
 
-        const player1 = data._getSpriteByName('player1')
-        const player2 = data._getSpriteByName('player2')
+        const player1 = data.getSpriteByName('player1')
+        const player2 = data.getSpriteByName('player2')
         engine.press(RULE_DIRECTION.RIGHT)
         engine.tick()
 
         expect(player1.getCellsThatMatch().size).toBe(1)
         expect(player2.getCellsThatMatch().size).toBe(0)
-        expect(engine.currentLevel.getCells()[0][1].getSpritesAsSet().has(player1)).toBe(true)
+        expect(engine.getCurrentLevel().getCells()[0][1].getSpritesAsSet().has(player1)).toBe(true)
     })
 
     it('preserves wantsToMove when sprite changes', () => {
@@ -473,30 +465,30 @@ describe('player movement', () => {
 
         `) // end game
 
-        const player1 = data._getSpriteByName('player1')
+        const player1 = data.getSpriteByName('player1')
         engine.press(RULE_DIRECTION.RIGHT)
         engine.tick()
 
         expect(player1.getCellsThatMatch().size).toBe(1)
-        expect(engine.currentLevel.getCells()[0][1].getSpritesAsSet().has(player1)).toBe(true)
+        expect(engine.getCurrentLevel().getCells()[0][1].getSpritesAsSet().has(player1)).toBe(true)
     })
 
     it('plays a level of Beam Islands', () => {
         const LEVEL_NUM = 3
         const LEVEL_SOLUTION = 'lluuuxlduruuxddddd'
-        const { engine, data } = parseEngine(fs.readFileSync(path.join(__dirname, '../gists/2b9ece642cd7cdfb4a5f2c9fa8455e40/script.txt'), 'utf-8'), LEVEL_NUM) // end game
+        const { engine } = parseEngine(fs.readFileSync(path.join(__dirname, '../gists/2b9ece642cd7cdfb4a5f2c9fa8455e40/script.txt'), 'utf-8'), LEVEL_NUM) // end game
         let didWin = false
 
         const keypresses = LEVEL_SOLUTION.split('')
         for (const key of keypresses) {
-            switch(key) {
+            switch (key) {
                 case 'u': engine.press(RULE_DIRECTION.UP); break
                 case 'd': engine.press(RULE_DIRECTION.DOWN); break
                 case 'l': engine.press(RULE_DIRECTION.LEFT); break
                 case 'r': engine.press(RULE_DIRECTION.RIGHT); break
                 case 'x': engine.press(RULE_DIRECTION.ACTION); break
             }
-            const {isWinning} = engine.tick()
+            const { isWinning } = engine.tick()
             if (isWinning) {
                 didWin = true
             }

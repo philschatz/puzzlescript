@@ -1,10 +1,10 @@
-const {SortedList, SortedArray} = require('../src/sortedList')
+import { SortedArray, SortedList } from './sortedList'
 
-function numberComparator(a, b) {
+function numberComparator(a: number, b: number) {
     return a - b
 }
 
-function objComparator(a, b) {
+function objComparator(a: {value: number}, b: {value: number}) {
     return a.value - b.value
 }
 
@@ -22,15 +22,15 @@ describe('SortedList', () => {
         const list = new SortedList(objComparator)
         expect(list.size()).toBe(0)
         expect(list.isEmpty()).toBe(true)
-        list.add({value: 1})
+        list.add({ value: 1 })
         expect(list.size()).toBe(1)
         expect(list.isEmpty()).toBe(false)
-        list.add({value: 1})
+        list.add({ value: 1 })
         expect(list.size()).toBe(1)
 
-        expect([{value: 1}]).toEqual([...list])
+        expect([{ value: 1 }]).toEqual([...list])
 
-        list.delete({value: 1})
+        list.delete({ value: 1 })
         expect(list.size()).toBe(0)
     })
 
@@ -90,7 +90,6 @@ describe('SortedList', () => {
         expect([...list]).toEqual([ 0, 1.5, 1.9, 2, 3, 5, 6 ])
     })
 })
-
 
 describe('SortedArray', () => {
     it('does not add duplicates', () => {

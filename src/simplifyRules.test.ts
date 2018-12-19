@@ -1,6 +1,6 @@
 /* eslint-env jasmine */
-const { LevelEngine } = require('../src/engine')
-const { default: Parser } = require('../src/parser/parser')
+import { LevelEngine } from './engine'
+import Parser from './parser/parser'
 
 const HORIZONTAL_GAME = `title check that Horizontal Expands
 
@@ -50,9 +50,8 @@ LEVELS
 
 ` // end game
 
-function parseEngine(code) {
-    const { data, error } = Parser.parse(code)
-    expect(error && error.message).toBeFalsy() // Use && so the error messages are shorter
+function parseEngine(code: string) {
+    const { data } = Parser.parse(code)
 
     const engine = new LevelEngine(data)
     engine.setLevel(0)
@@ -61,10 +60,10 @@ function parseEngine(code) {
 
 describe('Rule simplifier', () => {
     it('expands horizontal rules', () => {
-        const { engine, data } = parseEngine(HORIZONTAL_GAME)
+        const { data } = parseEngine(HORIZONTAL_GAME)
         const foo = data.rules
         expect(foo.length).toBe(1)
-        expect(foo[0].rules.length).toBe(2)
+        expect(foo[0].getChildRules().length).toBe(2)
     })
 
     it('treats adjacent neighbors that are the same as distinct (e.g. [ Wall | Wall ]', () => {
@@ -114,10 +113,10 @@ describe('Rule simplifier', () => {
     WW
 
     `) // end game
-        const rightExtension = data._getSpriteByName('RightExtension')
+        const rightExtension = data.getSpriteByName('RightExtension')
         engine.tick()
 
-        expect(engine.currentLevel.getCells()[0][0].getSpritesAsSet().has(rightExtension)).toBe(true)
+        expect(engine.getCurrentLevel().getCells()[0][0].getSpritesAsSet().has(rightExtension)).toBe(true)
     })
 
     it('converts VERTICAL and HORIZONTAL at the beginning of a rule into 2 rules', () => {
@@ -194,29 +193,28 @@ describe('Rule simplifier', () => {
         WWWW
 
     `) // end game
-        const horiz = data._getSpriteByName('PrettyHorizWall')
-        const vert = data._getSpriteByName('PrettyVertWall')
+        const horiz = data.getSpriteByName('PrettyHorizWall')
+        const vert = data.getSpriteByName('PrettyVertWall')
         engine.tick()
         expect(engine.toSnapshot()).toMatchSnapshot()
 
         expect(data.rules.length).toBe(2)
-        expect(data.rules[0].rules.length).toBe(2) // just LEFT RIGHT
-        expect(data.rules[1].rules.length).toBe(2) // just UP DOWN
+        expect(data.rules[0].getChildRules().length).toBe(2) // just LEFT RIGHT
+        expect(data.rules[1].getChildRules().length).toBe(2) // just UP DOWN
 
-        expect(engine.currentLevel.getCells()[0][1].getSpritesAsSet().has(horiz)).toBe(true)
-        expect(engine.currentLevel.getCells()[0][2].getSpritesAsSet().has(horiz)).toBe(true)
+        expect(engine.getCurrentLevel().getCells()[0][1].getSpritesAsSet().has(horiz)).toBe(true)
+        expect(engine.getCurrentLevel().getCells()[0][2].getSpritesAsSet().has(horiz)).toBe(true)
 
-        expect(engine.currentLevel.getCells()[3][1].getSpritesAsSet().has(horiz)).toBe(true)
-        expect(engine.currentLevel.getCells()[3][2].getSpritesAsSet().has(horiz)).toBe(true)
+        expect(engine.getCurrentLevel().getCells()[3][1].getSpritesAsSet().has(horiz)).toBe(true)
+        expect(engine.getCurrentLevel().getCells()[3][2].getSpritesAsSet().has(horiz)).toBe(true)
 
-        expect(engine.currentLevel.getCells()[1][0].getSpritesAsSet().has(vert)).toBe(true)
-        expect(engine.currentLevel.getCells()[1][3].getSpritesAsSet().has(vert)).toBe(true)
+        expect(engine.getCurrentLevel().getCells()[1][0].getSpritesAsSet().has(vert)).toBe(true)
+        expect(engine.getCurrentLevel().getCells()[1][3].getSpritesAsSet().has(vert)).toBe(true)
 
-        expect(engine.currentLevel.getCells()[2][0].getSpritesAsSet().has(vert)).toBe(true)
-        expect(engine.currentLevel.getCells()[2][3].getSpritesAsSet().has(vert)).toBe(true)
+        expect(engine.getCurrentLevel().getCells()[2][0].getSpritesAsSet().has(vert)).toBe(true)
+        expect(engine.getCurrentLevel().getCells()[2][3].getSpritesAsSet().has(vert)).toBe(true)
 
     })
-
 
     it('expands MOVING into simple UP DOWN LEFT RIGHT ACTION rules', () => {
         const { engine, data } = parseEngine(`title check that MOVING Expands
@@ -265,21 +263,21 @@ describe('Rule simplifier', () => {
     S..
 
     `) // end game
-        const player = data._getSpriteByName('player')
-        const shadow = data._getSpriteByName('shadow')
+        const player = data.getSpriteByName('player')
+        const shadow = data.getSpriteByName('shadow')
         engine.tick()
 
         expect(data.rules.length).toBe(2)
-        expect(data.rules[0].rules.length).toBe(1) // Not interesting
-        expect(data.rules[1].rules.length).toBe(4 * 5) // UP DOWN LEFT RIGHT ACTION
+        expect(data.rules[0].getChildRules().length).toBe(1) // Not interesting
+        expect(data.rules[1].getChildRules().length).toBe(4 * 5) // UP DOWN LEFT RIGHT ACTION
 
         expect(engine.toSnapshot()).toMatchSnapshot()
 
-        expect(engine.currentLevel.getCells()[0][0].getSpritesAsSet().has(player)).toBe(false)
-        expect(engine.currentLevel.getCells()[0][1].getSpritesAsSet().has(player)).toBe(true)
+        expect(engine.getCurrentLevel().getCells()[0][0].getSpritesAsSet().has(player)).toBe(false)
+        expect(engine.getCurrentLevel().getCells()[0][1].getSpritesAsSet().has(player)).toBe(true)
 
-        expect(engine.currentLevel.getCells()[1][0].getSpritesAsSet().has(shadow)).toBe(false)
-        expect(engine.currentLevel.getCells()[1][1].getSpritesAsSet().has(shadow)).toBe(true)
+        expect(engine.getCurrentLevel().getCells()[1][0].getSpritesAsSet().has(shadow)).toBe(false)
+        expect(engine.getCurrentLevel().getCells()[1][1].getSpritesAsSet().has(shadow)).toBe(true)
     })
 
     it('expands MOVING in multiple brackets into simple UP DOWN LEFT RIGHT ACTION rules', () => {
@@ -329,26 +327,25 @@ describe('Rule simplifier', () => {
     S..
 
     `) // end game
-        const player = data._getSpriteByName('player')
-        const shadow = data._getSpriteByName('shadow')
+        const player = data.getSpriteByName('player')
+        const shadow = data.getSpriteByName('shadow')
         engine.tick()
 
         expect(data.rules.length).toBe(2)
-        expect(data.rules[0].rules.length).toBe(1) // Not interesting
-        expect(data.rules[1].rules.length).toBe(5) // UP DOWN LEFT RIGHT ACTION
+        expect(data.rules[0].getChildRules().length).toBe(1) // Not interesting
+        expect(data.rules[1].getChildRules().length).toBe(5) // UP DOWN LEFT RIGHT ACTION
 
         expect(engine.toSnapshot()).toMatchSnapshot()
 
-        expect(engine.currentLevel.getCells()[0][0].getSpritesAsSet().has(player)).toBe(false)
-        expect(engine.currentLevel.getCells()[0][1].getSpritesAsSet().has(player)).toBe(true)
+        expect(engine.getCurrentLevel().getCells()[0][0].getSpritesAsSet().has(player)).toBe(false)
+        expect(engine.getCurrentLevel().getCells()[0][1].getSpritesAsSet().has(player)).toBe(true)
 
-        expect(engine.currentLevel.getCells()[1][0].getSpritesAsSet().has(shadow)).toBe(false)
-        expect(engine.currentLevel.getCells()[1][1].getSpritesAsSet().has(shadow)).toBe(true)
+        expect(engine.getCurrentLevel().getCells()[1][0].getSpritesAsSet().has(shadow)).toBe(false)
+        expect(engine.getCurrentLevel().getCells()[1][1].getSpritesAsSet().has(shadow)).toBe(true)
     })
 
-
     it('collapses rules when they do not depend on the direction (major performance speedup)', () => {
-        const { engine, data } = parseEngine(`title foo
+        const { data } = parseEngine(`title foo
 
     ========
     OBJECTS
@@ -392,12 +389,12 @@ describe('Rule simplifier', () => {
         expect(data.rules.length).toBe(2)
 
         // Ensure that both rules were collapsed because they do not depend on the direction
-        expect(data.rules[0].rules.length).toBe(1)
-        expect(data.rules[1].rules.length).toBe(1)
+        expect(data.rules[0].getChildRules().length).toBe(1)
+        expect(data.rules[1].getChildRules().length).toBe(1)
     })
 
     it('keeps rules expanded when they have neighbors', () => {
-        const { engine, data } = parseEngine(`title foo
+        const { data } = parseEngine(`title foo
 
     ========
     OBJECTS
@@ -441,12 +438,12 @@ describe('Rule simplifier', () => {
         expect(data.rules.length).toBe(2)
 
         // Ensure that both rules were collapsed because they do not depend on the direction
-        expect(data.rules[0].rules.length).toBe(4)
-        expect(data.rules[1].rules.length).toBe(4)
+        expect(data.rules[0].getChildRules().length).toBe(4)
+        expect(data.rules[1].getChildRules().length).toBe(4)
     })
 
     it('keeps rules expanded when the action has a direction', () => {
-        const { engine, data } = parseEngine(`title foo
+        const { data } = parseEngine(`title foo
 
     ========
     OBJECTS
@@ -490,8 +487,8 @@ describe('Rule simplifier', () => {
         expect(data.rules.length).toBe(2)
 
         // Ensure that both rules were collapsed because they do not depend on the direction
-        expect(data.rules[0].rules.length).toBe(4)
-        expect(data.rules[1].rules.length).toBe(4)
+        expect(data.rules[0].getChildRules().length).toBe(4)
+        expect(data.rules[1].getChildRules().length).toBe(4)
     })
 
 })

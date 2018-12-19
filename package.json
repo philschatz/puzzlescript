@@ -37,6 +37,7 @@
     "puzzlescript-demo": "./bin/puzzlescript-demo.js"
   },
   "dependencies": {
+    "@types/jest": "^23.3.10",
     "ansi-escapes": "^3.1.0",
     "ansi-styles": "^3.2.1",
     "bitset": "^5.0.4",
@@ -69,6 +70,7 @@
     "@types/keymaster": "^1.6.28",
     "@types/nearley": "^2.11.0",
     "@types/pify": "^3.0.2",
+    "@types/puppeteer": "^1.11.1",
     "@types/quick-lru": "^1.1.0",
     "@types/supports-color": "^5.3.0",
     "babel-core": "7.0.0-bridge.0",
@@ -84,7 +86,7 @@
     "mkdirp": "^0.5.1",
     "node-fetch": "^2.3.0",
     "process-nextick-args": "^2.0.0",
-    "puppeteer": "^1.10.0",
+    "puppeteer": "^1.11.0",
     "serve": "^10.1.1",
     "source-map-support": "^0.5.9",
     "sourcemapped-stacktrace-node": "github:philschatz/sourcemapped-stacktrace-node#2a76787b5f9356b3798788942947e05a5bc8ecc2",
@@ -116,9 +118,7 @@
     "transformIgnorePatterns": [
       "[/\\\\]node_modules[/\\\\].+\\.(js|jsx|ts|tsx)$"
     ],
-    "testMatch": [
-      "**/test/**/*.test.+(ts|tsx|js)"
-    ]
+    "testRegex": "(\\.|/)?test\\.tsx?$"
   },
   "babel": {
     "presets": [

@@ -1,18 +1,16 @@
 /* eslint-env jasmine */
-const { LevelEngine } = require('../src/engine')
-const { default: Parser } = require('../src/parser/parser')
+import { LevelEngine } from './engine'
+import Parser from './parser/parser'
 
-
-function parseEngine(code) {
-    const { data, error } = Parser.parse(code)
-    expect(error && error.message).toBeFalsy() // Use && so the error messages are shorter
+function parseEngine(code: string) {
+    const { data } = Parser.parse(code)
 
     const engine = new LevelEngine(data)
     engine.setLevel(0)
     return { engine, data }
 }
 
-function buildGame(winConditions) {
+function buildGame(winConditions: string[]) {
     return `title foo
 
     ========
@@ -80,9 +78,9 @@ function buildGame(winConditions) {
 describe('Win Conditions', () => {
 
     it('detects conditions for simple checks', () => {
-        function simple(conditions, expected) {
-            const { engine, data } = parseEngine(buildGame(conditions))
-            const {isWinning} = engine.tick()
+        function simple(conditions: string[], expected: boolean) {
+            const { engine } = parseEngine(buildGame(conditions))
+            const { isWinning } = engine.tick()
             expect(isWinning).toBe(expected)
         }
         simple(['NO Player'], false)
@@ -99,6 +97,5 @@ describe('Win Conditions', () => {
         simple(['SOME Dog ON Player'], false)
 
     })
-
 
 })
