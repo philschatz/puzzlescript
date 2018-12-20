@@ -93,7 +93,9 @@ describe('Browser', () => {
     })
 
     afterEach(() => {
-        page.off('console', consoleHandler)
+        if (page.off) { // page.off is not a function in Travis
+            page.off('console', consoleHandler)
+        }
     })
 
     it('plays a game in the browser', async() => {
