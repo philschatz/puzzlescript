@@ -2,12 +2,12 @@ import BitSet from 'bitset'
 import { Cell, Level } from '../engine'
 import { LOG_LEVEL, logger } from '../logger'
 import LruCache from '../lruCache'
+import { Command, COMMAND_TYPE, SoundItem } from '../parser/astTypes'
 import { SpriteBitSet } from '../spriteBitSet'
 // import TerminalUI from '../ui/terminal'
 import { _flatten, DEBUG_FLAG, ICacheable, nextRandom, opposite, Optional, RULE_DIRECTION, setIntersection } from '../util'
 import { BaseForLines, IGameCode } from './BaseForLines'
 import { CollisionLayer } from './collisionLayer'
-import { AbstractCommand } from './command'
 import { IGameNode } from './game'
 import { GameSprite, IGameTile } from './tile'
 const BitSet2 = require('bitset') // tslint:disable-line:no-var-requires
@@ -57,7 +57,7 @@ export interface IRule extends IGameNode {
 export interface IMutation {
     hasCell: () => boolean
     getCell: () => Cell
-    getCommand: () => AbstractCommand
+    getCommand: () => Command<SoundItem<IGameTile>>
 }
 
 class CellMutation implements IMutation {
@@ -67,14 +67,14 @@ class CellMutation implements IMutation {
     }
     public hasCell() { return true }
     public getCell() { return this.cell }
-    public getCommand(): AbstractCommand {
+    public getCommand(): Command<SoundItem<IGameTile>> {
         throw new Error(`BUG: check hasCommand first`)
     }
 }
 
 class CommandMutation implements IMutation {
-    private command: AbstractCommand
-    constructor(command: AbstractCommand) {
+    private command: Command<SoundItem<IGameTile>>
+    constructor(command: Command<SoundItem<IGameTile>>) {
         this.command = command
     }
     public getCommand() { return this.command }
@@ -100,6 +100,21 @@ function buildPermutations<T>(cells: T[][]) {
         tuples = newtuples
     }
     return tuples
+}
+
+function commandToKey(c: Command<SoundItem<IGameTile>>) {
+    switch (c.type) {
+        case COMMAND_TYPE.AGAIN:
+        case COMMAND_TYPE.CANCEL:
+        case COMMAND_TYPE.CHECKPOINT:
+        case COMMAND_TYPE.RESTART:
+        case COMMAND_TYPE.WIN:
+            return c.type
+        case COMMAND_TYPE.MESSAGE:
+            return `${c.type}:${c.message}`
+        case COMMAND_TYPE.SFX:
+            return `${c.type}:${c.sound.type}:${c.sound.soundCode}`
+    }
 }
 
 export class SimpleRuleGroup extends BaseForLines implements IRule {
@@ -247,7 +262,7 @@ export class SimpleRuleLoop extends SimpleRuleGroup {
 export class SimpleRule extends BaseForLines implements ICacheable, IRule {
     public conditionBrackets: ISimpleBracket[]
     public actionBrackets: ISimpleBracket[]
-    public commands: AbstractCommand[]
+    public commands: Array<Command<SoundItem<IGameTile>>>
     public debugFlag: Optional<DEBUG_FLAG>
     // private evaluationDirection: RULE_DIRECTION
     private _isLate: boolean
@@ -256,7 +271,7 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
 
     constructor(source: IGameCode,
                 conditionBrackets: ISimpleBracket[], actionBrackets: ISimpleBracket[],
-                commands: AbstractCommand[], isLate: boolean, isRigid: boolean, debugFlag: Optional<DEBUG_FLAG>) {
+                commands: Array<Command<SoundItem<IGameTile>>>, isLate: boolean, isRigid: boolean, debugFlag: Optional<DEBUG_FLAG>) {
 
         super(source)
         // this.evaluationDirection = evaluationDirection
@@ -278,7 +293,7 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
         // const dir = this.dependsOnDirection() ? this.evaluationDirection : ''
         const conditions = this.conditionBrackets.map((x) => x.toKey())
         const actions = this.actionBrackets.map((x) => x.toKey())
-        const commands = this.commands.map((c) => c.toKey())
+        const commands = this.commands.map((c) => commandToKey(c))
         return `{Late?${this._isLate}} {Rigid?${this.isRigid}} ${conditions} -> ${actions} ${commands.join(' ')} {debugger?${this.debugFlag}}`
     }
     public getChildRules(): IRule[] {

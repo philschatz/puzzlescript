@@ -1,12 +1,9 @@
 import { lookupColorPalette } from '../colors'
 import { CollisionLayer } from '../models/collisionLayer'
 import { HexColor, TransparentColor } from '../models/colors'
-import { AgainCommand, CancelCommand, CheckpointCommand, MessageCommand, RestartCommand, SoundCommand, WinCommand } from '../models/command'
 import { GameData } from '../models/game'
-import { LevelMap, MessageLevel } from '../models/level'
 import { Dimension, GameMetadata } from '../models/metadata'
 import { ISimpleBracket, SimpleBracket, SimpleEllipsisBracket, SimpleNeighbor, SimpleRule, SimpleRuleGroup, SimpleRuleLoop, SimpleTileWithModifier } from '../models/rule'
-import { GameSound, GameSoundMoveDirection, GameSoundMoveSimple, GameSoundNormal, GameSoundSimpleEnum } from '../models/sound'
 import { GameLegendTileAnd, GameLegendTileOr, GameLegendTileSimple, GameSprite, GameSpritePixels, GameSpriteSingleColor, IGameTile } from '../models/tile'
 import { WinConditionOn, WinConditionSimple } from '../models/winCondition'
 import { ICacheable, Optional, RULE_DIRECTION, RULE_DIRECTION_RELATIVE, RULE_DIRECTION_WITH_RELATIVE } from '../util'
@@ -37,11 +34,11 @@ const RULE_DIRECTION_LIST = [
 
 const RULE_DIRECTION_SET: Set<string> = new Set(RULE_DIRECTION_LIST)
 
-function removeNulls<T>(ary: Array<T | null>) {
+function removeNulls<T>(ary: Array<Optional<T>>) {
     // return ary.filter(a => !!a)
 
     // TypeScript-friendly version
-    const ret = []
+    const ret: T[] = []
     for (const item of ary) {
         if (item) {
             ret.push(item)
@@ -110,7 +107,7 @@ function relativeDirectionToAbsolute(currentDirection: RULE_DIRECTION, relativeM
 export class AstBuilder {
     private readonly code: string
     private readonly tileCache: Map<string, IGameTile>
-    private readonly soundCache: Map<string, GameSound>
+    private readonly soundCache: Map<string, ast.SoundItem<IGameTile>>
     constructor(code: string) {
         this.code = code
         this.tileCache = new Map()
@@ -251,47 +248,37 @@ export class AstBuilder {
         return new CollisionLayer(source, node.tiles.map((n) => this.cacheGet(n)))
     }
 
-    private buildSound(node: ast.SoundItem<string>) {
-        const source = this.toSource(node)
-
+    private buildSound(node: ast.SoundItem<string>): ast.SoundItem<IGameTile> {
         switch (node.type) {
             case 'SOUND_SFX':
-                const ret = new GameSound(source, node.soundCode)
-                this.soundCacheAdd(node.soundEffect, ret)
-                return ret
+                this.soundCacheAdd(node.soundEffect, node)
+                return node
             case 'SOUND_WHEN':
-                return new GameSoundSimpleEnum(source, node.when, node.soundCode)
+                return node
             case 'SOUND_SPRITE_MOVE':
-                return new GameSoundMoveSimple(source, this.cacheGet(node.sprite), node.soundCode)
             case 'SOUND_SPRITE_DIRECTION':
-                return new GameSoundMoveDirection(source, this.cacheGet(node.sprite), node.spriteDirection, node.soundCode)
             case 'SOUND_SPRITE_EVENT':
-                return new GameSoundNormal(source, this.cacheGet(node.sprite), node.spriteEvent, node.soundCode)
+                return { ...node, sprite: this.cacheGet(node.sprite) }
             default:
                 throw new Error(`Unsupported type ${node}`)
         }
     }
 
-    private buildCommand(node: ast.Command<string>) {
-        const source = this.toSource(node)
+    private buildCommand(node: ast.Command<string>): Optional<ast.Command<ast.SoundItem<IGameTile>>> {
         switch (node.type) {
-            case ast.COMMAND_TYPE.MESSAGE:
-                return new MessageCommand(source, node.message)
             case ast.COMMAND_TYPE.SFX:
                 if (!this.soundCacheHas(node.sound)) {
                     return null
                 }
-                return new SoundCommand(source, this.soundCacheGet(node.sound))
-            case ast.COMMAND_TYPE.CANCEL:
-                return new CancelCommand(source)
+                const sound = this.soundCacheGet(node.sound)
+                return { ...node, sound }
             case ast.COMMAND_TYPE.AGAIN:
-                return new AgainCommand(source)
-            case ast.COMMAND_TYPE.WIN:
-                return new WinCommand(source)
-            case ast.COMMAND_TYPE.RESTART:
-                return new RestartCommand(source)
+            case ast.COMMAND_TYPE.CANCEL:
+            case ast.COMMAND_TYPE.MESSAGE:
             case ast.COMMAND_TYPE.CHECKPOINT:
-                return new CheckpointCommand(source)
+            case ast.COMMAND_TYPE.RESTART:
+            case ast.COMMAND_TYPE.WIN:
+                return node
             default:
                 throw new Error(`Unsupported type ${node}`)
         }
@@ -310,12 +297,11 @@ export class AstBuilder {
     }
 
     private buildLevel(node: ast.Level<string>) {
-        const source = this.toSource(node)
         switch (node.type) {
             case ast.LEVEL_TYPE.MESSAGE:
-                return new MessageLevel(source, node.message)
+                return node
             case ast.LEVEL_TYPE.MAP:
-                return new LevelMap(source, node.cells.map((row) => row.map((cell) => this.cacheGet(cell))))
+                return { ...node, cells: node.cells.map((row) => row.map((cell) => this.cacheGet(cell))) }
             default:
                 throw new Error(`Unsupported type ${node}`)
         }
@@ -726,7 +712,7 @@ export class AstBuilder {
         }
     }
 
-    private soundCacheAdd(name: string, value: GameSound) {
+    private soundCacheAdd(name: string, value: ast.SoundItem<IGameTile>) {
         if (this.soundCache.has(name.toLowerCase())) {
             throw new Error(`BUG??? duplicate definition of ${name}`)
         }

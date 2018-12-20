@@ -1,11 +1,10 @@
 import { EventEmitter2, Listener } from 'eventemitter2'
 import { logger } from './logger'
 import { CollisionLayer } from './models/collisionLayer'
-import { AbstractCommand, COMMAND_TYPE } from './models/command'
 import { GameData } from './models/game'
 import { IMutation, SimpleRuleGroup } from './models/rule'
-import { GameSound } from './models/sound'
-import { GameSprite } from './models/tile'
+import { GameSprite, IGameTile } from './models/tile'
+import { Command, COMMAND_TYPE, LEVEL_TYPE, SoundItem } from './parser/astTypes'
 import { SpriteBitSet } from './spriteBitSet'
 import { _flatten, Optional, resetRandomSeed, RULE_DIRECTION, setAddAll, setDifference, setEquals } from './util'
 
@@ -16,7 +15,7 @@ interface ICollisionLayerState {
 
 interface ITickResult {
     changedCells: Set<Cell>,
-    soundToPlay: Optional<GameSound>,
+    soundToPlay: Optional<SoundItem<IGameTile>>,
     messageToShow: Optional<string>,
     didWinGame: boolean,
     didLevelChange: boolean,
@@ -389,29 +388,30 @@ export class LevelEngine extends EventEmitter2 {
         if (!levelData) {
             throw new Error(`Invalid levelNum: ${levelNum}`)
         }
-        if (process.env.NODE_ENV === 'development') {
-            levelData.__incrementCoverage()
-        }
-        resetRandomSeed()
+        if (levelData.type === LEVEL_TYPE.MAP) {
+            resetRandomSeed()
 
-        const levelSprites = levelData.getRows().map((row) => {
-            return row.map((col) => {
-                const sprites = new Set(col.getSprites())
-                const backgroundSprite = this.gameData.getMagicBackgroundSprite()
-                if (backgroundSprite) {
-                    sprites.add(backgroundSprite)
-                }
-                return sprites
+            const levelSprites = levelData.cells.map((row) => {
+                return row.map((col) => {
+                    const sprites = new Set(col.getSprites())
+                    const backgroundSprite = this.gameData.getMagicBackgroundSprite()
+                    if (backgroundSprite) {
+                        sprites.add(backgroundSprite)
+                    }
+                    return sprites
+                })
             })
-        })
 
-        // Clone the board because we will be modifying it
-        this._setLevel(levelSprites)
+            // Clone the board because we will be modifying it
+            this._setLevel(levelSprites)
 
-        this.takeSnapshot(this.createSnapshot())
+            this.takeSnapshot(this.createSnapshot())
 
-        // Return the cells so the UI can listen to when they change
-        return this.getCells()
+            // Return the cells so the UI can listen to when they change
+            return this.getCells()
+        } else {
+            throw new Error(`BUG: LEVEL_MESSAGE should not reach this point`)
+        }
     }
 
     public setMessageLevel(sprites: Array<Array<Set<GameSprite>>>) {
@@ -454,21 +454,21 @@ export class LevelEngine extends EventEmitter2 {
         }
         const ret = this.tickNormal()
         // TODO: Handle the commands like RESTART, CANCEL, WIN at this point
-        let soundToPlay: Optional<GameSound> = null
+        let soundToPlay: Optional<SoundItem<IGameTile>> = null
         let messageToShow: Optional<string> = null
         let hasWinCommand = false
         let hasRestart = false
         for (const command of ret.commands) {
-            switch (command.getType()) {
+            switch (command.type) {
                 case COMMAND_TYPE.RESTART:
                     hasRestart = true
                     break
                 case COMMAND_TYPE.SFX:
-                    soundToPlay = command.getSound()
+                    soundToPlay = command.sound
                     break
                 case COMMAND_TYPE.MESSAGE:
                     this.hasAgainThatNeedsToRun = false // make sure we won't be waiting on another tick
-                    messageToShow = command.getMessage()
+                    messageToShow = command.message
                     break
                 case COMMAND_TYPE.WIN:
                     hasWinCommand = true
@@ -478,7 +478,7 @@ export class LevelEngine extends EventEmitter2 {
                 case COMMAND_TYPE.CHECKPOINT:
                     break
                 default:
-                    throw new Error(`BUG: Unsupported command "${command.getType()}"`)
+                    throw new Error(`BUG: Unsupported command "${command}"`)
             }
         }
         logger.debug(() => `checking win condition.`)
@@ -692,7 +692,7 @@ export class LevelEngine extends EventEmitter2 {
 
         // We may have mutated the same cell 4 times (e.g. [Player]->[>Player]) so consolidate
         const changedCells = new Set<Cell>()
-        const commands = new Set<AbstractCommand>()
+        const commands: Set<Command<SoundItem<IGameTile>>> = new Set()
         // let didSomeSpriteChange = false
         for (const mutation of changedMutations) {
             // if (mutation.getDidSpritesChange()) {
@@ -711,7 +711,7 @@ export class LevelEngine extends EventEmitter2 {
     }
 
     private tickNormal() {
-        let changedCellMutations = new Set()
+        let changedCellMutations = new Set<Cell>()
         const initialSnapshot = this.createSnapshot()
         if (this.pendingPlayerWantsToMove) {
             this.takeSnapshot(initialSnapshot)
@@ -741,26 +741,26 @@ export class LevelEngine extends EventEmitter2 {
         const movedCells = this.tickMoveSprites(new Set<Cell>(changedCellMutations.keys()))
         const { changedCells: changedCellsLate, evaluatedRules: evaluatedRulesLate, commands: commandsLate } = this.tickUpdateCellsLate()
         const allCommands = [...commands, ...commandsLate]
-        const didCancel = !!allCommands.filter((c) => c.getType() === COMMAND_TYPE.CANCEL)[0]
+        const didCancel = !!allCommands.filter((c) => c.type === COMMAND_TYPE.CANCEL)[0]
         if (didCancel) {
             this.hasAgainThatNeedsToRun = false
             if (this.undoStack.length > 0) {
                 this.applySnapshot(this.undoStack[this.undoStack.length - 1])
             }
             return {
-                changedCells: new Set(),
-                commands: new Set(),
+                changedCells: new Set<Cell>(),
+                commands: new Set<Command<SoundItem<IGameTile>>>(),
                 evaluatedRules
             }
         }
-        const didCheckpoint = !!allCommands.find((c) => c.getType() === COMMAND_TYPE.CHECKPOINT)
+        const didCheckpoint = !!allCommands.find((c) => c.type === COMMAND_TYPE.CHECKPOINT)
         if (didCheckpoint) {
             this.undoStack = []
             this.takeSnapshot(this.createSnapshot())
         }
         // set this only if we did not CANCEL and if some cell changed
         const changedCells = setAddAll(setAddAll(changedCellMutations, changedCellsLate), movedCells)
-        if (allCommands.find((c) => c.getType() === COMMAND_TYPE.AGAIN)) {
+        if (allCommands.find((c) => c.type === COMMAND_TYPE.AGAIN)) {
             // Compare all the cells to the top of the undo stack. If it does not differ
             this.hasAgainThatNeedsToRun = this.doSnapshotsDiffer(initialSnapshot, this.createSnapshot())
         }
@@ -878,7 +878,7 @@ export class GameEngine {
     public setLevel(levelNum: number) {
         this.messageShownAndWaitingForActionPress = false
         this.levelEngine.hasAgainThatNeedsToRun = false // clear this so the user can press "X"
-        if (this.getGameData().levels[levelNum].isMap()) {
+        if (this.getGameData().levels[levelNum].type === LEVEL_TYPE.MAP) {
             this.isFirstTick = true
             this.levelEngine.setLevel(levelNum)
         } else {
@@ -888,7 +888,7 @@ export class GameEngine {
     }
     public tick(): ITickResult {
         // When the current level is a Message, wait until the user presses ACTION
-        if (!this.getCurrentLevel().isMap()) {
+        if (this.getCurrentLevel().type === LEVEL_TYPE.MESSAGE) {
             // Wait until the user presses "X" (ACTION)
             let didWinGameInMessage = false
             let didLevelChange = false

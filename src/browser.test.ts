@@ -30,51 +30,33 @@ async function pressKeys(keys: string[]) {
     }
 }
 
-async function startBrowser() {
-    const url = `http://localhost:8000/src/browser/html-table.xhtml`
+// redirect browser console messages to the terminal
+const consoleHandler = (message: puppeteer.ConsoleMessage) => {
+    const type = message.type()
+    const text = message.text()
 
-    // jest-puppeteer will expose the `page` and `browser` globals to Jest tests.
-    if (!browser || !page) {
-        throw new Error('Browser has not been started! Did you remember to specify `@jest-environment puppeteer`?')
+    switch (type) {
+        case 'log': console.log(text); break // tslint:disable-line:no-console
+        case 'debug': console.debug(text); break // tslint:disable-line:no-console
+        case 'info': console.info(text); break // tslint:disable-line:no-console
+        case 'error': console.error(text); break // tslint:disable-line:no-console
+        case 'dir': console.dir(text); break // tslint:disable-line:no-console
+        case 'dirxml': console.dirxml(text); break // tslint:disable-line:no-console
+        case 'table': console.table(text); break // tslint:disable-line:no-console
+        case 'trace': console.trace(text); break // tslint:disable-line:no-console
+        case 'assert': console.assert(text); break // tslint:disable-line:no-console
+        case 'profile': console.profile(text); break // tslint:disable-line:no-console
+        case 'profileEnd': console.profileEnd(text); break // tslint:disable-line:no-console
+        case 'count': console.count(text); break // tslint:disable-line:no-console
+        case 'timeEnd': console.timeEnd(text); break // tslint:disable-line:no-console
+
+        case 'clear': console.clear(); break // tslint:disable-line:no-console
+        case 'warning': console.warn(text); break // tslint:disable-line:no-console
+        case 'startGroup':
+        case 'startGroupCollapsed':
+        case 'endGroup':
+            console.info(type, text); break // tslint:disable-line:no-console
     }
-
-    // redirect browser console messages to the terminal
-    page.on('console', (consoleMessage) => {
-        const type = consoleMessage.type()
-        const text = consoleMessage.text()
-
-        switch (type) {
-            case 'log': console.log(text); break // tslint:disable-line:no-console
-            case 'debug': console.debug(text); break // tslint:disable-line:no-console
-            case 'info': console.info(text); break // tslint:disable-line:no-console
-            case 'error': console.error(text); break // tslint:disable-line:no-console
-            case 'dir': console.dir(text); break // tslint:disable-line:no-console
-            case 'dirxml': console.dirxml(text); break // tslint:disable-line:no-console
-            case 'table': console.table(text); break // tslint:disable-line:no-console
-            case 'trace': console.trace(text); break // tslint:disable-line:no-console
-            case 'assert': console.assert(text); break // tslint:disable-line:no-console
-            case 'profile': console.profile(text); break // tslint:disable-line:no-console
-            case 'profileEnd': console.profileEnd(text); break // tslint:disable-line:no-console
-            case 'count': console.count(text); break // tslint:disable-line:no-console
-            case 'timeEnd': console.timeEnd(text); break // tslint:disable-line:no-console
-
-            case 'clear': console.clear(); break // tslint:disable-line:no-console
-            case 'warning': console.warn(text); break // tslint:disable-line:no-console
-            case 'startGroup':
-            case 'startGroupCollapsed':
-            case 'endGroup':
-                console.info(type, text); break // tslint:disable-line:no-console
-        }
-    })
-
-    // page.on('pageerror', async e => {
-    //     const newStack = await mapStackTrace(e.message, { isChromeOrEdge: true })
-    //     console.error(newStack)
-    // })
-
-    await page.goto(url)
-
-    return { page, browser }
 }
 
 async function evaluateWithStackTrace(fn: puppeteer.EvaluateFn, ...args: any[]) {
@@ -92,11 +74,34 @@ async function evaluateWithStackTrace(fn: puppeteer.EvaluateFn, ...args: any[]) 
 
 describe('Browser', () => {
 
+    beforeEach(async() => {
+        const url = `http://localhost:8000/src/browser/html-table.xhtml`
+
+        // jest-puppeteer will expose the `page` and `browser` globals to Jest tests.
+        if (!browser || !page) {
+            throw new Error('Browser has not been started! Did you remember to specify `@jest-environment puppeteer`?')
+        }
+
+        page.on('console', consoleHandler)
+
+        // page.on('pageerror', async e => {
+        //     const newStack = await mapStackTrace(e.message, { isChromeOrEdge: true })
+        //     console.error(newStack)
+        // })
+
+        await page.goto(url)
+    })
+
+    afterEach(() => {
+        if (page.off) { // page.off is not a function in Travis
+            page.off('console', consoleHandler)
+        }
+    })
+
     it('plays a game in the browser', async() => {
         // browser tests are slow. Headless is slower it seems (from jest watch mode)
         jest.setTimeout(process.env.NODE_ENV === 'development' ? 90 * 1000 : 90 * 1000)
 
-        await startBrowser()
         const source = fs.readFileSync(path.join(__dirname, '../gists/_pot-wash-panic_itch/script.txt'), 'utf-8')
         const startLevel = 3
 

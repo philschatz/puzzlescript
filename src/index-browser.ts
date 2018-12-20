@@ -1,7 +1,8 @@
 import keymaster from 'keymaster'
 import { Cell, GameEngine, ILoadingCellsEvent } from './engine'
 import { GameData } from './models/game'
-import { GameSound } from './models/sound'
+import { IGameTile } from './models/tile'
+import { SoundItem } from './parser/astTypes'
 import Parser from './parser/parser'
 import { closeSounds, playSound } from './sounds'
 import BaseUI from './ui/base'
@@ -25,14 +26,14 @@ export {
 }
 
 export interface ICustomTableEngineEvents {
-    onSound?(sound: GameSound): (void | Promise<any>)
+    onSound?(sound: SoundItem<IGameTile>): (void | Promise<any>)
     onLevelComplete?(newLevel: number): (void | Promise<any>)
     onMessage?(message: string): (void | Promise<any>)
     onWin?(): (void | Promise<any>)
 }
 
 export interface ITableEngineEvents {
-    onSound(sound: GameSound): (void | Promise<any>)
+    onSound(sound: SoundItem<IGameTile>): (void | Promise<any>)
     onLevelComplete(newLevel: number): (void | Promise<any>)
     onMessage(message: string): (void | Promise<any>)
     onWin(): (void | Promise<any>)
@@ -50,7 +51,7 @@ export class TableEngine {
         this.currentLevel = 0
 
         const defaultEventHandler = {
-            onSound: (sound: GameSound) => {
+            onSound: (sound: SoundItem<IGameTile>) => {
                 // let sounds play while the game loads or player keeps moving
                 playSound(sound) // tslint:disable-line:no-floating-promises
                 return

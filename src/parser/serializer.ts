@@ -1,12 +1,9 @@
 import { Optional, RULE_DIRECTION } from '..'
 import { CollisionLayer } from '../models/collisionLayer'
 import { HexColor, IColor, TransparentColor } from '../models/colors'
-import { AbstractCommand, AgainCommand, CancelCommand, CheckpointCommand, MessageCommand, RestartCommand, SoundCommand, WinCommand } from '../models/command'
 import { GameData } from '../models/game'
-import { ILevel, LevelMap, MessageLevel } from '../models/level'
 import { Dimension, GameMetadata } from '../models/metadata'
 import { IRule, ISimpleBracket, SimpleBracket, SimpleEllipsisBracket, SimpleNeighbor, SimpleRule, SimpleRuleGroup, SimpleRuleLoop, SimpleTileWithModifier } from '../models/rule'
-import { GameSound } from '../models/sound'
 import { GameLegendTileAnd, GameLegendTileOr, GameLegendTileSimple, GameSprite, GameSpritePixels, IGameTile } from '../models/tile'
 import { WinConditionOn, WinConditionSimple } from '../models/winCondition'
 import * as ast from './astTypes'
@@ -96,17 +93,7 @@ interface IGraphSprite extends ISourceNode {
     collisionLayer: CollisionId,
     // sounds: {}
 }
-interface IGraphSound extends ISourceNode { soundCode: number }
-// enum RULE_DIRECTION {
-//     UP = 'UP',
-//     DOWN = 'DOWN',
-//     LEFT = 'LEFT',
-//     RIGHT = 'RIGHT',
-//     // These only apply to Tiles
-//     ACTION = 'ACTION',
-//     STATIONARY = 'STATIONARY',
-//     RANDOMDIR = 'RANDOMDIR'
-// }
+
 enum TILE_TYPE {
     OR = 'OR',
     AND = 'AND',
@@ -246,45 +233,35 @@ export default class Serializer {
         // First, build up all of the lookup maps
         const colorMap: DefiniteMap<string, IColor> = new DefiniteMap()
         const spritesMap: DefiniteMap<string, GameSprite> = new DefiniteMap()
-        const soundMap: DefiniteMap<string, GameSound> = new DefiniteMap()
+        const soundMap: DefiniteMap<string, ast.SoundItem<IGameTile>> = new DefiniteMap()
         const collisionLayerMap: DefiniteMap<string, CollisionLayer> = new DefiniteMap()
         const bracketMap: DefiniteMap<string, ISimpleBracket> = new DefiniteMap()
         const neighborsMap: DefiniteMap<string, SimpleNeighbor> = new DefiniteMap()
         const tileWithModifierMap: DefiniteMap<string, SimpleTileWithModifier> = new DefiniteMap()
         const tileMap: DefiniteMap<string, IGameTile> = new DefiniteMap()
         const ruleMap: DefiniteMap<string, IRule> = new DefiniteMap()
-        const commandMap: DefiniteMap<string, AbstractCommand> = new DefiniteMap()
+        const commandMap: DefiniteMap<string, ast.Command<ast.SoundItem<IGameTile>>> = new DefiniteMap()
 
         for (const [key, val] of Object.entries(source.colors)) {
             colorMap.set(key, new HexColor({ code, sourceOffset: 0 }, val))
         }
         for (const [key, val] of Object.entries(source.sounds)) {
-            const { _sourceOffset: sourceOffset, soundCode } = val
-            soundMap.set(key, new GameSound({ code, sourceOffset }, soundCode))
+            soundMap.set(key, val)
         }
         for (const [key, val] of Object.entries(source.commands)) {
-            const { _sourceOffset: sourceOffset } = val
             switch (val.type) {
                 case ast.COMMAND_TYPE.MESSAGE:
-                    commandMap.set(key, new MessageCommand({ code, sourceOffset }, val.message))
+                    commandMap.set(key, val)
                     break
                 case ast.COMMAND_TYPE.SFX:
-                    commandMap.set(key, new SoundCommand({ code, sourceOffset }, soundMap.get(val.sound)))
+                    commandMap.set(key, { ...val, sound: soundMap.get(val.sound) })
                     break
                 case ast.COMMAND_TYPE.RESTART:
-                    commandMap.set(key, new RestartCommand({ code, sourceOffset }))
-                    break
                 case ast.COMMAND_TYPE.AGAIN:
-                    commandMap.set(key, new AgainCommand({ code, sourceOffset }))
-                    break
                 case ast.COMMAND_TYPE.CANCEL:
-                    commandMap.set(key, new CancelCommand({ code, sourceOffset }))
-                    break
                 case ast.COMMAND_TYPE.CHECKPOINT:
-                    commandMap.set(key, new CheckpointCommand({ code, sourceOffset }))
-                    break
                 case ast.COMMAND_TYPE.WIN:
-                    commandMap.set(key, new WinCommand({ code, sourceOffset }))
+                    commandMap.set(key, val)
                     break
                 default:
                     throw new Error(`ERROR: Unsupported command type`)
@@ -401,12 +378,11 @@ export default class Serializer {
         }
 
         const levels = source.levels.map((item) => {
-            const { _sourceOffset: sourceOffset } = item
             switch (item.type) {
-                case ast.LEVEL_TYPE.MESSAGE:
-                    return new MessageLevel({ code, sourceOffset }, item.message)
                 case ast.LEVEL_TYPE.MAP:
-                    return new LevelMap({ code, sourceOffset }, item.cells.map((row) => row.map((tile) => tileMap.get(tile))))
+                    return { ...item, cells: item.cells.map((row) => row.map((tile) => tileMap.get(tile))) }
+                case ast.LEVEL_TYPE.MESSAGE:
+                    return item
                 default:
                     throw new Error(`ERROR: Invalid level type`)
             }
@@ -457,14 +433,14 @@ export default class Serializer {
     private readonly game: GameData
     private readonly colorsMap: Map<string, ColorId>
     private readonly spritesMap: MapWithId<GameSprite, IGraphSprite>
-    private readonly soundMap: MapWithId<GameSound, IGraphSound>
+    private readonly soundMap: MapWithId<ast.SoundItem<IGameTile>, ast.SoundItem<IGameTile>>
     private readonly collisionLayerMap: MapWithId<CollisionLayer, ISourceNode>
     private readonly conditionsMap: MapWithId<ISimpleBracket, ast.Bracket<NeighborId>>
     private readonly neighborsMap: MapWithId<SimpleNeighbor, ast.Neighbor<TileWithModifierId>>
     private readonly tileWithModifierMap: MapWithId<SimpleTileWithModifier, ast.TileWithModifier<RULE_DIRECTION, TileId>>
     private readonly tileMap: MapWithId<IGameTile, GraphTile>
     private readonly ruleMap: MapWithId<IRule, ast.Rule<RuleId, RuleId, BracketId, CommandId>>
-    private readonly commandMap: MapWithId<AbstractCommand, ast.Command<SoundId>>
+    private readonly commandMap: MapWithId<ast.Command<ast.SoundItem<IGameTile>>, ast.Command<SoundId>>
     private readonly winConditions: Array<ast.WinCondition<TileId>>
     private orderedRules: RuleId[]
     private levels: Array<ast.Level<TileId>>
@@ -493,7 +469,7 @@ export default class Serializer {
         // Load up the colors and sprites
         this.game.collisionLayers.forEach((item) => this.buildCollisionLayer(item))
         this.game.sounds.forEach((item) => {
-            this.soundMap.set(item, this.soundToJson(item))
+            this.soundMap.set(item, item)
         })
         this.game.objects.forEach((sprite) => {
             this.buildSprite(sprite)
@@ -577,21 +553,14 @@ export default class Serializer {
             levels: this.levels
         }
     }
-    private buildLevel(level: ILevel): ast.Level<TileId> {
-        if (level instanceof LevelMap) {
-            return {
-                type: ast.LEVEL_TYPE.MAP,
-                cells: level.getRows().map((row) => row.map((cell) => this.buildTile(cell))),
-                _sourceOffset: level.__source.sourceOffset
-            }
-        } else if (level instanceof MessageLevel) {
-            return {
-                type: ast.LEVEL_TYPE.MESSAGE,
-                message: level.getMessage(),
-                _sourceOffset: level.__source.sourceOffset
-            }
-        } else {
-            debugger; throw new Error(`BUG: Unsupported level subtype`) // tslint:disable-line:no-debugger
+    private buildLevel(level: ast.Level<IGameTile>): ast.Level<TileId> {
+        switch (level.type) {
+            case ast.LEVEL_TYPE.MAP:
+                return { ...level, cells: level.cells.map((row) => row.map((cell) => this.buildTile(cell))) }
+            case ast.LEVEL_TYPE.MESSAGE:
+                return level
+            default:
+                debugger; throw new Error(`BUG: Unsupported level subtype`) // tslint:disable-line:no-debugger
         }
     }
     private recBuildRule(rule: IRule): string {
@@ -630,46 +599,19 @@ export default class Serializer {
         }
 
     }
-    private buildCommand(command: AbstractCommand) {
-        if (command instanceof MessageCommand) {
-            return this.commandMap.set(command, {
-                type: ast.COMMAND_TYPE.MESSAGE,
-                message: command.getMessage(),
-                _sourceOffset: command.__source.sourceOffset
-            })
-        } else if (command instanceof SoundCommand) {
-            return this.commandMap.set(command, {
-                type: ast.COMMAND_TYPE.SFX,
-                sound: this.soundMap.getId(command.getSound()),
-                _sourceOffset: command.__source.sourceOffset
-            })
-        } else if (command instanceof CheckpointCommand) {
-            return this.commandMap.set(command, {
-                type: ast.COMMAND_TYPE.CHECKPOINT,
-                _sourceOffset: command.__source.sourceOffset
-            })
-        } else if (command instanceof RestartCommand) {
-            return this.commandMap.set(command, {
-                type: ast.COMMAND_TYPE.RESTART,
-                _sourceOffset: command.__source.sourceOffset
-            })
-        } else if (command instanceof CancelCommand) {
-            return this.commandMap.set(command, {
-                type: ast.COMMAND_TYPE.CANCEL,
-                _sourceOffset: command.__source.sourceOffset
-            })
-        } else if (command instanceof AgainCommand) {
-            return this.commandMap.set(command, {
-                type: ast.COMMAND_TYPE.AGAIN,
-                _sourceOffset: command.__source.sourceOffset
-            })
-        } else if (command instanceof WinCommand) {
-            return this.commandMap.set(command, {
-                type: ast.COMMAND_TYPE.WIN,
-                _sourceOffset: command.__source.sourceOffset
-            })
-        } else {
-            debugger; throw new Error(`BUG: Unsupoprted command type`) // tslint:disable-line:no-debugger
+    private buildCommand(command: ast.Command<ast.SoundItem<IGameTile>>) {
+        switch (command.type) {
+            case ast.COMMAND_TYPE.SFX:
+                return this.commandMap.set(command, { ...command, sound: this.soundMap.getId(command.sound) })
+            case ast.COMMAND_TYPE.AGAIN:
+            case ast.COMMAND_TYPE.CANCEL:
+            case ast.COMMAND_TYPE.CHECKPOINT:
+            case ast.COMMAND_TYPE.MESSAGE:
+            case ast.COMMAND_TYPE.RESTART:
+            case ast.COMMAND_TYPE.WIN:
+                return this.commandMap.set(command, command)
+            default:
+                debugger; throw new Error(`BUG: Unsupoprted command type`) // tslint:disable-line:no-debugger
         }
     }
     private buildConditionBracket(bracket: ISimpleBracket): BracketId {
@@ -751,12 +693,6 @@ export default class Serializer {
             debugger; throw new Error(`BUG: Invalid tile type`) // tslint:disable-line:no-debugger
         }
     }
-    private soundToJson(sound: GameSound): IGraphSound {
-        return {
-            soundCode: sound.soundCode,
-            _sourceOffset: sound.__source.sourceOffset
-        }
-    }
     private buildSprite(sprite: GameSprite): SpriteId {
         const { spriteHeight, spriteWidth } = this.game.getSpriteSize()
         return this.spritesMap.set(sprite, {
@@ -784,7 +720,7 @@ interface IGraphJson {
     title: string,
     metadata: IGraphGameMetadata,
     colors: {[key: string]: string},
-    sounds: {[key: string]: IGraphSound},
+    sounds: {[key: string]: ast.SoundItem<IGameTile>},
     collisionLayers: {[key: string]: ISourceNode},
     commands: {[key: string]: ast.Command<SoundId>},
     sprites: {[key: string]: IGraphSprite},

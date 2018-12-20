@@ -13,6 +13,7 @@ import * as supportsColor from 'supports-color'
 import { ensureDir } from 'fs-extra'
 import { closeSounds, GameData, GameEngine, ILoadingCellsEvent, Optional, Parser, playSound, RULE_DIRECTION } from '..'
 import { logger } from '../logger'
+import { LEVEL_TYPE } from '../parser/astTypes'
 import { saveCoverageFile } from '../recordCoverage'
 import TerminalUI, { getTerminalSize } from '../ui/terminal'
 import SOLVED_GAMES from './solvedGames'
@@ -244,7 +245,7 @@ async function startPromptsAndPlayGame(gamePath: string, gistId: Optional<string
     if (gistId && existsSync(solutionPath)) {
         recordings = JSON.parse(readFileSync(solutionPath, 'utf-8'))
     } else {
-        recordings = { version: 1, solutions: [], title: data.title, totalLevels: data.levels.length, totalMapLevels: data.levels.filter((l) => l.isMap()).length } // default
+        recordings = { version: 1, solutions: [], title: data.title, totalLevels: data.levels.length, totalMapLevels: data.levels.filter((l) => l.type === LEVEL_TYPE.MAP).length } // default
     }
 
     const currentLevelNum = await promptChooseLevel(recordings, data, cliNewGame ? 0 : cliLevel || null)
@@ -706,8 +707,8 @@ async function promptChooseLevel(recordings: ISaveFile, data: GameData, cliLevel
         pageSize: Math.max(15, getTerminalSize().rows - 15),
         choices: levels.map((levelMap, index) => {
             const hasSolution = recordings.solutions[index] && recordings.solutions[index].solution
-            if (levelMap.isMap()) {
-                const levelRows = levelMap.getRows()
+            if (levelMap.type === LEVEL_TYPE.MAP) {
+                const levelRows = levelMap.cells
                 const cols = levelRows[0]
                 let width = cols.length
                 let height = levelRows.length
@@ -752,7 +753,7 @@ async function promptChooseLevel(recordings: ISaveFile, data: GameData, cliLevel
                     }
                 }
             } else {
-                const message = levelMap.getMessage()
+                const message = levelMap.message
                 let snippet = message.split('\n')[0] // just use the 1st line
                 if (snippet.length > 40) {
                     snippet = `${snippet.substring(0, 40)}...`

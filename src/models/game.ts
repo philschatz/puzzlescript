@@ -1,11 +1,10 @@
 import { getLetterSprites } from '../letters'
+import { Level, SoundItem } from '../parser/astTypes'
 import { Optional } from '../util'
 import { IGameCode } from './BaseForLines'
 import { CollisionLayer } from './collisionLayer'
-import { ILevel } from './level'
 import { GameMetadata } from './metadata'
 import { SimpleRuleGroup } from './rule'
-import { GameSound } from './sound'
 import { GameSprite, IGameTile } from './tile'
 import { WinConditionSimple } from './winCondition'
 
@@ -23,11 +22,11 @@ export class GameData {
     public readonly metadata: GameMetadata
     public readonly objects: GameSprite[]
     public readonly legends: IGameTile[]
-    public readonly sounds: GameSound[]
+    public readonly sounds: Array<SoundItem<IGameTile>>
     public readonly collisionLayers: CollisionLayer[]
     public readonly rules: SimpleRuleGroup[]
     public readonly winConditions: WinConditionSimple[]
-    public readonly levels: ILevel[]
+    public readonly levels: Array<Level<IGameTile>>
     private readonly cacheSpriteSize: {spriteHeight: number, spriteWidth: number}
     private cachedBackgroundSprite: Optional<GameSprite>
     private readonly letterSprites: Map<string, GameSprite>
@@ -38,11 +37,11 @@ export class GameData {
         metadata: GameMetadata,
         objects: GameSprite[],
         legends: IGameTile[],
-        sounds: GameSound[],
+        sounds: Array<SoundItem<IGameTile>>,
         collisionLayers: CollisionLayer[],
         rules: SimpleRuleGroup[],
         winConditions: WinConditionSimple[],
-        levels: ILevel[]
+        levels: Array<Level<IGameTile>>
     ) {
         this.title = title
         this.metadata = metadata
