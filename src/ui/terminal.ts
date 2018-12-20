@@ -1,5 +1,5 @@
-import * as ansiEscapes from 'ansi-escapes'
-import * as ansiStyles from 'ansi-styles'
+import ansiEscapes from 'ansi-escapes'
+import ansiStyles from 'ansi-styles'
 import chalk from 'chalk'
 import * as supportsColor from 'supports-color'
 

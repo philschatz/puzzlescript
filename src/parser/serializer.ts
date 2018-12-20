@@ -220,13 +220,23 @@ class MapWithId<T, TJson> {
     }
 }
 
-class DefiniteMap<K, V> extends Map<K, V> {
+class DefiniteMap<K, V> {
+    private map: Map<K, V>
+    constructor() {
+        this.map = new Map()
+    }
     public get(key: K) {
-        const v = super.get(key)
+        const v = this.map.get(key)
         if (!v) {
             throw new Error(`ERROR: JSON is missing key "${key}". Should have already been added`)
         }
         return v
+    }
+    public set(k: K, v: V) {
+        this.map.set(k, v)
+    }
+    public values() {
+        return this.map.values()
     }
 }
 

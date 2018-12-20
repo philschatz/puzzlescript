@@ -1,11 +1,11 @@
 /* eslint-env jasmine */
-const fs = require('fs')
-const path = require('path')
-const { GameEngine } = require('../../lib/engine')
-const { default: Parser } = require('../../lib/parser/parser')
-const { RULE_DIRECTION } = require('../../lib/util')
-const { saveCoverageFile } = require('../../lib/recordCoverage')
-// const { default: TerminalUI } = require('../../lib/ui/terminal')
+import fs from 'fs'
+import path from 'path'
+import { GameEngine } from '../../src/engine'
+import Parser from '../../src/parser/parser'
+import { saveCoverageFile } from '../../src/recordCoverage'
+import { RULE_DIRECTION } from '../../src/util'
+// import TerminalUI from '../../src/ui/terminal'
 
 const CI_MAX_SOLUTION_LENGTH = 1000 // The length of 1 level of cyber-lasso
 const describeFn = process.env.SKIP_SOLUTIONS ? describe.skip : describe
@@ -13,24 +13,23 @@ const describeFn = process.env.SKIP_SOLUTIONS ? describe.skip : describe
 const SOLUTION_ROOT = path.join(__dirname, '../../gist-solutions/')
 const solutionFiles = fs.readdirSync(SOLUTION_ROOT)
 
-function parseEngine (code, levelNum = 0) {
-    const { data, error } = Parser.parse(code)
-    expect(error && error.message).toBeFalsy() // Use && so the error messages are shorter
+function parseEngine(code: string, levelNum = 0) {
+    const { data } = Parser.parse(code)
 
     const engine = new GameEngine(data)
     return { engine, data }
 }
 
-function createTests (moduloNumber, moduloTotal) {
-    if (process.env['SKIP_SOLUTIONS']) {
+export function createTests(moduloNumber: number, moduloTotal: number) {
+    if (process.env.SKIP_SOLUTIONS) {
         describe.skip('Skipping replay tests', () => {
             it.skip('skiping test')
         })
-        console.log('Skipping Replay tests')
+        console.log('Skipping Replay tests') // tslint:disable-line:no-console
         return
     }
 
-    if (process.env['CI'] === 'true' && (moduloNumber === 7 || moduloNumber === 8)) {
+    if (process.env.CI === 'true' && (moduloNumber === 7 || moduloNumber === 8)) {
         describe.skip(`Skipping replaySolutions/${moduloNumber}.test because it causes Travis to time out`, () => {
             it.skip('skipping tests')
         })
@@ -50,10 +49,10 @@ function createTests (moduloNumber, moduloTotal) {
 
             const GIST_ID = path.basename(solutionFilename).replace('.json', '')
 
-            it(`plays ${process.env.CI === 'true' ? '*a single level*' : '_the solved levels_'} of ${GIST_ID}`, async () => {
+            it(`plays ${process.env.CI === 'true' ? '*a single level*' : '_the solved levels_'} of ${GIST_ID}`, async() => {
                 const gistFilename = path.join(__dirname, `../../gists/${GIST_ID}/script.txt`)
                 const { engine, data } = parseEngine(fs.readFileSync(gistFilename, 'utf-8'))
-                let recordings = JSON.parse(fs.readFileSync(path.join(SOLUTION_ROOT, solutionFilename), 'utf-8')).solutions
+                const recordings = JSON.parse(fs.readFileSync(path.join(SOLUTION_ROOT, solutionFilename), 'utf-8')).solutions
 
                 let numPlayed = 0
                 let hasAtLeastOneSolution = 0
@@ -75,7 +74,8 @@ function createTests (moduloNumber, moduloTotal) {
                     hasAtLeastOneSolution++
 
                     if (process.env.CI === 'true' && recording.solution.length > CI_MAX_SOLUTION_LENGTH) {
-                        console.log(`CI-SKIP: Solution group: [${moduloNumber}/${moduloTotal}]. Level=${index}. Because the solution is too long: ${recording.solution.length} > ${CI_MAX_SOLUTION_LENGTH}. "${GIST_ID}"`)
+                        const msg = `CI-SKIP: Solution group: [${moduloNumber}/${moduloTotal}]. Level=${index}. Because the solution is too long: ${recording.solution.length} > ${CI_MAX_SOLUTION_LENGTH}. "${GIST_ID}"` // tslint:disable-line:max-line-length
+                        console.log(msg) // tslint:disable-line:no-console
                         continue
                     }
 
@@ -90,7 +90,7 @@ function createTests (moduloNumber, moduloTotal) {
                     // UI.setGame(engine)
 
                     const DID_NOT_WIN = 'DID_NOT_WIN'
-                    let wonAtKeyIndex = DID_NOT_WIN
+                    let wonAtKeyIndex: number | 'DID_NOT_WIN' = DID_NOT_WIN
                     const keypresses = recording.solution.split('')
 
                     // Do one tick in the beginning to make sure the sprites are all loaded up
@@ -98,16 +98,16 @@ function createTests (moduloNumber, moduloTotal) {
                     for (let i = 0; i < keypresses.length; i++) {
                         const key = keypresses[i]
                         switch (key) {
-                        case 'W': engine.press(RULE_DIRECTION.UP); break
-                        case 'S': engine.press(RULE_DIRECTION.DOWN); break
-                        case 'A': engine.press(RULE_DIRECTION.LEFT); break
-                        case 'D': engine.press(RULE_DIRECTION.RIGHT); break
-                        case 'X': engine.press(RULE_DIRECTION.ACTION); break
-                        case '.':
-                        case ',':
-                            break
-                        default:
-                            throw new Error(`ERROR: Unsupported character "${key}"`)
+                            case 'W': engine.press(RULE_DIRECTION.UP); break
+                            case 'S': engine.press(RULE_DIRECTION.DOWN); break
+                            case 'A': engine.press(RULE_DIRECTION.LEFT); break
+                            case 'D': engine.press(RULE_DIRECTION.RIGHT); break
+                            case 'X': engine.press(RULE_DIRECTION.ACTION); break
+                            case '.':
+                            case ',':
+                                break
+                            default:
+                                throw new Error(`ERROR: Unsupported character "${key}"`)
                         }
 
                         let didWin = false
@@ -151,5 +151,3 @@ function createTests (moduloNumber, moduloTotal) {
         })
     })
 }
-
-module.exports = { createTests }

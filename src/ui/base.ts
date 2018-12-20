@@ -329,6 +329,23 @@ abstract class BaseUI {
         this.drawCellsAfterRecentering(cells, renderScreenDepth)
     }
 
+    public /*for testing*/ getPixelsForCell(cell: Cell) {
+        if (!this.gameData) {
+            throw new Error(`BUG: gameData was not set yet`)
+        }
+        const spritesToDrawSet = cell.getSpritesAsSet() // Not sure why, but entanglement renders properly when reversed
+
+        // If there is a magic background object then rely on it last
+        const magicBackgroundSprite = this.gameData.getMagicBackgroundSprite()
+        if (magicBackgroundSprite) {
+            spritesToDrawSet.add(magicBackgroundSprite)
+        }
+
+        const pixels = this.cellColorCache.get(spritesToDrawSet,
+            this.gameData.metadata.backgroundColor, this.SPRITE_HEIGHT, this.SPRITE_WIDTH)
+        return pixels
+    }
+
     protected createMessageTextScreen(messageStr: string) {
         const titleImage = [
             '                                  ',
@@ -459,23 +476,6 @@ abstract class BaseUI {
     protected abstract getMaxSize(): {columns: number, rows: number}
 
     protected abstract drawCellsAfterRecentering(cells: Iterable<Cell>, renderScreenDepth: number): void
-
-    protected getPixelsForCell(cell: Cell) {
-        if (!this.gameData) {
-            throw new Error(`BUG: gameData was not set yet`)
-        }
-        const spritesToDrawSet = cell.getSpritesAsSet() // Not sure why, but entanglement renders properly when reversed
-
-        // If there is a magic background object then rely on it last
-        const magicBackgroundSprite = this.gameData.getMagicBackgroundSprite()
-        if (magicBackgroundSprite) {
-            spritesToDrawSet.add(magicBackgroundSprite)
-        }
-
-        const pixels = this.cellColorCache.get(spritesToDrawSet,
-            this.gameData.metadata.backgroundColor, this.SPRITE_HEIGHT, this.SPRITE_WIDTH)
-        return pixels
-    }
 
     protected clearScreen() {
         this.renderedPixels = []

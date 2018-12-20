@@ -5,6 +5,7 @@ declare module 'inquirer-autocomplete-prompt' {
 
     import {PromptModule} from 'inquirer'
 
-    export default PromptModule
+    const x: PromptModule
+    export = x;
 }
 

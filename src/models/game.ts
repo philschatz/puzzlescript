@@ -87,6 +87,20 @@ export class GameData {
     public _getTileByName(name: string) {
         return this.legends.find((tile) => tile.getName().toLowerCase() === name.toLowerCase())
     }
+    public getSpriteByName(name: string) {
+        const sprite = this._getSpriteByName(name)
+        if (!sprite) {
+            throw new Error(`BUG: Could not find sprite "${name}" but expected one to exist.`)
+        }
+        return sprite
+    }
+    public getTileByName(name: string) {
+        const tile = this._getTileByName(name)
+        if (!tile) {
+            throw new Error(`BUG: Could not find tile "${name}" but expected one to exist.`)
+        }
+        return tile
+    }
 
     public getMagicBackgroundSprite() {
         if (this.cachedBackgroundSprite) {
