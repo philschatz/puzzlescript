@@ -1,19 +1,14 @@
 /* eslint-env jasmine */
-const { LevelEngine } = require('../lib/engine')
-const { default: Parser } = require('../lib/parser/parser')
-const { RULE_DIRECTION } = require('../lib/util')
+import { LevelEngine } from './engine'
+import Parser from './parser/parser'
+import { RULE_DIRECTION } from './util'
 
-function parseEngine(code) {
-    const { data, error } = Parser.parse(code)
-    expect(error && error.message).toBeFalsy() // Use && so the error messages are shorter
+function parseEngine(code: string) {
+    const { data } = Parser.parse(code)
 
     const engine = new LevelEngine(data)
     engine.setLevel(0)
     return { engine, data }
-}
-
-function getSpriteByName(data, name) {
-    return data.objects.filter((sprite) => sprite._name === name)[0]
 }
 
 describe('engine', () => {
@@ -612,7 +607,7 @@ describe('engine', () => {
         (Make reflections)
 
         startloop
-        random [ Reflectable no DirectionCounter ] -> [ action Reflectable North left 00 ] (comment this and nothing works) (but move the 'no DirectionCounter' down to the next line and lines down work)
+        random [ Reflectable no DirectionCounter ] -> [ action Reflectable North left 00 ]
         + [ Reflectable North ] -> [ action Reflectable East right 00 ] (comment this and lines to the left work)
         + [ Reflectable East ] -> [ action Reflectable South up 00 ] (comment this out and lines to the right work)
         + [ Reflectable South ] -> [ action Reflectable West down 00 ] (comment this and lines up work)
@@ -684,9 +679,9 @@ describe('engine', () => {
 
     `) // end game definition
 
-        const player = data.getPlayer()
-        const playerReflection = data._getSpriteByName('Reflection')
-        const hasReflection = data._getSpriteByName('HasReflection')
+        const player = data.getPlayer().getSprites()[0]
+        const playerReflection = data.getSpriteByName('Reflection')
+        const hasReflection = data.getSpriteByName('HasReflection')
         engine.tick() // To get the reflections to render
         expect(playerReflection.getCellsThatMatch().size).toBe(4)
         expect(hasReflection.getCellsThatMatch().size).toBe(1)
@@ -698,23 +693,22 @@ describe('engine', () => {
 
         expect(player.getCellsThatMatch().size).toBe(4)
         // Player should now be in every corner of the level (because of the mirrors)
-        expect(engine.currentLevel.getCells()[0][0].getSpritesAsSet().has(player)).toBe(true)
-        expect(engine.currentLevel.getCells()[0][4].getSpritesAsSet().has(player)).toBe(true)
-        expect(engine.currentLevel.getCells()[4][0].getSpritesAsSet().has(player)).toBe(true)
-        expect(engine.currentLevel.getCells()[4][4].getSpritesAsSet().has(player)).toBe(true)
+        expect(engine.getCurrentLevel().getCells()[0][0].getSpritesAsSet().has(player)).toBe(true)
+        expect(engine.getCurrentLevel().getCells()[0][4].getSpritesAsSet().has(player)).toBe(true)
+        expect(engine.getCurrentLevel().getCells()[4][0].getSpritesAsSet().has(player)).toBe(true)
+        expect(engine.getCurrentLevel().getCells()[4][4].getSpritesAsSet().has(player)).toBe(true)
 
-        expect(engine.currentLevel.getCells()[0][0].getSpritesAsSet().has(hasReflection)).toBe(true)
-        expect(engine.currentLevel.getCells()[0][4].getSpritesAsSet().has(hasReflection)).toBe(true)
-        expect(engine.currentLevel.getCells()[4][0].getSpritesAsSet().has(hasReflection)).toBe(true)
-        expect(engine.currentLevel.getCells()[4][4].getSpritesAsSet().has(hasReflection)).toBe(true)
+        expect(engine.getCurrentLevel().getCells()[0][0].getSpritesAsSet().has(hasReflection)).toBe(true)
+        expect(engine.getCurrentLevel().getCells()[0][4].getSpritesAsSet().has(hasReflection)).toBe(true)
+        expect(engine.getCurrentLevel().getCells()[4][0].getSpritesAsSet().has(hasReflection)).toBe(true)
+        expect(engine.getCurrentLevel().getCells()[4][4].getSpritesAsSet().has(hasReflection)).toBe(true)
 
         // press action again to combing all the players back to one
         engine.press(RULE_DIRECTION.ACTION)
         engine.tick()
         expect(player.getCellsThatMatch().size).toBe(1)
 
-        expect(engine.currentLevel.getCells()[2][2].getSpritesAsSet().has(player)).toBe(true)
-
+        expect(engine.getCurrentLevel().getCells()[2][2].getSpritesAsSet().has(player)).toBe(true)
 
     })
 
@@ -771,14 +765,14 @@ describe('engine', () => {
 
     `) // end game definition
 
-        const randomTile = data._getSpriteByName('RandomTile')
+        const randomTile = data.getSpriteByName('RandomTile')
         engine.tick()
 
         expect(engine.toSnapshot()).toMatchSnapshot()
 
         expect(randomTile.getCellsThatMatch().size).toBe(1)
         // Player should now be in every corner of the level (because of the mirrors)
-        expect(engine.currentLevel.getCells()[0][0].getSpritesAsSet().has(randomTile)).toBe(true)
+        expect(engine.getCurrentLevel().getCells()[0][0].getSpritesAsSet().has(randomTile)).toBe(true)
 
     })
 
@@ -850,7 +844,7 @@ describe('engine', () => {
 
     `) // end game definition
 
-        const num = data._getTileByName('Number')
+        const num = data.getTileByName('Number')
         engine.tick()
         expect(engine.toSnapshot()).toMatchSnapshot()
 
@@ -934,7 +928,7 @@ describe('engine', () => {
 
     `) // end game definition
 
-        const num = data._getTileByName('Number')
+        const num = data.getTileByName('Number')
         engine.tick()
 
         expect(num.getCellsThatMatch().size).toBe(2)

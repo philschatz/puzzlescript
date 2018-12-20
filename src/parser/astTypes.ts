@@ -37,20 +37,6 @@ export enum TILE_MODIFIER {
     ARROW_ANY = 'ARROW_ANY'
 }
 
-// export enum RULE_MODIFIER {
-//     RANDOM = 'RANDOM',
-//     UP = 'UP',
-//     DOWN = 'DOWN',
-//     LEFT = 'LEFT',
-//     RIGHT = 'RIGHT',
-//     VERTICAL = 'VERTICAL',
-//     HORIZONTAL = 'HORIZONTAL',
-//     ORTHOGONAL = 'ORTHOGONAL',
-
-//     LATE = 'LATE',
-//     RIGID = 'RIGID',
-// }
-
 export enum SOUND_WHEN {
     RESTART = 'RESTART',
     UNDO = 'UNDO',
@@ -173,7 +159,7 @@ export type Debuggable = IASTNode & {
 export enum RULE_TYPE {
     GROUP = 'RULE_GROUP',
     LOOP = 'RULE_LOOP',
-    SIMPLE = 'SIMPLE'
+    SIMPLE = 'RULE_SIMPLE'
 }
 
 export type Rule<RuleGroupRef, SimpleRuleRef, BracketRef, CommandRef> = RuleGroup<SimpleRuleRef> | RuleLoop<RuleGroupRef> | SimpleRule<BracketRef, CommandRef>
@@ -201,8 +187,8 @@ export type SimpleRule<BracketRef, CommandRef> = Debuggable & {
 }
 
 export enum BRACKET_TYPE {
-    SIMPLE = 'BRACKET',
-    ELLIPSIS = 'ELLIPSIS_BRACKET'
+    SIMPLE = 'BRACKET_SIMPLE',
+    ELLIPSIS = 'BRACKET_ELLIPSIS'
 }
 export type Bracket<NeighborRef> = Debuggable & ({
     type: BRACKET_TYPE.SIMPLE

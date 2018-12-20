@@ -1,10 +1,10 @@
 /* eslint-env jasmine */
-const { default: Parser } = require('../lib/parser/parser')
-const { default: Serializer } = require('../lib/parser/serializer')
+import Parser from './parser'
+import Serializer from './serializer'
 
-function checkGrammar(code) {
+function checkGrammar(code: string) {
     // check that it does not throw an Error
-    const {data} = Parser.parse(code)
+    const { data } = Parser.parse(code)
     const json = new Serializer(data).toJson()
     expect(json).toMatchSnapshot()
     const game2 = Serializer.fromJson(json, code)
@@ -25,7 +25,6 @@ function checkGrammar(code) {
     // const json2 = new Serializer(game2).toJson()
     // expect(json2).toEqual(json)
 }
-
 
 describe('serializer', () => {
     it('parses an empty game', () => {

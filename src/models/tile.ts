@@ -47,6 +47,8 @@ export abstract class GameSprite extends BaseForLines implements IGameTile {
         this.trickleTiles = new Set()
         this.trickleTilesWithModifier = new Set()
         this.allSpritesBitSetIndex = -1 // will be changed once we have all the sprites
+        this.collisionLayer = null
+        this.bitSet = null
     }
     public isOr() {
         return false
@@ -247,6 +249,8 @@ export abstract class GameLegendTile extends BaseForLines implements IGameTile {
         this.tiles = tiles
         this.trickleCells = new Set()
         this.trickleTilesWithModifier = new Set()
+        this.collisionLayer = null
+        this.spritesCache = null
     }
     public equals(t: IGameTile) {
         if (this.isOr() !== t.isOr()) {

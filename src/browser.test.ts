@@ -1,15 +1,19 @@
 /** @jest-environment puppeteer */
 /* eslint-env jasmine */
-const fs = require('fs')
-const path = require('path')
-// const puppeteer = require('puppeteer')
-// const mapStackTrace = require('sourcemapped-stacktrace-node').default
+import fs from 'fs'
+import path from 'path'
+import puppeteer from 'puppeteer' // tslint:disable-line:no-implicit-dependencies
+// import mapStackTrace from 'sourcemapped-stacktrace-node')
 
-async function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms))
+// Defined via jest-puppeteer environment
+declare var page: puppeteer.Page
+declare var browser: puppeteer.Browser
+
+async function sleep(ms: number) {
+    return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
-async function pressKeys(page, keys) {
+async function pressKeys(keys: string[]) {
     for (const key of keys) {
         if (key === ',') { continue }
         await page.waitFor(`table[data-ps-accepting-input='true']`)
@@ -26,13 +30,12 @@ async function pressKeys(page, keys) {
     }
 }
 
-
 async function startBrowser() {
-    const url = `http://localhost:8000/test/browser/html-table.xhtml`
+    const url = `http://localhost:8000/src/browser/html-table.xhtml`
 
     // jest-puppeteer will expose the `page` and `browser` globals to Jest tests.
     if (!browser || !page) {
-        throw new Error('Browser has not been started! Did you remember to specify `@jest-environment puppeteer`?');
+        throw new Error('Browser has not been started! Did you remember to specify `@jest-environment puppeteer`?')
     }
 
     // redirect browser console messages to the terminal
@@ -40,8 +43,28 @@ async function startBrowser() {
         const type = consoleMessage.type()
         const text = consoleMessage.text()
 
-        const fn = console[type] || console.log
-        fn.apply(console, [text])
+        switch (type) {
+            case 'log': console.log(text); break // tslint:disable-line:no-console
+            case 'debug': console.debug(text); break // tslint:disable-line:no-console
+            case 'info': console.info(text); break // tslint:disable-line:no-console
+            case 'error': console.error(text); break // tslint:disable-line:no-console
+            case 'dir': console.dir(text); break // tslint:disable-line:no-console
+            case 'dirxml': console.dirxml(text); break // tslint:disable-line:no-console
+            case 'table': console.table(text); break // tslint:disable-line:no-console
+            case 'trace': console.trace(text); break // tslint:disable-line:no-console
+            case 'assert': console.assert(text); break // tslint:disable-line:no-console
+            case 'profile': console.profile(text); break // tslint:disable-line:no-console
+            case 'profileEnd': console.profileEnd(text); break // tslint:disable-line:no-console
+            case 'count': console.count(text); break // tslint:disable-line:no-console
+            case 'timeEnd': console.timeEnd(text); break // tslint:disable-line:no-console
+
+            case 'clear': console.clear(); break // tslint:disable-line:no-console
+            case 'warning': console.warn(text); break // tslint:disable-line:no-console
+            case 'startGroup':
+            case 'startGroupCollapsed':
+            case 'endGroup':
+                console.info(type, text); break // tslint:disable-line:no-console
+        }
     })
 
     // page.on('pageerror', async e => {
@@ -51,12 +74,12 @@ async function startBrowser() {
 
     await page.goto(url)
 
-    return {page, browser}
+    return { page, browser }
 }
 
-async function evaluateWithStackTrace(page, fn, args) {
+async function evaluateWithStackTrace(fn: puppeteer.EvaluateFn, ...args: any[]) {
     // try {
-        return await page.evaluate(fn, args)
+    return page.evaluate(fn, ...args)
     // } catch (e) {
     //     const stack = e.stack
     //     const message = stack.split('\n')[0]
@@ -69,7 +92,7 @@ async function evaluateWithStackTrace(page, fn, args) {
 
 describe('Browser', () => {
 
-    it('plays a game in the browser', async () => {
+    it('plays a game in the browser', async() => {
         // browser tests are slow. Headless is slower it seems (from jest watch mode)
         jest.setTimeout(process.env.NODE_ENV === 'development' ? 90 * 1000 : 90 * 1000)
 
@@ -77,12 +100,23 @@ describe('Browser', () => {
         const source = fs.readFileSync(path.join(__dirname, '../gists/_pot-wash-panic_itch/script.txt'), 'utf-8')
         const startLevel = 3
 
-        await sleep(500) // wait long enough for the JS to load maybe?
-        await evaluateWithStackTrace(page, ({source, startLevel}) => {
-            window.HackTableStart(source, startLevel)
-        }, {source, startLevel})
+        // This variable is _actually_ defined in the JS file, not here but it is in the body of page.evaluate
+        const HackTableStart = (sourceBrowser: string, startLevelBrowser: number) => 'actually implemented in the browser'
 
-        return new Promise( async (resolve) => {
+        await sleep(500) // wait long enough for the JS to load maybe?
+        await evaluateWithStackTrace(({ source, startLevel }) => { // tslint:disable-line:no-shadowed-variable
+            if (HackTableStart) {
+                if (source && typeof startLevel === 'number') {
+                    HackTableStart(source, startLevel)
+                } else {
+                    throw new Error(`BUG: Source was not a string or startLevel was not a number`)
+                }
+            } else {
+                throw new Error(`BUG: The browser JS does not have HackTableStart defined`)
+            }
+        }, { source, startLevel })
+
+        return new Promise(async(resolve) => {
             // const dialogHandler = async dialog => {
             //     expect(dialog.message()).toBe('I want to see my face in them! Level 3/14')
             //     await dialog.dismiss()
@@ -96,7 +130,7 @@ describe('Browser', () => {
             //     await dialog.dismiss()
             //     resolve()
             // })
-            await pressKeys(page, 'SAAASASDDDWDDDDWDDSAAASASAW'.split(''))
+            await pressKeys('SAAASASDDDWDDDDWDDSAAASASAW'.split(''))
             // await jestPuppeteer.debug()
             resolve()
         })

@@ -1,8 +1,13 @@
-import * as keymaster from 'keymaster'
-import { BaseUI, Cell, closeSounds, GameData, GameEngine, ILoadingCellsEvent, Optional, Parser, playSound, RULE_DIRECTION } from '.'
+import keymaster from 'keymaster'
+import { Cell, GameEngine, ILoadingCellsEvent } from './engine'
+import { GameData } from './models/game'
 import { IGameTile } from './models/tile'
 import { SoundItem } from './parser/astTypes'
+import Parser from './parser/parser'
+import { closeSounds, playSound } from './sounds'
+import BaseUI from './ui/base'
 import TableUI from './ui/table'
+import { Optional, RULE_DIRECTION } from './util'
 
 // Public API
 export {

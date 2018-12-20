@@ -293,6 +293,7 @@ export class Level {
     constructor() {
         this.rowCache = []
         this.colCache = []
+        this.cells = null
     }
     public setCells(cells: Cell[][]) {
         this.cells = cells
@@ -374,6 +375,9 @@ export class LevelEngine extends EventEmitter2 {
         this.gameData = gameData
         this.hasAgainThatNeedsToRun = false
         this.undoStack = []
+        this.pendingPlayerWantsToMove = null
+        this.currentLevel = null
+        this.tempOldLevel = null
     }
 
     public setLevel(levelNum: number) {
@@ -526,6 +530,65 @@ export class LevelEngine extends EventEmitter2 {
         }
     }
 
+    public /*for testing*/ tickUpdateCells() {
+        logger.debug(() => `applying rules`)
+        return this._tickUpdateCells(this.gameData.rules.filter((r) => !r.isLate()))
+    }
+
+    public /*only for unit tests*/ tickMoveSprites(changedCells: Set<Cell>) {
+        const movedCells: Set<Cell> = new Set()
+        // Loop over all the cells, see if a Rule matches, apply the transition, and notify that cells changed
+        let somethingChanged
+        do {
+            somethingChanged = false
+            for (const cell of changedCells) {
+                for (const [sprite, wantsToMove] of cell.getSpriteAndWantsToMoves()) {
+
+                    switch (wantsToMove) {
+                        case RULE_DIRECTION.STATIONARY:
+                            // nothing to do
+                            break
+                        case RULE_DIRECTION.ACTION:
+                            // just clear the wantsToMove flag
+                            somethingChanged = true
+                            cell.clearWantsToMove(sprite)
+                            break
+                        case RULE_DIRECTION.UP:
+                        case RULE_DIRECTION.DOWN:
+                        case RULE_DIRECTION.LEFT:
+                        case RULE_DIRECTION.RIGHT:
+                            const neighbor = cell.getNeighbor(wantsToMove)
+                            // Make sure
+                            if (neighbor && !neighbor.hasCollisionWithSprite(sprite)) {
+                                cell.removeSprite(sprite)
+                                neighbor.addSprite(sprite, RULE_DIRECTION.STATIONARY)
+                                movedCells.add(neighbor)
+                                movedCells.add(cell)
+                                somethingChanged = true
+                                // Don't delete until we are sure none of the sprites want to move
+                                // changedCells.delete(cell)
+                            } else {
+                                // Clear the wantsToMove flag LATER if we hit a wall (a sprite in the same collisionLayer) or are at the end of the map
+                                // We do this later because we are looping as long as something changed
+                                // cell.clearWantsToMove(sprite)
+                            }
+                            break
+                        default:
+                            throw new Error(`BUG: wantsToMove should have been handled earlier: ${wantsToMove}`)
+                    }
+                }
+            }
+        } while (somethingChanged)
+
+        // Clear the wantsToMove from all remaining cells
+        for (const cell of changedCells) {
+            for (const [sprite] of cell.getSpriteAndWantsToMoves()) {
+                cell.clearWantsToMove(sprite)
+            }
+        }
+        return movedCells
+    }
+
     private _setLevel(levelSprites: Array<Array<Set<GameSprite>>>) {
         const level = new Level()
         this.currentLevel = level
@@ -595,11 +658,6 @@ export class LevelEngine extends EventEmitter2 {
         return _flatten(this.getCurrentLevel().getCells())
     }
 
-    private tickUpdateCells() {
-        logger.debug(() => `applying rules`)
-        return this._tickUpdateCells(this.gameData.rules.filter((r) => !r.isLate()))
-    }
-
     private tickUpdateCellsLate() {
         logger.debug(() => `applying late rules`)
         return this._tickUpdateCells(this.gameData.rules.filter((r) => r.isLate()))
@@ -650,60 +708,6 @@ export class LevelEngine extends EventEmitter2 {
             // }
         }
         return { evaluatedRules, changedCells, commands/*, didSomeSpriteChange: didSomeSpriteChange*/ }
-    }
-
-    private tickMoveSprites(changedCells: Set<Cell>) {
-        const movedCells: Set<Cell> = new Set()
-        // Loop over all the cells, see if a Rule matches, apply the transition, and notify that cells changed
-        let somethingChanged
-        do {
-            somethingChanged = false
-            for (const cell of changedCells) {
-                for (const [sprite, wantsToMove] of cell.getSpriteAndWantsToMoves()) {
-
-                    switch (wantsToMove) {
-                        case RULE_DIRECTION.STATIONARY:
-                            // nothing to do
-                            break
-                        case RULE_DIRECTION.ACTION:
-                            // just clear the wantsToMove flag
-                            somethingChanged = true
-                            cell.clearWantsToMove(sprite)
-                            break
-                        case RULE_DIRECTION.UP:
-                        case RULE_DIRECTION.DOWN:
-                        case RULE_DIRECTION.LEFT:
-                        case RULE_DIRECTION.RIGHT:
-                            const neighbor = cell.getNeighbor(wantsToMove)
-                            // Make sure
-                            if (neighbor && !neighbor.hasCollisionWithSprite(sprite)) {
-                                cell.removeSprite(sprite)
-                                neighbor.addSprite(sprite, RULE_DIRECTION.STATIONARY)
-                                movedCells.add(neighbor)
-                                movedCells.add(cell)
-                                somethingChanged = true
-                                // Don't delete until we are sure none of the sprites want to move
-                                // changedCells.delete(cell)
-                            } else {
-                                // Clear the wantsToMove flag LATER if we hit a wall (a sprite in the same collisionLayer) or are at the end of the map
-                                // We do this later because we are looping as long as something changed
-                                // cell.clearWantsToMove(sprite)
-                            }
-                            break
-                        default:
-                            throw new Error(`BUG: wantsToMove should have been handled earlier: ${wantsToMove}`)
-                    }
-                }
-            }
-        } while (somethingChanged)
-
-        // Clear the wantsToMove from all remaining cells
-        for (const cell of changedCells) {
-            for (const [sprite] of cell.getSpriteAndWantsToMoves()) {
-                cell.clearWantsToMove(sprite)
-            }
-        }
-        return movedCells
     }
 
     private tickNormal() {

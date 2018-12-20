@@ -1,20 +1,21 @@
 /* eslint-env jasmine */
-const { default: Parser } = require('../lib/parser/parser')
-const { lookupColorPalette } = require('../lib/colors')
+import { lookupColorPalette } from '../colors'
+import { SimpleRuleGroup } from '../models/rule'
+import Parser from './parser'
 
-function checkGrammar(code) {
+function checkGrammar(code: string) {
     // check that it does not throw an Error
     const ast = Parser.parseToAST(code)
     expect(ast).toMatchSnapshot()
 }
 
-function checkParse(code) {
+function checkParse(code: string) {
     return Parser.parse(code)
 }
 
-function checkParseRule(code, varNames) {
+function checkParseRule(code: string, varNames: string[]) {
     // Now check if the semantics parsed
-    const legendItems = varNames.map(varName => {
+    const legendItems = varNames.map((varName) => {
         return `${varName} = testObject`
     })
     return checkParse(`
@@ -47,7 +48,7 @@ ${code}
 `)
 }
 
-function parseRule(code, varNames) {
+function parseRule(code: string, varNames: string[]) {
     // Add a header
     checkGrammar(`
 title checkGrammar
@@ -198,7 +199,7 @@ OBJECTS
 player
 yellow
 `)
-            expect(data1.objects[0].color.toHex().toLowerCase()).toBe(lookupColorPalette('gameboycolour', 'yellow').toLowerCase())
+            expect(data1.objects[0].getPixels(1, 1)[0][0].toHex().toLowerCase()).toBe(lookupColorPalette('gameboycolour', 'yellow').toLowerCase())
 
             const { data: data2 } = checkParse(`
 title foo
@@ -210,7 +211,7 @@ OBJECTS
 player
 yellow
 `)
-            expect(data2.objects[0].color.toHex().toLowerCase()).toBe(lookupColorPalette('gameboycolour', 'yellow').toLowerCase())
+            expect(data2.objects[0].getPixels(1, 1)[0][0].toHex().toLowerCase()).toBe(lookupColorPalette('gameboycolour', 'yellow').toLowerCase())
         })
 
         it('Supports characters that would be invalid in one scope but are valid in another scope', () => {
@@ -358,7 +359,8 @@ yellow
     `)
 
         // just make sure it doesn't throw an exception
-        expect(data._getSpriteByName('player').getCollisionLayer().id).toBeGreaterThan(0)
+        const player = data._getSpriteByName('player')
+        expect(player && player.getCollisionLayer().id).toBeGreaterThan(0)
     })
 
     it('Denotes if a rule is late, rigid, or again', () => {
@@ -391,7 +393,7 @@ yellow
     [ Player ] -> [ Player again] (from "Rose")
     `)
 
-        function expector(rule, late, rigid) {
+        function expector(rule: SimpleRuleGroup, late: boolean, rigid: boolean) {
             expect(rule.getChildRules()[0].isLate()).toBe(late)
             expect(rule.hasRigid()).toBe(rigid)
         }
@@ -405,19 +407,19 @@ yellow
 
     describe('RANDOM keyword propagation', () => {
         it('marks a rule as being RANDOM', () => {
-            const {data} = parseRule('RANDOM [.] -> []', ['.'])
+            const { data } = parseRule('RANDOM [.] -> []', ['.'])
             expect(data.rules[0].isRandom).toBe(true)
         })
 
         it('marks a rule Group as being RANDOM', () => {
-            const {data} = parseRule(`
+            const { data } = parseRule(`
 RANDOM [.] -> []
 + [Player] -> []`, ['.', 'Player'])
             expect(data.rules[0].isRandom).toBe(true)
         })
 
         it('does not mark a rule Loop as being RANDOM', () => {
-            const {data} = parseRule(`
+            const { data } = parseRule(`
 STARTLOOP
 RANDOM [.] -> []
 + [Player] -> []
@@ -427,7 +429,7 @@ ENDLOOP
         })
 
         it('properly groups loops and groups', () => {
-            const {data} = parseRule(`
+            const { data } = parseRule(`
 RIGHT [ ] -> [ ]
 STARTLOOP
 (1st rulegroup)
@@ -447,14 +449,13 @@ RIGHT [ ] -> [ ]
     `, ['.', 'Player'])
             expect(data.rules.length).toBe(3)
             // startloop
-            expect(data.rules[1].rules.length).toBe(3)
+            expect(data.rules[1].getChildRules().length).toBe(3)
             // 1st rulegroup
-            expect(data.rules[1].rules[0].rules.length).toBe(4)
+            expect(data.rules[1].getChildRules()[0].getChildRules().length).toBe(4)
             // 2nd rulegroup
-            expect(data.rules[1].rules[1].rules.length).toBe(2)
+            expect(data.rules[1].getChildRules()[1].getChildRules().length).toBe(2)
 
         })
-
 
     })
 

@@ -1,5 +1,5 @@
-import * as ansiEscapes from 'ansi-escapes'
-import * as ansiStyles from 'ansi-styles'
+import ansiEscapes from 'ansi-escapes'
+import ansiStyles from 'ansi-styles'
 import chalk from 'chalk'
 import * as supportsColor from 'supports-color'
 
@@ -490,7 +490,7 @@ class TerminalUI extends BaseUI {
                 const x = cellStartX + spriteColIndex
                 const y = cellStartY + spriteRowIndex
 
-                let color: Optional<IColor>
+                let color: Optional<IColor> = null
 
                 if (spriteColor) {
                     if (!spriteColor.isTransparent()) {

@@ -254,7 +254,7 @@ class TableUI extends BaseUI {
                 const x = cellStartX + spriteColIndex
                 const y = cellStartY + spriteRowIndex
 
-                let color: Optional<IColor>
+                let color: Optional<IColor> = null
 
                 if (spriteColor) {
                     if (!spriteColor.isTransparent()) {

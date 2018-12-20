@@ -3,7 +3,6 @@
     "lint": "npm run-script lint:js && npm run-script lint:ts",
     "lint:js": "standardx --fix ./test/**/*.js",
     "lint:ts": "tslint --fix --config ./tslint.json --project ./ --format stylish",
-    "compile": "npm run-script compile:grammar && npm run-script compile:ts && npm run-script build",
     "compile:grammar": "nearleyc --minify-rule-names ./src/parser/grammar.ne > ./src/parser/grammar.ts",
     "compile:ts": "tsc && cp ./src/sound/sfxr.js ./lib/sound/ && cp ./src/sound/sfxr-browser.js ./lib/sound/",
     "ci": "npm run-script test",
@@ -19,11 +18,11 @@
     "demo:coverage": "LOG_LEVEL=debug NODE_ENV=development istanbul cover -x '**/node_modules/**' ./bin/puzzlescript-demo.js 2> ./start.log",
     "demo:debug": "LOG_LEVEL=debug NODE_ENV=development node --inspect-brk ./bin/puzzlescript-demo.js 2> ./start.log",
     "demo:debug-cli": "LOG_LEVEL=debug NODE_ENV=development node inspect ./bin/puzzlescript-demo.js 2> ./start.log",
-    "coverage": "remap-istanbul --exclude 'sfxr.js,helper.js' --input ./coverage/coverage-final.json --output ./coverage/coverage-final.json && istanbul report --root ./coverage/ lcov",
-    "pretest": "npm run-script compile && node ./script/doBatchStuff.js",
+    "coverage": "istanbul report --root ./coverage/ lcov",
+    "pretest": "npm run-script compile:grammar && npm run-script build && node ./script/doBatchStuff.js",
     "test": "npm run-script test:unit",
     "test:unit": "VERIFY_MATCHES=true NODE_ENV=development jest --coverage --updateSnapshot --verbose --detectLeaks --detectOpenHandles",
-    "posttest": "npm run-script test:cli && npm run-script coverage && npm run-script lint",
+    "posttest": "npm run-script compile:ts && npm run-script test:cli && npm run-script coverage && npm run-script lint",
     "test:debug": "NODE_ENV=development node --inspect-brk -r source-map-support/register $(npm bin)/jest -i --updateSnapshot --detectLeaks --detectOpenHandles",
     "test:cli": "./bin/puzzlescript.js --no-ui --game 'Beam Islands' --level 1 --size small --resume",
     "test:server": "serve --listen 8000 .",
@@ -38,6 +37,7 @@
     "puzzlescript-demo": "./bin/puzzlescript-demo.js"
   },
   "dependencies": {
+    "@types/jest": "^23.3.10",
     "ansi-escapes": "^3.1.0",
     "ansi-styles": "^3.2.1",
     "bitset": "^5.0.4",
@@ -57,10 +57,12 @@
     "standardx": "^3.0.1",
     "supports-color": "^5.5.0",
     "update-notifier": "^2.5.0",
-    "weak": "^1.0.1",
     "web-audio-api": "^0.2.2"
   },
   "devDependencies": {
+    "@babel/core": "^7.0.0-0",
+    "@babel/preset-env": "^7.2.0",
+    "@babel/preset-typescript": "^7.1.0",
     "@types/ansi-escapes": "^3.0.0",
     "@types/ansi-styles": "^3.2.1",
     "@types/glob": "^7.1.1",
@@ -68,30 +70,33 @@
     "@types/keymaster": "^1.6.28",
     "@types/nearley": "^2.11.0",
     "@types/pify": "^3.0.2",
+    "@types/puppeteer": "^1.11.1",
     "@types/quick-lru": "^1.1.0",
     "@types/supports-color": "^5.3.0",
-    "awesome-typescript-loader": "^5.2.1",
+    "babel-core": "7.0.0-bridge.0",
+    "babel-jest": "^23.6.0",
+    "babel-loader": "^8.0.4",
+    "babel-polyfill": "^6.26.0",
     "codecov": "^3.1.0",
-    "hard-source-webpack-plugin": "^0.13.1",
-    "http-server": "^0.11.1",
     "istanbul": "^0.4.5",
     "jest": "^23.6.0",
+    "jest-pnp-resolver": "^1.0.2",
     "jest-puppeteer": "^3.7.0",
+    "jest-resolve": "^23.6.0",
     "mkdirp": "^0.5.1",
     "node-fetch": "^2.3.0",
     "process-nextick-args": "^2.0.0",
-    "puppeteer": "^1.10.0",
-    "remap-istanbul": "^0.12.0",
+    "puppeteer": "^1.11.0",
     "serve": "^10.1.1",
-    "source-map-loader": "^0.2.4",
     "source-map-support": "^0.5.9",
     "sourcemapped-stacktrace-node": "github:philschatz/sourcemapped-stacktrace-node#2a76787b5f9356b3798788942947e05a5bc8ecc2",
-    "ts-jest": "^23.10.5",
     "tslint": "^5.11.0",
     "tslint-config-prettier": "^1.17.0",
     "tslint-config-standard": "^8.0.1",
     "typedoc": "^0.13.0",
     "typescript": "^3.2.2",
+    "util-deprecate": "^1.0.2",
+    "weak": "^1.0.1",
     "webpack": "^4.27.1",
     "webpack-cli": "^3.1.2"
   },
@@ -106,16 +111,19 @@
       "js",
       "json"
     ],
+    "resolver": "jest-pnp-resolver",
     "transform": {
-      "^.+\\.(ts|tsx)$": "ts-jest"
+      "^.+\\.(js|jsx|ts|tsx)$": "<rootDir>/node_modules/babel-jest"
     },
-    "globals": {
-      "ts-jest": {
-        "tsConfigFile": "tsconfig.json"
-      }
-    },
-    "testMatch": [
-      "**/test/**/*.test.+(ts|tsx|js)"
+    "transformIgnorePatterns": [
+      "[/\\\\]node_modules[/\\\\].+\\.(js|jsx|ts|tsx)$"
+    ],
+    "testRegex": "(\\.|/)?test\\.tsx?$"
+  },
+  "babel": {
+    "presets": [
+      "@babel/preset-env",
+      "@babel/preset-typescript"
     ]
   },
   "standard": {
@@ -126,7 +134,7 @@
   },
   "name": "puzzlescript",
   "description": "Play PuzzleScript games in your terminal!",
-  "version": "3.2.1",
+  "version": "3.2.2",
   "main": "lib/index.js",
   "directories": {
     "lib": "lib",
@@ -145,6 +153,12 @@
   "engines": {
     "node": ">=4.0.0"
   },
+  "browserslist": [
+    "> .2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ],
   "author": "Philip Schatz",
   "license": "MIT",
   "bugs": {

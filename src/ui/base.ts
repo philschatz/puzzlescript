@@ -1,10 +1,10 @@
-import { Cell, GameData, GameEngine, Optional } from '..'
-import { RULE_DIRECTION } from '../index'
+import { Cell, GameEngine } from '../engine'
 import { IColor } from '../models/colors'
+import { GameData } from '../models/game'
 import { GameSprite } from '../models/tile'
 import { LEVEL_TYPE } from '../parser/astTypes'
 import Parser from '../parser/parser'
-import { _flatten } from '../util'
+import { _flatten, Optional, RULE_DIRECTION } from '../util'
 
 class CellColorCache {
     private readonly cache: Map<string, IColor[][]>
@@ -114,6 +114,11 @@ abstract class BaseUI {
 
         this.hasVisualUi = true
         this.lastTick = 0
+
+        this.gameData = null
+        this.engine = null
+        this.windowOffsetWidth = null
+        this.windowOffsetHeight = null
     }
 
     public destroy() {
@@ -325,6 +330,23 @@ abstract class BaseUI {
         this.drawCellsAfterRecentering(cells, renderScreenDepth)
     }
 
+    public /*for testing*/ getPixelsForCell(cell: Cell) {
+        if (!this.gameData) {
+            throw new Error(`BUG: gameData was not set yet`)
+        }
+        const spritesToDrawSet = cell.getSpritesAsSet() // Not sure why, but entanglement renders properly when reversed
+
+        // If there is a magic background object then rely on it last
+        const magicBackgroundSprite = this.gameData.getMagicBackgroundSprite()
+        if (magicBackgroundSprite) {
+            spritesToDrawSet.add(magicBackgroundSprite)
+        }
+
+        const pixels = this.cellColorCache.get(spritesToDrawSet,
+            this.gameData.metadata.backgroundColor, this.SPRITE_HEIGHT, this.SPRITE_WIDTH)
+        return pixels
+    }
+
     protected createMessageTextScreen(messageStr: string) {
         const titleImage = [
             '                                  ',
@@ -455,23 +477,6 @@ abstract class BaseUI {
     protected abstract getMaxSize(): {columns: number, rows: number}
 
     protected abstract drawCellsAfterRecentering(cells: Iterable<Cell>, renderScreenDepth: number): void
-
-    protected getPixelsForCell(cell: Cell) {
-        if (!this.gameData) {
-            throw new Error(`BUG: gameData was not set yet`)
-        }
-        const spritesToDrawSet = cell.getSpritesAsSet() // Not sure why, but entanglement renders properly when reversed
-
-        // If there is a magic background object then rely on it last
-        const magicBackgroundSprite = this.gameData.getMagicBackgroundSprite()
-        if (magicBackgroundSprite) {
-            spritesToDrawSet.add(magicBackgroundSprite)
-        }
-
-        const pixels = this.cellColorCache.get(spritesToDrawSet,
-            this.gameData.metadata.backgroundColor, this.SPRITE_HEIGHT, this.SPRITE_WIDTH)
-        return pixels
-    }
 
     protected clearScreen() {
         this.renderedPixels = []
