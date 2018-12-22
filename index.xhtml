@@ -3,8 +3,9 @@
 <head>
     <title>Example Puzzlescript Games using HTML Tables</title>
     <script src="./lib/webpack-output.js"></script>
-    <link rel="stylesheet" href="./test/browser/html-table.css"/>
+    <link rel="stylesheet" href="./src/browser/html-table.css"/>
     <style>
+        .hidden { display: none; }
         .light { opacity: .5 }
         kbd {
             font: 11px "SFMono-Regular",Consolas,"Liberation Mono",Menlo,Courier,monospace;
@@ -87,6 +88,10 @@
     <table id="thegamecanbeidentifiedbyselector">
     </table>
 
+    <p id="gamepad-unknown">Maybe checking to see if gamepad is connected</p>
+    <p id="gamepad-disabled" class="hidden">Try connecting with a gamepad controller (XBOX/PS3/PS4/etc) to play games with it</p>
+    <p id="gamepad-enabled" class="hidden">Gamepad is detected</p>
+
     <p><a href="https://github.com/philschatz/puzzlescript">Source On GitHub</a></p>
 
     <script type="text/javascript">//<![CDATA[
@@ -157,6 +162,22 @@
         }
         enableCss.addEventListener('change', setUi)
         setUi()
+
+        // Show/hide the "Add controller" message if a Gamepad is attached
+        const gamepadUnknown = document.querySelector('#gamepad-unknown')
+        const gamepadDisabled = document.querySelector('#gamepad-disabled')
+        const gamepadEnabled = document.querySelector('#gamepad-enabled')
+        setInterval(() => {
+            if (tableEngine.gamepad.isConnected()) {
+                gamepadUnknown.classList.add('hidden')
+                gamepadDisabled.classList.add('hidden')
+                gamepadEnabled.classList.remove('hidden')
+            } else {
+                gamepadUnknown.classList.add('hidden')
+                gamepadDisabled.classList.remove('hidden')
+                gamepadEnabled.classList.add('hidden')
+            }
+        }, 200)
 
     // ]]></script>
 </body>
