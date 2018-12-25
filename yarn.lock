@@ -711,10 +711,10 @@
   dependencies:
     "@types/node" "*"
 
-"@types/quick-lru@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@types/quick-lru/-/quick-lru-1.1.0.tgz#685289273f68966c1ae5dd5a7d4e6e08defbf72d"
-  integrity sha512-jGqlc1ctHmZzpuauplsWz+H3n2JRB49U7c5Pjhjw4zcE3q1yow30vQTe7rzb5rU6ciq3k1z8B0g167SvuyCDFQ==
+"@types/quick-lru@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@types/quick-lru/-/quick-lru-2.0.0.tgz#04b3a558d45533ceef1be33950b7ed7e1202cd2f"
+  integrity sha512-bQLWvCkzO4OFPUFAQH5Ql0K8Q+9XH0uGbsODUXQlv9PfT+1hMVB++XZpiLDTKad35hu0KB2e9sYop/jVnkosVg==
 
 "@types/rx-core-binding@*":
   version "4.0.4"
