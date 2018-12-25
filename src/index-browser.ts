@@ -129,7 +129,6 @@ export class TableEngine {
     }
 
     public start() {
-        // this.startKeyboardListener()
         this.startTickHandler()
     }
 
@@ -144,38 +143,42 @@ export class TableEngine {
     public startTickHandler() {
         const runLoop = async() => {
             this.pollControls()
-            while (this.tableUI.isCurrentLevelAMessage()) {
-                await this.eventHandler.onMessage(this.tableUI.getCurrentLevelMessage())
-                this.currentLevel++
-                this.tableUI.setLevel(this.currentLevel)
-            }
-            const {
-                // changedCells,
-                didLevelChange,
-                didWinGame,
-                messageToShow,
-                soundToPlay
-                // wasAgainTick
-            } = this.tableUI.tick()
-
-            if (soundToPlay) {
-                await this.eventHandler.onSound(soundToPlay)
-            }
-            if (didWinGame) {
-                await this.eventHandler.onWin()
-                cancelAnimationFrame(this.timer)
-                return // make sure we don't call window.requestAnimationFrame again
-            } else if (didLevelChange) {
-                this.currentLevel += 1
-                this.tableUI.setLevel(this.currentLevel)
-                await this.eventHandler.onLevelComplete(this.currentLevel)
-            } else if (messageToShow) {
-                await this.eventHandler.onMessage(messageToShow)
-                this.tableUI.pressAction() // Tell the engine we are ready to continue
-            }
+            await this.tick()
             this.timer = window.requestAnimationFrame(runLoop)
         }
 
         this.timer = window.requestAnimationFrame(runLoop)
+    }
+
+    public async tick() {
+        while (this.tableUI.isCurrentLevelAMessage()) {
+            await this.eventHandler.onMessage(this.tableUI.getCurrentLevelMessage())
+            this.currentLevel++
+            this.tableUI.setLevel(this.currentLevel)
+        }
+        const {
+            // changedCells,
+            didLevelChange,
+            didWinGame,
+            messageToShow,
+            soundToPlay
+            // wasAgainTick
+        } = this.tableUI.tick()
+
+        if (soundToPlay) {
+            await this.eventHandler.onSound(soundToPlay)
+        }
+        if (didWinGame) {
+            await this.eventHandler.onWin()
+            cancelAnimationFrame(this.timer)
+            return // make sure we don't call window.requestAnimationFrame again
+        } else if (didLevelChange) {
+            this.currentLevel += 1
+            this.tableUI.setLevel(this.currentLevel)
+            await this.eventHandler.onLevelComplete(this.currentLevel)
+        } else if (messageToShow) {
+            await this.eventHandler.onMessage(messageToShow)
+            this.tableUI.pressAction() // Tell the engine we are ready to continue
+        }
     }
 }

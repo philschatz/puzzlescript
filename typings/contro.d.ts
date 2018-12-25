@@ -25,7 +25,6 @@ declare module 'contro' {
     new (): Gamepad
     isConnected(): boolean
 
-    // getType(): GAMEPAD_TYPE
     hasButton(t: BUTTON_TYPE): boolean
   
     button(button: BUTTON_TYPE): Button
