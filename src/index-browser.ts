@@ -140,15 +140,6 @@ export class TableEngine {
         this.controlCheckers.forEach((fn) => fn())
     }
 
-    private isSomethingPressed() {
-        for (const entry of Object.values(this.controls)) {
-            if (entry.button.query()) {
-                return true
-            }
-        }
-        return false
-    }
-
     public startTickHandler() {
         const runLoop = async() => {
             this.pollControls()
@@ -196,5 +187,14 @@ export class TableEngine {
             await this.eventHandler.onMessage(messageToShow)
             this.tableUI.pressAction() // Tell the engine we are ready to continue
         }
+    }
+
+    private isSomethingPressed() {
+        for (const entry of Object.values(this.controls)) {
+            if (entry.button.query()) {
+                return true
+            }
+        }
+        return false
     }
 }
