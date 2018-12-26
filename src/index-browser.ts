@@ -140,6 +140,15 @@ export class TableEngine {
         this.controlCheckers.forEach((fn) => fn())
     }
 
+    private isSomethingPressed() {
+        for (const entry of Object.values(this.controls)) {
+            if (entry.button.query()) {
+                return true
+            }
+        }
+        return false
+    }
+
     public startTickHandler() {
         const runLoop = async() => {
             this.pollControls()
@@ -151,10 +160,17 @@ export class TableEngine {
     }
 
     public async tick() {
-        while (this.tableUI.isCurrentLevelAMessage()) {
+        if (this.tableUI.isCurrentLevelAMessage()) {
+            // wait until user is no longer pressing anything before
+            // showing the alert().
+            // https://bugzilla.mozilla.org/show_bug.cgi?id=1346228
+            if (this.isSomethingPressed()) {
+                return
+            }
             await this.eventHandler.onMessage(this.tableUI.getCurrentLevelMessage())
             this.currentLevel++
             this.tableUI.setLevel(this.currentLevel)
+            await this.eventHandler.onLevelComplete(this.currentLevel)
         }
         const {
             // changedCells,
