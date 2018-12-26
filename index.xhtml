@@ -98,8 +98,38 @@
         var table = document.querySelector('#thegamecanbeidentifiedbyselector')
         var gameId // used for loading and saving game progress
 
+        function resizeTable() {
+            // Resize the table so that it fits.
+            // TODO: resize when the window resizes
+
+            // TODO: ignore when the current level is a message level
+            if (tableEngine.tableUI.isCurrentLevelAMessage()) {
+                return
+            }
+
+            const cells = tableEngine.tableUI.getCurrentLevelCells()
+            const cellHeight = cells.length
+            const cellWidth = cells[0].length
+            const levelRatio = cellWidth / cellHeight
+            // Figure out if the width or the height is the limiting factor
+            const availableWidth = window.innerWidth - table.offsetLeft
+            const availableHeight = window.innerHeight - table.offsetTop
+            let newWidth = 0
+            if (availableWidth / availableHeight < levelRatio) {
+                // Width is the limiting factor
+                newWidth = availableWidth / levelRatio
+            } else {
+                // Height is the limiting factor
+                newWidth = availableHeight * levelRatio
+            }
+            table.setAttribute('style', `width: ${Math.floor(newWidth)}px;`)
+        }
+
+        window.addEventListener('resize', resizeTable)
+
         var tableEngine = new window.PuzzleScript.TableEngine(table, {onLevelComplete: function (newLevelNum) {
             setStorage(gameId, newLevelNum)
+            resizeTable()
         }})
 
         var gameSelection = document.querySelector('#gameSelection')
@@ -124,6 +154,7 @@
                     if (!isStarted) {
                         tableEngine.start()
                     }
+                    resizeTable()
                 })
             })
         }
