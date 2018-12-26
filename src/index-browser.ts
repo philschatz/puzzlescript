@@ -1,4 +1,4 @@
-import keymaster from 'keymaster'
+import { Button, BUTTON_TYPE, Gamepad, Keyboard, or } from 'contro'
 import { Cell, GameEngine, ILoadingCellsEvent } from './engine'
 import { GameData } from './models/game'
 import { IGameTile } from './models/tile'
@@ -20,7 +20,6 @@ export {
     RULE_DIRECTION,
     BaseUI,
     TableUI,
-    keymaster,
     playSound,
     closeSounds
 }
@@ -39,13 +38,63 @@ export interface ITableEngineEvents {
     onWin(): (void | Promise<any>)
 }
 
+interface Control<T> {
+    up: T,
+    down: T,
+    left: T,
+    right: T,
+    action: T,
+    undo: T,
+    restart: T
+}
+
 export class TableEngine {
+    public gamepad: Gamepad
     private tableUI: TableUI
     private timer: number
     private currentLevel: number
+    private controls: Control<{button: Button, lastPressed: Optional<number>}>
+    private controlCheckers: Array<() => void>
     private readonly eventHandler: ITableEngineEvents
 
     constructor(table: HTMLTableElement, customHandler?: ICustomTableEngineEvents) {
+        const keyboard = new Keyboard()
+        this.gamepad = new Gamepad()
+        this.controls = {
+            up: { lastPressed: null, button: or(this.gamepad.button(BUTTON_TYPE.ARROW_UP), keyboard.key('w')) },
+            down: { lastPressed: null, button: or(this.gamepad.button(BUTTON_TYPE.ARROW_DOWN), keyboard.key('s')) },
+            left: { lastPressed: null, button: or(this.gamepad.button(BUTTON_TYPE.ARROW_LEFT), keyboard.key('a')) },
+            right: { lastPressed: null, button: or(this.gamepad.button(BUTTON_TYPE.ARROW_RIGHT), keyboard.key('d')) },
+            action: { lastPressed: null, button: or(this.gamepad.button(BUTTON_TYPE.CLUSTER_BOTTOM), keyboard.key('x'), keyboard.key('Space')) },
+            undo: { lastPressed: null, button: or(this.gamepad.button(BUTTON_TYPE.CLUSTER_LEFT), this.gamepad.button(BUTTON_TYPE.BUMPER_TOP_LEFT), keyboard.key('z'), keyboard.key('u')) },
+            restart: { lastPressed: null, button: or(this.gamepad.button(BUTTON_TYPE.CLUSTER_TOP), keyboard.key('r')) }
+        }
+        const makeChecker = (control: keyof Control<Button>, gameAction: () => void) => {
+            return () => {
+                const now = Date.now()
+                const interval = this.tableUI.getGameData().metadata.keyRepeatInterval || .25
+                const { button, lastPressed } = this.controls[control]
+                if (button.query()) {
+                    if (!lastPressed || (lastPressed + interval * 1000) < now) {
+                        gameAction()
+                        this.controls[control].lastPressed = now
+                    }
+                } else {
+                    this.controls[control].lastPressed = null
+                }
+            }
+        }
+
+        this.controlCheckers = [
+            makeChecker('up', () => this.tableUI.pressUp()),
+            makeChecker('down', () => this.tableUI.pressDown()),
+            makeChecker('left', () => this.tableUI.pressLeft()),
+            makeChecker('right', () => this.tableUI.pressRight()),
+            makeChecker('action', () => this.tableUI.pressAction()),
+            makeChecker('undo', () => this.tableUI.pressUndo()),
+            makeChecker('restart', () => this.tableUI.pressRestart())
+        ]
+
         this.tableUI = new TableUI(table)
         this.timer = 0
         this.currentLevel = 0
@@ -80,7 +129,6 @@ export class TableEngine {
     }
 
     public start() {
-        this.startKeyboardListener()
         this.startTickHandler()
     }
 
@@ -88,50 +136,49 @@ export class TableEngine {
         cancelAnimationFrame(this.timer)
     }
 
-    public startKeyboardListener() {
-        keymaster('w', (e) => { e.preventDefault(); this.tableUI.pressUp() })
-        keymaster('s', (e) => { e.preventDefault(); this.tableUI.pressDown() })
-        keymaster('a', (e) => { e.preventDefault(); this.tableUI.pressLeft() })
-        keymaster('d', (e) => { e.preventDefault(); this.tableUI.pressRight() })
-        keymaster('x', (e) => { e.preventDefault(); this.tableUI.pressAction() })
-        keymaster('z, u', (e) => { e.preventDefault(); this.tableUI.pressUndo() })
-        keymaster('r', (e) => { e.preventDefault(); this.tableUI.pressRestart() })
+    public pollControls() {
+        this.controlCheckers.forEach((fn) => fn())
     }
 
     public startTickHandler() {
         const runLoop = async() => {
-            while (this.tableUI.isCurrentLevelAMessage()) {
-                await this.eventHandler.onMessage(this.tableUI.getCurrentLevelMessage())
-                this.currentLevel++
-                this.tableUI.setLevel(this.currentLevel)
-            }
-            const {
-                // changedCells,
-                didLevelChange,
-                didWinGame,
-                messageToShow,
-                soundToPlay
-                // wasAgainTick
-            } = this.tableUI.tick()
-
-            if (soundToPlay) {
-                await this.eventHandler.onSound(soundToPlay)
-            }
-            if (didWinGame) {
-                await this.eventHandler.onWin()
-                cancelAnimationFrame(this.timer)
-                return // make sure we don't call window.requestAnimationFrame again
-            } else if (didLevelChange) {
-                this.currentLevel += 1
-                this.tableUI.setLevel(this.currentLevel)
-                await this.eventHandler.onLevelComplete(this.currentLevel)
-            } else if (messageToShow) {
-                await this.eventHandler.onMessage(messageToShow)
-                this.tableUI.pressAction() // Tell the engine we are ready to continue
-            }
+            this.pollControls()
+            await this.tick()
             this.timer = window.requestAnimationFrame(runLoop)
         }
 
         this.timer = window.requestAnimationFrame(runLoop)
+    }
+
+    public async tick() {
+        while (this.tableUI.isCurrentLevelAMessage()) {
+            await this.eventHandler.onMessage(this.tableUI.getCurrentLevelMessage())
+            this.currentLevel++
+            this.tableUI.setLevel(this.currentLevel)
+        }
+        const {
+            // changedCells,
+            didLevelChange,
+            didWinGame,
+            messageToShow,
+            soundToPlay
+            // wasAgainTick
+        } = this.tableUI.tick()
+
+        if (soundToPlay) {
+            await this.eventHandler.onSound(soundToPlay)
+        }
+        if (didWinGame) {
+            await this.eventHandler.onWin()
+            cancelAnimationFrame(this.timer)
+            return // make sure we don't call window.requestAnimationFrame again
+        } else if (didLevelChange) {
+            this.currentLevel += 1
+            this.tableUI.setLevel(this.currentLevel)
+            await this.eventHandler.onLevelComplete(this.currentLevel)
+        } else if (messageToShow) {
+            await this.eventHandler.onMessage(messageToShow)
+            this.tableUI.pressAction() // Tell the engine we are ready to continue
+        }
     }
 }
