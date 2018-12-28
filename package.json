@@ -104,6 +104,7 @@
   },
   "jest": {
     "preset": "jest-puppeteer",
+    "testEnvironment": "node",
     "moduleFileExtensions": [
       "ts",
       "tsx",
