@@ -36,7 +36,7 @@ async function pressKeys(keys: string[]) {
         const { count } = await getAttrs()
         // await page.keyboard.press(`Key${key}`)
         await page.keyboard.down(`Key${key}`)
-        await sleep(10) // because alerts might show up and they take some time to pop open?
+        await sleep(100) // because alerts might show up and they take some time to pop open?
         await page.keyboard.up(`Key${key}`)
         // wait until the keypress was processed
         await page.waitFor(`.ps-table:not([data-ps-last-input-processed='${count}'])`)
