@@ -122,8 +122,14 @@ export class TableEngine {
         }
     }
 
-    public setGame(source: string, levelNum: number) {
+    public setGame(source: string, levelNum?: number) {
         this.tableUI.setGame(source)
+        if (levelNum !== undefined) {
+            this.tableUI.setLevel(levelNum)
+        }
+    }
+
+    public setLevel(levelNum: number) {
         this.tableUI.setLevel(levelNum)
         this.currentLevel = levelNum
     }
