@@ -4,7 +4,7 @@ import glob from 'glob'
 import * as path from 'path'
 import pify from 'pify'
 
-import { GameEngine, Parser, RULE_DIRECTION } from '..'
+import { GameEngine, Parser } from '..'
 import { logger } from '../logger'
 import { LEVEL_TYPE } from '../parser/astTypes'
 import Serializer from '../parser/serializer'
@@ -12,6 +12,7 @@ import { saveCoverageFile } from '../recordCoverage'
 import { closeSounds } from '../sounds'
 import TerminalUI from '../ui/terminal'
 import { ILevelRecording } from './playGame'
+import { INPUT_BUTTON } from '../util';
 
 async function sleep(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms))
@@ -108,19 +109,19 @@ async function run() {
             for (let i = 0; i < keypressesStr.length; i++) {
                 switch (keypressesStr[i]) {
                     case 'W':
-                        engine.press(RULE_DIRECTION.UP)
+                        engine.press(INPUT_BUTTON.UP)
                         break
                     case 'S':
-                        engine.press(RULE_DIRECTION.DOWN)
+                        engine.press(INPUT_BUTTON.DOWN)
                         break
                     case 'A':
-                        engine.press(RULE_DIRECTION.LEFT)
+                        engine.press(INPUT_BUTTON.LEFT)
                         break
                     case 'D':
-                        engine.press(RULE_DIRECTION.RIGHT)
+                        engine.press(INPUT_BUTTON.RIGHT)
                         break
                     case 'X':
-                        engine.press(RULE_DIRECTION.ACTION)
+                        engine.press(INPUT_BUTTON.ACTION)
                         break
                     case '.':
                     case ',':

@@ -6,7 +6,7 @@ import { IMutation, SimpleRuleGroup } from './models/rule'
 import { GameSprite, IGameTile } from './models/tile'
 import { Command, COMMAND_TYPE, LEVEL_TYPE, SoundItem } from './parser/astTypes'
 import { SpriteBitSet } from './spriteBitSet'
-import { _flatten, Optional, resetRandomSeed, RULE_DIRECTION, setAddAll, setDifference, setEquals } from './util'
+import { _flatten, Optional, resetRandomSeed, RULE_DIRECTION, setAddAll, setDifference, setEquals, INPUT_BUTTON } from './util'
 
 interface ICollisionLayerState {
     readonly wantsToMove: Optional<RULE_DIRECTION>
@@ -503,7 +503,19 @@ export class LevelEngine extends EventEmitter2 {
         return this.undoStack.length > 1
     }
 
-    public press(direction: RULE_DIRECTION) {
+    public press(button: INPUT_BUTTON) {
+        switch (button) {
+            case INPUT_BUTTON.UP: return this.pressDir(RULE_DIRECTION.UP)
+            case INPUT_BUTTON.DOWN: return this.pressDir(RULE_DIRECTION.DOWN)
+            case INPUT_BUTTON.LEFT: return this.pressDir(RULE_DIRECTION.LEFT)
+            case INPUT_BUTTON.RIGHT: return this.pressDir(RULE_DIRECTION.RIGHT)
+            case INPUT_BUTTON.ACTION: return this.pressDir(RULE_DIRECTION.ACTION)
+            case INPUT_BUTTON.UNDO: return this.pressUndo()
+            case INPUT_BUTTON.RESTART: return this.pressRestart()
+        }
+    }
+
+    private pressDir(direction: RULE_DIRECTION) {
         // Should disable keypresses if `AGAIN` is running.
         // It is commented because the didSpritesChange logic is not correct.
         // a rule might add a sprite, and then another rule might remove a sprite.
@@ -513,14 +525,14 @@ export class LevelEngine extends EventEmitter2 {
         this.pendingPlayerWantsToMove = direction
         // }
     }
-    public pressRestart() {
+    private pressRestart() {
         // Add the initial checkpoint to the top (rather than clearing the stack)
         // so the player can still "UNDO" after pressing "RESTART"
         const snapshot = this.undoStack[0]
         this.undoStack.push(snapshot)
         this.applySnapshot(snapshot)
     }
-    public pressUndo() {
+    private pressUndo() {
         const snapshot = this.undoStack.pop()
         if (snapshot && this.undoStack.length > 0) { // the 0th entry is the initial load of the level
             this.applySnapshot(snapshot)
@@ -993,32 +1005,38 @@ export class GameEngine {
         }
     }
 
-    public press(direction: RULE_DIRECTION) {
+    public press(direction: INPUT_BUTTON) {
+        switch(direction) {
+            case INPUT_BUTTON.UNDO:
+                this.messageShownAndWaitingForActionPress = false
+                break
+            case INPUT_BUTTON.RESTART:
+                this.isFirstTick = true
+                break
+        }
         return this.levelEngine.press(direction)
     }
     public pressUp() {
-        this.levelEngine.press(RULE_DIRECTION.UP)
+        this.press(INPUT_BUTTON.UP)
     }
     public pressDown() {
-        this.levelEngine.press(RULE_DIRECTION.DOWN)
+        this.press(INPUT_BUTTON.DOWN)
     }
     public pressLeft() {
-        this.levelEngine.press(RULE_DIRECTION.LEFT)
+        this.press(INPUT_BUTTON.LEFT)
     }
     public pressRight() {
-        this.levelEngine.press(RULE_DIRECTION.RIGHT)
+        this.press(INPUT_BUTTON.RIGHT)
     }
     public pressAction() {
-        this.levelEngine.press(RULE_DIRECTION.ACTION)
+        this.press(INPUT_BUTTON.ACTION)
     }
 
     public pressRestart() {
-        this.isFirstTick = true
-        this.levelEngine.pressRestart()
+        this.press(INPUT_BUTTON.RESTART)
     }
     public pressUndo() {
-        this.messageShownAndWaitingForActionPress = false
-        this.levelEngine.pressUndo()
+        this.press(INPUT_BUTTON.UNDO)
     }
 
     // Pixels and Sprites

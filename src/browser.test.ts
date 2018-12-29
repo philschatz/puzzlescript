@@ -15,12 +15,12 @@ async function sleep(ms: number) {
 }
 
 async function getAttrs() {
-    return await page.$eval('.ps-table', (el) => { 
-        return { 
-            count: el.getAttribute('data-ps-last-input-processed'), 
+    return await page.$eval('.ps-table', (el) => {
+        return {
+            count: el.getAttribute('data-ps-last-input-processed'),
             isAcceptingInput: el.getAttribute('data-ps-accepting-input'),
             levelNum: el.getAttribute('data-ps-current-level')
-        } 
+        }
     })
 }
 

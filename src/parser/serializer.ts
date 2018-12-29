@@ -715,7 +715,7 @@ export default class Serializer {
     }
 }
 
-interface IGraphJson {
+export interface IGraphJson {
     version: number,
     title: string,
     metadata: IGraphGameMetadata,

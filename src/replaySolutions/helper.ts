@@ -4,7 +4,7 @@ import path from 'path'
 import { GameEngine } from '../../src/engine'
 import Parser from '../../src/parser/parser'
 import { saveCoverageFile } from '../../src/recordCoverage'
-import { RULE_DIRECTION } from '../../src/util'
+import { INPUT_BUTTON } from '../../src/util'
 // import TerminalUI from '../../src/ui/terminal'
 
 const CI_MAX_SOLUTION_LENGTH = 1000 // The length of 1 level of cyber-lasso
@@ -98,11 +98,11 @@ export function createTests(moduloNumber: number, moduloTotal: number) {
                     for (let i = 0; i < keypresses.length; i++) {
                         const key = keypresses[i]
                         switch (key) {
-                            case 'W': engine.press(RULE_DIRECTION.UP); break
-                            case 'S': engine.press(RULE_DIRECTION.DOWN); break
-                            case 'A': engine.press(RULE_DIRECTION.LEFT); break
-                            case 'D': engine.press(RULE_DIRECTION.RIGHT); break
-                            case 'X': engine.press(RULE_DIRECTION.ACTION); break
+                            case 'W': engine.press(INPUT_BUTTON.UP); break
+                            case 'S': engine.press(INPUT_BUTTON.DOWN); break
+                            case 'A': engine.press(INPUT_BUTTON.LEFT); break
+                            case 'D': engine.press(INPUT_BUTTON.RIGHT); break
+                            case 'X': engine.press(INPUT_BUTTON.ACTION); break
                             case '.':
                             case ',':
                                 break

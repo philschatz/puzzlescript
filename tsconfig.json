@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "es2015",
-    "lib": ["es2017", "dom"],
+    "lib": ["webworker", "es2017", "dom", "scripthost"],
     "module": "commonjs",
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,

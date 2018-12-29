@@ -2,7 +2,7 @@ import { Cell } from '../engine'
 import { IColor } from '../models/colors'
 import { GameData } from '../models/game'
 import { LEVEL_TYPE } from '../parser/astTypes'
-import { _flatten, Optional, RULE_DIRECTION } from '../util'
+import { _flatten, Optional, RULE_DIRECTION, INPUT_BUTTON } from '../util'
 import BaseUI from './base'
 
 interface ITableCell {
@@ -30,7 +30,7 @@ class TableUI extends BaseUI {
         return ret
     }
 
-    public press(dir: RULE_DIRECTION) {
+    public press(dir: INPUT_BUTTON) {
         this.markAcceptingInput(false)
         super.press(dir)
     }

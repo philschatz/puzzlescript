@@ -1,3 +1,5 @@
+import { IGraphJson } from "./parser/serializer";
+
 export type Optional<T> = T | null
 
 export enum RULE_DIRECTION {
@@ -8,6 +10,16 @@ export enum RULE_DIRECTION {
     ACTION = 'ACTION',
     STATIONARY = 'STATIONARY',
     RANDOMDIR = 'RANDOMDIR'
+}
+
+export enum INPUT_BUTTON {
+    UP = 'UP',
+    DOWN = 'DOWN',
+    LEFT = 'LEFT',
+    RIGHT = 'RIGHT',
+    ACTION = 'ACTION',
+    UNDO = 'UNDO',
+    RESTART = 'RESTART'
 }
 
 export enum RULE_DIRECTION_RELATIVE {
@@ -174,4 +186,54 @@ export enum DEBUG_FLAG {
 
 export interface ICacheable {
     toKey: () => string
+}
+
+
+// Webworker message interfaces
+export interface TypedMessageEvent<T> extends MessageEvent {
+    data: T
+}
+
+export enum MESSAGE_TYPE {
+    LOAD_GAME = 'LOAD_GAME',
+    SET_LEVEL = 'SET_LEVEL',
+    TICK = 'TICK',
+    PRESS = 'PRESS',
+    CLOSE = 'CLOSE'
+}
+
+export type SerializedTickResult = {
+
+}
+
+export type WorkerMessage = {
+    type: MESSAGE_TYPE.LOAD_GAME
+    code: string
+} | {
+    type: MESSAGE_TYPE.SET_LEVEL
+    levelNum: number
+} | {
+    type: MESSAGE_TYPE.TICK
+} | {
+    type: MESSAGE_TYPE.PRESS
+    button: INPUT_BUTTON
+} | {
+    type: MESSAGE_TYPE.CLOSE
+}
+
+export type WorkerResponse = {
+    type: MESSAGE_TYPE.LOAD_GAME
+    payload: IGraphJson
+} | {
+    type: MESSAGE_TYPE.SET_LEVEL
+    payload: void
+} | {
+    type: MESSAGE_TYPE.TICK
+    payload: SerializedTickResult
+} | {
+    type: MESSAGE_TYPE.PRESS
+    payload: void
+} | {
+    type: MESSAGE_TYPE.CLOSE
+    payload: void
 }

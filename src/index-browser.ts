@@ -7,7 +7,15 @@ import Parser from './parser/parser'
 import { closeSounds, playSound } from './sounds'
 import BaseUI from './ui/base'
 import TableUI from './ui/table'
-import { Optional, RULE_DIRECTION } from './util'
+import { Optional, RULE_DIRECTION, MESSAGE_TYPE, WorkerResponse } from './util'
+
+const Worker = require("worker-loader?name=hash.worker.js!./index-webworker");
+const worker = new Worker()
+debugger
+worker.postMessage({type: MESSAGE_TYPE.LOAD_GAME, code: 'title: Hello World'})
+worker.onmessage = (response: WorkerResponse) => {
+    console.log(`Worker response:`, response)
+}
 
 // Public API
 export {

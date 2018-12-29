@@ -4,7 +4,7 @@ import { GameData } from '../models/game'
 import { GameSprite } from '../models/tile'
 import { LEVEL_TYPE } from '../parser/astTypes'
 import Parser from '../parser/parser'
-import { _flatten, Optional, RULE_DIRECTION } from '../util'
+import { _flatten, Optional, INPUT_BUTTON } from '../util'
 
 class CellColorCache {
     private readonly cache: Map<string, IColor[][]>
@@ -172,25 +172,25 @@ abstract class BaseUI {
         return this.engine.getGameData()
     }
 
-    public press(dir: RULE_DIRECTION) {
+    public press(dir: INPUT_BUTTON) {
         if (this.engine) {
             this.engine.press(dir)
         }
     }
     public pressUp() {
-        this.press(RULE_DIRECTION.UP)
+        this.press(INPUT_BUTTON.UP)
     }
     public pressDown() {
-        this.press(RULE_DIRECTION.DOWN)
+        this.press(INPUT_BUTTON.DOWN)
     }
     public pressLeft() {
-        this.press(RULE_DIRECTION.LEFT)
+        this.press(INPUT_BUTTON.LEFT)
     }
     public pressRight() {
-        this.press(RULE_DIRECTION.RIGHT)
+        this.press(INPUT_BUTTON.RIGHT)
     }
     public pressAction() {
-        this.press(RULE_DIRECTION.ACTION)
+        this.press(INPUT_BUTTON.ACTION)
     }
     public pressUndo() {
         if (this.engine) {
