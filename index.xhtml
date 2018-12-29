@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="./src/browser/html-table.css"/>
     <style>
         .hidden { display: none; }
+        #loading:not(.is-loading) { display: none; }
         .light { opacity: .5 }
         kbd {
             font: 11px "SFMono-Regular",Consolas,"Liberation Mono",Menlo,Courier,monospace;
@@ -82,7 +83,7 @@
         <option value="_skipping-stones_d6fd6fcf84de185e2584">Skipping Stones to Lonely Homes⁣ (SLOW)</option>
     </select>
 
-    <span id="loading">Loading...</span>
+    <span id="loading" class="is-loading">Loading...</span>
 
 
     <table id="thegamecanbeidentifiedbyselector">
@@ -98,8 +99,38 @@
         var table = document.querySelector('#thegamecanbeidentifiedbyselector')
         var gameId // used for loading and saving game progress
 
+        function resizeTable() {
+            // Resize the table so that it fits.
+            // TODO: resize when the window resizes
+
+            // TODO: ignore when the current level is a message level
+            if (tableEngine.tableUI.isCurrentLevelAMessage()) {
+                return
+            }
+
+            const cells = tableEngine.tableUI.getCurrentLevelCells()
+            const cellHeight = cells.length
+            const cellWidth = cells[0].length
+            const levelRatio = cellWidth / cellHeight
+            // Figure out if the width or the height is the limiting factor
+            const availableWidth = window.innerWidth - table.offsetLeft
+            const availableHeight = window.innerHeight - table.offsetTop
+            let newWidth = 0
+            if (availableWidth / availableHeight < levelRatio) {
+                // Width is the limiting factor
+                newWidth = availableWidth / levelRatio
+            } else {
+                // Height is the limiting factor
+                newWidth = availableHeight * levelRatio
+            }
+            table.setAttribute('style', `width: ${Math.floor(newWidth)}px;`)
+        }
+
+        window.addEventListener('resize', resizeTable)
+
         var tableEngine = new window.PuzzleScript.TableEngine(table, {onLevelComplete: function (newLevelNum) {
             setStorage(gameId, newLevelNum)
+            resizeTable()
         }})
 
         var gameSelection = document.querySelector('#gameSelection')
@@ -107,7 +138,7 @@
         var isStarted = false
 
         function playSelectedGame() {
-            loading.style.display = null // Show the "Loading..." text
+            loading.classList.add('is-loading') // Show the "Loading..." text
 
             gameSelection.blur() // lose focus so we don't navigate it when pressing keys
             gameId = gameSelection.value
@@ -116,14 +147,17 @@
                 return resp.text().then(source => {
                     // Look up if the user has already solved some of the levels
                     // Load the game
-                    tableEngine.setGame(source, getStorage(gameId) || 0)
+                    tableEngine.setGame(source)
 
                     // Hide the Loading... text
-                    loading.style.display = 'none'
+                    loading.classList.remove('is-loading')
+
+                    tableEngine.setLevel(getStorage(gameId) || 0)
 
                     if (!isStarted) {
                         tableEngine.start()
                     }
+                    resizeTable()
                 })
             })
         }

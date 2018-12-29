@@ -3,6 +3,7 @@
 import fs from 'fs'
 import path from 'path'
 import puppeteer from 'puppeteer' // tslint:disable-line:no-implicit-dependencies
+import { Optional } from './util';
 // import mapStackTrace from 'sourcemapped-stacktrace-node')
 
 // Defined via jest-puppeteer environment
@@ -13,20 +14,33 @@ async function sleep(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
+async function getAttrs() {
+    return await page.$eval('.ps-table', (el) => { 
+        return { 
+            count: el.getAttribute('data-ps-last-input-processed'), 
+            isAcceptingInput: el.getAttribute('data-ps-accepting-input'),
+            levelNum: el.getAttribute('data-ps-current-level')
+        } 
+    })
+}
+
 async function pressKeys(keys: string[]) {
     for (const key of keys) {
         if (key === ',') { continue }
-        await page.waitFor(`table[data-ps-accepting-input='true']`)
+        await page.waitFor(`.ps-table[data-ps-accepting-input='true']`)
         if (key === '.') {
             // wait long enough for a tick to occur
             await sleep(100)
             continue
         }
-        // await sleep(500/*Math.ceil(1000/60)*/) // enough for requestAnimationFrame to run (60fps)
-        await page.keyboard.press(`Key${key}`)
-        // wait until the keypress was processed
+        const { count } = await getAttrs()
+        // await page.keyboard.press(`Key${key}`)
+        await page.keyboard.down(`Key${key}`)
+        await sleep(100) // because alerts might show up and they take some time to pop open?
+        await page.keyboard.up(`Key${key}`)
         await sleep(100)
-        // await page.waitFor(`table[data-ps-accepting-input='false']`)
+        // wait until the keypress was processed
+        await page.waitFor(`.ps-table:not([data-ps-last-input-processed='${count}'])`)
     }
 }
 
@@ -74,6 +88,14 @@ async function evaluateWithStackTrace(fn: puppeteer.EvaluateFn, ...args: any[]) 
 
 describe('Browser', () => {
 
+    let dismissedCount: string[] = []
+
+    const dialogHandler = async (dialog: puppeteer.Dialog) => {
+        dismissedCount.push(dialog.message())
+        await dialog.dismiss()
+        // page.off('dialog', dialogHandler)
+    }
+
     beforeEach(async() => {
         const url = `http://localhost:8000/src/browser/html-table.xhtml`
 
@@ -83,6 +105,7 @@ describe('Browser', () => {
         }
 
         page.on('console', consoleHandler)
+        page.on('dialog', dialogHandler)
 
         // page.on('pageerror', async e => {
         //     const newStack = await mapStackTrace(e.message, { isChromeOrEdge: true })
@@ -93,9 +116,9 @@ describe('Browser', () => {
     })
 
     afterEach(() => {
-        if (page.off) { // page.off is not a function in Travis
-            page.off('console', consoleHandler)
-        }
+        // Node 8 does not have EventListener.off(...)
+        page.removeListener('console', consoleHandler)
+        page.removeListener('dialog', dialogHandler)
     })
 
     it('plays a game in the browser', async() => {
@@ -108,7 +131,6 @@ describe('Browser', () => {
         // This variable is _actually_ defined in the JS file, not here but it is in the body of page.evaluate
         const HackTableStart = (sourceBrowser: string, startLevelBrowser: number) => 'actually implemented in the browser'
 
-        await sleep(500) // wait long enough for the JS to load maybe?
         await evaluateWithStackTrace(({ source, startLevel }) => { // tslint:disable-line:no-shadowed-variable
             if (HackTableStart) {
                 if (source && typeof startLevel === 'number') {
@@ -139,6 +161,44 @@ describe('Browser', () => {
             // await jestPuppeteer.debug()
             resolve()
         })
+    })
+
+    it('plays a couple levels using the demo page', async () => {
+        const waitForDialogAfter = async (fn: () => Promise<any>) => {
+            // page.once('dialog', dialogHandler)
+            const oldCount = dismissedCount.length
+            await fn()
+            // Keep checking for the dialog to be dismissed
+            if (dismissedCount.length > oldCount) {
+                return
+            }
+            await sleep(100) // wait a little bit
+            if (dismissedCount.length > oldCount) {
+                return
+            }
+            await sleep(1000) // wait for the dialog to open and be dismissed
+            expect(dismissedCount.length).toBeGreaterThan(oldCount)
+        }
+
+        // The game shows a dialog immediately (uggh)
+        await waitForDialogAfter(async () => {
+            await page.goto(`http://localhost:8000/index.xhtml`)
+            await page.waitForSelector(`#loading:not(.is-loading)`)
+        })
+
+        // play a level and then wait for the dialog to open
+        let levelNum: Optional<string>
+        levelNum = (await getAttrs()).levelNum
+        expect(levelNum).toBe('1')
+        await waitForDialogAfter(async() => pressKeys('.AWAW'.split('')))
+        levelNum = (await getAttrs()).levelNum
+        expect(levelNum).toBe('3')
+        await waitForDialogAfter(async() => pressKeys('.WASDW'.split('')))
+
+        levelNum = (await getAttrs()).levelNum
+        expect(levelNum).toBe('5')
+
+        expect(dismissedCount.length).toBe(4)
     })
 
     // it.skip('Plays an arbitrary game', async () => {

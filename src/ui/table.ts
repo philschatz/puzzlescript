@@ -13,12 +13,14 @@ interface ITableCell {
 
 class TableUI extends BaseUI {
     private readonly table: HTMLElement
+    private inputsProcessed: number
     private tableCells: ITableCell[][]
 
     constructor(table: HTMLElement) {
         super()
         this.table = table
         this.tableCells = []
+        this.inputsProcessed = 0
         table.classList.add('ps-table')
         this.markAcceptingInput(false)
     }
@@ -47,6 +49,7 @@ class TableUI extends BaseUI {
         // this.markAcceptingInput(false)
         super.setLevel(levelNum)
         this.clearScreen()
+        this.table.setAttribute('data-ps-current-level', `${levelNum}`)
 
         if (!this.isCurrentLevelAMessage()) {
             const levelCells = this.getCurrentLevelCells()
@@ -207,8 +210,10 @@ class TableUI extends BaseUI {
         if (flag) {
             this.table.setAttribute('data-ps-accepting-input', 'true')
         } else {
+            this.inputsProcessed++
             this.table.setAttribute('data-ps-accepting-input', 'false')
         }
+        this.table.setAttribute('data-ps-last-input-processed', `${this.inputsProcessed}`)
     }
 
     private _drawCell(cell: Cell, renderScreenDepth: number = 0) {
