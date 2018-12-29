@@ -88,6 +88,14 @@ async function evaluateWithStackTrace(fn: puppeteer.EvaluateFn, ...args: any[]) 
 
 describe('Browser', () => {
 
+    let dismissedCount: string[] = []
+
+    const dialogHandler = async (dialog: puppeteer.Dialog) => {
+        dismissedCount.push(dialog.message())
+        await dialog.dismiss()
+        // page.off('dialog', dialogHandler)
+    }
+
     beforeEach(async() => {
         const url = `http://localhost:8000/src/browser/html-table.xhtml`
 
@@ -97,6 +105,7 @@ describe('Browser', () => {
         }
 
         page.on('console', consoleHandler)
+        page.on('dialog', dialogHandler)
 
         // page.on('pageerror', async e => {
         //     const newStack = await mapStackTrace(e.message, { isChromeOrEdge: true })
@@ -107,9 +116,9 @@ describe('Browser', () => {
     })
 
     afterEach(() => {
-        if (page.off) { // page.off is not a function in Travis
-            page.off('console', consoleHandler)
-        }
+        // Node 8 does not have EventListener.off(...)
+        page.removeListener('console', consoleHandler)
+        page.removeListener('dialog', dialogHandler)
     })
 
     it('plays a game in the browser', async() => {
@@ -155,30 +164,21 @@ describe('Browser', () => {
     })
 
     it('plays a couple levels using the demo page', async () => {
-        let dismissedCount = 0
-
-        const dialogHandler = async (dialog: puppeteer.Dialog) => {
-            await dialog.dismiss()
-            dismissedCount++
-            // page.off('dialog', dialogHandler)
-        }
         const waitForDialogAfter = async (fn: () => Promise<any>) => {
             // page.once('dialog', dialogHandler)
-            const oldCount = dismissedCount
+            const oldCount = dismissedCount.length
             await fn()
             // Keep checking for the dialog to be dismissed
-            if (dismissedCount > oldCount) {
+            if (dismissedCount.length > oldCount) {
                 return
             }
             await sleep(100) // wait a little bit
-            if (dismissedCount > oldCount) {
+            if (dismissedCount.length > oldCount) {
                 return
             }
             await sleep(1000) // wait for the dialog to open and be dismissed
-            expect(dismissedCount).toBeGreaterThan(oldCount)
+            expect(dismissedCount.length).toBeGreaterThan(oldCount)
         }
-
-        page.on('dialog', dialogHandler)
 
         // The game shows a dialog immediately (uggh)
         await waitForDialogAfter(async () => {
@@ -198,7 +198,7 @@ describe('Browser', () => {
         levelNum = (await getAttrs()).levelNum
         expect(levelNum).toBe('5')
 
-        expect(dismissedCount).toBe(3)
+        expect(dismissedCount.length).toBe(4)
     })
 
     // it.skip('Plays an arbitrary game', async () => {
