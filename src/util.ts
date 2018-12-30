@@ -196,13 +196,24 @@ export interface TypedMessageEvent<T> extends MessageEvent {
 
 export enum MESSAGE_TYPE {
     LOAD_GAME = 'LOAD_GAME',
+    PAUSE = 'PAUSE',
+    RESUME = 'RESUME',
     TICK = 'TICK',
     PRESS = 'PRESS',
     CLOSE = 'CLOSE'
 }
 
 export type SerializedTickResult = {
-
+    changedCells: Array<{
+        colIndex: number,
+        rowIndex: number,
+        spriteNames: string[]
+    }>
+    soundToPlay: Optional<number>
+    messageToShow: Optional<string>
+    didWinGame: boolean
+    didLevelChange: boolean
+    wasAgainTick: boolean
 }
 
 export type WorkerMessage = {
@@ -210,12 +221,14 @@ export type WorkerMessage = {
     code: string
     level: number
 } | {
-    type: MESSAGE_TYPE.TICK
-} | {
     type: MESSAGE_TYPE.PRESS
     button: INPUT_BUTTON
 } | {
     type: MESSAGE_TYPE.CLOSE
+} | {
+    type: MESSAGE_TYPE.PAUSE
+} | {
+    type: MESSAGE_TYPE.RESUME
 }
 
 export type WorkerResponse = {
@@ -230,4 +243,15 @@ export type WorkerResponse = {
 } | {
     type: MESSAGE_TYPE.CLOSE
     payload: void
+} | {
+    type: MESSAGE_TYPE.PAUSE
+    payload: void
+} | {
+    type: MESSAGE_TYPE.RESUME
+    payload: void
+}
+
+export interface PuzzlescriptWorker {
+    postMessage(msg: WorkerMessage): void
+    addEventListener(type: 'message', handler: (msg: {data: WorkerResponse}) => void): void
 }

@@ -6,7 +6,7 @@ import Serializer from './parser/serializer';
 declare var postMessage: (msg: WorkerResponse) => void
 
 let currentEngine: Optional<GameEngine> = null
-
+let gameLoop: Optional<NodeJS.Timeout> = null
 
 onmessage = function(event: TypedMessageEvent<WorkerMessage>) {
   const response: WorkerResponse = handleMessage(event)
@@ -17,7 +17,8 @@ const handleMessage = (event: TypedMessageEvent<WorkerMessage>): WorkerResponse 
   const msg = event.data
   switch(msg.type) {
     case MESSAGE_TYPE.LOAD_GAME: return {type: msg.type, payload: loadGame(msg.code, msg.level)}
-    case MESSAGE_TYPE.TICK: return {type: msg.type, payload: tick()}
+    case MESSAGE_TYPE.PAUSE: return {type: msg.type, payload: pauseGame()}
+    case MESSAGE_TYPE.RESUME: return {type: msg.type, payload: resumeGame()}
     case MESSAGE_TYPE.PRESS: return {type: msg.type, payload: press(msg.button)}
     case MESSAGE_TYPE.CLOSE: return {type: msg.type, payload: closeGame()}
     default:
@@ -32,11 +33,27 @@ const getEngine = () => {
   return currentEngine
 }
 
+const startPlayLoop = () => {
+  gameLoop = setInterval(() => {
+    postMessage({type: MESSAGE_TYPE.TICK, payload: tick()})
+  }, 2000)
+}
+
 const loadGame = (code: string, level: number) => {
   const {data} = Parser.parse(code)
   currentEngine = new GameEngine(data)
   currentEngine.setLevel(level)
+  startPlayLoop()
   return (new Serializer(data)).toJson()
+}
+
+const pauseGame = () => {
+  gameLoop !== null && clearInterval(gameLoop)
+}
+
+const resumeGame = () => {
+  pauseGame()
+  startPlayLoop()
 }
 
 const tick = () => {
@@ -44,7 +61,12 @@ const tick = () => {
   // Response needs to be serializable
   return {
     changedCells: [...changedCells.values()].map(cell => {
-      return cell.getSprites().map(sprite => sprite.getName())
+      const {colIndex, rowIndex} = cell
+      return {
+        colIndex,
+        rowIndex,
+        spriteNames: cell.getSprites().map(sprite => sprite.getName())
+      }
     }),
     soundToPlay: soundToPlay ? soundToPlay.soundCode : null,
     messageToShow,
@@ -59,5 +81,6 @@ const press = (button: INPUT_BUTTON) => {
 }
 
 const closeGame = () => {
+  pauseGame()
   currentEngine = null
 }

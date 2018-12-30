@@ -7,13 +7,8 @@ import Parser from './parser/parser'
 import { closeSounds, playSound } from './sounds'
 import BaseUI from './ui/base'
 import TableUI from './ui/table'
-import { Optional, RULE_DIRECTION, MESSAGE_TYPE, WorkerMessage, WorkerResponse } from './util'
+import { Optional, RULE_DIRECTION, MESSAGE_TYPE, INPUT_BUTTON, PuzzlescriptWorker } from './util'
 
-
-interface PuzzlescriptWorker {
-    postMessage(msg: WorkerMessage): void
-    addEventListener(type: 'message', handler: (msg: {data: WorkerResponse}) => void): void
-}
 
 const worker: PuzzlescriptWorker = new Worker('./lib/webpack-output-webworker.js')
 
@@ -39,18 +34,21 @@ Player
 LEVELS
 =======
 
-..P
+.P.
 `, level: 0})
 worker.addEventListener('message', (event) => {
     const {data} = event
     switch(data.type) {
         case MESSAGE_TYPE.LOAD_GAME:
             console.log(`Loaded game. Here is the serialized payload`, data.payload)
-            worker.postMessage({type: MESSAGE_TYPE.TICK})
+            worker.postMessage({type: MESSAGE_TYPE.PRESS, button: INPUT_BUTTON.RIGHT})
             break
         case MESSAGE_TYPE.TICK:
             console.log(`Tick happened. This is what changed`, data.payload)
+            worker.postMessage({type: MESSAGE_TYPE.PAUSE})
             break
+        default:
+            console.log(`BUG: Unhandled Event occurred`, data)
     }
 })
 
