@@ -1,7 +1,7 @@
 import { IColor } from '../models/colors'
 import { GameData } from '../models/game'
 import { LEVEL_TYPE } from '../parser/astTypes'
-import { _flatten, INPUT_BUTTON, Optional, RULE_DIRECTION, Cellish } from '../util'
+import { _flatten, Cellish, INPUT_BUTTON, Optional, RULE_DIRECTION } from '../util'
 import BaseUI from './base'
 
 interface ITableCell {
@@ -46,11 +46,13 @@ class TableUI extends BaseUI {
 
     public setLevel(levelNum: number) {
         // this.markAcceptingInput(false)
-        super.setLevel(levelNum)
+        const engine = super.getEngine()
+        engine.setLevel(levelNum)
         this.clearScreen()
         this.table.setAttribute('data-ps-current-level', `${levelNum}`)
 
         if (!this.isCurrentLevelAMessage()) {
+            super._setLevel(engine.getCurrentLevel(), engine.getCurrentLevelCells())
             const levelCells = this.getCurrentLevelCells()
             // Draw the level
             // Draw the empty table

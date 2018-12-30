@@ -137,6 +137,50 @@
         var loading = document.querySelector('#loading')
         var isStarted = false
 
+const worker = new Worker('./lib/webpack-output-webworker.js')
+
+// worker.postMessage({type: 'LOAD_GAME', level: 0, code: `title Hello World
+// ========
+// OBJECTS
+// ========
+
+// Background .
+// BLACK
+
+// Player P
+// YELLOW
+
+// ================
+// COLLISIONLAYERS
+// ================
+
+// Background
+// Player
+
+// =======
+// LEVELS
+// =======
+
+// .P.
+// `})
+let lastTick = Date.now()
+worker.addEventListener('message', (event) => {
+    const { data } = event
+    switch (data.type) {
+        case 'LOAD_GAME':
+            console.log(`Loaded game. Here is the serialized payload`, data.payload) // tslint:disable-line:no-console
+            worker.postMessage({ type: 'PRESS', button: 'RIGHT' })
+            break
+        case 'TICK':
+            console.log(`Tick happened. ${Date.now() - lastTick}ms This is what changed`, data.payload) // tslint:disable-line:no-console
+            lastTick = Date.now()
+            // worker.postMessage({ type: 'PAUSE' })
+            break
+        default:
+            console.log(`BUG: Unhandled Event occurred`, data) // tslint:disable-line:no-console
+    }
+})
+
         function playSelectedGame() {
             loading.classList.add('is-loading') // Show the "Loading..." text
 
@@ -158,6 +202,8 @@
                         tableEngine.start()
                     }
                     resizeTable()
+
+                    // worker.postMessage({type: 'LOAD_GAME', level: 0, code: source})
                 })
             })
         }

@@ -1,6 +1,6 @@
 import { GameMetadata } from './models/metadata'
+import { GameSprite } from './models/tile'
 import { IGraphJson } from './parser/serializer'
-import { GameSprite } from './models/tile';
 
 export type Optional<T> = T | null
 

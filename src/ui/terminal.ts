@@ -5,11 +5,11 @@ import * as supportsColor from 'supports-color'
 
 import { CollisionLayer } from '../models/collisionLayer'
 import { IColor } from '../models/colors'
+import { GameData } from '../models/game'
 import { GameSprite } from '../models/tile'
 import { LEVEL_TYPE } from '../parser/astTypes'
-import { _debounce, _flatten, Optional, Cellish, RULE_DIRECTION } from '../util'
+import { _debounce, _flatten, Cellish, Optional, RULE_DIRECTION } from '../util'
 import BaseUI from './base'
-import { GameData } from '../models/game';
 
 // Determine if this
 // 'truecolor' if this terminal supports 16m colors. 256 colors otherwise

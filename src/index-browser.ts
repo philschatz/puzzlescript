@@ -7,49 +7,49 @@ import Parser from './parser/parser'
 import { closeSounds, playSound } from './sounds'
 import BaseUI from './ui/base'
 import TableUI from './ui/table'
-import { INPUT_BUTTON, MESSAGE_TYPE, Optional, PuzzlescriptWorker, RULE_DIRECTION } from './util'
+import { Optional, RULE_DIRECTION } from './util'
 
-const worker: PuzzlescriptWorker = new Worker('./lib/webpack-output-webworker.js')
+// const worker: PuzzlescriptWorker = new Worker('./lib/webpack-output-webworker.js')
 
-worker.postMessage({type: MESSAGE_TYPE.LOAD_GAME, level: 0, code: `title Hello World
-========
-OBJECTS
-========
+// worker.postMessage({type: MESSAGE_TYPE.LOAD_GAME, level: 0, code: `title Hello World
+// ========
+// OBJECTS
+// ========
 
-Background .
-BLACK
+// Background .
+// BLACK
 
-Player P
-YELLOW
+// Player P
+// YELLOW
 
-================
-COLLISIONLAYERS
-================
+// ================
+// COLLISIONLAYERS
+// ================
 
-Background
-Player
+// Background
+// Player
 
-=======
-LEVELS
-=======
+// =======
+// LEVELS
+// =======
 
-.P.
-`})
-worker.addEventListener('message', (event) => {
-    const { data } = event
-    switch (data.type) {
-        case MESSAGE_TYPE.LOAD_GAME:
-            console.log(`Loaded game. Here is the serialized payload`, data.payload) // tslint:disable-line:no-console
-            worker.postMessage({ type: MESSAGE_TYPE.PRESS, button: INPUT_BUTTON.RIGHT })
-            break
-        case MESSAGE_TYPE.TICK:
-            console.log(`Tick happened. This is what changed`, data.payload) // tslint:disable-line:no-console
-            worker.postMessage({ type: MESSAGE_TYPE.PAUSE })
-            break
-        default:
-            console.log(`BUG: Unhandled Event occurred`, data) // tslint:disable-line:no-console
-    }
-})
+// .P.
+// `})
+// worker.addEventListener('message', (event) => {
+//     const { data } = event
+//     switch (data.type) {
+//         case MESSAGE_TYPE.LOAD_GAME:
+//             console.log(`Loaded game. Here is the serialized payload`, data.payload) // tslint:disable-line:no-console
+//             worker.postMessage({ type: MESSAGE_TYPE.PRESS, button: INPUT_BUTTON.RIGHT })
+//             break
+//         case MESSAGE_TYPE.TICK:
+//             console.log(`Tick happened. This is what changed`, data.payload) // tslint:disable-line:no-console
+//             worker.postMessage({ type: MESSAGE_TYPE.PAUSE })
+//             break
+//         default:
+//             console.log(`BUG: Unhandled Event occurred`, data) // tslint:disable-line:no-console
+//     }
+// })
 
 // Public API
 export {

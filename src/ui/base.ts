@@ -1,10 +1,10 @@
 import { GameEngine } from '../engine'
 import { IColor } from '../models/colors'
 import { GameData } from '../models/game'
-import { GameSprite } from '../models/tile'
-import { LEVEL_TYPE } from '../parser/astTypes'
+import { GameSprite, IGameTile } from '../models/tile'
+import { LEVEL_TYPE, Level } from '../parser/astTypes'
 import Parser from '../parser/parser'
-import { _flatten, INPUT_BUTTON, Optional, Cellish } from '../util'
+import { _flatten, Cellish, INPUT_BUTTON, Optional } from '../util'
 
 class CellColorCache {
     private readonly cache: Map<string, IColor[][]>
@@ -85,6 +85,8 @@ abstract class BaseUI {
     public PIXEL_HEIGHT: number
     protected gameData: Optional<GameData>
     protected engine: Optional<GameEngine>
+    private currentLevel: Optional<Level<IGameTile>>
+    private currentLevelCells: Cellish[][]
     protected renderedPixels: Array<Array<{hex: string, chars: string}>> // string is the hex code of the pixel
     protected windowOffsetColStart: number
     protected windowOffsetRowStart: number
@@ -114,6 +116,8 @@ abstract class BaseUI {
 
         this.gameData = null
         this.engine = null
+        this.currentLevel = null
+        this.currentLevelCells = []
         this.windowOffsetWidth = null
         this.windowOffsetHeight = null
     }
@@ -121,6 +125,8 @@ abstract class BaseUI {
     public destroy() {
         this.gameData = null
         this.engine = null
+        this.currentLevel = null
+        this.currentLevelCells = []
         this.renderedPixels = []
         this.cellColorCache.clear()
     }
@@ -163,10 +169,10 @@ abstract class BaseUI {
         this.setGameEngine(new GameEngine(data))
     }
     public getGameData() {
-        if (!this.engine) {
+        if (!this.gameData) {
             throw new Error(`BUG: Game has not been specified yet`)
         }
-        return this.engine.getGameData()
+        return this.gameData
     }
 
     public press(dir: INPUT_BUTTON) {
@@ -199,17 +205,18 @@ abstract class BaseUI {
             this.engine.pressRestart(); this.renderScreen(false)
         }
     }
-    public setLevel(levelNum: number) {
-        if (this.engine) {
-            this.engine.setLevel(levelNum)
+    public _setLevel(currentLevel: Level<IGameTile>, cells: Cellish[][]) {
+        this.currentLevel = currentLevel
+        this.currentLevelCells = cells
+    }
+    public getCurrentLevel() {
+        if (!this.currentLevel) {
+            throw new Error(`BUG: currentLevel has not been set yet`)
         }
+        return this.currentLevel
     }
     public getCurrentLevelCells() {
-        if (this.engine) {
-            return this.engine.getCurrentLevelCells()
-        } else {
-            throw new Error(`BUG: Game has not been specified yet`)
-        }
+        return this.currentLevelCells
     }
     public tick() {
         if (!this.engine) {
@@ -239,9 +246,7 @@ abstract class BaseUI {
     }
 
     public debugRenderScreen() {
-        if (this.engine) {
-            this.renderScreen(true)
-        }
+        this.renderScreen(true)
     }
 
     public renderMessageScreen(message: string) {
@@ -257,13 +262,13 @@ abstract class BaseUI {
         this.windowOffsetWidth = screenWidth
         this.clearScreen()
 
-        if (this.engine) {
-            const sprites = this.createMessageSprites(message)
-            this.engine.setMessageLevel(sprites)
-            // this.renderScreen(false)
-            this.drawCellsAfterRecentering(_flatten(this.getCurrentLevelCells()), 0)
-            this.engine.restoreFromMessageLevel()
-        }
+        // if (this.engine) {
+        //     const sprites = this.createMessageSprites(message)
+        //     this.engine.setMessageLevel(sprites)
+        //     // this.renderScreen(false)
+        //     this.drawCellsAfterRecentering(_flatten(this.getCurrentLevelCells()), 0)
+        //     this.engine.restoreFromMessageLevel()
+        // }
 
         this.windowOffsetColStart = windowOffsetColStart
         this.windowOffsetRowStart = windowOffsetRowStart
@@ -275,18 +280,15 @@ abstract class BaseUI {
         if (!this.gameData) {
             throw new Error(`BUG: gameData was not set yet`)
         }
-        if (!this.engine) {
-            throw new Error(`BUG: gameEngine was not set yet`)
-        }
 
-        const level = this.engine.getCurrentLevel()
+        const level = this.getCurrentLevel()
         if (level.type !== LEVEL_TYPE.MAP) {
             this.renderMessageScreen(level.message)
             return
         }
 
         // Otherwise, the level is a Map so render the cells
-        const levelRows = this.engine.getCurrentLevelCells()
+        const levelRows = this.getCurrentLevelCells()
 
         if (clearCaches) {
             this.cellColorCache.clear()
@@ -315,7 +317,7 @@ abstract class BaseUI {
                 const { isOnScreen } = this.cellPosToXY(playerCell)
                 if (this.recenterPlayerIfNeeded(playerCell, isOnScreen)) {
                     // if we moved the screen then re-render the whole screen
-                    cells = _flatten(this.engine.getCurrentLevelCells())
+                    cells = _flatten(this.getCurrentLevelCells())
                 }
             }
             // otherwise, keep rendering cells like normal
@@ -342,6 +344,13 @@ abstract class BaseUI {
         const pixels = this.cellColorCache.get(spritesToDraw,
             this.gameData.metadata.backgroundColor, this.SPRITE_HEIGHT, this.SPRITE_WIDTH)
         return pixels
+    }
+
+    protected getEngine() {
+        if (!this.engine) {
+            throw new Error(`BUG: Engine has not been set yet`)
+        }
+        return this.engine
     }
 
     protected createMessageTextScreen(messageStr: string) {
@@ -491,9 +500,6 @@ abstract class BaseUI {
         if (!this.gameData) {
             throw new Error(`BUG: gameData was not set yet`)
         }
-        if (!this.engine) {
-            throw new Error(`BUG: gameEngine was not set yet`)
-        }
         let boundingBoxLeft
         let boundingBoxTop
         let boundingBoxWidth
@@ -519,8 +525,8 @@ abstract class BaseUI {
         } else {
             boundingBoxLeft = 0
             boundingBoxTop = 0
-            boundingBoxHeight = this.engine.getCurrentLevelCells().length
-            boundingBoxWidth = this.engine.getCurrentLevelCells()[0].length
+            boundingBoxHeight = this.getCurrentLevelCells().length
+            boundingBoxWidth = this.getCurrentLevelCells()[0].length
         }
 
         if (zoomScreen) {

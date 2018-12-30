@@ -1,6 +1,6 @@
 import BitSet from 'bitset'
 import { Cell } from '../engine'
-import { _flatten, Optional, RULE_DIRECTION, setDifference, setIntersection, Cellish } from '../util'
+import { _flatten, Cellish, Optional, RULE_DIRECTION, setDifference, setIntersection } from '../util'
 import { BaseForLines, IGameCode } from './BaseForLines'
 import { CollisionLayer } from './collisionLayer'
 import { IColor } from './colors'

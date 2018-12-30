@@ -6,7 +6,7 @@ import { IMutation, SimpleRuleGroup } from './models/rule'
 import { GameSprite, IGameTile } from './models/tile'
 import { Command, COMMAND_TYPE, LEVEL_TYPE, SoundItem } from './parser/astTypes'
 import { SpriteBitSet } from './spriteBitSet'
-import { _flatten, INPUT_BUTTON, Optional, resetRandomSeed, RULE_DIRECTION, setAddAll, setDifference, setEquals, Cellish } from './util'
+import { _flatten, Cellish, INPUT_BUTTON, Optional, resetRandomSeed, RULE_DIRECTION, setAddAll, setDifference, setEquals } from './util'
 
 interface ICollisionLayerState {
     readonly wantsToMove: Optional<RULE_DIRECTION>

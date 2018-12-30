@@ -319,6 +319,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: ISa
     })
     TerminalUI.clearScreen()
     engine.setLevel(data.levels.indexOf(level))
+    TerminalUI._setLevel(engine.getCurrentLevel(), engine.getCurrentLevelCells())
 
     let keypresses: string[] = [] // set later once we walk through all the existing partial keys
     let pendingKey = null
