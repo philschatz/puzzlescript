@@ -99,7 +99,7 @@ async function run() {
             //   UI.drawCellAt(cell, cell.rowIndex, cell.colIndex, false)
             // })
 
-            TerminalUI.setGameEngine(engine)
+            TerminalUI.setGameData(engine.getGameData())
             TerminalUI.clearScreen()
             TerminalUI.renderScreen(true)
             TerminalUI.writeDebug(`"${data.title}"`, 0)

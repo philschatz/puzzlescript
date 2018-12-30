@@ -1,6 +1,8 @@
+import { GameEngine } from '../engine'
 import { IColor } from '../models/colors'
 import { GameData } from '../models/game'
 import { LEVEL_TYPE } from '../parser/astTypes'
+import parser from '../parser/parser'
 import { _flatten, Cellish, INPUT_BUTTON, Optional, RULE_DIRECTION } from '../util'
 import BaseUI from './base'
 
@@ -14,6 +16,8 @@ class TableUI extends BaseUI {
     private readonly table: HTMLElement
     private inputsProcessed: number
     private tableCells: ITableCell[][]
+    private engine: Optional<GameEngine>
+    private lastTick: number
 
     constructor(table: HTMLElement) {
         super()
@@ -22,37 +26,69 @@ class TableUI extends BaseUI {
         this.inputsProcessed = 0
         table.classList.add('ps-table')
         this.markAcceptingInput(false)
+        this.engine = null
+        this.lastTick = 0
     }
+
+    public setGameEngine(code: string) {
+        const { data } = parser.parse(code)
+        if (!data) {
+            throw new Error(`BUG: Could not parse gameData and did not find an error`)
+        }
+        this.engine = new GameEngine(data)
+        super.setGameData(data)
+    }
+
+    public pressUp() {
+        this.press(INPUT_BUTTON.UP)
+    }
+    public pressDown() {
+        this.press(INPUT_BUTTON.DOWN)
+    }
+    public pressLeft() {
+        this.press(INPUT_BUTTON.LEFT)
+    }
+    public pressRight() {
+        this.press(INPUT_BUTTON.RIGHT)
+    }
+    public pressAction() {
+        this.press(INPUT_BUTTON.ACTION)
+    }
+    public pressUndo() {
+        this.markAcceptingInput(false)
+        this.press(INPUT_BUTTON.UNDO)
+        super.handleUndo()
+    }
+    public pressRestart() {
+        this.markAcceptingInput(false)
+        this.press(INPUT_BUTTON.RESTART)
+        super.handleRestart()
+    }
+
     public tick() {
-        const ret = super.tick()
-        this.markAcceptingInput(!super.hasAgainThatNeedsToRun())
+        const ret = this._tick()
+        this.markAcceptingInput(!this.hasAgainThatNeedsToRun())
         return ret
     }
 
     public press(dir: INPUT_BUTTON) {
         this.markAcceptingInput(false)
-        super.press(dir)
-    }
-
-    public pressUndo() {
-        this.markAcceptingInput(false)
-        super.pressUndo()
-    }
-
-    public pressRestart() {
-        this.markAcceptingInput(false)
-        super.pressRestart()
+        if (this.engine) {
+            this.engine.press(dir)
+        }
     }
 
     public setLevel(levelNum: number) {
         // this.markAcceptingInput(false)
-        const engine = super.getEngine()
-        engine.setLevel(levelNum)
+        if (!this.engine) {
+            throw new Error(`BUG: Engine has not been set yet`)
+        }
+        this.engine.setLevel(levelNum)
         this.clearScreen()
         this.table.setAttribute('data-ps-current-level', `${levelNum}`)
 
         if (!this.isCurrentLevelAMessage()) {
-            super._setLevel(engine.getCurrentLevel(), engine.getCurrentLevelCells())
+            super._setLevel(this.engine.getCurrentLevel(), this.engine.getCurrentLevelCells())
             const levelCells = this.getCurrentLevelCells()
             // Draw the level
             // Draw the empty table
@@ -159,6 +195,13 @@ class TableUI extends BaseUI {
         return level.message
     }
 
+    protected hasAgainThatNeedsToRun() {
+        if (!this.engine) {
+            throw new Error(`BUG: Engine has not been set yet`)
+        }
+        return this.engine.hasAgain()
+    }
+
     protected renderLevelScreen(levelRows: Cellish[][], renderScreenDepth: number) {
         this.drawCells(_flatten(levelRows), false, renderScreenDepth)
     }
@@ -204,6 +247,33 @@ class TableUI extends BaseUI {
         return {
             columns: 1000,
             rows: 1000
+        }
+    }
+
+    private _tick() {
+        if (!this.engine) {
+            throw new Error(`BUG: Game has not been specified yet`)
+        }
+        const now = Date.now()
+        const gameData = this.getGameData()
+        let minTime = Math.min(gameData.metadata.realtimeInterval || 1000, gameData.metadata.keyRepeatInterval || 1000, gameData.metadata.againInterval || 1000)
+        if (minTime > 100 || Number.isNaN(minTime)) {
+            minTime = .01
+        }
+        if ((now - this.lastTick) >= (minTime * 1000)) {
+            this.lastTick = now
+            const ret = this.engine.tick()
+            this.drawCells(ret.changedCells, false)
+            return ret
+        } else {
+            return {
+                changedCells: new Set<Cellish>(),
+                soundToPlay: null,
+                messageToShow: null,
+                didWinGame: false,
+                didLevelChange: false,
+                wasAgainTick: false
+            }
         }
     }
 

@@ -255,9 +255,6 @@ class TerminalUI extends BaseUI {
     }
 
     public moveInspectorTo(cell: Cellish) {
-        if (!this.engine) {
-            throw new Error(`BUG: engine has not been assigned yet`)
-        }
         const { rowIndex: newRow, colIndex: newCol } = cell
         let canMove = false
         if (newCol >= this.windowOffsetColStart && newRow >= this.windowOffsetRowStart) {
@@ -274,9 +271,9 @@ class TerminalUI extends BaseUI {
 
         if (canMove) {
             let oldInspectorCell = null
-            const currentLevel = this.engine.getCurrentLevelCells()
+            const currentLevel = this.getCurrentLevelCells()
             if (currentLevel[this.inspectorRow] && currentLevel[this.inspectorRow][this.inspectorCol]) {
-                oldInspectorCell = this.engine.getCurrentLevelCells()[this.inspectorRow][this.inspectorCol]
+                oldInspectorCell = this.getCurrentLevelCells()[this.inspectorRow][this.inspectorCol]
             }
             const newInspectorCell = cell
             // move
@@ -300,14 +297,20 @@ class TerminalUI extends BaseUI {
         }
     }
     public moveInspector(direction: RULE_DIRECTION) {
-        if (!this.engine) {
-            throw new Error(`BUG: engine has not been assigned yet`)
-        }
         if (this.inspectorRow >= 0 && this.inspectorCol >= 0) {
-            const cell = this.engine.getCurrentLevelCells()[this.inspectorRow][this.inspectorCol]
-            const newCell = cell.getNeighbor(direction)
-            if (newCell) {
-                return this.moveInspectorTo(newCell)
+            let x = 0
+            let y = 0
+            switch (direction) {
+                case RULE_DIRECTION.UP: y -= 1; break
+                case RULE_DIRECTION.DOWN: y += 1; break
+                case RULE_DIRECTION.LEFT: x -= 1; break
+                case RULE_DIRECTION.RIGHT: x += 1; break
+                default:
+                    throw new Error(`BUG: Invalid direction`)
+            }
+            const cell = this.getCurrentLevelCells()[this.inspectorRow + y][this.inspectorCol + x]
+            if (cell) {
+                return this.moveInspectorTo(cell)
             }
         }
     }

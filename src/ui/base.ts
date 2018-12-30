@@ -1,10 +1,8 @@
-import { GameEngine } from '../engine'
 import { IColor } from '../models/colors'
 import { GameData } from '../models/game'
 import { GameSprite, IGameTile } from '../models/tile'
-import { LEVEL_TYPE, Level } from '../parser/astTypes'
-import Parser from '../parser/parser'
-import { _flatten, Cellish, INPUT_BUTTON, Optional } from '../util'
+import { Level, LEVEL_TYPE } from '../parser/astTypes'
+import { _flatten, Cellish, Optional } from '../util'
 
 class CellColorCache {
     private readonly cache: Map<string, IColor[][]>
@@ -84,9 +82,6 @@ abstract class BaseUI {
     public PIXEL_WIDTH: number // number of characters in the terminal used to represent a pixel
     public PIXEL_HEIGHT: number
     protected gameData: Optional<GameData>
-    protected engine: Optional<GameEngine>
-    private currentLevel: Optional<Level<IGameTile>>
-    private currentLevelCells: Cellish[][]
     protected renderedPixels: Array<Array<{hex: string, chars: string}>> // string is the hex code of the pixel
     protected windowOffsetColStart: number
     protected windowOffsetRowStart: number
@@ -96,8 +91,9 @@ abstract class BaseUI {
     protected SPRITE_WIDTH: number
     protected SPRITE_HEIGHT: number
     protected hasVisualUi: boolean
+    private currentLevel: Optional<Level<IGameTile>>
+    private currentLevelCells: Cellish[][]
     private readonly cellColorCache: CellColorCache
-    private lastTick: number
 
     constructor() {
         this.cellColorCache = new CellColorCache()
@@ -112,10 +108,8 @@ abstract class BaseUI {
         this.SPRITE_WIDTH = 5
 
         this.hasVisualUi = true
-        this.lastTick = 0
 
         this.gameData = null
-        this.engine = null
         this.currentLevel = null
         this.currentLevelCells = []
         this.windowOffsetWidth = null
@@ -124,15 +118,13 @@ abstract class BaseUI {
 
     public destroy() {
         this.gameData = null
-        this.engine = null
         this.currentLevel = null
         this.currentLevelCells = []
         this.renderedPixels = []
         this.cellColorCache.clear()
     }
-    public setGameEngine(engine: GameEngine) {
-        this.engine = engine
-        this.gameData = engine.getGameData()
+    public setGameData(gameData: GameData) {
+        this.gameData = gameData
 
         this.renderedPixels = []
         this.cellColorCache.clear()
@@ -161,13 +153,6 @@ abstract class BaseUI {
         this.SPRITE_WIDTH = spriteWidth
     }
 
-    public setGame(gameData: string) {
-        const { data } = Parser.parse(gameData)
-        if (!data) {
-            throw new Error(`BUG: Could not parse gameData and did not find an error`)
-        }
-        this.setGameEngine(new GameEngine(data))
-    }
     public getGameData() {
         if (!this.gameData) {
             throw new Error(`BUG: Game has not been specified yet`)
@@ -175,35 +160,11 @@ abstract class BaseUI {
         return this.gameData
     }
 
-    public press(dir: INPUT_BUTTON) {
-        if (this.engine) {
-            this.engine.press(dir)
-        }
+    public handleUndo() {
+        this.renderScreen(false)
     }
-    public pressUp() {
-        this.press(INPUT_BUTTON.UP)
-    }
-    public pressDown() {
-        this.press(INPUT_BUTTON.DOWN)
-    }
-    public pressLeft() {
-        this.press(INPUT_BUTTON.LEFT)
-    }
-    public pressRight() {
-        this.press(INPUT_BUTTON.RIGHT)
-    }
-    public pressAction() {
-        this.press(INPUT_BUTTON.ACTION)
-    }
-    public pressUndo() {
-        if (this.engine) {
-            this.engine.pressUndo(); this.renderScreen(false)
-        }
-    }
-    public pressRestart() {
-        if (this.engine) {
-            this.engine.pressRestart(); this.renderScreen(false)
-        }
+    public handleRestart() {
+        this.renderScreen(false)
     }
     public _setLevel(currentLevel: Level<IGameTile>, cells: Cellish[][]) {
         this.currentLevel = currentLevel
@@ -217,32 +178,6 @@ abstract class BaseUI {
     }
     public getCurrentLevelCells() {
         return this.currentLevelCells
-    }
-    public tick() {
-        if (!this.engine) {
-            throw new Error(`BUG: Game has not been specified yet`)
-        }
-        const now = Date.now()
-        const gameData = this.getGameData()
-        let minTime = Math.min(gameData.metadata.realtimeInterval || 1000, gameData.metadata.keyRepeatInterval || 1000, gameData.metadata.againInterval || 1000)
-        if (minTime > 100 || Number.isNaN(minTime)) {
-            minTime = .01
-        }
-        if ((now - this.lastTick) >= (minTime * 1000)) {
-            this.lastTick = now
-            const ret = this.engine.tick()
-            this.drawCells(ret.changedCells, false)
-            return ret
-        } else {
-            return {
-                changedCells: new Set<Cellish>(),
-                soundToPlay: null,
-                messageToShow: null,
-                didWinGame: false,
-                didLevelChange: false,
-                wasAgainTick: false
-            }
-        }
     }
 
     public debugRenderScreen() {
@@ -302,9 +237,6 @@ abstract class BaseUI {
         if (!this.gameData) {
             throw new Error(`BUG: gameData was not set yet`)
         }
-        if (!this.engine) {
-            throw new Error(`BUG: gameEngine was not set yet`)
-        }
 
         // Sort of HACKy... If the player is not visible on the screen then we need to
         // move the screen so that they are visible.
@@ -344,13 +276,6 @@ abstract class BaseUI {
         const pixels = this.cellColorCache.get(spritesToDraw,
             this.gameData.metadata.backgroundColor, this.SPRITE_HEIGHT, this.SPRITE_WIDTH)
         return pixels
-    }
-
-    protected getEngine() {
-        if (!this.engine) {
-            throw new Error(`BUG: Engine has not been set yet`)
-        }
-        return this.engine
     }
 
     protected createMessageTextScreen(messageStr: string) {
@@ -428,9 +353,6 @@ abstract class BaseUI {
         if (!this.gameData) {
             throw new Error(`BUG: gameData was not set yet`)
         }
-        if (!this.engine) {
-            throw new Error(`BUG: gameEngine was not set yet`)
-        }
         const titleImage = this.createMessageTextScreen(messageStr)
 
         // Now, convert the string array into cells
@@ -486,13 +408,6 @@ abstract class BaseUI {
 
     protected clearScreen() {
         this.renderedPixels = []
-    }
-
-    protected hasAgainThatNeedsToRun() {
-        if (!this.engine) {
-            throw new Error(`BUG: Engine has not been set yet`)
-        }
-        return this.engine.hasAgain()
     }
 
     // Returns true if the window was moved (so we can re-render the screen)
