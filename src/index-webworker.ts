@@ -1,12 +1,13 @@
 import { GameEngine } from './engine'
 import Parser from './parser/parser'
 import Serializer from './parser/serializer'
-import { INPUT_BUTTON, MESSAGE_TYPE, Optional, TypedMessageEvent, WorkerMessage, WorkerResponse } from './util'
+import { INPUT_BUTTON, MESSAGE_TYPE, Optional, shouldTick, TypedMessageEvent, WorkerMessage, WorkerResponse } from './util'
 
 declare var postMessage: (msg: WorkerResponse) => void
 
 let currentEngine: Optional<GameEngine> = null
 let gameLoop: Optional<NodeJS.Timeout> = null
+let lastTick = 0
 
 onmessage = (event: TypedMessageEvent<WorkerMessage>) => {
     const response: WorkerResponse = handleMessage(event)
@@ -35,8 +36,11 @@ const getEngine = () => {
 
 const startPlayLoop = () => {
     gameLoop = setInterval(() => {
-        postMessage({ type: MESSAGE_TYPE.TICK, payload: tick() })
-    }, 2000)
+        if (shouldTick(getEngine().getGameData().metadata, lastTick)) {
+            lastTick = Date.now()
+            postMessage({ type: MESSAGE_TYPE.TICK, payload: tick() })
+        }
+    }, 20)
 }
 
 const loadGame = (code: string, level: number) => {

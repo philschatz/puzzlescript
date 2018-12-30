@@ -1,10 +1,10 @@
-import { Cell, GameEngine } from '../engine'
+import { GameEngine } from '../engine'
 import { IColor } from '../models/colors'
 import { GameData } from '../models/game'
 import { GameSprite } from '../models/tile'
 import { LEVEL_TYPE } from '../parser/astTypes'
 import Parser from '../parser/parser'
-import { _flatten, INPUT_BUTTON, Optional } from '../util'
+import { _flatten, INPUT_BUTTON, Optional, Cellish } from '../util'
 
 class CellColorCache {
     private readonly cache: Map<string, IColor[][]>
@@ -13,13 +13,10 @@ class CellColorCache {
         this.cache = new Map()
     }
 
-    public get(spritesToDrawSet: Set<GameSprite>,
+    public get(spritesToDraw: GameSprite[],
                backgroundColor: Optional<IColor>,
                spriteHeight: number,
                spriteWidth: number) {
-        const spritesToDraw = [...spritesToDrawSet]
-        .sort((s1, s2) => s1.getCollisionLayer().id - s2.getCollisionLayer().id)
-        .reverse()
 
         const key = spritesToDraw.map((s) => s.getName()).join(' ')
         let ret = this.cache.get(key)
@@ -231,7 +228,7 @@ abstract class BaseUI {
             return ret
         } else {
             return {
-                changedCells: new Set<Cell>(),
+                changedCells: new Set<Cellish>(),
                 soundToPlay: null,
                 messageToShow: null,
                 didWinGame: false,
@@ -299,7 +296,7 @@ abstract class BaseUI {
         this.renderLevelScreen(levelRows, renderScreenDepth)
     }
 
-    public drawCells(cells: Iterable<Cell>, dontRestoreCursor: boolean, renderScreenDepth: number = 0) {
+    public drawCells(cells: Iterable<Cellish>, dontRestoreCursor: boolean, renderScreenDepth: number = 0) {
         if (!this.gameData) {
             throw new Error(`BUG: gameData was not set yet`)
         }
@@ -330,19 +327,19 @@ abstract class BaseUI {
         this.drawCellsAfterRecentering(cells, renderScreenDepth)
     }
 
-    public /*for testing*/ getPixelsForCell(cell: Cell) {
+    public /*for testing*/ getPixelsForCell(cell: Cellish) {
         if (!this.gameData) {
             throw new Error(`BUG: gameData was not set yet`)
         }
-        const spritesToDrawSet = cell.getSpritesAsSet() // Not sure why, but entanglement renders properly when reversed
+        const spritesToDraw = cell.getSprites()
 
         // If there is a magic background object then rely on it last
         const magicBackgroundSprite = this.gameData.getMagicBackgroundSprite()
         if (magicBackgroundSprite) {
-            spritesToDrawSet.add(magicBackgroundSprite)
+            spritesToDraw.push(magicBackgroundSprite)
         }
 
-        const pixels = this.cellColorCache.get(spritesToDrawSet,
+        const pixels = this.cellColorCache.get(spritesToDraw,
             this.gameData.metadata.backgroundColor, this.SPRITE_HEIGHT, this.SPRITE_WIDTH)
         return pixels
     }
@@ -440,13 +437,13 @@ abstract class BaseUI {
         return cells
     }
 
-    protected abstract renderLevelScreen(levelRows: Cell[][], renderScreenDepth: number): void
+    protected abstract renderLevelScreen(levelRows: Cellish[][], renderScreenDepth: number): void
 
     protected abstract setPixel(x: number, y: number, hex: string, fgHex: Optional<string>, chars: string): void
 
     protected abstract checkIfCellCanBeDrawnOnScreen(cellStartX: number, cellStartY: number): boolean
 
-    protected cellPosToXY(cell: Cell) {
+    protected cellPosToXY(cell: Cellish) {
         const { colIndex, rowIndex } = cell
         let isOnScreen = true // can be set to false for many reasons
         let cellStartX = -1
@@ -476,7 +473,7 @@ abstract class BaseUI {
 
     protected abstract getMaxSize(): {columns: number, rows: number}
 
-    protected abstract drawCellsAfterRecentering(cells: Iterable<Cell>, renderScreenDepth: number): void
+    protected abstract drawCellsAfterRecentering(cells: Iterable<Cellish>, renderScreenDepth: number): void
 
     protected clearScreen() {
         this.renderedPixels = []
@@ -490,7 +487,7 @@ abstract class BaseUI {
     }
 
     // Returns true if the window was moved (so we can re-render the screen)
-    private recenterPlayerIfNeeded(playerCell: Cell, isOnScreen: boolean) {
+    private recenterPlayerIfNeeded(playerCell: Cellish, isOnScreen: boolean) {
         if (!this.gameData) {
             throw new Error(`BUG: gameData was not set yet`)
         }

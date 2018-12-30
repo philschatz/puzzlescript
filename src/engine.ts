@@ -6,7 +6,7 @@ import { IMutation, SimpleRuleGroup } from './models/rule'
 import { GameSprite, IGameTile } from './models/tile'
 import { Command, COMMAND_TYPE, LEVEL_TYPE, SoundItem } from './parser/astTypes'
 import { SpriteBitSet } from './spriteBitSet'
-import { _flatten, INPUT_BUTTON, Optional, resetRandomSeed, RULE_DIRECTION, setAddAll, setDifference, setEquals } from './util'
+import { _flatten, INPUT_BUTTON, Optional, resetRandomSeed, RULE_DIRECTION, setAddAll, setDifference, setEquals, Cellish } from './util'
 
 interface ICollisionLayerState {
     readonly wantsToMove: Optional<RULE_DIRECTION>
@@ -32,7 +32,7 @@ type Snapshot = Array<Array<Set<GameSprite>>>
  * The [[TerminalUI]] uses this object to render and the [[GameEngine]] uses this to maintain the state
  * of one position of the current level.
  */
-export class Cell {
+export class Cell implements Cellish {
     public readonly rowIndex: number
     public readonly colIndex: number
     public readonly spriteBitSet: SpriteBitSet

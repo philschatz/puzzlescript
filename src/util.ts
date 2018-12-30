@@ -1,4 +1,6 @@
+import { GameMetadata } from './models/metadata'
 import { IGraphJson } from './parser/serializer'
+import { GameSprite } from './models/tile';
 
 export type Optional<T> = T | null
 
@@ -253,4 +255,22 @@ export type WorkerResponse = {
 export interface PuzzlescriptWorker {
     postMessage(msg: WorkerMessage): void
     addEventListener(type: 'message', handler: (msg: {data: WorkerResponse}) => void): void
+}
+
+export const shouldTick = (metadata: GameMetadata, lastTick: number) => {
+    const now = Date.now()
+    let minTime = Math.min(metadata.realtimeInterval || 1000, metadata.keyRepeatInterval || 1000, metadata.againInterval || 1000)
+    if (minTime > 100 || Number.isNaN(minTime)) {
+        minTime = .01
+    }
+    return (now - lastTick) >= (minTime * 1000)
+}
+
+// This interface is so the WebWorker does not have to instantiate Cells just to render to the screen
+export interface Cellish {
+    colIndex: number
+    rowIndex: number
+    getSprites(): GameSprite[]
+    getSpritesAsSet(): Set<GameSprite>
+    getWantsToMove(sprite: GameSprite): Optional<RULE_DIRECTION>
 }

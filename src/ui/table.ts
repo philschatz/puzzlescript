@@ -1,8 +1,7 @@
-import { Cell } from '../engine'
 import { IColor } from '../models/colors'
 import { GameData } from '../models/game'
 import { LEVEL_TYPE } from '../parser/astTypes'
-import { _flatten, INPUT_BUTTON, Optional, RULE_DIRECTION } from '../util'
+import { _flatten, INPUT_BUTTON, Optional, RULE_DIRECTION, Cellish } from '../util'
 import BaseUI from './base'
 
 interface ITableCell {
@@ -158,7 +157,7 @@ class TableUI extends BaseUI {
         return level.message
     }
 
-    protected renderLevelScreen(levelRows: Cell[][], renderScreenDepth: number) {
+    protected renderLevelScreen(levelRows: Cellish[][], renderScreenDepth: number) {
         this.drawCells(_flatten(levelRows), false, renderScreenDepth)
     }
 
@@ -188,7 +187,7 @@ class TableUI extends BaseUI {
         }
     }
 
-    protected drawCellsAfterRecentering(cells: Iterable<Cell>, renderScreenDepth: number) {
+    protected drawCellsAfterRecentering(cells: Iterable<Cellish>, renderScreenDepth: number) {
         for (const cell of cells) {
             this._drawCell(cell, renderScreenDepth)
         }
@@ -216,7 +215,7 @@ class TableUI extends BaseUI {
         this.table.setAttribute('data-ps-last-input-processed', `${this.inputsProcessed}`)
     }
 
-    private _drawCell(cell: Cell, renderScreenDepth: number = 0) {
+    private _drawCell(cell: Cellish, renderScreenDepth: number = 0) {
         if (!this.gameData) {
             throw new Error(`BUG: gameData was not set yet`)
         }

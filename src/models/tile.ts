@@ -1,6 +1,6 @@
 import BitSet from 'bitset'
 import { Cell } from '../engine'
-import { _flatten, Optional, RULE_DIRECTION, setDifference, setIntersection } from '../util'
+import { _flatten, Optional, RULE_DIRECTION, setDifference, setIntersection, Cellish } from '../util'
 import { BaseForLines, IGameCode } from './BaseForLines'
 import { CollisionLayer } from './collisionLayer'
 import { IColor } from './colors'
@@ -23,7 +23,7 @@ export interface IGameTile extends IGameNode {
     matchesCell: (cell: Cell) => boolean
     isOr: () => boolean
     getCellsThatMatch: () => Set<Cell>
-    getSpritesThatMatch: (cell: Cell) => Set<GameSprite>
+    getSpritesThatMatch: (cell: Cellish) => Set<GameSprite>
     getName: () => string
     equals: (t: IGameTile) => boolean
     hasCell(cell: Cell): boolean
@@ -102,7 +102,7 @@ export abstract class GameSprite extends BaseForLines implements IGameTile {
     public matchesCell(cell: Cell): boolean {
         return cell.getSpritesAsSet().has(this)
     }
-    public getSpritesThatMatch(cell: Cell) {
+    public getSpritesThatMatch(cell: Cellish) {
         if (cell.getSpritesAsSet().has(this)) {
             return new Set([this])
         } else {
@@ -263,7 +263,7 @@ export abstract class GameLegendTile extends BaseForLines implements IGameTile {
         return false
     }
     public abstract matchesCell(cell: Cell): boolean
-    public abstract getSpritesThatMatch(cell: Cell): Set<GameSprite>
+    public abstract getSpritesThatMatch(cell: Cellish): Set<GameSprite>
     public abstract hasSingleCollisionLayer(): boolean
 
     public getName() {
@@ -409,7 +409,7 @@ export class GameLegendTileSimple extends GameLegendTile {
         return true
     }
 
-    public getSpritesThatMatch(cell: Cell) {
+    public getSpritesThatMatch(cell: Cellish) {
         return setIntersection(new Set(this.getSprites()), cell.getSpritesAsSet())
     }
 
@@ -423,7 +423,7 @@ export class GameLegendTileAnd extends GameLegendTile {
         throw new Error(`BUG: Unreachable code`)
     }
 
-    public getSpritesThatMatch(cell: Cell): Set<GameSprite> {
+    public getSpritesThatMatch(cell: Cellish): Set<GameSprite> {
         // return setIntersection(new Set(this.getSprites()), cell.getSpritesAsSet())
         throw new Error(`BUG: This method should only be called for OR tiles`)
     }
@@ -453,7 +453,7 @@ export class GameLegendTileOr extends GameLegendTile {
         return false
     }
 
-    public getSpritesThatMatch(cell: Cell) {
+    public getSpritesThatMatch(cell: Cellish) {
         return setIntersection(new Set(this.getSprites()), cell.getSpritesAsSet())
     }
 

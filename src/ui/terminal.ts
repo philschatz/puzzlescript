@@ -3,13 +3,13 @@ import ansiStyles from 'ansi-styles'
 import chalk from 'chalk'
 import * as supportsColor from 'supports-color'
 
-import { Cell, GameData, Optional, RULE_DIRECTION } from '..'
 import { CollisionLayer } from '../models/collisionLayer'
 import { IColor } from '../models/colors'
 import { GameSprite } from '../models/tile'
 import { LEVEL_TYPE } from '../parser/astTypes'
-import { _debounce, _flatten } from '../util'
+import { _debounce, _flatten, Optional, Cellish, RULE_DIRECTION } from '../util'
 import BaseUI from './base'
+import { GameData } from '../models/game';
 
 // Determine if this
 // 'truecolor' if this terminal supports 16m colors. 256 colors otherwise
@@ -254,7 +254,7 @@ class TerminalUI extends BaseUI {
         drawPixelChar(x, y, fgHex, bgHex, chars)
     }
 
-    public moveInspectorTo(cell: Cell) {
+    public moveInspectorTo(cell: Cellish) {
         if (!this.engine) {
             throw new Error(`BUG: engine has not been assigned yet`)
         }
@@ -312,7 +312,7 @@ class TerminalUI extends BaseUI {
         }
     }
 
-    protected renderLevelScreen(levelRows: Cell[][], renderScreenDepth: number) {
+    protected renderLevelScreen(levelRows: Cellish[][], renderScreenDepth: number) {
         if (!this.gameData) {
             throw new Error(`BUG: gameData was not set yet`)
         }
@@ -326,7 +326,7 @@ class TerminalUI extends BaseUI {
         } else {
 
             // Print out the size of the screen and the count of each sprite on the screen
-            const collisionLayerToSprites: Map<CollisionLayer, Map<GameSprite, Cell[]>> = new Map()
+            const collisionLayerToSprites: Map<CollisionLayer, Map<GameSprite, Cellish[]>> = new Map()
             for (const cell of _flatten(levelRows)) {
                 if (this.cellPosToXY(cell).isOnScreen) {
                     for (const sprite of cell.getSpritesAsSet()) {
@@ -423,7 +423,7 @@ class TerminalUI extends BaseUI {
         return ret.join('')
     }
 
-    protected drawCellsAfterRecentering(cells: Iterable<Cell>, renderScreenDepth: number) {
+    protected drawCellsAfterRecentering(cells: Iterable<Cellish>, renderScreenDepth: number) {
         const ret = []
         for (const cell of cells) {
             const instructions = this._drawCell(cell, renderScreenDepth)
@@ -464,7 +464,7 @@ class TerminalUI extends BaseUI {
         process.stdout.write(getRestoreCursor())
     }
 
-    private _drawCell(cell: Cell, renderScreenDepth: number = 0) {
+    private _drawCell(cell: Cellish, renderScreenDepth: number = 0) {
         const ret: string[] = []
         if (!this.gameData) {
             throw new Error(`BUG: gameData was not set yet`)
