@@ -6,7 +6,7 @@ import { IMutation, SimpleRuleGroup } from './models/rule'
 import { GameSprite, IGameTile } from './models/tile'
 import { Command, COMMAND_TYPE, LEVEL_TYPE, SoundItem } from './parser/astTypes'
 import { SpriteBitSet } from './spriteBitSet'
-import { _flatten, Optional, resetRandomSeed, RULE_DIRECTION, setAddAll, setDifference, setEquals, INPUT_BUTTON } from './util'
+import { _flatten, INPUT_BUTTON, Optional, resetRandomSeed, RULE_DIRECTION, setAddAll, setDifference, setEquals } from './util'
 
 interface ICollisionLayerState {
     readonly wantsToMove: Optional<RULE_DIRECTION>
@@ -515,33 +515,6 @@ export class LevelEngine extends EventEmitter2 {
         }
     }
 
-    private pressDir(direction: RULE_DIRECTION) {
-        // Should disable keypresses if `AGAIN` is running.
-        // It is commented because the didSpritesChange logic is not correct.
-        // a rule might add a sprite, and then another rule might remove a sprite.
-        // We need to compare the set of sprites before and after ALL rules ran.
-        // This will likely be implemented as part of UNDO or CHECKPOINT.
-        // if (!this.hasAgain()) {
-        this.pendingPlayerWantsToMove = direction
-        // }
-    }
-    private pressRestart() {
-        // Add the initial checkpoint to the top (rather than clearing the stack)
-        // so the player can still "UNDO" after pressing "RESTART"
-        const snapshot = this.undoStack[0]
-        this.undoStack.push(snapshot)
-        this.applySnapshot(snapshot)
-    }
-    private pressUndo() {
-        const snapshot = this.undoStack.pop()
-        if (snapshot && this.undoStack.length > 0) { // the 0th entry is the initial load of the level
-            this.applySnapshot(snapshot)
-        } else if (snapshot) {
-            // oops, put the snapshot back on the stack
-            this.undoStack.push(snapshot)
-        }
-    }
-
     public /*for testing*/ tickUpdateCells() {
         logger.debug(() => `applying rules`)
         return this._tickUpdateCells(this.gameData.rules.filter((r) => !r.isLate()))
@@ -599,6 +572,33 @@ export class LevelEngine extends EventEmitter2 {
             }
         }
         return movedCells
+    }
+
+    private pressDir(direction: RULE_DIRECTION) {
+        // Should disable keypresses if `AGAIN` is running.
+        // It is commented because the didSpritesChange logic is not correct.
+        // a rule might add a sprite, and then another rule might remove a sprite.
+        // We need to compare the set of sprites before and after ALL rules ran.
+        // This will likely be implemented as part of UNDO or CHECKPOINT.
+        // if (!this.hasAgain()) {
+        this.pendingPlayerWantsToMove = direction
+        // }
+    }
+    private pressRestart() {
+        // Add the initial checkpoint to the top (rather than clearing the stack)
+        // so the player can still "UNDO" after pressing "RESTART"
+        const snapshot = this.undoStack[0]
+        this.undoStack.push(snapshot)
+        this.applySnapshot(snapshot)
+    }
+    private pressUndo() {
+        const snapshot = this.undoStack.pop()
+        if (snapshot && this.undoStack.length > 0) { // the 0th entry is the initial load of the level
+            this.applySnapshot(snapshot)
+        } else if (snapshot) {
+            // oops, put the snapshot back on the stack
+            this.undoStack.push(snapshot)
+        }
     }
 
     private _setLevel(levelSprites: Array<Array<Set<GameSprite>>>) {
@@ -1006,7 +1006,7 @@ export class GameEngine {
     }
 
     public press(direction: INPUT_BUTTON) {
-        switch(direction) {
+        switch (direction) {
             case INPUT_BUTTON.UNDO:
                 this.messageShownAndWaitingForActionPress = false
                 break

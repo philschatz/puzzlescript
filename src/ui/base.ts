@@ -4,7 +4,7 @@ import { GameData } from '../models/game'
 import { GameSprite } from '../models/tile'
 import { LEVEL_TYPE } from '../parser/astTypes'
 import Parser from '../parser/parser'
-import { _flatten, Optional, INPUT_BUTTON } from '../util'
+import { _flatten, INPUT_BUTTON, Optional } from '../util'
 
 class CellColorCache {
     private readonly cache: Map<string, IColor[][]>

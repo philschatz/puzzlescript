@@ -1,4 +1,4 @@
-import { IGraphJson } from "./parser/serializer";
+import { IGraphJson } from './parser/serializer'
 
 export type Optional<T> = T | null
 
@@ -188,7 +188,6 @@ export interface ICacheable {
     toKey: () => string
 }
 
-
 // Webworker message interfaces
 export interface TypedMessageEvent<T> extends MessageEvent {
     data: T
@@ -203,7 +202,7 @@ export enum MESSAGE_TYPE {
     CLOSE = 'CLOSE'
 }
 
-export type SerializedTickResult = {
+export interface SerializedTickResult {
     changedCells: Array<{
         colIndex: number,
         rowIndex: number,

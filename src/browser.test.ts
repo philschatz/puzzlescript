@@ -3,7 +3,7 @@
 import fs from 'fs'
 import path from 'path'
 import puppeteer from 'puppeteer' // tslint:disable-line:no-implicit-dependencies
-import { Optional } from './util';
+import { Optional } from './util'
 // import mapStackTrace from 'sourcemapped-stacktrace-node')
 
 // Defined via jest-puppeteer environment
@@ -15,7 +15,7 @@ async function sleep(ms: number) {
 }
 
 async function getAttrs() {
-    return await page.$eval('.ps-table', (el) => {
+    return page.$eval('.ps-table', (el) => {
         return {
             count: el.getAttribute('data-ps-last-input-processed'),
             isAcceptingInput: el.getAttribute('data-ps-accepting-input'),
@@ -88,9 +88,9 @@ async function evaluateWithStackTrace(fn: puppeteer.EvaluateFn, ...args: any[]) 
 
 describe('Browser', () => {
 
-    let dismissedCount: string[] = []
+    const dismissedCount: string[] = []
 
-    const dialogHandler = async (dialog: puppeteer.Dialog) => {
+    const dialogHandler = async(dialog: puppeteer.Dialog) => {
         dismissedCount.push(dialog.message())
         await dialog.dismiss()
         // page.off('dialog', dialogHandler)
@@ -163,8 +163,8 @@ describe('Browser', () => {
         })
     })
 
-    it('plays a couple levels using the demo page', async () => {
-        const waitForDialogAfter = async (fn: () => Promise<any>) => {
+    it('plays a couple levels using the demo page', async() => {
+        const waitForDialogAfter = async(fn: () => Promise<any>) => {
             // page.once('dialog', dialogHandler)
             const oldCount = dismissedCount.length
             await fn()
@@ -181,7 +181,7 @@ describe('Browser', () => {
         }
 
         // The game shows a dialog immediately (uggh)
-        await waitForDialogAfter(async () => {
+        await waitForDialogAfter(async() => {
             await page.goto(`http://localhost:8000/index.xhtml`)
             await page.waitForSelector(`#loading:not(.is-loading)`)
         })

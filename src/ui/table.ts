@@ -2,7 +2,7 @@ import { Cell } from '../engine'
 import { IColor } from '../models/colors'
 import { GameData } from '../models/game'
 import { LEVEL_TYPE } from '../parser/astTypes'
-import { _flatten, Optional, RULE_DIRECTION, INPUT_BUTTON } from '../util'
+import { _flatten, INPUT_BUTTON, Optional, RULE_DIRECTION } from '../util'
 import BaseUI from './base'
 
 interface ITableCell {

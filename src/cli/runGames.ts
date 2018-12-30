@@ -11,8 +11,8 @@ import Serializer from '../parser/serializer'
 import { saveCoverageFile } from '../recordCoverage'
 import { closeSounds } from '../sounds'
 import TerminalUI from '../ui/terminal'
+import { INPUT_BUTTON } from '../util'
 import { ILevelRecording } from './playGame'
-import { INPUT_BUTTON } from '../util';
 
 async function sleep(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms))
