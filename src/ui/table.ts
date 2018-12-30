@@ -1,10 +1,9 @@
-import { GameEngine } from '../engine'
 import { IColor } from '../models/colors'
 import { GameData } from '../models/game'
-import { LEVEL_TYPE } from '../parser/astTypes'
-import parser from '../parser/parser'
-import { _flatten, Cellish, INPUT_BUTTON, Optional, RULE_DIRECTION } from '../util'
+import { _flatten, Cellish, INPUT_BUTTON, Optional, RULE_DIRECTION, GameEngineHandler } from '../util'
 import BaseUI from './base'
+import { Soundish } from '../parser/astTypes';
+import { playSound } from '../sound/sfxr';
 
 interface ITableCell {
     td: HTMLTableCellElement,
@@ -12,12 +11,10 @@ interface ITableCell {
     pixels: HTMLSpanElement[][]
 }
 
-class TableUI extends BaseUI {
+class TableUI extends BaseUI implements GameEngineHandler {
     private readonly table: HTMLElement
     private inputsProcessed: number
     private tableCells: ITableCell[][]
-    private engine: Optional<GameEngine>
-    private lastTick: number
 
     constructor(table: HTMLElement) {
         super()
@@ -26,75 +23,27 @@ class TableUI extends BaseUI {
         this.inputsProcessed = 0
         table.classList.add('ps-table')
         this.markAcceptingInput(false)
-        this.engine = null
-        this.lastTick = 0
     }
 
-    public setGameEngine(code: string) {
-        const { data } = parser.parse(code)
-        if (!data) {
-            throw new Error(`BUG: Could not parse gameData and did not find an error`)
-        }
-        this.engine = new GameEngine(data)
-        super.setGameData(data)
-    }
-
-    public pressUp() {
-        this.press(INPUT_BUTTON.UP)
-    }
-    public pressDown() {
-        this.press(INPUT_BUTTON.DOWN)
-    }
-    public pressLeft() {
-        this.press(INPUT_BUTTON.LEFT)
-    }
-    public pressRight() {
-        this.press(INPUT_BUTTON.RIGHT)
-    }
-    public pressAction() {
-        this.press(INPUT_BUTTON.ACTION)
-    }
-    public pressUndo() {
+    public onPress(dir: INPUT_BUTTON) {
         this.markAcceptingInput(false)
-        this.press(INPUT_BUTTON.UNDO)
-        super.handleUndo()
-    }
-    public pressRestart() {
-        this.markAcceptingInput(false)
-        this.press(INPUT_BUTTON.RESTART)
-        super.handleRestart()
-    }
-
-    public tick() {
-        const ret = this._tick()
-        this.markAcceptingInput(!this.hasAgainThatNeedsToRun())
-        return ret
-    }
-
-    public press(dir: INPUT_BUTTON) {
-        this.markAcceptingInput(false)
-        if (this.engine) {
-            this.engine.press(dir)
+        switch(dir) {
+            case INPUT_BUTTON.UNDO:
+            case INPUT_BUTTON.RESTART:
+                this.renderScreen(false)
         }
     }
-
-    public setLevel(levelNum: number) {
-        // this.markAcceptingInput(false)
-        if (!this.engine) {
-            throw new Error(`BUG: Engine has not been set yet`)
-        }
-        this.engine.setLevel(levelNum)
+    public onLevelChange(levelNum: number, cells: Optional<Cellish[][]>, message: Optional<string>) {
         this.clearScreen()
         this.table.setAttribute('data-ps-current-level', `${levelNum}`)
 
-        if (!this.isCurrentLevelAMessage()) {
-            super._setLevel(this.engine.getCurrentLevel(), this.engine.getCurrentLevelCells())
-            const levelCells = this.getCurrentLevelCells()
+        if (cells) {
+            super._setLevel(cells, message)
             // Draw the level
             // Draw the empty table
             this.tableCells = []
             const gameData = this.getGameData()
-            const { width, height } = gameData.metadata.flickscreen || gameData.metadata.zoomscreen || { width: levelCells[0].length, height: levelCells.length }
+            const { width, height } = gameData.metadata.flickscreen || gameData.metadata.zoomscreen || { width: cells[0].length, height: cells.length }
 
             this.table.setAttribute('tabindex', '0')
             const tbody = document.createElement('tbody')
@@ -137,12 +86,8 @@ class TableUI extends BaseUI {
             }
             this.table.appendChild(tbody)
 
-            for (const row of levelCells) {
+            for (const row of cells) {
                 this.drawCells(row, false)
-            }
-
-            if (this.getGameData().metadata.runRulesOnLevelStart) {
-                this.tick()
             }
         }
         this.markAcceptingInput(true)
@@ -175,31 +120,6 @@ class TableUI extends BaseUI {
         // clear all the rows
         this.table.innerHTML = ''
         this.tableCells = []
-    }
-
-    public isCurrentLevelAMessage() {
-        if (!this.engine) {
-            throw new Error(`BUG: engine has not been set yet`)
-        }
-        return this.engine.getCurrentLevel().type === LEVEL_TYPE.MESSAGE
-    }
-
-    public getCurrentLevelMessage() {
-        if (!this.engine) {
-            throw new Error(`BUG: engine has not been set yet`)
-        }
-        const level = this.engine.getCurrentLevel()
-        if (level.type === LEVEL_TYPE.MAP) {
-            throw new Error(`BUG: current level is not a message level`)
-        }
-        return level.message
-    }
-
-    protected hasAgainThatNeedsToRun() {
-        if (!this.engine) {
-            throw new Error(`BUG: Engine has not been set yet`)
-        }
-        return this.engine.hasAgain()
     }
 
     protected renderLevelScreen(levelRows: Cellish[][], renderScreenDepth: number) {
@@ -250,31 +170,18 @@ class TableUI extends BaseUI {
         }
     }
 
-    private _tick() {
-        if (!this.engine) {
-            throw new Error(`BUG: Game has not been specified yet`)
-        }
-        const now = Date.now()
-        const gameData = this.getGameData()
-        let minTime = Math.min(gameData.metadata.realtimeInterval || 1000, gameData.metadata.keyRepeatInterval || 1000, gameData.metadata.againInterval || 1000)
-        if (minTime > 100 || Number.isNaN(minTime)) {
-            minTime = .01
-        }
-        if ((now - this.lastTick) >= (minTime * 1000)) {
-            this.lastTick = now
-            const ret = this.engine.tick()
-            this.drawCells(ret.changedCells, false)
-            return ret
-        } else {
-            return {
-                changedCells: new Set<Cellish>(),
-                soundToPlay: null,
-                messageToShow: null,
-                didWinGame: false,
-                didLevelChange: false,
-                wasAgainTick: false
-            }
-        }
+    public async onMessage(msg: string) {
+        alert(msg)
+    }
+    public onWin() {
+        alert(`You won! Congratulations!`)
+    }
+    public async onSound(sound: Soundish) {
+        await playSound(sound.soundCode)
+    }
+    public onTick(changedCells: Set<Cellish>, hasAgain: boolean) {
+        this.drawCells(changedCells, false)
+        this.markAcceptingInput(!hasAgain)
     }
 
     private markAcceptingInput(flag: boolean) {
@@ -305,7 +212,15 @@ class TableUI extends BaseUI {
         }
 
         // Inject the set of sprites for a11y
-        const cellLabel = this.tableCells[cell.rowIndex - this.windowOffsetRowStart][cell.colIndex - this.windowOffsetColStart].label
+        const tableRow = this.tableCells[cell.rowIndex - this.windowOffsetRowStart]
+        if (!tableRow) {
+            throw new Error(`BUG: Should not be trying to draw when there are no table cells`)
+        }
+        const tableCell = tableRow[cell.colIndex - this.windowOffsetColStart]
+        if (!tableCell) {
+            throw new Error(`BUG: Should not be trying to draw when there is not a matching table cell`)
+        }
+        const cellLabel = tableCell.label
         if (!cellLabel) {
             throw new Error(`BUG: Could not find cell in the table: [${cell.rowIndex} - ${this.windowOffsetRowStart}][${cell.colIndex} - ${this.windowOffsetColStart}]`)
         }

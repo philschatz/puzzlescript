@@ -1,13 +1,12 @@
 import { Button, BUTTON_TYPE, Gamepad, Keyboard, or } from 'contro'
 import { Cell, GameEngine, ILoadingCellsEvent } from './engine'
 import { GameData } from './models/game'
-import { IGameTile } from './models/tile'
-import { SoundItem } from './parser/astTypes'
 import Parser from './parser/parser'
 import { closeSounds, playSound } from './sounds'
 import BaseUI from './ui/base'
 import TableUI from './ui/table'
 import { Optional, RULE_DIRECTION } from './util'
+import parser from './parser/parser';
 
 // const worker: PuzzlescriptWorker = new Worker('./lib/webpack-output-webworker.js')
 
@@ -66,20 +65,6 @@ export {
     closeSounds
 }
 
-export interface ICustomTableEngineEvents {
-    onSound?(sound: SoundItem<IGameTile>): (void | Promise<any>)
-    onLevelComplete?(newLevel: number): (void | Promise<any>)
-    onMessage?(message: string): (void | Promise<any>)
-    onWin?(): (void | Promise<any>)
-}
-
-export interface ITableEngineEvents {
-    onSound(sound: SoundItem<IGameTile>): (void | Promise<any>)
-    onLevelComplete(newLevel: number): (void | Promise<any>)
-    onMessage(message: string): (void | Promise<any>)
-    onWin(): (void | Promise<any>)
-}
-
 interface Control<T> {
     up: T,
     down: T,
@@ -93,13 +78,12 @@ interface Control<T> {
 export class TableEngine {
     public gamepad: Gamepad
     private tableUI: TableUI
+    private engine: Optional<GameEngine>
     private timer: number
-    private currentLevel: number
     private controls: Control<{button: Button, lastPressed: Optional<number>}>
     private controlCheckers: Array<() => void>
-    private readonly eventHandler: ITableEngineEvents
 
-    constructor(table: HTMLTableElement, customHandler?: ICustomTableEngineEvents) {
+    constructor(table: HTMLTableElement) {
         const keyboard = new Keyboard()
         this.gamepad = new Gamepad()
         this.controls = {
@@ -128,52 +112,49 @@ export class TableEngine {
         }
 
         this.controlCheckers = [
-            makeChecker('up', () => this.tableUI.pressUp()),
-            makeChecker('down', () => this.tableUI.pressDown()),
-            makeChecker('left', () => this.tableUI.pressLeft()),
-            makeChecker('right', () => this.tableUI.pressRight()),
-            makeChecker('action', () => this.tableUI.pressAction()),
-            makeChecker('undo', () => this.tableUI.pressUndo()),
-            makeChecker('restart', () => this.tableUI.pressRestart())
+            makeChecker('up', () => this.getEngine().pressUp()),
+            makeChecker('down', () => this.getEngine().pressDown()),
+            makeChecker('left', () => this.getEngine().pressLeft()),
+            makeChecker('right', () => this.getEngine().pressRight()),
+            makeChecker('action', () => this.getEngine().pressAction()),
+            makeChecker('undo', () => this.getEngine().pressUndo()),
+            makeChecker('restart', () => this.getEngine().pressRestart())
         ]
 
-        this.tableUI = new TableUI(table)
         this.timer = 0
-        this.currentLevel = 0
-
-        const defaultEventHandler = {
-            onSound: (sound: SoundItem<IGameTile>) => {
-                // let sounds play while the game loads or player keeps moving
-                playSound(sound) // tslint:disable-line:no-floating-promises
-                return
-            },
-            onLevelComplete: () => {
-                if (!this.tableUI.isCurrentLevelAMessage()) {
-                    alert(`Congratulations! You completed the level.`)
-                }
-            },
-            onMessage: (message: string) => alert(message),
-            onWin: () => alert(`You WON!`)
-        }
-
-        this.eventHandler = {
-            onSound: (customHandler ? customHandler.onSound : null) || defaultEventHandler.onSound,
-            onLevelComplete: (customHandler ? customHandler.onLevelComplete : null) || defaultEventHandler.onLevelComplete,
-            onMessage: (customHandler ? customHandler.onMessage : null) || defaultEventHandler.onMessage,
-            onWin: (customHandler ? customHandler.onWin : null) || defaultEventHandler.onWin
-        }
+        this.engine = null
+        // TODO: wait until user is no longer pressing anything before
+        // showing the alert().
+        // https://bugzilla.mozilla.org/show_bug.cgi?id=1346228
+        const that = this
+        this.tableUI = new (class CustomTableUI extends TableUI {
+            onMessage(msg: string) {
+                const p = new Promise<void>((resolve) => {
+                    const timer = setInterval(() => {
+                        if (!that.isSomethingPressed()) {
+                            alert(msg)
+                            clearInterval(timer)
+                            resolve()
+                        }
+                    }, 10)
+                })
+                return p
+            }
+        })(table)
     }
 
     public setGame(code: string, levelNum?: number) {
-        this.tableUI.setGameEngine(code)
+        const { data} = parser.parse(code)
+        this.engine = new GameEngine(data, this.tableUI)
+
+        this.tableUI.setGameData(data)
         if (levelNum !== undefined) {
-            this.tableUI.setLevel(levelNum)
+            this.engine.setLevel(levelNum)
         }
     }
 
     public setLevel(levelNum: number) {
-        this.tableUI.setLevel(levelNum)
-        this.currentLevel = levelNum
+        this.getEngine().setLevel(levelNum)
     }
 
     public start() {
@@ -191,50 +172,18 @@ export class TableEngine {
     public startTickHandler() {
         const runLoop = async() => {
             this.pollControls()
-            await this.tick()
+            await this.getEngine().tick()
             this.timer = window.requestAnimationFrame(runLoop)
         }
 
         this.timer = window.requestAnimationFrame(runLoop)
     }
 
-    public async tick() {
-        if (this.tableUI.isCurrentLevelAMessage()) {
-            // wait until user is no longer pressing anything before
-            // showing the alert().
-            // https://bugzilla.mozilla.org/show_bug.cgi?id=1346228
-            if (this.isSomethingPressed()) {
-                return
-            }
-            await this.eventHandler.onMessage(this.tableUI.getCurrentLevelMessage())
-            this.currentLevel++
-            this.tableUI.setLevel(this.currentLevel)
-            await this.eventHandler.onLevelComplete(this.currentLevel)
+    private getEngine() {
+        if (!this.engine) {
+            throw new Error(`BUG: Engine has not been created yet`)
         }
-        const {
-            // changedCells,
-            didLevelChange,
-            didWinGame,
-            messageToShow,
-            soundToPlay
-            // wasAgainTick
-        } = this.tableUI.tick()
-
-        if (soundToPlay) {
-            await this.eventHandler.onSound(soundToPlay)
-        }
-        if (didWinGame) {
-            await this.eventHandler.onWin()
-            cancelAnimationFrame(this.timer)
-            return // make sure we don't call window.requestAnimationFrame again
-        } else if (didLevelChange) {
-            this.currentLevel += 1
-            this.tableUI.setLevel(this.currentLevel)
-            await this.eventHandler.onLevelComplete(this.currentLevel)
-        } else if (messageToShow) {
-            await this.eventHandler.onMessage(messageToShow)
-            this.tableUI.pressAction() // Tell the engine we are ready to continue
-        }
+        return this.engine
     }
 
     private isSomethingPressed() {

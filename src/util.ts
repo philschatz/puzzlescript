@@ -1,6 +1,7 @@
 import { GameMetadata } from './models/metadata'
 import { GameSprite } from './models/tile'
 import { IGraphJson } from './parser/serializer'
+import { Soundish } from './parser/astTypes';
 
 export type Optional<T> = T | null
 
@@ -273,4 +274,13 @@ export interface Cellish {
     getSprites(): GameSprite[]
     getSpritesAsSet(): Set<GameSprite>
     getWantsToMove(sprite: GameSprite): Optional<RULE_DIRECTION>
+}
+
+export interface GameEngineHandler {
+    onPress(dir: INPUT_BUTTON): void
+    onMessage(msg: string): Promise<void>
+    onLevelChange(level: number, cells: Optional<Cellish[][]>, message: Optional<string>): void
+    onWin(): void
+    onSound(sound: Soundish): Promise<void>
+    onTick(changedCells: Set<Cellish>, hasAgain: boolean): void
 }

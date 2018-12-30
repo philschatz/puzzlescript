@@ -6,7 +6,7 @@ import { IMutation, SimpleRuleGroup } from './models/rule'
 import { GameSprite, IGameTile } from './models/tile'
 import { Command, COMMAND_TYPE, LEVEL_TYPE, SoundItem } from './parser/astTypes'
 import { SpriteBitSet } from './spriteBitSet'
-import { _flatten, Cellish, INPUT_BUTTON, Optional, resetRandomSeed, RULE_DIRECTION, setAddAll, setDifference, setEquals } from './util'
+import { _flatten, Cellish, INPUT_BUTTON, Optional, resetRandomSeed, RULE_DIRECTION, setAddAll, setDifference, setEquals, GameEngineHandler } from './util'
 
 interface ICollisionLayerState {
     readonly wantsToMove: Optional<RULE_DIRECTION>
@@ -857,14 +857,13 @@ export class GameEngine {
     private levelEngine: LevelEngine
     private currentLevelNum: number
     private isFirstTick: boolean
-    private messageShownAndWaitingForActionPress: boolean
-    constructor(gameData: GameData) {
+    private handler: GameEngineHandler
+    constructor(gameData: GameData, handler: GameEngineHandler) {
         this.isFirstTick = true
         this.currentLevelNum = -1234567
-        this.messageShownAndWaitingForActionPress = false
+        this.handler = handler
 
         this.levelEngine = new LevelEngine(gameData)
-        this.messageShownAndWaitingForActionPress = false
     }
     public on(eventName: string, handler: ILoadingProgressHandler) {
         this.levelEngine.on(eventName, handler)
@@ -888,29 +887,30 @@ export class GameEngine {
         return this.levelEngine.canUndo()
     }
     public setLevel(levelNum: number) {
-        this.messageShownAndWaitingForActionPress = false
         this.levelEngine.hasAgainThatNeedsToRun = false // clear this so the user can press "X"
-        if (this.getGameData().levels[levelNum].type === LEVEL_TYPE.MAP) {
+        this.currentLevelNum = levelNum
+        const level = this.getGameData().levels[levelNum]
+        if (level.type === LEVEL_TYPE.MAP) {
             this.isFirstTick = true
             this.levelEngine.setLevel(levelNum)
+            this.handler.onLevelChange(this.currentLevelNum, this.levelEngine.getCurrentLevel().getCells(), null)
         } else {
             // TODO: no need to set the levelEngine when the current level is a Message
+            this.handler.onLevelChange(this.currentLevelNum, null, level.message)
         }
-        this.currentLevelNum = levelNum
     }
-    public tick(): ITickResult {
+    public async tick(): Promise<ITickResult> {
         // When the current level is a Message, wait until the user presses ACTION
-        if (this.getCurrentLevel().type === LEVEL_TYPE.MESSAGE) {
-            // Wait until the user presses "X" (ACTION)
+        const currentLevel = this.getCurrentLevel()
+        if (currentLevel.type === LEVEL_TYPE.MESSAGE) {
+            await this.handler.onMessage(currentLevel.message)
             let didWinGameInMessage = false
             let didLevelChange = false
-            if (this.levelEngine.pendingPlayerWantsToMove === RULE_DIRECTION.ACTION) {
-                didLevelChange = true
-                if (this.currentLevelNum === this.levelEngine.gameData.levels.length - 1) {
-                    didWinGameInMessage = true
-                } else {
-                    this.setLevel(this.currentLevelNum + 1)
-                }
+            if (this.currentLevelNum === this.levelEngine.gameData.levels.length - 1) {
+                this.handler.onWin()
+                didWinGameInMessage = true
+            } else {
+                this.setLevel(this.currentLevelNum + 1)
             }
             // clear any keys that were pressed
             this.levelEngine.pendingPlayerWantsToMove = null
@@ -924,7 +924,7 @@ export class GameEngine {
                 wasAgainTick: false
             }
         }
-        const hasAgain = this.levelEngine.hasAgain()
+        let hasAgain = this.levelEngine.hasAgain()
         if (this.levelEngine.gameData.metadata.runRulesOnLevelStart && this.isFirstTick) {
             // don't cancel early
         } else if (!hasAgain && !(this.levelEngine.gameData.metadata.realtimeInterval || this.levelEngine.pendingPlayerWantsToMove)) {
@@ -939,39 +939,12 @@ export class GameEngine {
             }
         }
 
-        // If we are showing a message then wait until ACTION is pressed
-        if (this.messageShownAndWaitingForActionPress) {
-            if (this.levelEngine.pendingPlayerWantsToMove === RULE_DIRECTION.ACTION) {
-                // render all the cells because we are currently rendering a Message
-                this.messageShownAndWaitingForActionPress = false
-                this.levelEngine.pendingPlayerWantsToMove = null
-                return {
-                    changedCells: new Set(_flatten(this.getCurrentLevelCells())),
-                    soundToPlay: null,
-                    messageToShow: null,
-                    didWinGame: false,
-                    didLevelChange: false,
-                    wasAgainTick: false
-                }
-            } else {
-                // Keep waiting until ACTION is pressed
-                return {
-                    changedCells: new Set(),
-                    soundToPlay: null,
-                    messageToShow: null,
-                    didWinGame: false,
-                    didLevelChange: false,
-                    wasAgainTick: false
-                }
-
-            }
-        }
-
         const { changedCells, soundToPlay, messageToShow, isWinning, hasRestart } = this.levelEngine.tick()
         this.isFirstTick = false
 
         if (hasRestart) {
             this.pressRestart()
+            this.handler.onPress(INPUT_BUTTON.RESTART)
             return {
                 changedCells: new Set(_flatten(this.getCurrentLevelCells())),
                 soundToPlay: null,
@@ -982,17 +955,23 @@ export class GameEngine {
             }
         }
 
+        hasAgain = this.levelEngine.hasAgain()
+        this.handler.onTick(changedCells, hasAgain)
         let didWinGame = false
         if (isWinning) {
             if (this.currentLevelNum === this.levelEngine.gameData.levels.length - 1) {
                 didWinGame = true
+                this.handler.onWin()
             } else {
                 this.setLevel(this.currentLevelNum + 1)
             }
         }
 
+        if (soundToPlay) {
+            await this.handler.onSound(soundToPlay)
+        }
         if (messageToShow) {
-            this.messageShownAndWaitingForActionPress = true
+            await this.handler.onMessage(messageToShow)
         }
 
         return {
@@ -1007,14 +986,12 @@ export class GameEngine {
 
     public press(direction: INPUT_BUTTON) {
         switch (direction) {
-            case INPUT_BUTTON.UNDO:
-                this.messageShownAndWaitingForActionPress = false
-                break
             case INPUT_BUTTON.RESTART:
                 this.isFirstTick = true
                 break
         }
-        return this.levelEngine.press(direction)
+        this.levelEngine.press(direction)
+        this.handler.onPress(direction)
     }
     public pressUp() {
         this.press(INPUT_BUTTON.UP)
@@ -1075,4 +1052,7 @@ export class GameEngine {
         this.levelEngine.restoreFromMessageLevel()
     }
 
+    public isCurrentLevelAMessage() {
+        return this.getCurrentLevel().type === LEVEL_TYPE.MESSAGE
+    }
 }

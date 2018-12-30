@@ -28,7 +28,9 @@ module.exports = {
         // Add '.ts' and '.tsx' as resolvable extensions.
         extensions: ['.ts', '.tsx', '.js', '.json'],
         alias: {
+            // TODO: There should only be 1 sfxr entry
             './sound/sfxr': path.resolve(__dirname, './src/sound/sfxr-browser'),
+            '../sound/sfxr': path.resolve(__dirname, './src/sound/sfxr-browser'),
             '../ui/terminal': path.resolve(__dirname, './src/ui/terminalBrowserShim.js')
         }
     },

@@ -295,7 +295,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: ISa
     if (!level) {
         throw new Error(`BUG: Could not find level ${currentLevelNum}`)
     }
-    const engine = new GameEngine(data)
+    const engine = new GameEngine(data, TerminalUI)
     engine.on('loading-cells', ({ cellStart, cellEnd, cellTotal }: ILoadingCellsEvent) => {
         // UI.writeDebug(`Loading cells ${cellStart}-${cellEnd} of ${cellTotal}. SpriteKey="${key}"`)
         const loading = `Loading... [`

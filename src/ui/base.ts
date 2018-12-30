@@ -1,7 +1,6 @@
 import { IColor } from '../models/colors'
 import { GameData } from '../models/game'
-import { GameSprite, IGameTile } from '../models/tile'
-import { Level, LEVEL_TYPE } from '../parser/astTypes'
+import { GameSprite } from '../models/tile'
 import { _flatten, Cellish, Optional } from '../util'
 
 class CellColorCache {
@@ -91,8 +90,8 @@ abstract class BaseUI {
     protected SPRITE_WIDTH: number
     protected SPRITE_HEIGHT: number
     protected hasVisualUi: boolean
-    private currentLevel: Optional<Level<IGameTile>>
-    private currentLevelCells: Cellish[][]
+    private currentLevelCells: Optional<Cellish[][]>
+    private currentLevelMessage: Optional<string>
     private readonly cellColorCache: CellColorCache
 
     constructor() {
@@ -110,16 +109,16 @@ abstract class BaseUI {
         this.hasVisualUi = true
 
         this.gameData = null
-        this.currentLevel = null
-        this.currentLevelCells = []
+        this.currentLevelMessage = null
+        this.currentLevelCells = null
         this.windowOffsetWidth = null
         this.windowOffsetHeight = null
     }
 
     public destroy() {
         this.gameData = null
-        this.currentLevel = null
-        this.currentLevelCells = []
+        this.currentLevelMessage = null
+        this.currentLevelCells = null
         this.renderedPixels = []
         this.cellColorCache.clear()
     }
@@ -160,23 +159,17 @@ abstract class BaseUI {
         return this.gameData
     }
 
-    public handleUndo() {
-        this.renderScreen(false)
-    }
-    public handleRestart() {
-        this.renderScreen(false)
-    }
-    public _setLevel(currentLevel: Level<IGameTile>, cells: Cellish[][]) {
-        this.currentLevel = currentLevel
-        this.currentLevelCells = cells
-    }
-    public getCurrentLevel() {
-        if (!this.currentLevel) {
-            throw new Error(`BUG: currentLevel has not been set yet`)
+    public _setLevel(cells: Optional<Cellish[][]>, message: Optional<string>) {
+        if ((!cells && !message) || (cells && message)) {
+            throw new Error(`BUG: Must provide either cells or a message (but not both)`)
         }
-        return this.currentLevel
+        this.currentLevelCells = cells
+        this.currentLevelMessage = message
     }
     public getCurrentLevelCells() {
+        if (!this.currentLevelCells) {
+            throw new Error(`BUG: There are no cells to render. Maybe it is a message level? Or no level has been set yet`)
+        }
         return this.currentLevelCells
     }
 
@@ -216,21 +209,16 @@ abstract class BaseUI {
             throw new Error(`BUG: gameData was not set yet`)
         }
 
-        const level = this.getCurrentLevel()
-        if (level.type !== LEVEL_TYPE.MAP) {
-            this.renderMessageScreen(level.message)
-            return
+        if (this.currentLevelMessage) {
+            this.renderMessageScreen(this.currentLevelMessage)
+        } else if (this.currentLevelCells) {
+            // Otherwise, the level is a Map so render the cells
+            if (clearCaches) {
+                this.cellColorCache.clear()
+                this.renderedPixels = []
+            }
+            this.renderLevelScreen(this.currentLevelCells, renderScreenDepth)
         }
-
-        // Otherwise, the level is a Map so render the cells
-        const levelRows = this.getCurrentLevelCells()
-
-        if (clearCaches) {
-            this.cellColorCache.clear()
-            this.renderedPixels = []
-        }
-
-        this.renderLevelScreen(levelRows, renderScreenDepth)
     }
 
     public drawCells(cells: Iterable<Cellish>, dontRestoreCursor: boolean, renderScreenDepth: number = 0) {

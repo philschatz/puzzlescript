@@ -130,7 +130,8 @@ export interface SfxSoundItem<TileRef> {
     soundEffect: string
 }
 
-export type SoundItem<TileRef> = IASTNode & {soundCode: number} & ({
+export type Soundish = {soundCode: number} 
+export type SoundItem<TileRef> = IASTNode & Soundish & ({
     type: SOUND_TYPE.WHEN
     when: SOUND_WHEN
 } | {

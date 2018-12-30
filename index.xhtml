@@ -7,6 +7,7 @@
     <style>
         .hidden { display: none; }
         #loading:not(.is-loading) { display: none; }
+        .ps-table:not([data-ps-accepting-input="true"]) { opacity: .5 }
         .light { opacity: .5 }
         kbd {
             font: 11px "SFMono-Regular",Consolas,"Liberation Mono",Menlo,Courier,monospace;
@@ -104,7 +105,7 @@
             // TODO: resize when the window resizes
 
             // TODO: ignore when the current level is a message level
-            if (tableEngine.tableUI.isCurrentLevelAMessage()) {
+            if (tableEngine.engine.isCurrentLevelAMessage()) {
                 return
             }
 
@@ -197,11 +198,11 @@ worker.addEventListener('message', (event) => {
                     loading.classList.remove('is-loading')
 
                     tableEngine.setLevel(getStorage(gameId) || 0)
+                    resizeTable()
 
                     if (!isStarted) {
                         tableEngine.start()
                     }
-                    resizeTable()
 
                     // worker.postMessage({type: 'LOAD_GAME', level: 0, code: source})
                 })
