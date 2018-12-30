@@ -3,21 +3,20 @@ import Parser from './parser/parser'
 import { Optional, INPUT_BUTTON, TypedMessageEvent, WorkerMessage, MESSAGE_TYPE, WorkerResponse } from './util'
 import Serializer from './parser/serializer';
 
+declare var postMessage: (msg: WorkerResponse) => void
+
 let currentEngine: Optional<GameEngine> = null
 
-debugger
 
 onmessage = function(event: TypedMessageEvent<WorkerMessage>) {
-  debugger
   const response: WorkerResponse = handleMessage(event)
-  this.postMessage(response, 'targetOrigin')
+  postMessage(response)
 }
 
 const handleMessage = (event: TypedMessageEvent<WorkerMessage>): WorkerResponse => {
   const msg = event.data
   switch(msg.type) {
-    case MESSAGE_TYPE.LOAD_GAME: return {type: msg.type, payload: loadGame(msg.code)}
-    case MESSAGE_TYPE.SET_LEVEL: return {type: msg.type, payload: setLevel(msg.levelNum)}
+    case MESSAGE_TYPE.LOAD_GAME: return {type: msg.type, payload: loadGame(msg.code, msg.level)}
     case MESSAGE_TYPE.TICK: return {type: msg.type, payload: tick()}
     case MESSAGE_TYPE.PRESS: return {type: msg.type, payload: press(msg.button)}
     case MESSAGE_TYPE.CLOSE: return {type: msg.type, payload: closeGame()}
@@ -33,14 +32,11 @@ const getEngine = () => {
   return currentEngine
 }
 
-const loadGame = (code: string) => {
+const loadGame = (code: string, level: number) => {
   const {data} = Parser.parse(code)
   currentEngine = new GameEngine(data)
+  currentEngine.setLevel(level)
   return (new Serializer(data)).toJson()
-}
-
-const setLevel = (levelNum: number) => {
-  return getEngine().setLevel(levelNum)
 }
 
 const tick = () => {

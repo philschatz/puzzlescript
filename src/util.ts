@@ -196,7 +196,6 @@ export interface TypedMessageEvent<T> extends MessageEvent {
 
 export enum MESSAGE_TYPE {
     LOAD_GAME = 'LOAD_GAME',
-    SET_LEVEL = 'SET_LEVEL',
     TICK = 'TICK',
     PRESS = 'PRESS',
     CLOSE = 'CLOSE'
@@ -209,9 +208,7 @@ export type SerializedTickResult = {
 export type WorkerMessage = {
     type: MESSAGE_TYPE.LOAD_GAME
     code: string
-} | {
-    type: MESSAGE_TYPE.SET_LEVEL
-    levelNum: number
+    level: number
 } | {
     type: MESSAGE_TYPE.TICK
 } | {
@@ -224,9 +221,6 @@ export type WorkerMessage = {
 export type WorkerResponse = {
     type: MESSAGE_TYPE.LOAD_GAME
     payload: IGraphJson
-} | {
-    type: MESSAGE_TYPE.SET_LEVEL
-    payload: void
 } | {
     type: MESSAGE_TYPE.TICK
     payload: SerializedTickResult

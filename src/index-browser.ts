@@ -7,15 +7,52 @@ import Parser from './parser/parser'
 import { closeSounds, playSound } from './sounds'
 import BaseUI from './ui/base'
 import TableUI from './ui/table'
-import { Optional, RULE_DIRECTION, MESSAGE_TYPE, WorkerResponse } from './util'
+import { Optional, RULE_DIRECTION, MESSAGE_TYPE, WorkerMessage, WorkerResponse } from './util'
 
-const Worker = require("worker-loader?name=hash.worker.js!./index-webworker");
-const worker = new Worker()
-debugger
-worker.postMessage({type: MESSAGE_TYPE.LOAD_GAME, code: 'title: Hello World'})
-worker.onmessage = (response: WorkerResponse) => {
-    console.log(`Worker response:`, response)
+
+interface PuzzlescriptWorker {
+    postMessage(msg: WorkerMessage): void
+    addEventListener(type: 'message', handler: (msg: {data: WorkerResponse}) => void): void
 }
+
+const worker: PuzzlescriptWorker = new Worker('./lib/webpack-output-webworker.js')
+
+worker.postMessage({type: MESSAGE_TYPE.LOAD_GAME, code: `title Hello World
+========
+OBJECTS
+========
+
+Background .
+BLACK
+
+Player P
+YELLOW
+
+================
+COLLISIONLAYERS
+================
+
+Background
+Player
+
+=======
+LEVELS
+=======
+
+..P
+`, level: 0})
+worker.addEventListener('message', (event) => {
+    const {data} = event
+    switch(data.type) {
+        case MESSAGE_TYPE.LOAD_GAME:
+            console.log(`Loaded game. Here is the serialized payload`, data.payload)
+            worker.postMessage({type: MESSAGE_TYPE.TICK})
+            break
+        case MESSAGE_TYPE.TICK:
+            console.log(`Tick happened. This is what changed`, data.payload)
+            break
+    }
+})
 
 // Public API
 export {
