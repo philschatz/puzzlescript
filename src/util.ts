@@ -1,7 +1,7 @@
 import { GameMetadata } from './models/metadata'
 import { GameSprite } from './models/tile'
+import { Soundish } from './parser/astTypes'
 import { IGraphJson } from './parser/serializer'
-import { Soundish } from './parser/astTypes';
 
 export type Optional<T> = T | null
 
@@ -283,4 +283,13 @@ export interface GameEngineHandler {
     onWin(): void
     onSound(sound: Soundish): Promise<void>
     onTick(changedCells: Set<Cellish>, hasAgain: boolean): void
+}
+
+export class EmptyGameEngineHandler implements GameEngineHandler {
+    public onPress(dir: INPUT_BUTTON) { /*no-op*/ }
+    public async onMessage(msg: string) { /*no-op*/ }
+    public onLevelChange(level: number, cells: Optional<Cellish[][]>, message: Optional<string>) { /*no-op*/ }
+    public onWin() { /*no-op*/ }
+    public async onSound(sound: Soundish) { /*no-op*/ }
+    public onTick(changedCells: Set<Cellish>, hasAgain: boolean) { /*no-op*/ }
 }

@@ -6,7 +6,6 @@ import { closeSounds, playSound } from './sounds'
 import BaseUI from './ui/base'
 import TableUI from './ui/table'
 import { Optional, RULE_DIRECTION } from './util'
-import parser from './parser/parser';
 
 // const worker: PuzzlescriptWorker = new Worker('./lib/webpack-output-webworker.js')
 
@@ -126,9 +125,9 @@ export class TableEngine {
         // TODO: wait until user is no longer pressing anything before
         // showing the alert().
         // https://bugzilla.mozilla.org/show_bug.cgi?id=1346228
-        const that = this
+        const that = this // tslint:disable-line:no-this-assignment
         this.tableUI = new (class CustomTableUI extends TableUI {
-            onMessage(msg: string) {
+            public onMessage(msg: string) {
                 const p = new Promise<void>((resolve) => {
                     const timer = setInterval(() => {
                         if (!that.isSomethingPressed()) {
@@ -144,7 +143,7 @@ export class TableEngine {
     }
 
     public setGame(code: string, levelNum?: number) {
-        const { data} = parser.parse(code)
+        const { data } = Parser.parse(code)
         this.engine = new GameEngine(data, this.tableUI)
 
         this.tableUI.setGameData(data)

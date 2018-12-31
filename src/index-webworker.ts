@@ -1,7 +1,7 @@
 import { GameEngine } from './engine'
 import Parser from './parser/parser'
 import Serializer from './parser/serializer'
-import { INPUT_BUTTON, MESSAGE_TYPE, Optional, shouldTick, TypedMessageEvent, WorkerMessage, WorkerResponse } from './util'
+import { EmptyGameEngineHandler, INPUT_BUTTON, MESSAGE_TYPE, Optional, shouldTick, TypedMessageEvent, WorkerMessage, WorkerResponse } from './util'
 
 declare var postMessage: (msg: WorkerResponse) => void
 
@@ -35,17 +35,18 @@ const getEngine = () => {
 }
 
 const startPlayLoop = () => {
-    gameLoop = setInterval(() => {
+    gameLoop = setInterval(async() => {
         if (shouldTick(getEngine().getGameData().metadata, lastTick)) {
             lastTick = Date.now()
-            postMessage({ type: MESSAGE_TYPE.TICK, payload: tick() })
+            const payload = await tick()
+            postMessage({ type: MESSAGE_TYPE.TICK, payload })
         }
     }, 20)
 }
 
 const loadGame = (code: string, level: number) => {
     const { data } = Parser.parse(code)
-    currentEngine = new GameEngine(data)
+    currentEngine = new GameEngine(data, new EmptyGameEngineHandler())
     currentEngine.setLevel(level)
     startPlayLoop()
     return (new Serializer(data)).toJson()
@@ -60,8 +61,9 @@ const resumeGame = () => {
     startPlayLoop()
 }
 
-const tick = () => {
-    const { changedCells, soundToPlay, messageToShow, didWinGame, didLevelChange, wasAgainTick } = getEngine().tick()
+const tick = async() => {
+    const engine = getEngine()
+    const { changedCells, soundToPlay, messageToShow, didWinGame, didLevelChange, wasAgainTick } = await engine.tick()
     // Response needs to be serializable
     return {
         changedCells: [...changedCells.values()].map((cell) => {

@@ -88,7 +88,7 @@ async function run() {
         if (currentLevel) {
 
             startTime = Date.now()
-            const engine = new GameEngine(data)
+            const engine = new GameEngine(data, TerminalUI)
             const levelNum = data.levels.indexOf(currentLevel)
             engine.setLevel(levelNum)
             logger.debug(() => `\n\nStart playing "${data.title}". Level ${levelNum}`)
@@ -131,12 +131,12 @@ async function run() {
                         throw new Error(`BUG: Invalid keypress character "${keypressesStr[i]}"`)
                 }
                 startTime = Date.now()
-                const { changedCells } = engine.tick()
+                const { didWinGame, didLevelChange } = await engine.tick()
+                if (didWinGame || didLevelChange) {
+                    break
+                }
 
                 // UI.renderScreen(data, engine.currentLevel)
-
-                // Draw any cells that moved
-                TerminalUI.drawCells(changedCells, false)
 
                 const msg = `Tick ${i} of "${data.title}" (took ${Date.now() - startTime}ms)`
                 TerminalUI.writeDebug(msg.substring(0, 160), 0)

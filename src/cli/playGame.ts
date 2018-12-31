@@ -319,7 +319,6 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: ISa
     })
     TerminalUI.clearScreen()
     engine.setLevel(data.levels.indexOf(level))
-    TerminalUI._setLevel(engine.getCurrentLevel(), engine.getCurrentLevelCells())
 
     let keypresses: string[] = [] // set later once we walk through all the existing partial keys
     let pendingKey = null
@@ -514,7 +513,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: ISa
             }
         }
         doPress(key, false)
-        const { changedCells, soundToPlay, didLevelChange, messageToShow } = engine.tick()
+        const { changedCells, soundToPlay, didLevelChange, messageToShow } = await engine.tick()
 
         // if (changedCells.size === 0 && !messageToShow && 'WSAD'.includes(key)) {
         //     isPaused = true
@@ -581,16 +580,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: ISa
             didHandleKeyPress = true
         }
         const startTime = Date.now()
-        const { changedCells, soundToPlay, messageToShow, didLevelChange, wasAgainTick } = engine.tick()
-
-        if (soundToPlay && !nosound) {
-            if (!currentlyPlayingSoundPromise) {
-                currentlyPlayingSoundPromise = playSound(soundToPlay).then(() => {
-                    currentlyPlayingSoundPromise = null
-                    return
-                })
-            }
-        }
+        const { changedCells, didLevelChange, wasAgainTick } = await engine.tick()
 
         if (didLevelChange) {
             if (!supportsColor.stdout) {
@@ -609,14 +599,6 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: ISa
             TerminalUI.renderScreen(true)
 
             continue
-        }
-
-        // do this after cells are rendered (so they don't cover the message)
-        if (messageToShow) {
-            TerminalUI.renderMessageScreen(messageToShow)
-        } else {
-            // Draw any cells that moved
-            TerminalUI.drawCells(changedCells, false)
         }
 
         const msg = `Tick: ${tickNum} took ${Date.now() - startTime}ms. Moves: ${[...keypresses].reverse().join('').substring(0, 20)}`

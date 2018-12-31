@@ -4,7 +4,7 @@ import path from 'path'
 import { GameEngine } from '../../src/engine'
 import Parser from '../../src/parser/parser'
 import { saveCoverageFile } from '../../src/recordCoverage'
-import { INPUT_BUTTON } from '../../src/util'
+import { EmptyGameEngineHandler, INPUT_BUTTON } from '../../src/util'
 // import TerminalUI from '../../src/ui/terminal'
 
 const CI_MAX_SOLUTION_LENGTH = 1000 // The length of 1 level of cyber-lasso
@@ -16,7 +16,7 @@ const solutionFiles = fs.readdirSync(SOLUTION_ROOT)
 function parseEngine(code: string, levelNum = 0) {
     const { data } = Parser.parse(code)
 
-    const engine = new GameEngine(data)
+    const engine = new GameEngine(data, new EmptyGameEngineHandler())
     return { engine, data }
 }
 
@@ -94,7 +94,7 @@ export function createTests(moduloNumber: number, moduloTotal: number) {
                     const keypresses = recording.solution.split('')
 
                     // Do one tick in the beginning to make sure the sprites are all loaded up
-                    engine.tick()
+                    await engine.tick()
                     for (let i = 0; i < keypresses.length; i++) {
                         const key = keypresses[i]
                         switch (key) {
@@ -112,7 +112,7 @@ export function createTests(moduloNumber: number, moduloTotal: number) {
 
                         let didWin = false
                         // do { // loop until we are done with animations
-                        const { didLevelChange, didWinGame } = engine.tick()
+                        const { didLevelChange, didWinGame } = await engine.tick()
                         didWin = didWin || didWinGame || didLevelChange
                         // } while(engine.hasAgain())
 

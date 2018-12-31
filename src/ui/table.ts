@@ -1,9 +1,9 @@
 import { IColor } from '../models/colors'
 import { GameData } from '../models/game'
-import { _flatten, Cellish, INPUT_BUTTON, Optional, RULE_DIRECTION, GameEngineHandler } from '../util'
+import { Soundish } from '../parser/astTypes'
+import { playSound } from '../sound/sfxr'
+import { _flatten, Cellish, GameEngineHandler, INPUT_BUTTON, Optional, RULE_DIRECTION } from '../util'
 import BaseUI from './base'
-import { Soundish } from '../parser/astTypes';
-import { playSound } from '../sound/sfxr';
 
 interface ITableCell {
     td: HTMLTableCellElement,
@@ -27,7 +27,7 @@ class TableUI extends BaseUI implements GameEngineHandler {
 
     public onPress(dir: INPUT_BUTTON) {
         this.markAcceptingInput(false)
-        switch(dir) {
+        switch (dir) {
             case INPUT_BUTTON.UNDO:
             case INPUT_BUTTON.RESTART:
                 this.renderScreen(false)
@@ -38,7 +38,7 @@ class TableUI extends BaseUI implements GameEngineHandler {
         this.table.setAttribute('data-ps-current-level', `${levelNum}`)
 
         if (cells) {
-            super._setLevel(cells, message)
+            super.onLevelChange(levelNum, cells, message)
             // Draw the level
             // Draw the empty table
             this.tableCells = []
@@ -122,6 +122,20 @@ class TableUI extends BaseUI implements GameEngineHandler {
         this.tableCells = []
     }
 
+    public async onMessage(msg: string) {
+        alert(msg)
+    }
+    public onWin() {
+        alert(`You won! Congratulations!`)
+    }
+    public async onSound(sound: Soundish) {
+        /*await*/ playSound(sound.soundCode) // tslint:disable-line:no-floating-promises
+    }
+    public onTick(changedCells: Set<Cellish>, hasAgain: boolean) {
+        this.drawCells(changedCells, false)
+        this.markAcceptingInput(!hasAgain)
+    }
+
     protected renderLevelScreen(levelRows: Cellish[][], renderScreenDepth: number) {
         this.drawCells(_flatten(levelRows), false, renderScreenDepth)
     }
@@ -168,20 +182,6 @@ class TableUI extends BaseUI implements GameEngineHandler {
             columns: 1000,
             rows: 1000
         }
-    }
-
-    public async onMessage(msg: string) {
-        alert(msg)
-    }
-    public onWin() {
-        alert(`You won! Congratulations!`)
-    }
-    public async onSound(sound: Soundish) {
-        await playSound(sound.soundCode)
-    }
-    public onTick(changedCells: Set<Cellish>, hasAgain: boolean) {
-        this.drawCells(changedCells, false)
-        this.markAcceptingInput(!hasAgain)
     }
 
     private markAcceptingInput(flag: boolean) {

@@ -7,8 +7,9 @@ import { CollisionLayer } from '../models/collisionLayer'
 import { IColor } from '../models/colors'
 import { GameData } from '../models/game'
 import { GameSprite } from '../models/tile'
-import { LEVEL_TYPE } from '../parser/astTypes'
-import { _debounce, _flatten, Cellish, Optional, RULE_DIRECTION } from '../util'
+import { LEVEL_TYPE, Soundish } from '../parser/astTypes'
+import { playSound } from '../sound/sfxr'
+import { _debounce, _flatten, Cellish, GameEngineHandler, Optional, RULE_DIRECTION } from '../util'
 import BaseUI from './base'
 
 // Determine if this
@@ -65,7 +66,18 @@ function drawPixelChar(x: number, y: number, fgHex: Optional<string>, bgHex: Opt
     return out.join('')
 }
 
-class TerminalUI extends BaseUI {
+function someKeyPressed() {
+    const p = new Promise((resolve) => {
+        function handleKeyPress(key: string) {
+            process.stdin.off('data', handleKeyPress)
+            resolve(key)
+        }
+        process.stdin.on('data', handleKeyPress)
+    })
+    return p
+}
+
+class TerminalUI extends BaseUI implements GameEngineHandler {
     protected inspectorCol: number
     protected inspectorRow: number
     private resizeHandler: Optional<() => void>
@@ -102,6 +114,24 @@ class TerminalUI extends BaseUI {
         }
         this.resizeHandler = null
         super.destroy()
+    }
+
+    public onPress() {
+        // Don't need to do anything
+    }
+    public onWin() {
+        // Don't need to do anything
+    }
+    public async onSound(sound: Soundish) {
+        /*await*/ playSound(sound.soundCode) // tslint:disable-line:no-floating-promises
+    }
+    public onTick(changedCells: Set<Cellish>) {
+        this.drawCells(changedCells, false)
+    }
+    public async onMessage(msg: string) {
+        this.renderMessageScreen(msg)
+        // Wait for "ACTION" key
+        await someKeyPressed()
     }
 
     public getHasVisualUi() {

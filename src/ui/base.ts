@@ -159,7 +159,7 @@ abstract class BaseUI {
         return this.gameData
     }
 
-    public _setLevel(cells: Optional<Cellish[][]>, message: Optional<string>) {
+    public onLevelChange(level: number, cells: Optional<Cellish[][]>, message: Optional<string>) {
         if ((!cells && !message) || (cells && message)) {
             throw new Error(`BUG: Must provide either cells or a message (but not both)`)
         }

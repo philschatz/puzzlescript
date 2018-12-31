@@ -3,13 +3,14 @@ import { lookupColorPalette } from './colors'
 import { GameEngine } from './engine'
 import Parser from './parser/parser'
 import UI from './ui/terminal'
+import { EmptyGameEngineHandler } from './util'
 
 const C_WHITE = { r: 255, g: 255, b: 255 }
 const C_BLACK = { r: 0, g: 0, b: 0 }
 
 function parseAndReturnFirstSpritePixels(code: string) {
     const { data } = Parser.parse(code)
-    const engine = new GameEngine(data)
+    const engine = new GameEngine(data, new EmptyGameEngineHandler())
     engine.setLevel(0)
     const cell = engine.getCurrentLevelCells()[0][0]
     // console.log(cell.getSprites())

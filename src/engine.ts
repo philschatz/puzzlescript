@@ -6,7 +6,7 @@ import { IMutation, SimpleRuleGroup } from './models/rule'
 import { GameSprite, IGameTile } from './models/tile'
 import { Command, COMMAND_TYPE, LEVEL_TYPE, SoundItem } from './parser/astTypes'
 import { SpriteBitSet } from './spriteBitSet'
-import { _flatten, Cellish, INPUT_BUTTON, Optional, resetRandomSeed, RULE_DIRECTION, setAddAll, setDifference, setEquals, GameEngineHandler } from './util'
+import { _flatten, Cellish, GameEngineHandler, INPUT_BUTTON, Optional, resetRandomSeed, RULE_DIRECTION, setAddAll, setDifference, setEquals } from './util'
 
 interface ICollisionLayerState {
     readonly wantsToMove: Optional<RULE_DIRECTION>
@@ -905,7 +905,6 @@ export class GameEngine {
         if (currentLevel.type === LEVEL_TYPE.MESSAGE) {
             await this.handler.onMessage(currentLevel.message)
             let didWinGameInMessage = false
-            let didLevelChange = false
             if (this.currentLevelNum === this.levelEngine.gameData.levels.length - 1) {
                 this.handler.onWin()
                 didWinGameInMessage = true
@@ -920,7 +919,7 @@ export class GameEngine {
                 soundToPlay: null,
                 messageToShow: null,
                 didWinGame: didWinGameInMessage,
-                didLevelChange,
+                didLevelChange: false,
                 wasAgainTick: false
             }
         }
