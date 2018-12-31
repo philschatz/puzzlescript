@@ -202,15 +202,25 @@ export enum MESSAGE_TYPE {
     RESUME = 'RESUME',
     TICK = 'TICK',
     PRESS = 'PRESS',
-    CLOSE = 'CLOSE'
+    CLOSE = 'CLOSE',
+    // Event handler events
+    ON_PRESS = 'ON_PRESS',
+    ON_MESSAGE = 'ON_MESSAGE',
+    ON_MESSAGE_DONE = 'ON_MESSAGE_DONE',
+    ON_LEVEL_CHANGE = 'ON_LEVEL_CHANGE',
+    ON_WIN = 'ON_WIN',
+    ON_SOUND = 'ON_SOUND',
+    ON_TICK = 'ON_TICK'
+}
+
+export interface CellishJson {
+    colIndex: number,
+    rowIndex: number,
+    spriteNames: string[]
 }
 
 export interface SerializedTickResult {
-    changedCells: Array<{
-        colIndex: number,
-        rowIndex: number,
-        spriteNames: string[]
-    }>
+    changedCells: Array<CellishJson>
     soundToPlay: Optional<number>
     messageToShow: Optional<string>
     didWinGame: boolean
@@ -231,6 +241,8 @@ export type WorkerMessage = {
     type: MESSAGE_TYPE.PAUSE
 } | {
     type: MESSAGE_TYPE.RESUME
+} | {
+    type: MESSAGE_TYPE.ON_MESSAGE_DONE
 }
 
 export type WorkerResponse = {
@@ -251,6 +263,26 @@ export type WorkerResponse = {
 } | {
     type: MESSAGE_TYPE.RESUME
     payload: void
+} | {
+    type: MESSAGE_TYPE.ON_PRESS
+    direction: INPUT_BUTTON
+} | {
+    type: MESSAGE_TYPE.ON_MESSAGE
+    message: string
+} | {
+    type: MESSAGE_TYPE.ON_LEVEL_CHANGE
+    level: number
+    cells: Optional<CellishJson[][]>
+    message: Optional<string>
+} | {
+    type: MESSAGE_TYPE.ON_WIN
+} | {
+    type: MESSAGE_TYPE.ON_SOUND
+    soundCode: number
+} | {
+    type: MESSAGE_TYPE.ON_TICK
+    changedCells: CellishJson[]
+    hasAgain: boolean
 }
 
 export interface PuzzlescriptWorker {

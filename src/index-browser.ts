@@ -2,10 +2,11 @@ import { Button, BUTTON_TYPE, Gamepad, Keyboard, or } from 'contro'
 import { Cell, GameEngine, ILoadingCellsEvent } from './engine'
 import { GameData } from './models/game'
 import Parser from './parser/parser'
+import Serializer from './parser/serializer'
 import { closeSounds, playSound } from './sounds'
 import BaseUI from './ui/base'
 import TableUI from './ui/table'
-import { Optional, RULE_DIRECTION } from './util'
+import { Optional, RULE_DIRECTION, INPUT_BUTTON } from './util'
 
 // const worker: PuzzlescriptWorker = new Worker('./lib/webpack-output-webworker.js')
 
@@ -52,6 +53,7 @@ import { Optional, RULE_DIRECTION } from './util'
 // Public API
 export {
     Parser,
+    Serializer,
     GameEngine,
     Cell,
     ILoadingCellsEvent,
@@ -111,13 +113,13 @@ export class TableEngine {
         }
 
         this.controlCheckers = [
-            makeChecker('up', () => this.getEngine().pressUp()),
-            makeChecker('down', () => this.getEngine().pressDown()),
-            makeChecker('left', () => this.getEngine().pressLeft()),
-            makeChecker('right', () => this.getEngine().pressRight()),
-            makeChecker('action', () => this.getEngine().pressAction()),
-            makeChecker('undo', () => this.getEngine().pressUndo()),
-            makeChecker('restart', () => this.getEngine().pressRestart())
+            makeChecker('up', () => this.getEngine().press(INPUT_BUTTON.UP)),
+            makeChecker('down', () => this.getEngine().press(INPUT_BUTTON.DOWN)),
+            makeChecker('left', () => this.getEngine().press(INPUT_BUTTON.LEFT)),
+            makeChecker('right', () => this.getEngine().press(INPUT_BUTTON.RIGHT)),
+            makeChecker('action', () => this.getEngine().press(INPUT_BUTTON.ACTION)),
+            makeChecker('undo', () => this.getEngine().press(INPUT_BUTTON.UNDO)),
+            makeChecker('restart', () => this.getEngine().press(INPUT_BUTTON.RESTART))
         ]
 
         this.timer = 0
@@ -152,8 +154,13 @@ export class TableEngine {
         }
     }
 
-    public setLevel(levelNum: number) {
-        this.getEngine().setLevel(levelNum)
+    public setEngine(engine: GameEngine) {
+        this.engine = engine
+        // this.tableUI.setGameData(engine.getGameData())
+    }
+
+    public async setLevel(levelNum: number) {
+        await this.getEngine().setLevel(levelNum)
     }
 
     public start() {

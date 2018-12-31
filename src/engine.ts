@@ -512,6 +512,8 @@ export class LevelEngine extends EventEmitter2 {
             case INPUT_BUTTON.ACTION: return this.pressDir(RULE_DIRECTION.ACTION)
             case INPUT_BUTTON.UNDO: return this.pressUndo()
             case INPUT_BUTTON.RESTART: return this.pressRestart()
+            default:
+                throw new Error(`BUG: Invalid button "${button}"`)
         }
     }
 
