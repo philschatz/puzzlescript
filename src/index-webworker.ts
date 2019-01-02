@@ -11,23 +11,16 @@ let gameLoop: Optional<NodeJS.Timeout> = null
 let lastTick = 0
 
 onmessage = (event: TypedMessageEvent<WorkerMessage>) => {
-    const response = handleMessage(event)
-    if (response) {
-        postMessage(response)
-    }
-}
-
-const handleMessage = (event: TypedMessageEvent<WorkerMessage>): Optional<WorkerResponse> => {
     const msg = event.data
     switch (msg.type) {
-        case MESSAGE_TYPE.LOAD_GAME: return { type: msg.type, payload: loadGame(msg.code, msg.level) }
-        case MESSAGE_TYPE.PAUSE: return { type: msg.type, payload: pauseGame() }
-        case MESSAGE_TYPE.RESUME: return { type: msg.type, payload: resumeGame() }
-        case MESSAGE_TYPE.PRESS: return { type: msg.type, payload: press(msg.button) }
-        case MESSAGE_TYPE.CLOSE: return { type: msg.type, payload: closeGame() }
+        case MESSAGE_TYPE.LOAD_GAME: loadGame(msg.code, msg.level); break
+        case MESSAGE_TYPE.PAUSE: postMessage({ type: msg.type, payload: pauseGame() }); break
+        case MESSAGE_TYPE.RESUME: postMessage({ type: msg.type, payload: resumeGame() }); break
+        case MESSAGE_TYPE.PRESS: postMessage({ type: msg.type, payload: press(msg.button) }); break
+        case MESSAGE_TYPE.CLOSE: postMessage({ type: msg.type, payload: closeGame() }); break
         case MESSAGE_TYPE.ON_MESSAGE_DONE: 
             dismissedMessage = true
-            return null
+            break
         default:
             throw new Error(`ERROR: Unsupported webworker message type "${JSON.stringify(event.data)}"`)
     }
@@ -41,6 +34,10 @@ const getEngine = () => {
 }
 
 const startPlayLoop = () => {
+    if (gameLoop !== null) {
+        console.log(`BUG: Webworker is already running`)
+        clearInterval(gameLoop)
+    }
     gameLoop = setInterval(async() => {
         if (shouldTick(getEngine().getGameData().metadata, lastTick)) {
             lastTick = Date.now()
@@ -51,16 +48,16 @@ const startPlayLoop = () => {
 }
 
 // Polls until a condition is true
-function pollingPromise<T>(ms: number, fn: () => boolean) {
-    const p = new Promise<T>(resolve => {
+function pollingPromise<T>(ms: number, fn: () => T) {
+    return new Promise<T>(resolve => {
         let timer = setInterval(() => {
-            if (fn()) {
+            const value = fn()
+            if (value) {
                 clearInterval(timer)
-                resolve()
+                resolve(value)
             }
         }, ms)
     })
-    return p
 }
 
 
@@ -74,11 +71,13 @@ class Handler implements GameEngineHandler {
         postMessage({type: MESSAGE_TYPE.ON_PRESS, direction: dir})
     }
     public async onMessage(msg: string) {
+        debugger
         dismissedMessage = false
         pauseGame()
         postMessage({type: MESSAGE_TYPE.ON_MESSAGE, message: msg})
         // Wait until the user dismissed the message
-        await pollingPromise<void>(50, () => dismissedMessage)
+        await pollingPromise<boolean>(50, () => dismissedMessage)
+        debugger
         resumeGame()
     }
     public onLevelChange(level: number, cells: Optional<Cellish[][]>, message: Optional<string>) {
@@ -100,15 +99,19 @@ class Handler implements GameEngineHandler {
 }
 
 const loadGame = (code: string, level: number) => {
+    pauseGame()
     const { data } = Parser.parse(code)
+    postMessage({type: MESSAGE_TYPE.LOAD_GAME, payload: (new Serializer(data)).toJson()})
     currentEngine = new GameEngine(data, new Handler())
     currentEngine.setLevel(level)
     startPlayLoop()
-    return (new Serializer(data)).toJson()
 }
 
 const pauseGame = () => {
-    gameLoop !== null && clearInterval(gameLoop)
+    if (gameLoop !== null) {
+        clearInterval(gameLoop)
+        gameLoop = null
+    }
 }
 
 const resumeGame = () => {

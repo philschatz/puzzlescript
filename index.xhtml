@@ -162,11 +162,23 @@ class ProxyEngine {
 
         const that = this
         function convertToCellish({rowIndex, colIndex, spriteNames}) {
-            return new ProxyCellish(rowIndex, colIndex, spriteNames.map(name => that.gameData.getSpriteByName(name)))
+            return new ProxyCellish(rowIndex, colIndex, spriteNames.map(name => {
+                if (!that.gameData._getSpriteByName(name)) {
+                    console.log(`Could not find sprite "${name}"`)
+                }
+                return that.gameData._getSpriteByName(name) // could be null
+            }).filter(x => !!x)) // filter out all the sprites that could not be found
         }
 
         worker.addEventListener('message', async({data}) => {
+            console.log(`Received from worker: ${data.type}`, data)
             switch (data.type) {
+                case 'LOAD_GAME':
+                    const gameData = window.PuzzleScript.Serializer.fromJson(data.payload)
+                    /*this.*/proxyEngine.gameData = gameData
+                    // /*this.*/proxyEngine.levelNum = level
+                    /*this.*/proxyEngine.ui.setGameData(gameData)
+                    break
                 case 'ON_LEVEL_CHANGE':
                     if (data.cells) {
                         ui.onLevelChange(data.level, data.cells.map(row => row.map(convertToCellish)), null)
