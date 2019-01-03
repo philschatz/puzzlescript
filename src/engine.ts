@@ -364,7 +364,7 @@ export class Level {
  */
 export class LevelEngine extends EventEmitter2 {
     public readonly gameData: GameData
-    public pendingPlayerWantsToMove: Optional<RULE_DIRECTION>
+    public pendingPlayerWantsToMove: Optional<INPUT_BUTTON>
     public hasAgainThatNeedsToRun: boolean
     private currentLevel: Optional<Level>
     private tempOldLevel: Optional<Level>
@@ -405,6 +405,12 @@ export class LevelEngine extends EventEmitter2 {
             // Clone the board because we will be modifying it
             this._setLevel(levelSprites)
 
+            if (this.gameData.metadata.runRulesOnLevelStart) {
+                const {soundToPlay, messageToShow, isWinning, hasRestart} = this.tick()
+                if (soundToPlay || messageToShow || isWinning || hasRestart) {
+                    throw new Error(`Error: Game should not cause a sound/message/win/restart during the initial tick`)
+                }
+            }
             this.takeSnapshot(this.createSnapshot())
 
             // Return the cells so the UI can listen to when they change
@@ -451,6 +457,30 @@ export class LevelEngine extends EventEmitter2 {
         if (this.hasAgainThatNeedsToRun) {
             // run the AGAIN rules
             this.hasAgainThatNeedsToRun = false // let the .tick() make it true
+        }
+        switch (this.pendingPlayerWantsToMove) {
+            case INPUT_BUTTON.UNDO:
+                this.doUndo()
+                this.pendingPlayerWantsToMove = null
+                return {
+                    changedCells: new Set(this.getCells()),
+                    soundToPlay: null,
+                    messageToShow: null,
+                    hasRestart: false,
+                    isWinning: false
+                }
+            case INPUT_BUTTON.RESTART:
+                this.doRestart()
+                this.pendingPlayerWantsToMove = null
+                return {
+                    changedCells: new Set(this.getCells()),
+                    soundToPlay: null,
+                    messageToShow: null,
+                    hasRestart: true,
+                    isWinning: false
+                }
+            default:
+              // no-op
         }
         const ret = this.tickNormal()
         // TODO: Handle the commands like RESTART, CANCEL, WIN at this point
@@ -504,17 +534,7 @@ export class LevelEngine extends EventEmitter2 {
     }
 
     public press(button: INPUT_BUTTON) {
-        switch (button) {
-            case INPUT_BUTTON.UP: return this.pressDir(RULE_DIRECTION.UP)
-            case INPUT_BUTTON.DOWN: return this.pressDir(RULE_DIRECTION.DOWN)
-            case INPUT_BUTTON.LEFT: return this.pressDir(RULE_DIRECTION.LEFT)
-            case INPUT_BUTTON.RIGHT: return this.pressDir(RULE_DIRECTION.RIGHT)
-            case INPUT_BUTTON.ACTION: return this.pressDir(RULE_DIRECTION.ACTION)
-            case INPUT_BUTTON.UNDO: return this.pressUndo()
-            case INPUT_BUTTON.RESTART: return this.pressRestart()
-            default:
-                throw new Error(`BUG: Invalid button "${button}"`)
-        }
+        return this.pressDir(button)
     }
 
     public /*for testing*/ tickUpdateCells() {
@@ -576,7 +596,7 @@ export class LevelEngine extends EventEmitter2 {
         return movedCells
     }
 
-    private pressDir(direction: RULE_DIRECTION) {
+    private pressDir(direction: INPUT_BUTTON) {
         // Should disable keypresses if `AGAIN` is running.
         // It is commented because the didSpritesChange logic is not correct.
         // a rule might add a sprite, and then another rule might remove a sprite.
@@ -586,14 +606,14 @@ export class LevelEngine extends EventEmitter2 {
         this.pendingPlayerWantsToMove = direction
         // }
     }
-    private pressRestart() {
+    private doRestart() {
         // Add the initial checkpoint to the top (rather than clearing the stack)
         // so the player can still "UNDO" after pressing "RESTART"
         const snapshot = this.undoStack[0]
         this.undoStack.push(snapshot)
         this.applySnapshot(snapshot)
     }
-    private pressUndo() {
+    private doUndo() {
         const snapshot = this.undoStack.pop()
         if (snapshot && this.undoStack.length > 0) { // the 0th entry is the initial load of the level
             this.applySnapshot(snapshot)
@@ -735,7 +755,7 @@ export class LevelEngine extends EventEmitter2 {
             const t = this.gameData.getPlayer()
             for (const cell of t.getCellsThatMatch()) {
                 for (const sprite of t.getSpritesThatMatch(cell)) {
-                    cell.updateSprite(sprite, this.pendingPlayerWantsToMove)
+                    cell.updateSprite(sprite, inputButtonToRuleDirection(this.pendingPlayerWantsToMove))
                     changedCellMutations.add(cell)
                 }
             }
@@ -940,14 +960,18 @@ export class GameEngine {
             }
         }
 
+        const previousPending = this.levelEngine.pendingPlayerWantsToMove
         const { changedCells, soundToPlay, messageToShow, isWinning, hasRestart } = this.levelEngine.tick()
         this.isFirstTick = false
 
+        if (previousPending && !this.levelEngine.pendingPlayerWantsToMove) {
+            this.handler.onPress(previousPending)
+        }
+
         if (hasRestart) {
-            this.pressRestart()
-            this.handler.onPress(INPUT_BUTTON.RESTART)
+            this.handler.onTick(changedCells, hasAgain)
             return {
-                changedCells: new Set(_flatten(this.getCurrentLevelCells())),
+                changedCells: changedCells,
                 soundToPlay: null,
                 messageToShow: null,
                 didWinGame: false,
@@ -992,7 +1016,6 @@ export class GameEngine {
                 break
         }
         this.levelEngine.press(direction)
-        this.handler.onPress(direction)
     }
     public pressUp() {
         this.press(INPUT_BUTTON.UP)
@@ -1055,5 +1078,18 @@ export class GameEngine {
 
     public isCurrentLevelAMessage() {
         return this.getCurrentLevel().type === LEVEL_TYPE.MESSAGE
+    }
+}
+
+
+function inputButtonToRuleDirection(button: INPUT_BUTTON) {
+    switch(button) {
+        case INPUT_BUTTON.UP: return RULE_DIRECTION.UP
+        case INPUT_BUTTON.DOWN: return RULE_DIRECTION.DOWN
+        case INPUT_BUTTON.LEFT: return RULE_DIRECTION.LEFT
+        case INPUT_BUTTON.RIGHT: return RULE_DIRECTION.RIGHT
+        case INPUT_BUTTON.ACTION: return RULE_DIRECTION.ACTION
+        default:
+            throw new Error(`BUG: Invalid input button at this point. Only up/down/left/right/action are allowed. "${button}"`)
     }
 }

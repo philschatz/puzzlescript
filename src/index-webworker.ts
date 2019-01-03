@@ -71,13 +71,11 @@ class Handler implements GameEngineHandler {
         postMessage({type: MESSAGE_TYPE.ON_PRESS, direction: dir})
     }
     public async onMessage(msg: string) {
-        debugger
         dismissedMessage = false
         pauseGame()
         postMessage({type: MESSAGE_TYPE.ON_MESSAGE, message: msg})
         // Wait until the user dismissed the message
         await pollingPromise<boolean>(50, () => dismissedMessage)
-        debugger
         resumeGame()
     }
     public onLevelChange(level: number, cells: Optional<Cellish[][]>, message: Optional<string>) {
