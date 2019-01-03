@@ -8,7 +8,7 @@
         .hidden { display: none; }
         #loading:not(.is-loading) { display: none; }
         .ps-table:not(:focus) { filter: grayscale(100%); opacity: .5 }
-        /* .ps-table:not([data-ps-accepting-input="true"]) { opacity: .5 } */
+        .ps-table:not([data-ps-accepting-input="true"]) { opacity: .8 }
         .light { opacity: .5 }
         kbd {
             font: 11px "SFMono-Regular",Consolas,"Liberation Mono",Menlo,Courier,monospace;
@@ -139,6 +139,13 @@
         var loading = document.querySelector('#loading')
         var isStarted = false
 
+        table.addEventListener('blur', () => {
+            worker.postMessage({type: 'PAUSE'})
+        })
+        table.addEventListener('focus', () => {
+            worker.postMessage({type: 'RESUME'})
+        })
+
 class ProxyCellish {
     constructor(rowIndex, colIndex, sprites) {
         this.rowIndex = rowIndex
@@ -200,6 +207,7 @@ class ProxyEngine {
                     } else {
                         ui.onLevelChange(data.level, null, data.message)
                     }
+                    resizeTable()
                     table.focus()
                     break
                 case 'ON_MESSAGE':
