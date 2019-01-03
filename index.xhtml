@@ -160,14 +160,26 @@ class ProxyEngine {
         this.worker = worker
         this.ui = ui
 
+        this.cellCache = []
+
         const that = this
-        function convertToCellish({rowIndex, colIndex, spriteNames}) {
-            return new ProxyCellish(rowIndex, colIndex, spriteNames.map(name => {
+        const convertToCellish = ({rowIndex, colIndex, spriteNames}) => {
+            // Lazy-initialize all the proxy cells
+            if (!that.cellCache[rowIndex]) {
+                that.cellCache[rowIndex] = []
+            }
+            if (!that.cellCache[rowIndex][colIndex]) {
+                that.cellCache[rowIndex][colIndex] = new ProxyCellish(rowIndex, colIndex, [])
+            }
+            
+            that.cellCache[rowIndex][colIndex].sprites = spriteNames.map(name => {
                 if (!that.gameData._getSpriteByName(name)) {
                     console.log(`Could not find sprite "${name}"`)
                 }
                 return that.gameData._getSpriteByName(name) // could be null
-            }).filter(x => !!x)) // filter out all the sprites that could not be found
+            }).filter(x => !!x) // filter out all the sprites that could not be found
+
+            return that.cellCache[rowIndex][colIndex]
         }
 
         worker.addEventListener('message', async({data}) => {
@@ -180,6 +192,7 @@ class ProxyEngine {
                     /*this.*/proxyEngine.ui.setGameData(gameData)
                     break
                 case 'ON_LEVEL_CHANGE':
+                    that.cellCache = [] // clear the cache since the level dimensions are different
                     if (data.cells) {
                         ui.onLevelChange(data.level, data.cells.map(row => row.map(convertToCellish)), null)
                     } else {

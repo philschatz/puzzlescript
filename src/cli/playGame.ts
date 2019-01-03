@@ -18,6 +18,7 @@ import { saveCoverageFile } from '../recordCoverage'
 import TerminalUI, { getTerminalSize } from '../ui/terminal'
 import SOLVED_GAMES from './solvedGames'
 import TITLE_FONTS from './titleFonts'
+import { _flatten } from '../util';
 
 SOLVED_GAMES.add(`Skipping Stones to Lonely Homes`)
 SOLVED_GAMES.add(`Spikes 'n' Stuff`)
@@ -400,7 +401,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: ISa
                 return
             case 'P':
             case 'p':
-                const players = data.getPlayer().getCellsThatMatch()
+                const players = data.getPlayer().getCellsThatMatch(_flatten(TerminalUI.getCurrentLevelCells()))
                 if (players.size === 1) {
                     TerminalUI.moveInspectorTo([...players][0])
                 } else {

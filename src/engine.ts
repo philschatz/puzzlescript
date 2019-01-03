@@ -753,7 +753,7 @@ export class LevelEngine extends EventEmitter2 {
             logger.debug(`=======================\nTurn starts with input of ${this.pendingPlayerWantsToMove.toLowerCase()}.`)
 
             const t = this.gameData.getPlayer()
-            for (const cell of t.getCellsThatMatch()) {
+            for (const cell of t.getCellsThatMatch(_flatten(this.getCurrentLevel().getCells()))) {
                 for (const sprite of t.getSpritesThatMatch(cell)) {
                     cell.updateSprite(sprite, inputButtonToRuleDirection(this.pendingPlayerWantsToMove))
                     changedCellMutations.add(cell)

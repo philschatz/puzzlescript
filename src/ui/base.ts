@@ -228,12 +228,16 @@ abstract class BaseUI {
 
         // Sort of HACKy... If the player is not visible on the screen then we need to
         // move the screen so that they are visible.
+        const allCells = _flatten(this.getCurrentLevelCells())
         const playerTile = this.gameData.getPlayer()
-        if (playerTile.getCellsThatMatch().size === 1) {
+        const playerCells = playerTile.getCellsThatMatch(allCells)
+        if (playerCells.size === 0) {
+            throw new Error(`BUG: Player should always be on the board`)
+        } else if (playerCells.size === 1) {
             // if the screen can only show an even number of cells (eg 4) then this will oscillate indefinitely
             // So we limit the recursion to just a couple of recursions
             if (renderScreenDepth <= 1) {
-                const playerCell = [...playerTile.getCellsThatMatch()][0]
+                const playerCell = [...playerCells][0]
                 const { isOnScreen } = this.cellPosToXY(playerCell)
                 if (this.recenterPlayerIfNeeded(playerCell, isOnScreen)) {
                     // if we moved the screen then re-render the whole screen
