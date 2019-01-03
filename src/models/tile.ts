@@ -22,7 +22,7 @@ export interface IGameTile extends IGameNode {
     getCollisionLayer(): CollisionLayer
     matchesCell(cell: Cell): boolean
     isOr(): boolean
-    getCellsThatMatch<T extends Cellish>(cells: Iterable<T>): Set<T>
+    getCellsThatMatch<T extends Cellish>(cells?: Iterable<T>): Set<T>
     getSpritesThatMatch(cell: Cellish): Set<GameSprite>
     getName(): string
     equals(t: IGameTile): boolean
@@ -185,13 +185,15 @@ export abstract class GameSprite extends BaseForLines implements IGameTile {
         }
         return false
     }
-    public getCellsThatMatch<T extends Cellish>(cells: Iterable<T>) {
+    public getCellsThatMatch<T extends Cellish>(cells?: Iterable<T>) {
         if (this.trickleCells.size > 0) {
             return (this.trickleCells as unknown) as Set<T>
-        } else {
+        } else if (cells) {
             // The Tile might just be an empty object (because of webworkers)
             // So check all the cells
             return new Set([...cells].filter(cell => this.matchesCell(cell)))
+        } else {
+            return new Set()
         }
     }
 }
@@ -320,7 +322,7 @@ export abstract class GameLegendTile extends BaseForLines implements IGameTile {
         return [...layers]
     }
 
-    public getCellsThatMatch(cells: Iterable<Cellish>) {
+    public getCellsThatMatch(cells?: Iterable<Cellish>) {
         const matches = new Set()
         for (const sprite of this.getSprites()) {
             for (const cell of sprite.getCellsThatMatch(cells)) {

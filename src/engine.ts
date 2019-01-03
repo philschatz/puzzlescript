@@ -406,9 +406,9 @@ export class LevelEngine extends EventEmitter2 {
             this._setLevel(levelSprites)
 
             if (this.gameData.metadata.runRulesOnLevelStart) {
-                const {soundToPlay, messageToShow, isWinning, hasRestart} = this.tick()
-                if (soundToPlay || messageToShow || isWinning || hasRestart) {
-                    throw new Error(`Error: Game should not cause a sound/message/win/restart during the initial tick`)
+                const {messageToShow, isWinning, hasRestart} = this.tick()
+                if (messageToShow || isWinning || hasRestart) {
+                    console.log(`Error: Game should not cause a sound/message/win/restart during the initial tick. "${messageToShow}" "${isWinning}" "${hasRestart}"`)
                 }
             }
             this.takeSnapshot(this.createSnapshot())

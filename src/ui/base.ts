@@ -232,7 +232,7 @@ abstract class BaseUI {
         const playerTile = this.gameData.getPlayer()
         const playerCells = playerTile.getCellsThatMatch(allCells)
         if (playerCells.size === 0) {
-            throw new Error(`BUG: Player should always be on the board`)
+            console.log(`BUG: Player should always be on the board`)
         } else if (playerCells.size === 1) {
             // if the screen can only show an even number of cells (eg 4) then this will oscillate indefinitely
             // So we limit the recursion to just a couple of recursions

@@ -7,7 +7,8 @@
     <style>
         .hidden { display: none; }
         #loading:not(.is-loading) { display: none; }
-        .ps-table:not([data-ps-accepting-input="true"]) { opacity: .5 }
+        .ps-table:not(:focus) { filter: grayscale(100%); opacity: .5 }
+        /* .ps-table:not([data-ps-accepting-input="true"]) { opacity: .5 } */
         .light { opacity: .5 }
         kbd {
             font: 11px "SFMono-Regular",Consolas,"Liberation Mono",Menlo,Courier,monospace;
@@ -193,15 +194,18 @@ class ProxyEngine {
                     break
                 case 'ON_LEVEL_CHANGE':
                     that.cellCache = [] // clear the cache since the level dimensions are different
+                    that.levelNum = data.level
                     if (data.cells) {
                         ui.onLevelChange(data.level, data.cells.map(row => row.map(convertToCellish)), null)
                     } else {
                         ui.onLevelChange(data.level, null, data.message)
                     }
+                    table.focus()
                     break
                 case 'ON_MESSAGE':
                     await ui.onMessage(data.message)
                     worker.postMessage({ type: 'ON_MESSAGE_DONE'})
+                    table.focus()
                     break
                 case 'ON_PRESS':
                     ui.onPress(data.direction)
@@ -220,6 +224,7 @@ class ProxyEngine {
         return new Promise(resolve => {
             function handler (ev) {
                 if (ev.data.type === 'LOAD_GAME') {
+                    table.focus()
                     worker.removeEventListener('message', handler)
                     // "this" does not work. For some reason it is the worker
                     const gameData = window.PuzzleScript.Serializer.fromJson(ev.data.payload)
