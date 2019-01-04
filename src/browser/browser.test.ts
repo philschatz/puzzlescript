@@ -86,6 +86,45 @@ async function evaluateWithStackTrace(fn: puppeteer.EvaluateFn, ...args: any[]) 
     // }
 }
 
+async function playLevel() {
+    const source = fs.readFileSync(path.join(__dirname, '../../gists/_pot-wash-panic_itch/script.txt'), 'utf-8')
+    const startLevel = 3
+
+    // This variable is _actually_ defined in the JS file, not here but it is in the body of page.evaluate
+    const HackTableStart = (sourceBrowser: string, startLevelBrowser: number) => 'actually implemented in the browser'
+
+    await evaluateWithStackTrace(({ source, startLevel }) => { // tslint:disable-line:no-shadowed-variable
+        if (HackTableStart) {
+            if (source && typeof startLevel === 'number') {
+                HackTableStart(source, startLevel)
+            } else {
+                throw new Error(`BUG: Source was not a string or startLevel was not a number`)
+            }
+        } else {
+            throw new Error(`BUG: The browser JS does not have HackTableStart defined`)
+        }
+    }, { source, startLevel })
+
+    return new Promise(async(resolve) => {
+        // const dialogHandler = async dialog => {
+        //     expect(dialog.message()).toBe('I want to see my face in them! Level 3/14')
+        //     await dialog.dismiss()
+        //     page.off('dialog', dialogHandler)
+        //     resolve()
+        // }
+        // page.once('dialog', dialogHandler)
+
+        // page.on('dialog', async dialog => {
+        //     expect(dialog.message()).toBe('I want to see my face in them! Level 3/14')
+        //     await dialog.dismiss()
+        //     resolve()
+        // })
+        await pressKeys('SAAASASDDDWDDDDWDDSAAASASAW'.split(''))
+        // await jestPuppeteer.debug()
+        resolve()
+    })
+}
+
 describe('Browser', () => {
 
     const dismissedCount: string[] = []
@@ -96,9 +135,7 @@ describe('Browser', () => {
         // page.off('dialog', dialogHandler)
     }
 
-    beforeEach(async() => {
-        const url = `http://localhost:8000/src/browser/test/html-table.xhtml`
-
+    beforeEach(() => {
         // jest-puppeteer will expose the `page` and `browser` globals to Jest tests.
         if (!browser || !page) {
             throw new Error('Browser has not been started! Did you remember to specify `@jest-environment puppeteer`?')
@@ -111,8 +148,6 @@ describe('Browser', () => {
         //     const newStack = await mapStackTrace(e.message, { isChromeOrEdge: true })
         //     console.error(newStack)
         // })
-
-        await page.goto(url)
     })
 
     afterEach(() => {
@@ -121,46 +156,18 @@ describe('Browser', () => {
         page.removeListener('dialog', dialogHandler)
     })
 
-    it('plays a game in the browser', async() => {
+    it('plays a game in the browser using the SyncTableEngine', async() => {
         // browser tests are slow. Headless is slower it seems (from jest watch mode)
         jest.setTimeout(process.env.NODE_ENV === 'development' ? 90 * 1000 : 90 * 1000)
+        await page.goto(`http://localhost:8000/src/browser/test/html-table.xhtml`)
+        return playLevel()
+    })
 
-        const source = fs.readFileSync(path.join(__dirname, '../gists/_pot-wash-panic_itch/script.txt'), 'utf-8')
-        const startLevel = 3
-
-        // This variable is _actually_ defined in the JS file, not here but it is in the body of page.evaluate
-        const HackTableStart = (sourceBrowser: string, startLevelBrowser: number) => 'actually implemented in the browser'
-
-        await evaluateWithStackTrace(({ source, startLevel }) => { // tslint:disable-line:no-shadowed-variable
-            if (HackTableStart) {
-                if (source && typeof startLevel === 'number') {
-                    HackTableStart(source, startLevel)
-                } else {
-                    throw new Error(`BUG: Source was not a string or startLevel was not a number`)
-                }
-            } else {
-                throw new Error(`BUG: The browser JS does not have HackTableStart defined`)
-            }
-        }, { source, startLevel })
-
-        return new Promise(async(resolve) => {
-            // const dialogHandler = async dialog => {
-            //     expect(dialog.message()).toBe('I want to see my face in them! Level 3/14')
-            //     await dialog.dismiss()
-            //     page.off('dialog', dialogHandler)
-            //     resolve()
-            // }
-            // page.once('dialog', dialogHandler)
-
-            // page.on('dialog', async dialog => {
-            //     expect(dialog.message()).toBe('I want to see my face in them! Level 3/14')
-            //     await dialog.dismiss()
-            //     resolve()
-            // })
-            await pressKeys('SAAASASDDDWDDDDWDDSAAASASAW'.split(''))
-            // await jestPuppeteer.debug()
-            resolve()
-        })
+    it('plays a game in the browser using the WebworkerTableEngine', async() => {
+        // browser tests are slow. Headless is slower it seems (from jest watch mode)
+        jest.setTimeout(process.env.NODE_ENV === 'development' ? 90 * 1000 : 90 * 1000)
+        await page.goto(`http://localhost:8000/src/browser/test/html-table-webworker.xhtml`)
+        return playLevel()
     })
 
     it('plays a couple levels using the demo page', async() => {
@@ -188,17 +195,20 @@ describe('Browser', () => {
 
         // play a level and then wait for the dialog to open
         let levelNum: Optional<string>
+        await sleep(1000)
         levelNum = (await getAttrs()).levelNum
         expect(levelNum).toBe('1')
         await waitForDialogAfter(async() => pressKeys('.AWAW'.split('')))
+        await sleep(1000)
         levelNum = (await getAttrs()).levelNum
         expect(levelNum).toBe('3')
         await waitForDialogAfter(async() => pressKeys('.WASDW'.split('')))
 
-        levelNum = (await getAttrs()).levelNum
-        expect(levelNum).toBe('5')
+        // await sleep(1000)
+        // levelNum = (await getAttrs()).levelNum
+        // expect(levelNum).toBe('5')
 
-        expect(dismissedCount.length).toBe(4)
+        expect(dismissedCount.length).toBe(5)
     })
 
     // it.skip('Plays an arbitrary game', async () => {

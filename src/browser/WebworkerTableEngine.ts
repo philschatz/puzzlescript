@@ -41,7 +41,7 @@ export default class WebworkerTableEngine implements Engineish {
     private levelNum: number
     private gameData: Optional<GameData>
 
-    constructor(worker: PuzzlescriptWorker, table: HTMLTableElement, handler: GameEngineHandlerOptional) {
+    constructor(worker: PuzzlescriptWorker, table: HTMLTableElement, handler?: GameEngineHandlerOptional) {
         this.worker = worker
         this.table = table
 
@@ -62,7 +62,7 @@ export default class WebworkerTableEngine implements Engineish {
                 })
             }
         })(table)
-        this.handler = new EmptyGameEngineHandler([this.ui, handler])
+        this.handler = new EmptyGameEngineHandler(handler ? [this.ui, handler] : [this.ui])
         this.resizeWatcher = new ResizeWatcher(table, this.handleResize.bind(this))
         this.inputWatcher = new InputWatcher()
 

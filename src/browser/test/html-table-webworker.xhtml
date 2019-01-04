@@ -14,7 +14,8 @@
         const { PuzzleScript } = window
 
         const table = document.querySelector('#thegamecanbeidentifiedbyselector')
-        const tableEngine = new PuzzleScript.SyncTableEngine(table)
+        const worker = new Worker('../../../lib/webpack-output-webworker.js')
+        const tableEngine = new PuzzleScript.WebworkerTableEngine(worker, table)
 
         window.HackTableStart = (source, initialLevel) => {
             // setTimeout(() => {throw new Error(`Checking if sourcemaps work in the browser in a separate tick`)}, 1)
