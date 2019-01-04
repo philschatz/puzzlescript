@@ -191,7 +191,7 @@ export abstract class GameSprite extends BaseForLines implements IGameTile {
         } else if (cells) {
             // The Tile might just be an empty object (because of webworkers)
             // So check all the cells
-            return new Set([...cells].filter(cell => this.matchesCell(cell)))
+            return new Set([...cells].filter((cell) => this.matchesCell(cell)))
         } else {
             return new Set()
         }

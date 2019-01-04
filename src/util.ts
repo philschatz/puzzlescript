@@ -46,9 +46,9 @@ export function _flatten<T>(arrays: T[][]) {
     return ret
 }
 
-export function filterNulls<T>(items: Optional<T>[]) {
+export function filterNulls<T>(items: Array<Optional<T>>) {
     const ret: T[] = []
-    items.forEach(x => {
+    items.forEach((x) => {
         if (x) { ret.push(x) }
     })
     return ret
@@ -203,8 +203,8 @@ export interface ICacheable {
 
 // Polls until a condition is true
 export function pollingPromise<T>(ms: number, fn: () => T) {
-    return new Promise<T>(resolve => {
-        let timer = setInterval(() => {
+    return new Promise<T>((resolve) => {
+        const timer = setInterval(() => {
             const value = fn()
             if (value) {
                 clearInterval(timer)
@@ -242,7 +242,7 @@ export interface CellishJson {
 }
 
 export interface SerializedTickResult {
-    changedCells: Array<CellishJson>
+    changedCells: CellishJson[]
     soundToPlay: Optional<number>
     messageToShow: Optional<string>
     didWinGame: boolean
@@ -359,21 +359,22 @@ export class EmptyGameEngineHandler implements GameEngineHandler {
     constructor(subHandlers?: GameEngineHandlerOptional[]) {
         this.subHandlers = subHandlers || []
     }
-    public onPress(dir: INPUT_BUTTON) { this.subHandlers.forEach(h => h.onPress && h.onPress(dir)) }
-    public async onMessage(msg: string) { this.subHandlers.forEach(h => h.onMessage && h.onMessage(msg)) }
-    public onLevelChange(level: number, cells: Optional<Cellish[][]>, message: Optional<string>) { this.subHandlers.forEach(h => h.onLevelChange && h.onLevelChange(level, cells, message)) }
-    public onWin() { this.subHandlers.forEach(h => h.onWin && h.onWin()) }
-    public async onSound(sound: Soundish) { this.subHandlers.forEach(h => h.onSound && h.onSound(sound)) }
-    public onTick(changedCells: Set<Cellish>, hasAgain: boolean) { this.subHandlers.forEach(h => h.onTick && h.onTick(changedCells, hasAgain)) }
+    public onPress(dir: INPUT_BUTTON) { this.subHandlers.forEach((h) => h.onPress && h.onPress(dir)) }
+    public async onMessage(msg: string) { this.subHandlers.forEach((h) => h.onMessage && h.onMessage(msg)) }
+    public onLevelChange(level: number, cells: Optional<Cellish[][]>, message: Optional<string>) { this.subHandlers.forEach((h) => h.onLevelChange && h.onLevelChange(level, cells, message)) }
+    public onWin() { this.subHandlers.forEach((h) => h.onWin && h.onWin()) }
+    public async onSound(sound: Soundish) { this.subHandlers.forEach((h) => h.onSound && h.onSound(sound)) }
+    public onTick(changedCells: Set<Cellish>, hasAgain: boolean) { this.subHandlers.forEach((h) => h.onTick && h.onTick(changedCells, hasAgain)) }
     // public onPause() { this.subHandlers.forEach(h => h.onPause()) }
     // public onResume() { this.subHandlers.forEach(h => h.onResume()) }
     // public onGameChange(data: GameData) { this.subHandlers.forEach(h => h.onGameChange(data)) }
 }
 
-export interface IEngine {
-    press(dir: INPUT_BUTTON): void
-    setLevel(level: number): void
-    setGame(code: string): void
-    pause(): void
-    resume(): void
+export interface Engineish {
+    setGame(code: string, level: number): void
+    dispose(): void
+    pause?(): void
+    resume?(): void
+    press?(dir: INPUT_BUTTON): void
+    tick?(): void
 }

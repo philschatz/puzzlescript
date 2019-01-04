@@ -1,8 +1,8 @@
 import { GameEngine } from './engine'
+import { Soundish } from './parser/astTypes'
 import Parser from './parser/parser'
 import Serializer from './parser/serializer'
-import { INPUT_BUTTON, MESSAGE_TYPE, Optional, shouldTick, TypedMessageEvent, WorkerMessage, WorkerResponse, GameEngineHandler, Cellish, CellishJson, pollingPromise } from './util'
-import { Soundish } from './parser/astTypes';
+import { Cellish, CellishJson, GameEngineHandler, INPUT_BUTTON, MESSAGE_TYPE, Optional, pollingPromise, shouldTick, TypedMessageEvent, WorkerMessage, WorkerResponse } from './util'
 
 declare var postMessage: (msg: WorkerResponse) => void
 
@@ -18,7 +18,7 @@ onmessage = (event: TypedMessageEvent<WorkerMessage>) => {
         case MESSAGE_TYPE.RESUME: postMessage({ type: msg.type, payload: resumeGame() }); break
         case MESSAGE_TYPE.PRESS: postMessage({ type: msg.type, payload: press(msg.button) }); break
         case MESSAGE_TYPE.CLOSE: postMessage({ type: msg.type, payload: closeGame() }); break
-        case MESSAGE_TYPE.ON_MESSAGE_DONE: 
+        case MESSAGE_TYPE.ON_MESSAGE_DONE:
             dismissedMessage = true
             break
         default:
@@ -47,7 +47,6 @@ const startPlayLoop = () => {
     }, 20)
 }
 
-
 let dismissedMessage = false
 
 class Handler implements GameEngineHandler {
@@ -55,12 +54,12 @@ class Handler implements GameEngineHandler {
         if (!dir) {
             throw new Error(`BUG: No direction provided to onPress`)
         }
-        postMessage({type: MESSAGE_TYPE.ON_PRESS, direction: dir})
+        postMessage({ type: MESSAGE_TYPE.ON_PRESS, direction: dir })
     }
     public async onMessage(msg: string) {
         dismissedMessage = false
         pauseGame()
-        postMessage({type: MESSAGE_TYPE.ON_MESSAGE, message: msg})
+        postMessage({ type: MESSAGE_TYPE.ON_MESSAGE, message: msg })
         // Wait until the user dismissed the message
         await pollingPromise<boolean>(50, () => dismissedMessage)
         resumeGame()
@@ -68,25 +67,25 @@ class Handler implements GameEngineHandler {
     public onLevelChange(level: number, cells: Optional<Cellish[][]>, message: Optional<string>) {
         let newCells: Optional<CellishJson[][]> = null
         if (cells) {
-            newCells = cells.map(row => toCellJson(row))
+            newCells = cells.map((row) => toCellJson(row))
         }
-        postMessage({type: MESSAGE_TYPE.ON_LEVEL_CHANGE, level, cells: newCells, message})
+        postMessage({ type: MESSAGE_TYPE.ON_LEVEL_CHANGE, level, cells: newCells, message })
     }
     public onWin() {
-        postMessage({type: MESSAGE_TYPE.ON_WIN})
+        postMessage({ type: MESSAGE_TYPE.ON_WIN })
     }
     public async onSound(sound: Soundish) {
-        postMessage({type: MESSAGE_TYPE.ON_SOUND, soundCode: sound.soundCode})
+        postMessage({ type: MESSAGE_TYPE.ON_SOUND, soundCode: sound.soundCode })
     }
     public onTick(changedCells: Set<Cellish>, hasAgain: boolean) {
-        postMessage({type: MESSAGE_TYPE.ON_TICK, changedCells: toCellJson(changedCells), hasAgain})
+        postMessage({ type: MESSAGE_TYPE.ON_TICK, changedCells: toCellJson(changedCells), hasAgain })
     }
 }
 
 const loadGame = (code: string, level: number) => {
     pauseGame()
     const { data } = Parser.parse(code)
-    postMessage({type: MESSAGE_TYPE.LOAD_GAME, payload: (new Serializer(data)).toJson()})
+    postMessage({ type: MESSAGE_TYPE.LOAD_GAME, payload: (new Serializer(data)).toJson() })
     currentEngine = new GameEngine(data, new Handler())
     currentEngine.setLevel(level)
     startPlayLoop()

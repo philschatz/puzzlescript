@@ -16,9 +16,9 @@ import { logger } from '../logger'
 import { LEVEL_TYPE } from '../parser/astTypes'
 import { saveCoverageFile } from '../recordCoverage'
 import TerminalUI, { getTerminalSize } from '../ui/terminal'
+import { _flatten } from '../util'
 import SOLVED_GAMES from './solvedGames'
 import TITLE_FONTS from './titleFonts'
-import { _flatten } from '../util';
 
 SOLVED_GAMES.add(`Skipping Stones to Lonely Homes`)
 SOLVED_GAMES.add(`Spikes 'n' Stuff`)

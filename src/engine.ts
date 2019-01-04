@@ -406,7 +406,7 @@ export class LevelEngine extends EventEmitter2 {
             this._setLevel(levelSprites)
 
             if (this.gameData.metadata.runRulesOnLevelStart) {
-                const {messageToShow, isWinning, hasRestart} = this.tick()
+                const { messageToShow, isWinning, hasRestart } = this.tick()
                 if (messageToShow || isWinning || hasRestart) {
                     console.log(`Error: Game should not cause a sound/message/win/restart during the initial tick. "${messageToShow}" "${isWinning}" "${hasRestart}"`)
                 }
@@ -971,7 +971,7 @@ export class GameEngine {
         if (hasRestart) {
             this.handler.onTick(changedCells, hasAgain)
             return {
-                changedCells: changedCells,
+                changedCells,
                 soundToPlay: null,
                 messageToShow: null,
                 didWinGame: false,
@@ -1081,9 +1081,8 @@ export class GameEngine {
     }
 }
 
-
 function inputButtonToRuleDirection(button: INPUT_BUTTON) {
-    switch(button) {
+    switch (button) {
         case INPUT_BUTTON.UP: return RULE_DIRECTION.UP
         case INPUT_BUTTON.DOWN: return RULE_DIRECTION.DOWN
         case INPUT_BUTTON.LEFT: return RULE_DIRECTION.LEFT

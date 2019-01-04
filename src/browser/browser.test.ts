@@ -3,7 +3,7 @@
 import fs from 'fs'
 import path from 'path'
 import puppeteer from 'puppeteer' // tslint:disable-line:no-implicit-dependencies
-import { Optional } from './util'
+import { Optional } from '../util'
 // import mapStackTrace from 'sourcemapped-stacktrace-node')
 
 // Defined via jest-puppeteer environment
@@ -97,7 +97,7 @@ describe('Browser', () => {
     }
 
     beforeEach(async() => {
-        const url = `http://localhost:8000/src/browser/html-table.xhtml`
+        const url = `http://localhost:8000/src/browser/test/html-table.xhtml`
 
         // jest-puppeteer will expose the `page` and `browser` globals to Jest tests.
         if (!browser || !page) {

@@ -3,7 +3,7 @@
 <head>
     <title>Example Puzzlescript Games using HTML Tables</title>
     <script src="./lib/webpack-output.js"></script>
-    <link rel="stylesheet" href="./src/browser/html-table.css"/>
+    <link rel="stylesheet" href="./src/browser/test/html-table.css"/>
     <style>
         .hidden { display: none; }
         #loading:not(.is-loading) { display: none; }
@@ -106,7 +106,9 @@
 
         const worker = new Worker('./lib/webpack-output-webworker.js')
 
-        var tableEngine = new window.PuzzleScript.WebworkerTableEngine(worker, table, {onLevelComplete: function (newLevelNum) {
+        // var tableEngine = new window.PuzzleScript.WebworkerTableEngine(worker, table, {onLevelComplete: function (newLevelNum) {
+            var tableEngine = new window.PuzzleScript.SyncTableEngine(table, {onLevelComplete: function (newLevelNum) {
+        
             setStorage(gameId, newLevelNum)
         }})
 
