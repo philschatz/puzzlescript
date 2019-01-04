@@ -128,6 +128,9 @@ export default class WebworkerTableEngine implements Engineish {
             case MESSAGE_TYPE.ON_TICK:
                 this.handler.onTick(new Set(data.changedCells.map((x) => this.convertToCellish(x))), data.hasAgain)
                 break
+            case MESSAGE_TYPE.ON_SOUND:
+                this.handler.onSound({soundCode: data.soundCode})
+                break
             case MESSAGE_TYPE.ON_PAUSE:
                 this.handler.onPause()
                 break
