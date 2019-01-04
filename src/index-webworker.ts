@@ -1,7 +1,7 @@
 import { GameEngine } from './engine'
 import Parser from './parser/parser'
 import Serializer from './parser/serializer'
-import { INPUT_BUTTON, MESSAGE_TYPE, Optional, shouldTick, TypedMessageEvent, WorkerMessage, WorkerResponse, GameEngineHandler, Cellish, CellishJson } from './util'
+import { INPUT_BUTTON, MESSAGE_TYPE, Optional, shouldTick, TypedMessageEvent, WorkerMessage, WorkerResponse, GameEngineHandler, Cellish, CellishJson, pollingPromise } from './util'
 import { Soundish } from './parser/astTypes';
 
 declare var postMessage: (msg: WorkerResponse) => void
@@ -45,19 +45,6 @@ const startPlayLoop = () => {
             // postMessage({ type: MESSAGE_TYPE.TICK, payload })
         }
     }, 20)
-}
-
-// Polls until a condition is true
-function pollingPromise<T>(ms: number, fn: () => T) {
-    return new Promise<T>(resolve => {
-        let timer = setInterval(() => {
-            const value = fn()
-            if (value) {
-                clearInterval(timer)
-                resolve(value)
-            }
-        }, ms)
-    })
 }
 
 

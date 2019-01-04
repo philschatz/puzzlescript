@@ -7,8 +7,7 @@
     <style>
         .hidden { display: none; }
         #loading:not(.is-loading) { display: none; }
-        .ps-table:not(:focus) { filter: grayscale(100%); opacity: .5 }
-        .ps-table:not([data-ps-accepting-input="true"]) { opacity: .8 }
+        
         .light { opacity: .5 }
         kbd {
             font: 11px "SFMono-Regular",Consolas,"Liberation Mono",Menlo,Courier,monospace;
@@ -20,11 +19,15 @@
             vertical-align: middle;
             background-color: #fafbfc;
             border: solid 1px #c6cbd1;
-                border-bottom-color: rgb(198, 203, 209);
             border-bottom-color: #959da5;
             border-radius: 3px;
             box-shadow: inset 0 -1px 0 #959da5;
         }
+
+        /* Move the following (all) to the html-table.css file */
+        .ps-table:not(:focus) { filter: grayscale(100%); opacity: .5 }
+        .ps-table:not([data-ps-accepting-input="true"]) { opacity: .8 }
+
         /* When the CSS is disabled then show a plain table with borders */
         .ps-table.ps-ui-disabled {
             width: 100%;
@@ -101,214 +104,15 @@
         var table = document.querySelector('#thegamecanbeidentifiedbyselector')
         var gameId // used for loading and saving game progress
 
-        function resizeTable() {
-            // Resize the table so that it fits.
-            // TODO: resize when the window resizes
+        const worker = new Worker('./lib/webpack-output-webworker.js')
 
-            // TODO: ignore when the current level is a message level
-            if (tableEngine.engine.isCurrentLevelAMessage()) {
-                return
-            }
-
-            const cells = tableEngine.tableUI.getCurrentLevelCells()
-            const cellHeight = cells.length
-            const cellWidth = cells[0].length
-            const levelRatio = cellWidth / cellHeight
-            // Figure out if the width or the height is the limiting factor
-            const availableWidth = window.innerWidth - table.offsetLeft
-            const availableHeight = window.innerHeight - table.offsetTop
-            let newWidth = 0
-            if (availableWidth / availableHeight < levelRatio) {
-                // Width is the limiting factor
-                newWidth = availableWidth / levelRatio
-            } else {
-                // Height is the limiting factor
-                newWidth = availableHeight * levelRatio
-            }
-            table.setAttribute('style', `width: ${Math.floor(newWidth)}px;`)
-        }
-
-        window.addEventListener('resize', resizeTable)
-
-        var tableEngine = new window.PuzzleScript.TableEngine(table, {onLevelComplete: function (newLevelNum) {
+        var tableEngine = new window.PuzzleScript.WebworkerTableEngine(worker, table, {onLevelComplete: function (newLevelNum) {
             setStorage(gameId, newLevelNum)
-            resizeTable()
         }})
 
         var gameSelection = document.querySelector('#gameSelection')
         var loading = document.querySelector('#loading')
         var isStarted = false
-
-        table.addEventListener('blur', () => {
-            worker.postMessage({type: 'PAUSE'})
-        })
-        table.addEventListener('focus', () => {
-            worker.postMessage({type: 'RESUME'})
-        })
-
-class ProxyCellish {
-    constructor(rowIndex, colIndex, sprites) {
-        this.rowIndex = rowIndex
-        this.colIndex = colIndex
-        this.sprites = sprites
-    }
-    getSprites() {
-        return this.sprites
-    }
-    getSpritesAsSet() {
-        return new Set(this.sprites)
-    }
-    getWantsToMove() {
-        return 'STATIONARY'
-    }
-}
-
-class ProxyEngine {
-    constructor(worker, ui) {
-        this.worker = worker
-        this.ui = ui
-
-        this.cellCache = []
-
-        const that = this
-        const convertToCellish = ({rowIndex, colIndex, spriteNames}) => {
-            // Lazy-initialize all the proxy cells
-            if (!that.cellCache[rowIndex]) {
-                that.cellCache[rowIndex] = []
-            }
-            if (!that.cellCache[rowIndex][colIndex]) {
-                that.cellCache[rowIndex][colIndex] = new ProxyCellish(rowIndex, colIndex, [])
-            }
-            
-            that.cellCache[rowIndex][colIndex].sprites = spriteNames.map(name => {
-                if (!that.gameData._getSpriteByName(name)) {
-                    console.log(`Could not find sprite "${name}"`)
-                }
-                return that.gameData._getSpriteByName(name) // could be null
-            }).filter(x => !!x) // filter out all the sprites that could not be found
-
-            return that.cellCache[rowIndex][colIndex]
-        }
-
-        worker.addEventListener('message', async({data}) => {
-            console.log(`Received from worker: ${data.type}`, data)
-            switch (data.type) {
-                case 'LOAD_GAME':
-                    const gameData = window.PuzzleScript.Serializer.fromJson(data.payload)
-                    /*this.*/proxyEngine.gameData = gameData
-                    // /*this.*/proxyEngine.levelNum = level
-                    /*this.*/proxyEngine.ui.setGameData(gameData)
-                    break
-                case 'ON_LEVEL_CHANGE':
-                    that.cellCache = [] // clear the cache since the level dimensions are different
-                    that.levelNum = data.level
-                    if (data.cells) {
-                        ui.onLevelChange(data.level, data.cells.map(row => row.map(convertToCellish)), null)
-                    } else {
-                        ui.onLevelChange(data.level, null, data.message)
-                    }
-                    resizeTable()
-                    table.focus()
-                    break
-                case 'ON_MESSAGE':
-                    await ui.onMessage(data.message)
-                    worker.postMessage({ type: 'ON_MESSAGE_DONE'})
-                    table.focus()
-                    break
-                case 'ON_PRESS':
-                    ui.onPress(data.direction)
-                    break
-                case 'ON_TICK':
-                    ui.onTick(new Set(data.changedCells.map(convertToCellish)), data.hasAgain)
-                    break
-                case 'TICK':
-                    break // less console noise
-                default:
-                    console.log(`BUG: Unhandled Event occurred`, data) // tslint:disable-line:no-console
-            }
-        })
-    }
-    async loadGame(code, level) {
-        return new Promise(resolve => {
-            function handler (ev) {
-                if (ev.data.type === 'LOAD_GAME') {
-                    table.focus()
-                    worker.removeEventListener('message', handler)
-                    // "this" does not work. For some reason it is the worker
-                    const gameData = window.PuzzleScript.Serializer.fromJson(ev.data.payload)
-                    /*this.*/proxyEngine.gameData = gameData
-                    /*this.*/proxyEngine.levelNum = level
-                    /*this.*/proxyEngine.ui.setGameData(gameData)
-                    resolve()
-                }
-            }
-            worker.addEventListener('message', handler)
-            worker.postMessage({type: 'LOAD_GAME', level: 0, code})
-        })
-    }
-    press(dir) {
-        worker.postMessage({type: 'PRESS', button: dir})
-    }
-    setLevel() {
-        console.log(`BUG: ProxyEngine.setLevel() Not implemented yet`)
-    }
-    tick() {
-        // No-op because the webworker is handling the ticks
-    }
-    isCurrentLevelAMessage() {
-        return this.gameData.levels[this.levelNum].type === 'LEVEL_MESSAGE'
-    }
-
-    pause() {
-        worker.postMessage({type: 'PAUSE'})
-    }
-    resume() {
-        worker.postMessage({type: 'RESUME'})
-    }
-}
-
-const worker = new Worker('./lib/webpack-output-webworker.js')
-const proxyEngine = new ProxyEngine(worker, tableEngine.tableUI)
-
-// worker.postMessage({type: 'LOAD_GAME', level: 0, code: `title Hello World
-// ========
-// OBJECTS
-// ========
-
-// Background .
-// BLACK
-
-// Player P
-// YELLOW
-
-// ================
-// COLLISIONLAYERS
-// ================
-
-// Background
-// Player
-
-// =======
-// LEVELS
-// =======
-
-// .P.
-// `})
-let lastTick = Date.now()
-// worker.addEventListener('message', async (event) => {
-//     const { data } = event
-//     switch (data.type) {
-//         case 'LOAD_GAME':
-//             console.log(`Loaded game. Here is the serialized payload`, data.payload) // tslint:disable-line:no-console
-//             worker.postMessage({ type: 'PRESS', button: 'RIGHT' })
-//             break
-//         case 'TICK':
-//             console.log(`Tick happened. ${Date.now() - lastTick}ms This is what changed`, data.payload) // tslint:disable-line:no-console
-//             lastTick = Date.now()
-//             // worker.postMessage({ type: 'PAUSE' })
-//             break
-//     }
-// })
 
         function playSelectedGame() {
             loading.classList.add('is-loading') // Show the "Loading..." text
@@ -320,18 +124,19 @@ let lastTick = Date.now()
                 return resp.text().then(async source => {
                     // Look up if the user has already solved some of the levels
                     // Load the game
-                    await proxyEngine.loadGame(source, getStorage(gameId) || 0)
-                    tableEngine.setEngine(proxyEngine)
+                    // await proxyEngine.loadGame(source, getStorage(gameId) || 0)
+                    // tableEngine.setEngine(proxyEngine)
+                    tableEngine.setGame(source, getStorage(gameId) || 0)
 
                     // Hide the Loading... text
                     loading.classList.remove('is-loading')
 
-                    tableEngine.setLevel(getStorage(gameId) || 0)
-                    resizeTable()
+                    // tableEngine.setLevel(getStorage(gameId) || 0)
+                    // resizeTable()
 
-                    if (!isStarted) {
-                        tableEngine.start()
-                    }
+                    // if (!isStarted) {
+                    //     tableEngine.start()
+                    // }
 
                 })
             })
@@ -377,7 +182,7 @@ let lastTick = Date.now()
         const gamepadDisabled = document.querySelector('#gamepad-disabled')
         const gamepadEnabled = document.querySelector('#gamepad-enabled')
         setInterval(() => {
-            if (tableEngine.gamepad.isConnected()) {
+            if (tableEngine.inputWatcher.gamepad.isConnected()) {
                 gamepadUnknown.classList.add('hidden')
                 gamepadDisabled.classList.add('hidden')
                 gamepadEnabled.classList.remove('hidden')

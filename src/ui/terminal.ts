@@ -122,6 +122,15 @@ class TerminalUI extends BaseUI implements GameEngineHandler {
     public onWin() {
         // Don't need to do anything
     }
+    public onPause() {
+        // Don't need to do anything
+    }
+    public onResume() {
+        // Don't need to do anything
+    }
+    public onGameChange() {
+        // Don't need to do anything
+    }
     public async onSound(sound: Soundish) {
         /*await*/ playSound(sound.soundCode) // tslint:disable-line:no-floating-promises
     }
@@ -630,15 +639,3 @@ function getRestoreCursor() {
 }
 
 export default new TerminalUI()
-
-// Mac terminal does not render all the colors so some pixels do not look different.
-// See 391852197b1aef15558342df2670d635 (the grid)
-// for (let r = 0; r < 256; r+=16) {
-//   for (let g = 0; g < 256; g+=16) {
-//     for (let b = 0; b < 256; b+=16) {
-//       console.log(ansiStyles.bgColor.ansi16m.rgb(r, g, b) + ' ' + ansiStyles.bgColor.close)
-//     }
-//     console.log(ansiStyles.bgColor.ansi16m.rgb(0, 0, 0) + '\n' + ansiStyles.bgColor.close)
-//   }
-//   console.log(ansiStyles.bgColor.ansi16m.rgb(0, 0, 0) + '\n' + ansiStyles.bgColor.close)
-// }

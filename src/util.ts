@@ -46,6 +46,14 @@ export function _flatten<T>(arrays: T[][]) {
     return ret
 }
 
+export function filterNulls<T>(items: Optional<T>[]) {
+    const ret: T[] = []
+    items.forEach(x => {
+        if (x) { ret.push(x) }
+    })
+    return ret
+}
+
 // export function _zip<T1, T2>(array1: T1[], array2: T2[]) {
 //     if (array1.length < array2.length) {
 //         throw new Error(`BUG: Zip array length mismatch ${array1.length} != ${array2.length}`)
@@ -192,6 +200,20 @@ export interface ICacheable {
 }
 
 // Webworker message interfaces
+
+// Polls until a condition is true
+export function pollingPromise<T>(ms: number, fn: () => T) {
+    return new Promise<T>(resolve => {
+        let timer = setInterval(() => {
+            const value = fn()
+            if (value) {
+                clearInterval(timer)
+                resolve(value)
+            }
+        }, ms)
+    })
+}
+
 export interface TypedMessageEvent<T> extends MessageEvent {
     data: T
 }
@@ -315,13 +337,43 @@ export interface GameEngineHandler {
     onWin(): void
     onSound(sound: Soundish): Promise<void>
     onTick(changedCells: Set<Cellish>, hasAgain: boolean): void
+    // onPause(): void
+    // onResume(): void
+    // onGameChange(data: GameData): void
+}
+
+export interface GameEngineHandlerOptional {
+    onPress?(dir: INPUT_BUTTON): void
+    onMessage?(msg: string): Promise<void>
+    onLevelChange?(level: number, cells: Optional<Cellish[][]>, message: Optional<string>): void
+    onWin?(): void
+    onSound?(sound: Soundish): Promise<void>
+    onTick?(changedCells: Set<Cellish>, hasAgain: boolean): void
+    // onPause?(): void
+    // onResume?(): void
+    // onGameChange?(data: GameData): void
 }
 
 export class EmptyGameEngineHandler implements GameEngineHandler {
-    public onPress(dir: INPUT_BUTTON) { /*no-op*/ }
-    public async onMessage(msg: string) { /*no-op*/ }
-    public onLevelChange(level: number, cells: Optional<Cellish[][]>, message: Optional<string>) { /*no-op*/ }
-    public onWin() { /*no-op*/ }
-    public async onSound(sound: Soundish) { /*no-op*/ }
-    public onTick(changedCells: Set<Cellish>, hasAgain: boolean) { /*no-op*/ }
+    private subHandlers: GameEngineHandlerOptional[]
+    constructor(subHandlers?: GameEngineHandlerOptional[]) {
+        this.subHandlers = subHandlers || []
+    }
+    public onPress(dir: INPUT_BUTTON) { this.subHandlers.forEach(h => h.onPress && h.onPress(dir)) }
+    public async onMessage(msg: string) { this.subHandlers.forEach(h => h.onMessage && h.onMessage(msg)) }
+    public onLevelChange(level: number, cells: Optional<Cellish[][]>, message: Optional<string>) { this.subHandlers.forEach(h => h.onLevelChange && h.onLevelChange(level, cells, message)) }
+    public onWin() { this.subHandlers.forEach(h => h.onWin && h.onWin()) }
+    public async onSound(sound: Soundish) { this.subHandlers.forEach(h => h.onSound && h.onSound(sound)) }
+    public onTick(changedCells: Set<Cellish>, hasAgain: boolean) { this.subHandlers.forEach(h => h.onTick && h.onTick(changedCells, hasAgain)) }
+    // public onPause() { this.subHandlers.forEach(h => h.onPause()) }
+    // public onResume() { this.subHandlers.forEach(h => h.onResume()) }
+    // public onGameChange(data: GameData) { this.subHandlers.forEach(h => h.onGameChange(data)) }
+}
+
+export interface IEngine {
+    press(dir: INPUT_BUTTON): void
+    setLevel(level: number): void
+    setGame(code: string): void
+    pause(): void
+    resume(): void
 }

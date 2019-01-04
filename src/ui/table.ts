@@ -23,6 +23,20 @@ class TableUI extends BaseUI implements GameEngineHandler {
         this.inputsProcessed = 0
         table.classList.add('ps-table')
         this.markAcceptingInput(false)
+
+        // To use this as a handler, the functions need to be bound to `this`
+        this.onPress = this.onPress.bind(this)
+        this.onLevelChange = this.onLevelChange.bind(this)
+    }
+
+    public onPause() {
+        // Don't need to do anything
+    }
+    public onResume() {
+        // Don't need to do anything
+    }
+    public onGameChange() {
+        // Don't need to do anything
     }
 
     public onPress(dir: INPUT_BUTTON) {
