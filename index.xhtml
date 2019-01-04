@@ -24,9 +24,7 @@
             box-shadow: inset 0 -1px 0 #959da5;
         }
 
-        /* Move the following (all) to the html-table.css file */
-        .ps-table:not(:focus) { filter: grayscale(100%); opacity: .5 }
-        .ps-table:not([data-ps-accepting-input="true"]) { opacity: .8 }
+        /* Decide whether to move the following (all) to the html-table.css file */
 
         /* When the CSS is disabled then show a plain table with borders */
         .ps-table.ps-ui-disabled {
@@ -104,13 +102,16 @@
         var table = document.querySelector('#thegamecanbeidentifiedbyselector')
         var gameId // used for loading and saving game progress
 
-        const worker = new Worker('./lib/webpack-output-webworker.js')
+        // Save when the user completes a level
+        const handler = {
+            onLevelChange: function (newLevelNum) {
+                setStorage(gameId, newLevelNum)
+            }
+        }
 
-        // var tableEngine = new window.PuzzleScript.WebworkerTableEngine(worker, table, {onLevelComplete: function (newLevelNum) {
-            var tableEngine = new window.PuzzleScript.SyncTableEngine(table, {onLevelComplete: function (newLevelNum) {
-        
-            setStorage(gameId, newLevelNum)
-        }})
+        const worker = new Worker('./lib/webpack-output-webworker.js')
+        const tableEngine = new window.PuzzleScript.WebworkerTableEngine(worker, table, handler)
+        // var tableEngine = new window.PuzzleScript.SyncTableEngine(table, handler)
 
         var gameSelection = document.querySelector('#gameSelection')
         var loading = document.querySelector('#loading')
@@ -184,6 +185,9 @@
         const gamepadDisabled = document.querySelector('#gamepad-disabled')
         const gamepadEnabled = document.querySelector('#gamepad-enabled')
         setInterval(() => {
+            if (!tableEngine.inputWatcher) {
+                return
+            }
             if (tableEngine.inputWatcher.gamepad.isConnected()) {
                 gamepadUnknown.classList.add('hidden')
                 gamepadDisabled.classList.add('hidden')

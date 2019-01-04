@@ -232,7 +232,9 @@ export enum MESSAGE_TYPE {
     ON_LEVEL_CHANGE = 'ON_LEVEL_CHANGE',
     ON_WIN = 'ON_WIN',
     ON_SOUND = 'ON_SOUND',
-    ON_TICK = 'ON_TICK'
+    ON_TICK = 'ON_TICK',
+    ON_PAUSE = 'ON_PAUSE',
+    ON_RESUME = 'ON_RESUME'
 }
 
 export interface CellishJson {
@@ -299,6 +301,10 @@ export type WorkerResponse = {
 } | {
     type: MESSAGE_TYPE.ON_WIN
 } | {
+    type: MESSAGE_TYPE.ON_PAUSE
+} | {
+    type: MESSAGE_TYPE.ON_RESUME
+} | {
     type: MESSAGE_TYPE.ON_SOUND
     soundCode: number
 } | {
@@ -337,8 +343,8 @@ export interface GameEngineHandler {
     onWin(): void
     onSound(sound: Soundish): Promise<void>
     onTick(changedCells: Set<Cellish>, hasAgain: boolean): void
-    // onPause(): void
-    // onResume(): void
+    onPause(): void
+    onResume(): void
     // onGameChange(data: GameData): void
 }
 
@@ -349,8 +355,8 @@ export interface GameEngineHandlerOptional {
     onWin?(): void
     onSound?(sound: Soundish): Promise<void>
     onTick?(changedCells: Set<Cellish>, hasAgain: boolean): void
-    // onPause?(): void
-    // onResume?(): void
+    onPause?(): void
+    onResume?(): void
     // onGameChange?(data: GameData): void
 }
 
@@ -365,9 +371,9 @@ export class EmptyGameEngineHandler implements GameEngineHandler {
     public onWin() { this.subHandlers.forEach((h) => h.onWin && h.onWin()) }
     public async onSound(sound: Soundish) { this.subHandlers.forEach((h) => h.onSound && h.onSound(sound)) }
     public onTick(changedCells: Set<Cellish>, hasAgain: boolean) { this.subHandlers.forEach((h) => h.onTick && h.onTick(changedCells, hasAgain)) }
-    // public onPause() { this.subHandlers.forEach(h => h.onPause()) }
-    // public onResume() { this.subHandlers.forEach(h => h.onResume()) }
-    // public onGameChange(data: GameData) { this.subHandlers.forEach(h => h.onGameChange(data)) }
+    public onPause() { this.subHandlers.forEach(h => h.onPause && h.onPause()) }
+    public onResume() { this.subHandlers.forEach(h => h.onResume && h.onResume()) }
+    // public onGameChange(data: GameData) { this.subHandlers.forEach(h => h.onGameChange && h.onGameChange(data)) }
 }
 
 export interface Engineish {

@@ -80,6 +80,12 @@ class Handler implements GameEngineHandler {
     public onTick(changedCells: Set<Cellish>, hasAgain: boolean) {
         postMessage({ type: MESSAGE_TYPE.ON_TICK, changedCells: toCellJson(changedCells), hasAgain })
     }
+    public onPause() {
+        postMessage({ type: MESSAGE_TYPE.ON_PAUSE })
+    }
+    public onResume() {
+        postMessage({ type: MESSAGE_TYPE.ON_RESUME })
+    }
 }
 
 const loadGame = (code: string, level: number) => {
@@ -95,12 +101,14 @@ const pauseGame = () => {
     if (gameLoop !== null) {
         clearInterval(gameLoop)
         gameLoop = null
+        postMessage({ type: MESSAGE_TYPE.ON_PAUSE })
     }
 }
 
 const resumeGame = () => {
     pauseGame()
     startPlayLoop()
+    postMessage({ type: MESSAGE_TYPE.ON_RESUME })
 }
 
 const tick = async() => {

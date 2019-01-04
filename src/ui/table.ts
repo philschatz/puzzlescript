@@ -30,10 +30,10 @@ class TableUI extends BaseUI implements GameEngineHandler {
     }
 
     public onPause() {
-        // Don't need to do anything
+        this.table.setAttribute('data-ps-state', 'paused')
     }
     public onResume() {
-        // Don't need to do anything
+        this.table.setAttribute('data-ps-state', 'running')
     }
     public onGameChange() {
         // Don't need to do anything
