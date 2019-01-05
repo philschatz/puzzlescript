@@ -11,7 +11,7 @@ import pify from 'pify'
 import * as supportsColor from 'supports-color'
 
 import { ensureDir } from 'fs-extra'
-import { closeSounds, GameData, GameEngine, ILoadingCellsEvent, Optional, Parser, playSound, RULE_DIRECTION } from '..'
+import { closeSounds, GameData, GameEngine, ILoadingCellsEvent, Optional, Parser, RULE_DIRECTION } from '..'
 import { logger } from '../logger'
 import { LEVEL_TYPE } from '../parser/astTypes'
 import { saveCoverageFile } from '../recordCoverage'
@@ -49,7 +49,6 @@ interface ICliOptions {
     new: true | undefined,
     level: number | undefined,
     resume: boolean | undefined,
-    nosound: boolean | undefined
 }
 
 // Use require instead of import so we can load JSON files
@@ -124,7 +123,6 @@ commander
 .option('-n, --new', 'start a new game')
 .option('-l, --level <num>', 'play a specific level', ((arg) => parseInt(arg, 10)))
 .option('-r, --resume', 'resume the level from last save')
-.option('--nosound', 'disable sound')
 .on('--help', () => {
     console.log('')
     console.log('Note: saved game state is stored in ~/.local/puzzlescript/solutions/')
@@ -141,12 +139,12 @@ async function run() {
     inquirer.registerPrompt('autocomplete', PromptModule)
     const gists = await pify(glob)(path.join(__dirname, '../../gists/*/script.txt'))
     const cliOptions: ICliOptions = commander.opts() as ICliOptions
-    const { ui: cliUi, game: cliGameTitle, nosound } = cliOptions
+    const { ui: cliUi, game: cliGameTitle } = cliOptions
     let { level: cliLevel, resume: cliResume } = cliOptions
     const gamePathInitial = commander.args[0]
 
     if (gamePathInitial) {
-        await startPromptsAndPlayGame(gamePathInitial, null, cliResume, cliLevel, nosound)
+        await startPromptsAndPlayGame(gamePathInitial, null, cliResume, cliLevel)
         return // we are only playing one game
     }
 
@@ -195,7 +193,7 @@ async function run() {
     let wantsToPlayAgain = false
     do {
         const { filePath: gamePath, id: gistId } = await promptGame(games, cliGameTitle)
-        await startPromptsAndPlayGame(gamePath, gistId, cliResume, cliLevel, nosound)
+        await startPromptsAndPlayGame(gamePath, gistId, cliResume, cliLevel)
 
         if (!cliGameTitle) {
             wantsToPlayAgain = await promptPlayAnother()
@@ -218,7 +216,7 @@ async function run() {
     }
 }
 
-async function startPromptsAndPlayGame(gamePath: string, gistId: Optional<string>, cliResume: boolean | undefined, cliLevel: number | undefined, nosound: boolean | undefined) {
+async function startPromptsAndPlayGame(gamePath: string, gistId: Optional<string>, cliResume: boolean | undefined, cliLevel: number | undefined) {
     const cliOptions: ICliOptions = commander.opts() as ICliOptions
     const { ui: cliUi, size: cliSpriteSize, new: cliNewGame } = cliOptions
 
@@ -280,11 +278,11 @@ async function startPromptsAndPlayGame(gamePath: string, gistId: Optional<string
 
     TerminalUI.clearScreen()
 
-    await playGame(data, currentLevelNum, recordings, ticksToRunFirst, absPath, solutionPath, cliUi, cliLevel !== undefined /*only run one level if specified*/, nosound || null)
+    await playGame(data, currentLevelNum, recordings, ticksToRunFirst, absPath, solutionPath, cliUi, cliLevel !== undefined /*only run one level if specified*/)
 }
 
 async function playGame(data: GameData, currentLevelNum: number, recordings: ISaveFile, ticksToRunFirst: string,
-                        absPath: string, solutionPath: string, cliUi: boolean, onlyOneLevel: boolean, nosound: Optional<boolean>) {
+                        absPath: string, solutionPath: string, cliUi: boolean, onlyOneLevel: boolean) {
 
     logger.debug(() => `Start playing "${data.title}". Level ${currentLevelNum}`)
 
@@ -492,8 +490,6 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: ISa
     TerminalUI.renderScreen(false)
     TerminalUI.writeDebug(`"${data.title}"`, 1)
 
-    let currentlyPlayingSoundPromise: Optional<Promise<void>> = null // stack the sounds so we know if one is playing
-
     // Run a bunch of ticks in case the user partially played a level
     let maxTickAndRenderTime = -1
     for (tickNum = 0; tickNum < ticksToRunFirstAry.length; tickNum++) {
@@ -515,25 +511,12 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: ISa
             }
         }
         doPress(key, false)
-        const { changedCells, soundToPlay, didLevelChange, messageToShow } = await engine.tick()
+        const { changedCells, didLevelChange } = await engine.tick()
 
         // if (changedCells.size === 0 && !messageToShow && 'WSAD'.includes(key)) {
         //     isPaused = true
         //     ticksToRunFirstAry.splice(keyNum, 0, '[PAUSED]')
         // }
-
-        if (soundToPlay && !nosound) {
-            if (!currentlyPlayingSoundPromise) {
-                currentlyPlayingSoundPromise = playSound(soundToPlay).then(() => {
-                    currentlyPlayingSoundPromise = null
-                    return
-                })
-            }
-        }
-
-        if (messageToShow) {
-            TerminalUI.renderMessageScreen(messageToShow)
-        }
 
         // UI.renderScreen(data, engine.currentLevel)
 

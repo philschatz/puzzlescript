@@ -113,12 +113,10 @@ const resumeGame = () => {
 
 const tick = async() => {
     const engine = getEngine()
-    const { changedCells, soundToPlay, messageToShow, didWinGame, didLevelChange, wasAgainTick } = await engine.tick()
+    const { changedCells, didWinGame, didLevelChange, wasAgainTick } = await engine.tick()
     // Response needs to be serializable
     return {
         changedCells: toCellJson(changedCells),
-        soundToPlay: soundToPlay ? soundToPlay.soundCode : null,
-        messageToShow,
         didWinGame,
         didLevelChange,
         wasAgainTick

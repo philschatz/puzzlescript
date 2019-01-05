@@ -15,8 +15,6 @@ interface ICollisionLayerState {
 
 interface ITickResult {
     changedCells: Set<Cell>,
-    soundToPlay: Optional<SoundItem<IGameTile>>,
-    messageToShow: Optional<string>,
     didWinGame: boolean,
     didLevelChange: boolean,
     wasAgainTick: boolean
@@ -938,10 +936,8 @@ export class GameEngine {
 
             return {
                 changedCells: new Set(),
-                soundToPlay: null,
-                messageToShow: null,
                 didWinGame: didWinGameInMessage,
-                didLevelChange: false,
+                didLevelChange: true,
                 wasAgainTick: false
             }
         }
@@ -952,8 +948,6 @@ export class GameEngine {
             // check if the `require_player_movement` flag is set in the game
             return {
                 changedCells: new Set(),
-                soundToPlay: null,
-                messageToShow: null,
                 didWinGame: false,
                 didLevelChange: false,
                 wasAgainTick: false
@@ -972,8 +966,6 @@ export class GameEngine {
             this.handler.onTick(changedCells, hasAgain)
             return {
                 changedCells,
-                soundToPlay: null,
-                messageToShow: null,
                 didWinGame: false,
                 didLevelChange: false,
                 wasAgainTick: false
@@ -1001,8 +993,6 @@ export class GameEngine {
 
         return {
             changedCells,
-            soundToPlay,
-            messageToShow,
             didWinGame,
             didLevelChange: isWinning,
             wasAgainTick: hasAgain

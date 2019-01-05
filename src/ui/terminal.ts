@@ -67,14 +67,19 @@ function drawPixelChar(x: number, y: number, fgHex: Optional<string>, bgHex: Opt
 }
 
 function someKeyPressed() {
-    const p = new Promise((resolve) => {
+    return new Promise((resolve) => {
         function handleKeyPress(key: string) {
-            process.stdin.off('data', handleKeyPress)
-            resolve(key)
+            switch (key) {
+                case 'X':
+                case 'x':
+                case ' ':
+                case '\u000D':
+                    process.stdin.off('data', handleKeyPress)
+                    resolve(key)
+            }
         }
         process.stdin.on('data', handleKeyPress)
     })
-    return p
 }
 
 class TerminalUI extends BaseUI implements GameEngineHandler {

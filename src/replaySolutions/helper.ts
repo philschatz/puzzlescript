@@ -20,6 +20,10 @@ function parseEngine(code: string, levelNum = 0) {
     return { engine, data }
 }
 
+function isShort() {
+    return process.env.CI === 'true' || process.env.TEST_SHORT === 'true'
+}
+
 export function createTests(moduloNumber: number, moduloTotal: number) {
     if (process.env.SKIP_SOLUTIONS) {
         describe.skip('Skipping replay tests', () => {
@@ -29,7 +33,7 @@ export function createTests(moduloNumber: number, moduloTotal: number) {
         return
     }
 
-    if (process.env.CI === 'true' && (moduloNumber === 7 || moduloNumber === 8)) {
+    if (isShort() && (moduloNumber === 7 || moduloNumber === 8)) {
         describe.skip(`Skipping replaySolutions/${moduloNumber}.test because it causes Travis to time out`, () => {
             it.skip('skipping tests')
         })
@@ -49,7 +53,7 @@ export function createTests(moduloNumber: number, moduloTotal: number) {
 
             const GIST_ID = path.basename(solutionFilename).replace('.json', '')
 
-            it(`plays ${process.env.CI === 'true' ? '*a single level*' : '_the solved levels_'} of ${GIST_ID}`, async() => {
+            it(`plays ${isShort() ? '*a single level*' : '_the solved levels_'} of ${GIST_ID}`, async() => {
                 const gistFilename = path.join(__dirname, `../../gists/${GIST_ID}/script.txt`)
                 const { engine, data } = parseEngine(fs.readFileSync(gistFilename, 'utf-8'))
                 const recordings = JSON.parse(fs.readFileSync(path.join(SOLUTION_ROOT, solutionFilename), 'utf-8')).solutions
@@ -73,13 +77,13 @@ export function createTests(moduloNumber: number, moduloTotal: number) {
 
                     hasAtLeastOneSolution++
 
-                    if (process.env.CI === 'true' && recording.solution.length > CI_MAX_SOLUTION_LENGTH) {
+                    if (isShort() && recording.solution.length > CI_MAX_SOLUTION_LENGTH) {
                         const msg = `CI-SKIP: Solution group: [${moduloNumber}/${moduloTotal}]. Level=${index}. Because the solution is too long: ${recording.solution.length} > ${CI_MAX_SOLUTION_LENGTH}. "${GIST_ID}"` // tslint:disable-line:max-line-length
                         console.log(msg) // tslint:disable-line:no-console
                         continue
                     }
 
-                    if (process.env.CI === 'true' && numPlayed > 0) {
+                    if (isShort() && numPlayed > 0) {
                         break
                     }
 
