@@ -35,14 +35,12 @@ const getEngine = () => {
 
 const startPlayLoop = () => {
     if (gameLoop !== null) {
-        console.log(`BUG: Webworker is already running`)
         clearInterval(gameLoop)
     }
     gameLoop = setInterval(async() => {
         if (shouldTick(getEngine().getGameData().metadata, lastTick)) {
             lastTick = Date.now()
             await tick()
-            // postMessage({ type: MESSAGE_TYPE.TICK, payload })
         }
     }, 20)
 }

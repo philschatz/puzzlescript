@@ -184,6 +184,10 @@ describe('Browser', () => {
                 return
             }
             await sleep(1000) // wait for the dialog to open and be dismissed
+            if (dismissedCount.length > oldCount) {
+                return
+            }
+            await sleep(10000) // wait a long time
             expect(dismissedCount.length).toBeGreaterThan(oldCount)
         }
 
@@ -204,9 +208,9 @@ describe('Browser', () => {
         expect(levelNum).toBe('3')
         await waitForDialogAfter(async() => pressKeys('.WASDW'.split('')))
 
-        // await sleep(1000)
-        // levelNum = (await getAttrs()).levelNum
-        // expect(levelNum).toBe('5')
+        await sleep(1000)
+        levelNum = (await getAttrs()).levelNum
+        expect(levelNum).toBe('5')
 
         expect(dismissedCount.length).toBe(5)
     })

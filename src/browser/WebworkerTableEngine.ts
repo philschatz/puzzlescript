@@ -3,7 +3,17 @@ import { GameSprite } from '../models/tile'
 import { LEVEL_TYPE } from '../parser/astTypes'
 import Serializer from '../parser/serializer'
 import TableUI from '../ui/table'
-import { Cellish, EmptyGameEngineHandler, Engineish, filterNulls, GameEngineHandlerOptional, INPUT_BUTTON, MESSAGE_TYPE, Optional, pollingPromise, PuzzlescriptWorker, RULE_DIRECTION, WorkerResponse } from '../util'
+import { Cellish,
+    EmptyGameEngineHandler,
+    Engineish,
+    GameEngineHandlerOptional,
+    INPUT_BUTTON,
+    MESSAGE_TYPE,
+    Optional,
+    pollingPromise,
+    PuzzlescriptWorker,
+    RULE_DIRECTION,
+    WorkerResponse } from '../util'
 import InputWatcher from './inputWatcher'
 import ResizeWatcher from './resizeWatcher'
 
@@ -50,18 +60,17 @@ export default class WebworkerTableEngine implements Engineish {
         this.levelNum = -123456
         this.gameData = null
 
-        const that = this
-        this.ui = new (class CustomTableUI extends TableUI {
-            public async onMessage(msg: string) {
+        this.ui = new TableUI(table, {
+            onMessage: (msg: string) => {
                 return pollingPromise<void>(10, () => {
-                    if (that.inputWatcher.isSomethingPressed()) {
+                    if (this.inputWatcher.isSomethingPressed()) {
                         return false
                     }
                     alert(msg)
                     return true
                 })
             }
-        })(table)
+        })
         this.handler = new EmptyGameEngineHandler(handler ? [this.ui, handler] : [this.ui])
         this.resizeWatcher = new ResizeWatcher(table, this.handleResize.bind(this))
         this.inputWatcher = new InputWatcher()
@@ -99,7 +108,6 @@ export default class WebworkerTableEngine implements Engineish {
     }
 
     private async messageListener({ data }: {data: WorkerResponse}) {
-        console.log(`Received from worker: ${data.type}`, data)
         switch (data.type) {
             case MESSAGE_TYPE.LOAD_GAME:
                 const gameData = Serializer.fromJson(data.payload, '**source not included because of laziness**')
@@ -129,7 +137,7 @@ export default class WebworkerTableEngine implements Engineish {
                 this.handler.onTick(new Set(data.changedCells.map((x) => this.convertToCellish(x))), data.hasAgain)
                 break
             case MESSAGE_TYPE.ON_SOUND:
-                this.handler.onSound({soundCode: data.soundCode})
+                await this.handler.onSound({ soundCode: data.soundCode })
                 break
             case MESSAGE_TYPE.ON_PAUSE:
                 this.handler.onPause()
@@ -137,11 +145,11 @@ export default class WebworkerTableEngine implements Engineish {
             case MESSAGE_TYPE.ON_RESUME:
                 this.handler.onResume()
                 break
-            
+
             case MESSAGE_TYPE.TICK:
                 break // less console noise
             default:
-                console.log(`BUG: Unhandled Event occurred`, data) // tslint:disable-line:no-console
+                console.log(`BUG: Unhandled Event occurred. Ignoring`, data) // tslint:disable-line:no-console
         }
     }
 
@@ -156,12 +164,13 @@ export default class WebworkerTableEngine implements Engineish {
             this.cellCache[rowIndex][colIndex] = new ProxyCellish(rowIndex, colIndex, [])
         }
 
-        this.cellCache[rowIndex][colIndex].sprites = filterNulls(spriteNames.map((name) => {
-            if (!this.getGameData()._getSpriteByName(name)) {
-                console.log(`Could not find sprite "${name}"`)
+        this.cellCache[rowIndex][colIndex].sprites = spriteNames.map((name) => {
+            const sprite = this.getGameData()._getSpriteByName(name)
+            if (!sprite) {
+                throw new Error(`Could not find sprite "${name}"`)
             }
-            return this.getGameData()._getSpriteByName(name) // could be null
-        })) // filter out all the sprites that could not be found
+            return sprite
+        })
 
         return this.cellCache[rowIndex][colIndex]
     }

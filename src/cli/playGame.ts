@@ -481,10 +481,6 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: ISa
         }
     }
 
-    // engine.on('cell:updated', cell => {
-    //   UI.drawCellAt(data, cell, cell.rowIndex, cell.colIndex, false)
-    // })
-
     TerminalUI.setGameData(engine.getGameData())
     TerminalUI.clearScreen()
     TerminalUI.renderScreen(false)
@@ -511,17 +507,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: ISa
             }
         }
         doPress(key, false)
-        const { changedCells, didLevelChange } = await engine.tick()
-
-        // if (changedCells.size === 0 && !messageToShow && 'WSAD'.includes(key)) {
-        //     isPaused = true
-        //     ticksToRunFirstAry.splice(keyNum, 0, '[PAUSED]')
-        // }
-
-        // UI.renderScreen(data, engine.currentLevel)
-
-        // Draw any cells that moved
-        TerminalUI.drawCells(changedCells, false)
+        const { didLevelChange } = await engine.tick()
 
         if (didLevelChange) {
             if (onlyOneLevel) {

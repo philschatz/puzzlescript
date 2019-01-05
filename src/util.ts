@@ -371,8 +371,8 @@ export class EmptyGameEngineHandler implements GameEngineHandler {
     public onWin() { this.subHandlers.forEach((h) => h.onWin && h.onWin()) }
     public async onSound(sound: Soundish) { this.subHandlers.forEach((h) => h.onSound && h.onSound(sound)) }
     public onTick(changedCells: Set<Cellish>, hasAgain: boolean) { this.subHandlers.forEach((h) => h.onTick && h.onTick(changedCells, hasAgain)) }
-    public onPause() { this.subHandlers.forEach(h => h.onPause && h.onPause()) }
-    public onResume() { this.subHandlers.forEach(h => h.onResume && h.onResume()) }
+    public onPause() { this.subHandlers.forEach((h) => h.onPause && h.onPause()) }
+    public onResume() { this.subHandlers.forEach((h) => h.onResume && h.onResume()) }
     // public onGameChange(data: GameData) { this.subHandlers.forEach(h => h.onGameChange && h.onGameChange(data)) }
 }
 

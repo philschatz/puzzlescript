@@ -2,7 +2,7 @@ import { IColor } from '../models/colors'
 import { GameData } from '../models/game'
 import { Soundish } from '../parser/astTypes'
 import { playSound } from '../sound/sfxr'
-import { _flatten, Cellish, GameEngineHandler, INPUT_BUTTON, Optional, RULE_DIRECTION } from '../util'
+import { _flatten, Cellish, EmptyGameEngineHandler, GameEngineHandler, GameEngineHandlerOptional, INPUT_BUTTON, Optional, RULE_DIRECTION } from '../util'
 import BaseUI from './base'
 
 interface ITableCell {
@@ -15,8 +15,9 @@ class TableUI extends BaseUI implements GameEngineHandler {
     private readonly table: HTMLElement
     private inputsProcessed: number
     private tableCells: ITableCell[][]
+    private handler: EmptyGameEngineHandler
 
-    constructor(table: HTMLElement) {
+    constructor(table: HTMLElement, handler?: GameEngineHandlerOptional) {
         super()
         this.table = table
         this.tableCells = []
@@ -27,13 +28,17 @@ class TableUI extends BaseUI implements GameEngineHandler {
         // To use this as a handler, the functions need to be bound to `this`
         this.onPress = this.onPress.bind(this)
         this.onLevelChange = this.onLevelChange.bind(this)
+
+        this.handler = new EmptyGameEngineHandler(handler ? [handler] : [])
     }
 
     public onPause() {
         this.table.setAttribute('data-ps-state', 'paused')
+        this.handler.onPause()
     }
     public onResume() {
         this.table.setAttribute('data-ps-state', 'running')
+        this.handler.onResume()
     }
     public onGameChange() {
         // Don't need to do anything
@@ -46,7 +51,9 @@ class TableUI extends BaseUI implements GameEngineHandler {
             case INPUT_BUTTON.RESTART:
                 this.renderScreen(false)
         }
+        this.handler.onPress(dir)
     }
+
     public onLevelChange(levelNum: number, cells: Optional<Cellish[][]>, message: Optional<string>) {
         this.clearScreen()
         this.table.setAttribute('data-ps-current-level', `${levelNum}`)
@@ -105,6 +112,24 @@ class TableUI extends BaseUI implements GameEngineHandler {
             }
         }
         this.markAcceptingInput(true)
+        this.handler.onLevelChange(levelNum, cells, message)
+    }
+
+    public async onMessage(msg: string) {
+        await this.handler.onMessage(msg)
+    }
+    public onWin() {
+        alert(`You won! Congratulations!`)
+        this.handler.onWin()
+    }
+    public async onSound(sound: Soundish) {
+        playSound(sound.soundCode) // tslint:disable-line:no-floating-promises
+        await this.handler.onSound(sound)
+    }
+    public onTick(changedCells: Set<Cellish>, hasAgain: boolean) {
+        this.drawCells(changedCells, false)
+        this.markAcceptingInput(!hasAgain)
+        this.handler.onTick(changedCells, hasAgain)
     }
 
     public willAllLevelsFitOnScreen(gameData: GameData) {
@@ -134,20 +159,6 @@ class TableUI extends BaseUI implements GameEngineHandler {
         // clear all the rows
         this.table.innerHTML = ''
         this.tableCells = []
-    }
-
-    public async onMessage(msg: string) {
-        alert(msg)
-    }
-    public onWin() {
-        alert(`You won! Congratulations!`)
-    }
-    public async onSound(sound: Soundish) {
-        /*await*/ playSound(sound.soundCode) // tslint:disable-line:no-floating-promises
-    }
-    public onTick(changedCells: Set<Cellish>, hasAgain: boolean) {
-        this.drawCells(changedCells, false)
-        this.markAcceptingInput(!hasAgain)
     }
 
     protected renderLevelScreen(levelRows: Cellish[][], renderScreenDepth: number) {
