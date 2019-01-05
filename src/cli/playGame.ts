@@ -16,7 +16,7 @@ import { logger } from '../logger'
 import { LEVEL_TYPE } from '../parser/astTypes'
 import { saveCoverageFile } from '../recordCoverage'
 import TerminalUI, { getTerminalSize } from '../ui/terminal'
-import { _flatten } from '../util'
+import { _flatten, EmptyGameEngineHandler } from '../util'
 import SOLVED_GAMES from './solvedGames'
 import TITLE_FONTS from './titleFonts'
 
@@ -294,7 +294,11 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: ISa
     if (!level) {
         throw new Error(`BUG: Could not find level ${currentLevelNum}`)
     }
-    const engine = new GameEngine(data, TerminalUI)
+    const engine = new GameEngine(data, new EmptyGameEngineHandler([TerminalUI, {
+        async onMessage() {
+            keypresses.push('!')
+        }
+    }]))
     engine.on('loading-cells', ({ cellStart, cellEnd, cellTotal }: ILoadingCellsEvent) => {
         // UI.writeDebug(`Loading cells ${cellStart}-${cellEnd} of ${cellTotal}. SpriteKey="${key}"`)
         const loading = `Loading... [`
