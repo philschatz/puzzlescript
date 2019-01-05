@@ -2,16 +2,16 @@
   "version": 1,
   "solutions": [
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
       "solution": ".,S,A,A,A,W,D,D,S,D,W,W,D,W,W,W,S,S,S,A,W,,,,D,W,W,W,W,,W,A,A,,A,W,W"
     },
     {
-      "solution": "X"
+      "solution": "!"
     }
   ],
   "title": "Outward force",

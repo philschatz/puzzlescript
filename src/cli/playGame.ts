@@ -470,6 +470,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: ISa
             case 'b': // so we can set a breakpoint in the playback
             case '[pause]': isPaused = true; break
             case '[continue]': isPaused = false; break
+            case '!': // dismiss a message
             case '.':
             case ',':
                 // just .tick()

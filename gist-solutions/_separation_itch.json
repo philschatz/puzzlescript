@@ -18,19 +18,19 @@
       "solution": ".......W..A.A..S...S.....DD.D..D.D...W.......S.A.A......A..A"
     },
     {
-      "solution": ".......W..A.A..S...S.....DD.D..D.D...W.......S.A.A......A..A.......W..A.A..S...S.....DD.D..D.D...W.......S.A.A......A..AX"
+      "solution": "!"
     },
     {
       "solution": "WAASDWWASDDW"
     },
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
       "solution": "SDDSAAAWWDSAASDDDWWWASSDDWWAASWDDSSAASAWWDSADDDWWAASAADDWDDDASSDDAAWAS"
     },
     {
-      "solution": "X"
+      "solution": "!"
     }
   ],
   "title": "Separation",

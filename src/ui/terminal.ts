@@ -141,6 +141,7 @@ class TerminalUI extends BaseUI implements GameEngineHandler {
         this.renderMessageScreen(msg)
         // Wait for "ACTION" key
         await someKeyPressed()
+        this.renderScreen(true)
     }
 
     public getHasVisualUi() {

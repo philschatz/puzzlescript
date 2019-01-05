@@ -2,13 +2,13 @@
   "version": 1,
   "solutions": [
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
       "solution": ".A,,,W,,,,D,,,,A,,,,S,,,,D,,,,"
     },
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
       "solution": ",D,,,S,,,A,,,,,W,,,,"
@@ -30,7 +30,7 @@
       "solution": ".W,,,,W,,,,A,,,D,,,,,S,,,,,,,S,,,,S,,,,A,,,A,,W,,,,,,,W,,,,A,,,,A,,S,,,,,,,S,,,,A,,,,,A,,W,,,,,,,W,,,,D,,,W,,,A,,,,,,,,,,,S,,,,,,,,,,,D,,W,,,,A,,,,,,A,,,,S,,,,,,,,,D,,W,W,,,,,,,,"
     },
     {
-      "solution": "X"
+      "solution": "!"
     }
   ],
   "title": "Garten der Medusen",

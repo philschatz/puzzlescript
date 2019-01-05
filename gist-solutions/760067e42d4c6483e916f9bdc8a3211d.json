@@ -5,13 +5,21 @@
     null,
     null,
     {
-      "solution": ".SSSSDDDDD.DDWWWAAXSSSSSSSSDX....WDWWDDDSSDDDDDWWWW"
+      "solution": ".SSSSDDWWDDDX.DDDD"
     },
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
-      "solution": ".WWDDWWWSSSSDX............DDDDD"
+      "solution": ".WWWWDDSSSSDX............DDDDD"
+    },
+    null,
+    {
+      "solution": ".ASSSSDX...................DDDDD"
+    },
+    null,
+    {
+      "solution": ".SDDDDSSAAASX........SS"
     }
   ],
   "title": "Magik",

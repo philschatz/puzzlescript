@@ -2,19 +2,19 @@
   "version": 1,
   "solutions": [
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
       "solution": "DDDDWWWWAAAA"
     },
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
       "solution": "WWAWDDDDSSSASA"
     },
     {
-      "solution": "X"
+      "solution": "!"
     }
   ],
   "title": "Fatigued square maze",

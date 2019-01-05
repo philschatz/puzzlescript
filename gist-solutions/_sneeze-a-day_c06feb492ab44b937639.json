@@ -2,10 +2,10 @@
   "version": 1,
   "solutions": [
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
       "solution": ".S.S.D.D.D.DW.W.A,...W.AW,.A.SS.S.SD,..."
@@ -14,7 +14,7 @@
       "solution": ".AA,....WDW,A.A.A.A.SA,......SDDDDDD,A.AAA.ASSDD,..D.WD.D,...A.AAA.WAA,......"
     },
     {
-      "solution": ".AAAA,XSAAWXDDXD,....DWW,....SSAAAAAWXDDDDWDSSSXS,...."
+      "solution": ".AAAA,!SAAWXDDXD,....DWW,....SSAAAAAWXDDDDWDSSSXS,...."
     },
     {
       "solution": ".SXAAWSDDWWAAAWASXS,..WDD,...DDSSSA,....WWWDW,...."

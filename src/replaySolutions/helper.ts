@@ -67,7 +67,7 @@ export function createTests(moduloNumber: number, moduloTotal: number) {
 
                     // Some games (like Fish Friend) are a bunch of dialog and do not actually need to run
                     // so if they only contain a "X" then skip them
-                    if (recording.solution.replace(/,/g, '').replace(/\./g, '') === 'X') {
+                    if (recording.solution.replace(/,/g, '').replace(/\./g, '') === '!') {
                         continue
                     }
 
@@ -103,6 +103,8 @@ export function createTests(moduloNumber: number, moduloTotal: number) {
                             case 'A': engine.press(INPUT_BUTTON.LEFT); break
                             case 'D': engine.press(INPUT_BUTTON.RIGHT); break
                             case 'X': engine.press(INPUT_BUTTON.ACTION); break
+                            case '!': // dismiss message prompt. not even a tick
+                                continue
                             case '.':
                             case ',':
                                 break

@@ -2,7 +2,7 @@
   "version": 1,
   "solutions": [
     {
-      "solution": "X",
+      "solution": "!",
       "partial": "A"
     },
     {
@@ -10,25 +10,25 @@
       "partial": "DSWADDWSWAA"
     },
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
       "solution": "DDDSDDWDDSAADWASADWDDSDDDDD"
     },
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
       "solution": "DDDSSDDWDWADSAWDDSDSAAWWADSAWDDSDSADWASDDWDDD"
     },
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
       "solution": "DDDWDDSDDWAWADSDSWAAWADSDDSAAAWWDDDSAWADSAWADSASDDWDDSAADDWSWAASAAWWDDSDDSDDWDDD"
     },
     {
-      "solution": "X"
+      "solution": "!"
     }
   ],
   "title": "MazezaM",

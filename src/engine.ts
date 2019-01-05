@@ -405,12 +405,12 @@ export class LevelEngine extends EventEmitter2 {
             // Clone the board because we will be modifying it
             this._setLevel(levelSprites)
 
-            if (this.gameData.metadata.runRulesOnLevelStart) {
-                const { messageToShow, isWinning, hasRestart } = this.tick()
-                if (messageToShow || isWinning || hasRestart) {
-                    console.log(`Error: Game should not cause a sound/message/win/restart during the initial tick. "${messageToShow}" "${isWinning}" "${hasRestart}"`)
-                }
-            }
+            // if (this.gameData.metadata.runRulesOnLevelStart) {
+            //     const { messageToShow, isWinning, hasRestart } = this.tick()
+            //     if (messageToShow || isWinning || hasRestart) {
+            //         console.log(`Error: Game should not cause a sound/message/win/restart during the initial tick. "${messageToShow}" "${isWinning}" "${hasRestart}"`)
+            //     }
+            // }
             this.takeSnapshot(this.createSnapshot())
 
             // Return the cells so the UI can listen to when they change

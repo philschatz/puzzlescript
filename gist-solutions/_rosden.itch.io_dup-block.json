@@ -2,22 +2,22 @@
   "version": 1,
   "solutions": [
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
       "solution": ".,W,WWD,W,A,W,D,W,A,S,A,W"
     },
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
       "solution": ".,W,D,W,A,S,A,A,W,A,W,W,D,S,D,W,A,W,D,A,W,W,D,D,S,D,D,S,S,A,W,A,W,D,A,A"
     },
     {
-      "solution": "X"
+      "solution": "!"
     }
   ],
   "title": "dup-block",

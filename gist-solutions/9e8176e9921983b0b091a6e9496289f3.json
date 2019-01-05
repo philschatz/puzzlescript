@@ -2,25 +2,25 @@
   "version": 1,
   "solutions": [
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
       "solution": "SSASAW"
     },
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
       "solution": "DDSDWDDDDWWWWA"
     },
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
       "solution": "SSSSSAAASSSSAAAAAAAWWWWWWWWWDDDDSSSSDSDDDDSAAAA"
     },
     {
-      "solution": "X"
+      "solution": "!"
     }
   ],
   "title": "Collapsable Sokoban",
