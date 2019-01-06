@@ -21,7 +21,7 @@ Also, it is **accessible**, meaning that [blind or visually impaired people can 
 See [./src/browser/spec/html-table.xhtml](./src/browser/spec/html-table.xhtml) for an example of embedding in a browser.
 
 ```js
-// Include <script src="node_modules/puzzlescript/lib/webpack-output.js"></script>
+// Include <script src="node_modules/puzzlescript/lib/puzzlescript.js"></script>
 // and then the following:
 table = document.querySelector('table') // selector to the <table> that will be used
 engine = new PuzzleScript.SyncTableEngine(table, optionalEventHandler)
@@ -31,7 +31,7 @@ engine.setGame(gameSourceString, 0 /*startLevel*/)
 Or, if the game is slow, it can be played using a [Webworker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers):
 
 ```js
-worker = new Worker('path/from/browser/to/webpack-output-webworker.js')
+worker = new Worker('path/from/browser/to/puzzlescript-webworker.js')
 engine = new PuzzleScript.WebworkerTableEngine(worker, table, optionalEventHandler)
 ...
 ```

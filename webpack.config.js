@@ -6,24 +6,11 @@ module.exports = {
     entry: ['babel-polyfill', './src/index-browser.ts'],
     output: {
         path: path.resolve(__dirname, './lib/'),
-        filename: 'webpack-output.js',
+        filename: 'puzzlescript.js',
         library: 'PuzzleScript',
         libraryTarget: 'umd',
     },
     devtool: 'source-map',
-    plugins: [
-		new webpack.LoaderOptionsPlugin({
-			options: {
-				worker: {
-					output: {
-                        path: path.resolve(__dirname, './lib/'),
-						filename: "hash.worker.js",
-						chunkFilename: "[id].hash.worker.js"
-					}
-				}
-			}
-		})
-    ],
     resolve: {
         // Add '.ts' and '.tsx' as resolvable extensions.
         extensions: ['.ts', '.tsx', '.js', '.json'],

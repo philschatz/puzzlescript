@@ -2,7 +2,7 @@
 
 <head>
     <title>Game running in an HTML Table</title>
-    <script src="../../../lib/webpack-output.js"></script>
+    <script src="../../../lib/puzzlescript.js"></script>
     <link rel="stylesheet" href="../../../style.css"/>
 </head>
 
@@ -14,7 +14,7 @@
         const { PuzzleScript } = window
 
         const table = document.querySelector('#the-game')
-        const worker = new Worker('../../../lib/webpack-output-webworker.js')
+        const worker = new Worker('../../../lib/puzzlescript-webworker.js')
         const tableEngine = new PuzzleScript.WebworkerTableEngine(worker, table)
 
         window.HackTableStart = (source, initialLevel) => {

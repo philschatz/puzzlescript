@@ -5,7 +5,7 @@ module.exports = {
     entry: ['babel-polyfill', './src/index-webworker.ts'],
     output: {
         path: path.resolve(__dirname, './lib/'),
-        filename: 'webpack-output-webworker.js',
+        filename: 'puzzlescript-webworker.js',
     },
     devtool: 'source-map',
     resolve: {
