@@ -1,3 +1,5 @@
+import { _debounce } from '../util'
+
 export default class ResizeWatcher {
     private readonly table: HTMLTableElement
     private readonly handler: (width: number) => void
@@ -10,7 +12,7 @@ export default class ResizeWatcher {
         this.handler = handler
         this.columns = 1
         this.rows = 1
-        this.boundResizeHandler = this.resizeHandler.bind(this)
+        this.boundResizeHandler = _debounce(this.resizeHandler.bind(this))
 
         window.addEventListener('resize', this.boundResizeHandler)
     }

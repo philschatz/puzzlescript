@@ -46,13 +46,13 @@ export function _flatten<T>(arrays: T[][]) {
     return ret
 }
 
-export function filterNulls<T>(items: Array<Optional<T>>) {
-    const ret: T[] = []
-    items.forEach((x) => {
-        if (x) { ret.push(x) }
-    })
-    return ret
-}
+// export function filterNulls<T>(items: Array<Optional<T>>) {
+//     const ret: T[] = []
+//     items.forEach((x) => {
+//         if (x) { ret.push(x) }
+//     })
+//     return ret
+// }
 
 // export function _zip<T1, T2>(array1: T1[], array2: T2[]) {
 //     if (array1.length < array2.length) {
