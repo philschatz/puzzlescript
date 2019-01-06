@@ -10,7 +10,7 @@ import * as path from 'path'
 import pify from 'pify'
 import * as supportsColor from 'supports-color'
 
-import { ensureDir } from 'fs-extra'
+import { ensureDir, ensureDirSync } from 'fs-extra'
 import { closeSounds, GameData, GameEngine, ILoadingCellsEvent, Optional, Parser, RULE_DIRECTION } from '..'
 import { logger } from '../logger'
 import { LEVEL_TYPE } from '../parser/astTypes'
@@ -288,6 +288,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: ISa
     let pendingKey = null
     let tickNum = 0
     let shouldExitGame: boolean = false
+    let dontSaveInitialLoad = true
 
     logger.debug(() => `Start playing "${data.title}". Level ${currentLevelNum}`)
 
@@ -300,8 +301,23 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: ISa
         throw new Error(`BUG: Could not find level ${currentLevelNum}`)
     }
     const engine = new GameEngine(data, new EmptyGameEngineHandler([TerminalUI, {
-        onLevelChange() {
+        onLevelChange(newLevel: number) {
+            if (dontSaveInitialLoad) {
+                dontSaveInitialLoad = false
+                keypresses = []
+                return
+            }
+            if (!supportsColor.stdout) {
+                console.log('You beat the level!')
+            }
+
+            // Save the solution
+            recordings.solutions[newLevel - 1] = { solution: keypresses.join('') }
+            ensureDirSync(path.dirname(solutionPath))
+            writeFileSync(solutionPath, JSON.stringify(recordings, null, 2))
             keypresses = []
+            pendingKey = null
+            currentLevelNum = newLevel
         },
         async onMessage() {
             keypresses.push('!')
@@ -465,7 +481,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: ISa
 
     let isPaused = false
 
-    function doPress(key: string, recordPress: boolean) {
+    function doPress(key: string) {
         switch (key) {
             case 'W': engine.pressUp(); break
             case 'S': engine.pressDown(); break
@@ -483,9 +499,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: ISa
             default:
                 throw new Error(`BUG: Invalid keypress character "${ticksToRunFirstAry[tickNum]}"`)
         }
-        if (recordPress) {
-            keypresses.push(key)
-        }
+        keypresses.push(key)
     }
 
     TerminalUI.setGameData(engine.getGameData())
@@ -513,16 +527,13 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: ISa
                 console.log(ticksToRunFirstAry.join(''))
             }
         }
-        doPress(key, false)
+        doPress(key)
         const { didLevelChange } = await engine.tick()
 
         if (didLevelChange) {
             if (onlyOneLevel) {
                 return
             }
-            currentLevelNum = engine.getCurrentLevelNum()
-            TerminalUI.clearScreen()
-            TerminalUI.renderScreen(false)
         }
 
         if (tickNum > 1) { // Skip the 1st couple because they might be cleaning up the level
@@ -536,8 +547,6 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: ISa
         await sleep(1) // sleep long enough to play sounds
         // await sleep(Math.max(100 - (Date.now() - startTime), 0))
     }
-
-    keypresses = [...ticksToRunFirstAry]
 
     while (true) {
         let maxSleepTime = process.env.NODE_ENV === 'development' ? 500 : 50
@@ -553,7 +562,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: ISa
 
         let didHandleKeyPress = false
         if (pendingKey && !engine.hasAgain()) {
-            doPress(pendingKey, true/*record*/)
+            doPress(pendingKey)
             pendingKey = null
             didHandleKeyPress = true
         }
@@ -561,22 +570,8 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: ISa
         const { changedCells, didLevelChange, wasAgainTick } = await engine.tick()
 
         if (didLevelChange) {
-            if (!supportsColor.stdout) {
-                console.log('You beat the level!')
-            }
-
-            // Save the solution
-            recordings.solutions[currentLevelNum] = { solution: keypresses.join('') }
-            await ensureDir(path.dirname(solutionPath))
-            writeFileSync(solutionPath, JSON.stringify(recordings, null, 2))
-            keypresses = []
-            pendingKey = null
-            currentLevelNum = engine.getCurrentLevelNum()
-
             TerminalUI.clearScreen()
             TerminalUI.renderScreen(true)
-
-            continue
         }
 
         const msg = `Tick: ${tickNum} took ${Date.now() - startTime}ms. Moves: ${[...keypresses].reverse().join('').substring(0, 20)}`

@@ -365,14 +365,14 @@ export class EmptyGameEngineHandler implements GameEngineHandler {
     constructor(subHandlers?: GameEngineHandlerOptional[]) {
         this.subHandlers = subHandlers || []
     }
-    public onPress(dir: INPUT_BUTTON) { this.subHandlers.forEach((h) => h.onPress && h.onPress(dir)) }
-    public async onMessage(msg: string) { this.subHandlers.forEach((h) => h.onMessage && h.onMessage(msg)) }
-    public onLevelChange(level: number, cells: Optional<Cellish[][]>, message: Optional<string>) { this.subHandlers.forEach((h) => h.onLevelChange && h.onLevelChange(level, cells, message)) }
-    public onWin() { this.subHandlers.forEach((h) => h.onWin && h.onWin()) }
-    public async onSound(sound: Soundish) { this.subHandlers.forEach((h) => h.onSound && h.onSound(sound)) }
-    public onTick(changedCells: Set<Cellish>, hasAgain: boolean) { this.subHandlers.forEach((h) => h.onTick && h.onTick(changedCells, hasAgain)) }
-    public onPause() { this.subHandlers.forEach((h) => h.onPause && h.onPause()) }
-    public onResume() { this.subHandlers.forEach((h) => h.onResume && h.onResume()) }
+    public onPress(dir: INPUT_BUTTON) { for (const h of this.subHandlers) { h.onPress && h.onPress(dir) } }
+    public async onMessage(msg: string) { for (const h of this.subHandlers) { h.onMessage && await h.onMessage(msg) } }
+    public onLevelChange(level: number, cells: Optional<Cellish[][]>, message: Optional<string>) { for (const h of this.subHandlers) { h.onLevelChange && h.onLevelChange(level, cells, message) } }
+    public onWin() { for (const h of this.subHandlers) { h.onWin && h.onWin() } }
+    public async onSound(sound: Soundish) { for (const h of this.subHandlers) { h.onSound && h.onSound(sound) } }
+    public onTick(changedCells: Set<Cellish>, hasAgain: boolean) { for (const h of this.subHandlers) { h.onTick && h.onTick(changedCells, hasAgain) } }
+    public onPause() { for (const h of this.subHandlers) { h.onPause && h.onPause() } }
+    public onResume() { for (const h of this.subHandlers) { h.onResume && h.onResume() } }
     // public onGameChange(data: GameData) { this.subHandlers.forEach(h => h.onGameChange && h.onGameChange(data)) }
 }
 
