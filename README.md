@@ -24,8 +24,16 @@ See [./test/browser/test/html-table.xhtml](./test/browser/test/html-table.xhtml)
 // Include <script src="node_modules/puzzlescript/lib/webpack-output.js"></script>
 // and then the following:
 table = document.querySelector('table') // selector to the <table> that will be used
-engine = new PuzzleScript.SyncTableEngine(table)
+engine = new PuzzleScript.SyncTableEngine(table, optionalEventHandler)
 engine.setGame(gameSourceString, 0 /*startLevel*/)
+```
+
+Or, if the game is slow, it can be played using a [Webworker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers):
+
+```js
+worker = new Worker('path/from/browser/to/webpack-output-webworker.js')
+engine = new PuzzleScript.WebworkerTableEngine(worker, table, optionalEventHandler)
+...
 ```
 
 # Screencaps
