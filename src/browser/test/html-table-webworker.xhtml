@@ -7,13 +7,13 @@
 </head>
 
 <body>
-    <table id="thegamecanbeidentifiedbyselector"></table>
+    <table id="the-game"></table>
     
     <script type="text/javascript">//<![CDATA[
         /* eslint-env browser */
         const { PuzzleScript } = window
 
-        const table = document.querySelector('#thegamecanbeidentifiedbyselector')
+        const table = document.querySelector('#the-game')
         const worker = new Worker('../../../lib/webpack-output-webworker.js')
         const tableEngine = new PuzzleScript.WebworkerTableEngine(worker, table)
 

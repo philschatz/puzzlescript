@@ -403,12 +403,12 @@ export class LevelEngine extends EventEmitter2 {
             // Clone the board because we will be modifying it
             this._setLevel(levelSprites)
 
-            // if (this.gameData.metadata.runRulesOnLevelStart) {
-            //     const { messageToShow, isWinning, hasRestart } = this.tick()
-            //     if (messageToShow || isWinning || hasRestart) {
-            //         console.log(`Error: Game should not cause a sound/message/win/restart during the initial tick. "${messageToShow}" "${isWinning}" "${hasRestart}"`)
-            //     }
-            // }
+            if (this.gameData.metadata.runRulesOnLevelStart) {
+                const { messageToShow, isWinning, hasRestart } = this.tick()
+                if (messageToShow || isWinning || hasRestart) {
+                    console.log(`Error: Game should not cause a sound/message/win/restart during the initial tick. "${messageToShow}" "${isWinning}" "${hasRestart}"`) // tslint:disable-line:no-console
+                }
+            }
             this.takeSnapshot(this.createSnapshot())
 
             // Return the cells so the UI can listen to when they change
@@ -876,10 +876,8 @@ export type CellSaveState = string[][][]
 export class GameEngine {
     private levelEngine: LevelEngine
     private currentLevelNum: number
-    private isFirstTick: boolean
     private handler: GameEngineHandler
     constructor(gameData: GameData, handler: GameEngineHandler) {
-        this.isFirstTick = true
         this.currentLevelNum = -1234567
         this.handler = handler
 
@@ -911,7 +909,6 @@ export class GameEngine {
         this.currentLevelNum = levelNum
         const level = this.getGameData().levels[levelNum]
         if (level.type === LEVEL_TYPE.MAP) {
-            this.isFirstTick = true
             this.levelEngine.setLevel(levelNum)
             this.handler.onLevelChange(this.currentLevelNum, this.levelEngine.getCurrentLevel().getCells(), null)
         } else {
@@ -942,9 +939,7 @@ export class GameEngine {
             }
         }
         let hasAgain = this.levelEngine.hasAgain()
-        if (this.levelEngine.gameData.metadata.runRulesOnLevelStart && this.isFirstTick) {
-            // don't cancel early
-        } else if (!hasAgain && !(this.levelEngine.gameData.metadata.realtimeInterval || this.levelEngine.pendingPlayerWantsToMove)) {
+        if (!hasAgain && !(this.levelEngine.gameData.metadata.realtimeInterval || this.levelEngine.pendingPlayerWantsToMove)) {
             // check if the `require_player_movement` flag is set in the game
             return {
                 changedCells: new Set(),
@@ -956,7 +951,6 @@ export class GameEngine {
 
         const previousPending = this.levelEngine.pendingPlayerWantsToMove
         const { changedCells, soundToPlay, messageToShow, isWinning, hasRestart } = this.levelEngine.tick()
-        this.isFirstTick = false
 
         if (previousPending && !this.levelEngine.pendingPlayerWantsToMove) {
             this.handler.onPress(previousPending)
@@ -1000,11 +994,6 @@ export class GameEngine {
     }
 
     public press(direction: INPUT_BUTTON) {
-        switch (direction) {
-            case INPUT_BUTTON.RESTART:
-                this.isFirstTick = true
-                break
-        }
         this.levelEngine.press(direction)
     }
     public pressUp() {

@@ -12,26 +12,36 @@ interface Control<T> {
 }
 
 export default class InputWatcher {
+    private readonly table: HTMLTableElement
+    private readonly gamepad: Gamepad
+    private readonly controls: Control<{button: Button, lastPressed: Optional<number>}>
+    private readonly controlCheckers: Array<() => void>
+    private readonly possibleKeys: string[]
+    private readonly boundOnKeyEvents: (evt: KeyboardEvent) => void
     private polledInput: Optional<INPUT_BUTTON>
     private repeatIntervalInSeconds: Optional<number>
-    private gamepad: Gamepad
-    private controls: Control<{button: Button, lastPressed: Optional<number>}>
-    private controlCheckers: Array<() => void>
 
-    constructor() {
+    constructor(table: HTMLTableElement) {
         const keyboard = new Keyboard()
         this.gamepad = new Gamepad()
+        this.table = table
         this.polledInput = null
         this.repeatIntervalInSeconds = null
 
+        this.possibleKeys = []
+        const keyboardKey = (key: string) => {
+            this.possibleKeys.push(key)
+            return keyboard.key(key)
+        }
+
         this.controls = {
-            up: { lastPressed: null, button: or(this.gamepad.button(BUTTON_TYPE.ARROW_UP), keyboard.key('w')) },
-            down: { lastPressed: null, button: or(this.gamepad.button(BUTTON_TYPE.ARROW_DOWN), keyboard.key('s')) },
-            left: { lastPressed: null, button: or(this.gamepad.button(BUTTON_TYPE.ARROW_LEFT), keyboard.key('a')) },
-            right: { lastPressed: null, button: or(this.gamepad.button(BUTTON_TYPE.ARROW_RIGHT), keyboard.key('d')) },
-            action: { lastPressed: null, button: or(this.gamepad.button(BUTTON_TYPE.CLUSTER_BOTTOM), keyboard.key('x'), keyboard.key('Space')) },
-            undo: { lastPressed: null, button: or(this.gamepad.button(BUTTON_TYPE.CLUSTER_LEFT), this.gamepad.button(BUTTON_TYPE.BUMPER_TOP_LEFT), keyboard.key('z'), keyboard.key('u')) },
-            restart: { lastPressed: null, button: or(this.gamepad.button(BUTTON_TYPE.CLUSTER_TOP), keyboard.key('r')) }
+            up: { lastPressed: null, button: or(this.gamepad.button(BUTTON_TYPE.ARROW_UP), keyboardKey('w'), keyboardKey('ArrowUp')) },
+            down: { lastPressed: null, button: or(this.gamepad.button(BUTTON_TYPE.ARROW_DOWN), keyboardKey('s'), keyboardKey('ArrowDown')) },
+            left: { lastPressed: null, button: or(this.gamepad.button(BUTTON_TYPE.ARROW_LEFT), keyboardKey('a'), keyboardKey('ArrowLeft')) },
+            right: { lastPressed: null, button: or(this.gamepad.button(BUTTON_TYPE.ARROW_RIGHT), keyboardKey('d'), keyboardKey('ArrowRight')) },
+            action: { lastPressed: null, button: or(this.gamepad.button(BUTTON_TYPE.CLUSTER_BOTTOM), keyboardKey('x'), keyboardKey(' '), keyboardKey('Enter')) },
+            undo: { lastPressed: null, button: or(this.gamepad.button(BUTTON_TYPE.CLUSTER_LEFT), this.gamepad.button(BUTTON_TYPE.BUMPER_TOP_LEFT), keyboardKey('z'), keyboardKey('u')) },
+            restart: { lastPressed: null, button: or(this.gamepad.button(BUTTON_TYPE.CLUSTER_TOP), keyboardKey('r')) }
         }
         const makeChecker = (control: keyof Control<Button>, gameAction: () => void) => {
             return () => {
@@ -58,9 +68,31 @@ export default class InputWatcher {
             makeChecker('undo', () => this.polledInput = INPUT_BUTTON.UNDO),
             makeChecker('restart', () => this.polledInput = INPUT_BUTTON.RESTART)
         ]
+
+        // Disable bubbling up events when keys are pressed
+        this.boundOnKeyEvents = this.onKeyEvents.bind(this)
+        window.addEventListener('keydown', this.boundOnKeyEvents)
+        window.addEventListener('keyup', this.boundOnKeyEvents)
+        window.addEventListener('keypress', this.boundOnKeyEvents)
+    }
+
+    public onKeyEvents(evt: KeyboardEvent) {
+        if (evt.metaKey || evt.shiftKey || evt.altKey || evt.ctrlKey) {
+            return
+        }
+        if (window.document.activeElement !== this.table) {
+            return
+        }
+        if (this.possibleKeys.indexOf(evt.key) >= 0) {
+            evt.preventDefault()
+        }
     }
 
     public pollControls() {
+        if (window.document.activeElement !== this.table) {
+            // Ignore if the game is not in focus
+            return null
+        }
         this.polledInput = null
         this.controlCheckers.forEach((fn) => fn())
         const input = this.polledInput
@@ -68,7 +100,6 @@ export default class InputWatcher {
         return input
     }
 
-    // TODO: This might not be needed. pollControls() might be sufficient
     public isSomethingPressed() {
         for (const entry of Object.values(this.controls)) {
             if (entry.button.query()) {
@@ -82,4 +113,9 @@ export default class InputWatcher {
         this.repeatIntervalInSeconds = repeatIntervalInSeconds
     }
 
+    public dispose() {
+        window.removeEventListener('keydown', this.boundOnKeyEvents)
+        window.removeEventListener('keyup', this.boundOnKeyEvents)
+        window.removeEventListener('keypress', this.boundOnKeyEvents)
+    }
 }

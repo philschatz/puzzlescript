@@ -99,8 +99,7 @@
     "util-deprecate": "^1.0.2",
     "weak": "^1.0.1",
     "webpack": "^4.27.1",
-    "webpack-cli": "^3.1.2",
-    "worker-loader": "^2.0.0"
+    "webpack-cli": "^3.1.2"
   },
   "optionalDependencies": {
     "speaker": "github:philschatz/node-speaker#cac7c5b7c434b52619bfbbd9530ab0871156e815"

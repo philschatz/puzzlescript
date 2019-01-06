@@ -284,6 +284,11 @@ async function startPromptsAndPlayGame(gamePath: string, gistId: Optional<string
 async function playGame(data: GameData, currentLevelNum: number, recordings: ISaveFile, ticksToRunFirst: string,
                         absPath: string, solutionPath: string, cliUi: boolean, onlyOneLevel: boolean) {
 
+    let keypresses: string[] = [] // set later once we walk through all the existing partial keys
+    let pendingKey = null
+    let tickNum = 0
+    let shouldExitGame: boolean = false
+
     logger.debug(() => `Start playing "${data.title}". Level ${currentLevelNum}`)
 
     const ticksToRunFirstAry = ticksToRunFirst.split('')
@@ -295,6 +300,9 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: ISa
         throw new Error(`BUG: Could not find level ${currentLevelNum}`)
     }
     const engine = new GameEngine(data, new EmptyGameEngineHandler([TerminalUI, {
+        onLevelChange() {
+            keypresses = []
+        },
         async onMessage() {
             keypresses.push('!')
         }
@@ -322,11 +330,6 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: ISa
     })
     TerminalUI.clearScreen()
     engine.setLevel(data.levels.indexOf(level))
-
-    let keypresses: string[] = [] // set later once we walk through all the existing partial keys
-    let pendingKey = null
-    let tickNum = 0
-    let shouldExitGame: boolean = false
 
     function restartLevel() {
         engine.pressRestart()

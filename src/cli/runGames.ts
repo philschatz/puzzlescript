@@ -123,6 +123,7 @@ async function run() {
                     case 'X':
                         engine.press(INPUT_BUTTON.ACTION)
                         break
+                    case '!': break // ignore message prompts
                     case '.':
                     case ',':
                         // just .tick()

@@ -97,8 +97,6 @@ export function createTests(moduloNumber: number, moduloTotal: number) {
                     let wonAtKeyIndex: number | 'DID_NOT_WIN' = DID_NOT_WIN
                     const keypresses = recording.solution.split('')
 
-                    // Do one tick in the beginning to make sure the sprites are all loaded up
-                    await engine.tick()
                     for (let i = 0; i < keypresses.length; i++) {
                         const key = keypresses[i]
                         switch (key) {

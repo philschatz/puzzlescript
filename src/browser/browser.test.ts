@@ -3,7 +3,6 @@
 import fs from 'fs'
 import path from 'path'
 import puppeteer from 'puppeteer' // tslint:disable-line:no-implicit-dependencies
-import { Optional } from '../util'
 // import mapStackTrace from 'sourcemapped-stacktrace-node')
 
 // Defined via jest-puppeteer environment
@@ -105,24 +104,7 @@ async function playLevel() {
         }
     }, { source, startLevel })
 
-    return new Promise(async(resolve) => {
-        // const dialogHandler = async dialog => {
-        //     expect(dialog.message()).toBe('I want to see my face in them! Level 3/14')
-        //     await dialog.dismiss()
-        //     page.off('dialog', dialogHandler)
-        //     resolve()
-        // }
-        // page.once('dialog', dialogHandler)
-
-        // page.on('dialog', async dialog => {
-        //     expect(dialog.message()).toBe('I want to see my face in them! Level 3/14')
-        //     await dialog.dismiss()
-        //     resolve()
-        // })
-        await pressKeys('SAAASASDDDWDDDDWDDSAAASASAW'.split(''))
-        // await jestPuppeteer.debug()
-        resolve()
-    })
+    await pressKeys('SAAASASDDDWDDDDWDDSAAASASAW'.split(''))
 }
 
 describe('Browser', () => {
@@ -132,7 +114,6 @@ describe('Browser', () => {
     const dialogHandler = async(dialog: puppeteer.Dialog) => {
         dismissedCount.push(dialog.message())
         await dialog.dismiss()
-        // page.off('dialog', dialogHandler)
     }
 
     beforeEach(() => {
@@ -194,44 +175,18 @@ describe('Browser', () => {
         // The game shows a dialog immediately (uggh)
         await waitForDialogAfter(async() => {
             await page.goto(`http://localhost:8000/index.xhtml`)
-            await page.waitForSelector(`#loading:not(.is-loading)`)
+            await page.waitForSelector(`#loadingIndicator.hidden`)
         })
 
         // play a level and then wait for the dialog to open
-        let levelNum: Optional<string>
-        await sleep(1000)
-        levelNum = (await getAttrs()).levelNum
-        expect(levelNum).toBe('1')
+        await page.waitForSelector(`.ps-table[data-ps-current-level="${1}"]`)
         await waitForDialogAfter(async() => pressKeys('.AWAW'.split('')))
-        await sleep(1000)
-        levelNum = (await getAttrs()).levelNum
-        expect(levelNum).toBe('3')
+
+        await page.waitForSelector(`.ps-table[data-ps-current-level="${3}"]`)
         await waitForDialogAfter(async() => pressKeys('.WASDW'.split('')))
 
-        await sleep(1000)
-        levelNum = (await getAttrs()).levelNum
-        expect(levelNum).toBe('5')
+        await page.waitForSelector(`.ps-table[data-ps-current-level="${5}"]`)
 
         expect(dismissedCount.length).toBe(5)
     })
-
-    // it.skip('Plays an arbitrary game', async () => {
-    //     // browser tests are slow. Headless is slower it seems (from jest watch mode)
-    //     jest.setTimeout(process.env.NODE_ENV === 'development' ? 10 * 60 * 1000 : 10 * 60 * 1000)
-
-    //     const {page, browser} = await startBrowser()
-
-    //     const source = fs.readFileSync(path.join(__dirname, '../gists/_entanglement/script.txt'), 'utf-8')
-    //     const solutions = JSON.parse(fs.readFileSync(path.join(__dirname, '../gist-solutions/_entanglement.json'), 'utf-8'))
-    //     const startLevel = 3
-    //     const partial = solutions.solutions[startLevel].partial
-
-    //     await sleep(500) // wait for the browser JS to execute
-    //     await page.evaluate(({source, startLevel}) => {
-    //         window.HackTableStart(source, startLevel)
-    //     }, {source, startLevel})
-
-    //     await pressKeys(page, partial.split(''))
-    //     await stopBrowser(browser)
-    // })
 })

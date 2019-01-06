@@ -8,6 +8,7 @@ declare var postMessage: (msg: WorkerResponse) => void
 
 let currentEngine: Optional<GameEngine> = null
 let gameLoop: Optional<NodeJS.Timeout> = null
+let dismissedMessage = false
 let lastTick = 0
 
 onmessage = (event: TypedMessageEvent<WorkerMessage>) => {
@@ -44,8 +45,6 @@ const startPlayLoop = () => {
         }
     }, 20)
 }
-
-let dismissedMessage = false
 
 class Handler implements GameEngineHandler {
     public onPress(dir: INPUT_BUTTON) {
@@ -121,7 +120,7 @@ const tick = async() => {
     }
 }
 
-function toCellJson(cells: Iterable<Cellish>): CellishJson[] {
+const toCellJson = (cells: Iterable<Cellish>): CellishJson[] => {
     return [...cells].map((cell) => {
         const { colIndex, rowIndex } = cell
         return {

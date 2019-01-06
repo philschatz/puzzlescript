@@ -231,9 +231,7 @@ abstract class BaseUI {
         const allCells = _flatten(this.getCurrentLevelCells())
         const playerTile = this.gameData.getPlayer()
         const playerCells = playerTile.getCellsThatMatch(allCells)
-        if (playerCells.size === 0) {
-            throw new Error(`BUG: Player should always be somewhere`)
-        } else if (playerCells.size === 1) {
+        if (playerCells.size === 1) {
             // if the screen can only show an even number of cells (eg 4) then this will oscillate indefinitely
             // So we limit the recursion to just a couple of recursions
             if (renderScreenDepth <= 1) {

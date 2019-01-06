@@ -14,8 +14,8 @@ import { Cellish,
     PuzzlescriptWorker,
     RULE_DIRECTION,
     WorkerResponse } from '../util'
-import InputWatcher from './inputWatcher'
-import ResizeWatcher from './resizeWatcher'
+import InputWatcher from './InputWatcher'
+import ResizeWatcher from './ResizeWatcher'
 
 class ProxyCellish implements Cellish {
     public readonly rowIndex: number
@@ -45,6 +45,9 @@ export default class WebworkerTableEngine implements Engineish {
     private readonly handler: EmptyGameEngineHandler
     private readonly resizeWatcher: ResizeWatcher
     private readonly inputWatcher: InputWatcher
+    private readonly boundPause: () => void
+    private readonly boundResume: () => void
+    private readonly boundMessageListener: ({ data }: {data: WorkerResponse}) => Promise<void>
     private inputInterval: number
 
     private cellCache: ProxyCellish[][]
@@ -73,12 +76,16 @@ export default class WebworkerTableEngine implements Engineish {
         })
         this.handler = new EmptyGameEngineHandler(handler ? [this.ui, handler] : [this.ui])
         this.resizeWatcher = new ResizeWatcher(table, this.handleResize.bind(this))
-        this.inputWatcher = new InputWatcher()
+        this.inputWatcher = new InputWatcher(table)
 
-        table.addEventListener('blur', this.pause.bind(this))
-        table.addEventListener('focus', this.resume.bind(this))
+        this.boundPause = this.pause.bind(this)
+        this.boundResume = this.resume.bind(this)
+        this.boundMessageListener = this.messageListener.bind(this)
+        table.addEventListener('blur', this.boundPause)
+        table.addEventListener('focus', this.boundResume)
 
-        worker.addEventListener('message', this.messageListener.bind(this))
+        worker.addEventListener('message', this.boundMessageListener)
+
         this.inputInterval = window.setInterval(() => {
             const button = this.inputWatcher.pollControls()
             if (button) {
@@ -91,6 +98,7 @@ export default class WebworkerTableEngine implements Engineish {
     }
 
     public dispose() {
+        this.inputWatcher.dispose()
         this.resizeWatcher.dispose()
         clearInterval(this.inputInterval)
     }
@@ -106,7 +114,6 @@ export default class WebworkerTableEngine implements Engineish {
     public resume() {
         this.worker.postMessage({ type: MESSAGE_TYPE.RESUME })
     }
-
     private async messageListener({ data }: {data: WorkerResponse}) {
         switch (data.type) {
             case MESSAGE_TYPE.LOAD_GAME:
@@ -122,7 +129,7 @@ export default class WebworkerTableEngine implements Engineish {
                 } else {
                     this.handler.onLevelChange(data.level, null, data.message)
                 }
-                this.resizeWatcher.resizeHandler()
+                this.resizeWatcher.resizeHandler() // force resize
                 this.table.focus()
                 break
             case MESSAGE_TYPE.ON_MESSAGE:
@@ -152,7 +159,6 @@ export default class WebworkerTableEngine implements Engineish {
                 console.log(`BUG: Unhandled Event occurred. Ignoring`, data) // tslint:disable-line:no-console
         }
     }
-
     private convertToCellish(c: {rowIndex: number, colIndex: number, spriteNames: string[]}) {
         const { rowIndex, colIndex, spriteNames } = c
 
@@ -164,7 +170,9 @@ export default class WebworkerTableEngine implements Engineish {
             this.cellCache[rowIndex][colIndex] = new ProxyCellish(rowIndex, colIndex, [])
         }
 
-        this.cellCache[rowIndex][colIndex].sprites = spriteNames.map((name) => {
+        const cell = this.cellCache[rowIndex][colIndex]
+
+        cell.sprites = spriteNames.map((name) => {
             const sprite = this.getGameData()._getSpriteByName(name)
             if (!sprite) {
                 throw new Error(`Could not find sprite "${name}"`)
@@ -172,9 +180,8 @@ export default class WebworkerTableEngine implements Engineish {
             return sprite
         })
 
-        return this.cellCache[rowIndex][colIndex]
+        return cell
     }
-
     private getGameData() {
         if (!this.gameData) {
             throw new Error(`BUG: Game Data has not been retreived from the worker yet`)

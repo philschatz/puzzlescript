@@ -119,7 +119,6 @@ class TableUI extends BaseUI implements GameEngineHandler {
         await this.handler.onMessage(msg)
     }
     public onWin() {
-        alert(`You won! Congratulations!`)
         this.handler.onWin()
     }
     public async onSound(sound: Soundish) {
@@ -249,6 +248,8 @@ class TableUI extends BaseUI implements GameEngineHandler {
         if (!cellLabel) {
             throw new Error(`BUG: Could not find cell in the table: [${cell.rowIndex} - ${this.windowOffsetRowStart}][${cell.colIndex} - ${this.windowOffsetColStart}]`)
         }
+
+        cellLabel.classList.remove('ps-player')
         if (spritesForDebugging.length > 0) {
             const player = this.gameData.getPlayer()
             if (player.getSpritesThatMatch(cell).size > 0) {
