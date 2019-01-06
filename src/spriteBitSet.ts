@@ -81,20 +81,20 @@ export class SpriteBitSet extends CustomBitSet<GameSprite> {
         return item.allSpritesBitSetIndex
     }
 
-    public toString(gameData: GameData) {
-        const str = []
-        for (const sprite of this.getSprites(gameData)) {
-            str.push(sprite.getName())
-        }
-        return str.join(' ')
-    }
-
     public union(bitSets: Iterable<SpriteBitSet>) {
         let ret: SpriteBitSet = this // tslint:disable-line:no-this-assignment
         for (const bitSet of bitSets) {
             ret = ret.or(bitSet)
         }
         return ret
+    }
+
+    protected toString(gameData: GameData) {
+        const str = []
+        for (const sprite of this.getSprites(gameData)) {
+            str.push(sprite.getName())
+        }
+        return str.join(' ')
     }
 
     private getSprites(gameData: GameData) {

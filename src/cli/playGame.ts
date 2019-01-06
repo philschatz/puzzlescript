@@ -16,7 +16,7 @@ import { logger } from '../logger'
 import { LEVEL_TYPE } from '../parser/astTypes'
 import { saveCoverageFile } from '../recordCoverage'
 import TerminalUI, { getTerminalSize } from '../ui/terminal'
-import { _flatten, EmptyGameEngineHandler } from '../util'
+import { _flatten, EmptyGameEngineHandler, INPUT_BUTTON } from '../util'
 import SOLVED_GAMES from './solvedGames'
 import TITLE_FONTS from './titleFonts'
 
@@ -348,7 +348,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: ISa
     engine.setLevel(data.levels.indexOf(level))
 
     function restartLevel() {
-        engine.pressRestart()
+        engine.press(INPUT_BUTTON.RESTART)
         TerminalUI.renderScreen(true)
         keypresses = [] // clear key history
     }
@@ -396,7 +396,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: ISa
                         break
                     }
                 }
-                engine.pressUndo()
+                engine.press(INPUT_BUTTON.UNDO)
                 TerminalUI.renderScreen(false)
                 return
             case 'C':
@@ -483,11 +483,11 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: ISa
 
     function doPress(key: string) {
         switch (key) {
-            case 'W': engine.pressUp(); break
-            case 'S': engine.pressDown(); break
-            case 'A': engine.pressLeft(); break
-            case 'D': engine.pressRight(); break
-            case 'X': engine.pressAction(); break
+            case 'W': engine.press(INPUT_BUTTON.UP); break
+            case 'S': engine.press(INPUT_BUTTON.DOWN); break
+            case 'A': engine.press(INPUT_BUTTON.LEFT); break
+            case 'D': engine.press(INPUT_BUTTON.RIGHT); break
+            case 'X': engine.press(INPUT_BUTTON.ACTION); break
             case 'b': // so we can set a breakpoint in the playback
             case '[pause]': isPaused = true; break
             case '[continue]': isPaused = false; break
