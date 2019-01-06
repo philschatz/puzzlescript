@@ -154,9 +154,12 @@ export default class WebworkerTableEngine implements Engineish {
                 break
 
             case MESSAGE_TYPE.TICK:
+            case MESSAGE_TYPE.PRESS:
+            case MESSAGE_TYPE.PAUSE:
+            case MESSAGE_TYPE.RESUME:
                 break // less console noise
             default:
-                console.log(`BUG: Unhandled Event occurred. Ignoring`, data) // tslint:disable-line:no-console
+                console.log(`BUG: Unhandled Event occurred. Ignoring "${data.type}"`, data) // tslint:disable-line:no-console
         }
     }
     private convertToCellish(c: {rowIndex: number, colIndex: number, spriteNames: string[]}) {
