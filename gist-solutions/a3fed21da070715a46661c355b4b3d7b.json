@@ -2,43 +2,43 @@
   "version": 1,
   "solutions": [
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
       "solution": ".ADWWWWWWSAAAAADDDDDDDDSSSSSSDDDDAAAS"
     },
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
       "solution": ".WDWDDDAAAWWSSAADDSDWD"
     },
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
       "solution": ".WWWAAAAAAWWWAADAASSSSWWWWDDDDAAAAAWWSSSSSSSDDDDDDAAAAAAADWWWWWWSSSSSSDDDDDSSS"
     },
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
       "solution": ".SSAAWAADDDSSSDDWWWWWWSSSAAAAAAADWWWWWSAAAAAA"
     },
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
       "solution": ".SDDDDWWWWWAAAASSSAAASSWAAWWWAAAADDDDWWWSSSSWWWDDDDDDAAAAASSAAAAA"
     },
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
       "solution": ".AAAADDDDDDDDAAAAAAAADDDDDDWWWAWWWSSSDDWWWDAWWWWWSSSSSSWWDAWWWW"
     },
     {
-      "solution": "X"
+      "solution": "!"
     }
   ],
   "title": "2D Whale World",

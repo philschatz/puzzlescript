@@ -6,7 +6,7 @@ import { IMutation, SimpleRuleGroup } from './models/rule'
 import { GameSprite, IGameTile } from './models/tile'
 import { Command, COMMAND_TYPE, LEVEL_TYPE, SoundItem } from './parser/astTypes'
 import { SpriteBitSet } from './spriteBitSet'
-import { _flatten, Optional, resetRandomSeed, RULE_DIRECTION, setAddAll, setDifference, setEquals } from './util'
+import { _flatten, Cellish, GameEngineHandler, INPUT_BUTTON, Optional, resetRandomSeed, RULE_DIRECTION, setAddAll, setDifference, setEquals } from './util'
 
 interface ICollisionLayerState {
     readonly wantsToMove: Optional<RULE_DIRECTION>
@@ -15,8 +15,6 @@ interface ICollisionLayerState {
 
 interface ITickResult {
     changedCells: Set<Cell>,
-    soundToPlay: Optional<SoundItem<IGameTile>>,
-    messageToShow: Optional<string>,
     didWinGame: boolean,
     didLevelChange: boolean,
     wasAgainTick: boolean
@@ -32,7 +30,7 @@ type Snapshot = Array<Array<Set<GameSprite>>>
  * The [[TerminalUI]] uses this object to render and the [[GameEngine]] uses this to maintain the state
  * of one position of the current level.
  */
-export class Cell {
+export class Cell implements Cellish {
     public readonly rowIndex: number
     public readonly colIndex: number
     public readonly spriteBitSet: SpriteBitSet
@@ -364,7 +362,7 @@ export class Level {
  */
 export class LevelEngine extends EventEmitter2 {
     public readonly gameData: GameData
-    public pendingPlayerWantsToMove: Optional<RULE_DIRECTION>
+    public pendingPlayerWantsToMove: Optional<INPUT_BUTTON>
     public hasAgainThatNeedsToRun: boolean
     private currentLevel: Optional<Level>
     private tempOldLevel: Optional<Level>
@@ -405,6 +403,12 @@ export class LevelEngine extends EventEmitter2 {
             // Clone the board because we will be modifying it
             this._setLevel(levelSprites)
 
+            if (this.gameData.metadata.runRulesOnLevelStart) {
+                const { messageToShow, isWinning, hasRestart } = this.tick()
+                if (messageToShow || isWinning || hasRestart) {
+                    console.log(`Error: Game should not cause a sound/message/win/restart during the initial tick. "${messageToShow}" "${isWinning}" "${hasRestart}"`) // tslint:disable-line:no-console
+                }
+            }
             this.takeSnapshot(this.createSnapshot())
 
             // Return the cells so the UI can listen to when they change
@@ -451,6 +455,30 @@ export class LevelEngine extends EventEmitter2 {
         if (this.hasAgainThatNeedsToRun) {
             // run the AGAIN rules
             this.hasAgainThatNeedsToRun = false // let the .tick() make it true
+        }
+        switch (this.pendingPlayerWantsToMove) {
+            case INPUT_BUTTON.UNDO:
+                this.doUndo()
+                this.pendingPlayerWantsToMove = null
+                return {
+                    changedCells: new Set(this.getCells()),
+                    soundToPlay: null,
+                    messageToShow: null,
+                    hasRestart: false,
+                    isWinning: false
+                }
+            case INPUT_BUTTON.RESTART:
+                this.doRestart()
+                this.pendingPlayerWantsToMove = null
+                return {
+                    changedCells: new Set(this.getCells()),
+                    soundToPlay: null,
+                    messageToShow: null,
+                    hasRestart: true,
+                    isWinning: false
+                }
+            default:
+              // no-op
         }
         const ret = this.tickNormal()
         // TODO: Handle the commands like RESTART, CANCEL, WIN at this point
@@ -503,31 +531,8 @@ export class LevelEngine extends EventEmitter2 {
         return this.undoStack.length > 1
     }
 
-    public press(direction: RULE_DIRECTION) {
-        // Should disable keypresses if `AGAIN` is running.
-        // It is commented because the didSpritesChange logic is not correct.
-        // a rule might add a sprite, and then another rule might remove a sprite.
-        // We need to compare the set of sprites before and after ALL rules ran.
-        // This will likely be implemented as part of UNDO or CHECKPOINT.
-        // if (!this.hasAgain()) {
-        this.pendingPlayerWantsToMove = direction
-        // }
-    }
-    public pressRestart() {
-        // Add the initial checkpoint to the top (rather than clearing the stack)
-        // so the player can still "UNDO" after pressing "RESTART"
-        const snapshot = this.undoStack[0]
-        this.undoStack.push(snapshot)
-        this.applySnapshot(snapshot)
-    }
-    public pressUndo() {
-        const snapshot = this.undoStack.pop()
-        if (snapshot && this.undoStack.length > 0) { // the 0th entry is the initial load of the level
-            this.applySnapshot(snapshot)
-        } else if (snapshot) {
-            // oops, put the snapshot back on the stack
-            this.undoStack.push(snapshot)
-        }
+    public press(button: INPUT_BUTTON) {
+        return this.pressDir(button)
     }
 
     public /*for testing*/ tickUpdateCells() {
@@ -587,6 +592,33 @@ export class LevelEngine extends EventEmitter2 {
             }
         }
         return movedCells
+    }
+
+    private pressDir(direction: INPUT_BUTTON) {
+        // Should disable keypresses if `AGAIN` is running.
+        // It is commented because the didSpritesChange logic is not correct.
+        // a rule might add a sprite, and then another rule might remove a sprite.
+        // We need to compare the set of sprites before and after ALL rules ran.
+        // This will likely be implemented as part of UNDO or CHECKPOINT.
+        // if (!this.hasAgain()) {
+        this.pendingPlayerWantsToMove = direction
+        // }
+    }
+    private doRestart() {
+        // Add the initial checkpoint to the top (rather than clearing the stack)
+        // so the player can still "UNDO" after pressing "RESTART"
+        const snapshot = this.undoStack[0]
+        this.undoStack.push(snapshot)
+        this.applySnapshot(snapshot)
+    }
+    private doUndo() {
+        const snapshot = this.undoStack.pop()
+        if (snapshot && this.undoStack.length > 0) { // the 0th entry is the initial load of the level
+            this.applySnapshot(snapshot)
+        } else if (snapshot) {
+            // oops, put the snapshot back on the stack
+            this.undoStack.push(snapshot)
+        }
     }
 
     private _setLevel(levelSprites: Array<Array<Set<GameSprite>>>) {
@@ -719,9 +751,9 @@ export class LevelEngine extends EventEmitter2 {
             logger.debug(`=======================\nTurn starts with input of ${this.pendingPlayerWantsToMove.toLowerCase()}.`)
 
             const t = this.gameData.getPlayer()
-            for (const cell of t.getCellsThatMatch()) {
+            for (const cell of t.getCellsThatMatch(_flatten(this.getCurrentLevel().getCells()))) {
                 for (const sprite of t.getSpritesThatMatch(cell)) {
-                    cell.updateSprite(sprite, this.pendingPlayerWantsToMove)
+                    cell.updateSprite(sprite, inputButtonToRuleDirection(this.pendingPlayerWantsToMove))
                     changedCellMutations.add(cell)
                 }
             }
@@ -844,15 +876,12 @@ export type CellSaveState = string[][][]
 export class GameEngine {
     private levelEngine: LevelEngine
     private currentLevelNum: number
-    private isFirstTick: boolean
-    private messageShownAndWaitingForActionPress: boolean
-    constructor(gameData: GameData) {
-        this.isFirstTick = true
+    private handler: GameEngineHandler
+    constructor(gameData: GameData, handler: GameEngineHandler) {
         this.currentLevelNum = -1234567
-        this.messageShownAndWaitingForActionPress = false
+        this.handler = handler
 
         this.levelEngine = new LevelEngine(gameData)
-        this.messageShownAndWaitingForActionPress = false
     }
     public on(eventName: string, handler: ILoadingProgressHandler) {
         this.levelEngine.on(eventName, handler)
@@ -876,149 +905,118 @@ export class GameEngine {
         return this.levelEngine.canUndo()
     }
     public setLevel(levelNum: number) {
-        this.messageShownAndWaitingForActionPress = false
         this.levelEngine.hasAgainThatNeedsToRun = false // clear this so the user can press "X"
-        if (this.getGameData().levels[levelNum].type === LEVEL_TYPE.MAP) {
-            this.isFirstTick = true
+        this.currentLevelNum = levelNum
+        const level = this.getGameData().levels[levelNum]
+        if (level.type === LEVEL_TYPE.MAP) {
             this.levelEngine.setLevel(levelNum)
+            this.handler.onLevelChange(this.currentLevelNum, this.levelEngine.getCurrentLevel().getCells(), null)
         } else {
             // TODO: no need to set the levelEngine when the current level is a Message
+            this.handler.onLevelChange(this.currentLevelNum, null, level.message)
         }
-        this.currentLevelNum = levelNum
     }
-    public tick(): ITickResult {
+    public async tick(): Promise<ITickResult> {
         // When the current level is a Message, wait until the user presses ACTION
-        if (this.getCurrentLevel().type === LEVEL_TYPE.MESSAGE) {
-            // Wait until the user presses "X" (ACTION)
+        const currentLevel = this.getCurrentLevel()
+        if (currentLevel.type === LEVEL_TYPE.MESSAGE) {
+            await this.handler.onMessage(currentLevel.message)
             let didWinGameInMessage = false
-            let didLevelChange = false
-            if (this.levelEngine.pendingPlayerWantsToMove === RULE_DIRECTION.ACTION) {
-                didLevelChange = true
-                if (this.currentLevelNum === this.levelEngine.gameData.levels.length - 1) {
-                    didWinGameInMessage = true
-                } else {
-                    this.setLevel(this.currentLevelNum + 1)
-                }
+            if (this.currentLevelNum === this.levelEngine.gameData.levels.length - 1) {
+                this.handler.onWin()
+                didWinGameInMessage = true
+            } else {
+                this.setLevel(this.currentLevelNum + 1)
             }
             // clear any keys that were pressed
             this.levelEngine.pendingPlayerWantsToMove = null
 
             return {
                 changedCells: new Set(),
-                soundToPlay: null,
-                messageToShow: null,
                 didWinGame: didWinGameInMessage,
-                didLevelChange,
+                didLevelChange: true,
                 wasAgainTick: false
             }
         }
-        const hasAgain = this.levelEngine.hasAgain()
-        if (this.levelEngine.gameData.metadata.runRulesOnLevelStart && this.isFirstTick) {
-            // don't cancel early
-        } else if (!hasAgain && !(this.levelEngine.gameData.metadata.realtimeInterval || this.levelEngine.pendingPlayerWantsToMove)) {
+        let hasAgain = this.levelEngine.hasAgain()
+        if (!hasAgain && !(this.levelEngine.gameData.metadata.realtimeInterval || this.levelEngine.pendingPlayerWantsToMove)) {
             // check if the `require_player_movement` flag is set in the game
             return {
                 changedCells: new Set(),
-                soundToPlay: null,
-                messageToShow: null,
                 didWinGame: false,
                 didLevelChange: false,
                 wasAgainTick: false
             }
         }
 
-        // If we are showing a message then wait until ACTION is pressed
-        if (this.messageShownAndWaitingForActionPress) {
-            if (this.levelEngine.pendingPlayerWantsToMove === RULE_DIRECTION.ACTION) {
-                // render all the cells because we are currently rendering a Message
-                this.messageShownAndWaitingForActionPress = false
-                this.levelEngine.pendingPlayerWantsToMove = null
-                return {
-                    changedCells: new Set(_flatten(this.getCurrentLevelCells())),
-                    soundToPlay: null,
-                    messageToShow: null,
-                    didWinGame: false,
-                    didLevelChange: false,
-                    wasAgainTick: false
-                }
-            } else {
-                // Keep waiting until ACTION is pressed
-                return {
-                    changedCells: new Set(),
-                    soundToPlay: null,
-                    messageToShow: null,
-                    didWinGame: false,
-                    didLevelChange: false,
-                    wasAgainTick: false
-                }
-
-            }
-        }
-
+        const previousPending = this.levelEngine.pendingPlayerWantsToMove
         const { changedCells, soundToPlay, messageToShow, isWinning, hasRestart } = this.levelEngine.tick()
-        this.isFirstTick = false
+
+        if (previousPending && !this.levelEngine.pendingPlayerWantsToMove) {
+            this.handler.onPress(previousPending)
+        }
 
         if (hasRestart) {
-            this.pressRestart()
+            this.handler.onTick(changedCells, hasAgain)
             return {
-                changedCells: new Set(_flatten(this.getCurrentLevelCells())),
-                soundToPlay: null,
-                messageToShow: null,
+                changedCells,
                 didWinGame: false,
                 didLevelChange: false,
                 wasAgainTick: false
             }
         }
 
+        hasAgain = this.levelEngine.hasAgain()
+        this.handler.onTick(changedCells, hasAgain)
         let didWinGame = false
         if (isWinning) {
             if (this.currentLevelNum === this.levelEngine.gameData.levels.length - 1) {
                 didWinGame = true
+                this.handler.onWin()
             } else {
                 this.setLevel(this.currentLevelNum + 1)
             }
         }
 
+        if (soundToPlay) {
+            await this.handler.onSound(soundToPlay)
+        }
         if (messageToShow) {
-            this.messageShownAndWaitingForActionPress = true
+            await this.handler.onMessage(messageToShow)
         }
 
         return {
             changedCells,
-            soundToPlay,
-            messageToShow,
             didWinGame,
             didLevelChange: isWinning,
             wasAgainTick: hasAgain
         }
     }
 
-    public press(direction: RULE_DIRECTION) {
-        return this.levelEngine.press(direction)
+    public press(direction: INPUT_BUTTON) {
+        this.levelEngine.press(direction)
     }
     public pressUp() {
-        this.levelEngine.press(RULE_DIRECTION.UP)
+        this.press(INPUT_BUTTON.UP)
     }
     public pressDown() {
-        this.levelEngine.press(RULE_DIRECTION.DOWN)
+        this.press(INPUT_BUTTON.DOWN)
     }
     public pressLeft() {
-        this.levelEngine.press(RULE_DIRECTION.LEFT)
+        this.press(INPUT_BUTTON.LEFT)
     }
     public pressRight() {
-        this.levelEngine.press(RULE_DIRECTION.RIGHT)
+        this.press(INPUT_BUTTON.RIGHT)
     }
     public pressAction() {
-        this.levelEngine.press(RULE_DIRECTION.ACTION)
+        this.press(INPUT_BUTTON.ACTION)
     }
 
     public pressRestart() {
-        this.isFirstTick = true
-        this.levelEngine.pressRestart()
+        this.press(INPUT_BUTTON.RESTART)
     }
     public pressUndo() {
-        this.messageShownAndWaitingForActionPress = false
-        this.levelEngine.pressUndo()
+        this.press(INPUT_BUTTON.UNDO)
     }
 
     // Pixels and Sprites
@@ -1057,4 +1055,19 @@ export class GameEngine {
         this.levelEngine.restoreFromMessageLevel()
     }
 
+    public isCurrentLevelAMessage() {
+        return this.getCurrentLevel().type === LEVEL_TYPE.MESSAGE
+    }
+}
+
+function inputButtonToRuleDirection(button: INPUT_BUTTON) {
+    switch (button) {
+        case INPUT_BUTTON.UP: return RULE_DIRECTION.UP
+        case INPUT_BUTTON.DOWN: return RULE_DIRECTION.DOWN
+        case INPUT_BUTTON.LEFT: return RULE_DIRECTION.LEFT
+        case INPUT_BUTTON.RIGHT: return RULE_DIRECTION.RIGHT
+        case INPUT_BUTTON.ACTION: return RULE_DIRECTION.ACTION
+        default:
+            throw new Error(`BUG: Invalid input button at this point. Only up/down/left/right/action are allowed. "${button}"`)
+    }
 }

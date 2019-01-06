@@ -4,13 +4,14 @@ import glob from 'glob'
 import * as path from 'path'
 import pify from 'pify'
 
-import { GameEngine, Parser, RULE_DIRECTION } from '..'
+import { GameEngine, Parser } from '..'
 import { logger } from '../logger'
 import { LEVEL_TYPE } from '../parser/astTypes'
 import Serializer from '../parser/serializer'
 import { saveCoverageFile } from '../recordCoverage'
 import { closeSounds } from '../sounds'
 import TerminalUI from '../ui/terminal'
+import { INPUT_BUTTON } from '../util'
 import { ILevelRecording } from './playGame'
 
 async function sleep(ms: number) {
@@ -87,7 +88,7 @@ async function run() {
         if (currentLevel) {
 
             startTime = Date.now()
-            const engine = new GameEngine(data)
+            const engine = new GameEngine(data, TerminalUI)
             const levelNum = data.levels.indexOf(currentLevel)
             engine.setLevel(levelNum)
             logger.debug(() => `\n\nStart playing "${data.title}". Level ${levelNum}`)
@@ -98,7 +99,7 @@ async function run() {
             //   UI.drawCellAt(cell, cell.rowIndex, cell.colIndex, false)
             // })
 
-            TerminalUI.setGameEngine(engine)
+            TerminalUI.setGameData(engine.getGameData())
             TerminalUI.clearScreen()
             TerminalUI.renderScreen(true)
             TerminalUI.writeDebug(`"${data.title}"`, 0)
@@ -108,20 +109,21 @@ async function run() {
             for (let i = 0; i < keypressesStr.length; i++) {
                 switch (keypressesStr[i]) {
                     case 'W':
-                        engine.press(RULE_DIRECTION.UP)
+                        engine.press(INPUT_BUTTON.UP)
                         break
                     case 'S':
-                        engine.press(RULE_DIRECTION.DOWN)
+                        engine.press(INPUT_BUTTON.DOWN)
                         break
                     case 'A':
-                        engine.press(RULE_DIRECTION.LEFT)
+                        engine.press(INPUT_BUTTON.LEFT)
                         break
                     case 'D':
-                        engine.press(RULE_DIRECTION.RIGHT)
+                        engine.press(INPUT_BUTTON.RIGHT)
                         break
                     case 'X':
-                        engine.press(RULE_DIRECTION.ACTION)
+                        engine.press(INPUT_BUTTON.ACTION)
                         break
+                    case '!': break // ignore message prompts
                     case '.':
                     case ',':
                         // just .tick()
@@ -130,12 +132,12 @@ async function run() {
                         throw new Error(`BUG: Invalid keypress character "${keypressesStr[i]}"`)
                 }
                 startTime = Date.now()
-                const { changedCells } = engine.tick()
+                const { didWinGame, didLevelChange } = await engine.tick()
+                if (didWinGame || didLevelChange) {
+                    break
+                }
 
                 // UI.renderScreen(data, engine.currentLevel)
-
-                // Draw any cells that moved
-                TerminalUI.drawCells(changedCells, false)
 
                 const msg = `Tick ${i} of "${data.title}" (took ${Date.now() - startTime}ms)`
                 TerminalUI.writeDebug(msg.substring(0, 160), 0)

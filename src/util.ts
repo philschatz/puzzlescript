@@ -1,3 +1,8 @@
+import { GameMetadata } from './models/metadata'
+import { GameSprite } from './models/tile'
+import { Soundish } from './parser/astTypes'
+import { IGraphJson } from './parser/serializer'
+
 export type Optional<T> = T | null
 
 export enum RULE_DIRECTION {
@@ -8,6 +13,16 @@ export enum RULE_DIRECTION {
     ACTION = 'ACTION',
     STATIONARY = 'STATIONARY',
     RANDOMDIR = 'RANDOMDIR'
+}
+
+export enum INPUT_BUTTON {
+    UP = 'UP',
+    DOWN = 'DOWN',
+    LEFT = 'LEFT',
+    RIGHT = 'RIGHT',
+    ACTION = 'ACTION',
+    UNDO = 'UNDO',
+    RESTART = 'RESTART'
 }
 
 export enum RULE_DIRECTION_RELATIVE {
@@ -30,6 +45,14 @@ export function _flatten<T>(arrays: T[][]) {
     })
     return ret
 }
+
+// export function filterNulls<T>(items: Array<Optional<T>>) {
+//     const ret: T[] = []
+//     items.forEach((x) => {
+//         if (x) { ret.push(x) }
+//     })
+//     return ret
+// }
 
 // export function _zip<T1, T2>(array1: T1[], array2: T2[]) {
 //     if (array1.length < array2.length) {
@@ -174,4 +197,190 @@ export enum DEBUG_FLAG {
 
 export interface ICacheable {
     toKey: () => string
+}
+
+// Webworker message interfaces
+
+// Polls until a condition is true
+export function pollingPromise<T>(ms: number, fn: () => T) {
+    return new Promise<T>((resolve) => {
+        const timer = setInterval(() => {
+            const value = fn()
+            if (value) {
+                clearInterval(timer)
+                resolve(value)
+            }
+        }, ms)
+    })
+}
+
+export interface TypedMessageEvent<T> extends MessageEvent {
+    data: T
+}
+
+export enum MESSAGE_TYPE {
+    LOAD_GAME = 'LOAD_GAME',
+    PAUSE = 'PAUSE',
+    RESUME = 'RESUME',
+    TICK = 'TICK',
+    PRESS = 'PRESS',
+    CLOSE = 'CLOSE',
+    // Event handler events
+    ON_PRESS = 'ON_PRESS',
+    ON_MESSAGE = 'ON_MESSAGE',
+    ON_MESSAGE_DONE = 'ON_MESSAGE_DONE',
+    ON_LEVEL_CHANGE = 'ON_LEVEL_CHANGE',
+    ON_WIN = 'ON_WIN',
+    ON_SOUND = 'ON_SOUND',
+    ON_TICK = 'ON_TICK',
+    ON_PAUSE = 'ON_PAUSE',
+    ON_RESUME = 'ON_RESUME'
+}
+
+export interface CellishJson {
+    colIndex: number,
+    rowIndex: number,
+    spriteNames: string[]
+}
+
+export interface SerializedTickResult {
+    changedCells: CellishJson[]
+    soundToPlay: Optional<number>
+    messageToShow: Optional<string>
+    didWinGame: boolean
+    didLevelChange: boolean
+    wasAgainTick: boolean
+}
+
+export type WorkerMessage = {
+    type: MESSAGE_TYPE.LOAD_GAME
+    code: string
+    level: number
+} | {
+    type: MESSAGE_TYPE.PRESS
+    button: INPUT_BUTTON
+} | {
+    type: MESSAGE_TYPE.CLOSE
+} | {
+    type: MESSAGE_TYPE.PAUSE
+} | {
+    type: MESSAGE_TYPE.RESUME
+} | {
+    type: MESSAGE_TYPE.ON_MESSAGE_DONE
+}
+
+export type WorkerResponse = {
+    type: MESSAGE_TYPE.LOAD_GAME
+    payload: IGraphJson
+} | {
+    type: MESSAGE_TYPE.TICK
+    payload: SerializedTickResult
+} | {
+    type: MESSAGE_TYPE.PRESS
+    payload: void
+} | {
+    type: MESSAGE_TYPE.CLOSE
+    payload: void
+} | {
+    type: MESSAGE_TYPE.PAUSE
+    payload: void
+} | {
+    type: MESSAGE_TYPE.RESUME
+    payload: void
+} | {
+    type: MESSAGE_TYPE.ON_PRESS
+    direction: INPUT_BUTTON
+} | {
+    type: MESSAGE_TYPE.ON_MESSAGE
+    message: string
+} | {
+    type: MESSAGE_TYPE.ON_LEVEL_CHANGE
+    level: number
+    cells: Optional<CellishJson[][]>
+    message: Optional<string>
+} | {
+    type: MESSAGE_TYPE.ON_WIN
+} | {
+    type: MESSAGE_TYPE.ON_PAUSE
+} | {
+    type: MESSAGE_TYPE.ON_RESUME
+} | {
+    type: MESSAGE_TYPE.ON_SOUND
+    soundCode: number
+} | {
+    type: MESSAGE_TYPE.ON_TICK
+    changedCells: CellishJson[]
+    hasAgain: boolean
+}
+
+export interface PuzzlescriptWorker {
+    postMessage(msg: WorkerMessage): void
+    addEventListener(type: 'message', handler: (msg: {data: WorkerResponse}) => void): void
+}
+
+export const shouldTick = (metadata: GameMetadata, lastTick: number) => {
+    const now = Date.now()
+    let minTime = Math.min(metadata.realtimeInterval || 1000, metadata.keyRepeatInterval || 1000, metadata.againInterval || 1000)
+    if (minTime > 100 || Number.isNaN(minTime)) {
+        minTime = .01
+    }
+    return (now - lastTick) >= (minTime * 1000)
+}
+
+// This interface is so the WebWorker does not have to instantiate Cells just to render to the screen
+export interface Cellish {
+    colIndex: number
+    rowIndex: number
+    getSprites(): GameSprite[]
+    getSpritesAsSet(): Set<GameSprite>
+    getWantsToMove(sprite: GameSprite): Optional<RULE_DIRECTION>
+}
+
+export interface GameEngineHandler {
+    onPress(dir: INPUT_BUTTON): void
+    onMessage(msg: string): Promise<void>
+    onLevelChange(level: number, cells: Optional<Cellish[][]>, message: Optional<string>): void
+    onWin(): void
+    onSound(sound: Soundish): Promise<void>
+    onTick(changedCells: Set<Cellish>, hasAgain: boolean): void
+    onPause(): void
+    onResume(): void
+    // onGameChange(data: GameData): void
+}
+
+export interface GameEngineHandlerOptional {
+    onPress?(dir: INPUT_BUTTON): void
+    onMessage?(msg: string): Promise<void>
+    onLevelChange?(level: number, cells: Optional<Cellish[][]>, message: Optional<string>): void
+    onWin?(): void
+    onSound?(sound: Soundish): Promise<void>
+    onTick?(changedCells: Set<Cellish>, hasAgain: boolean): void
+    onPause?(): void
+    onResume?(): void
+    // onGameChange?(data: GameData): void
+}
+
+export class EmptyGameEngineHandler implements GameEngineHandler {
+    private subHandlers: GameEngineHandlerOptional[]
+    constructor(subHandlers?: GameEngineHandlerOptional[]) {
+        this.subHandlers = subHandlers || []
+    }
+    public onPress(dir: INPUT_BUTTON) { for (const h of this.subHandlers) { h.onPress && h.onPress(dir) } }
+    public async onMessage(msg: string) { for (const h of this.subHandlers) { h.onMessage && await h.onMessage(msg) } }
+    public onLevelChange(level: number, cells: Optional<Cellish[][]>, message: Optional<string>) { for (const h of this.subHandlers) { h.onLevelChange && h.onLevelChange(level, cells, message) } }
+    public onWin() { for (const h of this.subHandlers) { h.onWin && h.onWin() } }
+    public async onSound(sound: Soundish) { for (const h of this.subHandlers) { h.onSound && h.onSound(sound) } }
+    public onTick(changedCells: Set<Cellish>, hasAgain: boolean) { for (const h of this.subHandlers) { h.onTick && h.onTick(changedCells, hasAgain) } }
+    public onPause() { for (const h of this.subHandlers) { h.onPause && h.onPause() } }
+    public onResume() { for (const h of this.subHandlers) { h.onResume && h.onResume() } }
+    // public onGameChange(data: GameData) { this.subHandlers.forEach(h => h.onGameChange && h.onGameChange(data)) }
+}
+
+export interface Engineish {
+    setGame(code: string, level: number): void
+    dispose(): void
+    pause?(): void
+    resume?(): void
+    press?(dir: INPUT_BUTTON): void
+    tick?(): void
 }

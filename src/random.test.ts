@@ -1,7 +1,7 @@
 /* eslint-env jasmine */
 import { LevelEngine } from './engine'
 import Parser from './parser/parser'
-import { RULE_DIRECTION } from './util'
+import { INPUT_BUTTON } from './util'
 
 function parseEngine(code: string) {
     const { data } = Parser.parse(code)
@@ -687,7 +687,7 @@ describe('engine', () => {
         expect(hasReflection.getCellsThatMatch().size).toBe(1)
 
         // press action to get the player to reflect into 4 players
-        engine.press(RULE_DIRECTION.ACTION)
+        engine.press(INPUT_BUTTON.ACTION)
         engine.tick()
         expect(engine.toSnapshot()).toMatchSnapshot()
 
@@ -704,7 +704,7 @@ describe('engine', () => {
         expect(engine.getCurrentLevel().getCells()[4][4].getSpritesAsSet().has(hasReflection)).toBe(true)
 
         // press action again to combing all the players back to one
-        engine.press(RULE_DIRECTION.ACTION)
+        engine.press(INPUT_BUTTON.ACTION)
         engine.tick()
         expect(player.getCellsThatMatch().size).toBe(1)
 

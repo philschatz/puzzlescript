@@ -1,0 +1,32 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <title>Game running in an HTML Table</title>
+    <script src="../../../lib/webpack-output.js"></script>
+    <link rel="stylesheet" href="./html-table.css"/>
+</head>
+
+<body>
+    <table id="the-game"></table>
+    
+    <script type="text/javascript">//<![CDATA[
+        /* eslint-env browser */
+        const { PuzzleScript } = window
+
+        const table = document.querySelector('#the-game')
+        const worker = new Worker('../../../lib/webpack-output-webworker.js')
+        const tableEngine = new PuzzleScript.WebworkerTableEngine(worker, table)
+
+        window.HackTableStart = (source, initialLevel) => {
+            // setTimeout(() => {throw new Error(`Checking if sourcemaps work in the browser in a separate tick`)}, 1)
+            // throw new Error(`Checking if sourcemaps work in the browser while evaluating`)
+            tableEngine.setGame(source, initialLevel)
+        }
+        window.HackTableStop = () => {
+            tableEngine.dispose()
+        }
+
+    // ]]></script>
+</body>
+
+</html>

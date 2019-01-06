@@ -1,4 +1,5 @@
 const path = require('path');
+const webpack = require('webpack')
 
 module.exports = {
     mode: process.env['NODE_ENV'] || 'production',
@@ -10,11 +11,26 @@ module.exports = {
         libraryTarget: 'umd',
     },
     devtool: 'source-map',
+    plugins: [
+		new webpack.LoaderOptionsPlugin({
+			options: {
+				worker: {
+					output: {
+                        path: path.resolve(__dirname, './lib/'),
+						filename: "hash.worker.js",
+						chunkFilename: "[id].hash.worker.js"
+					}
+				}
+			}
+		})
+    ],
     resolve: {
         // Add '.ts' and '.tsx' as resolvable extensions.
         extensions: ['.ts', '.tsx', '.js', '.json'],
         alias: {
+            // TODO: There should only be 1 sfxr entry
             './sound/sfxr': path.resolve(__dirname, './src/sound/sfxr-browser'),
+            '../sound/sfxr': path.resolve(__dirname, './src/sound/sfxr-browser'),
             '../ui/terminal': path.resolve(__dirname, './src/ui/terminalBrowserShim.js')
         }
     },

@@ -2,7 +2,7 @@
   "version": 1,
   "solutions": [
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
       "solution": "X,DX,DX,DX,"
@@ -11,13 +11,13 @@
       "solution": "SDX,WSX,SDX,WSX,"
     },
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
       "solution": "SSSX,SX,SDDX,DX,AX,"
     },
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
       "solution": "SSSWDDDDSWAAAASDDWDDSDWWAAASX,DDWSX,DWSSX,WAAASDDASDWWSX,WASX,"

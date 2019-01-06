@@ -2,31 +2,31 @@
   "version": 1,
   "solutions": [
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
       "solution": "XD,X,D,S"
     },
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
       "solution": "W,D,XW,X,A"
     },
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
       "solution": "XS,X,D,XW,X,A"
     },
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
       "solution": "W,D,XW,X,A,S"
     },
     {
-      "solution": "X"
+      "solution": "!"
     }
   ],
   "title": "Slidings",

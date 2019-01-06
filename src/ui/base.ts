@@ -1,10 +1,7 @@
-import { Cell, GameEngine } from '../engine'
 import { IColor } from '../models/colors'
 import { GameData } from '../models/game'
 import { GameSprite } from '../models/tile'
-import { LEVEL_TYPE } from '../parser/astTypes'
-import Parser from '../parser/parser'
-import { _flatten, Optional, RULE_DIRECTION } from '../util'
+import { _flatten, Cellish, Optional } from '../util'
 
 class CellColorCache {
     private readonly cache: Map<string, IColor[][]>
@@ -13,13 +10,10 @@ class CellColorCache {
         this.cache = new Map()
     }
 
-    public get(spritesToDrawSet: Set<GameSprite>,
+    public get(spritesToDraw: GameSprite[],
                backgroundColor: Optional<IColor>,
                spriteHeight: number,
                spriteWidth: number) {
-        const spritesToDraw = [...spritesToDrawSet]
-        .sort((s1, s2) => s1.getCollisionLayer().id - s2.getCollisionLayer().id)
-        .reverse()
 
         const key = spritesToDraw.map((s) => s.getName()).join(' ')
         let ret = this.cache.get(key)
@@ -87,7 +81,6 @@ abstract class BaseUI {
     public PIXEL_WIDTH: number // number of characters in the terminal used to represent a pixel
     public PIXEL_HEIGHT: number
     protected gameData: Optional<GameData>
-    protected engine: Optional<GameEngine>
     protected renderedPixels: Array<Array<{hex: string, chars: string}>> // string is the hex code of the pixel
     protected windowOffsetColStart: number
     protected windowOffsetRowStart: number
@@ -97,8 +90,9 @@ abstract class BaseUI {
     protected SPRITE_WIDTH: number
     protected SPRITE_HEIGHT: number
     protected hasVisualUi: boolean
+    private currentLevelCells: Optional<Cellish[][]>
+    private currentLevelMessage: Optional<string>
     private readonly cellColorCache: CellColorCache
-    private lastTick: number
 
     constructor() {
         this.cellColorCache = new CellColorCache()
@@ -113,23 +107,23 @@ abstract class BaseUI {
         this.SPRITE_WIDTH = 5
 
         this.hasVisualUi = true
-        this.lastTick = 0
 
         this.gameData = null
-        this.engine = null
+        this.currentLevelMessage = null
+        this.currentLevelCells = null
         this.windowOffsetWidth = null
         this.windowOffsetHeight = null
     }
 
     public destroy() {
         this.gameData = null
-        this.engine = null
+        this.currentLevelMessage = null
+        this.currentLevelCells = null
         this.renderedPixels = []
         this.cellColorCache.clear()
     }
-    public setGameEngine(engine: GameEngine) {
-        this.engine = engine
-        this.gameData = engine.getGameData()
+    public setGameData(gameData: GameData) {
+        this.gameData = gameData
 
         this.renderedPixels = []
         this.cellColorCache.clear()
@@ -158,93 +152,29 @@ abstract class BaseUI {
         this.SPRITE_WIDTH = spriteWidth
     }
 
-    public setGame(gameData: string) {
-        const { data } = Parser.parse(gameData)
-        if (!data) {
-            throw new Error(`BUG: Could not parse gameData and did not find an error`)
-        }
-        this.setGameEngine(new GameEngine(data))
-    }
     public getGameData() {
-        if (!this.engine) {
+        if (!this.gameData) {
             throw new Error(`BUG: Game has not been specified yet`)
         }
-        return this.engine.getGameData()
+        return this.gameData
     }
 
-    public press(dir: RULE_DIRECTION) {
-        if (this.engine) {
-            this.engine.press(dir)
+    public onLevelChange(level: number, cells: Optional<Cellish[][]>, message: Optional<string>) {
+        if ((!cells && !message) || (cells && message)) {
+            throw new Error(`BUG: Must provide either cells or a message (but not both)`)
         }
-    }
-    public pressUp() {
-        this.press(RULE_DIRECTION.UP)
-    }
-    public pressDown() {
-        this.press(RULE_DIRECTION.DOWN)
-    }
-    public pressLeft() {
-        this.press(RULE_DIRECTION.LEFT)
-    }
-    public pressRight() {
-        this.press(RULE_DIRECTION.RIGHT)
-    }
-    public pressAction() {
-        this.press(RULE_DIRECTION.ACTION)
-    }
-    public pressUndo() {
-        if (this.engine) {
-            this.engine.pressUndo(); this.renderScreen(false)
-        }
-    }
-    public pressRestart() {
-        if (this.engine) {
-            this.engine.pressRestart(); this.renderScreen(false)
-        }
-    }
-    public setLevel(levelNum: number) {
-        if (this.engine) {
-            this.engine.setLevel(levelNum)
-        }
+        this.currentLevelCells = cells
+        this.currentLevelMessage = message
     }
     public getCurrentLevelCells() {
-        if (this.engine) {
-            return this.engine.getCurrentLevelCells()
-        } else {
-            throw new Error(`BUG: Game has not been specified yet`)
+        if (!this.currentLevelCells) {
+            throw new Error(`BUG: There are no cells to render. Maybe it is a message level? Or no level has been set yet`)
         }
-    }
-    public tick() {
-        if (!this.engine) {
-            throw new Error(`BUG: Game has not been specified yet`)
-        }
-        const now = Date.now()
-        const gameData = this.getGameData()
-        let minTime = Math.min(gameData.metadata.realtimeInterval || 1000, gameData.metadata.keyRepeatInterval || 1000, gameData.metadata.againInterval || 1000)
-        if (minTime > 100 || Number.isNaN(minTime)) {
-            minTime = .01
-        }
-        if ((now - this.lastTick) >= (minTime * 1000)) {
-            this.lastTick = now
-            const ret = this.engine.tick()
-            this.drawCells(ret.changedCells, false)
-            return ret
-        } else {
-            return {
-                changedCells: new Set<Cell>(),
-                soundToPlay: null,
-                messageToShow: null,
-                didWinGame: false,
-                didLevelChange: false,
-                wasAgainTick: false
-            }
-        }
+        return this.currentLevelCells
     }
 
     public debugRenderScreen() {
-        if (this.engine) {
-            this.renderScreen(true)
-        }
+        this.renderScreen(true)
     }
 
     public renderMessageScreen(message: string) {
@@ -260,13 +190,13 @@ abstract class BaseUI {
         this.windowOffsetWidth = screenWidth
         this.clearScreen()
 
-        if (this.engine) {
-            const sprites = this.createMessageSprites(message)
-            this.engine.setMessageLevel(sprites)
-            // this.renderScreen(false)
-            this.drawCellsAfterRecentering(_flatten(this.getCurrentLevelCells()), 0)
-            this.engine.restoreFromMessageLevel()
-        }
+        // if (this.engine) {
+        //     const sprites = this.createMessageSprites(message)
+        //     this.engine.setMessageLevel(sprites)
+        //     // this.renderScreen(false)
+        //     this.drawCellsAfterRecentering(_flatten(this.getCurrentLevelCells()), 0)
+        //     this.engine.restoreFromMessageLevel()
+        // }
 
         this.windowOffsetColStart = windowOffsetColStart
         this.windowOffsetRowStart = windowOffsetRowStart
@@ -278,47 +208,38 @@ abstract class BaseUI {
         if (!this.gameData) {
             throw new Error(`BUG: gameData was not set yet`)
         }
-        if (!this.engine) {
-            throw new Error(`BUG: gameEngine was not set yet`)
+
+        if (this.currentLevelMessage) {
+            this.renderMessageScreen(this.currentLevelMessage)
+        } else if (this.currentLevelCells) {
+            // Otherwise, the level is a Map so render the cells
+            if (clearCaches) {
+                this.cellColorCache.clear()
+                this.renderedPixels = []
+            }
+            this.renderLevelScreen(this.currentLevelCells, renderScreenDepth)
         }
-
-        const level = this.engine.getCurrentLevel()
-        if (level.type !== LEVEL_TYPE.MAP) {
-            this.renderMessageScreen(level.message)
-            return
-        }
-
-        // Otherwise, the level is a Map so render the cells
-        const levelRows = this.engine.getCurrentLevelCells()
-
-        if (clearCaches) {
-            this.cellColorCache.clear()
-            this.renderedPixels = []
-        }
-
-        this.renderLevelScreen(levelRows, renderScreenDepth)
     }
 
-    public drawCells(cells: Iterable<Cell>, dontRestoreCursor: boolean, renderScreenDepth: number = 0) {
+    public drawCells(cells: Iterable<Cellish>, dontRestoreCursor: boolean, renderScreenDepth: number = 0) {
         if (!this.gameData) {
             throw new Error(`BUG: gameData was not set yet`)
-        }
-        if (!this.engine) {
-            throw new Error(`BUG: gameEngine was not set yet`)
         }
 
         // Sort of HACKy... If the player is not visible on the screen then we need to
         // move the screen so that they are visible.
+        const allCells = _flatten(this.getCurrentLevelCells())
         const playerTile = this.gameData.getPlayer()
-        if (playerTile.getCellsThatMatch().size === 1) {
+        const playerCells = playerTile.getCellsThatMatch(allCells)
+        if (playerCells.size === 1) {
             // if the screen can only show an even number of cells (eg 4) then this will oscillate indefinitely
             // So we limit the recursion to just a couple of recursions
             if (renderScreenDepth <= 1) {
-                const playerCell = [...playerTile.getCellsThatMatch()][0]
+                const playerCell = [...playerCells][0]
                 const { isOnScreen } = this.cellPosToXY(playerCell)
                 if (this.recenterPlayerIfNeeded(playerCell, isOnScreen)) {
                     // if we moved the screen then re-render the whole screen
-                    cells = _flatten(this.engine.getCurrentLevelCells())
+                    cells = _flatten(this.getCurrentLevelCells())
                 }
             }
             // otherwise, keep rendering cells like normal
@@ -330,19 +251,19 @@ abstract class BaseUI {
         this.drawCellsAfterRecentering(cells, renderScreenDepth)
     }
 
-    public /*for testing*/ getPixelsForCell(cell: Cell) {
+    public /*for testing*/ getPixelsForCell(cell: Cellish) {
         if (!this.gameData) {
             throw new Error(`BUG: gameData was not set yet`)
         }
-        const spritesToDrawSet = cell.getSpritesAsSet() // Not sure why, but entanglement renders properly when reversed
+        const spritesToDraw = cell.getSprites()
 
         // If there is a magic background object then rely on it last
         const magicBackgroundSprite = this.gameData.getMagicBackgroundSprite()
         if (magicBackgroundSprite) {
-            spritesToDrawSet.add(magicBackgroundSprite)
+            spritesToDraw.push(magicBackgroundSprite)
         }
 
-        const pixels = this.cellColorCache.get(spritesToDrawSet,
+        const pixels = this.cellColorCache.get(spritesToDraw,
             this.gameData.metadata.backgroundColor, this.SPRITE_HEIGHT, this.SPRITE_WIDTH)
         return pixels
     }
@@ -422,9 +343,6 @@ abstract class BaseUI {
         if (!this.gameData) {
             throw new Error(`BUG: gameData was not set yet`)
         }
-        if (!this.engine) {
-            throw new Error(`BUG: gameEngine was not set yet`)
-        }
         const titleImage = this.createMessageTextScreen(messageStr)
 
         // Now, convert the string array into cells
@@ -440,13 +358,13 @@ abstract class BaseUI {
         return cells
     }
 
-    protected abstract renderLevelScreen(levelRows: Cell[][], renderScreenDepth: number): void
+    protected abstract renderLevelScreen(levelRows: Cellish[][], renderScreenDepth: number): void
 
     protected abstract setPixel(x: number, y: number, hex: string, fgHex: Optional<string>, chars: string): void
 
     protected abstract checkIfCellCanBeDrawnOnScreen(cellStartX: number, cellStartY: number): boolean
 
-    protected cellPosToXY(cell: Cell) {
+    protected cellPosToXY(cell: Cellish) {
         const { colIndex, rowIndex } = cell
         let isOnScreen = true // can be set to false for many reasons
         let cellStartX = -1
@@ -476,26 +394,16 @@ abstract class BaseUI {
 
     protected abstract getMaxSize(): {columns: number, rows: number}
 
-    protected abstract drawCellsAfterRecentering(cells: Iterable<Cell>, renderScreenDepth: number): void
+    protected abstract drawCellsAfterRecentering(cells: Iterable<Cellish>, renderScreenDepth: number): void
 
     protected clearScreen() {
         this.renderedPixels = []
     }
 
-    protected hasAgainThatNeedsToRun() {
-        if (!this.engine) {
-            throw new Error(`BUG: Engine has not been set yet`)
-        }
-        return this.engine.hasAgain()
-    }
-
     // Returns true if the window was moved (so we can re-render the screen)
-    private recenterPlayerIfNeeded(playerCell: Cell, isOnScreen: boolean) {
+    private recenterPlayerIfNeeded(playerCell: Cellish, isOnScreen: boolean) {
         if (!this.gameData) {
             throw new Error(`BUG: gameData was not set yet`)
-        }
-        if (!this.engine) {
-            throw new Error(`BUG: gameEngine was not set yet`)
         }
         let boundingBoxLeft
         let boundingBoxTop
@@ -522,8 +430,8 @@ abstract class BaseUI {
         } else {
             boundingBoxLeft = 0
             boundingBoxTop = 0
-            boundingBoxHeight = this.engine.getCurrentLevelCells().length
-            boundingBoxWidth = this.engine.getCurrentLevelCells()[0].length
+            boundingBoxHeight = this.getCurrentLevelCells().length
+            boundingBoxWidth = this.getCurrentLevelCells()[0].length
         }
 
         if (zoomScreen) {

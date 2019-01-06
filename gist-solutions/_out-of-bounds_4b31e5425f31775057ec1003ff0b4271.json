@@ -2,109 +2,109 @@
   "version": 1,
   "solutions": [
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
       "solution": "XX.DDDDD"
     },
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
       "solution": ".DDDDS"
     },
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
       "solution": ".SDDDWDDSD"
     },
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
       "solution": ".SAWWDDDDDSD"
     },
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
       "solution": ".SAWWDDDSWAAASDSDWDDDD"
     },
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
       "solution": ".DDAASDDDDW"
     },
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
       "solution": ".AWDASDDWDDSD"
     },
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
       "solution": ".DDWDSSAWWAWWDSDDDDWDDDDSSSSAWWDWAAWAASD"
     },
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
       "solution": ".DDSDDWDADDWDDDSWSWSSSS"
     },
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
       "solution": ".DWAAAAAAAAWSWSWSWWAWDWWDDDDDDSSAAAADDDDWWAAAAAAASSSDSSWSWWDWWDDDD"
     },
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
       "solution": "AWDDSSSASDDDDDSDDWAAAAASAWWWAAWDDDDADDDDDD"
     },
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
       "solution": ".DDDDDSSASAAWAASSDSSWWDDSSWWAASSDAWWDASSDSSAAWDSDWAWWWDSASSSDDWSAAWWWDDDAAASSSDWWAWWDDDAAASSDWAWDDAAAWWDDSDDSDSWAWAAWAASSSDDDDSDSS"
     },
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
       "solution": ".DSDDWSDDWDASSDAWWDSASDDDWWDSS"
     },
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
       "solution": ".AAAAAAAAWDDDWSWSWSDDDDSDSS"
     },
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
       "solution": ".DDDDDDDDAAAWWWWDDDWDASSDWDDAAAAAAAAAAWAAWWWWADSSSSSSDDWASAWWWWWSSSDDWWWWAAADDDDDDDDDAAAAASSWWDDDDDDDDD"
     },
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
       "solution": ".DWAWWSSDDWAAWSDDWWAASSDWDWAASSSDSAAWWWWWDWDD"
     },
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
       "solution": ".SAAWWWWDDWWDDWDDDSSSASSSDDDDWWAAAAWASDSSAAWDSDWAWDDASSDDDDWWAAAWAASSDWAWDSDWWWAWWDSSAWAASAASSAASSSSDDWWWDWWDDDDDDAAAAAASSASSSAAWWWWDDWWDDWDDSAADDDSSASSSDDDDWWWWWWWWSSSSSSAAAWAASSDWAWDSDWWWAWWDSSAAAAAWAASDDSSAASSSSDDWWWDWWDDDDDWWWWSWSWSWSWSWWAAAAASSSSSSSASSSDDDDWWWWDWWAWWDSSSSASDAASSSAAAAAWWWWDDWWDDDDWDSAAAAAASSASSSSDDWWWDWWDDDDDSSSDAWWWWWWWSWSWSWSWSWWAAAAAASSWWAAA"
     },
     {
-      "solution": "X"
+      "solution": "!"
     }
   ],
   "title": "out of bounds [lite demo v2]",

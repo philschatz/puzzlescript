@@ -2,16 +2,16 @@
   "version": 1,
   "solutions": [
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
       "solution": ".,D,D,W,A,S,D,S,D,W,W,S,A,A,W,W,D,W,D,W,W,W,A,W"
     },
     {
-      "solution": "X"
+      "solution": "!"
     }
   ],
   "title": "Wall-bonding",

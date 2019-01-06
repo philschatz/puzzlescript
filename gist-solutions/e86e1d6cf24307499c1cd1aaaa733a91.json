@@ -2,22 +2,22 @@
   "version": 1,
   "solutions": [
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
       "solution": ".W.D.WW.A.AS.SD......"
     },
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
       "solution": "..AS.DD.WA...XS.X.S...S......."
     },
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
       "solution": "DWXAAWX,,,,,,SSDXAWWWX,,,,,,SSDXWAWWX,,,,,,SSSXWWWWX,,,,,,SSSXWWWWAX,,,,,,AXAWSDDDX,,,,,,AXDDX,,,,,,DXDWSAAAASSSSDSSX,,,,,,SS,,,,,,,,,,,,,"
@@ -26,7 +26,7 @@
       "solution": ".SADXSX,,,,,,SXWWWX,,,,,,SXWWX,,,,,,SXASDWDAWWX,,,,,,SXWWWAX,,,,,,SSXWWAX,,,,,,AXADDDX,,,,,,AXDDX,,,,,,DDA,,,,"
     },
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
       "solution": ".DDDDAAAWWWAWXDSDDWDWX,,,,,,ASAWXSAAWWWWSSSSDDDDWWWWAX,,,,,,AAD,,,,"
@@ -35,7 +35,7 @@
       "solution": ".DDDAWWAAAADDDDSWXSSAADDDDAAAAX,,,,,,AADDDDDDXAAWWDDDWWX,,,,,,SXASAAAAWAAWWDX,,,,,,DDWWSSAASSDDDDDDWWDWSSASAAWWWWSSSSAAWWAAWWSSDDSSDDDDWWDWW,,,,"
     },
     {
-      "solution": "X"
+      "solution": "!"
     }
   ],
   "title": "SwapBot",

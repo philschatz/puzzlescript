@@ -1,7 +1,7 @@
 /* eslint-env jasmine */
 import { LevelEngine } from './engine'
 import Parser from './parser/parser'
-import { RULE_DIRECTION } from './util'
+import { INPUT_BUTTON } from './util'
 
 const EMPTY_GAME = `
 title foo
@@ -496,7 +496,7 @@ describe('engine', () => {
         engine.tick()
         expect(engine.getCurrentLevel().getCells()[0][0].getSpritesAsSet().has(player)).toBe(true)
 
-        engine.press(RULE_DIRECTION.RIGHT)
+        engine.press(INPUT_BUTTON.RIGHT)
         engine.tick()
         expect(player.getCellsThatMatch().size).toBe(1)
         expect(engine.getCurrentLevel().getCells()[0][1].getSpritesAsSet().has(player)).toBe(true)
@@ -508,7 +508,7 @@ describe('engine', () => {
         engine.tick()
         expect(engine.getCurrentLevel().getCells()[0][0].getSpritesAsSet().has(player)).toBe(true)
 
-        engine.press(RULE_DIRECTION.RIGHT)
+        engine.press(INPUT_BUTTON.RIGHT)
         engine.tick()
         expect(player.getCellsThatMatch().size).toBe(1)
         expect(engine.getCurrentLevel().getCells()[0][1].getSpritesAsSet().has(player)).toBe(true)
@@ -1486,7 +1486,7 @@ describe('engine', () => {
         const player = data.getSpriteByName('player')
         const island = data.getSpriteByName('island')
         const playerIsland = data.getSpriteByName('PlayerIsland')
-        engine.press(RULE_DIRECTION.LEFT)
+        engine.press(INPUT_BUTTON.LEFT)
         engine.tick()
         expect(engine.toSnapshot()).toMatchSnapshot()
 
@@ -1555,7 +1555,7 @@ describe('engine', () => {
     `) // end game definition
 
         const player = data.getSpriteByName('player')
-        engine.press(RULE_DIRECTION.RIGHT)
+        engine.press(INPUT_BUTTON.RIGHT)
         engine.tick()
         expect(engine.toSnapshot()).toMatchSnapshot()
 
@@ -2282,7 +2282,7 @@ describe('engine', () => {
     `) // end game definition
 
         const dot = data.getSpriteByName('dot')
-        engine.press(RULE_DIRECTION.RIGHT)
+        engine.press(INPUT_BUTTON.RIGHT)
         engine.tick()
 
         expect(dot.getCellsThatMatch().size).toBe(1)
@@ -2291,13 +2291,13 @@ describe('engine', () => {
         // Verify that the bracket no longer has any matches (since things are no longer moving bc the tick is done)
         expect((engine.gameData.rules[1].getChildRules()[0] as any).conditionBrackets[0].firstCells.size).toBe(0)
 
-        engine.pressUndo()
+        engine.press(INPUT_BUTTON.UNDO)
         engine.tick()
 
         expect(dot.getCellsThatMatch().size).toBe(0)
         expect(engine.getCurrentLevel().getCells()[0][2].getSpritesAsSet().has(dot)).toBe(false) // the dot disappeared
 
-        engine.press(RULE_DIRECTION.LEFT)
+        engine.press(INPUT_BUTTON.LEFT)
         engine.tick()
 
         expect(dot.getCellsThatMatch().size).toBe(0)

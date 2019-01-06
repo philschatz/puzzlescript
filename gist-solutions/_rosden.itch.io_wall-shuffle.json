@@ -2,22 +2,22 @@
   "version": 1,
   "solutions": [
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
       "solution": ".,S,A,A,S,A,W,W,A,W,W,WS,S,D,W,A,W,W"
     },
     {
-      "solution": "X"
+      "solution": "!"
     },
     {
       "solution": ".,S,S,S,S,A,S,D,W,D,A,S,D,D,W,D,S,S,S,A,W,W,W,W,W,W,W,A"
     },
     {
-      "solution": "X"
+      "solution": "!"
     }
   ],
   "title": "wall shuffle",

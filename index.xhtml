@@ -3,10 +3,9 @@
 <head>
     <title>Example Puzzlescript Games using HTML Tables</title>
     <script src="./lib/webpack-output.js"></script>
-    <link rel="stylesheet" href="./src/browser/html-table.css"/>
+    <link rel="stylesheet" href="./src/browser/test/html-table.css"/>
     <style>
         .hidden { display: none; }
-        #loading:not(.is-loading) { display: none; }
         .light { opacity: .5 }
         kbd {
             font: 11px "SFMono-Regular",Consolas,"Liberation Mono",Menlo,Courier,monospace;
@@ -18,11 +17,13 @@
             vertical-align: middle;
             background-color: #fafbfc;
             border: solid 1px #c6cbd1;
-                border-bottom-color: rgb(198, 203, 209);
             border-bottom-color: #959da5;
             border-radius: 3px;
             box-shadow: inset 0 -1px 0 #959da5;
         }
+
+        /* Decide whether to move the following (all) to the html-table.css file */
+
         /* When the CSS is disabled then show a plain table with borders */
         .ps-table.ps-ui-disabled {
             width: 100%;
@@ -42,129 +43,100 @@
 <body>
     <h1>Example <a href="https://github.com/philschatz/puzzlescript">PuzzleScript Games</a> using HTML Tables</h1>
 
+    <p>Currently playing:
+        <select id="gameSelection">
+            <option value="f0b9b8e95d0bc87c9fb9e411756daa23">IceCrates⁣</option>
+            <option value="7f4470ab80d9f7ffe4b9e28c83b26adc">PUSH⁣</option>
+            <option value="ee39bfe12012c774acfc5e3d32fb4f89">Boxes &amp; Balloons⁣</option>
+            <option value="_pot-wash-panic_itch">Pot Wash Panic</option>
+            <option value="457c6d8be68ffb6d921211d40ca48c15">Pants, Shirt, Cap⁣</option>
+            <option value="_cyber-lasso-e3e444f7c63fb21b6ec0">Cyber-Lasso⁣</option>
+            <option value="e13482e035a5f75e9b0e4d0b5f28f8b6">Pushcat Jr⁣</option>
+            <option value="_mirror-isles_219a7db6511dad557b84">Mirror Isles⁣</option>
+            <option value="_boxes-love-bloxing_c2d717a77f9aa02ecb1b793111f3a921">Boxes Love Bloxing Gloves⁣</option>
+            <!-- <option value="a4829564ab394e720a82cf25d6c9cd91">Garten der Medusen⁣</option> -->
+            <option value="e86e1d6cf24307499c1cd1aaaa733a91">SwapBot⁣</option>
+            <option value="_separation_itch">Separation⁣</option>
+            <option value="_roll-those-sixes-itch">Roll those Sixes⁣</option>
+            <option value="_hack-the-net_8b5eb39cb825277832d261b3142f084b">Hack the Net⁣</option>
+            <option value="_spacekoban_6a6c07f71d7039e4155e">Spacekoban⁣</option>
+            <option value="_spikes-n-stuff_dc5c4a669e362e389e994025075f7d0b">Spikes 'n' Stuff⁣</option>
+            <option value="6daa8b63cf79202cd085c1b168048c09">Rock, Paper, Scissors (v0.90 = v1.alpha)⁣</option>
+            <option value="_spooky-pumpkin_7242443">Spooky Pumpkin Game⁣</option>
+            <option value="181f370a15625905ca6e844a972a4abf">Miss Direction⁣</option>
+            <option value="c5ec035de4e0c145a85327942fb76098">Some lines were meant to be crossed⁣</option>
+            <option value="711d6220e4fe2a36254cc544c6ba4885">Memories Of Castlemouse⁣</option>
+            <option value="8074d60a0af768f970ef055d4460414d">Bubble Butler: CMD REORGANIZE⁣</option>
+            <option value="_sleepy-player_itch">Sleepy players⁣</option>
+            <option value="_rosden.itch.io_bomb-n-ice">bomb n ice⁣</option>
+            <option value="_alien-disco_itch">Alien Disco⁣</option>
+
+            <option value="b6c8ba9363b4cca270d8ce5e88f79abf">Vacuum⁣</option>
+            <option value="542b97948cb1d377dce6d276c0bcd9d5">Sokoboros⁣</option>
+            <option value="2b9ece642cd7cdfb4a5f2c9fa8455e40">Beam Islands⁣</option>
+            <option value="_entanglement">Entanglement - Chapter One⁣</option>
+            <option value="_rosden.itch.io_islands">Islands⁣</option>
+            <option value="_skipping-stones_d6fd6fcf84de185e2584">Skipping Stones to Lonely Homes⁣</option>
+        </select>
+
+        <span id="loadingIndicator" class="hidden">Loading...</span>
+    </p>
+    
+    <table id="theGame"></table>
+
     <p><input id="ui-enable" type="checkbox" checked="checked"/> <label for="ui-enable"><strong>Uncheck</strong> to see what a non-sighted user would experience</label></p>
 
-    <p>To play: use <kbd>W</kbd>, <kbd>S</kbd>, <kbd>A</kbd>, <kbd>D</kbd>, <kbd>X</kbd> for Action, <kbd>Z</kbd> for Undo, and <kbd>R</kbd> to Restart the current level</p>
+    <p>To play:</p>
+    <ul>
+        <li>Arrow keys or <kbd>W</kbd>, <kbd>S</kbd>, <kbd>A</kbd>, <kbd>D</kbd></li>
+        <li><kbd>X</kbd> for Action</li>
+        <li><kbd>Z</kbd> or <kbd>U</kbd> for Undo</li>
+        <li><kbd>R</kbd> to Restart the current level</li>
+    </ul>
 
-    <p>Or, choose another game!</p>
-
-    <select id="gameSelection">
-        <option value="f0b9b8e95d0bc87c9fb9e411756daa23">IceCrates⁣</option>
-        <option value="7f4470ab80d9f7ffe4b9e28c83b26adc">PUSH⁣</option>
-        <option value="ee39bfe12012c774acfc5e3d32fb4f89">Boxes &amp; Balloons⁣</option>
-        <option value="_pot-wash-panic_itch">Pot Wash Panic</option>
-        <option value="457c6d8be68ffb6d921211d40ca48c15">Pants, Shirt, Cap⁣</option>
-        <option value="_cyber-lasso-e3e444f7c63fb21b6ec0">Cyber-Lasso⁣</option>
-        <option value="e13482e035a5f75e9b0e4d0b5f28f8b6">Pushcat Jr⁣</option>
-        <option value="_mirror-isles_219a7db6511dad557b84">Mirror Isles⁣</option>
-        <option value="_boxes-love-bloxing_c2d717a77f9aa02ecb1b793111f3a921">Boxes Love Bloxing Gloves⁣</option>
-        <!-- <option value="a4829564ab394e720a82cf25d6c9cd91">Garten der Medusen⁣</option> -->
-        <option value="e86e1d6cf24307499c1cd1aaaa733a91">SwapBot⁣</option>
-        <option value="_separation_itch">Separation⁣</option>
-        <option value="_roll-those-sixes-itch">Roll those Sixes⁣</option>
-        <option value="_hack-the-net_8b5eb39cb825277832d261b3142f084b">Hack the Net⁣</option>
-        <option value="_spacekoban_6a6c07f71d7039e4155e">Spacekoban⁣</option>
-        <option value="_spikes-n-stuff_dc5c4a669e362e389e994025075f7d0b">Spikes 'n' Stuff⁣</option>
-        <option value="6daa8b63cf79202cd085c1b168048c09">Rock, Paper, Scissors (v0.90 = v1.alpha)⁣</option>
-        <option value="_spooky-pumpkin_7242443">Spooky Pumpkin Game⁣</option>
-        <option value="181f370a15625905ca6e844a972a4abf">Miss Direction⁣</option>
-        <option value="c5ec035de4e0c145a85327942fb76098">Some lines were meant to be crossed⁣</option>
-        <option value="711d6220e4fe2a36254cc544c6ba4885">Memories Of Castlemouse⁣</option>
-        <option value="8074d60a0af768f970ef055d4460414d">Bubble Butler: CMD REORGANIZE⁣</option>
-        <option value="_sleepy-player_itch">Sleepy players⁣</option>
-        <option value="_rosden.itch.io_bomb-n-ice">bomb n ice⁣</option>
-        <option value="_alien-disco_itch">Alien Disco⁣</option>
-
-        <option value="b6c8ba9363b4cca270d8ce5e88f79abf">Vacuum⁣</option>
-        <option value="542b97948cb1d377dce6d276c0bcd9d5">Sokoboros⁣</option>
-        <option value="2b9ece642cd7cdfb4a5f2c9fa8455e40">Beam Islands⁣</option>
-        <option value="_entanglement">Entanglement - Chapter One⁣</option>
-        <option value="_rosden.itch.io_islands">Islands⁣ (SLOW)</option>
-        <option value="_skipping-stones_d6fd6fcf84de185e2584">Skipping Stones to Lonely Homes⁣ (SLOW)</option>
-    </select>
-
-    <span id="loading" class="is-loading">Loading...</span>
-
-
-    <table id="thegamecanbeidentifiedbyselector">
-    </table>
-
-    <p id="gamepad-unknown">Maybe checking to see if gamepad is connected</p>
-    <p id="gamepad-disabled" class="hidden">Try connecting with a gamepad controller (XBOX/PS3/PS4/etc) to play games with it</p>
-    <p id="gamepad-enabled" class="hidden">Gamepad is detected</p>
+    <p id="gamepadDisabled" class="hidden"><strong>Tip:</strong> Connect a gamepad controller (XBOX/PS3/PS4/etc) to use it to play games</p>
+    <p id="gamepadEnabled" class="hidden">Gamepad is detected</p>
 
     <p><a href="https://github.com/philschatz/puzzlescript">Source On GitHub</a></p>
 
     <script type="text/javascript">//<![CDATA[
-        var table = document.querySelector('#thegamecanbeidentifiedbyselector')
+        var table = document.querySelector('#theGame')
+        var gameSelection = document.querySelector('#gameSelection')
+        var loadingIndicator = document.querySelector('#loadingIndicator')
         var gameId // used for loading and saving game progress
 
-        function resizeTable() {
-            // Resize the table so that it fits.
-            // TODO: resize when the window resizes
+        // Save when the user completes a level
+        var handler = {
+            onLevelChange: function (newLevelNum) {
+                // Hide the Loading text because the level loaded
+                loadingIndicator.classList.add('hidden')
 
-            // TODO: ignore when the current level is a message level
-            if (tableEngine.tableUI.isCurrentLevelAMessage()) {
-                return
+                setStorage(gameId, newLevelNum)
             }
-
-            const cells = tableEngine.tableUI.getCurrentLevelCells()
-            const cellHeight = cells.length
-            const cellWidth = cells[0].length
-            const levelRatio = cellWidth / cellHeight
-            // Figure out if the width or the height is the limiting factor
-            const availableWidth = window.innerWidth - table.offsetLeft
-            const availableHeight = window.innerHeight - table.offsetTop
-            let newWidth = 0
-            if (availableWidth / availableHeight < levelRatio) {
-                // Width is the limiting factor
-                newWidth = availableWidth / levelRatio
-            } else {
-                // Height is the limiting factor
-                newWidth = availableHeight * levelRatio
-            }
-            table.setAttribute('style', `width: ${Math.floor(newWidth)}px;`)
         }
 
-        window.addEventListener('resize', resizeTable)
-
-        var tableEngine = new window.PuzzleScript.TableEngine(table, {onLevelComplete: function (newLevelNum) {
-            setStorage(gameId, newLevelNum)
-            resizeTable()
-        }})
-
-        var gameSelection = document.querySelector('#gameSelection')
-        var loading = document.querySelector('#loading')
-        var isStarted = false
+        var worker = new Worker('./lib/webpack-output-webworker.js')
+        var tableEngine = new window.PuzzleScript.WebworkerTableEngine(worker, table, handler)
+        // var tableEngine = new window.PuzzleScript.SyncTableEngine(table, handler)
 
         function playSelectedGame() {
-            loading.classList.add('is-loading') // Show the "Loading..." text
+            loadingIndicator.classList.remove('hidden') // Show the "Loading..." text
 
-            gameSelection.blur() // lose focus so we don't navigate it when pressing keys
             gameId = gameSelection.value
             fetch(`./gists/${gameId}/script.txt`)
             .then(resp => {
-                return resp.text().then(source => {
-                    // Look up if the user has already solved some of the levels
+                return resp.text().then(function(source) {
                     // Load the game
-                    tableEngine.setGame(source)
-
-                    // Hide the Loading... text
-                    loading.classList.remove('is-loading')
-
-                    tableEngine.setLevel(getStorage(gameId) || 0)
-
-                    if (!isStarted) {
-                        tableEngine.start()
-                    }
-                    resizeTable()
+                    tableEngine.setGame(source, getStorage(gameId) || 0)
                 })
             })
         }
         playSelectedGame()
+        
+        // Load the new game when the dropdown changes
         gameSelection.addEventListener('change', playSelectedGame)
 
-
+        // Functions for loading/saving game progress
         function getStorage(gameId) {
             var storageStr = window.localStorage.getItem('puzzlescriptGameProgress')
             if (storageStr) {
@@ -175,12 +147,7 @@
         }
         function setStorage(gameId, levelNum) {
             var storageStr = window.localStorage.getItem('puzzlescriptGameProgress')
-            var storage
-            if (storageStr) {
-                storage = JSON.parse(storageStr)
-            } else {
-                storage = {}
-            }
+            var storage = storageStr ? JSON.parse(storageStr) : {}
             storage[gameId] = levelNum
             window.localStorage.setItem('puzzlescriptGameProgress', JSON.stringify(storage))
         }
@@ -193,25 +160,25 @@
             } else {
                 table.classList.add('ps-ui-disabled')
             }
+            table.focus()
         }
         enableCss.addEventListener('change', setUi)
         setUi()
 
         // Show/hide the "Add controller" message if a Gamepad is attached
-        const gamepadUnknown = document.querySelector('#gamepad-unknown')
-        const gamepadDisabled = document.querySelector('#gamepad-disabled')
-        const gamepadEnabled = document.querySelector('#gamepad-enabled')
-        setInterval(() => {
-            if (tableEngine.gamepad.isConnected()) {
-                gamepadUnknown.classList.add('hidden')
-                gamepadDisabled.classList.add('hidden')
-                gamepadEnabled.classList.remove('hidden')
-            } else {
-                gamepadUnknown.classList.add('hidden')
-                gamepadDisabled.classList.remove('hidden')
-                gamepadEnabled.classList.add('hidden')
-            }
-        }, 200)
+        const gamepadDisabled = document.querySelector('#gamepadDisabled')
+        const gamepadEnabled = document.querySelector('#gamepadEnabled')
+        if (tableEngine.inputWatcher) {
+            setInterval(() => {
+                if (tableEngine.inputWatcher.gamepad.isConnected()) {
+                    gamepadDisabled.classList.add('hidden')
+                    gamepadEnabled.classList.remove('hidden')
+                } else {
+                    gamepadDisabled.classList.remove('hidden')
+                    gamepadEnabled.classList.add('hidden')
+                }
+            }, 200)
+        }
 
     // ]]></script>
 </body>

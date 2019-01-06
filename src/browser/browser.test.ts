@@ -3,7 +3,6 @@
 import fs from 'fs'
 import path from 'path'
 import puppeteer from 'puppeteer' // tslint:disable-line:no-implicit-dependencies
-import { Optional } from './util';
 // import mapStackTrace from 'sourcemapped-stacktrace-node')
 
 // Defined via jest-puppeteer environment
@@ -15,12 +14,12 @@ async function sleep(ms: number) {
 }
 
 async function getAttrs() {
-    return await page.$eval('.ps-table', (el) => { 
-        return { 
-            count: el.getAttribute('data-ps-last-input-processed'), 
+    return page.$eval('.ps-table', (el) => {
+        return {
+            count: el.getAttribute('data-ps-last-input-processed'),
             isAcceptingInput: el.getAttribute('data-ps-accepting-input'),
             levelNum: el.getAttribute('data-ps-current-level')
-        } 
+        }
     })
 }
 
@@ -86,19 +85,38 @@ async function evaluateWithStackTrace(fn: puppeteer.EvaluateFn, ...args: any[]) 
     // }
 }
 
+async function playLevel() {
+    const source = fs.readFileSync(path.join(__dirname, '../../gists/_pot-wash-panic_itch/script.txt'), 'utf-8')
+    const startLevel = 3
+
+    // This variable is _actually_ defined in the JS file, not here but it is in the body of page.evaluate
+    const HackTableStart = (sourceBrowser: string, startLevelBrowser: number) => 'actually implemented in the browser'
+
+    await evaluateWithStackTrace(({ source, startLevel }) => { // tslint:disable-line:no-shadowed-variable
+        if (HackTableStart) {
+            if (source && typeof startLevel === 'number') {
+                HackTableStart(source, startLevel)
+            } else {
+                throw new Error(`BUG: Source was not a string or startLevel was not a number`)
+            }
+        } else {
+            throw new Error(`BUG: The browser JS does not have HackTableStart defined`)
+        }
+    }, { source, startLevel })
+
+    await pressKeys('SAAASASDDDWDDDDWDDSAAASASAW'.split(''))
+}
+
 describe('Browser', () => {
 
-    let dismissedCount: string[] = []
+    const dismissedCount: string[] = []
 
-    const dialogHandler = async (dialog: puppeteer.Dialog) => {
+    const dialogHandler = async(dialog: puppeteer.Dialog) => {
         dismissedCount.push(dialog.message())
         await dialog.dismiss()
-        // page.off('dialog', dialogHandler)
     }
 
-    beforeEach(async() => {
-        const url = `http://localhost:8000/src/browser/html-table.xhtml`
-
+    beforeEach(() => {
         // jest-puppeteer will expose the `page` and `browser` globals to Jest tests.
         if (!browser || !page) {
             throw new Error('Browser has not been started! Did you remember to specify `@jest-environment puppeteer`?')
@@ -111,8 +129,6 @@ describe('Browser', () => {
         //     const newStack = await mapStackTrace(e.message, { isChromeOrEdge: true })
         //     console.error(newStack)
         // })
-
-        await page.goto(url)
     })
 
     afterEach(() => {
@@ -121,50 +137,22 @@ describe('Browser', () => {
         page.removeListener('dialog', dialogHandler)
     })
 
-    it('plays a game in the browser', async() => {
+    it('plays a game in the browser using the SyncTableEngine', async() => {
         // browser tests are slow. Headless is slower it seems (from jest watch mode)
         jest.setTimeout(process.env.NODE_ENV === 'development' ? 90 * 1000 : 90 * 1000)
-
-        const source = fs.readFileSync(path.join(__dirname, '../gists/_pot-wash-panic_itch/script.txt'), 'utf-8')
-        const startLevel = 3
-
-        // This variable is _actually_ defined in the JS file, not here but it is in the body of page.evaluate
-        const HackTableStart = (sourceBrowser: string, startLevelBrowser: number) => 'actually implemented in the browser'
-
-        await evaluateWithStackTrace(({ source, startLevel }) => { // tslint:disable-line:no-shadowed-variable
-            if (HackTableStart) {
-                if (source && typeof startLevel === 'number') {
-                    HackTableStart(source, startLevel)
-                } else {
-                    throw new Error(`BUG: Source was not a string or startLevel was not a number`)
-                }
-            } else {
-                throw new Error(`BUG: The browser JS does not have HackTableStart defined`)
-            }
-        }, { source, startLevel })
-
-        return new Promise(async(resolve) => {
-            // const dialogHandler = async dialog => {
-            //     expect(dialog.message()).toBe('I want to see my face in them! Level 3/14')
-            //     await dialog.dismiss()
-            //     page.off('dialog', dialogHandler)
-            //     resolve()
-            // }
-            // page.once('dialog', dialogHandler)
-
-            // page.on('dialog', async dialog => {
-            //     expect(dialog.message()).toBe('I want to see my face in them! Level 3/14')
-            //     await dialog.dismiss()
-            //     resolve()
-            // })
-            await pressKeys('SAAASASDDDWDDDDWDDSAAASASAW'.split(''))
-            // await jestPuppeteer.debug()
-            resolve()
-        })
+        await page.goto(`http://localhost:8000/src/browser/test/html-table.xhtml`)
+        return playLevel()
     })
 
-    it('plays a couple levels using the demo page', async () => {
-        const waitForDialogAfter = async (fn: () => Promise<any>) => {
+    it('plays a game in the browser using the WebworkerTableEngine', async() => {
+        // browser tests are slow. Headless is slower it seems (from jest watch mode)
+        jest.setTimeout(process.env.NODE_ENV === 'development' ? 90 * 1000 : 90 * 1000)
+        await page.goto(`http://localhost:8000/src/browser/test/html-table-webworker.xhtml`)
+        return playLevel()
+    })
+
+    it('plays a couple levels using the demo page', async() => {
+        const waitForDialogAfter = async(fn: () => Promise<any>) => {
             // page.once('dialog', dialogHandler)
             const oldCount = dismissedCount.length
             await fn()
@@ -177,47 +165,28 @@ describe('Browser', () => {
                 return
             }
             await sleep(1000) // wait for the dialog to open and be dismissed
+            if (dismissedCount.length > oldCount) {
+                return
+            }
+            await sleep(10000) // wait a long time
             expect(dismissedCount.length).toBeGreaterThan(oldCount)
         }
 
         // The game shows a dialog immediately (uggh)
-        await waitForDialogAfter(async () => {
+        await waitForDialogAfter(async() => {
             await page.goto(`http://localhost:8000/index.xhtml`)
-            await page.waitForSelector(`#loading:not(.is-loading)`)
+            await page.waitForSelector(`#loadingIndicator.hidden`)
         })
 
         // play a level and then wait for the dialog to open
-        let levelNum: Optional<string>
-        levelNum = (await getAttrs()).levelNum
-        expect(levelNum).toBe('1')
+        await page.waitForSelector(`.ps-table[data-ps-current-level="${1}"]`)
         await waitForDialogAfter(async() => pressKeys('.AWAW'.split('')))
-        levelNum = (await getAttrs()).levelNum
-        expect(levelNum).toBe('3')
+
+        await page.waitForSelector(`.ps-table[data-ps-current-level="${3}"]`)
         await waitForDialogAfter(async() => pressKeys('.WASDW'.split('')))
 
-        levelNum = (await getAttrs()).levelNum
-        expect(levelNum).toBe('5')
+        await page.waitForSelector(`.ps-table[data-ps-current-level="${5}"]`)
 
-        expect(dismissedCount.length).toBe(4)
+        expect(dismissedCount.length).toBe(5)
     })
-
-    // it.skip('Plays an arbitrary game', async () => {
-    //     // browser tests are slow. Headless is slower it seems (from jest watch mode)
-    //     jest.setTimeout(process.env.NODE_ENV === 'development' ? 10 * 60 * 1000 : 10 * 60 * 1000)
-
-    //     const {page, browser} = await startBrowser()
-
-    //     const source = fs.readFileSync(path.join(__dirname, '../gists/_entanglement/script.txt'), 'utf-8')
-    //     const solutions = JSON.parse(fs.readFileSync(path.join(__dirname, '../gist-solutions/_entanglement.json'), 'utf-8'))
-    //     const startLevel = 3
-    //     const partial = solutions.solutions[startLevel].partial
-
-    //     await sleep(500) // wait for the browser JS to execute
-    //     await page.evaluate(({source, startLevel}) => {
-    //         window.HackTableStart(source, startLevel)
-    //     }, {source, startLevel})
-
-    //     await pressKeys(page, partial.split(''))
-    //     await stopBrowser(browser)
-    // })
 })

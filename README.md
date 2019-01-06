@@ -18,15 +18,22 @@ Also, it is **accessible**, meaning that [blind or visually impaired people can 
 
 ### Embed in a Browser
 
-See [./test/browser/html-table.xhtml](./test/browser/html-table.xhtml) for an example of embedding in a browser.
+See [./test/browser/test/html-table.xhtml](./test/browser/test/html-table.xhtml) for an example of embedding in a browser.
 
 ```js
-// Include <script src="node_modules/puzzlescript/dist/puzzlescript.js"></script>
+// Include <script src="node_modules/puzzlescript/lib/webpack-output.js"></script>
 // and then the following:
 table = document.querySelector('table') // selector to the <table> that will be used
-engine = new PuzzleScript.HTMLTableEngine(table)
+engine = new PuzzleScript.SyncTableEngine(table, optionalEventHandler)
 engine.setGame(gameSourceString, 0 /*startLevel*/)
-engine.start()
+```
+
+Or, if the game is slow, it can be played using a [Webworker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers):
+
+```js
+worker = new Worker('path/from/browser/to/webpack-output-webworker.js')
+engine = new PuzzleScript.WebworkerTableEngine(worker, table, optionalEventHandler)
+...
 ```
 
 # Screencaps

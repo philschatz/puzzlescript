@@ -3,12 +3,13 @@ import ansiStyles from 'ansi-styles'
 import chalk from 'chalk'
 import * as supportsColor from 'supports-color'
 
-import { Cell, GameData, Optional, RULE_DIRECTION } from '..'
 import { CollisionLayer } from '../models/collisionLayer'
 import { IColor } from '../models/colors'
+import { GameData } from '../models/game'
 import { GameSprite } from '../models/tile'
-import { LEVEL_TYPE } from '../parser/astTypes'
-import { _debounce, _flatten } from '../util'
+import { LEVEL_TYPE, Soundish } from '../parser/astTypes'
+import { playSound } from '../sound/sfxr'
+import { _debounce, _flatten, Cellish, GameEngineHandler, Optional, RULE_DIRECTION } from '../util'
 import BaseUI from './base'
 
 // Determine if this
@@ -65,7 +66,23 @@ function drawPixelChar(x: number, y: number, fgHex: Optional<string>, bgHex: Opt
     return out.join('')
 }
 
-class TerminalUI extends BaseUI {
+function someKeyPressed() {
+    return new Promise((resolve) => {
+        function handleKeyPress(key: string) {
+            switch (key) {
+                case 'X':
+                case 'x':
+                case ' ':
+                case '\u000D':
+                    process.stdin.off('data', handleKeyPress)
+                    resolve(key)
+            }
+        }
+        process.stdin.on('data', handleKeyPress)
+    })
+}
+
+class TerminalUI extends BaseUI implements GameEngineHandler {
     protected inspectorCol: number
     protected inspectorRow: number
     private resizeHandler: Optional<() => void>
@@ -102,6 +119,34 @@ class TerminalUI extends BaseUI {
         }
         this.resizeHandler = null
         super.destroy()
+    }
+
+    public onPress() {
+        // Don't need to do anything
+    }
+    public onWin() {
+        // Don't need to do anything
+    }
+    public onPause() {
+        // Don't need to do anything
+    }
+    public onResume() {
+        // Don't need to do anything
+    }
+    public onGameChange() {
+        // Don't need to do anything
+    }
+    public async onSound(sound: Soundish) {
+        /*await*/ playSound(sound.soundCode) // tslint:disable-line:no-floating-promises
+    }
+    public onTick(changedCells: Set<Cellish>) {
+        this.drawCells(changedCells, false)
+    }
+    public async onMessage(msg: string) {
+        this.renderMessageScreen(msg)
+        // Wait for "ACTION" key
+        await someKeyPressed()
+        this.renderScreen(true)
     }
 
     public getHasVisualUi() {
@@ -254,10 +299,7 @@ class TerminalUI extends BaseUI {
         drawPixelChar(x, y, fgHex, bgHex, chars)
     }
 
-    public moveInspectorTo(cell: Cell) {
-        if (!this.engine) {
-            throw new Error(`BUG: engine has not been assigned yet`)
-        }
+    public moveInspectorTo(cell: Cellish) {
         const { rowIndex: newRow, colIndex: newCol } = cell
         let canMove = false
         if (newCol >= this.windowOffsetColStart && newRow >= this.windowOffsetRowStart) {
@@ -274,9 +316,9 @@ class TerminalUI extends BaseUI {
 
         if (canMove) {
             let oldInspectorCell = null
-            const currentLevel = this.engine.getCurrentLevelCells()
+            const currentLevel = this.getCurrentLevelCells()
             if (currentLevel[this.inspectorRow] && currentLevel[this.inspectorRow][this.inspectorCol]) {
-                oldInspectorCell = this.engine.getCurrentLevelCells()[this.inspectorRow][this.inspectorCol]
+                oldInspectorCell = this.getCurrentLevelCells()[this.inspectorRow][this.inspectorCol]
             }
             const newInspectorCell = cell
             // move
@@ -300,19 +342,25 @@ class TerminalUI extends BaseUI {
         }
     }
     public moveInspector(direction: RULE_DIRECTION) {
-        if (!this.engine) {
-            throw new Error(`BUG: engine has not been assigned yet`)
-        }
         if (this.inspectorRow >= 0 && this.inspectorCol >= 0) {
-            const cell = this.engine.getCurrentLevelCells()[this.inspectorRow][this.inspectorCol]
-            const newCell = cell.getNeighbor(direction)
-            if (newCell) {
-                return this.moveInspectorTo(newCell)
+            let x = 0
+            let y = 0
+            switch (direction) {
+                case RULE_DIRECTION.UP: y -= 1; break
+                case RULE_DIRECTION.DOWN: y += 1; break
+                case RULE_DIRECTION.LEFT: x -= 1; break
+                case RULE_DIRECTION.RIGHT: x += 1; break
+                default:
+                    throw new Error(`BUG: Invalid direction`)
+            }
+            const cell = this.getCurrentLevelCells()[this.inspectorRow + y][this.inspectorCol + x]
+            if (cell) {
+                return this.moveInspectorTo(cell)
             }
         }
     }
 
-    protected renderLevelScreen(levelRows: Cell[][], renderScreenDepth: number) {
+    protected renderLevelScreen(levelRows: Cellish[][], renderScreenDepth: number) {
         if (!this.gameData) {
             throw new Error(`BUG: gameData was not set yet`)
         }
@@ -326,7 +374,7 @@ class TerminalUI extends BaseUI {
         } else {
 
             // Print out the size of the screen and the count of each sprite on the screen
-            const collisionLayerToSprites: Map<CollisionLayer, Map<GameSprite, Cell[]>> = new Map()
+            const collisionLayerToSprites: Map<CollisionLayer, Map<GameSprite, Cellish[]>> = new Map()
             for (const cell of _flatten(levelRows)) {
                 if (this.cellPosToXY(cell).isOnScreen) {
                     for (const sprite of cell.getSpritesAsSet()) {
@@ -423,7 +471,7 @@ class TerminalUI extends BaseUI {
         return ret.join('')
     }
 
-    protected drawCellsAfterRecentering(cells: Iterable<Cell>, renderScreenDepth: number) {
+    protected drawCellsAfterRecentering(cells: Iterable<Cellish>, renderScreenDepth: number) {
         const ret = []
         for (const cell of cells) {
             const instructions = this._drawCell(cell, renderScreenDepth)
@@ -464,7 +512,7 @@ class TerminalUI extends BaseUI {
         process.stdout.write(getRestoreCursor())
     }
 
-    private _drawCell(cell: Cell, renderScreenDepth: number = 0) {
+    private _drawCell(cell: Cellish, renderScreenDepth: number = 0) {
         const ret: string[] = []
         if (!this.gameData) {
             throw new Error(`BUG: gameData was not set yet`)
@@ -597,15 +645,3 @@ function getRestoreCursor() {
 }
 
 export default new TerminalUI()
-
-// Mac terminal does not render all the colors so some pixels do not look different.
-// See 391852197b1aef15558342df2670d635 (the grid)
-// for (let r = 0; r < 256; r+=16) {
-//   for (let g = 0; g < 256; g+=16) {
-//     for (let b = 0; b < 256; b+=16) {
-//       console.log(ansiStyles.bgColor.ansi16m.rgb(r, g, b) + ' ' + ansiStyles.bgColor.close)
-//     }
-//     console.log(ansiStyles.bgColor.ansi16m.rgb(0, 0, 0) + '\n' + ansiStyles.bgColor.close)
-//   }
-//   console.log(ansiStyles.bgColor.ansi16m.rgb(0, 0, 0) + '\n' + ansiStyles.bgColor.close)
-// }

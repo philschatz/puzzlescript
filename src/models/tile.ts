@@ -1,6 +1,6 @@
 import BitSet from 'bitset'
 import { Cell } from '../engine'
-import { _flatten, Optional, RULE_DIRECTION, setDifference, setIntersection } from '../util'
+import { _flatten, Cellish, Optional, RULE_DIRECTION, setDifference, setIntersection } from '../util'
 import { BaseForLines, IGameCode } from './BaseForLines'
 import { CollisionLayer } from './collisionLayer'
 import { IColor } from './colors'
@@ -10,22 +10,22 @@ import { SimpleTileWithModifier } from './rule'
 const BitSet2 = require('bitset') // tslint:disable-line:no-var-requires
 
 export interface IGameTile extends IGameNode {
-    subscribeToCellChanges: (t: SimpleTileWithModifier) => void
-    hasNegationTileWithModifier: () => boolean
-    addCells: (sprite: GameSprite, cells: Cell[], wantsToMove: Optional<RULE_DIRECTION>) => void
-    updateCells: (sprite: GameSprite, cells: Cell[], wantsToMove: RULE_DIRECTION) => void
-    removeCells: (sprite: GameSprite, cells: Cell[]) => void
-    _getDescendantTiles: () => IGameTile[]
-    getSprites: () => GameSprite[]
-    hasSingleCollisionLayer: () => boolean
-    setCollisionLayer: (collisionLayer: CollisionLayer) => void
-    getCollisionLayer: () => CollisionLayer
-    matchesCell: (cell: Cell) => boolean
-    isOr: () => boolean
-    getCellsThatMatch: () => Set<Cell>
-    getSpritesThatMatch: (cell: Cell) => Set<GameSprite>
-    getName: () => string
-    equals: (t: IGameTile) => boolean
+    subscribeToCellChanges(t: SimpleTileWithModifier): void
+    hasNegationTileWithModifier(): boolean
+    addCells(sprite: GameSprite, cells: Cell[], wantsToMove: Optional<RULE_DIRECTION>): void
+    updateCells(sprite: GameSprite, cells: Cell[], wantsToMove: RULE_DIRECTION): void
+    removeCells(sprite: GameSprite, cells: Cell[]): void
+    _getDescendantTiles(): IGameTile[]
+    getSprites(): GameSprite[]
+    hasSingleCollisionLayer(): boolean
+    setCollisionLayer(collisionLayer: CollisionLayer): void
+    getCollisionLayer(): CollisionLayer
+    matchesCell(cell: Cell): boolean
+    isOr(): boolean
+    getCellsThatMatch<T extends Cellish>(cells?: Iterable<T>): Set<T>
+    getSpritesThatMatch(cell: Cellish): Set<GameSprite>
+    getName(): string
+    equals(t: IGameTile): boolean
     hasCell(cell: Cell): boolean
 }
 
@@ -99,10 +99,11 @@ export abstract class GameSprite extends BaseForLines implements IGameTile {
     public hasCell(cell: Cell): boolean {
         return this.trickleCells.has(cell)
     }
-    public matchesCell(cell: Cell): boolean {
+    public matchesCell(cell: Cellish): boolean {
         return cell.getSpritesAsSet().has(this)
+        // because of Webworkers, we cannot perform equality tests (unless the sprites match exactly what comes out of gamedata... hmm, maybe that's the way to do it?)
     }
-    public getSpritesThatMatch(cell: Cell) {
+    public getSpritesThatMatch(cell: Cellish) {
         if (cell.getSpritesAsSet().has(this)) {
             return new Set([this])
         } else {
@@ -184,8 +185,16 @@ export abstract class GameSprite extends BaseForLines implements IGameTile {
         }
         return false
     }
-    public getCellsThatMatch() {
-        return this.trickleCells
+    public getCellsThatMatch<T extends Cellish>(cells?: Iterable<T>) {
+        if (this.trickleCells.size > 0) {
+            return (this.trickleCells as unknown) as Set<T>
+        } else if (cells) {
+            // The Tile might just be an empty object (because of webworkers)
+            // So check all the cells
+            return new Set([...cells].filter((cell) => this.matchesCell(cell)))
+        } else {
+            return new Set()
+        }
     }
 }
 
@@ -263,7 +272,7 @@ export abstract class GameLegendTile extends BaseForLines implements IGameTile {
         return false
     }
     public abstract matchesCell(cell: Cell): boolean
-    public abstract getSpritesThatMatch(cell: Cell): Set<GameSprite>
+    public abstract getSpritesThatMatch(cell: Cellish): Set<GameSprite>
     public abstract hasSingleCollisionLayer(): boolean
 
     public getName() {
@@ -313,10 +322,10 @@ export abstract class GameLegendTile extends BaseForLines implements IGameTile {
         return [...layers]
     }
 
-    public getCellsThatMatch() {
+    public getCellsThatMatch(cells?: Iterable<Cellish>) {
         const matches = new Set()
         for (const sprite of this.getSprites()) {
-            for (const cell of sprite.getCellsThatMatch()) {
+            for (const cell of sprite.getCellsThatMatch(cells)) {
                 matches.add(cell)
             }
         }
@@ -409,7 +418,7 @@ export class GameLegendTileSimple extends GameLegendTile {
         return true
     }
 
-    public getSpritesThatMatch(cell: Cell) {
+    public getSpritesThatMatch(cell: Cellish) {
         return setIntersection(new Set(this.getSprites()), cell.getSpritesAsSet())
     }
 
@@ -423,7 +432,7 @@ export class GameLegendTileAnd extends GameLegendTile {
         throw new Error(`BUG: Unreachable code`)
     }
 
-    public getSpritesThatMatch(cell: Cell): Set<GameSprite> {
+    public getSpritesThatMatch(cell: Cellish): Set<GameSprite> {
         // return setIntersection(new Set(this.getSprites()), cell.getSpritesAsSet())
         throw new Error(`BUG: This method should only be called for OR tiles`)
     }
@@ -453,7 +462,7 @@ export class GameLegendTileOr extends GameLegendTile {
         return false
     }
 
-    public getSpritesThatMatch(cell: Cell) {
+    public getSpritesThatMatch(cell: Cellish) {
         return setIntersection(new Set(this.getSprites()), cell.getSpritesAsSet())
     }
 

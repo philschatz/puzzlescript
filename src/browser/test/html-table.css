@@ -1,3 +1,6 @@
+table.ps-table:not([data-ps-state="running"]) { filter: grayscale(100%); opacity: .5 }
+table.ps-table:not([data-ps-accepting-input="true"]) { opacity: .8 }
+
 table.ps-table:not(.ps-ui-disabled) {
     /* width: 90%; */
     width: 400px;

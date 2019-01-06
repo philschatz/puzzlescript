@@ -10,12 +10,13 @@ import * as path from 'path'
 import pify from 'pify'
 import * as supportsColor from 'supports-color'
 
-import { ensureDir } from 'fs-extra'
-import { closeSounds, GameData, GameEngine, ILoadingCellsEvent, Optional, Parser, playSound, RULE_DIRECTION } from '..'
+import { ensureDir, ensureDirSync } from 'fs-extra'
+import { closeSounds, GameData, GameEngine, ILoadingCellsEvent, Optional, Parser, RULE_DIRECTION } from '..'
 import { logger } from '../logger'
 import { LEVEL_TYPE } from '../parser/astTypes'
 import { saveCoverageFile } from '../recordCoverage'
 import TerminalUI, { getTerminalSize } from '../ui/terminal'
+import { _flatten, EmptyGameEngineHandler } from '../util'
 import SOLVED_GAMES from './solvedGames'
 import TITLE_FONTS from './titleFonts'
 
@@ -48,7 +49,6 @@ interface ICliOptions {
     new: true | undefined,
     level: number | undefined,
     resume: boolean | undefined,
-    nosound: boolean | undefined
 }
 
 // Use require instead of import so we can load JSON files
@@ -123,7 +123,6 @@ commander
 .option('-n, --new', 'start a new game')
 .option('-l, --level <num>', 'play a specific level', ((arg) => parseInt(arg, 10)))
 .option('-r, --resume', 'resume the level from last save')
-.option('--nosound', 'disable sound')
 .on('--help', () => {
     console.log('')
     console.log('Note: saved game state is stored in ~/.local/puzzlescript/solutions/')
@@ -140,12 +139,12 @@ async function run() {
     inquirer.registerPrompt('autocomplete', PromptModule)
     const gists = await pify(glob)(path.join(__dirname, '../../gists/*/script.txt'))
     const cliOptions: ICliOptions = commander.opts() as ICliOptions
-    const { ui: cliUi, game: cliGameTitle, nosound } = cliOptions
+    const { ui: cliUi, game: cliGameTitle } = cliOptions
     let { level: cliLevel, resume: cliResume } = cliOptions
     const gamePathInitial = commander.args[0]
 
     if (gamePathInitial) {
-        await startPromptsAndPlayGame(gamePathInitial, null, cliResume, cliLevel, nosound)
+        await startPromptsAndPlayGame(gamePathInitial, null, cliResume, cliLevel)
         return // we are only playing one game
     }
 
@@ -194,7 +193,7 @@ async function run() {
     let wantsToPlayAgain = false
     do {
         const { filePath: gamePath, id: gistId } = await promptGame(games, cliGameTitle)
-        await startPromptsAndPlayGame(gamePath, gistId, cliResume, cliLevel, nosound)
+        await startPromptsAndPlayGame(gamePath, gistId, cliResume, cliLevel)
 
         if (!cliGameTitle) {
             wantsToPlayAgain = await promptPlayAnother()
@@ -217,7 +216,7 @@ async function run() {
     }
 }
 
-async function startPromptsAndPlayGame(gamePath: string, gistId: Optional<string>, cliResume: boolean | undefined, cliLevel: number | undefined, nosound: boolean | undefined) {
+async function startPromptsAndPlayGame(gamePath: string, gistId: Optional<string>, cliResume: boolean | undefined, cliLevel: number | undefined) {
     const cliOptions: ICliOptions = commander.opts() as ICliOptions
     const { ui: cliUi, size: cliSpriteSize, new: cliNewGame } = cliOptions
 
@@ -279,11 +278,17 @@ async function startPromptsAndPlayGame(gamePath: string, gistId: Optional<string
 
     TerminalUI.clearScreen()
 
-    await playGame(data, currentLevelNum, recordings, ticksToRunFirst, absPath, solutionPath, cliUi, cliLevel !== undefined /*only run one level if specified*/, nosound || null)
+    await playGame(data, currentLevelNum, recordings, ticksToRunFirst, absPath, solutionPath, cliUi, cliLevel !== undefined /*only run one level if specified*/)
 }
 
 async function playGame(data: GameData, currentLevelNum: number, recordings: ISaveFile, ticksToRunFirst: string,
-                        absPath: string, solutionPath: string, cliUi: boolean, onlyOneLevel: boolean, nosound: Optional<boolean>) {
+                        absPath: string, solutionPath: string, cliUi: boolean, onlyOneLevel: boolean) {
+
+    let keypresses: string[] = [] // set later once we walk through all the existing partial keys
+    let pendingKey = null
+    let tickNum = 0
+    let shouldExitGame: boolean = false
+    let dontSaveInitialLoad = true
 
     logger.debug(() => `Start playing "${data.title}". Level ${currentLevelNum}`)
 
@@ -295,7 +300,29 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: ISa
     if (!level) {
         throw new Error(`BUG: Could not find level ${currentLevelNum}`)
     }
-    const engine = new GameEngine(data)
+    const engine = new GameEngine(data, new EmptyGameEngineHandler([TerminalUI, {
+        onLevelChange(newLevel: number) {
+            if (dontSaveInitialLoad) {
+                dontSaveInitialLoad = false
+                keypresses = []
+                return
+            }
+            if (!supportsColor.stdout) {
+                console.log('You beat the level!')
+            }
+
+            // Save the solution
+            recordings.solutions[newLevel - 1] = { solution: keypresses.join('') }
+            ensureDirSync(path.dirname(solutionPath))
+            writeFileSync(solutionPath, JSON.stringify(recordings, null, 2))
+            keypresses = []
+            pendingKey = null
+            currentLevelNum = newLevel
+        },
+        async onMessage() {
+            keypresses.push('!')
+        }
+    }]))
     engine.on('loading-cells', ({ cellStart, cellEnd, cellTotal }: ILoadingCellsEvent) => {
         // UI.writeDebug(`Loading cells ${cellStart}-${cellEnd} of ${cellTotal}. SpriteKey="${key}"`)
         const loading = `Loading... [`
@@ -319,11 +346,6 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: ISa
     })
     TerminalUI.clearScreen()
     engine.setLevel(data.levels.indexOf(level))
-
-    let keypresses: string[] = [] // set later once we walk through all the existing partial keys
-    let pendingKey = null
-    let tickNum = 0
-    let shouldExitGame: boolean = false
 
     function restartLevel() {
         engine.pressRestart()
@@ -400,7 +422,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: ISa
                 return
             case 'P':
             case 'p':
-                const players = data.getPlayer().getCellsThatMatch()
+                const players = data.getPlayer().getCellsThatMatch(_flatten(TerminalUI.getCurrentLevelCells()))
                 if (players.size === 1) {
                     TerminalUI.moveInspectorTo([...players][0])
                 } else {
@@ -459,7 +481,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: ISa
 
     let isPaused = false
 
-    function doPress(key: string, recordPress: boolean) {
+    function doPress(key: string) {
         switch (key) {
             case 'W': engine.pressUp(); break
             case 'S': engine.pressDown(); break
@@ -469,6 +491,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: ISa
             case 'b': // so we can set a breakpoint in the playback
             case '[pause]': isPaused = true; break
             case '[continue]': isPaused = false; break
+            case '!': // dismiss a message
             case '.':
             case ',':
                 // just .tick()
@@ -476,21 +499,13 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: ISa
             default:
                 throw new Error(`BUG: Invalid keypress character "${ticksToRunFirstAry[tickNum]}"`)
         }
-        if (recordPress) {
-            keypresses.push(key)
-        }
+        keypresses.push(key)
     }
 
-    // engine.on('cell:updated', cell => {
-    //   UI.drawCellAt(data, cell, cell.rowIndex, cell.colIndex, false)
-    // })
-
-    TerminalUI.setGameEngine(engine)
+    TerminalUI.setGameData(engine.getGameData())
     TerminalUI.clearScreen()
     TerminalUI.renderScreen(false)
     TerminalUI.writeDebug(`"${data.title}"`, 1)
-
-    let currentlyPlayingSoundPromise: Optional<Promise<void>> = null // stack the sounds so we know if one is playing
 
     // Run a bunch of ticks in case the user partially played a level
     let maxTickAndRenderTime = -1
@@ -512,39 +527,13 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: ISa
                 console.log(ticksToRunFirstAry.join(''))
             }
         }
-        doPress(key, false)
-        const { changedCells, soundToPlay, didLevelChange, messageToShow } = engine.tick()
-
-        // if (changedCells.size === 0 && !messageToShow && 'WSAD'.includes(key)) {
-        //     isPaused = true
-        //     ticksToRunFirstAry.splice(keyNum, 0, '[PAUSED]')
-        // }
-
-        if (soundToPlay && !nosound) {
-            if (!currentlyPlayingSoundPromise) {
-                currentlyPlayingSoundPromise = playSound(soundToPlay).then(() => {
-                    currentlyPlayingSoundPromise = null
-                    return
-                })
-            }
-        }
-
-        if (messageToShow) {
-            TerminalUI.renderMessageScreen(messageToShow)
-        }
-
-        // UI.renderScreen(data, engine.currentLevel)
-
-        // Draw any cells that moved
-        TerminalUI.drawCells(changedCells, false)
+        doPress(key)
+        const { didLevelChange } = await engine.tick()
 
         if (didLevelChange) {
             if (onlyOneLevel) {
                 return
             }
-            currentLevelNum = engine.getCurrentLevelNum()
-            TerminalUI.clearScreen()
-            TerminalUI.renderScreen(false)
         }
 
         if (tickNum > 1) { // Skip the 1st couple because they might be cleaning up the level
@@ -558,8 +547,6 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: ISa
         await sleep(1) // sleep long enough to play sounds
         // await sleep(Math.max(100 - (Date.now() - startTime), 0))
     }
-
-    keypresses = [...ticksToRunFirstAry]
 
     while (true) {
         let maxSleepTime = process.env.NODE_ENV === 'development' ? 500 : 50
@@ -575,47 +562,16 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: ISa
 
         let didHandleKeyPress = false
         if (pendingKey && !engine.hasAgain()) {
-            doPress(pendingKey, true/*record*/)
+            doPress(pendingKey)
             pendingKey = null
             didHandleKeyPress = true
         }
         const startTime = Date.now()
-        const { changedCells, soundToPlay, messageToShow, didLevelChange, wasAgainTick } = engine.tick()
-
-        if (soundToPlay && !nosound) {
-            if (!currentlyPlayingSoundPromise) {
-                currentlyPlayingSoundPromise = playSound(soundToPlay).then(() => {
-                    currentlyPlayingSoundPromise = null
-                    return
-                })
-            }
-        }
+        const { changedCells, didLevelChange, wasAgainTick } = await engine.tick()
 
         if (didLevelChange) {
-            if (!supportsColor.stdout) {
-                console.log('You beat the level!')
-            }
-
-            // Save the solution
-            recordings.solutions[currentLevelNum] = { solution: keypresses.join('') }
-            await ensureDir(path.dirname(solutionPath))
-            writeFileSync(solutionPath, JSON.stringify(recordings, null, 2))
-            keypresses = []
-            pendingKey = null
-            currentLevelNum = engine.getCurrentLevelNum()
-
             TerminalUI.clearScreen()
             TerminalUI.renderScreen(true)
-
-            continue
-        }
-
-        // do this after cells are rendered (so they don't cover the message)
-        if (messageToShow) {
-            TerminalUI.renderMessageScreen(messageToShow)
-        } else {
-            // Draw any cells that moved
-            TerminalUI.drawCells(changedCells, false)
         }
 
         const msg = `Tick: ${tickNum} took ${Date.now() - startTime}ms. Moves: ${[...keypresses].reverse().join('').substring(0, 20)}`

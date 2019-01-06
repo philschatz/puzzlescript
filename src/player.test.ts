@@ -3,7 +3,7 @@ import fs from 'fs'
 import path from 'path'
 import { LevelEngine } from './engine'
 import Parser from './parser/parser'
-import { RULE_DIRECTION } from './util'
+import { INPUT_BUTTON } from './util'
 
 function parseEngine(code: string, levelNum = 0) {
     const { data } = Parser.parse(code)
@@ -70,7 +70,7 @@ describe('player movement', () => {
         `) // end game
 
         const playerSprite = data.getSpriteByName('player')
-        engine.press(RULE_DIRECTION.RIGHT)
+        engine.press(INPUT_BUTTON.RIGHT)
         engine.tick()
 
         expect(engine.getCurrentLevel().getCells()[0][1].getSpritesAsSet().has(playerSprite)).toBe(true)
@@ -132,7 +132,7 @@ describe('player movement', () => {
         `) // end game
 
         const playerSprite = data.getSpriteByName('player')
-        engine.press(RULE_DIRECTION.RIGHT)
+        engine.press(INPUT_BUTTON.RIGHT)
         engine.tick()
 
         expect(engine.getCurrentLevel().getCells()[0][0].getSpritesAsSet().has(playerSprite)).toBe(false)
@@ -140,7 +140,7 @@ describe('player movement', () => {
         expect(engine.getCurrentLevel().getCells()[0][2].getSpritesAsSet().has(playerSprite)).toBe(true)
         expect(engine.getCurrentLevel().getCells()[0][3].getSpritesAsSet().has(playerSprite)).toBe(false)
 
-        engine.press(RULE_DIRECTION.RIGHT)
+        engine.press(INPUT_BUTTON.RIGHT)
         engine.tick()
 
         expect(engine.getCurrentLevel().getCells()[0][0].getSpritesAsSet().has(playerSprite)).toBe(false)
@@ -213,7 +213,7 @@ describe('player movement', () => {
 
         const playerSprite = data.getSpriteByName('player')
         const shadowSprite = data.getSpriteByName('shadow')
-        engine.press(RULE_DIRECTION.RIGHT)
+        engine.press(INPUT_BUTTON.RIGHT)
         engine.tick()
 
         expect(engine.getCurrentLevel().getCells()[0][0].getSpritesAsSet().has(playerSprite)).toBe(false)
@@ -280,7 +280,7 @@ describe('player movement', () => {
         `) // end game
 
         const playerSprite = data.getSpriteByName('player')
-        engine.press(RULE_DIRECTION.RIGHT)
+        engine.press(INPUT_BUTTON.RIGHT)
         engine.tick()
 
         expect(engine.getCurrentLevel().getCells()[0][0].getSpritesAsSet().has(playerSprite)).toBe(false)
@@ -344,7 +344,7 @@ describe('player movement', () => {
         `) // end game
 
         const playerSprite = data.getSpriteByName('player')
-        engine.press(RULE_DIRECTION.RIGHT)
+        engine.press(INPUT_BUTTON.RIGHT)
         engine.tick()
 
         expect(engine.getCurrentLevel().getCells()[0][0].getSpritesAsSet().has(playerSprite)).toBe(true)
@@ -404,7 +404,7 @@ describe('player movement', () => {
 
         const player1 = data.getSpriteByName('player1')
         const player2 = data.getSpriteByName('player2')
-        engine.press(RULE_DIRECTION.RIGHT)
+        engine.press(INPUT_BUTTON.RIGHT)
         engine.tick()
 
         expect(player1.getCellsThatMatch().size).toBe(1)
@@ -466,7 +466,7 @@ describe('player movement', () => {
         `) // end game
 
         const player1 = data.getSpriteByName('player1')
-        engine.press(RULE_DIRECTION.RIGHT)
+        engine.press(INPUT_BUTTON.RIGHT)
         engine.tick()
 
         expect(player1.getCellsThatMatch().size).toBe(1)
@@ -482,11 +482,11 @@ describe('player movement', () => {
         const keypresses = LEVEL_SOLUTION.split('')
         for (const key of keypresses) {
             switch (key) {
-                case 'u': engine.press(RULE_DIRECTION.UP); break
-                case 'd': engine.press(RULE_DIRECTION.DOWN); break
-                case 'l': engine.press(RULE_DIRECTION.LEFT); break
-                case 'r': engine.press(RULE_DIRECTION.RIGHT); break
-                case 'x': engine.press(RULE_DIRECTION.ACTION); break
+                case 'u': engine.press(INPUT_BUTTON.UP); break
+                case 'd': engine.press(INPUT_BUTTON.DOWN); break
+                case 'l': engine.press(INPUT_BUTTON.LEFT); break
+                case 'r': engine.press(INPUT_BUTTON.RIGHT); break
+                case 'x': engine.press(INPUT_BUTTON.ACTION); break
             }
             const { isWinning } = engine.tick()
             if (isWinning) {
