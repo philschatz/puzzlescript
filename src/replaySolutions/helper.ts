@@ -71,7 +71,8 @@ export function createTests(moduloNumber: number, moduloTotal: number) {
 
                     // Some games (like Fish Friend) are a bunch of dialog and do not actually need to run
                     // so if they only contain a "X" then skip them
-                    if (recording.solution.replace(/,/g, '').replace(/\./g, '').replace(/!/g, '') === '') {
+                    const trimmedSolution = recording.solution.replace(/,/g, '').replace(/\./g, '').replace(/!/g, '')
+                    if (trimmedSolution === 'X' || trimmedSolution === '') {
                         continue
                     }
 
