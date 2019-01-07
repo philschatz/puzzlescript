@@ -2,8 +2,8 @@
 
 <head>
     <title>Example Puzzlescript Games using HTML Tables</title>
-    <script src="./lib/webpack-output.js"></script>
-    <link rel="stylesheet" href="./src/browser/test/html-table.css"/>
+    <script src="./lib/puzzlescript.js"></script>
+    <link rel="stylesheet" href="./style.css"/>
     <style>
         .hidden { display: none; }
         .light { opacity: .5 }
@@ -115,7 +115,7 @@
             }
         }
 
-        var worker = new Worker('./lib/webpack-output-webworker.js')
+        var worker = new Worker('./lib/puzzlescript-webworker.js')
         var tableEngine = new window.PuzzleScript.WebworkerTableEngine(worker, table, handler)
         // var tableEngine = new window.PuzzleScript.SyncTableEngine(table, handler)
 

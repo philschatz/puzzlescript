@@ -1,8 +1,6 @@
 {
   "scripts": {
-    "lint": "npm run-script lint:js && npm run-script lint:ts",
-    "lint:js": "standardx --fix ./test/**/*.js",
-    "lint:ts": "tslint --fix --config ./tslint.json --project ./ --format stylish",
+    "lint": "tslint --fix --config ./tslint.json --project ./ --format stylish",
     "compile:grammar": "nearleyc --minify-rule-names ./src/parser/grammar.ne > ./src/parser/grammar.ts",
     "compile:ts": "tsc && cp ./src/sound/sfxr.js ./lib/sound/ && cp ./src/sound/sfxr-browser.js ./lib/sound/",
     "ci": "npm run-script test",
@@ -57,7 +55,6 @@
     "nearley": "github:philschatz/nearley#24685991e203fd6645a6f687198687aa42b7d6f2",
     "pify": "^4.0.0",
     "quick-lru": "^2.0.0",
-    "standardx": "^3.0.1",
     "supports-color": "^6.0.0",
     "update-notifier": "^2.5.0",
     "web-audio-api": "^0.2.2"
@@ -122,7 +119,7 @@
     "transformIgnorePatterns": [
       "[/\\\\]node_modules[/\\\\].+\\.(js|jsx|ts|tsx)$"
     ],
-    "testRegex": "(\\.|/)?test\\.tsx?$"
+    "testRegex": "(\\.|/)?spec\\.tsx?$"
   },
   "babel": {
     "presets": [
@@ -141,8 +138,7 @@
   "version": "4.0.0",
   "main": "lib/index.js",
   "directories": {
-    "lib": "lib",
-    "test": "test"
+    "lib": "lib"
   },
   "repository": {
     "type": "git",

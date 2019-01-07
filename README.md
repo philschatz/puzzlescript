@@ -18,10 +18,10 @@ Also, it is **accessible**, meaning that [blind or visually impaired people can 
 
 ### Embed in a Browser
 
-See [./test/browser/test/html-table.xhtml](./test/browser/test/html-table.xhtml) for an example of embedding in a browser.
+See [./src/browser/spec/html-table.xhtml](./src/browser/spec/html-table.xhtml) for an example of embedding in a browser.
 
 ```js
-// Include <script src="node_modules/puzzlescript/lib/webpack-output.js"></script>
+// Include <script src="node_modules/puzzlescript/lib/puzzlescript.js"></script>
 // and then the following:
 table = document.querySelector('table') // selector to the <table> that will be used
 engine = new PuzzleScript.SyncTableEngine(table, optionalEventHandler)
@@ -31,7 +31,7 @@ engine.setGame(gameSourceString, 0 /*startLevel*/)
 Or, if the game is slow, it can be played using a [Webworker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers):
 
 ```js
-worker = new Worker('path/from/browser/to/webpack-output-webworker.js')
+worker = new Worker('path/from/browser/to/puzzlescript-webworker.js')
 engine = new PuzzleScript.WebworkerTableEngine(worker, table, optionalEventHandler)
 ...
 ```
@@ -167,7 +167,7 @@ Want to help? Here is a roadmap of things that need to be implemented:
     - a sprite is `CREATE`, `DESTROY`, `CANTMOVE`
     - a sprite is moved
     - `RESTART`, `UNDO`, `TITLESCREEN`, `STARTGAME`, `STARTLEVEL`, `ENDLEVEL`, `ENDGAME`, `SHOWMESSAGE`, `CLOSEMESSAGE`
-- [x] use HTML Tables to render in the browser (see [./test/browser/html-table.xhtml](./test/browser/html-table.xhtml))
+- [x] use HTML Tables to render in the browser
 - [x] Cache Improvements
     - [x] cache the `SimpleNeighbor.matchesCell()` function so we do not have to recompute if a cell matches a Neighbor
     - [x] de-duplicate `SimpleNeighbor` that have a direction but none of the tiles depend on the direction (causes fewer caches to be updated)
