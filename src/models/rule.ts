@@ -47,10 +47,10 @@ export interface IRule extends IGameNode {
     hasRigid: () => boolean
     clearCaches: () => void
     addCellsToEmptyRules: (cells: Iterable<Cell>) => void
-    a11yGetConditionSprites(): Set<GameSprite>[]
 
     totalTimeMs?: number
     timesRan?: number
+    a11yGetConditionSprites(): Array<Set<GameSprite>>
     toKey(): string
 
 }
@@ -247,7 +247,7 @@ export class SimpleRuleGroup extends BaseForLines implements IRule {
     }
 
     public a11yGetConditionSprites() {
-        let sprites: Set<GameSprite>[] = []
+        let sprites: Array<Set<GameSprite>> = []
         for (const rule of this.rules) {
             sprites = [...sprites, ...rule.a11yGetConditionSprites()]
         }
@@ -464,7 +464,7 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
     }
 
     public a11yGetConditionSprites() {
-        let sprites: Set<GameSprite>[] = []
+        let sprites: Array<Set<GameSprite>> = []
         for (const b of this.conditionBrackets) {
             sprites = [...sprites, ...b.a11yGetSprites()]
         }
@@ -674,7 +674,7 @@ export abstract class ISimpleBracket extends BaseForLines implements ICacheable 
     public abstract removeCell(index: number, neighbor: SimpleNeighbor, t: SimpleTileWithModifier, sprite: GameSprite, cell: Cell): void
     public abstract addCellsToEmptyRules(cells: Iterable<Cell>): void
     public abstract getMatches(level: Level, actionBracket: Optional<ISimpleBracket>): MatchedCellsForRule[]
-    public abstract a11yGetSprites(): Set<GameSprite>[]
+    public abstract a11yGetSprites(): Array<Set<GameSprite>>
 
     public _getAllNeighbors() {
         return this.allNeighbors
@@ -959,6 +959,18 @@ export class SimpleBracket extends ISimpleBracket {
         return matches
     }
 
+    public a11yGetSprites() {
+        const sprites = new Set<GameSprite>()
+        for (const n of this.neighbors) {
+            for (const t of n._tilesWithModifier) {
+                for (const s of t._tile.getSprites()) {
+                    sprites.add(s)
+                }
+            }
+        }
+        return [sprites]
+    }
+
     protected _removeFirstCell(firstCell: Cell) {
         if (this.firstCells.has(firstCell)) {
             if (process.env.NODE_ENV === 'development' && this.debugFlag === DEBUG_FLAG.BREAKPOINT_REMOVE) {
@@ -1070,18 +1082,6 @@ export class SimpleBracket extends ISimpleBracket {
         if (this.neighbors[0].matchesCellSimple(cell) && this.matchesDownstream(cell, 0)) {
             this.addToCellMatches(matches, cell, actionBracket)
         }
-    }
-
-    public a11yGetSprites() {
-        const sprites = new Set<GameSprite>()
-        for (const n of this.neighbors) {
-            for (const t of n._tilesWithModifier) {
-                for (const s of t._tile.getSprites()) {
-                    sprites.add(s)
-                }
-            }
-        }
-        return [sprites]
     }
 }
 
@@ -1365,14 +1365,14 @@ export class SimpleEllipsisBracket extends ISimpleBracket {
         return ret
     }
 
+    public a11yGetSprites() {
+        return [...this.beforeEllipsisBracket.a11yGetSprites(), ...this.afterEllipsisBracket.a11yGetSprites()]
+    }
+
     private checkInvariants() {
         if (this.firstCells.size !== this.linkages.sizeA()) {
             throw new Error(`BUG: Invariant violation`)
         }
-    }
-
-    public a11yGetSprites() {
-        return [...this.beforeEllipsisBracket.a11yGetSprites(), ...this.afterEllipsisBracket.a11yGetSprites()]
     }
 
 }

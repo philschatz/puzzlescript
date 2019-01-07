@@ -1,10 +1,10 @@
 import { IColor } from '../models/colors'
 import { GameData } from '../models/game'
+import { GameSprite } from '../models/tile'
 import { Soundish } from '../parser/astTypes'
 import { playSound } from '../sound/sfxr'
 import { _flatten, Cellish, EmptyGameEngineHandler, GameEngineHandler, GameEngineHandlerOptional, INPUT_BUTTON, Optional, RULE_DIRECTION, setIntersection } from '../util'
 import BaseUI from './base'
-import { GameSprite } from '../models/tile';
 
 interface ITableCell {
     td: HTMLTableCellElement,
