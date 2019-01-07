@@ -47,6 +47,7 @@ export interface IRule extends IGameNode {
     hasRigid: () => boolean
     clearCaches: () => void
     addCellsToEmptyRules: (cells: Iterable<Cell>) => void
+    a11yGetConditionSprites(): Set<GameSprite>[]
 
     totalTimeMs?: number
     timesRan?: number
@@ -243,6 +244,14 @@ export class SimpleRuleGroup extends BaseForLines implements IRule {
     }
     public toKey() {
         return this.rules.map((r) => r.toKey()).join('\n')
+    }
+
+    public a11yGetConditionSprites() {
+        let sprites: Set<GameSprite>[] = []
+        for (const rule of this.rules) {
+            sprites = [...sprites, ...rule.a11yGetConditionSprites()]
+        }
+        return sprites
     }
 }
 
@@ -453,6 +462,14 @@ export class SimpleRule extends BaseForLines implements ICacheable, IRule {
             bracket.addCellsToEmptyRules(cells)
         }
     }
+
+    public a11yGetConditionSprites() {
+        let sprites: Set<GameSprite>[] = []
+        for (const b of this.conditionBrackets) {
+            sprites = [...sprites, ...b.a11yGetSprites()]
+        }
+        return sprites
+    }
 }
 
 export class SimpleTileWithModifier extends BaseForLines implements ICacheable {
@@ -657,6 +674,7 @@ export abstract class ISimpleBracket extends BaseForLines implements ICacheable 
     public abstract removeCell(index: number, neighbor: SimpleNeighbor, t: SimpleTileWithModifier, sprite: GameSprite, cell: Cell): void
     public abstract addCellsToEmptyRules(cells: Iterable<Cell>): void
     public abstract getMatches(level: Level, actionBracket: Optional<ISimpleBracket>): MatchedCellsForRule[]
+    public abstract a11yGetSprites(): Set<GameSprite>[]
 
     public _getAllNeighbors() {
         return this.allNeighbors
@@ -1053,6 +1071,18 @@ export class SimpleBracket extends ISimpleBracket {
             this.addToCellMatches(matches, cell, actionBracket)
         }
     }
+
+    public a11yGetSprites() {
+        const sprites = new Set<GameSprite>()
+        for (const n of this.neighbors) {
+            for (const t of n._tilesWithModifier) {
+                for (const s of t._tile.getSprites()) {
+                    sprites.add(s)
+                }
+            }
+        }
+        return [sprites]
+    }
 }
 
 enum BEFORE_OR_AFTER {
@@ -1339,6 +1369,10 @@ export class SimpleEllipsisBracket extends ISimpleBracket {
         if (this.firstCells.size !== this.linkages.sizeA()) {
             throw new Error(`BUG: Invariant violation`)
         }
+    }
+
+    public a11yGetSprites() {
+        return [...this.beforeEllipsisBracket.a11yGetSprites(), ...this.afterEllipsisBracket.a11yGetSprites()]
     }
 
 }
