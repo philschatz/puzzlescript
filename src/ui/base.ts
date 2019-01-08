@@ -255,7 +255,7 @@ abstract class BaseUI {
         if (!this.gameData) {
             throw new Error(`BUG: gameData was not set yet`)
         }
-        const spritesToDraw = cell.getSprites()
+        const spritesToDraw = cell.getSprites().filter((s) => !s.isTransparent())
 
         // If there is a magic background object then rely on it last
         const magicBackgroundSprite = this.gameData.getMagicBackgroundSprite()

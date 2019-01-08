@@ -1,8 +1,9 @@
 import { IColor } from '../models/colors'
 import { GameData } from '../models/game'
+import { GameSprite } from '../models/tile'
 import { Soundish } from '../parser/astTypes'
 import { playSound } from '../sound/sfxr'
-import { _flatten, Cellish, EmptyGameEngineHandler, GameEngineHandler, GameEngineHandlerOptional, INPUT_BUTTON, Optional, RULE_DIRECTION } from '../util'
+import { _flatten, Cellish, EmptyGameEngineHandler, GameEngineHandler, GameEngineHandlerOptional, INPUT_BUTTON, Optional, RULE_DIRECTION, spritesThatInteractWithPlayer } from '../util'
 import BaseUI from './base'
 
 interface ITableCell {
@@ -16,12 +17,14 @@ class TableUI extends BaseUI implements GameEngineHandler {
     private inputsProcessed: number
     private tableCells: ITableCell[][]
     private handler: EmptyGameEngineHandler
+    private interactsWithPlayer: Set<GameSprite>
 
     constructor(table: HTMLElement, handler?: GameEngineHandlerOptional) {
         super()
         this.table = table
         this.tableCells = []
         this.inputsProcessed = 0
+        this.interactsWithPlayer = new Set()
         table.classList.add('ps-table')
         this.markAcceptingInput(false)
 
@@ -41,7 +44,7 @@ class TableUI extends BaseUI implements GameEngineHandler {
         this.handler.onResume()
     }
     public onGameChange() {
-        // Don't need to do anything
+        this.interactsWithPlayer = spritesThatInteractWithPlayer(this.getGameData())
     }
 
     public onPress(dir: INPUT_BUTTON) {
@@ -129,6 +132,11 @@ class TableUI extends BaseUI implements GameEngineHandler {
         this.drawCells(changedCells, false)
         this.markAcceptingInput(!hasAgain)
         this.handler.onTick(changedCells, hasAgain)
+    }
+
+    public setGameData(game: GameData) {
+        super.setGameData(game)
+        this.onGameChange()
     }
 
     public willAllLevelsFitOnScreen(gameData: GameData) {
@@ -226,8 +234,8 @@ class TableUI extends BaseUI implements GameEngineHandler {
             throw new Error(`BUG: Should not get to this point`)
         }
 
-        // TODO: Also eventually filter out the Background ones when Background is an OR Tile
-        const spritesForDebugging = cell.getSprites().filter((s) => !s.isBackground())
+        // Remove any sprites that do not impact (transitively) the player
+        const spritesForDebugging = cell.getSprites().filter((s) => this.interactsWithPlayer.has(s))
 
         const { isOnScreen, cellStartX, cellStartY } = this.cellPosToXY(cell)
 
@@ -249,8 +257,8 @@ class TableUI extends BaseUI implements GameEngineHandler {
             throw new Error(`BUG: Could not find cell in the table: [${cell.rowIndex} - ${this.windowOffsetRowStart}][${cell.colIndex} - ${this.windowOffsetColStart}]`)
         }
 
-        cellLabel.classList.remove('ps-player')
         if (spritesForDebugging.length > 0) {
+            cellLabel.classList.remove('ps-cell-empty')
             const player = this.gameData.getPlayer()
             if (player.getSpritesThatMatch(cell).size > 0) {
                 cellLabel.classList.add('ps-player')
@@ -259,6 +267,8 @@ class TableUI extends BaseUI implements GameEngineHandler {
             }
             cellLabel.textContent = spritesForDebugging.map((s) => s.getName()).join(', ')
         } else {
+            cellLabel.classList.remove('ps-player')
+            cellLabel.classList.add('ps-cell-empty')
             cellLabel.textContent = '(empty)' // (empty)
         }
 

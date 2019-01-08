@@ -36,6 +36,10 @@ export class WinConditionSimple extends BaseForLines {
         return ret
     }
 
+    public a11yGetTiles() {
+        return [this.tile]
+    }
+
     protected _isSatisfied(cells: Iterable<Cell>) {
         const tileCells = this.cellsThatMatchTile(cells, this.tile)
         switch (this.qualifier) {
@@ -58,6 +62,10 @@ export class WinConditionOn extends WinConditionSimple {
     constructor(source: IGameCode, qualifierEnum: WIN_QUALIFIER, tile: IGameTile, onTile: IGameTile) {
         super(source, qualifierEnum, tile)
         this.onTile = onTile
+    }
+
+    public a11yGetTiles() {
+        return [this.tile, this.onTile]
     }
 
     protected _isSatisfied(cells: Iterable<Cell>) {

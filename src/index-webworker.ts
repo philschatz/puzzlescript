@@ -61,7 +61,7 @@ class Handler implements GameEngineHandler {
     }
     public async onMessage(msg: string) {
         if (previousMessage === msg) {
-            throw new Error(`BUG: Should not show the same message twice`)
+            throw new Error(`BUG: Should not show the same message twice. "${msg}"`)
         }
         previousMessage = msg
 
