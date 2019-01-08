@@ -85,7 +85,7 @@ class TableUI extends BaseUI implements GameEngineHandler {
         }
 
         // remove transparent sprites once the dependecies are found
-        this.interactsWithPlayer = new Set([...interactsWithPlayer].filter(s => !s.isTransparent()))
+        this.interactsWithPlayer = new Set([...interactsWithPlayer].filter((s) => !s.isTransparent()))
     }
 
     public onPress(dir: INPUT_BUTTON) {
