@@ -110,6 +110,7 @@
             onLevelChange: function (newLevelNum) {
                 // Hide the Loading text because the level loaded
                 loadingIndicator.classList.add('hidden')
+                gameSelection.removeAttribute('disabled')
 
                 setStorage(gameId, newLevelNum)
             }
@@ -121,6 +122,7 @@
 
         function playSelectedGame() {
             loadingIndicator.classList.remove('hidden') // Show the "Loading..." text
+            gameSelection.setAttribute('disabled', 'disabled')
 
             gameId = gameSelection.value
             fetch(`./gists/${gameId}/script.txt`)
