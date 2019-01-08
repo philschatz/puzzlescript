@@ -140,14 +140,14 @@ describe('Browser', () => {
     it('plays a game in the browser using the SyncTableEngine', async() => {
         // browser tests are slow. Headless is slower it seems (from jest watch mode)
         jest.setTimeout(process.env.NODE_ENV === 'development' ? 90 * 1000 : 90 * 1000)
-        await page.goto(`http://localhost:8000/src/browser/test/html-table.xhtml`)
+        await page.goto(`http://localhost:8000/src/browser/spec/html-table.xhtml`)
         return playLevel()
     })
 
     it('plays a game in the browser using the WebworkerTableEngine', async() => {
         // browser tests are slow. Headless is slower it seems (from jest watch mode)
         jest.setTimeout(process.env.NODE_ENV === 'development' ? 90 * 1000 : 90 * 1000)
-        await page.goto(`http://localhost:8000/src/browser/test/html-table-webworker.xhtml`)
+        await page.goto(`http://localhost:8000/src/browser/spec/html-table-webworker.xhtml`)
         return playLevel()
     })
 

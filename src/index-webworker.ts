@@ -8,7 +8,7 @@ declare var postMessage: (msg: WorkerResponse) => void
 
 let currentEngine: Optional<GameEngine> = null
 let gameLoop: Optional<NodeJS.Timeout> = null
-let dismissedMessage = false
+let awaitingMessage = false
 let lastTick = 0
 
 onmessage = (event: TypedMessageEvent<WorkerMessage>) => {
@@ -20,7 +20,7 @@ onmessage = (event: TypedMessageEvent<WorkerMessage>) => {
         case MESSAGE_TYPE.PRESS: postMessage({ type: msg.type, payload: press(msg.button) }); break
         case MESSAGE_TYPE.CLOSE: postMessage({ type: msg.type, payload: closeGame() }); break
         case MESSAGE_TYPE.ON_MESSAGE_DONE:
-            dismissedMessage = true
+            awaitingMessage = false
             break
         default:
             throw new Error(`ERROR: Unsupported webworker message type "${JSON.stringify(event.data)}"`)
@@ -34,17 +34,23 @@ const getEngine = () => {
     return currentEngine
 }
 
-const startPlayLoop = () => {
-    if (gameLoop !== null) {
-        clearInterval(gameLoop)
+// This uses setTimeout because when a MESSAGE_DONE is received, we need to resume the game
+const runPlayLoop = async() => {
+    if (gameLoop) {
+        clearTimeout(gameLoop)
+        gameLoop = null
     }
-    gameLoop = setInterval(async() => {
-        if (shouldTick(getEngine().getGameData().metadata, lastTick)) {
-            lastTick = Date.now()
-            await tick()
-        }
-    }, 20)
+    if (awaitingMessage) {
+        return
+    }
+    if (shouldTick(getEngine().getGameData().metadata, lastTick)) {
+        lastTick = Date.now()
+        await tick()
+    }
+    gameLoop = setTimeout(runPlayLoop, 20)
 }
+
+let previousMessage = '' // a dev-invariant checker that ensures we do not show the same message twice
 
 class Handler implements GameEngineHandler {
     public onPress(dir: INPUT_BUTTON) {
@@ -54,12 +60,20 @@ class Handler implements GameEngineHandler {
         postMessage({ type: MESSAGE_TYPE.ON_PRESS, direction: dir })
     }
     public async onMessage(msg: string) {
-        dismissedMessage = false
+        if (previousMessage === msg) {
+            throw new Error(`BUG: Should not show the same message twice`)
+        }
+        previousMessage = msg
+
         pauseGame()
         postMessage({ type: MESSAGE_TYPE.ON_MESSAGE, message: msg })
         // Wait until the user dismissed the message
-        await pollingPromise<boolean>(50, () => dismissedMessage)
-        resumeGame()
+        if (awaitingMessage) {
+            throw new Error(`BUG: should not already be awaiting a message`)
+        }
+        awaitingMessage = true
+        await pollingPromise<boolean>(50, () => !awaitingMessage)
+        // resumeGame() No need to resume since we are inside a `await tick()` and at the end of it it will start back up (via a call to setTimeout)
     }
     public onLevelChange(level: number, cells: Optional<Cellish[][]>, message: Optional<string>) {
         let newCells: Optional<CellishJson[][]> = null
@@ -87,25 +101,25 @@ class Handler implements GameEngineHandler {
 
 const loadGame = (code: string, level: number) => {
     pauseGame()
+    previousMessage = '' // clear this dev-invariant-tester field since it is a new game
     const { data } = Parser.parse(code)
     postMessage({ type: MESSAGE_TYPE.LOAD_GAME, payload: (new Serializer(data)).toJson() })
     currentEngine = new GameEngine(data, new Handler())
     currentEngine.setLevel(level)
-    startPlayLoop()
+    runPlayLoop() // tslint:disable-line:no-floating-promises
 }
 
 const pauseGame = () => {
     if (gameLoop !== null) {
-        clearInterval(gameLoop)
+        clearTimeout(gameLoop)
         gameLoop = null
         postMessage({ type: MESSAGE_TYPE.ON_PAUSE })
     }
 }
 
 const resumeGame = () => {
-    pauseGame()
-    startPlayLoop()
     postMessage({ type: MESSAGE_TYPE.ON_RESUME })
+    runPlayLoop() // tslint:disable-line:no-floating-promises
 }
 
 const tick = async() => {

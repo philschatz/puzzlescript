@@ -709,37 +709,19 @@ export class LevelEngine extends EventEmitter2 {
             for (const mutation of cellMutations) {
                 changedMutations.add(mutation)
             }
-            // if (logger.isLevel(LOG_LEVEL.DEBUG)) {
-            //     if (rule.timesRan && rule.totalTimeMs) {
-            //         const avg = rule.totalTimeMs // Math.round(rule.totalTimeMs / rule.timesRan)
-            //         if (avg > 100) {
-            //             logger.debug(`Took:${avg}ms (${cellMutations.length} changed) ${rule.toString()}`)
-            //         }
-            //     }
-            //     // if (cellMutations.length > 0) {
-            //     //     logger.debug(`Took:${rule.totalTimeMs}ms (${cellMutations.length} changed) ${rule.toString()}`)
-            //     // }
-            // }
         }
 
         // We may have mutated the same cell 4 times (e.g. [Player]->[>Player]) so consolidate
         const changedCells = new Set<Cell>()
         const commands: Set<Command<SoundItem<IGameTile>>> = new Set()
-        // let didSomeSpriteChange = false
         for (const mutation of changedMutations) {
-            // if (mutation.getDidSpritesChange()) {
-            //     didSomeSpriteChange = true
-            // }
             if (mutation.hasCell()) {
                 changedCells.add(mutation.getCell())
             } else {
                 commands.add(mutation.getCommand())
             }
-            // if (!changedCells.has(mutation.cell)) {
-            //     changedCells.set(mutation.cell, mutation.didSpritesChange)
-            // }
         }
-        return { evaluatedRules, changedCells, commands/*, didSomeSpriteChange: didSomeSpriteChange*/ }
+        return { evaluatedRules, changedCells, commands }
     }
 
     private tickNormal() {
@@ -804,7 +786,7 @@ export class LevelEngine extends EventEmitter2 {
     }
 
     private isWinning() {
-        let conditionsSatisfied = this.gameData.winConditions.length > 0 // true
+        let conditionsSatisfied = this.gameData.winConditions.length > 0
         this.gameData.winConditions.forEach((winCondition) => {
             if (!winCondition.isSatisfied(this.getCells())) {
                 conditionsSatisfied = false
@@ -901,18 +883,14 @@ export class GameEngine {
     public hasAgain() {
         return this.levelEngine.hasAgain()
     }
-    public canUndo() {
-        return this.levelEngine.canUndo()
-    }
     public setLevel(levelNum: number) {
-        this.levelEngine.hasAgainThatNeedsToRun = false // clear this so the user can press "X"
+        this.levelEngine.hasAgainThatNeedsToRun = false
         this.currentLevelNum = levelNum
         const level = this.getGameData().levels[levelNum]
         if (level.type === LEVEL_TYPE.MAP) {
             this.levelEngine.setLevel(levelNum)
             this.handler.onLevelChange(this.currentLevelNum, this.levelEngine.getCurrentLevel().getCells(), null)
         } else {
-            // TODO: no need to set the levelEngine when the current level is a Message
             this.handler.onLevelChange(this.currentLevelNum, null, level.message)
         }
     }
@@ -940,7 +918,6 @@ export class GameEngine {
         }
         let hasAgain = this.levelEngine.hasAgain()
         if (!hasAgain && !(this.levelEngine.gameData.metadata.realtimeInterval || this.levelEngine.pendingPlayerWantsToMove)) {
-            // check if the `require_player_movement` flag is set in the game
             return {
                 changedCells: new Set(),
                 didWinGame: false,
@@ -996,33 +973,6 @@ export class GameEngine {
     public press(direction: INPUT_BUTTON) {
         this.levelEngine.press(direction)
     }
-    public pressUp() {
-        this.press(INPUT_BUTTON.UP)
-    }
-    public pressDown() {
-        this.press(INPUT_BUTTON.DOWN)
-    }
-    public pressLeft() {
-        this.press(INPUT_BUTTON.LEFT)
-    }
-    public pressRight() {
-        this.press(INPUT_BUTTON.RIGHT)
-    }
-    public pressAction() {
-        this.press(INPUT_BUTTON.ACTION)
-    }
-
-    public pressRestart() {
-        this.press(INPUT_BUTTON.RESTART)
-    }
-    public pressUndo() {
-        this.press(INPUT_BUTTON.UNDO)
-    }
-
-    // Pixels and Sprites
-    public getSpriteSize() {
-        return this.getGameData().getSpriteSize()
-    }
 
     public saveSnapshotToJSON(): CellSaveState {
         return this.getCurrentLevelCells().map((row) => row.map((cell) => [...cell.toSnapshot()].map((s) => s.getName())))
@@ -1045,14 +995,6 @@ export class GameEngine {
                 cell.fromSnapshot(new Set(spritesToHave))
             })
         })
-    }
-
-    public setMessageLevel(sprites: Array<Array<Set<GameSprite>>>) {
-        this.levelEngine.setMessageLevel(sprites)
-    }
-
-    public restoreFromMessageLevel() {
-        this.levelEngine.restoreFromMessageLevel()
     }
 
     public isCurrentLevelAMessage() {
