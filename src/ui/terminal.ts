@@ -9,7 +9,7 @@ import { GameData } from '../models/game'
 import { GameSprite } from '../models/tile'
 import { LEVEL_TYPE, Soundish } from '../parser/astTypes'
 import { playSound } from '../sound/sfxr'
-import { _debounce, _flatten, Cellish, GameEngineHandler, Optional, RULE_DIRECTION } from '../util'
+import { _debounce, _flatten, Cellish, GameEngineHandler, Optional, RULE_DIRECTION, spritesThatInteractWithPlayer } from '../util'
 import BaseUI from './base'
 
 // Determine if this
@@ -398,6 +398,8 @@ class TerminalUI extends BaseUI implements GameEngineHandler {
                 }
             }
 
+            const interactsWithPlayer = spritesThatInteractWithPlayer(this.gameData)
+
             const levelHeight = this.windowOffsetHeight || levelRows.length
             const levelWidth = this.windowOffsetWidth || levelRows[0].length
             console.log(`Level size is ${levelHeight} high by ${levelWidth} wide`) // tslint:disable-line:no-console
@@ -412,13 +414,15 @@ class TerminalUI extends BaseUI implements GameEngineHandler {
                 // tslint:disable-next-line:no-console
                 console.log(`START: ${chalk.whiteBright(`${spriteToCells.size}`)} Sprites in same collision layer`)
                 for (const sprite of spriteToCells.keys()) {
-                    const cells = spriteToCells.get(sprite)
+                    if (interactsWithPlayer.has(sprite)) {
+                        const cells = spriteToCells.get(sprite)
 
-                    if (!cells) {
-                        throw new Error(`BUG: could not find mapping to cells`)
+                        if (!cells) {
+                            throw new Error(`BUG: could not find mapping to cells`)
+                        }
+                        const msg = `    ${sprite.getName()} ${cells.length}`
+                        console.log(msg) // tslint:disable-line:no-console
                     }
-                    const msg = `    ${sprite.getName()} ${cells.length}`
-                    console.log(msg) // tslint:disable-line:no-console
                 }
             }
         }

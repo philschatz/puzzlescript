@@ -1,3 +1,4 @@
+import { GameData } from '.'
 import { GameMetadata } from './models/metadata'
 import { GameSprite } from './models/tile'
 import { Soundish } from './parser/astTypes'
@@ -197,6 +198,50 @@ export enum DEBUG_FLAG {
 
 export interface ICacheable {
     toKey: () => string
+}
+
+export function spritesThatInteractWithPlayer(game: GameData) {
+    const playerSprites = game.getPlayer().getSprites()
+    const interactsWithPlayer = new Set<GameSprite>(playerSprites)
+
+    // Add all the sprites in the same collision layer as the Player
+    for (const playerSprite of interactsWithPlayer) {
+        const collisionLayer = playerSprite.getCollisionLayer()
+        for (const sprite of game.objects) {
+            if (sprite.getCollisionLayer() === collisionLayer) {
+                interactsWithPlayer.add(sprite)
+            }
+        }
+    }
+
+    // Add all the winCondition sprites
+    for (const win of game.winConditions) {
+        for (const tile of win.a11yGetTiles()) {
+            for (const sprite of tile.getSprites()) {
+                interactsWithPlayer.add(sprite)
+            }
+        }
+    }
+
+    // Add all the other sprites that interact with the player
+    for (const rule of game.rules) {
+        for (const sprites of rule.a11yGetConditionSprites()) {
+            if (setIntersection(sprites, interactsWithPlayer).size > 0) {
+                for (const sprite of sprites) {
+                    interactsWithPlayer.add(sprite)
+                }
+            }
+        }
+    }
+
+    // remove the background sprite (even though it transitively interacts)
+    const background = game.getMagicBackgroundSprite()
+    if (background) {
+        interactsWithPlayer.delete(background)
+    }
+
+    // remove transparent sprites once the dependecies are found
+    return new Set([...interactsWithPlayer].filter((s) => !s.isTransparent()))
 }
 
 // Webworker message interfaces
