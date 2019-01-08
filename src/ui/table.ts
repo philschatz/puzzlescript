@@ -48,7 +48,17 @@ class TableUI extends BaseUI implements GameEngineHandler {
         const playerSprites = game.getPlayer().getSprites()
         const interactsWithPlayer = new Set<GameSprite>(playerSprites)
 
-        // Add al all the winCondition sprites
+        // Add all the sprites in the same collision layer as the Player
+        for (const playerSprite of interactsWithPlayer) {
+            const collisionLayer = playerSprite.getCollisionLayer()
+            for (const sprite of game.objects) {
+                if (sprite.getCollisionLayer() === collisionLayer) {
+                    interactsWithPlayer.add(sprite)
+                }
+            }
+        }
+
+        // Add all the winCondition sprites
         for (const win of game.winConditions) {
             for (const tile of win.a11yGetTiles()) {
                 for (const sprite of tile.getSprites()) {
@@ -68,7 +78,14 @@ class TableUI extends BaseUI implements GameEngineHandler {
             }
         }
 
-        this.interactsWithPlayer = interactsWithPlayer
+        // remove the background sprite (even though it transitively interacts)
+        const background = game.getMagicBackgroundSprite()
+        if (background) {
+            interactsWithPlayer.delete(background)
+        }
+
+        // remove transparent sprites once the dependecies are found
+        this.interactsWithPlayer = new Set([...interactsWithPlayer].filter(s => !s.isTransparent()))
     }
 
     public onPress(dir: INPUT_BUTTON) {
