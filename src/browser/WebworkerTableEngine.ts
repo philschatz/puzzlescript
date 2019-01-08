@@ -4,7 +4,6 @@ import { LEVEL_TYPE } from '../parser/astTypes'
 import Serializer from '../parser/serializer'
 import TableUI from '../ui/table'
 import { Cellish,
-    EmptyGameEngineHandler,
     Engineish,
     GameEngineHandlerOptional,
     INPUT_BUTTON,
@@ -42,7 +41,6 @@ export default class WebworkerTableEngine implements Engineish {
     private readonly worker: PuzzlescriptWorker
     private readonly table: HTMLTableElement
     private readonly ui: TableUI
-    private readonly handler: EmptyGameEngineHandler
     private readonly resizeWatcher: ResizeWatcher
     private readonly inputWatcher: InputWatcher
     private readonly boundPause: () => void
@@ -58,23 +56,26 @@ export default class WebworkerTableEngine implements Engineish {
         this.worker = worker
         this.table = table
 
+        const defaultOnMessage = (msg: string) => {
+            return pollingPromise<void>(10, () => {
+                // Using a pollingPromise is only necessary for alert() because of the keyUp event not firing
+                if (this.inputWatcher.isSomethingPressed()) {
+                    return false
+                }
+                alert(msg)
+                return true
+            })
+        }
+        if (!handler || !handler.onMessage) {
+            handler = { ...handler, onMessage: defaultOnMessage }
+        }
+
         // cache
         this.cellCache = []
         this.levelNum = -123456
         this.gameData = null
 
-        this.ui = new TableUI(table, {
-            onMessage: (msg: string) => {
-                return pollingPromise<void>(10, () => {
-                    if (this.inputWatcher.isSomethingPressed()) {
-                        return false
-                    }
-                    alert(msg)
-                    return true
-                })
-            }
-        })
-        this.handler = new EmptyGameEngineHandler(handler ? [this.ui, handler] : [this.ui])
+        this.ui = new TableUI(table, handler)
         this.resizeWatcher = new ResizeWatcher(table, this.handleResize.bind(this))
         this.inputWatcher = new InputWatcher(table)
 
@@ -125,32 +126,32 @@ export default class WebworkerTableEngine implements Engineish {
                 this.cellCache = [] // clear the cache since the level dimensions are different
                 this.levelNum = data.level
                 if (data.cells) {
-                    this.handler.onLevelChange(data.level, data.cells.map((row) => row.map((x) => this.convertToCellish(x))), null)
+                    this.ui.onLevelChange(data.level, data.cells.map((row) => row.map((x) => this.convertToCellish(x))), null)
                 } else {
-                    this.handler.onLevelChange(data.level, null, data.message)
+                    this.ui.onLevelChange(data.level, null, data.message)
                 }
                 this.resizeWatcher.resizeHandler() // force resize
                 this.table.focus()
                 break
             case MESSAGE_TYPE.ON_MESSAGE:
-                await this.handler.onMessage(data.message)
+                await this.ui.onMessage(data.message)
                 this.worker.postMessage({ type: MESSAGE_TYPE.ON_MESSAGE_DONE })
                 this.table.focus()
                 break
             case MESSAGE_TYPE.ON_PRESS:
-                this.handler.onPress(data.direction)
+                this.ui.onPress(data.direction)
                 break
             case MESSAGE_TYPE.ON_TICK:
-                this.handler.onTick(new Set(data.changedCells.map((x) => this.convertToCellish(x))), data.hasAgain)
+                this.ui.onTick(new Set(data.changedCells.map((x) => this.convertToCellish(x))), data.hasAgain)
                 break
             case MESSAGE_TYPE.ON_SOUND:
-                await this.handler.onSound({ soundCode: data.soundCode })
+                await this.ui.onSound({ soundCode: data.soundCode })
                 break
             case MESSAGE_TYPE.ON_PAUSE:
-                this.handler.onPause()
+                this.ui.onPause()
                 break
             case MESSAGE_TYPE.ON_RESUME:
-                this.handler.onResume()
+                this.ui.onResume()
                 break
 
             case MESSAGE_TYPE.TICK:
