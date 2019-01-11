@@ -56,6 +56,7 @@ export interface IRule extends IGameNode {
 }
 
 export interface IMutation {
+    messages: REPLACE_MESSAGE[]
     hasCell: () => boolean
     getCell: () => Cell
     getCommand: () => Command<SoundItem<IGameTile>>
@@ -63,8 +64,10 @@ export interface IMutation {
 
 class CellMutation implements IMutation {
     private cell: Cell
-    constructor(cell: Cell) {
+    public readonly messages: REPLACE_MESSAGE[]
+    constructor(cell: Cell, messages: REPLACE_MESSAGE[]) {
         this.cell = cell
+        this.messages = messages
     }
     public hasCell() { return true }
     public getCell() { return this.cell }
@@ -73,10 +76,23 @@ class CellMutation implements IMutation {
     }
 }
 
+// The only reason this class exists is because I am lazy & did not want to pull out the messages early
+export class MoveMutation implements IMutation {
+    public readonly messages: REPLACE_MESSAGE[]
+    constructor(message: REPLACE_MESSAGE) {
+        this.messages = [message]
+    }
+    public hasCell(): boolean { throw new Error(`BUG: Should not be calling this method`)}
+    public getCell(): Cell { throw new Error(`BUG: Should not be calling this method`)}
+    public getCommand(): Command<SoundItem<IGameTile>> { throw new Error(`BUG: Should not be calling this method`)}
+}
+
 class CommandMutation implements IMutation {
+    public readonly messages: REPLACE_MESSAGE[]
     private command: Command<SoundItem<IGameTile>>
     constructor(command: Command<SoundItem<IGameTile>>) {
         this.command = command
+        this.messages = [] // TODO: Decide if something should be here
     }
     public getCommand() { return this.command }
     public hasCell() { return false }
@@ -1377,6 +1393,33 @@ export class SimpleEllipsisBracket extends ISimpleBracket {
 
 }
 
+export enum REPLACE_TYPE {
+    ADD = 'ADD',
+    REPLACE = 'REPLACE',
+    REMOVE = 'REMOVE',
+    MOVE = 'MOVE'
+}
+
+export type REPLACE_MESSAGE = {
+    type: REPLACE_TYPE.ADD,
+    sprites: Iterable<GameSprite>
+    cell: Cell
+} | {
+    type: REPLACE_TYPE.REPLACE,
+    replacements: Iterable<{oldSprite: GameSprite, newSprite: GameSprite}>
+    cell: Cell
+} | {
+    type: REPLACE_TYPE.REMOVE,
+    sprites: Set<GameSprite>,
+    cell: Cell
+} | {
+    type: REPLACE_TYPE.MOVE,
+    oldCell: Cell,
+    newCell: Cell,
+    direction: RULE_DIRECTION,
+    sprite: GameSprite
+}
+
 class ReplaceTile {
     private collisionLayer: CollisionLayer
     private actionTileWithModifier: Optional<SimpleTileWithModifier>
@@ -1397,8 +1440,9 @@ class ReplaceTile {
         this.conditionSpritesToRemove = conditionSpritesToRemove
         this.newDirection = newDirection
     }
-    public replace(cell: Cell, magicOrTiles: Map<IGameTile, Set<GameSprite>>, orTilesRemoved: Set<IGameTile>) {
+    public replace(cell: Cell, magicOrTiles: Map<IGameTile, Set<GameSprite>>, orTilesRemoved: Set<IGameTile>): { didActuallyChange: boolean, messages: REPLACE_MESSAGE[]} {
         let didActuallyChange = false
+        let messages: REPLACE_MESSAGE[]= []
         // Check if we are adding or removing....
         if (this.actionTileWithModifier) {
             // adding
@@ -1419,6 +1463,8 @@ class ReplaceTile {
             } else {
                 sprites = this.actionTileWithModifier._tile.getSprites()
             }
+            const addedSprites: GameSprite[] = []
+            const replacedSprites: {oldSprite: GameSprite, newSprite: GameSprite}[] = []
             for (const sprite of sprites) {
                 const c = sprite.getCollisionLayer()
                 const wantsToMove = this.newDirection || cell.getCollisionLayerWantsToMove(c)
@@ -1429,17 +1475,26 @@ class ReplaceTile {
                     }
                     added = cell.updateSprite(sprite, wantsToMove)
                 } else {
+                    const oldSprite = cell.getSpriteByCollisionLayer(c)
+                    if (oldSprite) {
+                        replacedSprites.push({oldSprite: oldSprite, newSprite: sprite})
+                    } else {
+                        addedSprites.push(sprite)
+                    }
                     // preserve the wantsToMove if the sprite is in the same collision layer
                     added = cell.addSprite(sprite, wantsToMove)
                 }
                 didActuallyChange = didActuallyChange || added
             }
+            messages.push({ type: REPLACE_TYPE.ADD, cell, sprites: addedSprites })
+            messages.push({ type: REPLACE_TYPE.REPLACE, cell, replacements: replacedSprites })
         } else {
             // removing
+            const removedSprites = new Set<GameSprite>()
             const tile = cell.getSpriteByCollisionLayer(this.collisionLayer)
             if (!tile && this.mightNotFindConditionButThatIsOk) {
                 // this occurs when there is just a -> [ NO Color ] on the action side (remove color if it exists)
-                return { didActuallyChange: false }
+                return { didActuallyChange: false, messages: [] }
             }
             if (!tile) {
                 throw new Error(`BUG: No tile found`)
@@ -1453,6 +1508,7 @@ class ReplaceTile {
                         for (const conditionSpriteToRemove of this.conditionSpritesToRemove._tile.getSprites()) {
                             if (cellSprites.indexOf(conditionSpriteToRemove) >= 0) {
                                 const removed = cell.removeSprite(conditionSpriteToRemove)
+                                removedSprites.add(conditionSpriteToRemove)
                                 didActuallyChange = didActuallyChange || removed
 
                                 if (removed) {
@@ -1468,6 +1524,7 @@ class ReplaceTile {
                     for (const sprite of tile.getSprites()) {
                         if (conditionSpritesToRemove.has(sprite)) {
                             const removed = cell.removeSprite(sprite)
+                            removedSprites.add(sprite)
                             didActuallyChange = didActuallyChange || removed
                         }
                     }
@@ -1481,10 +1538,12 @@ class ReplaceTile {
                 //     didActuallyChange = didActuallyChange || removed
                 // }
             }
+            messages.push({ type: REPLACE_TYPE.REMOVE, cell, sprites: removedSprites })
         }
         // return the oldSprite for UNDO
         return {
-            didActuallyChange
+            didActuallyChange,
+            messages
         }
     }
 }
@@ -1844,8 +1903,12 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
         let didChangeSprites = false
         let didChangeDirection = false
         const orTilesRemoved = new Set()
+        let allMessages: REPLACE_MESSAGE[] = []
         for (const replaceTile of replaceTiles) {
-            const { didActuallyChange } = replaceTile.replace(cell, magicOrTiles, orTilesRemoved)
+            const { didActuallyChange, messages } = replaceTile.replace(cell, magicOrTiles, orTilesRemoved)
+            if (didActuallyChange) {
+                allMessages = [...allMessages, ...messages]
+            }
             didChangeSprites = didChangeSprites || didActuallyChange || false
         }
         for (const replaceDirection of replaceDirections) {
@@ -1855,7 +1918,7 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
 
         // TODO: Be better about recording when the cell actually updated
         if (didChangeSprites || didChangeDirection) {
-            return new CellMutation(cell)
+            return new CellMutation(cell, allMessages)
         } else {
             return null
         }

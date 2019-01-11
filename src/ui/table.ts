@@ -3,8 +3,9 @@ import { GameData } from '../models/game'
 import { GameSprite } from '../models/tile'
 import { Soundish } from '../parser/astTypes'
 import { playSound } from '../sound/sfxr'
-import { _flatten, Cellish, EmptyGameEngineHandler, GameEngineHandler, GameEngineHandlerOptional, INPUT_BUTTON, Optional, RULE_DIRECTION, spritesThatInteractWithPlayer } from '../util'
+import { _flatten, Cellish, EmptyGameEngineHandler, GameEngineHandler, GameEngineHandlerOptional, INPUT_BUTTON, Optional, RULE_DIRECTION, spritesThatInteractWithPlayer, setIntersection } from '../util'
 import BaseUI from './base'
+import { IMutation, REPLACE_TYPE } from '../models/rule';
 
 interface ITableCell {
     td: HTMLTableCellElement,
@@ -14,10 +15,17 @@ interface ITableCell {
 
 class TableUI extends BaseUI implements GameEngineHandler {
     private readonly table: HTMLElement
+    private readonly liveLog: Element
     private inputsProcessed: number
     private tableCells: ITableCell[][]
     private handler: EmptyGameEngineHandler
     private interactsWithPlayer: Set<GameSprite>
+    private didPressCauseTick: boolean
+    private silencedOutput: boolean
+    private messagesSincePress: number
+    private isCollecting: boolean
+    private collectedMessages: Set<string>
+    private collectingTickCount: number
 
     constructor(table: HTMLElement, handler?: GameEngineHandlerOptional) {
         super()
@@ -33,6 +41,19 @@ class TableUI extends BaseUI implements GameEngineHandler {
         this.onLevelChange = this.onLevelChange.bind(this)
 
         this.handler = new EmptyGameEngineHandler(handler ? [handler] : [])
+
+        const liveLog = table.querySelector('[aria-live]') || document.querySelector('[aria-live]')
+        if (!liveLog) {
+            throw new Error(`Error: For screenreaders to work, an element inside the table (for now) with an aria-live attribute needs to exist in the initial page. See https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Live_Regions`)
+        }
+        this.liveLog = liveLog
+
+        this.didPressCauseTick = false
+        this.silencedOutput = false
+        this.messagesSincePress = 0
+        this.isCollecting = false
+        this.collectedMessages = new Set()
+        this.collectingTickCount = 0
     }
 
     public onPause() {
@@ -44,10 +65,14 @@ class TableUI extends BaseUI implements GameEngineHandler {
         this.handler.onResume()
     }
     public onGameChange() {
+        this.silencedOutput = false
+        this.didPressCauseTick = false
         this.interactsWithPlayer = spritesThatInteractWithPlayer(this.getGameData())
     }
 
     public onPress(dir: INPUT_BUTTON) {
+        this.didPressCauseTick = true
+        this.liveLog.innerHTML = '' // clear out the log
         this.markAcceptingInput(false)
         switch (dir) {
             case INPUT_BUTTON.UNDO:
@@ -74,6 +99,13 @@ class TableUI extends BaseUI implements GameEngineHandler {
             for (let currentY = 0; currentY < height; currentY++) {
                 const tr = document.createElement('tr')
                 const tableRow = []
+
+                // Add the row header with a summary of which sprites are in the row
+                // const th = document.createElement('th')
+                // th.classList.add('ps-row-summary')
+                // th.textContent = 'Sprites in Row:'
+                // tr.appendChild(th)
+
                 for (let currentX = 0; currentX < width; currentX++) {
                     const td = document.createElement('td')
                     const tableCellPixels = []
@@ -108,7 +140,7 @@ class TableUI extends BaseUI implements GameEngineHandler {
                 tbody.appendChild(tr)
                 this.tableCells.push(tableRow)
             }
-            this.table.appendChild(tbody)
+            this.table.prepend(tbody)
 
             for (const row of cells) {
                 this.drawCells(row, false)
@@ -128,10 +160,13 @@ class TableUI extends BaseUI implements GameEngineHandler {
         playSound(sound.soundCode) // tslint:disable-line:no-floating-promises
         await this.handler.onSound(sound)
     }
-    public onTick(changedCells: Set<Cellish>, hasAgain: boolean) {
+    public onTick(changedCells: Set<Cellish>, hasAgain: boolean, mutations: Set<IMutation>) {
+        this.collectingTickCount++
+        this.printMutations(mutations, hasAgain)
         this.drawCells(changedCells, false)
         this.markAcceptingInput(!hasAgain)
-        this.handler.onTick(changedCells, hasAgain)
+        this.didPressCauseTick = false
+        this.handler.onTick(changedCells, hasAgain, mutations)
     }
 
     public setGameData(game: GameData) {
@@ -164,7 +199,9 @@ class TableUI extends BaseUI implements GameEngineHandler {
     public clearScreen() {
         super.clearScreen()
         // clear all the rows
-        this.table.innerHTML = ''
+        const tbody = this.table.querySelector('tbody')
+        tbody && tbody.remove()
+        this.liveLog.innerHTML = ''
         this.tableCells = []
     }
 
@@ -213,6 +250,107 @@ class TableUI extends BaseUI implements GameEngineHandler {
         return {
             columns: 1000,
             rows: 1000
+        }
+    }
+
+    private printMutations(mutations: Set<IMutation>, hasAgain: boolean) {
+        if (this.silencedOutput && !this.didPressCauseTick) {
+            return
+        }
+        const GAME_TICK = 'game tick'
+        const visibleSprites = spritesThatInteractWithPlayer(this.getGameData()) // hoist out of here
+
+        let pendingMessages: string[] = []
+        const addMessage = (msg: string) => {
+            if (!this.collectedMessages.has(msg)) {
+                pendingMessages.push(msg)
+            }
+        }
+        const printPendingMessages = () => {
+            for (const msg of pendingMessages) {
+                const p = document.createElement('p')
+                p.textContent = msg
+                this.liveLog.append(p)
+                if (!this.didPressCauseTick) {
+                    this.messagesSincePress++
+                }
+            }
+        }
+
+        if(hasAgain) {
+            addMessage(GAME_TICK)
+        }
+
+        for (const mutation of mutations) {
+            for (const message of mutation.messages) {
+                switch(message.type) {
+                    case REPLACE_TYPE.ADD:
+                        for (const sprite of setIntersection(visibleSprites, message.sprites)) {
+                            addMessage(`Added ${sprite.getName()} @ ${message.cell.rowIndex},${message.cell.colIndex}`)
+                        }
+                        break
+                    case REPLACE_TYPE.REPLACE:
+                        for (const {oldSprite, newSprite} of message.replacements) {
+                            if (visibleSprites.has(oldSprite)) {
+                                if (visibleSprites.has(newSprite)) {
+                                    addMessage(`Replaced ${oldSprite.getName()} with ${newSprite.getName()} @ ${message.cell.rowIndex},${message.cell.colIndex}`)
+                                } else {
+                                    addMessage(`Removed* ${oldSprite.getName()} @ ${message.cell.rowIndex},${message.cell.colIndex}`)
+                                }
+                            } else if (visibleSprites.has(newSprite)) {
+                                addMessage(`Added* ${newSprite.getName()} @ ${message.cell.rowIndex},${message.cell.colIndex}`)
+                            }
+                        }
+                        break
+                    case REPLACE_TYPE.REMOVE:
+                        for (const sprite of setIntersection(visibleSprites, message.sprites)) {
+                            addMessage(`Removed ${sprite.getName()} @ ${message.cell.rowIndex},${message.cell.colIndex}`)
+                        }
+                        break
+                    case REPLACE_TYPE.MOVE:
+                        addMessage(`Moved ${message.sprite.getName()} ${message.direction} to ${message.newCell.rowIndex},${message.newCell.colIndex}`)
+                        break
+                    default:
+                        throw new Error(`BUG: unsupported a11y message type ${message.type}`)
+                }
+            }
+        }
+
+        if (this.didPressCauseTick) {
+            printPendingMessages()
+        } else if (this.silencedOutput) {
+            pendingMessages = []
+        } else if (!this.isCollecting && (this.messagesSincePress > 10 || pendingMessages.length > 10)) {
+            if (this.collectedMessages.size > 0) {
+                // We tried collecting before but it did not seem to work so just go silent
+                this.silencedOutput = true
+                pendingMessages = [`Things keep changing so switching to a quieter mode`]
+            } else {
+                // start collecting
+                this.isCollecting = true
+                this.collectingTickCount = 0
+                pendingMessages = [`Many things changed (probably animations). Collecting data for a few ticks to see what to ignore`]
+            }
+        } else if (this.isCollecting && this.collectingTickCount < 41) {
+            for (const msg of pendingMessages) {
+                if (msg !== GAME_TICK)
+                    this.collectedMessages.add(msg)
+            }
+            pendingMessages = [] // stay silent while collecting
+        } else if (this.isCollecting) {
+            this.isCollecting = false
+            if (pendingMessages.length > 1) {
+                this.silencedOutput = true
+                pendingMessages = [`Done collecting but too many things keep changing so switching to a quieter mode. ${this.collectedMessages.size}`]
+            } else {
+                pendingMessages = [`Done collecting. Found ${this.collectedMessages.size} animations to ignore.`]
+            }
+        }
+
+        printPendingMessages()
+
+        if (this.didPressCauseTick) {
+            this.messagesSincePress = 0
         }
     }
 

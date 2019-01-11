@@ -3,6 +3,7 @@ import { GameMetadata } from './models/metadata'
 import { GameSprite } from './models/tile'
 import { Soundish } from './parser/astTypes'
 import { IGraphJson } from './parser/serializer'
+import { IMutation } from './models/rule';
 
 export type Optional<T> = T | null
 
@@ -387,7 +388,7 @@ export interface GameEngineHandler {
     onLevelChange(level: number, cells: Optional<Cellish[][]>, message: Optional<string>): void
     onWin(): void
     onSound(sound: Soundish): Promise<void>
-    onTick(changedCells: Set<Cellish>, hasAgain: boolean): void
+    onTick(changedCells: Set<Cellish>, hasAgain: boolean, mutations: Set<IMutation>): void
     onPause(): void
     onResume(): void
     // onGameChange(data: GameData): void
@@ -399,7 +400,7 @@ export interface GameEngineHandlerOptional {
     onLevelChange?(level: number, cells: Optional<Cellish[][]>, message: Optional<string>): void
     onWin?(): void
     onSound?(sound: Soundish): Promise<void>
-    onTick?(changedCells: Set<Cellish>, hasAgain: boolean): void
+    onTick?(changedCells: Set<Cellish>, hasAgain: boolean, mutations: Set<IMutation>): void
     onPause?(): void
     onResume?(): void
     // onGameChange?(data: GameData): void
@@ -415,7 +416,7 @@ export class EmptyGameEngineHandler implements GameEngineHandler {
     public onLevelChange(level: number, cells: Optional<Cellish[][]>, message: Optional<string>) { for (const h of this.subHandlers) { h.onLevelChange && h.onLevelChange(level, cells, message) } }
     public onWin() { for (const h of this.subHandlers) { h.onWin && h.onWin() } }
     public async onSound(sound: Soundish) { for (const h of this.subHandlers) { h.onSound && h.onSound(sound) } }
-    public onTick(changedCells: Set<Cellish>, hasAgain: boolean) { for (const h of this.subHandlers) { h.onTick && h.onTick(changedCells, hasAgain) } }
+    public onTick(changedCells: Set<Cellish>, hasAgain: boolean, mutations: Set<IMutation>) { for (const h of this.subHandlers) { h.onTick && h.onTick(changedCells, hasAgain, mutations) } }
     public onPause() { for (const h of this.subHandlers) { h.onPause && h.onPause() } }
     public onResume() { for (const h of this.subHandlers) { h.onResume && h.onResume() } }
     // public onGameChange(data: GameData) { this.subHandlers.forEach(h => h.onGameChange && h.onGameChange(data)) }

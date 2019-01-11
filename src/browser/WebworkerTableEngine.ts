@@ -130,7 +130,7 @@ export default class WebworkerTableEngine implements Engineish {
                 } else {
                     this.ui.onLevelChange(data.level, null, data.message)
                 }
-                this.resizeWatcher.resizeHandler() // force resize
+                this.resizeWatcher.trigger() // force resize
                 this.table.focus()
                 break
             case MESSAGE_TYPE.ON_MESSAGE:

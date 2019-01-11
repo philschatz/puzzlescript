@@ -47,3 +47,16 @@ table.ps-table:not(.ps-ui-disabled) .ps-sprite-pixel { flex-grow: 1 }
 table.ps-table.ps-ui-disabled tr td.ps-cell .ps-cell-label.ps-cell-empty {
     opacity: .25;
 }
+
+table.ps-table.ps-ui-disabled caption {
+    caption-side: bottom;
+    text-align: left;
+    font-size: 50%;
+    opacity: .5;
+}
+
+table.ps-table:not(.ps-ui-disabled) caption,
+table.ps-table:not(.ps-ui-disabled) [aria-live] {
+    position: absolute;
+    left: -10000px;
+}
