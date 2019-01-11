@@ -3,7 +3,7 @@ import { GameData } from '../models/game'
 import { GameSprite } from '../models/tile'
 import { Soundish } from '../parser/astTypes'
 import { playSound } from '../sound/sfxr'
-import { _flatten, Cellish, EmptyGameEngineHandler, GameEngineHandler, GameEngineHandlerOptional, INPUT_BUTTON, Optional, RULE_DIRECTION, spritesThatInteractWithPlayer, setIntersection } from '../util'
+import { _flatten, Cellish, EmptyGameEngineHandler, GameEngineHandler, GameEngineHandlerOptional, INPUT_BUTTON, Optional, RULE_DIRECTION, spritesThatInteractWithPlayer, setIntersection, setAddAll } from '../util'
 import BaseUI from './base'
 import { IMutation, REPLACE_TYPE } from '../models/rule';
 
@@ -13,6 +13,15 @@ interface ITableCell {
     pixels: HTMLSpanElement[][]
 }
 
+function mapIncrement<T>(map: Map<T, number>, item: T) {
+    const number = map.get(item)
+    map.set(item, number ? number + 1 : 1)
+}
+
+function mapCount<T>(map: Map<T, number>, item: T) {
+    return map.get(item) || 0
+}
+
 class TableUI extends BaseUI implements GameEngineHandler {
     private readonly table: HTMLElement
     private readonly liveLog: Element
@@ -20,11 +29,12 @@ class TableUI extends BaseUI implements GameEngineHandler {
     private tableCells: ITableCell[][]
     private handler: EmptyGameEngineHandler
     private interactsWithPlayer: Set<GameSprite>
+    private usedInMessages: Set<GameSprite>
     private didPressCauseTick: boolean
     private silencedOutput: boolean
     private messagesSincePress: number
     private isCollecting: boolean
-    private collectedMessages: Set<string>
+    private collectedSprites: Map<GameSprite, number>
     private collectingTickCount: number
 
     constructor(table: HTMLElement, handler?: GameEngineHandlerOptional) {
@@ -33,6 +43,7 @@ class TableUI extends BaseUI implements GameEngineHandler {
         this.tableCells = []
         this.inputsProcessed = 0
         this.interactsWithPlayer = new Set()
+        this.usedInMessages = new Set()
         table.classList.add('ps-table')
         this.markAcceptingInput(false)
 
@@ -52,7 +63,7 @@ class TableUI extends BaseUI implements GameEngineHandler {
         this.silencedOutput = false
         this.messagesSincePress = 0
         this.isCollecting = false
-        this.collectedMessages = new Set()
+        this.collectedSprites = new Map()
         this.collectingTickCount = 0
     }
 
@@ -68,6 +79,8 @@ class TableUI extends BaseUI implements GameEngineHandler {
         this.silencedOutput = false
         this.didPressCauseTick = false
         this.interactsWithPlayer = spritesThatInteractWithPlayer(this.getGameData())
+        this.usedInMessages = new Set(this.interactsWithPlayer)
+        this.collectedSprites.clear()
     }
 
     public onPress(dir: INPUT_BUTTON) {
@@ -258,12 +271,16 @@ class TableUI extends BaseUI implements GameEngineHandler {
             return
         }
         const GAME_TICK = 'game tick'
-        const visibleSprites = spritesThatInteractWithPlayer(this.getGameData()) // hoist out of here
+
 
         let pendingMessages: string[] = []
-        const addMessage = (msg: string) => {
-            if (!this.collectedMessages.has(msg)) {
-                pendingMessages.push(msg)
+        const addMessage = (msg: string, sprites: GameSprite[]) => {
+            pendingMessages.push(msg)
+
+            if (this.isCollecting) {
+                for (const sprite of sprites) {
+                    mapIncrement(this.collectedSprites, sprite)
+                }
             }
         }
         const printPendingMessages = () => {
@@ -278,37 +295,37 @@ class TableUI extends BaseUI implements GameEngineHandler {
         }
 
         if(hasAgain) {
-            addMessage(GAME_TICK)
+            addMessage(GAME_TICK, [])
         }
 
         for (const mutation of mutations) {
             for (const message of mutation.messages) {
                 switch(message.type) {
                     case REPLACE_TYPE.ADD:
-                        for (const sprite of setIntersection(visibleSprites, message.sprites)) {
-                            addMessage(`Added ${sprite.getName()} @ ${message.cell.rowIndex},${message.cell.colIndex}`)
+                        for (const sprite of setIntersection(this.usedInMessages, message.sprites)) {
+                            addMessage(`Added ${sprite.getName()} @ ${message.cell.rowIndex},${message.cell.colIndex}`, [sprite])
                         }
                         break
                     case REPLACE_TYPE.REPLACE:
                         for (const {oldSprite, newSprite} of message.replacements) {
-                            if (visibleSprites.has(oldSprite)) {
-                                if (visibleSprites.has(newSprite)) {
-                                    addMessage(`Replaced ${oldSprite.getName()} with ${newSprite.getName()} @ ${message.cell.rowIndex},${message.cell.colIndex}`)
+                            if (this.usedInMessages.has(oldSprite)) {
+                                if (this.usedInMessages.has(newSprite)) {
+                                    addMessage(`Replaced ${oldSprite.getName()} with ${newSprite.getName()} @ ${message.cell.rowIndex},${message.cell.colIndex}`, [oldSprite, newSprite])
                                 } else {
-                                    addMessage(`Removed* ${oldSprite.getName()} @ ${message.cell.rowIndex},${message.cell.colIndex}`)
+                                    addMessage(`Removed* ${oldSprite.getName()} @ ${message.cell.rowIndex},${message.cell.colIndex}`, [oldSprite])
                                 }
-                            } else if (visibleSprites.has(newSprite)) {
-                                addMessage(`Added* ${newSprite.getName()} @ ${message.cell.rowIndex},${message.cell.colIndex}`)
+                            } else if (this.usedInMessages.has(newSprite)) {
+                                addMessage(`Added* ${newSprite.getName()} @ ${message.cell.rowIndex},${message.cell.colIndex}`, [newSprite])
                             }
                         }
                         break
                     case REPLACE_TYPE.REMOVE:
-                        for (const sprite of setIntersection(visibleSprites, message.sprites)) {
-                            addMessage(`Removed ${sprite.getName()} @ ${message.cell.rowIndex},${message.cell.colIndex}`)
+                        for (const sprite of setIntersection(this.usedInMessages, message.sprites)) {
+                            addMessage(`Removed ${sprite.getName()} @ ${message.cell.rowIndex},${message.cell.colIndex}`, [sprite])
                         }
                         break
                     case REPLACE_TYPE.MOVE:
-                        addMessage(`Moved ${message.sprite.getName()} ${message.direction} to ${message.newCell.rowIndex},${message.newCell.colIndex}`)
+                        addMessage(`Moved ${message.sprite.getName()} ${message.direction} to ${message.newCell.rowIndex},${message.newCell.colIndex}`, [message.sprite])
                         break
                     default:
                         throw new Error(`BUG: unsupported a11y message type ${message.type}`)
@@ -317,11 +334,14 @@ class TableUI extends BaseUI implements GameEngineHandler {
         }
 
         if (this.didPressCauseTick) {
-            printPendingMessages()
+            if (pendingMessages.length > 10) {
+                pendingMessages = [...pendingMessages.slice(0, 4), '(truncated messages)', ...pendingMessages.slice(pendingMessages.length - 4, pendingMessages.length)]
+            }
+
         } else if (this.silencedOutput) {
             pendingMessages = []
         } else if (!this.isCollecting && (this.messagesSincePress > 10 || pendingMessages.length > 10)) {
-            if (this.collectedMessages.size > 0) {
+            if (this.collectedSprites.size > 0) {
                 // We tried collecting before but it did not seem to work so just go silent
                 this.silencedOutput = true
                 pendingMessages = [`Things keep changing so switching to a quieter mode`]
@@ -331,19 +351,16 @@ class TableUI extends BaseUI implements GameEngineHandler {
                 this.collectingTickCount = 0
                 pendingMessages = [`Many things changed (probably animations). Collecting data for a few ticks to see what to ignore`]
             }
-        } else if (this.isCollecting && this.collectingTickCount < 41) {
-            for (const msg of pendingMessages) {
-                if (msg !== GAME_TICK)
-                    this.collectedMessages.add(msg)
-            }
+        } else if (this.isCollecting && this.collectingTickCount < 20) {
             pendingMessages = [] // stay silent while collecting
         } else if (this.isCollecting) {
             this.isCollecting = false
-            if (pendingMessages.length > 1) {
-                this.silencedOutput = true
-                pendingMessages = [`Done collecting but too many things keep changing so switching to a quieter mode. ${this.collectedMessages.size}`]
-            } else {
-                pendingMessages = [`Done collecting. Found ${this.collectedMessages.size} animations to ignore.`]
+            pendingMessages = [`Done collecting. Found ${this.collectedSprites.size} sprites to ignore: ${JSON.stringify([...this.collectedSprites.entries()].map(([sprite, count]) => [sprite.getName(), count]))}`]
+            this.messagesSincePress = 0
+            for (const [sprite, count] of this.collectedSprites) {
+                if (count > 4) {
+                    this.usedInMessages.delete(sprite)
+                }
             }
         }
 
