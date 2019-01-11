@@ -1,11 +1,11 @@
 import { IColor } from '../models/colors'
 import { GameData } from '../models/game'
+import { A11Y_MESSAGE, A11Y_MESSAGE_TYPE } from '../models/rule'
 import { GameSprite } from '../models/tile'
 import { Soundish } from '../parser/astTypes'
 import { playSound } from '../sound/sfxr'
-import { _flatten, Cellish, EmptyGameEngineHandler, GameEngineHandler, GameEngineHandlerOptional, INPUT_BUTTON, Optional, RULE_DIRECTION, spritesThatInteractWithPlayer, setIntersection, setAddAll } from '../util'
+import { _flatten, Cellish, EmptyGameEngineHandler, GameEngineHandler, GameEngineHandlerOptional, INPUT_BUTTON, Optional, RULE_DIRECTION, setIntersection, spritesThatInteractWithPlayer } from '../util'
 import BaseUI from './base'
-import { IMutation, REPLACE_TYPE } from '../models/rule';
 
 interface ITableCell {
     td: HTMLTableCellElement,
@@ -16,10 +16,6 @@ interface ITableCell {
 function mapIncrement<T>(map: Map<T, number>, item: T) {
     const number = map.get(item)
     map.set(item, number ? number + 1 : 1)
-}
-
-function mapCount<T>(map: Map<T, number>, item: T) {
-    return map.get(item) || 0
 }
 
 class TableUI extends BaseUI implements GameEngineHandler {
@@ -173,13 +169,13 @@ class TableUI extends BaseUI implements GameEngineHandler {
         playSound(sound.soundCode) // tslint:disable-line:no-floating-promises
         await this.handler.onSound(sound)
     }
-    public onTick(changedCells: Set<Cellish>, hasAgain: boolean, mutations: Set<IMutation>) {
+    public onTick(changedCells: Set<Cellish>, hasAgain: boolean, a11yMessages: Array<A11Y_MESSAGE<Cellish, GameSprite>>) {
         this.collectingTickCount++
-        this.printMutations(mutations, hasAgain)
+        this.printMessageLog(a11yMessages, hasAgain)
         this.drawCells(changedCells, false)
         this.markAcceptingInput(!hasAgain)
         this.didPressCauseTick = false
-        this.handler.onTick(changedCells, hasAgain, mutations)
+        this.handler.onTick(changedCells, hasAgain, a11yMessages)
     }
 
     public setGameData(game: GameData) {
@@ -266,12 +262,11 @@ class TableUI extends BaseUI implements GameEngineHandler {
         }
     }
 
-    private printMutations(mutations: Set<IMutation>, hasAgain: boolean) {
+    private printMessageLog(a11yMessages: Array<A11Y_MESSAGE<Cellish, GameSprite>>, hasAgain: boolean) {
         if (this.silencedOutput && !this.didPressCauseTick) {
             return
         }
         const GAME_TICK = 'game tick'
-
 
         let pendingMessages: string[] = []
         const addMessage = (msg: string, sprites: GameSprite[]) => {
@@ -294,42 +289,40 @@ class TableUI extends BaseUI implements GameEngineHandler {
             }
         }
 
-        if(hasAgain) {
+        if (hasAgain) {
             addMessage(GAME_TICK, [])
         }
 
-        for (const mutation of mutations) {
-            for (const message of mutation.messages) {
-                switch(message.type) {
-                    case REPLACE_TYPE.ADD:
-                        for (const sprite of setIntersection(this.usedInMessages, message.sprites)) {
-                            addMessage(`Added ${sprite.getName()} @ ${message.cell.rowIndex},${message.cell.colIndex}`, [sprite])
-                        }
-                        break
-                    case REPLACE_TYPE.REPLACE:
-                        for (const {oldSprite, newSprite} of message.replacements) {
-                            if (this.usedInMessages.has(oldSprite)) {
-                                if (this.usedInMessages.has(newSprite)) {
-                                    addMessage(`Replaced ${oldSprite.getName()} with ${newSprite.getName()} @ ${message.cell.rowIndex},${message.cell.colIndex}`, [oldSprite, newSprite])
-                                } else {
-                                    addMessage(`Removed* ${oldSprite.getName()} @ ${message.cell.rowIndex},${message.cell.colIndex}`, [oldSprite])
-                                }
-                            } else if (this.usedInMessages.has(newSprite)) {
-                                addMessage(`Added* ${newSprite.getName()} @ ${message.cell.rowIndex},${message.cell.colIndex}`, [newSprite])
+        for (const message of a11yMessages) {
+            switch (message.type) {
+                case A11Y_MESSAGE_TYPE.ADD:
+                    for (const sprite of setIntersection(this.usedInMessages, message.sprites)) {
+                        addMessage(`Added ${sprite.getName()} @ ${message.cell.rowIndex},${message.cell.colIndex}`, [sprite])
+                    }
+                    break
+                case A11Y_MESSAGE_TYPE.REPLACE:
+                    for (const { oldSprite, newSprite } of message.replacements) {
+                        if (this.usedInMessages.has(oldSprite)) {
+                            if (this.usedInMessages.has(newSprite)) {
+                                addMessage(`Replaced ${oldSprite.getName()} with ${newSprite.getName()} @ ${message.cell.rowIndex},${message.cell.colIndex}`, [oldSprite, newSprite])
+                            } else {
+                                addMessage(`Removed* ${oldSprite.getName()} @ ${message.cell.rowIndex},${message.cell.colIndex}`, [oldSprite])
                             }
+                        } else if (this.usedInMessages.has(newSprite)) {
+                            addMessage(`Added* ${newSprite.getName()} @ ${message.cell.rowIndex},${message.cell.colIndex}`, [newSprite])
                         }
-                        break
-                    case REPLACE_TYPE.REMOVE:
-                        for (const sprite of setIntersection(this.usedInMessages, message.sprites)) {
-                            addMessage(`Removed ${sprite.getName()} @ ${message.cell.rowIndex},${message.cell.colIndex}`, [sprite])
-                        }
-                        break
-                    case REPLACE_TYPE.MOVE:
-                        addMessage(`Moved ${message.sprite.getName()} ${message.direction} to ${message.newCell.rowIndex},${message.newCell.colIndex}`, [message.sprite])
-                        break
-                    default:
-                        throw new Error(`BUG: unsupported a11y message type ${message.type}`)
-                }
+                    }
+                    break
+                case A11Y_MESSAGE_TYPE.REMOVE:
+                    for (const sprite of setIntersection(this.usedInMessages, message.sprites)) {
+                        addMessage(`Removed ${sprite.getName()} @ ${message.cell.rowIndex},${message.cell.colIndex}`, [sprite])
+                    }
+                    break
+                case A11Y_MESSAGE_TYPE.MOVE:
+                    addMessage(`Moved ${message.sprite.getName()} ${message.direction} to ${message.newCell.rowIndex},${message.newCell.colIndex}`, [message.sprite])
+                    break
+                default:
+                    throw new Error(`BUG: unsupported a11y message type ${message}`)
             }
         }
 
@@ -355,7 +348,7 @@ class TableUI extends BaseUI implements GameEngineHandler {
             pendingMessages = [] // stay silent while collecting
         } else if (this.isCollecting) {
             this.isCollecting = false
-            pendingMessages = [`Done collecting. Found ${this.collectedSprites.size} sprites to ignore: ${JSON.stringify([...this.collectedSprites.entries()].map(([sprite, count]) => [sprite.getName(), count]))}`]
+            pendingMessages = [`Done collecting. Found ${this.collectedSprites.size} sprites to ignore: ${[...this.collectedSprites.keys()].map((sprite) => sprite.getName()).join(', ')}`]
             this.messagesSincePress = 0
             for (const [sprite, count] of this.collectedSprites) {
                 if (count > 4) {

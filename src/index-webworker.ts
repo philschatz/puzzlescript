@@ -1,4 +1,6 @@
-import { GameEngine } from './engine'
+import { Cell, GameEngine } from './engine'
+import { A11Y_MESSAGE, A11Y_MESSAGE_TYPE } from './models/rule'
+import { GameSprite } from './models/tile'
 import { Soundish } from './parser/astTypes'
 import Parser from './parser/parser'
 import Serializer from './parser/serializer'
@@ -78,7 +80,7 @@ class Handler implements GameEngineHandler {
     public onLevelChange(level: number, cells: Optional<Cellish[][]>, message: Optional<string>) {
         let newCells: Optional<CellishJson[][]> = null
         if (cells) {
-            newCells = cells.map((row) => toCellJson(row))
+            newCells = cells.map((row) => toCellsJson(row))
         }
         postMessage({ type: MESSAGE_TYPE.ON_LEVEL_CHANGE, level, cells: newCells, message })
     }
@@ -88,8 +90,8 @@ class Handler implements GameEngineHandler {
     public async onSound(sound: Soundish) {
         postMessage({ type: MESSAGE_TYPE.ON_SOUND, soundCode: sound.soundCode })
     }
-    public onTick(changedCells: Set<Cellish>, hasAgain: boolean) {
-        postMessage({ type: MESSAGE_TYPE.ON_TICK, changedCells: toCellJson(changedCells), hasAgain })
+    public onTick(changedCells: Set<Cellish>, hasAgain: boolean, a11yMessages: Array<A11Y_MESSAGE<Cell, GameSprite>>) {
+        postMessage({ type: MESSAGE_TYPE.ON_TICK, changedCells: toCellsJson(changedCells), hasAgain, a11yMessages: a11yMessages.map(toA11yMessageJson) })
     }
     public onPause() {
         postMessage({ type: MESSAGE_TYPE.ON_PAUSE })
@@ -127,22 +129,41 @@ const tick = async() => {
     const { changedCells, didWinGame, didLevelChange, wasAgainTick } = await engine.tick()
     // Response needs to be serializable
     return {
-        changedCells: toCellJson(changedCells),
+        changedCells: toCellsJson(changedCells),
         didWinGame,
         didLevelChange,
         wasAgainTick
     }
 }
 
-const toCellJson = (cells: Iterable<Cellish>): CellishJson[] => {
-    return [...cells].map((cell) => {
-        const { colIndex, rowIndex } = cell
-        return {
-            colIndex,
-            rowIndex,
-            spriteNames: cell.getSprites().map((sprite) => sprite.getName())
-        }
-    })
+const toCellsJson = (cells: Iterable<Cellish>) => {
+    return [...cells].map(toCellJson)
+}
+
+const toCellJson = (cell: Cellish): CellishJson => {
+    const { colIndex, rowIndex } = cell
+    return {
+        colIndex,
+        rowIndex,
+        spriteNames: cell.getSprites().map((sprite) => sprite.getName())
+    }
+}
+
+const toA11yMessageJson = (message: A11Y_MESSAGE<Cell, GameSprite>): A11Y_MESSAGE<CellishJson, string> => {
+    switch (message.type) {
+        case A11Y_MESSAGE_TYPE.ADD:
+            return { ...message, cell: toCellJson(message.cell), sprites: [...message.sprites].map(toSpriteName) }
+        case A11Y_MESSAGE_TYPE.MOVE:
+            return { ...message, oldCell: toCellJson(message.oldCell), newCell: toCellJson(message.newCell), sprite: toSpriteName(message.sprite) }
+        case A11Y_MESSAGE_TYPE.REMOVE:
+            return { ...message, cell: toCellJson(message.cell), sprites: [...message.sprites].map(toSpriteName) }
+        case A11Y_MESSAGE_TYPE.REPLACE:
+            return { ...message, cell: toCellJson(message.cell), replacements: [...message.replacements].map(({ oldSprite, newSprite }) =>({ oldSprite: toSpriteName(oldSprite), newSprite: toSpriteName(newSprite) })) }
+    }
+}
+
+const toSpriteName = (sprite: GameSprite) => {
+    return sprite.getName()
 }
 
 const press = (button: INPUT_BUTTON) => {

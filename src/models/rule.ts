@@ -56,16 +56,16 @@ export interface IRule extends IGameNode {
 }
 
 export interface IMutation {
-    messages: REPLACE_MESSAGE[]
+    messages: Array<A11Y_MESSAGE<Cell, GameSprite>>
     hasCell: () => boolean
     getCell: () => Cell
     getCommand: () => Command<SoundItem<IGameTile>>
 }
 
 class CellMutation implements IMutation {
+    public readonly messages: Array<A11Y_MESSAGE<Cell, GameSprite>>
     private cell: Cell
-    public readonly messages: REPLACE_MESSAGE[]
-    constructor(cell: Cell, messages: REPLACE_MESSAGE[]) {
+    constructor(cell: Cell, messages: Array<A11Y_MESSAGE<Cell, GameSprite>>) {
         this.cell = cell
         this.messages = messages
     }
@@ -76,19 +76,8 @@ class CellMutation implements IMutation {
     }
 }
 
-// The only reason this class exists is because I am lazy & did not want to pull out the messages early
-export class MoveMutation implements IMutation {
-    public readonly messages: REPLACE_MESSAGE[]
-    constructor(message: REPLACE_MESSAGE) {
-        this.messages = [message]
-    }
-    public hasCell(): boolean { throw new Error(`BUG: Should not be calling this method`)}
-    public getCell(): Cell { throw new Error(`BUG: Should not be calling this method`)}
-    public getCommand(): Command<SoundItem<IGameTile>> { throw new Error(`BUG: Should not be calling this method`)}
-}
-
 class CommandMutation implements IMutation {
-    public readonly messages: REPLACE_MESSAGE[]
+    public readonly messages: Array<A11Y_MESSAGE<Cell, GameSprite>>
     private command: Command<SoundItem<IGameTile>>
     constructor(command: Command<SoundItem<IGameTile>>) {
         this.command = command
@@ -1393,31 +1382,31 @@ export class SimpleEllipsisBracket extends ISimpleBracket {
 
 }
 
-export enum REPLACE_TYPE {
+export enum A11Y_MESSAGE_TYPE {
     ADD = 'ADD',
     REPLACE = 'REPLACE',
     REMOVE = 'REMOVE',
     MOVE = 'MOVE'
 }
 
-export type REPLACE_MESSAGE = {
-    type: REPLACE_TYPE.ADD,
-    sprites: Iterable<GameSprite>
-    cell: Cell
+export type A11Y_MESSAGE<TCell, TSprite> = {
+    type: A11Y_MESSAGE_TYPE.ADD,
+    sprites: Iterable<TSprite>
+    cell: TCell
 } | {
-    type: REPLACE_TYPE.REPLACE,
-    replacements: Iterable<{oldSprite: GameSprite, newSprite: GameSprite}>
-    cell: Cell
+    type: A11Y_MESSAGE_TYPE.REPLACE,
+    replacements: Iterable<{oldSprite: TSprite, newSprite: TSprite}>
+    cell: TCell
 } | {
-    type: REPLACE_TYPE.REMOVE,
-    sprites: Set<GameSprite>,
-    cell: Cell
+    type: A11Y_MESSAGE_TYPE.REMOVE,
+    sprites: Iterable<TSprite>,
+    cell: TCell
 } | {
-    type: REPLACE_TYPE.MOVE,
-    oldCell: Cell,
-    newCell: Cell,
+    type: A11Y_MESSAGE_TYPE.MOVE,
+    oldCell: TCell,
+    newCell: TCell,
     direction: RULE_DIRECTION,
-    sprite: GameSprite
+    sprite: TSprite
 }
 
 class ReplaceTile {
@@ -1440,9 +1429,9 @@ class ReplaceTile {
         this.conditionSpritesToRemove = conditionSpritesToRemove
         this.newDirection = newDirection
     }
-    public replace(cell: Cell, magicOrTiles: Map<IGameTile, Set<GameSprite>>, orTilesRemoved: Set<IGameTile>): { didActuallyChange: boolean, messages: REPLACE_MESSAGE[]} {
+    public replace(cell: Cell, magicOrTiles: Map<IGameTile, Set<GameSprite>>, orTilesRemoved: Set<IGameTile>): { didActuallyChange: boolean, messages: Array<A11Y_MESSAGE<Cell, GameSprite>>} {
         let didActuallyChange = false
-        let messages: REPLACE_MESSAGE[]= []
+        const messages: Array<A11Y_MESSAGE<Cell, GameSprite>> = []
         // Check if we are adding or removing....
         if (this.actionTileWithModifier) {
             // adding
@@ -1464,7 +1453,7 @@ class ReplaceTile {
                 sprites = this.actionTileWithModifier._tile.getSprites()
             }
             const addedSprites: GameSprite[] = []
-            const replacedSprites: {oldSprite: GameSprite, newSprite: GameSprite}[] = []
+            const replacedSprites: Array<{oldSprite: GameSprite, newSprite: GameSprite}> = []
             for (const sprite of sprites) {
                 const c = sprite.getCollisionLayer()
                 const wantsToMove = this.newDirection || cell.getCollisionLayerWantsToMove(c)
@@ -1477,7 +1466,7 @@ class ReplaceTile {
                 } else {
                     const oldSprite = cell.getSpriteByCollisionLayer(c)
                     if (oldSprite) {
-                        replacedSprites.push({oldSprite: oldSprite, newSprite: sprite})
+                        replacedSprites.push({ oldSprite, newSprite: sprite })
                     } else {
                         addedSprites.push(sprite)
                     }
@@ -1486,8 +1475,8 @@ class ReplaceTile {
                 }
                 didActuallyChange = didActuallyChange || added
             }
-            messages.push({ type: REPLACE_TYPE.ADD, cell, sprites: addedSprites })
-            messages.push({ type: REPLACE_TYPE.REPLACE, cell, replacements: replacedSprites })
+            messages.push({ type: A11Y_MESSAGE_TYPE.ADD, cell, sprites: addedSprites })
+            messages.push({ type: A11Y_MESSAGE_TYPE.REPLACE, cell, replacements: replacedSprites })
         } else {
             // removing
             const removedSprites = new Set<GameSprite>()
@@ -1538,7 +1527,7 @@ class ReplaceTile {
                 //     didActuallyChange = didActuallyChange || removed
                 // }
             }
-            messages.push({ type: REPLACE_TYPE.REMOVE, cell, sprites: removedSprites })
+            messages.push({ type: A11Y_MESSAGE_TYPE.REMOVE, cell, sprites: removedSprites })
         }
         // return the oldSprite for UNDO
         return {
@@ -1903,7 +1892,7 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
         let didChangeSprites = false
         let didChangeDirection = false
         const orTilesRemoved = new Set()
-        let allMessages: REPLACE_MESSAGE[] = []
+        let allMessages: Array<A11Y_MESSAGE<Cell, GameSprite>> = []
         for (const replaceTile of replaceTiles) {
             const { didActuallyChange, messages } = replaceTile.replace(cell, magicOrTiles, orTilesRemoved)
             if (didActuallyChange) {
