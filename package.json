@@ -44,7 +44,6 @@
     "bitset": "^5.0.4",
     "chalk": "^2.4.1",
     "commander": "^2.19.0",
-    "contro": "github:philschatz/contro#51a450da7758f0754bed7d2248942a4557d112fc",
     "eventemitter2": "^5.0.1",
     "firstline": "^2.0.2",
     "font-ascii": "^1.1.16",
