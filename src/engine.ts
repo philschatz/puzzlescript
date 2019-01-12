@@ -2,7 +2,7 @@ import { EventEmitter2, Listener } from 'eventemitter2'
 import { logger } from './logger'
 import { CollisionLayer } from './models/collisionLayer'
 import { GameData } from './models/game'
-import { IMutation, SimpleRuleGroup } from './models/rule'
+import { A11Y_MESSAGE, A11Y_MESSAGE_TYPE, IMutation, SimpleRuleGroup } from './models/rule'
 import { GameSprite, IGameTile } from './models/tile'
 import { Command, COMMAND_TYPE, LEVEL_TYPE, SoundItem } from './parser/astTypes'
 import { SpriteBitSet } from './spriteBitSet'
@@ -465,7 +465,9 @@ export class LevelEngine extends EventEmitter2 {
                     soundToPlay: null,
                     messageToShow: null,
                     hasRestart: false,
-                    isWinning: false
+                    isWinning: false,
+                    mutations: [],
+                    a11yMessages: []
                 }
             case INPUT_BUTTON.RESTART:
                 this.doRestart()
@@ -475,7 +477,9 @@ export class LevelEngine extends EventEmitter2 {
                     soundToPlay: null,
                     messageToShow: null,
                     hasRestart: true,
-                    isWinning: false
+                    isWinning: false,
+                    mutations: [],
+                    a11yMessages: []
                 }
             default:
               // no-op
@@ -519,7 +523,9 @@ export class LevelEngine extends EventEmitter2 {
             soundToPlay,
             messageToShow,
             hasRestart,
-            isWinning: hasWinCommand || this.isWinning()
+            isWinning: hasWinCommand || this.isWinning(),
+            mutations: ret.mutations,
+            a11yMessages: ret.a11yMessages
         }
     }
 
@@ -542,6 +548,7 @@ export class LevelEngine extends EventEmitter2 {
 
     public /*only for unit tests*/ tickMoveSprites(changedCells: Set<Cell>) {
         const movedCells: Set<Cell> = new Set()
+        const a11yMessages: Array<A11Y_MESSAGE<Cell, GameSprite>> = []
         // Loop over all the cells, see if a Rule matches, apply the transition, and notify that cells changed
         let somethingChanged
         do {
@@ -570,6 +577,8 @@ export class LevelEngine extends EventEmitter2 {
                                 movedCells.add(neighbor)
                                 movedCells.add(cell)
                                 somethingChanged = true
+
+                                a11yMessages.push({ type: A11Y_MESSAGE_TYPE.MOVE, oldCell: cell, newCell: neighbor, sprite, direction: wantsToMove })
                                 // Don't delete until we are sure none of the sprites want to move
                                 // changedCells.delete(cell)
                             } else {
@@ -591,7 +600,7 @@ export class LevelEngine extends EventEmitter2 {
                 cell.clearWantsToMove(sprite)
             }
         }
-        return movedCells
+        return { movedCells, a11yMessages }
     }
 
     private pressDir(direction: INPUT_BUTTON) {
@@ -697,6 +706,7 @@ export class LevelEngine extends EventEmitter2 {
 
     private _tickUpdateCells(rules: Iterable<SimpleRuleGroup>) {
         const changedMutations: Set<IMutation> = new Set()
+        const a11yMessages: Array<A11Y_MESSAGE<Cell, GameSprite>> = []
         const evaluatedRules: SimpleRuleGroup[] = []
         if (!this.currentLevel) {
             throw new Error(`BUG: Level Cells do not exist yet`)
@@ -708,6 +718,9 @@ export class LevelEngine extends EventEmitter2 {
             }
             for (const mutation of cellMutations) {
                 changedMutations.add(mutation)
+                for (const message of mutation.messages) {
+                    a11yMessages.push(message)
+                }
             }
         }
 
@@ -721,7 +734,7 @@ export class LevelEngine extends EventEmitter2 {
                 commands.add(mutation.getCommand())
             }
         }
-        return { evaluatedRules, changedCells, commands }
+        return { evaluatedRules, changedCells, commands, mutations: changedMutations, a11yMessages }
     }
 
     private tickNormal() {
@@ -744,7 +757,7 @@ export class LevelEngine extends EventEmitter2 {
             logger.debug(() => `Turn starts with no input.`)
         }
 
-        const { changedCells: changedCellMutations2, evaluatedRules, commands } = this.tickUpdateCells()
+        const { changedCells: changedCellMutations2, evaluatedRules, commands, mutations, a11yMessages: a11yMessages1 } = this.tickUpdateCells()
         changedCellMutations = setAddAll(changedCellMutations, changedCellMutations2)
 
         // Continue evaluating again rules only when some sprites have changed
@@ -752,8 +765,8 @@ export class LevelEngine extends EventEmitter2 {
         // a rule might add a sprite, and then another rule might remove a sprite.
         // We need to compare the set of sprites before and after ALL rules ran.
         // This will likely be implemented as part of UNDO or CHECKPOINT.
-        const movedCells = this.tickMoveSprites(new Set<Cell>(changedCellMutations.keys()))
-        const { changedCells: changedCellsLate, evaluatedRules: evaluatedRulesLate, commands: commandsLate } = this.tickUpdateCellsLate()
+        const { movedCells, a11yMessages: a11yMessages2 } = this.tickMoveSprites(new Set<Cell>(changedCellMutations.keys()))
+        const { changedCells: changedCellsLate, evaluatedRules: evaluatedRulesLate, commands: commandsLate, mutations: mutationsLate, a11yMessages: a11yMessages3 } = this.tickUpdateCellsLate()
         const allCommands = [...commands, ...commandsLate]
         const didCancel = !!allCommands.filter((c) => c.type === COMMAND_TYPE.CANCEL)[0]
         if (didCancel) {
@@ -764,7 +777,9 @@ export class LevelEngine extends EventEmitter2 {
             return {
                 changedCells: new Set<Cell>(),
                 commands: new Set<Command<SoundItem<IGameTile>>>(),
-                evaluatedRules
+                evaluatedRules,
+                mutations: new Set<IMutation>(),
+                a11yMessages: []
             }
         }
         const didCheckpoint = !!allCommands.find((c) => c.type === COMMAND_TYPE.CHECKPOINT)
@@ -781,7 +796,9 @@ export class LevelEngine extends EventEmitter2 {
         return {
             changedCells,
             evaluatedRules: evaluatedRules.concat(evaluatedRulesLate),
-            commands: allCommands
+            commands: allCommands,
+            mutations: new Set([...mutations, ...mutationsLate]),
+            a11yMessages: [...a11yMessages1, ...a11yMessages2, ...a11yMessages3]
         }
     }
 
@@ -927,14 +944,14 @@ export class GameEngine {
         }
 
         const previousPending = this.levelEngine.pendingPlayerWantsToMove
-        const { changedCells, soundToPlay, messageToShow, isWinning, hasRestart } = this.levelEngine.tick()
+        const { changedCells, soundToPlay, messageToShow, isWinning, hasRestart, a11yMessages } = this.levelEngine.tick()
 
         if (previousPending && !this.levelEngine.pendingPlayerWantsToMove) {
             this.handler.onPress(previousPending)
         }
 
         if (hasRestart) {
-            this.handler.onTick(changedCells, hasAgain)
+            this.handler.onTick(changedCells, hasAgain, a11yMessages)
             return {
                 changedCells,
                 didWinGame: false,
@@ -944,7 +961,7 @@ export class GameEngine {
         }
 
         hasAgain = this.levelEngine.hasAgain()
-        this.handler.onTick(changedCells, hasAgain)
+        this.handler.onTick(changedCells, hasAgain, a11yMessages)
         let didWinGame = false
         if (isWinning) {
             if (this.currentLevelNum === this.levelEngine.gameData.levels.length - 1) {

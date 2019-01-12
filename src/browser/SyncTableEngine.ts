@@ -118,6 +118,7 @@ export default class SyncTableEngine implements Engineish {
         }
         this.subEngine.start()
         this.table.focus()
+        this.resizeWatcher.trigger()
     }
     public dispose() {
         this.subEngine.dispose()

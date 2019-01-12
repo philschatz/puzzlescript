@@ -4,8 +4,8 @@ declare module 'contro' {
   export function and<T1, T2 extends Control<T1>>(...controls: T2[]): T2
 
   interface Vector2 {
-    xAxis: number
-    yAxis: number
+    x: number
+    y: number
   }
 
   interface Control<T> {

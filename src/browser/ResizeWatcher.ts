@@ -12,7 +12,7 @@ export default class ResizeWatcher {
         this.handler = handler
         this.columns = 1
         this.rows = 1
-        this.boundResizeHandler = _debounce(this.resizeHandler.bind(this))
+        this.boundResizeHandler = _debounce(this.trigger.bind(this))
 
         window.addEventListener('resize', this.boundResizeHandler)
     }
@@ -22,7 +22,7 @@ export default class ResizeWatcher {
         this.columns = columns
     }
 
-    public resizeHandler() {
+    public trigger() {
         // Resize the table so that it fits.
         const levelRatio = this.columns / this.rows
         // Figure out if the width or the height is the limiting factor

@@ -1,9 +1,11 @@
 import { GameData } from '../models/game'
+import { A11Y_MESSAGE, A11Y_MESSAGE_TYPE } from '../models/rule'
 import { GameSprite } from '../models/tile'
 import { LEVEL_TYPE } from '../parser/astTypes'
 import Serializer from '../parser/serializer'
 import TableUI from '../ui/table'
 import { Cellish,
+    CellishJson,
     Engineish,
     GameEngineHandlerOptional,
     INPUT_BUTTON,
@@ -12,7 +14,7 @@ import { Cellish,
     pollingPromise,
     PuzzlescriptWorker,
     RULE_DIRECTION,
-    WorkerResponse } from '../util'
+    WorkerResponse} from '../util'
 import InputWatcher from './InputWatcher'
 import ResizeWatcher from './ResizeWatcher'
 
@@ -130,7 +132,7 @@ export default class WebworkerTableEngine implements Engineish {
                 } else {
                     this.ui.onLevelChange(data.level, null, data.message)
                 }
-                this.resizeWatcher.resizeHandler() // force resize
+                this.resizeWatcher.trigger() // force resize
                 this.table.focus()
                 break
             case MESSAGE_TYPE.ON_MESSAGE:
@@ -142,7 +144,7 @@ export default class WebworkerTableEngine implements Engineish {
                 this.ui.onPress(data.direction)
                 break
             case MESSAGE_TYPE.ON_TICK:
-                this.ui.onTick(new Set(data.changedCells.map((x) => this.convertToCellish(x))), data.hasAgain)
+                this.ui.onTick(new Set(data.changedCells.map((x) => this.convertToCellish(x))), data.hasAgain, this.convertToA11yMessages(data.a11yMessages))
                 break
             case MESSAGE_TYPE.ON_SOUND:
                 await this.ui.onSound({ soundCode: data.soundCode })
@@ -163,6 +165,31 @@ export default class WebworkerTableEngine implements Engineish {
                 console.log(`BUG: Unhandled Event occurred. Ignoring "${data.type}"`, data) // tslint:disable-line:no-console
         }
     }
+    private convertToA11yMessages(a11yMessages: Array<A11Y_MESSAGE<CellishJson, string>>): Array<A11Y_MESSAGE<Cellish, GameSprite>> {
+        return a11yMessages.map((message) => {
+            switch (message.type) {
+                case A11Y_MESSAGE_TYPE.ADD:
+                    return { ...message, cell: this.convertToCellish(message.cell), sprites: [...message.sprites].map((n) => this.lookupSprite(n)) }
+                case A11Y_MESSAGE_TYPE.MOVE:
+                    return { ...message, oldCell: this.convertToCellish(message.oldCell), newCell: this.convertToCellish(message.newCell), sprite: this.lookupSprite(message.sprite) }
+                case A11Y_MESSAGE_TYPE.REMOVE:
+                    return { ...message, cell: this.convertToCellish(message.cell), sprites: [...message.sprites].map((n) => this.lookupSprite(n)) }
+                case A11Y_MESSAGE_TYPE.REPLACE:
+                    return {
+                        ...message,
+                        cell: this.convertToCellish(message.cell),
+                        replacements: [...message.replacements].map(({ oldSprite, newSprite }) => ({ oldSprite: this.lookupSprite(oldSprite), newSprite: this.lookupSprite(newSprite) }))
+                    }
+            }
+        })
+    }
+    private lookupSprite(name: string) {
+        const sprite = this.getGameData()._getSpriteByName(name)
+        if (!sprite) {
+            throw new Error(`Could not find sprite "${name}"`)
+        }
+        return sprite
+    }
     private convertToCellish(c: {rowIndex: number, colIndex: number, spriteNames: string[]}) {
         const { rowIndex, colIndex, spriteNames } = c
 
@@ -176,13 +203,7 @@ export default class WebworkerTableEngine implements Engineish {
 
         const cell = this.cellCache[rowIndex][colIndex]
 
-        cell.sprites = spriteNames.map((name) => {
-            const sprite = this.getGameData()._getSpriteByName(name)
-            if (!sprite) {
-                throw new Error(`Could not find sprite "${name}"`)
-            }
-            return sprite
-        })
+        cell.sprites = spriteNames.map((name) => this.lookupSprite(name))
 
         return cell
     }

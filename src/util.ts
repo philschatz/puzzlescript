@@ -1,5 +1,7 @@
 import { GameData } from '.'
+import { Cell } from './engine'
 import { GameMetadata } from './models/metadata'
+import { A11Y_MESSAGE } from './models/rule'
 import { GameSprite } from './models/tile'
 import { Soundish } from './parser/astTypes'
 import { IGraphJson } from './parser/serializer'
@@ -294,7 +296,8 @@ export interface SerializedTickResult {
     messageToShow: Optional<string>
     didWinGame: boolean
     didLevelChange: boolean
-    wasAgainTick: boolean
+    wasAgainTick: boolean,
+    a11yMessages: A11Y_MESSAGE<CellishJson, string>
 }
 
 export type WorkerMessage = {
@@ -356,6 +359,7 @@ export type WorkerResponse = {
     type: MESSAGE_TYPE.ON_TICK
     changedCells: CellishJson[]
     hasAgain: boolean
+    a11yMessages: Array<A11Y_MESSAGE<CellishJson, string>>
 }
 
 export interface PuzzlescriptWorker {
@@ -387,7 +391,7 @@ export interface GameEngineHandler {
     onLevelChange(level: number, cells: Optional<Cellish[][]>, message: Optional<string>): void
     onWin(): void
     onSound(sound: Soundish): Promise<void>
-    onTick(changedCells: Set<Cellish>, hasAgain: boolean): void
+    onTick(changedCells: Set<Cellish>, hasAgain: boolean, a11yMessages: Array<A11Y_MESSAGE<Cell, GameSprite>>): void
     onPause(): void
     onResume(): void
     // onGameChange(data: GameData): void
@@ -399,7 +403,7 @@ export interface GameEngineHandlerOptional {
     onLevelChange?(level: number, cells: Optional<Cellish[][]>, message: Optional<string>): void
     onWin?(): void
     onSound?(sound: Soundish): Promise<void>
-    onTick?(changedCells: Set<Cellish>, hasAgain: boolean): void
+    onTick?(changedCells: Set<Cellish>, hasAgain: boolean, a11yMessages: Array<A11Y_MESSAGE<Cellish, GameSprite>>): void
     onPause?(): void
     onResume?(): void
     // onGameChange?(data: GameData): void
@@ -415,7 +419,9 @@ export class EmptyGameEngineHandler implements GameEngineHandler {
     public onLevelChange(level: number, cells: Optional<Cellish[][]>, message: Optional<string>) { for (const h of this.subHandlers) { h.onLevelChange && h.onLevelChange(level, cells, message) } }
     public onWin() { for (const h of this.subHandlers) { h.onWin && h.onWin() } }
     public async onSound(sound: Soundish) { for (const h of this.subHandlers) { h.onSound && h.onSound(sound) } }
-    public onTick(changedCells: Set<Cellish>, hasAgain: boolean) { for (const h of this.subHandlers) { h.onTick && h.onTick(changedCells, hasAgain) } }
+    public onTick(changedCells: Set<Cellish>, hasAgain: boolean, a11yMessages: Array<A11Y_MESSAGE<Cellish, GameSprite>>) {
+        for (const h of this.subHandlers) { h.onTick && h.onTick(changedCells, hasAgain, a11yMessages) }
+    }
     public onPause() { for (const h of this.subHandlers) { h.onPause && h.onPause() } }
     public onResume() { for (const h of this.subHandlers) { h.onResume && h.onResume() } }
     // public onGameChange(data: GameData) { this.subHandlers.forEach(h => h.onGameChange && h.onGameChange(data)) }
