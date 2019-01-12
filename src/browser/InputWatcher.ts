@@ -1,5 +1,5 @@
-import { Button, BUTTON_TYPE, Gamepad, Keyboard, or, Stick, STICK_TYPE } from 'contro'
 import { INPUT_BUTTON, Optional } from '../util'
+import { BUTTON_TYPE, Controllers, IButton, IGamepad, IStick, STICK_TYPE } from './controller/controller'
 
 interface Control<T> {
     up: T,
@@ -18,9 +18,9 @@ interface StickControl<T> {
 
 export default class InputWatcher {
     private readonly table: HTMLTableElement
-    private readonly gamepad: Gamepad
-    private readonly controls: Control<{button: Button, lastPressed: Optional<number>}>
-    private readonly stickControls: StickControl<{stick: Stick, lastPressed: Optional<number>}>
+    private readonly gamepad: IGamepad
+    private readonly controls: Control<{button: IButton, lastPressed: Optional<number>}>
+    private readonly stickControls: StickControl<{stick: IStick, lastPressed: Optional<number>}>
     private readonly controlCheckers: Array<() => void>
     private readonly possibleKeys: string[]
     private readonly boundOnKeyEvents: (evt: KeyboardEvent) => void
@@ -28,8 +28,7 @@ export default class InputWatcher {
     private repeatIntervalInSeconds: Optional<number>
 
     constructor(table: HTMLTableElement) {
-        const keyboard = new Keyboard()
-        this.gamepad = new Gamepad()
+        this.gamepad = Controllers.getAnyGamepad()
         this.table = table
         this.polledInput = null
         this.repeatIntervalInSeconds = null
@@ -37,24 +36,38 @@ export default class InputWatcher {
         this.possibleKeys = []
         const keyboardKey = (key: string) => {
             this.possibleKeys.push(key)
-            return keyboard.key(key)
+            return Controllers.key(key)
         }
 
+        // const anyGamepad = Contro.getAnyGamepad()
+        // const stick = Contro.orSticks([
+        //     dpadAsStick(anyGamepad),
+        //     anyGamepad.stick(STICK_TYPE.LEFT),
+        //     anyGamepad.stick(STICK_TYPE.RIGHT),
+        //     // arrowKeysAsStick(),
+        //     // wsadKeysAsStick(),
+        //     Contro.asStick(keyboardKey('w'), keyboardKey('s'), keyboardKey('a'), keyboardKey('d')),
+        //     Contro.asStick(keyboardKey('ArrowUp'), keyboardKey('ArrowDown'), keyboardKey('ArrowLeft'), keyboardKey('ArrowRight')),
+        // ])
+        // const action = Contro.or([this.gamepad.button(BUTTON_TYPE.CLUSTER_BOTTOM), keyboardKey('x'), keyboardKey(' '), keyboardKey('Enter')])
+        // const undo = Contro.or([this.gamepad.button(BUTTON_TYPE.CLUSTER_LEFT), this.gamepad.button(BUTTON_TYPE.BUMPER_TOP_LEFT), keyboardKey('z'), keyboardKey('u')])
+        // const restart = Contro.or([this.gamepad.button(BUTTON_TYPE.CLUSTER_TOP), keyboardKey('r')])
+
         this.controls = {
-            up: { lastPressed: null, button: or(this.gamepad.button(BUTTON_TYPE.ARROW_UP), keyboardKey('w'), keyboardKey('ArrowUp')) },
-            down: { lastPressed: null, button: or(this.gamepad.button(BUTTON_TYPE.ARROW_DOWN), keyboardKey('s'), keyboardKey('ArrowDown')) },
-            left: { lastPressed: null, button: or(this.gamepad.button(BUTTON_TYPE.ARROW_LEFT), keyboardKey('a'), keyboardKey('ArrowLeft')) },
-            right: { lastPressed: null, button: or(this.gamepad.button(BUTTON_TYPE.ARROW_RIGHT), keyboardKey('d'), keyboardKey('ArrowRight')) },
-            action: { lastPressed: null, button: or(this.gamepad.button(BUTTON_TYPE.CLUSTER_BOTTOM), keyboardKey('x'), keyboardKey(' '), keyboardKey('Enter')) },
-            undo: { lastPressed: null, button: or(this.gamepad.button(BUTTON_TYPE.CLUSTER_LEFT), this.gamepad.button(BUTTON_TYPE.BUMPER_TOP_LEFT), keyboardKey('z'), keyboardKey('u')) },
-            restart: { lastPressed: null, button: or(this.gamepad.button(BUTTON_TYPE.CLUSTER_TOP), keyboardKey('r')) }
+            up: { lastPressed: null, button: Controllers.or([this.gamepad.button(BUTTON_TYPE.ARROW_UP), keyboardKey('w'), keyboardKey('ArrowUp')]) },
+            down: { lastPressed: null, button: Controllers.or([this.gamepad.button(BUTTON_TYPE.ARROW_DOWN), keyboardKey('s'), keyboardKey('ArrowDown')]) },
+            left: { lastPressed: null, button: Controllers.or([this.gamepad.button(BUTTON_TYPE.ARROW_LEFT), keyboardKey('a'), keyboardKey('ArrowLeft')]) },
+            right: { lastPressed: null, button: Controllers.or([this.gamepad.button(BUTTON_TYPE.ARROW_RIGHT), keyboardKey('d'), keyboardKey('ArrowRight')]) },
+            action: { lastPressed: null, button: Controllers.or([this.gamepad.button(BUTTON_TYPE.CLUSTER_BOTTOM), keyboardKey('x'), keyboardKey(' '), keyboardKey('Enter')]) },
+            undo: { lastPressed: null, button: Controllers.or([this.gamepad.button(BUTTON_TYPE.CLUSTER_LEFT), this.gamepad.button(BUTTON_TYPE.BUMPER_TOP_LEFT), keyboardKey('z'), keyboardKey('u')]) },
+            restart: { lastPressed: null, button: Controllers.or([this.gamepad.button(BUTTON_TYPE.CLUSTER_TOP), keyboardKey('r')]) }
         }
         this.stickControls = {
             left: { lastPressed: null, stick: this.gamepad.stick(STICK_TYPE.LEFT) },
             right: { lastPressed: null, stick: this.gamepad.stick(STICK_TYPE.RIGHT) }
         }
 
-        const makeChecker = (control: keyof Control<Button>, gameAction: () => void) => {
+        const makeChecker = (control: keyof Control<IButton>, gameAction: () => void) => {
             return () => {
                 const now = Date.now()
                 const interval = (this.repeatIntervalInSeconds || .25) * 1000

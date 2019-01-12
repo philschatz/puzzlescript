@@ -2156,10 +2156,6 @@ content-disposition@0.5.2:
   resolved "https://registry.yarnpkg.com/content-disposition/-/content-disposition-0.5.2.tgz#0cf68bb9ddf5f2be7961c3a85178cb85dba78cb4"
   integrity sha1-DPaLud318r55YcOoUXjLhdunjLQ=
 
-"contro@github:philschatz/contro#51a450da7758f0754bed7d2248942a4557d112fc":
-  version "0.0.0-semantically-released"
-  resolved "https://codeload.github.com/philschatz/contro/tar.gz/51a450da7758f0754bed7d2248942a4557d112fc"
-
 convert-source-map@^1.1.0, convert-source-map@^1.4.0, convert-source-map@^1.5.1:
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/convert-source-map/-/convert-source-map-1.6.0.tgz#51b537a8c43e0f04dec1993bffcdd504e758ac20"
