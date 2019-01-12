@@ -84,10 +84,20 @@ const direction = stick.direction() // 'UP', 'DOWN', ..., or null . The cardinal
 
 Keyboard keys can also be handled like gamepad buttons.
 
+Optionally, a scope element can/should be specified so keys on the whole webpage still work.
+
 ```ts
 const button2 = Controllers.key('Enter')
 const isPressed = button2.query()
 button2.dispose()
+```
+
+Optional scope and modifier keys.
+For example, to check if <kbd>Shift</kbd>+<kbd>S</kbd> when the game is focused on, use the following:
+
+```ts
+const button3 = Controllers.key('s', gameEl, [ KEY_MODIFIER.SHIFT ])
+button3.query() // true if Shift+S is pressed while `gameEl` is the focused element.
 ```
 
 ## Composition

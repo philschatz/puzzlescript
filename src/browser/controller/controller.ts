@@ -36,6 +36,13 @@ export enum DIRECTION {
     RIGHT = 'RIGHT'
 }
 
+export enum KEY_MODIFIER {
+    ALT = 'ALT',
+    CTRL = 'CTRL',
+    META = 'META',
+    SHIFT = 'SHIFT'
+}
+
 export interface IGamepad {
     isConnected(): boolean
     hasButton(arg: BUTTON_TYPE): boolean
@@ -224,13 +231,39 @@ export const Controllers = new (class ControllersSingleton {
         return anyGamepad
     }
 
-    public key(key: string): IKeyboardButton {
+    public key(key: string, context?: Element, modifiers?: KEY_MODIFIER[]): IKeyboardButton {
+        const mods = new Set(modifiers ? modifiers : [])
         let pressed = false
+        const checkModifiers = (m: Set<KEY_MODIFIER>, evt: KeyboardEvent) => {
+            return m.has(KEY_MODIFIER.ALT) === evt.altKey &&
+                m.has(KEY_MODIFIER.CTRL) === evt.ctrlKey &&
+                m.has(KEY_MODIFIER.META) === evt.metaKey &&
+                m.has(KEY_MODIFIER.SHIFT) === evt.shiftKey
+        }
+        const checkActiveElement = (root: Element, current: Element | null): boolean => {
+            if (root === current) {
+                return true
+            }
+            if (current !== null && current.parentElement) {
+                return checkActiveElement(root, current.parentElement)
+            }
+            return false
+        }
         const onKeyDown = (evt: KeyboardEvent) => {
-            if (evt.key === key) { pressed = true }
+            if (evt.key === key && checkModifiers(mods, evt)) {
+                if (!context || checkActiveElement(context, window.document.activeElement)) {
+                    pressed = true
+                    evt.preventDefault()
+                }
+            }
         }
         const onKeyUp = (evt: KeyboardEvent) => {
-            if (evt.key === key) { pressed = false }
+            if (evt.key === key && checkModifiers(mods, evt)) {
+                if (!context || checkActiveElement(context, window.document.activeElement)) {
+                    pressed = false
+                    evt.preventDefault()
+                }
+            }
         }
         window.addEventListener('keydown', onKeyDown)
         window.addEventListener('keyup', onKeyUp)
@@ -305,18 +338,18 @@ export const Controllers = new (class ControllersSingleton {
     }
 })() // new Singleton
 
-export const arrowKeysAsStick = () => Controllers.asStick(
-    Controllers.key('ArrowUp'),
-    Controllers.key('ArrowDown'),
-    Controllers.key('ArrowLeft'),
-    Controllers.key('ArrowRight')
+export const arrowKeysAsStick = (root?: Element) => Controllers.asStick(
+    Controllers.key('ArrowUp', root),
+    Controllers.key('ArrowDown', root),
+    Controllers.key('ArrowLeft', root),
+    Controllers.key('ArrowRight', root)
 )
 
-export const wsadKeysAsStick = () => Controllers.asStick(
-    Controllers.key('w'),
-    Controllers.key('s'),
-    Controllers.key('a'),
-    Controllers.key('d')
+export const wsadKeysAsStick = (root?: Element) => Controllers.asStick(
+    Controllers.key('w', root),
+    Controllers.key('s', root),
+    Controllers.key('a', root),
+    Controllers.key('d', root)
 )
 
 export const dpadAsStick = (arg: IGamepad) => Controllers.asStick(

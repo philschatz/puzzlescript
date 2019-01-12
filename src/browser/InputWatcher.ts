@@ -1,5 +1,5 @@
 import { INPUT_BUTTON, Optional } from '../util'
-import { BUTTON_TYPE, Controllers, IButton, IGamepad, IStick, STICK_TYPE } from './controller/controller'
+import { BUTTON_TYPE, Controllers, IButton, IGamepad, IKeyboardButton, IStick, STICK_TYPE } from './controller/controller'
 
 interface Control<T> {
     up: T,
@@ -22,8 +22,7 @@ export default class InputWatcher {
     private readonly controls: Control<{button: IButton, lastPressed: Optional<number>}>
     private readonly stickControls: StickControl<{stick: IStick, lastPressed: Optional<number>}>
     private readonly controlCheckers: Array<() => void>
-    private readonly possibleKeys: string[]
-    private readonly boundOnKeyEvents: (evt: KeyboardEvent) => void
+    private readonly boundKeys: IKeyboardButton[]
     private polledInput: Optional<INPUT_BUTTON>
     private repeatIntervalInSeconds: Optional<number>
 
@@ -32,11 +31,12 @@ export default class InputWatcher {
         this.table = table
         this.polledInput = null
         this.repeatIntervalInSeconds = null
+        this.boundKeys = []
 
-        this.possibleKeys = []
         const keyboardKey = (key: string) => {
-            this.possibleKeys.push(key)
-            return Controllers.key(key)
+            const button = Controllers.key(key, table)
+            this.boundKeys.push(button)
+            return button
         }
 
         // const anyGamepad = Contro.getAnyGamepad()
@@ -124,24 +124,6 @@ export default class InputWatcher {
             makeChecker('undo', () => this.polledInput = INPUT_BUTTON.UNDO),
             makeChecker('restart', () => this.polledInput = INPUT_BUTTON.RESTART)
         ]
-
-        // Disable bubbling up events when keys are pressed
-        this.boundOnKeyEvents = this.onKeyEvents.bind(this)
-        window.addEventListener('keydown', this.boundOnKeyEvents)
-        window.addEventListener('keyup', this.boundOnKeyEvents)
-        window.addEventListener('keypress', this.boundOnKeyEvents)
-    }
-
-    public onKeyEvents(evt: KeyboardEvent) {
-        if (evt.metaKey || evt.shiftKey || evt.altKey || evt.ctrlKey) {
-            return
-        }
-        if (window.document.activeElement !== this.table) {
-            return
-        }
-        if (this.possibleKeys.indexOf(evt.key) >= 0) {
-            evt.preventDefault()
-        }
     }
 
     public pollControls() {
@@ -170,8 +152,8 @@ export default class InputWatcher {
     }
 
     public dispose() {
-        window.removeEventListener('keydown', this.boundOnKeyEvents)
-        window.removeEventListener('keyup', this.boundOnKeyEvents)
-        window.removeEventListener('keypress', this.boundOnKeyEvents)
+        for (const button of this.boundKeys) {
+            button.dispose()
+        }
     }
 }
