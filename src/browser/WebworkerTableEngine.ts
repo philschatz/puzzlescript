@@ -175,7 +175,11 @@ export default class WebworkerTableEngine implements Engineish {
                 case A11Y_MESSAGE_TYPE.REMOVE:
                     return { ...message, cell: this.convertToCellish(message.cell), sprites: [...message.sprites].map((n) => this.lookupSprite(n)) }
                 case A11Y_MESSAGE_TYPE.REPLACE:
-                    return { ...message, cell: this.convertToCellish(message.cell), replacements: [...message.replacements].map(({ oldSprite, newSprite }) =>({ oldSprite: this.lookupSprite(oldSprite), newSprite: this.lookupSprite(newSprite) })) }
+                    return {
+                        ...message,
+                        cell: this.convertToCellish(message.cell),
+                        replacements: [...message.replacements].map(({ oldSprite, newSprite }) => ({ oldSprite: this.lookupSprite(oldSprite), newSprite: this.lookupSprite(newSprite) }))
+                    }
             }
         })
     }

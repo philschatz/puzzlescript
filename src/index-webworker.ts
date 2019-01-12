@@ -158,7 +158,11 @@ const toA11yMessageJson = (message: A11Y_MESSAGE<Cell, GameSprite>): A11Y_MESSAG
         case A11Y_MESSAGE_TYPE.REMOVE:
             return { ...message, cell: toCellJson(message.cell), sprites: [...message.sprites].map(toSpriteName) }
         case A11Y_MESSAGE_TYPE.REPLACE:
-            return { ...message, cell: toCellJson(message.cell), replacements: [...message.replacements].map(({ oldSprite, newSprite }) =>({ oldSprite: toSpriteName(oldSprite), newSprite: toSpriteName(newSprite) })) }
+            return {
+                ...message,
+                cell: toCellJson(message.cell),
+                replacements: [...message.replacements].map(({ oldSprite, newSprite }) => ({ oldSprite: toSpriteName(oldSprite), newSprite: toSpriteName(newSprite) }))
+            }
     }
 }
 

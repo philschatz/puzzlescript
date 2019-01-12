@@ -419,7 +419,9 @@ export class EmptyGameEngineHandler implements GameEngineHandler {
     public onLevelChange(level: number, cells: Optional<Cellish[][]>, message: Optional<string>) { for (const h of this.subHandlers) { h.onLevelChange && h.onLevelChange(level, cells, message) } }
     public onWin() { for (const h of this.subHandlers) { h.onWin && h.onWin() } }
     public async onSound(sound: Soundish) { for (const h of this.subHandlers) { h.onSound && h.onSound(sound) } }
-    public onTick(changedCells: Set<Cellish>, hasAgain: boolean, a11yMessages: Array<A11Y_MESSAGE<Cellish, GameSprite>>) { for (const h of this.subHandlers) { h.onTick && h.onTick(changedCells, hasAgain, a11yMessages) } }
+    public onTick(changedCells: Set<Cellish>, hasAgain: boolean, a11yMessages: Array<A11Y_MESSAGE<Cellish, GameSprite>>) {
+        for (const h of this.subHandlers) { h.onTick && h.onTick(changedCells, hasAgain, a11yMessages) }
+    }
     public onPause() { for (const h of this.subHandlers) { h.onPause && h.onPause() } }
     public onResume() { for (const h of this.subHandlers) { h.onResume && h.onResume() } }
     // public onGameChange(data: GameData) { this.subHandlers.forEach(h => h.onGameChange && h.onGameChange(data)) }

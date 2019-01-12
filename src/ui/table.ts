@@ -4,7 +4,18 @@ import { A11Y_MESSAGE, A11Y_MESSAGE_TYPE } from '../models/rule'
 import { GameSprite } from '../models/tile'
 import { Soundish } from '../parser/astTypes'
 import { playSound } from '../sound/sfxr'
-import { _flatten, Cellish, EmptyGameEngineHandler, GameEngineHandler, GameEngineHandlerOptional, INPUT_BUTTON, Optional, RULE_DIRECTION, setIntersection, spritesThatInteractWithPlayer } from '../util'
+import {
+    _flatten,
+    Cellish,
+    EmptyGameEngineHandler,
+    GameEngineHandler,
+    GameEngineHandlerOptional,
+    INPUT_BUTTON,
+    Optional,
+    RULE_DIRECTION,
+    setIntersection,
+    spritesThatInteractWithPlayer
+} from '../util'
 import BaseUI from './base'
 
 interface ITableCell {
@@ -14,8 +25,8 @@ interface ITableCell {
 }
 
 function mapIncrement<T>(map: Map<T, number>, item: T) {
-    const number = map.get(item)
-    map.set(item, number ? number + 1 : 1)
+    const num = map.get(item)
+    map.set(item, num ? num + 1 : 1)
 }
 
 class TableUI extends BaseUI implements GameEngineHandler {
@@ -51,7 +62,7 @@ class TableUI extends BaseUI implements GameEngineHandler {
 
         const liveLog = table.querySelector('[aria-live]') || document.querySelector('[aria-live]')
         if (!liveLog) {
-            throw new Error(`Error: For screenreaders to work, an element inside the table (for now) with an aria-live attribute needs to exist in the initial page. See https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Live_Regions`)
+            throw new Error(`Error: For screenreaders to work, an element inside the table (for now) with an aria-live attribute needs to exist in the initial page. See https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Live_Regions`) // tslint:disable-line:max-line-length
         }
         this.liveLog = liveLog
 
