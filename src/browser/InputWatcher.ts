@@ -1,4 +1,4 @@
-import { Button, BUTTON_TYPE, Gamepad, Keyboard, or } from 'contro'
+import { Button, BUTTON_TYPE, Gamepad, Keyboard, or, Stick, STICK_TYPE } from 'contro'
 import { INPUT_BUTTON, Optional } from '../util'
 
 interface Control<T> {
@@ -11,10 +11,16 @@ interface Control<T> {
     restart: T
 }
 
+interface StickControl<T> {
+    left: T,
+    right: T,
+}
+
 export default class InputWatcher {
     private readonly table: HTMLTableElement
     private readonly gamepad: Gamepad
     private readonly controls: Control<{button: Button, lastPressed: Optional<number>}>
+    private readonly stickControls: StickControl<{stick: Stick, lastPressed: Optional<number>}>
     private readonly controlCheckers: Array<() => void>
     private readonly possibleKeys: string[]
     private readonly boundOnKeyEvents: (evt: KeyboardEvent) => void
@@ -43,13 +49,18 @@ export default class InputWatcher {
             undo: { lastPressed: null, button: or(this.gamepad.button(BUTTON_TYPE.CLUSTER_LEFT), this.gamepad.button(BUTTON_TYPE.BUMPER_TOP_LEFT), keyboardKey('z'), keyboardKey('u')) },
             restart: { lastPressed: null, button: or(this.gamepad.button(BUTTON_TYPE.CLUSTER_TOP), keyboardKey('r')) }
         }
+        this.stickControls = {
+            left: { lastPressed: null, stick: this.gamepad.stick(STICK_TYPE.LEFT) },
+            right: { lastPressed: null, stick: this.gamepad.stick(STICK_TYPE.RIGHT) }
+        }
+
         const makeChecker = (control: keyof Control<Button>, gameAction: () => void) => {
             return () => {
                 const now = Date.now()
-                const interval = this.repeatIntervalInSeconds || .25
+                const interval = (this.repeatIntervalInSeconds || .25) * 1000
                 const { button, lastPressed } = this.controls[control]
                 if (button.query()) {
-                    if (!lastPressed || (lastPressed + interval * 1000) < now) {
+                    if (!lastPressed || (lastPressed + interval) < now) {
                         gameAction()
                         this.controls[control].lastPressed = now
                     }
@@ -59,7 +70,39 @@ export default class InputWatcher {
             }
         }
 
+        const makeStickChecker = (whichStick: keyof StickControl<any>) => {
+            return () => {
+                const now = Date.now()
+                const interval = (this.repeatIntervalInSeconds || .25) * 1000
+                const control = this.stickControls[whichStick]
+                const { stick, lastPressed } = control
+                const { x: xAxis, y: yAxis } = stick.query()
+                const yLean = Math.abs(yAxis)
+                const xLean = Math.abs(xAxis)
+                if (yLean > xLean) {
+                    if (yLean > .5) {
+                        if (!lastPressed || (lastPressed + interval) < now) {
+                            control.lastPressed = now
+                            this.polledInput = yAxis < 0 ? INPUT_BUTTON.UP : INPUT_BUTTON.DOWN
+                        }
+                        return
+                    }
+                } else {
+                    if (xLean > .5) {
+                        if (!lastPressed || (lastPressed + interval) < now) {
+                            control.lastPressed = now
+                            this.polledInput = xAxis < 0 ? INPUT_BUTTON.LEFT : INPUT_BUTTON.RIGHT
+                        }
+                        return
+                    }
+                }
+                control.lastPressed = null
+            }
+        }
+
         this.controlCheckers = [
+            makeStickChecker('left'),
+            makeStickChecker('right'),
             makeChecker('up', () => this.polledInput = INPUT_BUTTON.UP),
             makeChecker('down', () => this.polledInput = INPUT_BUTTON.DOWN),
             makeChecker('left', () => this.polledInput = INPUT_BUTTON.LEFT),
