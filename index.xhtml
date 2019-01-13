@@ -127,13 +127,13 @@
     <p><a href="https://github.com/philschatz/puzzlescript">Source On GitHub</a></p>
 
     <script type="text/javascript">//<![CDATA[
-        var table = document.querySelector('#theGame')
-        var gameSelection = document.querySelector('#gameSelection')
-        var loadingIndicator = document.querySelector('#loadingIndicator')
-        var gameId // used for loading and saving game progress
+        const table = document.querySelector('#theGame')
+        const gameSelection = document.querySelector('#gameSelection')
+        const loadingIndicator = document.querySelector('#loadingIndicator')
+        let gameId // used for loading and saving game progress
 
         // Save when the user completes a level
-        var handler = {
+        const handler = {
             onLevelChange: function (newLevelNum) {
                 // Hide the Loading text because the level loaded
                 loadingIndicator.classList.add('hidden')
@@ -143,11 +143,18 @@
             }
         }
 
-        var worker = new Worker('./lib/puzzlescript-webworker.js')
-        var tableEngine = new window.PuzzleScript.WebworkerTableEngine(worker, table, handler)
-        // var tableEngine = new window.PuzzleScript.SyncTableEngine(table, handler)
 
-        function playSelectedGame() {
+        function startTableEngine(webworkerUrl) {
+
+            const worker = new Worker(webworkerUrl)
+            const tableEngine = new window.PuzzleScript.WebworkerTableEngine(worker, table, handler)
+            // const tableEngine = new window.PuzzleScript.SyncTableEngine(table, handler)
+
+            startGamepadDetection(tableEngine)
+            playSelectedGame(tableEngine)
+        }
+
+        function playSelectedGame(tableEngine) {
             loadingIndicator.classList.remove('hidden') // Show the "Loading..." text
             gameSelection.setAttribute('disabled', 'disabled')
 
@@ -160,14 +167,60 @@
                 })
             })
         }
-        playSelectedGame()
+
+
+        // gh-pages does not allow hosting large JavaScript files so we need to load the webworker from unpkg.com
+        if (window.location.host === 'philschatz.com') {
+            loadRemoteWebworker('https://unpkg.com/puzzlescript@5/lib/puzzlescript-webworker.js', startTableEngine)
+        } else {
+            startTableEngine('./lib/puzzlescript-webworker.js')
+        }
+
+        // Show/hide the "Add controller" message if a Gamepad is attached
+        const gamepadIcon = document.querySelector('#gamepadIcon')
+        const gamepadDisabled = document.querySelector('#gamepadDisabled')
+        const gamepadRecognized = document.querySelector('#gamepadRecognized')
+        const gamepadNotRecognized = document.querySelector('#gamepadNotRecognized')
+        function startGamepadDetection(tableEngine) {
+            if (tableEngine.inputWatcher) {
+                setInterval(() => {
+                    if (tableEngine.inputWatcher.gamepad.isRecognized()) {
+                        gamepadIcon.classList.add('enabled')
+                        gamepadDisabled.classList.add('hidden')
+                        gamepadRecognized.classList.remove('hidden')
+                        gamepadNotRecognized.classList.add('hidden')
+                    } else if (tableEngine.inputWatcher.gamepad.isSomethingConnected()) {
+                        gamepadIcon.classList.remove('enabled')
+                        gamepadDisabled.classList.add('hidden')
+                        gamepadRecognized.classList.add('hidden')
+                        gamepadNotRecognized.classList.remove('hidden')
+                    } else {
+                        gamepadIcon.classList.remove('enabled')
+                        gamepadDisabled.classList.remove('hidden')
+                        gamepadRecognized.classList.add('hidden')
+                        gamepadNotRecognized.classList.add('hidden')
+                    }
+                }, 200)
+            }
+
+        }
+
+        // See https://gist.github.com/willywongi/5780151#file-2-index-html-L86
+        function loadRemoteWebworker(webworkerUrl, callback) {
+            const oReq = new XMLHttpRequest();
+            oReq.addEventListener('load', function() {
+                callback(window.URL.createObjectURL(new Blob([this.responseText])))
+            }, oReq)
+            oReq.open('get', webworkerUrl, true)
+            oReq.send()
+        }
         
         // Load the new game when the dropdown changes
         gameSelection.addEventListener('change', playSelectedGame)
 
         // Functions for loading/saving game progress
         function getStorage(gameId) {
-            var storageStr = window.localStorage.getItem('puzzlescriptGameProgress')
+            const storageStr = window.localStorage.getItem('puzzlescriptGameProgress')
             if (storageStr) {
                 return JSON.parse(storageStr)[gameId]
             } else {
@@ -175,8 +228,8 @@
             }
         }
         function setStorage(gameId, levelNum) {
-            var storageStr = window.localStorage.getItem('puzzlescriptGameProgress')
-            var storage = storageStr ? JSON.parse(storageStr) : {}
+            const storageStr = window.localStorage.getItem('puzzlescriptGameProgress')
+            const storage = storageStr ? JSON.parse(storageStr) : {}
             storage[gameId] = levelNum
             window.localStorage.setItem('puzzlescriptGameProgress', JSON.stringify(storage))
         }
@@ -194,32 +247,16 @@
         disableCss.addEventListener('change', setUi)
         setUi()
 
-        // Show/hide the "Add controller" message if a Gamepad is attached
-        const gamepadIcon = document.querySelector('#gamepadIcon')
-        const gamepadDisabled = document.querySelector('#gamepadDisabled')
-        const gamepadRecognized = document.querySelector('#gamepadRecognized')
-        const gamepadNotRecognized = document.querySelector('#gamepadNotRecognized')
-        if (tableEngine.inputWatcher) {
-            setInterval(() => {
-                if (tableEngine.inputWatcher.gamepad.isRecognized()) {
-                    gamepadIcon.classList.add('enabled')
-                    gamepadDisabled.classList.add('hidden')
-                    gamepadRecognized.classList.remove('hidden')
-                    gamepadNotRecognized.classList.add('hidden')
-                } else if (tableEngine.inputWatcher.gamepad.isSomethingConnected()) {
-                    gamepadIcon.classList.remove('enabled')
-                    gamepadDisabled.classList.add('hidden')
-                    gamepadRecognized.classList.add('hidden')
-                    gamepadNotRecognized.classList.remove('hidden')
-                } else {
-                    gamepadIcon.classList.remove('enabled')
-                    gamepadDisabled.classList.remove('hidden')
-                    gamepadRecognized.classList.add('hidden')
-                    gamepadNotRecognized.classList.add('hidden')
-                }
-            }, 200)
-        }
+    // ]]></script>
 
+    <script type="text/javascript">//<![CDATA[
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-48498113-1', 'philschatz.com');
+        ga('send', 'pageview');
     // ]]></script>
 </body>
 
