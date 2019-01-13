@@ -164,10 +164,15 @@
             gameId = gameSelection.value
             fetch(`./gists/${gameId}/script.txt`)
             .then(resp => {
-                return resp.text().then(function(source) {
-                    // Load the game
-                    tableEngine.setGame(source, getStorage(gameId) || 0)
-                })
+                if (resp.status === 200) {
+                    return resp.text().then(function(source) {
+                        // Load the game
+                        tableEngine.setGame(source, getStorage(gameId) || 0)
+                    })
+                } else {
+                    alert('Problem finding game game file. Please choose another one')
+                    gameSelection.removeAttribute('disabled')
+                }
             })
         }
 
