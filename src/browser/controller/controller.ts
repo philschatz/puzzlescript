@@ -44,7 +44,8 @@ export enum KEY_MODIFIER {
 }
 
 export interface IGamepad {
-    isConnected(): boolean
+    isSomethingConnected(): boolean
+    isRecognized(): boolean
     hasButton(arg: BUTTON_TYPE): boolean
     hasStick(arg: STICK_TYPE): boolean
     isButtonPressed(arg: BUTTON_TYPE): boolean
@@ -78,8 +79,9 @@ function lookupButtonIndex(gamepad: Gamepad, arg: BUTTON_TYPE) {
     const config = getGamepadConfig(gamepad)
     // little more complicated because the index could be 0
     if (config) {
-        if (typeof config.buttons[arg] !== 'undefined') {
-            return config.buttons[arg] || null
+        const buttonIndex = config.buttons[arg]
+        if (typeof buttonIndex !== 'undefined') {
+            return buttonIndex
         }
     }
     return null
@@ -98,8 +100,12 @@ class ControllerGamepad implements IGamepad {
         }
         this.index = index
     }
-    public isConnected() {
+    public isSomethingConnected() {
         return !!this.raw()
+    }
+    public isRecognized() {
+        const raw = this.raw()
+        return !!raw && getGamepadConfig(raw) !== null
     }
     public isButtonPressed(arg: BUTTON_TYPE) {
         const raw = this.raw()
@@ -160,8 +166,11 @@ class ControllerGamepad implements IGamepad {
 }
 
 class AnyGamepad implements IGamepad {
-    public isConnected() {
-        return !!Controllers.getGamepads().find((c) => !!c && c.isConnected())
+    public isSomethingConnected() {
+        return !!Controllers.getGamepads().find((c) => !!c && c.isSomethingConnected())
+    }
+    public isRecognized() {
+        return !!Controllers.getGamepads().find((c) => !!c && c.isRecognized())
     }
     public hasButton(arg: BUTTON_TYPE) {
         return !!Controllers.getGamepads().find((c) => !!c && c.hasButton(arg))

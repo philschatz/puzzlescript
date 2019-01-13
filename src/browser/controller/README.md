@@ -30,8 +30,10 @@ function loop() {
         // jump...
     }
 
-    if (pad.isConnected()) {
-        console.log('The gamepad is connected!')
+    if (pad.isRecognized()) {
+        console.log('The gamepad is connected and ready to use!')
+    } else if (pad.isSomethingConnected()) {
+        console.log('A gamepad is connected but it is not recognized. A mapping might need to be provided.')
     }
 }
 ```
@@ -64,7 +66,8 @@ const gamepads = Controllers.getGamepads()
 ## Check the state
 
 ```ts
-gamepad.isConnected()
+gamepad.isRecognized()          // Gamepad is ready to use
+gamepad.isSomethingConnected()  // Gamepad is connected but the button map is not recognized
 gamepad.hasButton(BUTTON_TYPE.ARROW_LEFT)
 gamepad.hasStick(STICK_TYPE.LEFT)
 
