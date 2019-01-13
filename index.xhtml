@@ -152,6 +152,9 @@
 
             startGamepadDetection(tableEngine)
             playSelectedGame(tableEngine)
+
+            // Load the new game when the dropdown changes
+            gameSelection.addEventListener('change', function () { playSelectedGame(tableEngine)})
         }
 
         function playSelectedGame(tableEngine) {
@@ -215,9 +218,6 @@
             oReq.send()
         }
         
-        // Load the new game when the dropdown changes
-        gameSelection.addEventListener('change', playSelectedGame)
-
         // Functions for loading/saving game progress
         function getStorage(gameId) {
             const storageStr = window.localStorage.getItem('puzzlescriptGameProgress')
