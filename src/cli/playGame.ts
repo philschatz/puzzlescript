@@ -54,7 +54,7 @@ interface ICliOptions {
 // Use require instead of import so we can load JSON files
 const pkg: IPackage = require('../../package.json') as IPackage // tslint:disable-line:no-var-requires
 
-let SOLUTION_ROOT = path.join(__dirname, '../../gist-solutions/')
+let SOLUTION_ROOT = path.join(__dirname, '../../game-solutions/')
 if (!existsSync(SOLUTION_ROOT)) {
     const homeDir = process.env.HOME
     if (!homeDir) {
@@ -137,7 +137,7 @@ run().then(() => { process.exit(0) }, (err) => {
 
 async function run() {
     inquirer.registerPrompt('autocomplete', PromptModule)
-    const gists = await pify(glob)(path.join(__dirname, '../../gists/*/script.txt'))
+    const gists = await pify(glob)(path.join(__dirname, '../../games/*/script.txt'))
     const cliOptions: ICliOptions = commander.opts() as ICliOptions
     const { ui: cliUi, game: cliGameTitle } = cliOptions
     let { level: cliLevel, resume: cliResume } = cliOptions

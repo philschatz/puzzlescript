@@ -21,7 +21,7 @@ async function sleep(ms: number) {
 async function run() {
     TerminalUI.setSmallTerminal(true)
 
-    const files = await pify(glob)('./gists/*/script.txt')
+    const files = await pify(glob)('./games/*/script.txt')
     console.log(`Looping over ${files.length} games...`)
     console.log(`Screen size is ${process.stdout.columns} wide and ${process.stdout.rows} high`)
 
@@ -65,7 +65,7 @@ async function run() {
             'SWWS',
             'DAAD'
         ].join('').split('').join('.')
-        const recordingsPath = path.join(__dirname, `../../gist-solutions/${gistId}.json`)
+        const recordingsPath = path.join(__dirname, `../../game-solutions/${gistId}.json`)
         if (existsSync(recordingsPath)) {
             const recordings: ILevelRecording[] = JSON.parse(readFileSync(recordingsPath, 'utf-8')).solutions
             // TODO: Use the following rules for finding which recording to play:
