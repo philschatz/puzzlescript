@@ -7,14 +7,16 @@ import c1 from './ps3'
 import c2 from './ps4'
 import standard from './standard'
 import c3 from './xbox'
+import c4 from './xbox-360'
 
 const controllerConfigs = [
     // These are ordered by popularity
     standard,
     c2,
     c3,
-    c0,
-    c1
+    c1,
+    c4,
+    c0
 ]
 
 export interface StickIndexes {

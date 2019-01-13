@@ -38,11 +38,18 @@
             font-weight: bold;
         }
 
+        #gamepadIcon:not(.enabled) {
+            filter: grayscale(100%);
+            opacity: .5;
+        }
+
     </style>
 </head>
 
 <body>
     <h1>Example <a href="https://github.com/philschatz/puzzlescript">PuzzleScript Games</a> using HTML Tables</h1>
+
+    <p><input id="disableCss" type="checkbox"/> <label for="disableCss"><strong>Check</strong> to see what a non-sighted user would experience (disables CSS)</label></p>
 
     <p><label for="gameSelection">Currently playing:</label>
         <select id="gameSelection">
@@ -100,8 +107,6 @@
     </table>
 
 
-    <p><input id="ui-enable" type="checkbox" checked="checked"/> <label for="ui-enable"><strong>Uncheck</strong> to see what a non-sighted user would experience (disables CSS)</label></p>
-
     <div id="gameInstructions">
         <p>To play:</p>
         <ul>
@@ -112,9 +117,13 @@
         </ul>
     </div>
 
-    <p id="gamepadDisabled" class="hidden"><strong>Tip:</strong> Connect a gamepad controller (XBOX/PS3/PS4/etc) to use it to play games</p>
-    <p id="gamepadEnabled" class="hidden">Gamepad is detected</p>
-
+    <p>
+        <img id="gamepadIcon" alt="gamepad icon" width="42" height="42" src="./gamepad-icon.svg"/>
+        <span id="gamepadDisabled" class="hidden"><strong>Tip:</strong> Connect a gamepad controller (XBOX/PS3/PS4/etc) to use it to play games. You might need to press some buttons so it is detected. Occasionally, a driver needs to be installed.</span>
+        <span id="gamepadRecognized" class="hidden">Gamepad is detected. You can play using it now. Just make sure the game is focused.</span>
+        <span id="gamepadNotRecognized" class="hidden">Gamepad is detected but not recognized. Please submit an Issue on the Repository and we will help get it added</span>
+    </p>
+    
     <p><a href="https://github.com/philschatz/puzzlescript">Source On GitHub</a></p>
 
     <script type="text/javascript">//<![CDATA[
@@ -173,29 +182,40 @@
         }
 
         // Support toggling the "Enable CSS" checkbox
-        const enableCss = document.querySelector('#ui-enable')
+        const disableCss = document.querySelector('#disableCss')
         function setUi() {
-            if (enableCss.checked) {
-                table.classList.remove('ps-ui-disabled')
-            } else {
+            if (disableCss.checked) {
                 table.classList.add('ps-ui-disabled')
+            } else {
+                table.classList.remove('ps-ui-disabled')
             }
             table.focus()
         }
-        enableCss.addEventListener('change', setUi)
+        disableCss.addEventListener('change', setUi)
         setUi()
 
         // Show/hide the "Add controller" message if a Gamepad is attached
+        const gamepadIcon = document.querySelector('#gamepadIcon')
         const gamepadDisabled = document.querySelector('#gamepadDisabled')
-        const gamepadEnabled = document.querySelector('#gamepadEnabled')
+        const gamepadRecognized = document.querySelector('#gamepadRecognized')
+        const gamepadNotRecognized = document.querySelector('#gamepadNotRecognized')
         if (tableEngine.inputWatcher) {
             setInterval(() => {
-                if (tableEngine.inputWatcher.gamepad.isConnected()) {
+                if (tableEngine.inputWatcher.gamepad.isRecognized()) {
+                    gamepadIcon.classList.add('enabled')
                     gamepadDisabled.classList.add('hidden')
-                    gamepadEnabled.classList.remove('hidden')
+                    gamepadRecognized.classList.remove('hidden')
+                    gamepadNotRecognized.classList.add('hidden')
+                } else if (tableEngine.inputWatcher.gamepad.isSomethingConnected()) {
+                    gamepadIcon.classList.remove('enabled')
+                    gamepadDisabled.classList.add('hidden')
+                    gamepadRecognized.classList.add('hidden')
+                    gamepadNotRecognized.classList.remove('hidden')
                 } else {
+                    gamepadIcon.classList.remove('enabled')
                     gamepadDisabled.classList.remove('hidden')
-                    gamepadEnabled.classList.add('hidden')
+                    gamepadRecognized.classList.add('hidden')
+                    gamepadNotRecognized.classList.add('hidden')
                 }
             }, 200)
         }
