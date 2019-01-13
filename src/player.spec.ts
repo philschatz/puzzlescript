@@ -476,7 +476,7 @@ describe('player movement', () => {
     it('plays a level of Beam Islands', () => {
         const LEVEL_NUM = 3
         const LEVEL_SOLUTION = 'lluuuxlduruuxddddd'
-        const { engine } = parseEngine(fs.readFileSync(path.join(__dirname, '../gists/gist-2b9ece642cd7cdfb4a5f2c9fa8455e40/script.txt'), 'utf-8'), LEVEL_NUM) // end game
+        const { engine } = parseEngine(fs.readFileSync(path.join(__dirname, '../games/game-2b9ece642cd7cdfb4a5f2c9fa8455e40/script.txt'), 'utf-8'), LEVEL_NUM) // end game
         let didWin = false
 
         const keypresses = LEVEL_SOLUTION.split('')

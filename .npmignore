@@ -1,7 +1,7 @@
 /node_modules/
 /coverage/
 /script/
-/gist-solutions/
+/game-solutions/
 /webpack-stats.json
 /.*
 *.log
