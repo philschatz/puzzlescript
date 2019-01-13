@@ -6,7 +6,7 @@ const pify = require('pify')
 // const {default: Parser} = require('../lib/parser/parser')
 
 const SOLUTION_FILE = path.join(__dirname, `../src/cli/solvedGames.ts`)
-const SOLUTIONS_GLOB = path.join(__dirname, '../game-solutions/*.json')
+const SOLUTIONS_GLOB = path.join(__dirname, '../gist-solutions/*.json')
 // const readFile = pify(fs.readFile)
 
 run()
@@ -30,7 +30,7 @@ async function run() {
         if (json.solutions && json.solutions.find(s => s && s.solution)) {
             entries.push(`    \`${json.title}\``)
         }
-        // const promise = readFile(`./games/${gistId}/script.txt`, 'utf-8').then(code => {
+        // const promise = readFile(`./gists/${gistId}/script.txt`, 'utf-8').then(code => {
         //     console.log(`Parsing ${gistId}...`)
         //     const { data, error, trace } = Parser.parse(code)
         //     json.title = data.title

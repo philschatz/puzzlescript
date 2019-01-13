@@ -29,11 +29,11 @@ async function doImport() {
         if (/puzzlescript\.net/.test(url.hostname)) {
             // It's a puzzlescript game. Just use the GIST query parameter
             const gistId = url.query['p']
-            const response = await fetch(`https://api.github.com/games/${gistId}`)
+            const response = await fetch(`https://api.github.com/gists/${gistId}`)
             const gist = await response.json()
 
             dirName = gistId
-            const outDir = path.join(__dirname, `../games`, dirName)
+            const outDir = path.join(__dirname, `../gists`, dirName)
             const outFile = path.join(outDir, `script.txt`)
 
             mkdirp.sync(outDir)
@@ -46,7 +46,7 @@ async function doImport() {
         } else {
             throw new Error(`BUG: Unsupported URL. Unsure how to name the game file`)
         }
-        const outDir = path.join(__dirname, `../games`, dirName)
+        const outDir = path.join(__dirname, `../gists`, dirName)
         const outFile = path.join(outDir, `script.txt`)
 
         const {sourceCode} = await getSourceFromUrl(page, gameUrl)

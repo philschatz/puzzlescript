@@ -162,7 +162,7 @@
             gameSelection.setAttribute('disabled', 'disabled')
 
             gameId = gameSelection.value
-            fetch(`./games/${gameId}/script.txt`)
+            fetch(`./gists/${gameId}/script.txt`)
             .then(resp => {
                 if (resp.status === 200) {
                     return resp.text().then(function(source) {
