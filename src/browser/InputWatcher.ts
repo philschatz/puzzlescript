@@ -25,6 +25,8 @@ export default class InputWatcher {
     private readonly boundKeys: IKeyboardButton[]
     private polledInput: Optional<INPUT_BUTTON>
     private repeatIntervalInSeconds: Optional<number>
+    private touchStart: Optional<Touch> // For handling touch gestures
+    private touchStartedAt: number
 
     constructor(table: HTMLTableElement) {
         this.gamepad = Controllers.getAnyGamepad()
@@ -32,6 +34,8 @@ export default class InputWatcher {
         this.polledInput = null
         this.repeatIntervalInSeconds = null
         this.boundKeys = []
+        this.touchStart = null
+        this.touchStartedAt = 0
 
         const keyboardKey = (key: string) => {
             const button = Controllers.key(key, table)
@@ -124,6 +128,14 @@ export default class InputWatcher {
             makeChecker('undo', () => this.polledInput = INPUT_BUTTON.UNDO),
             makeChecker('restart', () => this.polledInput = INPUT_BUTTON.RESTART)
         ]
+
+        this.onTouchStart = this.onTouchStart.bind(this)
+        this.onTouchMove = this.onTouchMove.bind(this)
+        this.onTouchEnd = this.onTouchEnd.bind(this)
+
+        this.table.addEventListener('touchstart', this.onTouchStart)
+        this.table.addEventListener('touchmove', this.onTouchMove)
+        this.table.addEventListener('touchend', this.onTouchEnd)
     }
 
     public pollControls() {
@@ -131,7 +143,6 @@ export default class InputWatcher {
             // Ignore if the game is not in focus
             return null
         }
-        this.polledInput = null
         this.controlCheckers.forEach((fn) => fn())
         const input = this.polledInput
         this.polledInput = null
@@ -151,9 +162,68 @@ export default class InputWatcher {
         this.repeatIntervalInSeconds = repeatIntervalInSeconds
     }
 
+    private onTouchStart(evt: TouchEvent) {
+        if (evt.changedTouches.length === 1) {
+            this.touchStart = evt.changedTouches[0]
+            this.touchStartedAt = Date.now()
+        }
+        // Still allow the user to zoom
+    }
+
+    private onTouchMove(evt: TouchEvent) {
+        // Make sure the user is not zooming
+        if (this.touchStart && evt.touches.length === 1) {
+            evt.preventDefault()
+        }
+    }
+
+    private onTouchEnd(evt: TouchEvent) {
+
+        const handleTap = () => {
+            const now = Date.now()
+            if (now - this.touchStartedAt >= 200) {
+                const shouldRestart = confirm('Do you want to restart? Press cancel to just undo the last move.')
+                this.polledInput = shouldRestart ? INPUT_BUTTON.RESTART : INPUT_BUTTON.UNDO
+            } else {
+                this.polledInput = INPUT_BUTTON.ACTION
+            }
+        }
+
+        if (this.touchStart && evt.changedTouches.length === 1) {
+            const touchEnd = evt.changedTouches[0]
+
+            const xDist = touchEnd.pageX - this.touchStart.pageX
+            const yDist = touchEnd.pageY - this.touchStart.pageY
+
+            const xAbs = Math.abs(xDist)
+            const yAbs = Math.abs(yDist)
+            if (xAbs > yAbs) {
+                // The main axis is "X"
+                if (xAbs > this.table.clientWidth / 10) {
+                    this.polledInput = xDist > 0 ? INPUT_BUTTON.RIGHT : INPUT_BUTTON.LEFT
+                } else {
+                    handleTap()
+                }
+            } else {
+                // The main axis is "Y"
+                if (yAbs > this.table.clientHeight / 10) {
+                    this.polledInput = yDist > 0 ? INPUT_BUTTON.DOWN : INPUT_BUTTON.UP
+                } else {
+                    handleTap()
+                }
+            }
+            this.touchStart = null
+            evt.preventDefault()
+        }
+    }
+
     public dispose() {
         for (const button of this.boundKeys) {
             button.dispose()
         }
+
+        this.table.removeEventListener('touchstart', this.onTouchStart)
+        this.table.removeEventListener('touchmove', this.onTouchMove)
+        this.table.removeEventListener('touchend', this.onTouchEnd)
     }
 }
