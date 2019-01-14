@@ -25,6 +25,8 @@ export default class InputWatcher {
     private readonly boundKeys: IKeyboardButton[]
     private polledInput: Optional<INPUT_BUTTON>
     private repeatIntervalInSeconds: Optional<number>
+    private touchStart: Optional<Touch> // For handling touch gestures
+    private touchStartedAt: number
 
     constructor(table: HTMLTableElement) {
         this.gamepad = Controllers.getAnyGamepad()
@@ -32,6 +34,8 @@ export default class InputWatcher {
         this.polledInput = null
         this.repeatIntervalInSeconds = null
         this.boundKeys = []
+        this.touchStart = null
+        this.touchStartedAt = 0
 
         const keyboardKey = (key: string) => {
             const button = Controllers.key(key, table)
@@ -124,6 +128,9 @@ export default class InputWatcher {
             makeChecker('undo', () => this.polledInput = INPUT_BUTTON.UNDO),
             makeChecker('restart', () => this.polledInput = INPUT_BUTTON.RESTART)
         ]
+
+        this.table.addEventListener('touchstart', this.onTouchStart.bind(this))
+        this.table.addEventListener('touchend', this.onTouchEnd.bind(this))
     }
 
     public pollControls() {
@@ -131,7 +138,6 @@ export default class InputWatcher {
             // Ignore if the game is not in focus
             return null
         }
-        this.polledInput = null
         this.controlCheckers.forEach((fn) => fn())
         const input = this.polledInput
         this.polledInput = null
@@ -149,6 +155,52 @@ export default class InputWatcher {
 
     public setKeyRepeatInterval(repeatIntervalInSeconds: number) {
         this.repeatIntervalInSeconds = repeatIntervalInSeconds
+    }
+
+    public onTouchStart(evt: TouchEvent) {
+        this.touchStart = evt.changedTouches[0]
+        this.touchStartedAt = Date.now()
+        evt.preventDefault()
+    }
+
+    public onTouchEnd(evt: TouchEvent) {
+
+        const handleTap = () => {
+            const now = Date.now()
+            if (now - this.touchStartedAt >= 1000) {
+                const shouldRestart = confirm('Do you want to restart? Press cancel to just undo the last move.')
+                this.polledInput = shouldRestart ? INPUT_BUTTON.RESTART : INPUT_BUTTON.UNDO
+            } else {
+                this.polledInput = INPUT_BUTTON.ACTION
+            }
+        }
+        
+        if (this.touchStart) {
+            const touchEnd = evt.changedTouches[0]
+
+            const xDist = touchEnd.pageX - this.touchStart.pageX
+            const yDist = touchEnd.pageY - this.touchStart.pageY
+
+            const xAbs = Math.abs(xDist)
+            const yAbs = Math.abs(yDist)
+            if (xAbs > yAbs) {
+                // The main axis is "X"
+                if (xAbs > 100) { // TODO: This should be >= 1 cell width rather than a pixel amount. or 1/10 of the screen width or something
+                    this.polledInput = xDist > 0 ? INPUT_BUTTON.RIGHT : INPUT_BUTTON.LEFT
+                } else {
+                    handleTap()
+                }
+            } else {
+                // The main axis is "Y"
+                if (yAbs > 100) { // TODO: This should be based on the screen size and/or the level size
+                    this.polledInput = yDist > 0 ? INPUT_BUTTON.DOWN : INPUT_BUTTON.UP
+                } else {
+                    handleTap()
+                }
+            }
+            this.touchStart = null
+            evt.preventDefault()
+        }
     }
 
     public dispose() {
