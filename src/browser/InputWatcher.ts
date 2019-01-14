@@ -129,8 +129,13 @@ export default class InputWatcher {
             makeChecker('restart', () => this.polledInput = INPUT_BUTTON.RESTART)
         ]
 
-        this.table.addEventListener('touchstart', this.onTouchStart.bind(this))
-        this.table.addEventListener('touchend', this.onTouchEnd.bind(this))
+        this.onTouchStart = this.onTouchStart.bind(this)
+        this.onTouchMove = this.onTouchMove.bind(this)
+        this.onTouchEnd = this.onTouchEnd.bind(this)
+
+        this.table.addEventListener('touchstart', this.onTouchStart)
+        this.table.addEventListener('touchmove', this.onTouchMove)
+        this.table.addEventListener('touchend', this.onTouchEnd)
     }
 
     public pollControls() {
@@ -157,25 +162,34 @@ export default class InputWatcher {
         this.repeatIntervalInSeconds = repeatIntervalInSeconds
     }
 
-    public onTouchStart(evt: TouchEvent) {
-        this.touchStart = evt.changedTouches[0]
-        this.touchStartedAt = Date.now()
-        evt.preventDefault()
+    private onTouchStart(evt: TouchEvent) {
+        if (evt.changedTouches.length === 1) {
+            this.touchStart = evt.changedTouches[0]
+            this.touchStartedAt = Date.now()
+        }
+        // Still allow the user to zoom
     }
 
-    public onTouchEnd(evt: TouchEvent) {
+    private onTouchMove(evt: TouchEvent) {
+        // Make sure the user is not zooming
+        if (this.touchStart && evt.touches.length === 1) {
+            evt.preventDefault()
+        }
+    }
+
+    private onTouchEnd(evt: TouchEvent) {
 
         const handleTap = () => {
             const now = Date.now()
-            if (now - this.touchStartedAt >= 1000) {
+            if (now - this.touchStartedAt >= 200) {
                 const shouldRestart = confirm('Do you want to restart? Press cancel to just undo the last move.')
                 this.polledInput = shouldRestart ? INPUT_BUTTON.RESTART : INPUT_BUTTON.UNDO
             } else {
                 this.polledInput = INPUT_BUTTON.ACTION
             }
         }
-        
-        if (this.touchStart) {
+
+        if (this.touchStart && evt.changedTouches.length === 1) {
             const touchEnd = evt.changedTouches[0]
 
             const xDist = touchEnd.pageX - this.touchStart.pageX
@@ -185,14 +199,14 @@ export default class InputWatcher {
             const yAbs = Math.abs(yDist)
             if (xAbs > yAbs) {
                 // The main axis is "X"
-                if (xAbs > 100) { // TODO: This should be >= 1 cell width rather than a pixel amount. or 1/10 of the screen width or something
+                if (xAbs > this.table.clientWidth / 10) {
                     this.polledInput = xDist > 0 ? INPUT_BUTTON.RIGHT : INPUT_BUTTON.LEFT
                 } else {
                     handleTap()
                 }
             } else {
                 // The main axis is "Y"
-                if (yAbs > 100) { // TODO: This should be based on the screen size and/or the level size
+                if (yAbs > this.table.clientHeight / 10) {
                     this.polledInput = yDist > 0 ? INPUT_BUTTON.DOWN : INPUT_BUTTON.UP
                 } else {
                     handleTap()
@@ -207,5 +221,9 @@ export default class InputWatcher {
         for (const button of this.boundKeys) {
             button.dispose()
         }
+
+        this.table.removeEventListener('touchstart', this.onTouchStart)
+        this.table.removeEventListener('touchmove', this.onTouchMove)
+        this.table.removeEventListener('touchend', this.onTouchEnd)
     }
 }
