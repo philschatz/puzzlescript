@@ -10,7 +10,7 @@ import { EmptyGameEngineHandler, INPUT_BUTTON } from '../../src/util'
 const CI_MAX_SOLUTION_LENGTH = 1000 // The length of 1 level of cyber-lasso
 const describeFn = process.env.SKIP_SOLUTIONS ? describe.skip : describe
 
-const SOLUTION_ROOT = path.join(__dirname, '../../gist-solutions/')
+const SOLUTION_ROOT = path.join(__dirname, '../../game-solutions/')
 const solutionFiles = fs.readdirSync(SOLUTION_ROOT)
 
 function parseEngine(code: string, levelNum = 0) {
@@ -54,7 +54,7 @@ export function createTests(moduloNumber: number, moduloTotal: number) {
             const GIST_ID = path.basename(solutionFilename).replace('.json', '')
 
             it(`plays ${isShort() ? '*a single level*' : '_the solved levels_'} of ${GIST_ID}`, async() => {
-                const gistFilename = path.join(__dirname, `../../gists/${GIST_ID}/script.txt`)
+                const gistFilename = path.join(__dirname, `../../games/${GIST_ID}/script.txt`)
                 const { engine, data } = parseEngine(fs.readFileSync(gistFilename, 'utf-8'))
                 const recordings = JSON.parse(fs.readFileSync(path.join(SOLUTION_ROOT, solutionFilename), 'utf-8')).solutions
 

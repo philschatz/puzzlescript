@@ -3,8 +3,8 @@ import fs from 'fs'
 import path from 'path'
 import Parser from './parser/parser'
 
-const GISTS_ROOT = path.join(__dirname, '../gists/')
-const GIST_SOLUTIONS_ROOT = path.join(__dirname, '../gist-solutions/')
+const GISTS_ROOT = path.join(__dirname, '../games/')
+const GIST_SOLUTIONS_ROOT = path.join(__dirname, '../game-solutions/')
 
 describe('parsing files unambiguously', () => {
 

@@ -135,11 +135,11 @@ const reparsedData = Serializer.fromJson(json, gameSource)
 ## Commands
 
 - `npm run docs` generates docs in the `./docs/` directory
-- `npm start` runs a game in the [./gists/](./gists/) directory without debugging info (10x faster) (uses `NODE_ENV=production`)
-- `npm run start:dev` runs a game in the [./gists/](./gists/) directory with sprite info (useful for debugging)
-- `npm run start:debug` runs a game in the [./gists/](./gists/) directory with a Chrome Debugger open so you can set breakpoints
-- `npm demo` runs all of the games in the [./gists/](./gists/) directory with a few sample moves (up/down/left/right/action)
-- `npm test` runs all of the unit tests (including solutions in the [./gist-solutions/](./gist-solutions/) directory)
+- `npm start` runs a game in the [./games/](./games/) directory without debugging info (10x faster) (uses `NODE_ENV=production`)
+- `npm run start:dev` runs a game in the [./games/](./games/) directory with sprite info (useful for debugging)
+- `npm run start:debug` runs a game in the [./games/](./games/) directory with a Chrome Debugger open so you can set breakpoints
+- `npm demo` runs all of the games in the [./games/](./games/) directory with a few sample moves (up/down/left/right/action)
+- `npm test` runs all of the unit tests (including solutions in the [./game-solutions/](./game-solutions/) directory)
 - `npm run watch` Run the tests and when you update the source, it re-runs the tests
 - `npm run test:debug` Run the tests but opens a debugger (remember to add a `debugger` line into the JavaScript)
 - `npm test; open coverage/lcov-report/index.html` to see test coverage
