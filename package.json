@@ -134,7 +134,7 @@
   },
   "name": "puzzlescript",
   "description": "Play PuzzleScript games in your terminal!",
-  "version": "5.2.0",
+  "version": "5.2.1",
   "main": "lib/index.js",
   "directories": {
     "lib": "lib"
