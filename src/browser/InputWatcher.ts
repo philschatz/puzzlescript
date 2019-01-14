@@ -16,6 +16,11 @@ interface StickControl<T> {
     right: T,
 }
 
+const DURATION_TO_UNDO = 500
+const DURATION_TO_ACTION = 200
+const DURATION_TO_RESTART = 2000
+const LENGTH_TO_SWIPE = 15
+
 export default class InputWatcher {
     private readonly table: HTMLTableElement
     private readonly gamepad: IGamepad
@@ -27,6 +32,7 @@ export default class InputWatcher {
     private repeatIntervalInSeconds: Optional<number>
     private touchStart: Optional<Touch> // For handling touch gestures
     private touchStartedAt: number
+    private touchHoldInterval: Optional<NodeJS.Timeout>
 
     constructor(table: HTMLTableElement) {
         this.gamepad = Controllers.getAnyGamepad()
@@ -36,6 +42,7 @@ export default class InputWatcher {
         this.boundKeys = []
         this.touchStart = null
         this.touchStartedAt = 0
+        this.touchHoldInterval = null
 
         const keyboardKey = (key: string) => {
             const button = Controllers.key(key, table)
@@ -162,10 +169,31 @@ export default class InputWatcher {
         this.repeatIntervalInSeconds = repeatIntervalInSeconds
     }
 
+    public dispose() {
+        for (const button of this.boundKeys) {
+            button.dispose()
+        }
+
+        this.table.removeEventListener('touchstart', this.onTouchStart)
+        this.table.removeEventListener('touchmove', this.onTouchMove)
+        this.table.removeEventListener('touchend', this.onTouchEnd)
+    }
+
+    private startTouchHoldInterval() {
+        this.touchHoldInterval = setInterval(() => this.polledInput = INPUT_BUTTON.UNDO, DURATION_TO_UNDO)
+    }
+
+    private endTouchHoldInterval() {
+        this.touchHoldInterval && clearInterval(this.touchHoldInterval)
+        this.touchHoldInterval = null
+    }
+
     private onTouchStart(evt: TouchEvent) {
         if (evt.changedTouches.length === 1) {
             this.touchStart = evt.changedTouches[0]
             this.touchStartedAt = Date.now()
+
+            this.startTouchHoldInterval()
         }
         // Still allow the user to zoom
     }
@@ -181,13 +209,16 @@ export default class InputWatcher {
 
         const handleTap = () => {
             const now = Date.now()
-            if (now - this.touchStartedAt >= 200) {
-                const shouldRestart = confirm('Do you want to restart? Press cancel to just undo the last move.')
-                this.polledInput = shouldRestart ? INPUT_BUTTON.RESTART : INPUT_BUTTON.UNDO
-            } else {
+            const timeHolding = now - this.touchStartedAt
+            if (timeHolding >= DURATION_TO_RESTART) {
+                const shouldRestart = confirm('You were holding for a while. Do you want to restart the level?')
+                this.polledInput = shouldRestart ? INPUT_BUTTON.RESTART : null
+            } else if (timeHolding < DURATION_TO_ACTION) {
                 this.polledInput = INPUT_BUTTON.ACTION
             }
         }
+
+        this.endTouchHoldInterval()
 
         if (this.touchStart && evt.changedTouches.length === 1) {
             const touchEnd = evt.changedTouches[0]
@@ -199,14 +230,14 @@ export default class InputWatcher {
             const yAbs = Math.abs(yDist)
             if (xAbs > yAbs) {
                 // The main axis is "X"
-                if (xAbs > this.table.clientWidth / 10) {
+                if (xAbs > this.table.clientWidth / LENGTH_TO_SWIPE) {
                     this.polledInput = xDist > 0 ? INPUT_BUTTON.RIGHT : INPUT_BUTTON.LEFT
                 } else {
                     handleTap()
                 }
             } else {
                 // The main axis is "Y"
-                if (yAbs > this.table.clientHeight / 10) {
+                if (yAbs > this.table.clientWidth / LENGTH_TO_SWIPE) { // assume mobile pixels are square so use the width
                     this.polledInput = yDist > 0 ? INPUT_BUTTON.DOWN : INPUT_BUTTON.UP
                 } else {
                     handleTap()
@@ -215,15 +246,5 @@ export default class InputWatcher {
             this.touchStart = null
             evt.preventDefault()
         }
-    }
-
-    public dispose() {
-        for (const button of this.boundKeys) {
-            button.dispose()
-        }
-
-        this.table.removeEventListener('touchstart', this.onTouchStart)
-        this.table.removeEventListener('touchmove', this.onTouchMove)
-        this.table.removeEventListener('touchend', this.onTouchEnd)
     }
 }
