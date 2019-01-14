@@ -190,6 +190,7 @@ export default class InputWatcher {
 
     private onTouchStart(evt: TouchEvent) {
         if (evt.changedTouches.length === 1) {
+            this.table.focus() // in case the game was paused and the user is trying to resume
             this.touchStart = evt.changedTouches[0]
             this.touchStartedAt = Date.now()
 
