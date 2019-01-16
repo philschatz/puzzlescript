@@ -163,9 +163,9 @@
             gameSelection.setAttribute('disabled', 'disabled')
 
             gameId = gameSelection.value
-            fetch(`./games/${gameId}/script.txt`)
+            fetch(`./games/${gameId}/script.txt`, {cache: 'force-cache'})
             .then(resp => {
-                if (resp.status === 200) {
+                if (resp.ok) {
                     return resp.text().then(function(source) {
                         // Load the game
                         tableEngine.setGame(source, getStorage(gameId) || 0)
@@ -176,6 +176,8 @@
                 }
             })
         }
+
+        
 
 
         // gh-pages does not allow hosting large JavaScript files so we need to load the webworker from unpkg.com
@@ -216,12 +218,13 @@
 
         // See https://gist.github.com/willywongi/5780151#file-2-index-html-L86
         function loadRemoteWebworker(webworkerUrl, callback) {
-            const oReq = new XMLHttpRequest();
-            oReq.addEventListener('load', function() {
-                callback(window.URL.createObjectURL(new Blob([this.responseText])))
-            }, oReq)
-            oReq.open('get', webworkerUrl, true)
-            oReq.send()
+            return fetch(webworkerUrl, {cache: 'force-cache'})
+            .then(function (resp) {
+                return resp.text()
+                .then(function (source) {
+                    callback(window.URL.createObjectURL(new Blob([this.responseText])))
+                })
+            })
         }
         
         // Functions for loading/saving game progress
