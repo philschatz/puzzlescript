@@ -26,7 +26,8 @@ module.exports = {
     plugins: [
         new HtmlWebpackPlugin({
             xhtml: true,
-            template: 'index.xhtml'
+            template: 'demo-template.xhtml',
+            filename: path.resolve(__dirname, 'index.xhtml')
         }),
         new WorkboxPlugin.GenerateSW({
             // these options encourage the ServiceWorkers to get in there fast 
