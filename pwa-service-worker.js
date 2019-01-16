@@ -10,7 +10,7 @@
 // To learn more about the benefits of this model and instructions on how to
 // opt-in, read http://bit.ly/CRA-PWA
 
-const PUBLIC_URL = './lib'
+const PUBLIC_URL = '.'
 
 const isLocalhost = Boolean(window && (
     window.location.hostname === 'localhost' ||

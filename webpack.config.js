@@ -7,7 +7,7 @@ module.exports = {
     mode: process.env['NODE_ENV'] || 'production',
     entry: ['babel-polyfill', './src/index-browser.ts'],
     output: {
-        path: path.resolve(__dirname, './lib/'),
+        path: path.resolve(__dirname, './'),
         filename: 'puzzlescript.js',
         library: 'PuzzleScript',
         libraryTarget: 'umd',
@@ -34,7 +34,7 @@ module.exports = {
             // and not allow any straggling "old" SWs to hang around
             clientsClaim: true,
             skipWaiting: true,
-            directoryIndex: 'index.xhtml'
+            directoryIndex: 'index.xhtml',
         })
     ],
     module: {
