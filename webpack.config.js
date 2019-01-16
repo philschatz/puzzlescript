@@ -27,13 +27,14 @@ module.exports = {
         new HtmlWebpackPlugin({
             xhtml: true,
             template: 'demo-template.xhtml',
-            filename: path.resolve(__dirname, 'index.xhtml')
+            filename: 'index.xhtml'
         }),
         new WorkboxPlugin.GenerateSW({
             // these options encourage the ServiceWorkers to get in there fast 
             // and not allow any straggling "old" SWs to hang around
             clientsClaim: true,
-            skipWaiting: true
+            skipWaiting: true,
+            directoryIndex: 'index.xhtml'
         })
     ],
     module: {
