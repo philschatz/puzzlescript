@@ -140,7 +140,7 @@ export default class InputWatcher {
         this.onTouchMove = this.onTouchMove.bind(this)
         this.onTouchEnd = this.onTouchEnd.bind(this)
 
-        this.table.addEventListener('touchstart', this.onTouchStart)
+        this.table.addEventListener('touchstart', this.onTouchStart, { passive: true })
         this.table.addEventListener('touchmove', this.onTouchMove)
         this.table.addEventListener('touchend', this.onTouchEnd)
     }

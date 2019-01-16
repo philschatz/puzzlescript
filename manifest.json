@@ -1,0 +1,16 @@
+{
+    "short_name": "Puzzle Games",
+    "name": "Example Accessible Puzzle Games",
+    "icons": [
+      {
+        "src": "gamepad-icon.svg",
+        "sizes": "64x64 32x32 24x24 16x16, 192x192, 512x512",
+        "type": "image/svg+xml"
+      }
+    ],
+    "start_url": "index.xhtml",
+    "display": "standalone",
+    "theme_color": "#000000",
+    "background_color": "#ffffff"
+  }
+  
