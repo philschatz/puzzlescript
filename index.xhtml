@@ -168,12 +168,19 @@
             class InMemoryCache {
                 constructor() { this.map = new Map() }
                 put(request, response) { this.map.set(request.url, response.clone()) }
-                match(request) { return this.map.get(request.url) }
+                match(request) { 
+                    const ret = this.map.get(request.url)
+                    if (ret) {
+                        return Promise.resolve(ret.clone())
+                    } else {
+                        return Promise.reject(`Cache miss for ${request.url}`)
+                    }
+                }
             }
             cacheApi = {
                 open: function (cacheName) {
                     let ret = memCaches.get(cacheName) || new InMemoryCache()
-                    memCaches.add(ret)
+                    memCaches.set(cacheName, ret)
                     return Promise.resolve(ret)
                 }
             }
@@ -189,13 +196,13 @@
                 // Don't update the cache with error pages!
                 if (response.ok) {
                     // All good? Update the cache with the network response
-                    caches.open(CACHE_NAME).then(function (cache) {
+                    cacheApi.open(CACHE_NAME).then(function (cache) {
                         cache.put(request, clonedResponse)
                     })
                 }
                 return response
             })
-            const cachedResource = caches.open(CACHE_NAME).then(function (cache) {
+            const cachedResource = cacheApi.open(CACHE_NAME).then(function (cache) {
                 return cache.match(request).then(function(response) {
                     return response || freshResource
                 })
@@ -275,7 +282,7 @@
             .then(function (resp) {
                 return resp.text()
                 .then(function (source) {
-                    callback(window.URL.createObjectURL(new Blob([this.responseText])))
+                    callback(window.URL.createObjectURL(new Blob([source])))
                 })
             })
         }
