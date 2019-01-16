@@ -8,9 +8,11 @@ import { closeSounds, playSound } from './sounds'
 import BaseUI from './ui/base'
 import TableUI from './ui/table'
 import { Optional, RULE_DIRECTION } from './util'
+import * as pwaServiceWorker from './pwaServiceWorker'
 
 // Public API
 export {
+    pwaServiceWorker,
     Parser,
     Serializer,
     GameEngine,
