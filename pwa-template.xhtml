@@ -4,9 +4,16 @@
     <title>Example Puzzlescript Games using HTML Tables</title>
     <link rel="stylesheet" href="./style.css"/>
     <style>
+        /* Progressive Web App (PWA) media query. https://stackoverflow.com/a/52695341 */
+        @media (display-mode: standalone) {
+            #headingSection,
+            #gameInstructionsSection,
+            #gamepadSection { display: none; }
+        }
+
         body { font-family: helvetica, arial, sans-serif; }
         .hidden { display: none; }
-        .light { opacity: .5 }
+        .light { opacity: .5; }
         kbd {
             font: 11px "SFMono-Regular",Consolas,"Liberation Mono",Menlo,Courier,monospace;
             display: inline-block;
@@ -57,11 +64,11 @@
 </head>
 
 <body>
-    <h1>Example <a href="https://github.com/philschatz/puzzlescript">PuzzleScript Games</a> using HTML Tables</h1>
+    <h1 id="headingSection">Example <a href="https://github.com/philschatz/puzzlescript">PuzzleScript Games</a> using HTML Tables</h1>
 
-    <p><input id="disableCss" type="checkbox"/> <label for="disableCss"><strong>Check</strong> to see what a non-sighted user would experience (disables CSS)</label></p>
+    <p id="disableCssSection"><input id="disableCss" type="checkbox"/> <label for="disableCss"><strong>Check</strong> to see what a non-sighted user would experience (disables CSS)</label></p>
 
-    <p>
+    <p id="gameSelectionSection">
         <button id="btnAdd" class="hidden">Add to Homescreen?</button>
         <label for="gameSelection">Currently playing:</label>
         <select id="gameSelection">
@@ -110,7 +117,7 @@
         <span id="loadingIndicator" class="hidden">Loading...</span>
     </p>
     
-    <table id="theGame" aria-labelledby="gameInstructions">
+    <table id="theGame" aria-labelledby="gameInstructionsSection">
         <caption>
             Game info goes here. like the current level, the goal, etc.
             <!-- See https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Live_Regions -->
@@ -119,7 +126,7 @@
     </table>
 
 
-    <div id="gameInstructions">
+    <div id="gameInstructionsSection">
         <p>To play:</p>
         <ul>
             <li>Arrow keys or <kbd>W</kbd>, <kbd>S</kbd>, <kbd>A</kbd>, <kbd>D</kbd></li>
@@ -129,14 +136,14 @@
         </ul>
     </div>
 
-    <p>
+    <p id="gamepadSection">
         <img id="gamepadIcon" alt="gamepad icon" width="42" height="42" src="./pwa-icon.svg"/>
         <span id="gamepadDisabled" class="hidden"><strong>Tip:</strong> Connect a gamepad controller (XBOX/PS3/PS4/etc) to use it to play games. You might need to press some buttons so it is detected. Occasionally, a driver needs to be installed.</span>
         <span id="gamepadRecognized" class="hidden">Gamepad is detected. You can play using it now. Just make sure the game is focused.</span>
         <span id="gamepadNotRecognized" class="hidden">Gamepad is detected but not recognized. Please submit an Issue on the Repository and we will help get it added</span>
     </p>
     
-    <p><a href="https://github.com/philschatz/puzzlescript">Source On GitHub</a></p>
+    <p id="sourceSection"><a href="https://github.com/philschatz/puzzlescript">Source On GitHub</a></p>
 
     <script type="text/javascript">//<![CDATA[
         (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
