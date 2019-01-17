@@ -4,8 +4,11 @@
     <title>Example Puzzlescript Games using HTML Tables</title>
     <link rel="stylesheet" href="./style.css"/>
     <style>
-        /* Progressive Web App (PWA) media query. https://stackoverflow.com/a/52695341 */
-        @media (display-mode: standalone) {
+        /* Progressive Web App (PWA) media query. 
+         * See https://stackoverflow.com/a/52695341
+         * See https://developer.mozilla.org/en-US/docs/Web/CSS/@media/display-mode
+         */
+        @media all and (display-mode: standalone) {
             #headingSection,
             #gameInstructionsSection,
             #gamepadSection { display: none; }
