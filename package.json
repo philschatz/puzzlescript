@@ -26,6 +26,7 @@
     "posttest:cli": "remap-istanbul --exclude bin/puzzlescript.js --input ./coverage/coverage.json --output ./coverage/coverage-cli.json && rm ./coverage/coverage.json",
     "test:server": "serve --listen 8000 .",
     "build": "npm run-script build:browser && npm run-script build:webworker",
+    "prebuild:browser": "rimraf ./precache-manifest.*.js",
     "build:browser": "webpack",
     "build:webworker": "webpack --config ./webpack-config-webworker.js",
     "build:dev": "webpack --mode development",

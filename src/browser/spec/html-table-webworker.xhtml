@@ -2,7 +2,7 @@
 
 <head>
     <title>Game running in an HTML Table</title>
-    <script src="../../../lib/puzzlescript.js"></script>
+    <script src="../../../puzzlescript.js"></script>
     <link rel="stylesheet" href="../../../style.css"/>
 </head>
 
@@ -18,12 +18,10 @@
         const { PuzzleScript } = window
 
         const table = document.querySelector('#the-game')
-        const worker = new Worker('../../../lib/puzzlescript-webworker.js')
+        const worker = new Worker('../../../puzzlescript-webworker.js')
         const tableEngine = new PuzzleScript.WebworkerTableEngine(worker, table)
 
         window.HackTableStart = (source, initialLevel) => {
-            // setTimeout(() => {throw new Error(`Checking if sourcemaps work in the browser in a separate tick`)}, 1)
-            // throw new Error(`Checking if sourcemaps work in the browser while evaluating`)
             tableEngine.setGame(source, initialLevel)
         }
         window.HackTableStop = () => {

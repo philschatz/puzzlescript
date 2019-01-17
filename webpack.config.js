@@ -26,7 +26,7 @@ module.exports = {
     plugins: [
         new HtmlWebpackPlugin({
             xhtml: true,
-            template: 'demo-template.xhtml',
+            template: 'pwa-template.xhtml',
             filename: 'index.xhtml'
         }),
         new WorkboxPlugin.GenerateSW({
@@ -35,6 +35,7 @@ module.exports = {
             clientsClaim: true,
             skipWaiting: true,
             directoryIndex: 'index.xhtml',
+            swDest: 'pwa-service-worker.js'
         })
     ],
     module: {

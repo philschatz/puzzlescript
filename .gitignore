@@ -13,7 +13,9 @@
 /precache-manifest.*.js
 /puzzlescript.js
 /puzzlescript.js.map
-/service-worker.js
+/puzzlescript-webworker.js
+/puzzlescript-webworker.js.map
+/pwa-service-worker.js
 
 # ---
 # Misc files

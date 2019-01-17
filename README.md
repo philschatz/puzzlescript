@@ -16,12 +16,19 @@ Also, it is **accessible**, meaning that [blind or visually impaired people can 
 1. Run `npm install -g puzzlescript` to install
 1. Run `puzzlescript` to start playing
 
+## Play in a browser or on your mobile device
+
+This is also a [Progressive Web App](https://developer.mozilla.org/en-US/docs/Web/Apps/Progressive/Introduction), meaning that you can add it to your phone/tablet/browser and play games even when you are offline.
+
+Just visit the [demo site](https://philschatz.com/puzzlescript) and click the "Add" button at the bottom.
+
+
 ### Embed in a Browser
 
 See [./src/browser/spec/html-table.xhtml](./src/browser/spec/html-table.xhtml) for an example of embedding in a browser.
 
 ```js
-// Include <script src="node_modules/puzzlescript/lib/puzzlescript.js"></script>
+// Include <script src="node_modules/puzzlescript/puzzlescript.js"></script>
 // and then the following:
 table = document.querySelector('table') // selector to the <table> that will be used
 engine = new PuzzleScript.SyncTableEngine(table, optionalEventHandler)
@@ -105,21 +112,8 @@ The goal of this project is to do 3 things:
 
 To use https://chromevox.com, table navigation keys on the Mac are <kbd>Ctrl</kbd> + <kbd>Command</kbd> + <kbd>Up</kbd>.
 
-# Dev Notes
 
-This is a remake of PuzzleScript that has the following features:
-
-- There is [documentation](https://philschatz.com/puzzlescript/docs/) for using the [NPM package](https://www.npmjs.com/package/puzzlescript)
-- There is a [Grammar](https://en.wikipedia.org/wiki/Parsing_expression_grammar) file that parses the game file (uses [nearley](https://github.com/kach/nearley))
-- The interpreter is a separate component
-- The rendering code is abstracted out so folks can add a different renderer (the example uses ASCII in the Terminal to show the game)
-  - This allows for fun things like adding an accessible-friendly interface to play the games
-  - Inspired by https://askubuntu.com/questions/699159/ascii-animations-that-are-viewed-in-the-command-line#699161
-- The input code is abstracted out so gamepads, buttons, etc can easily be provided
-  - This also allows computers to play the games!
-- The game can be imported/exported to JSON for research or other purposes
-
-## Research
+# Research
 
 To convert a game to JSON, run the following:
 

@@ -1,5 +1,6 @@
 window.addEventListener('load', () => {
 
+    const WEBWORKER_URL = './puzzlescript-webworker.js'
     const table = document.querySelector('#theGame')
     const gameSelection = document.querySelector('#gameSelection')
     const loadingIndicator = document.querySelector('#loadingIndicator')
@@ -16,10 +17,9 @@ window.addEventListener('load', () => {
         }
     }
 
+    function startTableEngine() {
 
-    function startTableEngine(webworkerUrl) {
-
-        const worker = new Worker(webworkerUrl)
+        const worker = new Worker(WEBWORKER_URL)
         const tableEngine = new window.PuzzleScript.WebworkerTableEngine(worker, table, handler)
         // const tableEngine = new window.PuzzleScript.SyncTableEngine(table, handler)
 
@@ -30,66 +30,12 @@ window.addEventListener('load', () => {
         gameSelection.addEventListener('change', function () { playSelectedGame(tableEngine)})
     }
 
-
-    let cacheApi
-    if (window.caches) {
-        cacheApi = window.caches
-    } else {
-        // In-memory polyfill for browsers that do not support https://developer.mozilla.org/en-US/docs/Web/API/Cache
-        const memCaches = new Map()
-        class InMemoryCache {
-            constructor() { this.map = new Map() }
-            put(request, response) { this.map.set(request.url, response.clone()) }
-            match(request) { 
-                const ret = this.map.get(request.url)
-                if (ret) {
-                    return Promise.resolve(ret.clone())
-                } else {
-                    return Promise.reject(`Cache miss for ${request.url}`)
-                }
-            }
-        }
-        cacheApi = {
-            open: function (cacheName) {
-                let ret = memCaches.get(cacheName) || new InMemoryCache()
-                memCaches.set(cacheName, ret)
-                return Promise.resolve(ret)
-            }
-        }
-    }
-
-    // From https://stackoverflow.com/a/39367408
-    const CACHE_NAME = 'puzzlescript'
-    function cacheFetch(url, options) {
-        const request = new Request(url, options)
-        const requestURL = new URL(request.url)
-        const freshResource = fetch(request).then(function (response) {
-            const clonedResponse = response.clone()
-            // Don't update the cache with error pages!
-            if (response.ok) {
-                // All good? Update the cache with the network response
-                cacheApi.open(CACHE_NAME).then(function (cache) {
-                    cache.put(request, clonedResponse)
-                })
-            }
-            return response
-        })
-        const cachedResource = cacheApi.open(CACHE_NAME).then(function (cache) {
-            return cache.match(request).then(function(response) {
-                return response || freshResource
-            })
-        }).catch(function (e) {
-            return freshResource
-        })
-        return cachedResource
-    }
-
     function playSelectedGame(tableEngine) {
         loadingIndicator.classList.remove('hidden') // Show the "Loading..." text
         gameSelection.setAttribute('disabled', 'disabled')
 
         gameId = gameSelection.value
-        cacheFetch(`./games/${gameId}/script.txt`, {redirect: 'follow'})
+        fetch(`./games/${gameId}/script.txt`, {redirect: 'follow'})
         .then(resp => {
             if (resp.ok) {
                 return resp.text().then(function(source) {
@@ -112,7 +58,7 @@ window.addEventListener('load', () => {
 
 
 
-    startTableEngine('./lib/puzzlescript-webworker.js')
+    startTableEngine()
 
     // Show/hide the "Add controller" message if a Gamepad is attached
     const gamepadIcon = document.querySelector('#gamepadIcon')
@@ -141,17 +87,6 @@ window.addEventListener('load', () => {
             }, 200)
         }
 
-    }
-
-    // See https://gist.github.com/willywongi/5780151#file-2-index-html-L86
-    function loadRemoteWebworker(webworkerUrl, callback) {
-        return cacheFetch(webworkerUrl, {redirect: 'follow'})
-        .then(function (resp) {
-            return resp.text()
-            .then(function (source) {
-                callback(window.URL.createObjectURL(new Blob([source])))
-            })
-        })
     }
 
     // Functions for loading/saving game progress

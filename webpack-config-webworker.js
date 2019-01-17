@@ -4,7 +4,7 @@ module.exports = {
     mode: process.env['NODE_ENV'] || 'production',
     entry: ['babel-polyfill', './src/index-webworker.ts'],
     output: {
-        path: path.resolve(__dirname, './lib/'),
+        path: path.resolve(__dirname, './'),
         filename: 'puzzlescript-webworker.js',
     },
     devtool: 'source-map',
