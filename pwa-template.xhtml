@@ -9,10 +9,13 @@
          * See https://developer.mozilla.org/en-US/docs/Web/CSS/@media/display-mode
          */
         @media all and (display-mode: standalone) {
-            #headingSection,
+            /* #headingSection, Uncommenting this causes horizontal lines on Android */
             #gameInstructionsSection,
             #gamepadSection { display: none; }
+            #gamepadSectionPWA { display: block; }
         }
+        /* Hide by default */
+        #gamepadSectionPWA { display: none; }
 
         body { font-family: helvetica, arial, sans-serif; }
         .hidden { display: none; }
@@ -145,6 +148,16 @@
         <span id="gamepadRecognized" class="hidden">Gamepad is detected. You can play using it now. Just make sure the game is focused.</span>
         <span id="gamepadNotRecognized" class="hidden">Gamepad is detected but not recognized. Please submit an Issue on the Repository and we will help get it added</span>
     </p>
+
+    <div id="gamepadSectionPWA">
+        <p>
+            <img id="gamepadIcon" alt="gamepad icon" width="42" height="42" src="./pwa-icon.svg"/>
+            <strong>Tip:</strong> Optionally, connect a gamepad controller (XBOX/PS3/PS4/etc) via BlueTooth to play games.
+        </p>
+        <p>
+            Partial Gamepad support. Up/Down/Left/Right works but not Action/Undo. See this <a href="https://bugs.chromium.org/p/chromium/issues/detail?id=906347">Chrome Bug</a>
+        </p>
+    </div>
     
     <p id="sourceSection"><a href="https://github.com/philschatz/puzzlescript">Source On GitHub</a></p>
 
@@ -152,10 +165,20 @@
         (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
         (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
         m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
         ga('create', 'UA-48498113-1', 'philschatz.com');
         ga('send', 'pageview');
+
+        // Try to signal to Chrome that we are looking to use the real gamepad, not just up/down/left/right arrow keys mapped from a gamepad
+        window.addEventListener("gamepadconnected", () => {})
+        if (typeof navigator !== 'undefined' && navigator.getGamepads) {
+            navigator.getGamepads()
+        } else {
+            setTimeout(() => {
+                navigator.getGamepads()
+            }, 1)
+        }
     // ]]></script>
 </body>
 
