@@ -3,11 +3,11 @@
 import fs from 'fs'
 import path from 'path'
 import puppeteer from 'puppeteer' // tslint:disable-line:no-implicit-dependencies
+import { browserAfterEach, browserBeforeEach, browserDismissedDialogs, getUrl } from './browserSpecUtils'
 // import mapStackTrace from 'sourcemapped-stacktrace-node')
 
 // Defined via jest-puppeteer environment
 declare var page: puppeteer.Page
-declare var browser: puppeteer.Browser
 
 async function sleep(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms))
@@ -40,35 +40,6 @@ async function pressKeys(keys: string[]) {
         await sleep(100)
         // wait until the keypress was processed
         await page.waitFor(`.ps-table:not([data-ps-last-input-processed='${count}'])`)
-    }
-}
-
-// redirect browser console messages to the terminal
-const consoleHandler = (message: puppeteer.ConsoleMessage) => {
-    const type = message.type()
-    const text = message.text()
-
-    switch (type) {
-        case 'log': console.log(text); break // tslint:disable-line:no-console
-        case 'debug': console.debug(text); break // tslint:disable-line:no-console
-        case 'info': console.info(text); break // tslint:disable-line:no-console
-        case 'error': console.error(text); break // tslint:disable-line:no-console
-        case 'dir': console.dir(text); break // tslint:disable-line:no-console
-        case 'dirxml': console.dirxml(text); break // tslint:disable-line:no-console
-        case 'table': console.table(text); break // tslint:disable-line:no-console
-        case 'trace': console.trace(text); break // tslint:disable-line:no-console
-        case 'assert': console.assert(text); break // tslint:disable-line:no-console
-        case 'profile': console.profile(text); break // tslint:disable-line:no-console
-        case 'profileEnd': console.profileEnd(text); break // tslint:disable-line:no-console
-        case 'count': console.count(text); break // tslint:disable-line:no-console
-        case 'timeEnd': console.timeEnd(text); break // tslint:disable-line:no-console
-
-        case 'clear': console.clear(); break // tslint:disable-line:no-console
-        case 'warning': console.warn(text); break // tslint:disable-line:no-console
-        case 'startGroup':
-        case 'startGroupCollapsed':
-        case 'endGroup':
-            console.info(type, text); break // tslint:disable-line:no-console
     }
 }
 
@@ -109,72 +80,47 @@ async function playLevel() {
 
 describe('Browser', () => {
 
-    const dismissedCount: string[] = []
-
-    const dialogHandler = async(dialog: puppeteer.Dialog) => {
-        dismissedCount.push(dialog.message())
-        await dialog.dismiss()
-    }
-
-    beforeEach(() => {
-        // jest-puppeteer will expose the `page` and `browser` globals to Jest tests.
-        if (!browser || !page) {
-            throw new Error('Browser has not been started! Did you remember to specify `@jest-environment puppeteer`?')
-        }
-
-        page.on('console', consoleHandler)
-        page.on('dialog', dialogHandler)
-
-        // page.on('pageerror', async e => {
-        //     const newStack = await mapStackTrace(e.message, { isChromeOrEdge: true })
-        //     console.error(newStack)
-        // })
-    })
-
-    afterEach(() => {
-        // Node 8 does not have EventListener.off(...)
-        page.removeListener('console', consoleHandler)
-        page.removeListener('dialog', dialogHandler)
-    })
+    beforeEach(browserBeforeEach)
+    afterEach(browserAfterEach)
 
     it('plays a game in the browser using the SyncTableEngine', async() => {
         // browser tests are slow. Headless is slower it seems (from jest watch mode)
         jest.setTimeout(process.env.NODE_ENV === 'development' ? 90 * 1000 : 90 * 1000)
-        await page.goto(`http://localhost:8000/src/browser/spec/html-table.xhtml`)
+        await page.goto(getUrl(`/src/browser/spec/html-table.xhtml`))
         return playLevel()
     })
 
     it('plays a game in the browser using the WebworkerTableEngine', async() => {
         // browser tests are slow. Headless is slower it seems (from jest watch mode)
         jest.setTimeout(process.env.NODE_ENV === 'development' ? 90 * 1000 : 90 * 1000)
-        await page.goto(`http://localhost:8000/src/browser/spec/html-table-webworker.xhtml`)
+        await page.goto(getUrl(`/src/browser/spec/html-table-webworker.xhtml`))
         return playLevel()
     })
 
     it('plays a couple levels using the demo page', async() => {
         const waitForDialogAfter = async(fn: () => Promise<any>) => {
             // page.once('dialog', dialogHandler)
-            const oldCount = dismissedCount.length
+            const oldCount = browserDismissedDialogs().length
             await fn()
             // Keep checking for the dialog to be dismissed
-            if (dismissedCount.length > oldCount) {
+            if (browserDismissedDialogs().length > oldCount) {
                 return
             }
             await sleep(100) // wait a little bit
-            if (dismissedCount.length > oldCount) {
+            if (browserDismissedDialogs().length > oldCount) {
                 return
             }
             await sleep(1000) // wait for the dialog to open and be dismissed
-            if (dismissedCount.length > oldCount) {
+            if (browserDismissedDialogs().length > oldCount) {
                 return
             }
             await sleep(10000) // wait a long time
-            expect(dismissedCount.length).toBeGreaterThan(oldCount)
+            expect(browserDismissedDialogs().length).toBeGreaterThan(oldCount)
         }
 
         // The game shows a dialog immediately (uggh)
         await waitForDialogAfter(async() => {
-            await page.goto(`http://localhost:8000/index.xhtml`)
+            await page.goto(getUrl(`index.xhtml`))
             await page.waitForSelector(`#loadingIndicator.hidden`)
         })
 
@@ -187,6 +133,6 @@ describe('Browser', () => {
 
         await page.waitForSelector(`.ps-table[data-ps-current-level="${5}"]`)
 
-        expect(dismissedCount.length).toBe(5)
+        expect(browserDismissedDialogs().length).toBe(5)
     })
 })
