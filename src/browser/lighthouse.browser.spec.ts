@@ -1,5 +1,6 @@
 /** @jest-environment puppeteer */
 /* eslint-env jasmine */
+import { URL } from 'url'
 import lighthouse from 'lighthouse' // tslint:disable-line:no-implicit-dependencies
 import puppeteer from 'puppeteer' // tslint:disable-line:no-implicit-dependencies
 import { browserAfterEach, browserBeforeEach, getUrl } from './browserSpecUtils'
