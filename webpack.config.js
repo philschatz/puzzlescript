@@ -1,11 +1,13 @@
-const path = require('path');
+const path = require('path')
 const webpack = require('webpack')
+const WorkboxPlugin = require('workbox-webpack-plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = {
     mode: process.env['NODE_ENV'] || 'production',
     entry: ['babel-polyfill', './src/index-browser.ts'],
     output: {
-        path: path.resolve(__dirname, './lib/'),
+        path: path.resolve(__dirname, './'),
         filename: 'puzzlescript.js',
         library: 'PuzzleScript',
         libraryTarget: 'umd',
@@ -21,6 +23,21 @@ module.exports = {
             '../ui/terminal': path.resolve(__dirname, './src/ui/terminalBrowserShim.js')
         }
     },
+    plugins: [
+        new HtmlWebpackPlugin({
+            xhtml: true,
+            template: 'pwa-template.xhtml',
+            filename: 'index.xhtml'
+        }),
+        new WorkboxPlugin.GenerateSW({
+            // these options encourage the ServiceWorkers to get in there fast 
+            // and not allow any straggling "old" SWs to hang around
+            clientsClaim: true,
+            skipWaiting: true,
+            directoryIndex: 'index.xhtml',
+            swDest: 'pwa-service-worker.js'
+        })
+    ],
     module: {
         rules: [
             { 
