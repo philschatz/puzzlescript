@@ -21,7 +21,7 @@
     "test": "npm run-script test:unit && npm run-script test:browser",
     "test:unit": "VERIFY_MATCHES=true NODE_ENV=development jest --coverage --updateSnapshot --verbose --detectLeaks --detectOpenHandles --testPathPattern '^((?!browser).)*\\.spec\\.ts'",
     "pretest:browser": "npm run-script build",
-    "test:browser": "NODE_ENV=development jest --coverage --updateSnapshot --verbose --detectOpenHandles --testPathPattern 'browser\\.spec\\.ts'",
+    "test:browser": "NODE_ENV=development jest --updateSnapshot --verbose --detectOpenHandles --testPathPattern 'browser\\.spec\\.ts'",
     "posttest": "npm run-script compile:ts && npm run-script test:cli && npm run-script coverage && npm run-script lint",
     "test:debug": "NODE_ENV=development node --inspect-brk -r source-map-support/register $(npm bin)/jest -i --updateSnapshot --detectLeaks --detectOpenHandles",
     "test:cli": "istanbul cover -x '**/node_modules/**' -x 'lib/sound/sfxr.js' ./bin/puzzlescript.js -- --no-ui --game 'Beam Islands' --level 1 --size small --resume",
