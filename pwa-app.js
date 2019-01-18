@@ -1,6 +1,7 @@
 window.addEventListener('load', () => {
 
     const WEBWORKER_URL = './puzzlescript-webworker.js'
+    const GAME_STORAGE_ID = 'puzzlescriptGameProgress'
     const table = document.querySelector('#theGame')
     const gameSelection = document.querySelector('#gameSelection')
     const loadingIndicator = document.querySelector('#loadingIndicator')
@@ -55,9 +56,14 @@ window.addEventListener('load', () => {
             loadingIndicator.classList.add('hidden')
             gameSelection.removeAttribute('disabled')
 
-            setStorage(gameId, newLevelNum)
+            saveCurrentLevelNum(gameId, newLevelNum)
+        },
+        onGameChange: function (gameData) {
+            saveTotalLevelCount(gameId, gameData.levels.length, gameData.title)
         }
     }
+
+    updateGameSelectionInfo() // update the % complete in the dropdown
 
     function startTableEngine() {
 
@@ -82,7 +88,7 @@ window.addEventListener('load', () => {
             if (resp.ok) {
                 return resp.text().then(function(source) {
                     // Load the game
-                    tableEngine.setGame(source, getStorage(gameId) || 0)
+                    tableEngine.setGame(source, loadCurrentLevelNum(gameId) || 0)
                 })
             } else {
                 alert('Problem finding game game file. Please choose another one')
@@ -132,19 +138,49 @@ window.addEventListener('load', () => {
     }
 
     // Functions for loading/saving game progress
-    function getStorage(gameId) {
-        const storageStr = window.localStorage.getItem('puzzlescriptGameProgress')
-        if (storageStr) {
-            return JSON.parse(storageStr)[gameId]
-        } else {
-            return null
-        }
+    function loadStorage() {
+        const storageStr = window.localStorage.getItem(GAME_STORAGE_ID)
+        const storage = storageStr ? JSON.parse(storageStr) : { _version: 1 }
+        return storage
     }
-    function setStorage(gameId, levelNum) {
-        const storageStr = window.localStorage.getItem('puzzlescriptGameProgress')
-        const storage = storageStr ? JSON.parse(storageStr) : {}
-        storage[gameId] = levelNum
-        window.localStorage.setItem('puzzlescriptGameProgress', JSON.stringify(storage))
+    function loadCurrentLevelNum(gameId) {
+        const storage = loadStorage()
+        const gameData = storage[gameId]
+        return (gameData || null) && gameData.currentLevelNum
+    }
+    function saveCurrentLevelNum(gameId, levelNum) {
+        const storage = loadStorage()
+        storage[gameId] = storage[gameId] || {}
+        storage[gameId].currentLevelNum = levelNum
+        storage[gameId].completedLevelAt = Date.now()
+        storage[gameId].lastPlayedAt = Date.now()
+        window.localStorage.setItem(GAME_STORAGE_ID, JSON.stringify(storage))
+    }
+    function saveTotalLevelCount(gameId, totalLevelCount, title) {
+        const storage = loadStorage()
+        storage[gameId] = storage[gameId] || {}
+        storage[gameId].totalLevelCount = totalLevelCount
+        storage[gameId].title = title
+        storage[gameId].lastPlayedAt = Date.now()
+        window.localStorage.setItem(GAME_STORAGE_ID, JSON.stringify(storage))
+    }
+
+    function updateGameSelectionInfo() {
+        const storage = loadStorage()
+
+        for (const option of gameSelection.querySelectorAll('option')) {
+            const gameId = option.getAttribute('value')
+            const gameInfo = storage[gameId]
+            if (gameInfo) {
+                if (gameInfo.currentLevelNum === gameInfo.totalLevelCount) {
+                    // Game is complete
+                } else {
+                    // Game is in-progress
+                }
+            } else {
+                // Game has not started
+            }
+        }
     }
 
     // Support toggling the "Enable CSS" checkbox

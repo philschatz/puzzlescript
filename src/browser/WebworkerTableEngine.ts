@@ -97,7 +97,7 @@ export default class WebworkerTableEngine implements Engineish {
         }, 10)
     }
     public setGame(code: string, level: number) {
-        this.worker.postMessage({ type: MESSAGE_TYPE.LOAD_GAME, code, level })
+        this.worker.postMessage({ type: MESSAGE_TYPE.ON_GAME_CHANGE, code, level })
     }
 
     public dispose() {
@@ -119,10 +119,10 @@ export default class WebworkerTableEngine implements Engineish {
     }
     private async messageListener({ data }: {data: WorkerResponse}) {
         switch (data.type) {
-            case MESSAGE_TYPE.LOAD_GAME:
+            case MESSAGE_TYPE.ON_GAME_CHANGE:
                 const gameData = Serializer.fromJson(data.payload, '**source not included because of laziness**')
                 this.gameData = gameData
-                this.ui.setGameData(gameData)
+                this.ui.onGameChange(gameData)
                 break
             case MESSAGE_TYPE.ON_LEVEL_CHANGE:
                 this.cellCache = [] // clear the cache since the level dimensions are different

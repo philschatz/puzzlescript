@@ -133,8 +133,8 @@ class TerminalUI extends BaseUI implements GameEngineHandler {
     public onResume() {
         // Don't need to do anything
     }
-    public onGameChange() {
-        // Don't need to do anything
+    public onGameChange(gameData: GameData) {
+        super.onGameChange(gameData)
     }
     public async onSound(sound: Soundish) {
         /*await*/ playSound(sound.soundCode) // tslint:disable-line:no-floating-promises

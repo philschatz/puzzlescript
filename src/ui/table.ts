@@ -82,12 +82,14 @@ class TableUI extends BaseUI implements GameEngineHandler {
         this.table.setAttribute('data-ps-state', 'running')
         this.handler.onResume()
     }
-    public onGameChange() {
+    public onGameChange(gameData: GameData) {
+        super.onGameChange(gameData)
         this.silencedOutput = false
         this.didPressCauseTick = false
         this.interactsWithPlayer = spritesThatInteractWithPlayer(this.getGameData())
         this.usedInMessages = new Set(this.interactsWithPlayer)
         this.collectedSprites.clear()
+        this.handler.onGameChange(gameData)
     }
 
     public onPress(dir: INPUT_BUTTON) {
@@ -187,11 +189,6 @@ class TableUI extends BaseUI implements GameEngineHandler {
         this.markAcceptingInput(!hasAgain)
         this.didPressCauseTick = false
         this.handler.onTick(changedCells, hasAgain, a11yMessages)
-    }
-
-    public setGameData(game: GameData) {
-        super.setGameData(game)
-        this.onGameChange()
     }
 
     public willAllLevelsFitOnScreen(gameData: GameData) {
