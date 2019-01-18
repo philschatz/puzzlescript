@@ -117,11 +117,19 @@ window.addEventListener('load', () => {
         if (tableEngine.inputWatcher) {
             setInterval(() => {
                 if (tableEngine.inputWatcher.gamepad.isRecognized()) {
+                    // Send GA when someone adds a gamepad
+                    if (!gamepadIcon.classList.contains('enabled')) {
+                        ga && ga('send', 'event', 'gamepad', 'recognized')
+                    }
                     gamepadIcon.classList.add('enabled')
                     gamepadDisabled.classList.add('hidden')
                     gamepadRecognized.classList.remove('hidden')
                     gamepadNotRecognized.classList.add('hidden')
                 } else if (tableEngine.inputWatcher.gamepad.isSomethingConnected()) {
+                    // Send GA when someone adds a gamepad
+                    if (gamepadNotRecognized.classList.contains('hidden')) {
+                        ga && ga('send', 'event', 'gamepad', 'something-connected')
+                    }
                     gamepadIcon.classList.remove('enabled')
                     gamepadDisabled.classList.add('hidden')
                     gamepadRecognized.classList.add('hidden')
@@ -155,6 +163,7 @@ window.addEventListener('load', () => {
         storage[gameId].completedLevelAt = Date.now()
         storage[gameId].lastPlayedAt = Date.now()
         window.localStorage.setItem(GAME_STORAGE_ID, JSON.stringify(storage))
+        ga && ga('send', 'event', 'game', 'level', gameId, levelNum)
     }
     function saveTotalLevelCount(gameId, totalLevelCount, title) {
         const storage = loadStorage()
@@ -185,7 +194,10 @@ window.addEventListener('load', () => {
 
     // Support toggling the "Enable CSS" checkbox
     const disableCss = document.querySelector('#disableCss')
-    function setUi() {
+    function setUi(skipAnalytics) {
+        if (!skipAnalytics) {
+            ga && ga('send', 'event', 'accessibility', 'toggle', disableCss.checked ? 'show' : 'hide')
+        }
         if (disableCss.checked) {
             table.classList.add('ps-ui-disabled')
         } else {
@@ -194,7 +206,7 @@ window.addEventListener('load', () => {
         table.focus()
     }
     disableCss.addEventListener('change', setUi)
-    setUi()
+    setUi(true)
 
 
 
@@ -203,12 +215,12 @@ window.addEventListener('load', () => {
     const btnAdd = document.querySelector('#btnAdd')
     let deferredPrompt
     window.addEventListener('beforeinstallprompt', (e) => {
-    // Prevent Chrome 67 and earlier from automatically showing the prompt
-    e.preventDefault();
-    // Stash the event so it can be triggered later.
-    deferredPrompt = e;
-    // Update UI notify the user they can add to home screen
-    btnAdd.classList.remove('hidden')
+        // Prevent Chrome 67 and earlier from automatically showing the prompt
+        e.preventDefault();
+        // Stash the event so it can be triggered later.
+        deferredPrompt = e;
+        // Update UI notify the user they can add to home screen
+        btnAdd.classList.remove('hidden')
     })
 
     btnAdd.addEventListener('click', (e) => {
