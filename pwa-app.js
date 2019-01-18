@@ -8,6 +8,30 @@ window.addEventListener('load', () => {
 
     // Save when the user completes a level
     const handler = {
+        onMessage: function (msg) {
+
+            // Show a phone notification rather than an alert (if notifications are granted)
+            // Just to show that notifications can be done and what they would look like
+            return new Promise((resolve) => {
+                Notification.requestPermission(async (result) => {
+                    if (result === 'granted') {
+                        const registration = await navigator.serviceWorker.ready
+                        await registration.showNotification('Annoying Message', {
+                            body: `${msg} (Just showing that notifications work. You can disable them)`,
+                            icon: './pwa-icon.png',
+                            badge: './pwa-icon.png',
+                            vibrate: [200, 100, 200],
+                            actions: [
+                                { action: 'action-ok', title: 'ok' }
+                            ]
+                        })
+                    } else {
+                        alert(msg)
+                    }
+                    resolve()
+                })
+            })
+        },
         onLevelChange: function (newLevelNum) {
             // Hide the Loading text because the level loaded
             loadingIndicator.classList.add('hidden')
