@@ -5,6 +5,10 @@ window.addEventListener('load', () => {
     const table = document.querySelector('#theGame')
     const gameSelection = document.querySelector('#gameSelection')
     const loadingIndicator = document.querySelector('#loadingIndicator')
+
+    window.PuzzleScript.TimeAgo.addLocale(window.PuzzleScript.TimeAgoEn)
+    const timeAgo = new window.PuzzleScript.TimeAgo('en-US')
+
     let gameId // used for loading and saving game progress
 
     // Save when the user completes a level
@@ -57,9 +61,10 @@ window.addEventListener('load', () => {
             gameSelection.removeAttribute('disabled')
 
             saveCurrentLevelNum(gameId, newLevelNum)
+            updateGameSelectionInfo()
         },
         onGameChange: function (gameData) {
-            saveTotalLevelCount(gameId, gameData.levels.length, gameData.title)
+            saveGameInfo(gameId, gameData.levels, gameData.title)
         }
     }
 
@@ -83,6 +88,9 @@ window.addEventListener('load', () => {
         gameSelection.setAttribute('disabled', 'disabled')
 
         gameId = gameSelection.value
+        if (!gameId) {
+            return
+        }
         fetch(`./games/${gameId}/script.txt`, {redirect: 'follow'})
         .then(resp => {
             if (resp.ok) {
@@ -91,7 +99,7 @@ window.addEventListener('load', () => {
                     tableEngine.setGame(source, loadCurrentLevelNum(gameId) || 0)
                 })
             } else {
-                alert('Problem finding game game file. Please choose another one')
+                alert(`Problem finding game file. Please choose another one`)
                 loadingIndicator.classList.add('hidden')
                 gameSelection.removeAttribute('disabled')
             }
@@ -165,31 +173,108 @@ window.addEventListener('load', () => {
         window.localStorage.setItem(GAME_STORAGE_ID, JSON.stringify(storage))
         ga && ga('send', 'event', 'game', 'level', gameId, levelNum)
     }
-    function saveTotalLevelCount(gameId, totalLevelCount, title) {
+    function saveGameInfo(gameId, levels, title) {
         const storage = loadStorage()
         storage[gameId] = storage[gameId] || {}
-        storage[gameId].totalLevelCount = totalLevelCount
+        storage[gameId].levelMaps = levels.map(l => l.type === 'LEVEL_MAP')
         storage[gameId].title = title
         storage[gameId].lastPlayedAt = Date.now()
         window.localStorage.setItem(GAME_STORAGE_ID, JSON.stringify(storage))
     }
 
+    // store the original sort order so that we fall back to it.
+    gameSelection.querySelectorAll('option').forEach((option, index) => {
+        option.setAttribute('data-original-index', index)
+    })
+
     function updateGameSelectionInfo() {
         const storage = loadStorage()
 
-        for (const option of gameSelection.querySelectorAll('option')) {
+        // Update the last-updated time for all of the games and then sort them
+        const gameOptions = [...gameSelection.querySelectorAll('option')]
+        for (const option of gameOptions) {
             const gameId = option.getAttribute('value')
             const gameInfo = storage[gameId]
             if (gameInfo) {
-                if (gameInfo.currentLevelNum === gameInfo.totalLevelCount) {
-                    // Game is complete
-                } else {
-                    // Game is in-progress
-                }
-            } else {
-                // Game has not started
+                const currentMapLevels = gameInfo.levelMaps.slice(0, gameInfo.currentLevelNum - 1).filter(b => b).length
+                const totalMapLevels = gameInfo.levelMaps.filter(b => b).length
+                const percent = Math.floor(100 * currentMapLevels / totalMapLevels)
+                option.setAttribute('data-percent-complete', `${percent}`)
+                option.setAttribute('data-last-played-at', `${gameInfo.lastPlayedAt}`)
+                option.textContent = `${gameInfo.title} (${percent}% ${timeAgo.format(gameInfo.lastPlayedAt)})`
+            } else if (gameId) {
+                option.setAttribute('data-percent-complete', `0`)
+                option.setAttribute('data-last-played-at', '0')
             }
         }
+
+        const selectedGameId = gameSelection.value
+        const continuePlayingOptions = []
+        const newGameOptions = []
+        const uncompletedOptions = []
+        const completedOptions = []
+
+        const oneMonthAgo = Date.now() - 1 * 30 * 24 * 60 * 60 * 1000
+        for (const option of gameOptions) {
+            const percent = Number.parseInt(option.getAttribute('data-percent-complete'))
+            const lastPlayed = Number.parseInt(option.getAttribute('data-last-played-at'))
+            const originalIndex = Number.parseInt(option.getAttribute('data-original-index'))
+            
+            if (!option.getAttribute('value')) {
+                // discard separators
+            } else if (percent === 100) {
+                completedOptions.push(option)
+            } else if (!lastPlayed) {
+                newGameOptions.push(option)
+            } else if (lastPlayed < oneMonthAgo) {
+                uncompletedOptions.push(option)
+            } else {
+                continuePlayingOptions.push(option)
+            }
+        }
+
+        // Sort the lists
+        const lastPlayedComparator = (a, b) => {
+            const aLastPlayed = Number.parseInt(a.getAttribute('data-last-played-at'))
+            const bLastPlayed = Number.parseInt(b.getAttribute('data-last-played-at'))
+            return bLastPlayed - aLastPlayed
+        }
+        continuePlayingOptions.sort(lastPlayedComparator)
+        uncompletedOptions.sort(lastPlayedComparator)
+        completedOptions.sort(lastPlayedComparator)
+        newGameOptions.sort((a, b) => {
+            const aOriginalIndex = Number.parseInt(a.getAttribute('data-original-index'))
+            const bOriginalIndex = Number.parseInt(b.getAttribute('data-original-index'))
+            return aOriginalIndex - bOriginalIndex
+        })
+
+        gameSelection.value = null // clear the selection because we will be adding
+
+        for (const option of gameOptions) {
+            gameSelection.remove(option)
+        }
+
+        if (continuePlayingOptions.length > 0) {
+            continuePlayingOptions.unshift(createSeparator('Continue playing'))
+        }
+        if (newGameOptions.length > 0) {
+            newGameOptions.unshift(createSeparator('New'))
+        }
+        if (uncompletedOptions.length > 0) {
+            uncompletedOptions.unshift(createSeparator('Uncompleted'))
+        }
+        if (completedOptions.length > 0) {
+            completedOptions.unshift(createSeparator('Completed'))
+        }
+        gameSelection.append(...continuePlayingOptions, ...newGameOptions, ...uncompletedOptions, ...completedOptions)
+        gameSelection.value = selectedGameId
+    }
+
+    function createSeparator(textContent) {
+        const el = document.createElement('option')
+        el.setAttribute('disabled', 'disabled')
+        el.textContent = `--- ${textContent}`
+        return el
     }
 
     // Support toggling the "Enable CSS" checkbox

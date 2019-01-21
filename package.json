@@ -81,6 +81,7 @@
     "codecov": "^3.1.0",
     "html-webpack-plugin": "^3.2.0",
     "istanbul": "^0.4.5",
+    "javascript-time-ago": "^2.0.1",
     "jest": "^23.6.0",
     "jest-pnp-resolver": "^1.0.2",
     "jest-puppeteer": "^3.7.0",
