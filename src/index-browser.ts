@@ -1,3 +1,5 @@
+import TimeAgo from 'javascript-time-ago' // tslint:disable-line:no-implicit-dependencies
+import TimeAgoEn from 'javascript-time-ago/locale/en' // tslint:disable-line
 import SyncTableEngine from './browser/SyncTableEngine'
 import WebworkerTableEngine from './browser/WebworkerTableEngine'
 import { Cell, GameEngine, ILoadingCellsEvent } from './engine'
@@ -11,6 +13,8 @@ import { Optional, RULE_DIRECTION } from './util'
 
 // Public API
 export {
+    TimeAgo,
+    TimeAgoEn,
     Parser,
     Serializer,
     GameEngine,
