@@ -266,13 +266,13 @@ export interface TypedMessageEvent<T> extends MessageEvent {
 }
 
 export enum MESSAGE_TYPE {
-    LOAD_GAME = 'LOAD_GAME',
     PAUSE = 'PAUSE',
     RESUME = 'RESUME',
     TICK = 'TICK',
     PRESS = 'PRESS',
     CLOSE = 'CLOSE',
     // Event handler events
+    ON_GAME_CHANGE = 'ON_GAME_CHANGE',
     ON_PRESS = 'ON_PRESS',
     ON_MESSAGE = 'ON_MESSAGE',
     ON_MESSAGE_DONE = 'ON_MESSAGE_DONE',
@@ -301,7 +301,7 @@ export interface SerializedTickResult {
 }
 
 export type WorkerMessage = {
-    type: MESSAGE_TYPE.LOAD_GAME
+    type: MESSAGE_TYPE.ON_GAME_CHANGE
     code: string
     level: number
 } | {
@@ -318,7 +318,7 @@ export type WorkerMessage = {
 }
 
 export type WorkerResponse = {
-    type: MESSAGE_TYPE.LOAD_GAME
+    type: MESSAGE_TYPE.ON_GAME_CHANGE
     payload: IGraphJson
 } | {
     type: MESSAGE_TYPE.TICK
@@ -386,6 +386,7 @@ export interface Cellish {
 }
 
 export interface GameEngineHandler {
+    onGameChange(gameData: GameData): void
     onPress(dir: INPUT_BUTTON): void
     onMessage(msg: string): Promise<void>
     onLevelChange(level: number, cells: Optional<Cellish[][]>, message: Optional<string>): void
@@ -398,6 +399,7 @@ export interface GameEngineHandler {
 }
 
 export interface GameEngineHandlerOptional {
+    onGameChange?(gameData: GameData): void
     onPress?(dir: INPUT_BUTTON): void
     onMessage?(msg: string): Promise<void>
     onLevelChange?(level: number, cells: Optional<Cellish[][]>, message: Optional<string>): void
@@ -414,6 +416,7 @@ export class EmptyGameEngineHandler implements GameEngineHandler {
     constructor(subHandlers?: GameEngineHandlerOptional[]) {
         this.subHandlers = subHandlers || []
     }
+    public onGameChange(gameData: GameData) { for (const h of this.subHandlers) { h.onGameChange && h.onGameChange(gameData) } }
     public onPress(dir: INPUT_BUTTON) { for (const h of this.subHandlers) { h.onPress && h.onPress(dir) } }
     public async onMessage(msg: string) { for (const h of this.subHandlers) { h.onMessage && await h.onMessage(msg) } }
     public onLevelChange(level: number, cells: Optional<Cellish[][]>, message: Optional<string>) { for (const h of this.subHandlers) { h.onLevelChange && h.onLevelChange(level, cells, message) } }

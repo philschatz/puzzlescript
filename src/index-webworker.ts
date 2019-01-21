@@ -1,4 +1,5 @@
 import { Cell, GameEngine } from './engine'
+import { GameData } from './models/game'
 import { A11Y_MESSAGE, A11Y_MESSAGE_TYPE } from './models/rule'
 import { GameSprite } from './models/tile'
 import { Soundish } from './parser/astTypes'
@@ -16,7 +17,7 @@ let lastTick = 0
 onmessage = (event: TypedMessageEvent<WorkerMessage>) => {
     const msg = event.data
     switch (msg.type) {
-        case MESSAGE_TYPE.LOAD_GAME: loadGame(msg.code, msg.level); break
+        case MESSAGE_TYPE.ON_GAME_CHANGE: loadGame(msg.code, msg.level); break
         case MESSAGE_TYPE.PAUSE: postMessage({ type: msg.type, payload: pauseGame() }); break
         case MESSAGE_TYPE.RESUME: postMessage({ type: msg.type, payload: resumeGame() }); break
         case MESSAGE_TYPE.PRESS: postMessage({ type: msg.type, payload: press(msg.button) }); break
@@ -55,6 +56,9 @@ const runPlayLoop = async() => {
 let previousMessage = '' // a dev-invariant checker that ensures we do not show the same message twice
 
 class Handler implements GameEngineHandler {
+    public onGameChange(gameData: GameData) {
+        postMessage({ type: MESSAGE_TYPE.ON_GAME_CHANGE, payload: (new Serializer(gameData)).toJson() })
+    }
     public onPress(dir: INPUT_BUTTON) {
         if (!dir) {
             throw new Error(`BUG: No direction provided to onPress`)
@@ -105,7 +109,7 @@ const loadGame = (code: string, level: number) => {
     pauseGame()
     previousMessage = '' // clear this dev-invariant-tester field since it is a new game
     const { data } = Parser.parse(code)
-    postMessage({ type: MESSAGE_TYPE.LOAD_GAME, payload: (new Serializer(data)).toJson() })
+    postMessage({ type: MESSAGE_TYPE.ON_GAME_CHANGE, payload: (new Serializer(data)).toJson() })
     currentEngine = new GameEngine(data, new Handler())
     currentEngine.setLevel(level)
     runPlayLoop() // tslint:disable-line:no-floating-promises

@@ -122,7 +122,7 @@ abstract class BaseUI {
         this.renderedPixels = []
         this.cellColorCache.clear()
     }
-    public setGameData(gameData: GameData) {
+    public onGameChange(gameData: GameData) {
         this.gameData = gameData
 
         this.renderedPixels = []

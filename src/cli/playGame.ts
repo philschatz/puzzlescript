@@ -502,7 +502,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: ISa
         keypresses.push(key)
     }
 
-    TerminalUI.setGameData(engine.getGameData())
+    TerminalUI.onGameChange(engine.getGameData())
     TerminalUI.clearScreen()
     TerminalUI.renderScreen(false)
     TerminalUI.writeDebug(`"${data.title}"`, 1)

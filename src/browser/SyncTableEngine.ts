@@ -47,7 +47,7 @@ class SubTableEngine {
         const { data } = Parser.parse(code)
         this.engine = new GameEngine(data, this.tableUI)
 
-        this.tableUI.setGameData(data)
+        this.tableUI.onGameChange(data)
         this.engine.setLevel(levelNum)
 
         if (data.metadata.keyRepeatInterval) {
