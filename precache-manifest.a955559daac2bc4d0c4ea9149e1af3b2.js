@@ -4,7 +4,7 @@ self.__precacheManifest = [
     "url": "puzzlescript.js"
   },
   {
-    "revision": "d5e8be295fe4d3b7b9eaf720bac66576",
+    "revision": "b199399c1ccd147833b99e435973033d",
     "url": "index.xhtml"
   }
 ];
