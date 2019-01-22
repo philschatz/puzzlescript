@@ -196,12 +196,17 @@ window.addEventListener('load', () => {
             const gameId = option.getAttribute('value')
             const gameInfo = storage[gameId]
             if (gameInfo) {
-                const currentMapLevels = gameInfo.levelMaps.slice(0, gameInfo.currentLevelNum - 1).filter(b => b).length
-                const totalMapLevels = gameInfo.levelMaps.filter(b => b).length
-                const percent = Math.floor(100 * currentMapLevels / totalMapLevels)
-                option.setAttribute('data-percent-complete', `${percent}`)
-                option.setAttribute('data-last-played-at', `${gameInfo.lastPlayedAt}`)
-                option.textContent = `${gameInfo.title} (${percent}% ${timeAgo.format(gameInfo.lastPlayedAt)})`
+                if (gameInfo.levelMaps) {
+                    const currentMapLevels = gameInfo.levelMaps.slice(0, gameInfo.currentLevelNum - 1).filter(b => b).length
+                    const totalMapLevels = gameInfo.levelMaps.filter(b => b).length
+                    const percent = Math.floor(100 * currentMapLevels / totalMapLevels)
+                    option.setAttribute('data-percent-complete', `${percent}`)
+                    option.setAttribute('data-last-played-at', `${gameInfo.lastPlayedAt}`)
+                    option.textContent = `${gameInfo.title} (${percent}% ${timeAgo.format(gameInfo.lastPlayedAt)})`
+                } else {
+                    option.setAttribute('data-percent-complete', `0`)
+                    option.setAttribute('data-last-played-at', `0`)
+                }
             } else if (gameId) {
                 option.setAttribute('data-percent-complete', `0`)
                 option.setAttribute('data-last-played-at', '0')
