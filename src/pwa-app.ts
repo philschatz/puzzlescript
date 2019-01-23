@@ -1,18 +1,61 @@
+import 'babel-polyfill'
+import TimeAgo from 'javascript-time-ago' // tslint:disable-line:no-implicit-dependencies
+import TimeAgoEn from 'javascript-time-ago/locale/en' // tslint:disable-line
+import { Optional, GameEngineHandlerOptional } from './util';
+import WebworkerTableEngine from './browser/WebworkerTableEngine';
+import { IGameTile } from './models/tile';
+import { Level } from './parser/astTypes';
+
+declare const ga: (a1: string, a2: string, a3: string, a4: string, a5?: string, a6?: number) => void
+
+type PromptEvent = Event & {
+    prompt: () => void
+    userChoice: Promise<{outcome: 'accepted' | 'rejected' | 'default'}>
+}
+
+type StorageGameInfo = {
+    currentLevelNum: number
+    completedLevelAt: number
+    lastPlayedAt: number
+    levelMaps: boolean[]
+    title: string
+}
+
+type Storage = { [gameId: string]: StorageGameInfo }
+
+function getElement<T extends Element>(selector: string) {
+    const el: Optional<T> = document.querySelector(selector)
+    if (!el) {
+        throw new Error(`BUG: Could not find "${selector}" in the page`)
+    }
+    return el
+}
+
+function getAllElements<T extends Element>(selector: string, root: Element) {
+    const ret: T[] = []
+    root.querySelectorAll(selector).forEach(el => ret.push(el as T))
+    return ret
+}
+
 window.addEventListener('load', () => {
 
     const WEBWORKER_URL = './puzzlescript-webworker.js'
     const GAME_STORAGE_ID = 'puzzlescriptGameProgress'
-    const table = document.querySelector('#theGame')
-    const gameSelection = document.querySelector('#gameSelection')
-    const loadingIndicator = document.querySelector('#loadingIndicator')
+    const table: HTMLTableElement = getElement('#theGame')
+    const gameSelection: HTMLSelectElement = getElement('#gameSelection')
+    const loadingIndicator = getElement('#loadingIndicator')
 
-    window.PuzzleScript.TimeAgo.addLocale(window.PuzzleScript.TimeAgoEn)
-    const timeAgo = new window.PuzzleScript.TimeAgo('en-US')
+    TimeAgo.addLocale(TimeAgoEn)
+    const timeAgo = new TimeAgo('en-US')
 
-    let gameId // used for loading and saving game progress
+    let gameId = '' // used for loading and saving game progress
+
+    if (!gameSelection) { throw new Error(`BUG: Could not find game selection dropdown`) }
+    if (!loadingIndicator) { throw new Error(`BUG: Could not find loading indicator`) }
+
 
     // Save when the user completes a level
-    const handler = {
+    const handler: GameEngineHandlerOptional = {
         onMessage: function (msg) {
 
             // Show a phone notification rather than an alert (if notifications are granted)
@@ -30,8 +73,7 @@ window.addEventListener('load', () => {
                 Notification.requestPermission(async (result) => {
                     // Safari does not support registration.showNotification() so we fall back to new Notification()
                     const fallback = () => {
-                        const notification = new Notification('Annoying Test Message', notificationOptions)
-                        // notification.onshow = () => resolve()
+                        new Notification('Annoying Test Message', notificationOptions)
                         resolve()
                     }
                     if (result === 'granted') {
@@ -70,20 +112,21 @@ window.addEventListener('load', () => {
 
     updateGameSelectionInfo() // update the % complete in the dropdown
 
-    function startTableEngine() {
+    // startTableEngine
+    if (!table) { throw new Error(`BUG: Could not find table on the page`) }
 
-        const worker = new Worker(WEBWORKER_URL)
-        const tableEngine = new window.PuzzleScript.WebworkerTableEngine(worker, table, handler)
-        // const tableEngine = new window.PuzzleScript.SyncTableEngine(table, handler)
+    const worker = new Worker(WEBWORKER_URL)
+    const tableEngine = new WebworkerTableEngine(worker, table, handler)
+    // const tableEngine = new window.PuzzleScript.SyncTableEngine(table, handler)
 
-        startGamepadDetection(tableEngine)
-        playSelectedGame(tableEngine)
+    startGamepadDetection(tableEngine)
+    playSelectedGame(tableEngine)
 
-        // Load the new game when the dropdown changes
-        gameSelection.addEventListener('change', function () { playSelectedGame(tableEngine)})
-    }
+    // Load the new game when the dropdown changes
+    gameSelection.addEventListener('change', function () { playSelectedGame(tableEngine)})
 
-    function playSelectedGame(tableEngine) {
+
+    function playSelectedGame(tableEngine: WebworkerTableEngine) {
         loadingIndicator.classList.remove('hidden') // Show the "Loading..." text
         gameSelection.setAttribute('disabled', 'disabled')
 
@@ -112,16 +155,12 @@ window.addEventListener('load', () => {
     }
 
 
-
-
-    startTableEngine()
-
     // Show/hide the "Add controller" message if a Gamepad is attached
-    const gamepadIcon = document.querySelector('#gamepadIcon')
-    const gamepadDisabled = document.querySelector('#gamepadDisabled')
-    const gamepadRecognized = document.querySelector('#gamepadRecognized')
-    const gamepadNotRecognized = document.querySelector('#gamepadNotRecognized')
-    function startGamepadDetection(tableEngine) {
+    const gamepadIcon = getElement('#gamepadIcon')
+    const gamepadDisabled = getElement('#gamepadDisabled')
+    const gamepadRecognized = getElement('#gamepadRecognized')
+    const gamepadNotRecognized = getElement('#gamepadNotRecognized')
+    function startGamepadDetection(tableEngine: WebworkerTableEngine) {
         if (tableEngine.inputWatcher) {
             setInterval(() => {
                 if (tableEngine.inputWatcher.gamepad.isRecognized()) {
@@ -157,14 +196,14 @@ window.addEventListener('load', () => {
     function loadStorage() {
         const storageStr = window.localStorage.getItem(GAME_STORAGE_ID)
         const storage = storageStr ? JSON.parse(storageStr) : { _version: 1 }
-        return storage
+        return storage as Storage
     }
-    function loadCurrentLevelNum(gameId) {
+    function loadCurrentLevelNum(gameId: string) {
         const storage = loadStorage()
         const gameData = storage[gameId]
         return (gameData || null) && gameData.currentLevelNum
     }
-    function saveCurrentLevelNum(gameId, levelNum) {
+    function saveCurrentLevelNum(gameId: string, levelNum: number) {
         const storage = loadStorage()
         storage[gameId] = storage[gameId] || {}
         storage[gameId].currentLevelNum = levelNum
@@ -173,7 +212,7 @@ window.addEventListener('load', () => {
         window.localStorage.setItem(GAME_STORAGE_ID, JSON.stringify(storage))
         ga && ga('send', 'event', 'game', 'level', gameId, levelNum)
     }
-    function saveGameInfo(gameId, levels, title) {
+    function saveGameInfo(gameId: string, levels: Level<IGameTile>[], title: string) {
         const storage = loadStorage()
         storage[gameId] = storage[gameId] || {}
         storage[gameId].levelMaps = levels.map(l => l.type === 'LEVEL_MAP')
@@ -184,29 +223,27 @@ window.addEventListener('load', () => {
 
     // store the original sort order so that we fall back to it.
     gameSelection.querySelectorAll('option').forEach((option, index) => {
-        option.setAttribute('data-original-index', index)
+        option.setAttribute('data-original-index', `${index}`)
     })
 
     function updateGameSelectionInfo() {
         const storage = loadStorage()
 
         // Update the last-updated time for all of the games and then sort them
-        const gameOptions = [...gameSelection.querySelectorAll('option')]
+        const gameOptions = getAllElements('option', gameSelection)
         for (const option of gameOptions) {
             const gameId = option.getAttribute('value')
+            if (!gameId) {
+                continue
+            }
             const gameInfo = storage[gameId]
             if (gameInfo) {
-                if (gameInfo.levelMaps) {
-                    const currentMapLevels = gameInfo.levelMaps.slice(0, gameInfo.currentLevelNum - 1).filter(b => b).length
-                    const totalMapLevels = gameInfo.levelMaps.filter(b => b).length
-                    const percent = Math.floor(100 * currentMapLevels / totalMapLevels)
-                    option.setAttribute('data-percent-complete', `${percent}`)
-                    option.setAttribute('data-last-played-at', `${gameInfo.lastPlayedAt}`)
-                    option.textContent = `${gameInfo.title} (${percent}% ${timeAgo.format(gameInfo.lastPlayedAt)})`
-                } else {
-                    option.setAttribute('data-percent-complete', `0`)
-                    option.setAttribute('data-last-played-at', `0`)
-                }
+                const currentMapLevels = gameInfo.levelMaps.slice(0, gameInfo.currentLevelNum - 1).filter(b => b).length
+                const totalMapLevels = gameInfo.levelMaps.filter(b => b).length
+                const percent = Math.floor(100 * currentMapLevels / totalMapLevels)
+                option.setAttribute('data-percent-complete', `${percent}`)
+                option.setAttribute('data-last-played-at', `${gameInfo.lastPlayedAt}`)
+                option.textContent = `${gameInfo.title} (${percent}% ${timeAgo.format(gameInfo.lastPlayedAt)})`
             } else if (gameId) {
                 option.setAttribute('data-percent-complete', `0`)
                 option.setAttribute('data-last-played-at', '0')
@@ -221,9 +258,8 @@ window.addEventListener('load', () => {
 
         const oneMonthAgo = Date.now() - 1 * 30 * 24 * 60 * 60 * 1000
         for (const option of gameOptions) {
-            const percent = Number.parseInt(option.getAttribute('data-percent-complete'))
-            const lastPlayed = Number.parseInt(option.getAttribute('data-last-played-at'))
-            const originalIndex = Number.parseInt(option.getAttribute('data-original-index'))
+            const percent = Number.parseInt(option.getAttribute('data-percent-complete') || `0`)
+            const lastPlayed = Number.parseInt(option.getAttribute('data-last-played-at') || `0`)
             
             if (!option.getAttribute('value')) {
                 // discard separators
@@ -239,24 +275,24 @@ window.addEventListener('load', () => {
         }
 
         // Sort the lists
-        const lastPlayedComparator = (a, b) => {
-            const aLastPlayed = Number.parseInt(a.getAttribute('data-last-played-at'))
-            const bLastPlayed = Number.parseInt(b.getAttribute('data-last-played-at'))
+        const lastPlayedComparator = (a: Element, b: Element) => {
+            const aLastPlayed = Number.parseInt(a.getAttribute('data-last-played-at') || `0`)
+            const bLastPlayed = Number.parseInt(b.getAttribute('data-last-played-at') || `0`)
             return bLastPlayed - aLastPlayed
         }
         continuePlayingOptions.sort(lastPlayedComparator)
         uncompletedOptions.sort(lastPlayedComparator)
         completedOptions.sort(lastPlayedComparator)
         newGameOptions.sort((a, b) => {
-            const aOriginalIndex = Number.parseInt(a.getAttribute('data-original-index'))
-            const bOriginalIndex = Number.parseInt(b.getAttribute('data-original-index'))
+            const aOriginalIndex = Number.parseInt(a.getAttribute('data-original-index') || `0`)
+            const bOriginalIndex = Number.parseInt(b.getAttribute('data-original-index') || `0`)
             return aOriginalIndex - bOriginalIndex
         })
 
-        gameSelection.value = null // clear the selection because we will be adding
+        gameSelection.value = '' // clear the selection because we will be adding
 
         for (const option of gameOptions) {
-            gameSelection.remove(option)
+            gameSelection.removeChild(option)
         }
 
         if (continuePlayingOptions.length > 0) {
@@ -275,7 +311,7 @@ window.addEventListener('load', () => {
         gameSelection.value = selectedGameId
     }
 
-    function createSeparator(textContent) {
+    function createSeparator(textContent: string) {
         const el = document.createElement('option')
         el.setAttribute('disabled', 'disabled')
         el.textContent = `--- ${textContent}`
@@ -283,8 +319,8 @@ window.addEventListener('load', () => {
     }
 
     // Support toggling the "Enable CSS" checkbox
-    const disableCss = document.querySelector('#disableCss')
-    function setUi(skipAnalytics) {
+    const disableCss: HTMLInputElement = getElement('#disableCss')
+    function setUi(skipAnalytics: boolean) {
         if (!skipAnalytics) {
             ga && ga('send', 'event', 'accessibility', 'toggle', disableCss.checked ? 'show' : 'hide')
         }
@@ -295,29 +331,29 @@ window.addEventListener('load', () => {
         }
         table.focus()
     }
-    disableCss.addEventListener('change', setUi)
+    disableCss.addEventListener('change', () => setUi(false))
     setUi(true)
 
 
 
 
     // https://developers.google.com/web/fundamentals/app-install-banners/#listen_for_beforeinstallprompt
-    const btnAdd = document.querySelector('#btnAdd')
-    let deferredPrompt
+    const btnAdd = getElement('#btnAdd')
+    let deferredPrompt: Optional<PromptEvent> = null
     window.addEventListener('beforeinstallprompt', (e) => {
         // Prevent Chrome 67 and earlier from automatically showing the prompt
         e.preventDefault();
         // Stash the event so it can be triggered later.
-        deferredPrompt = e;
+        deferredPrompt = e as PromptEvent;
         // Update UI notify the user they can add to home screen
         btnAdd.classList.remove('hidden')
     })
 
     btnAdd.addEventListener('click', (e) => {
         btnAdd.classList.add('hidden')
-        deferredPrompt.prompt();
+        deferredPrompt && deferredPrompt.prompt();
         // Wait for the user to respond to the prompt
-        deferredPrompt.userChoice
+        deferredPrompt && deferredPrompt.userChoice
         .then((choiceResult) => {
             if (choiceResult.outcome === 'accepted') {
                 console.log('User accepted the A2HS prompt');
