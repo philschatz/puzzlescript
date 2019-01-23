@@ -1,33 +1,11 @@
 import 'babel-polyfill'
-import TimeAgo from 'javascript-time-ago' // tslint:disable-line:no-implicit-dependencies
-import TimeAgoEn from 'javascript-time-ago/locale/en' // tslint:disable-line
 import SyncTableEngine from './browser/SyncTableEngine'
 import WebworkerTableEngine from './browser/WebworkerTableEngine'
-import { Cell, GameEngine, ILoadingCellsEvent } from './engine'
-import { GameData } from './models/game'
-import Parser from './parser/parser'
-import Serializer from './parser/serializer'
-import { closeSounds, playSound } from './sounds'
-import BaseUI from './ui/base'
-import TableUI from './ui/table'
-import { Optional, RULE_DIRECTION } from './util'
+import { closeSounds } from './sounds'
 
 // Public API
-export {
-    TimeAgo,
-    TimeAgoEn,
-    Parser,
-    Serializer,
-    GameEngine,
-    Cell,
-    ILoadingCellsEvent,
-    GameData,
-    Optional,
-    RULE_DIRECTION,
-    BaseUI,
-    TableUI,
+(window as any).PuzzleScript = {
     WebworkerTableEngine,
     SyncTableEngine,
-    playSound,
     closeSounds
 }
