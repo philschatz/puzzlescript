@@ -22,8 +22,8 @@ const DURATION_TO_RESTART = 2000
 const LENGTH_TO_SWIPE = 15
 
 export default class InputWatcher {
+    public readonly gamepad: IGamepad
     private readonly table: HTMLTableElement
-    private readonly gamepad: IGamepad
     private readonly controls: Control<{button: IButton, lastPressed: Optional<number>}>
     private readonly stickControls: StickControl<{stick: IStick, lastPressed: Optional<number>}>
     private readonly controlCheckers: Array<() => void>

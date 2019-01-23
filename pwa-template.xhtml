@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
 
 <head>
@@ -11,6 +12,7 @@
         @media all and (display-mode: standalone) {
             /* #headingSection, Uncommenting this causes horizontal lines on Android */
             #gameInstructionsSection,
+            #disableCssSection,
             #gamepadSection { display: none; }
             #gamepadSectionPWA { display: block; }
         }
@@ -63,10 +65,10 @@
     <meta name="theme-color" content="#000000"/>
     <meta name="mobile-web-app-capable" content="yes"/>
     <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <link rel="preconnect" href="https://google-analytics.com"/>
     <link rel="manifest" href="./pwa-manifest.json"/>
-    <script src="./pwa-sw-loader.js"></script>
-    <script src="./pwa-app.js"></script>
-
+    <link rel="preload" href="./puzzlescript-webworker.js" as="script"/>
+    <script src="./pwa-sw-loader.js" async="async"></script>
 </head>
 
 <body>

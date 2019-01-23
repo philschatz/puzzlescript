@@ -40,11 +40,11 @@ class ProxyCellish implements Cellish {
 }
 
 export default class WebworkerTableEngine implements Engineish {
+    public readonly inputWatcher: InputWatcher
     private readonly worker: PuzzlescriptWorker
     private readonly table: HTMLTableElement
     private readonly ui: TableUI
     private readonly resizeWatcher: ResizeWatcher
-    private readonly inputWatcher: InputWatcher
     private readonly boundPause: () => void
     private readonly boundResume: () => void
     private readonly boundMessageListener: ({ data }: {data: WorkerResponse}) => Promise<void>
