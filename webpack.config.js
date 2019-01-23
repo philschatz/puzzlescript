@@ -1,6 +1,7 @@
 const path = require('path')
 const WorkboxPlugin = require('workbox-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin')
 
 module.exports = {
     mode: process.env['NODE_ENV'] || 'production',
@@ -31,6 +32,14 @@ module.exports = {
             filename: 'index.xhtml',
             inject: 'head',
             chunks: ['pwa-app']
+        }),
+        new ScriptExtHtmlWebpackPlugin({
+            // defaultAttribute: 'async' // Does not work for XHTML files
+            custom: {
+                test: /pwa-app/,
+                attribute: 'async',
+                value: 'async'
+            }
         }),
         new WorkboxPlugin.GenerateSW({
             // these options encourage the ServiceWorkers to get in there fast 
