@@ -12,7 +12,7 @@ self.__precacheManifest = [
     "url": "puzzlescript-webworker.js"
   },
   {
-    "revision": "1789e56279e3228ef2167404f877affb",
+    "revision": "9655999f82581acbcfdfb004546af1bb",
     "url": "index.xhtml"
   }
 ];
