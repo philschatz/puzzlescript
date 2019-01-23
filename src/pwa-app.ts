@@ -8,10 +8,15 @@ import { GameEngineHandlerOptional, Optional } from './util'
 
 declare const ga: (a1: string, a2: string, a3: string, a4: string, a5?: string, a6?: number) => void
 
-type PromptEvent = Event & {
-    prompt: () => void
-    userChoice: Promise<{outcome: 'accepted' | 'rejected' | 'default'}>
-}
+// type PromptEvent = Event & {
+//     prompt: () => void
+//     userChoice: Promise<{outcome: 'accepted' | 'rejected' | 'default'}>
+// }
+//
+// type NotificationEvent = Event & {
+//     action: Optional<string>
+//     notification: Notification
+// }
 
 interface StorageGameInfo {
     currentLevelNum: number
@@ -57,44 +62,56 @@ window.addEventListener('load', () => {
     const handler: GameEngineHandlerOptional = {
         onMessage(msg) {
 
-            // Show a phone notification rather than an alert (if notifications are granted)
-            // Just to show that notifications can be done and what they would look like
-            const notificationOptions = {
-                body: `${msg} (Just showing that notifications work. You can disable them)`,
-                icon: './pwa-icon.png',
-                badge: './pwa-icon.png',
-                vibrate: [200, 100, 200],
-                actions: [
-                    { action: 'action-ok', title: 'ok' }
-                ]
-            }
-            return new Promise((resolve) => {
-                Notification.requestPermission(async(result) => { // tslint:disable-line:no-floating-promises
-                    // Safari does not support registration.showNotification() so we fall back to new Notification()
-                    const fallback = () => {
-                        new Notification('Annoying Test Message', notificationOptions) // tslint:disable-line:no-unused-expression
-                        resolve()
-                    }
-                    if (result === 'granted') {
-                        if (navigator.serviceWorker) {
-                            // Mobile notification (Android Chrome)
-                            const registration = await navigator.serviceWorker.ready
-                            if (registration.showNotification) {
-                                await registration.showNotification('Annoying Test Message', notificationOptions)
-                                resolve()
-                            } else {
-                                fallback()
-                            }
-                        } else {
-                            // Desktop notification Fallback (Firefox)
-                            fallback()
-                        }
-                    } else {
-                        alert(msg)
-                        resolve()
-                    }
-                })
-            })
+            alert(msg)
+            return Promise.resolve()
+            // // Show a phone notification rather than an alert (if notifications are granted)
+            // // Just to show that notifications can be done and what they would look like
+            // const notificationOptions = {
+            //     body: `${msg} (Just showing that notifications work. You can disable them)`,
+            //     icon: './pwa-icon.png',
+            //     badge: './pwa-icon.png',
+            //     vibrate: [200, 100, 200],
+            //     actions: [
+            //         { action: 'action-ok', title: 'ok' }
+            //     ]
+            // }
+            // return new Promise((resolve) => {
+            //     Notification.requestPermission(async(result) => { // tslint:disable-line:no-floating-promises
+            //         // Safari does not support registration.showNotification() so we fall back to new Notification()
+            //         const fallback = () => {
+            //             new Notification('Annoying Test Message', notificationOptions) // tslint:disable-line:no-unused-expression
+            //             resolve()
+            //         }
+            //         if (result === 'granted') {
+            //             if (navigator.serviceWorker) {
+            //                 // Mobile notification (Android Chrome)
+            //                 const registration = await navigator.serviceWorker.ready
+            //                 if (registration.showNotification) {
+            //                     // navigator.serviceWorker.addEventListener('notificationclick', (evt) => {
+            //                     //     const event = evt as NotificationEvent
+            //                     //     console.log('On notification click: ', event.notification.tag);
+            //                     //     event.notification.close()
+
+            //                     //     if (event.action === 'action-ok') {
+            //                     //         // Do stuff with the "OK"
+            //                     //         alert('woot!')
+            //                     //     }
+            //                     //   })
+            //                     await registration.showNotification('Annoying Test Message', notificationOptions)
+            //                     resolve()
+            //                 } else {
+            //                     fallback()
+            //                 }
+            //             } else {
+            //                 // Desktop notification Fallback (Firefox)
+            //                 fallback()
+            //             }
+            //         } else {
+            //             alert(msg)
+            //             resolve()
+            //         }
+            //     })
+            // })
         },
         onLevelChange(newLevelNum) {
             // Hide the Loading text because the level loaded
@@ -332,26 +349,26 @@ window.addEventListener('load', () => {
     disableCss.addEventListener('change', () => setUi(false))
     setUi(true)
 
-    // https://developers.google.com/web/fundamentals/app-install-banners/#listen_for_beforeinstallprompt
-    const btnAdd = getElement('#btnAdd')
-    let deferredPrompt: Optional<PromptEvent> = null
-    window.addEventListener('beforeinstallprompt', (e) => {
-        // Prevent Chrome 67 and earlier from automatically showing the prompt
-        e.preventDefault()
-        // Stash the event so it can be triggered later.
-        deferredPrompt = e as PromptEvent
-        // Update UI notify the user they can add to home screen
-        btnAdd.classList.remove('hidden')
-    })
+    // // https://developers.google.com/web/fundamentals/app-install-banners/#listen_for_beforeinstallprompt
+    // const btnAdd = getElement('#btnAdd')
+    // let deferredPrompt: Optional<PromptEvent> = null
+    // window.addEventListener('beforeinstallprompt', (e) => {
+    //     // Prevent Chrome 67 and earlier from automatically showing the prompt
+    //     e.preventDefault()
+    //     // Stash the event so it can be triggered later.
+    //     deferredPrompt = e as PromptEvent
+    //     // Update UI notify the user they can add to home screen
+    //     btnAdd.classList.remove('hidden')
+    // })
 
-    btnAdd.addEventListener('click', (e) => {
-        btnAdd.classList.add('hidden')
-        deferredPrompt && deferredPrompt.prompt()
-        // Wait for the user to respond to the prompt
-        deferredPrompt && deferredPrompt.userChoice
-        .then((choiceResult) => {
-            deferredPrompt = null
-        })
-    })
+    // btnAdd.addEventListener('click', (e) => {
+    //     btnAdd.classList.add('hidden')
+    //     deferredPrompt && deferredPrompt.prompt()
+    //     // Wait for the user to respond to the prompt
+    //     deferredPrompt && deferredPrompt.userChoice
+    //     .then((choiceResult) => {
+    //         deferredPrompt = null
+    //     })
+    // })
 
 })
