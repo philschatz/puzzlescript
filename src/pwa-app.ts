@@ -1,10 +1,10 @@
-import 'babel-polyfill'
+import 'babel-polyfill' // tslint:disable-line:no-implicit-dependencies
 import TimeAgo from 'javascript-time-ago' // tslint:disable-line:no-implicit-dependencies
 import TimeAgoEn from 'javascript-time-ago/locale/en' // tslint:disable-line
-import { Optional, GameEngineHandlerOptional } from './util';
-import WebworkerTableEngine from './browser/WebworkerTableEngine';
-import { IGameTile } from './models/tile';
-import { Level } from './parser/astTypes';
+import WebworkerTableEngine from './browser/WebworkerTableEngine'
+import { IGameTile } from './models/tile'
+import { Level } from './parser/astTypes'
+import { GameEngineHandlerOptional, Optional } from './util'
 
 declare const ga: (a1: string, a2: string, a3: string, a4: string, a5?: string, a6?: number) => void
 
@@ -13,7 +13,7 @@ type PromptEvent = Event & {
     userChoice: Promise<{outcome: 'accepted' | 'rejected' | 'default'}>
 }
 
-type StorageGameInfo = {
+interface StorageGameInfo {
     currentLevelNum: number
     completedLevelAt: number
     lastPlayedAt: number
@@ -21,7 +21,7 @@ type StorageGameInfo = {
     title: string
 }
 
-type Storage = { [gameId: string]: StorageGameInfo }
+interface Storage { [gameId: string]: StorageGameInfo }
 
 function getElement<T extends Element>(selector: string) {
     const el: Optional<T> = document.querySelector(selector)
@@ -33,7 +33,7 @@ function getElement<T extends Element>(selector: string) {
 
 function getAllElements<T extends Element>(selector: string, root: Element) {
     const ret: T[] = []
-    root.querySelectorAll(selector).forEach(el => ret.push(el as T))
+    root.querySelectorAll(selector).forEach((el) => ret.push(el as T))
     return ret
 }
 
@@ -48,15 +48,14 @@ window.addEventListener('load', () => {
     TimeAgo.addLocale(TimeAgoEn)
     const timeAgo = new TimeAgo('en-US')
 
-    let gameId = '' // used for loading and saving game progress
+    let currentGameId = '' // used for loading and saving game progress
 
     if (!gameSelection) { throw new Error(`BUG: Could not find game selection dropdown`) }
     if (!loadingIndicator) { throw new Error(`BUG: Could not find loading indicator`) }
 
-
     // Save when the user completes a level
     const handler: GameEngineHandlerOptional = {
-        onMessage: function (msg) {
+        onMessage(msg) {
 
             // Show a phone notification rather than an alert (if notifications are granted)
             // Just to show that notifications can be done and what they would look like
@@ -70,10 +69,10 @@ window.addEventListener('load', () => {
                 ]
             }
             return new Promise((resolve) => {
-                Notification.requestPermission(async (result) => {
+                Notification.requestPermission(async(result) => { // tslint:disable-line:no-floating-promises
                     // Safari does not support registration.showNotification() so we fall back to new Notification()
                     const fallback = () => {
-                        new Notification('Annoying Test Message', notificationOptions)
+                        new Notification('Annoying Test Message', notificationOptions) // tslint:disable-line:no-unused-expression
                         resolve()
                     }
                     if (result === 'granted') {
@@ -97,16 +96,16 @@ window.addEventListener('load', () => {
                 })
             })
         },
-        onLevelChange: function (newLevelNum) {
+        onLevelChange(newLevelNum) {
             // Hide the Loading text because the level loaded
             loadingIndicator.classList.add('hidden')
             gameSelection.removeAttribute('disabled')
 
-            saveCurrentLevelNum(gameId, newLevelNum)
+            saveCurrentLevelNum(currentGameId, newLevelNum)
             updateGameSelectionInfo()
         },
-        onGameChange: function (gameData) {
-            saveGameInfo(gameId, gameData.levels, gameData.title)
+        onGameChange(gameData) {
+            saveGameInfo(currentGameId, gameData.levels, gameData.title)
         }
     }
 
@@ -119,27 +118,26 @@ window.addEventListener('load', () => {
     const tableEngine = new WebworkerTableEngine(worker, table, handler)
     // const tableEngine = new window.PuzzleScript.SyncTableEngine(table, handler)
 
-    startGamepadDetection(tableEngine)
-    playSelectedGame(tableEngine)
+    startGamepadDetection()
+    playSelectedGame()
 
     // Load the new game when the dropdown changes
-    gameSelection.addEventListener('change', function () { playSelectedGame(tableEngine)})
+    gameSelection.addEventListener('change', () => playSelectedGame())
 
-
-    function playSelectedGame(tableEngine: WebworkerTableEngine) {
+    function playSelectedGame() {
         loadingIndicator.classList.remove('hidden') // Show the "Loading..." text
         gameSelection.setAttribute('disabled', 'disabled')
 
-        gameId = gameSelection.value
-        if (!gameId) {
+        currentGameId = gameSelection.value
+        if (!currentGameId) {
             return
         }
-        fetch(`./games/${gameId}/script.txt`, {redirect: 'follow'})
-        .then(resp => {
+        fetch(`./games/${currentGameId}/script.txt`, { redirect: 'follow' })
+        .then((resp) => {
             if (resp.ok) {
-                return resp.text().then(function(source) {
+                return resp.text().then((source) => {
                     // Load the game
-                    tableEngine.setGame(source, loadCurrentLevelNum(gameId) || 0)
+                    tableEngine.setGame(source, loadCurrentLevelNum(currentGameId) || 0)
                 })
             } else {
                 alert(`Problem finding game file. Please choose another one`)
@@ -147,20 +145,20 @@ window.addEventListener('load', () => {
                 gameSelection.removeAttribute('disabled')
             }
         },
-        err => {
+        (err) => {
             alert('Could not download the game. Are you connected to the internet?')
+            console.error(err) // tslint:disable-line:no-console
             loadingIndicator.classList.add('hidden')
             gameSelection.removeAttribute('disabled')
         })
     }
-
 
     // Show/hide the "Add controller" message if a Gamepad is attached
     const gamepadIcon = getElement('#gamepadIcon')
     const gamepadDisabled = getElement('#gamepadDisabled')
     const gamepadRecognized = getElement('#gamepadRecognized')
     const gamepadNotRecognized = getElement('#gamepadNotRecognized')
-    function startGamepadDetection(tableEngine: WebworkerTableEngine) {
+    function startGamepadDetection() {
         if (tableEngine.inputWatcher) {
             setInterval(() => {
                 if (tableEngine.inputWatcher.gamepad.isRecognized()) {
@@ -212,10 +210,10 @@ window.addEventListener('load', () => {
         window.localStorage.setItem(GAME_STORAGE_ID, JSON.stringify(storage))
         ga && ga('send', 'event', 'game', 'level', gameId, levelNum)
     }
-    function saveGameInfo(gameId: string, levels: Level<IGameTile>[], title: string) {
+    function saveGameInfo(gameId: string, levels: Array<Level<IGameTile>>, title: string) {
         const storage = loadStorage()
         storage[gameId] = storage[gameId] || {}
-        storage[gameId].levelMaps = levels.map(l => l.type === 'LEVEL_MAP')
+        storage[gameId].levelMaps = levels.map((l) => l.type === 'LEVEL_MAP')
         storage[gameId].title = title
         storage[gameId].lastPlayedAt = Date.now()
         window.localStorage.setItem(GAME_STORAGE_ID, JSON.stringify(storage))
@@ -238,8 +236,8 @@ window.addEventListener('load', () => {
             }
             const gameInfo = storage[gameId]
             if (gameInfo) {
-                const currentMapLevels = gameInfo.levelMaps.slice(0, gameInfo.currentLevelNum - 1).filter(b => b).length
-                const totalMapLevels = gameInfo.levelMaps.filter(b => b).length
+                const currentMapLevels = gameInfo.levelMaps.slice(0, gameInfo.currentLevelNum - 1).filter((b) => b).length
+                const totalMapLevels = gameInfo.levelMaps.filter((b) => b).length
                 const percent = Math.floor(100 * currentMapLevels / totalMapLevels)
                 option.setAttribute('data-percent-complete', `${percent}`)
                 option.setAttribute('data-last-played-at', `${gameInfo.lastPlayedAt}`)
@@ -258,9 +256,9 @@ window.addEventListener('load', () => {
 
         const oneMonthAgo = Date.now() - 1 * 30 * 24 * 60 * 60 * 1000
         for (const option of gameOptions) {
-            const percent = Number.parseInt(option.getAttribute('data-percent-complete') || `0`)
-            const lastPlayed = Number.parseInt(option.getAttribute('data-last-played-at') || `0`)
-            
+            const percent = Number.parseInt(option.getAttribute('data-percent-complete') || `0`, 10)
+            const lastPlayed = Number.parseInt(option.getAttribute('data-last-played-at') || `0`, 10)
+
             if (!option.getAttribute('value')) {
                 // discard separators
             } else if (percent === 100) {
@@ -276,16 +274,16 @@ window.addEventListener('load', () => {
 
         // Sort the lists
         const lastPlayedComparator = (a: Element, b: Element) => {
-            const aLastPlayed = Number.parseInt(a.getAttribute('data-last-played-at') || `0`)
-            const bLastPlayed = Number.parseInt(b.getAttribute('data-last-played-at') || `0`)
+            const aLastPlayed = Number.parseInt(a.getAttribute('data-last-played-at') || `0`, 10)
+            const bLastPlayed = Number.parseInt(b.getAttribute('data-last-played-at') || `0`, 10)
             return bLastPlayed - aLastPlayed
         }
         continuePlayingOptions.sort(lastPlayedComparator)
         uncompletedOptions.sort(lastPlayedComparator)
         completedOptions.sort(lastPlayedComparator)
         newGameOptions.sort((a, b) => {
-            const aOriginalIndex = Number.parseInt(a.getAttribute('data-original-index') || `0`)
-            const bOriginalIndex = Number.parseInt(b.getAttribute('data-original-index') || `0`)
+            const aOriginalIndex = Number.parseInt(a.getAttribute('data-original-index') || `0`, 10)
+            const bOriginalIndex = Number.parseInt(b.getAttribute('data-original-index') || `0`, 10)
             return aOriginalIndex - bOriginalIndex
         })
 
@@ -334,35 +332,26 @@ window.addEventListener('load', () => {
     disableCss.addEventListener('change', () => setUi(false))
     setUi(true)
 
-
-
-
     // https://developers.google.com/web/fundamentals/app-install-banners/#listen_for_beforeinstallprompt
     const btnAdd = getElement('#btnAdd')
     let deferredPrompt: Optional<PromptEvent> = null
     window.addEventListener('beforeinstallprompt', (e) => {
         // Prevent Chrome 67 and earlier from automatically showing the prompt
-        e.preventDefault();
+        e.preventDefault()
         // Stash the event so it can be triggered later.
-        deferredPrompt = e as PromptEvent;
+        deferredPrompt = e as PromptEvent
         // Update UI notify the user they can add to home screen
         btnAdd.classList.remove('hidden')
     })
 
     btnAdd.addEventListener('click', (e) => {
         btnAdd.classList.add('hidden')
-        deferredPrompt && deferredPrompt.prompt();
+        deferredPrompt && deferredPrompt.prompt()
         // Wait for the user to respond to the prompt
         deferredPrompt && deferredPrompt.userChoice
         .then((choiceResult) => {
-            if (choiceResult.outcome === 'accepted') {
-                console.log('User accepted the A2HS prompt');
-            } else {
-                console.log('User dismissed the A2HS prompt');
-            }
-            deferredPrompt = null;
-        });
+            deferredPrompt = null
+        })
     })
-
 
 })
