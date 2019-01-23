@@ -1,5 +1,4 @@
 const path = require('path')
-const webpack = require('webpack')
 const WorkboxPlugin = require('workbox-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 
@@ -29,7 +28,9 @@ module.exports = {
         new HtmlWebpackPlugin({
             xhtml: true,
             template: 'pwa-template.xhtml',
-            filename: 'index.xhtml'
+            filename: 'index.xhtml',
+            inject: 'head',
+            chunks: ['pwa-app']
         }),
         new WorkboxPlugin.GenerateSW({
             // these options encourage the ServiceWorkers to get in there fast 
