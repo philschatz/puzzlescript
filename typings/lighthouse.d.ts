@@ -220,3 +220,12 @@ declare module 'lighthouse' {
     export = lighthouse;
   }
   
+  declare module 'lighthouse/lighthouse-core/report/report-generator' {
+    type ReportGenerator = {
+      generateReportHtml(lhr: any): string
+      generateReportCSV(lhr: any): string
+      generateReport(lhr: any, outputModes: Array<'html' | 'csv' | 'json'>): string[]
+    }
+    var reportGenerator: ReportGenerator
+    export default reportGenerator
+  }
