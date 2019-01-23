@@ -1,3 +1,4 @@
+import 'babel-polyfill'
 import TimeAgo from 'javascript-time-ago' // tslint:disable-line:no-implicit-dependencies
 import TimeAgoEn from 'javascript-time-ago/locale/en' // tslint:disable-line
 import SyncTableEngine from './browser/SyncTableEngine'

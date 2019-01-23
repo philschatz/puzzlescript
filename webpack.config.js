@@ -5,12 +5,14 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = {
     mode: process.env['NODE_ENV'] || 'production',
-    entry: ['babel-polyfill', './src/index-browser.ts'],
+    entry: {
+        'pwa-app': './src/pwa-app.ts',
+        'puzzlescript-webworker': './src/index-webworker.ts',
+        'puzzlescript': './src/index-browser.ts',
+    },
     output: {
         path: path.resolve(__dirname, './'),
-        filename: 'puzzlescript.js',
-        library: 'PuzzleScript',
-        libraryTarget: 'umd',
+        filename: '[name].js',
     },
     devtool: 'source-map',
     resolve: {
