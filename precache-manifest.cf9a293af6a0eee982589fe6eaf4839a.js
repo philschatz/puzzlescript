@@ -1,14 +1,14 @@
 self.__precacheManifest = [
   {
-    "revision": "7e4591bcda74ba29d48c",
+    "revision": "1f5ff436c8bc7f011bd7",
     "url": "pwa-app.js"
   },
   {
-    "revision": "1aa77f248c72259e6194",
+    "revision": "14efd022299f3654c33d",
     "url": "puzzlescript.js"
   },
   {
-    "revision": "23f76755710aaffd728d",
+    "revision": "57d825e6accf3881450b",
     "url": "puzzlescript-webworker.js"
   },
   {
