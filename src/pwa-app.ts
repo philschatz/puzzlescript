@@ -61,7 +61,6 @@ window.addEventListener('load', () => {
     // Save when the user completes a level
     const handler: GameEngineHandlerOptional = {
         onMessage(msg) {
-
             alert(msg)
             return Promise.resolve()
             // // Show a phone notification rather than an alert (if notifications are granted)
@@ -76,41 +75,37 @@ window.addEventListener('load', () => {
             //     ]
             // }
             // return new Promise((resolve) => {
-            //     Notification.requestPermission(async(result) => { // tslint:disable-line:no-floating-promises
-            //         // Safari does not support registration.showNotification() so we fall back to new Notification()
-            //         const fallback = () => {
-            //             new Notification('Annoying Test Message', notificationOptions) // tslint:disable-line:no-unused-expression
-            //             resolve()
-            //         }
-            //         if (result === 'granted') {
-            //             if (navigator.serviceWorker) {
-            //                 // Mobile notification (Android Chrome)
-            //                 const registration = await navigator.serviceWorker.ready
-            //                 if (registration.showNotification) {
-            //                     // navigator.serviceWorker.addEventListener('notificationclick', (evt) => {
-            //                     //     const event = evt as NotificationEvent
-            //                     //     console.log('On notification click: ', event.notification.tag);
-            //                     //     event.notification.close()
-
-            //                     //     if (event.action === 'action-ok') {
-            //                     //         // Do stuff with the "OK"
-            //                     //         alert('woot!')
-            //                     //     }
-            //                     //   })
-            //                     await registration.showNotification('Annoying Test Message', notificationOptions)
-            //                     resolve()
+            //     // Notification is not available on iOS 
+            //     if (typeof Notification !== 'undefined') { // tslint:disable-line:strict-type-predicates
+            //         Notification.requestPermission(async(result) => { // tslint:disable-line:no-floating-promises
+            //             // Safari does not support registration.showNotification() so we fall back to new Notification()
+            //             const fallback = () => {
+            //                 new Notification('Annoying Test Message', notificationOptions) // tslint:disable-line:no-unused-expression
+            //                 resolve()
+            //             }
+            //             if (result === 'granted') {
+            //                 if (navigator.serviceWorker) {
+            //                     // Mobile notification (Android Chrome)
+            //                     const registration = await navigator.serviceWorker.ready
+            //                     if (registration.showNotification) {
+            //                         await registration.showNotification('Annoying Test Message', notificationOptions)
+            //                         resolve()
+            //                     } else {
+            //                         fallback()
+            //                     }
             //                 } else {
+            //                     // Desktop notification Fallback (Firefox)
             //                     fallback()
             //                 }
             //             } else {
-            //                 // Desktop notification Fallback (Firefox)
-            //                 fallback()
+            //                 alert(msg)
+            //                 resolve()
             //             }
-            //         } else {
-            //             alert(msg)
-            //             resolve()
-            //         }
-            //     })
+            //         })
+            //     } else {
+            //         alert(msg)
+            //         resolve()
+            //     }
             // })
         },
         onLevelChange(newLevelNum) {
