@@ -1,6 +1,6 @@
 self.__precacheManifest = [
   {
-    "revision": "b1bbb977ccd43c36b370",
+    "revision": "92162a704cc33beb7d62",
     "url": "pwa-app.js"
   },
   {
