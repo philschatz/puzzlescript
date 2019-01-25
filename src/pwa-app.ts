@@ -8,11 +8,11 @@ import { GameEngineHandlerOptional, Optional } from './util'
 
 declare const ga: (a1: string, a2: string, a3: string, a4: string, a5?: string, a6?: number) => void
 
-// type PromptEvent = Event & {
-//     prompt: () => void
-//     userChoice: Promise<{outcome: 'accepted' | 'rejected' | 'default'}>
-// }
-//
+type PromptEvent = Event & {
+    prompt: () => void
+    userChoice: Promise<{outcome: 'accepted' | 'rejected' | 'default'}>
+}
+
 // type NotificationEvent = Event & {
 //     action: Optional<string>
 //     notification: Notification
@@ -349,26 +349,26 @@ window.addEventListener('load', () => {
     disableCss.addEventListener('change', () => setUi(false))
     setUi(true)
 
-    // // https://developers.google.com/web/fundamentals/app-install-banners/#listen_for_beforeinstallprompt
-    // const btnAdd = getElement('#btnAdd')
-    // let deferredPrompt: Optional<PromptEvent> = null
-    // window.addEventListener('beforeinstallprompt', (e) => {
-    //     // Prevent Chrome 67 and earlier from automatically showing the prompt
-    //     e.preventDefault()
-    //     // Stash the event so it can be triggered later.
-    //     deferredPrompt = e as PromptEvent
-    //     // Update UI notify the user they can add to home screen
-    //     btnAdd.classList.remove('hidden')
-    // })
+    // https://developers.google.com/web/fundamentals/app-install-banners/#listen_for_beforeinstallprompt
+    const btnAdd = getElement('#btnAdd')
+    let deferredPrompt: Optional<PromptEvent> = null
+    window.addEventListener('beforeinstallprompt', (e) => {
+        // Prevent Chrome 67 and earlier from automatically showing the prompt
+        e.preventDefault()
+        // Stash the event so it can be triggered later.
+        deferredPrompt = e as PromptEvent
+        // Update UI notify the user they can add to home screen
+        btnAdd.classList.remove('hidden')
+    })
 
-    // btnAdd.addEventListener('click', (e) => {
-    //     btnAdd.classList.add('hidden')
-    //     deferredPrompt && deferredPrompt.prompt()
-    //     // Wait for the user to respond to the prompt
-    //     deferredPrompt && deferredPrompt.userChoice
-    //     .then((choiceResult) => {
-    //         deferredPrompt = null
-    //     })
-    // })
+    btnAdd.addEventListener('click', (e) => {
+        btnAdd.classList.add('hidden')
+        deferredPrompt && deferredPrompt.prompt()
+        // Wait for the user to respond to the prompt
+        deferredPrompt && deferredPrompt.userChoice
+        .then(() => {
+            deferredPrompt = null
+        })
+    })
 
 })
