@@ -13,6 +13,11 @@ type PromptEvent = Event & {
     userChoice: Promise<{outcome: 'accepted' | 'rejected' | 'default'}>
 }
 
+// type NotificationEvent = Event & {
+//     action: Optional<string>
+//     notification: Notification
+// }
+
 interface StorageGameInfo {
     currentLevelNum: number
     completedLevelAt: number
@@ -56,51 +61,52 @@ window.addEventListener('load', () => {
     // Save when the user completes a level
     const handler: GameEngineHandlerOptional = {
         onMessage(msg) {
-
-            // Show a phone notification rather than an alert (if notifications are granted)
-            // Just to show that notifications can be done and what they would look like
-            const notificationOptions = {
-                body: `${msg} (Just showing that notifications work. You can disable them)`,
-                icon: './pwa-icon.png',
-                badge: './pwa-icon.png',
-                vibrate: [200, 100, 200],
-                actions: [
-                    { action: 'action-ok', title: 'ok' }
-                ]
-            }
-            return new Promise((resolve) => {
-                // Notification is not available on iOS 
-                if (typeof Notification !== 'undefined') { // tslint:disable-line:strict-type-predicates
-                    Notification.requestPermission(async(result) => { // tslint:disable-line:no-floating-promises
-                        // Safari does not support registration.showNotification() so we fall back to new Notification()
-                        const fallback = () => {
-                            new Notification('Annoying Test Message', notificationOptions) // tslint:disable-line:no-unused-expression
-                            resolve()
-                        }
-                        if (result === 'granted') {
-                            if (navigator.serviceWorker) {
-                                // Mobile notification (Android Chrome)
-                                const registration = await navigator.serviceWorker.ready
-                                if (registration.showNotification) {
-                                    await registration.showNotification('Annoying Test Message', notificationOptions)
-                                    resolve()
-                                } else {
-                                    fallback()
-                                }
-                            } else {
-                                // Desktop notification Fallback (Firefox)
-                                fallback()
-                            }
-                        } else {
-                            alert(msg)
-                            resolve()
-                        }
-                    })
-                } else {
-                    alert(msg)
-                    resolve()
-                }
-            })
+            alert(msg)
+            return Promise.resolve()
+            // // Show a phone notification rather than an alert (if notifications are granted)
+            // // Just to show that notifications can be done and what they would look like
+            // const notificationOptions = {
+            //     body: `${msg} (Just showing that notifications work. You can disable them)`,
+            //     icon: './pwa-icon.png',
+            //     badge: './pwa-icon.png',
+            //     vibrate: [200, 100, 200],
+            //     actions: [
+            //         { action: 'action-ok', title: 'ok' }
+            //     ]
+            // }
+            // return new Promise((resolve) => {
+            //     // Notification is not available on iOS 
+            //     if (typeof Notification !== 'undefined') { // tslint:disable-line:strict-type-predicates
+            //         Notification.requestPermission(async(result) => { // tslint:disable-line:no-floating-promises
+            //             // Safari does not support registration.showNotification() so we fall back to new Notification()
+            //             const fallback = () => {
+            //                 new Notification('Annoying Test Message', notificationOptions) // tslint:disable-line:no-unused-expression
+            //                 resolve()
+            //             }
+            //             if (result === 'granted') {
+            //                 if (navigator.serviceWorker) {
+            //                     // Mobile notification (Android Chrome)
+            //                     const registration = await navigator.serviceWorker.ready
+            //                     if (registration.showNotification) {
+            //                         await registration.showNotification('Annoying Test Message', notificationOptions)
+            //                         resolve()
+            //                     } else {
+            //                         fallback()
+            //                     }
+            //                 } else {
+            //                     // Desktop notification Fallback (Firefox)
+            //                     fallback()
+            //                 }
+            //             } else {
+            //                 alert(msg)
+            //                 resolve()
+            //             }
+            //         })
+            //     } else {
+            //         alert(msg)
+            //         resolve()
+            //     }
+            // })
         },
         onLevelChange(newLevelNum) {
             // Hide the Loading text because the level loaded
@@ -355,7 +361,7 @@ window.addEventListener('load', () => {
         deferredPrompt && deferredPrompt.prompt()
         // Wait for the user to respond to the prompt
         deferredPrompt && deferredPrompt.userChoice
-        .then((choiceResult) => {
+        .then(() => {
             deferredPrompt = null
         })
     })
