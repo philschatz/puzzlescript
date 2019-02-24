@@ -1,11 +1,11 @@
 import 'babel-polyfill' // tslint:disable-line:no-implicit-dependencies
+import * as dialogPolyfill from 'dialog-polyfill' // tslint:disable-line:no-implicit-dependencies
 import TimeAgo from 'javascript-time-ago' // tslint:disable-line:no-implicit-dependencies
 import TimeAgoEn from 'javascript-time-ago/locale/en' // tslint:disable-line
-import * as dialogPolyfill from 'dialog-polyfill'
 import WebworkerTableEngine from './browser/WebworkerTableEngine'
 import { IGameTile } from './models/tile'
 import { Level } from './parser/astTypes'
-import { GameEngineHandlerOptional, pollingPromise, Optional } from './util'
+import { GameEngineHandlerOptional, Optional, pollingPromise } from './util'
 
 declare const ga: (a1: string, a2: string, a3: string, a4: string, a5?: string, a6?: number) => void
 
@@ -29,14 +29,14 @@ interface StorageGameInfo {
 
 interface Storage { [gameId: string]: StorageGameInfo }
 
-interface Dialog extends Element {
+interface Dialog extends HTMLElement {
     open: Optional<boolean>
     show(): void
     showModal(): void
     close(returnValue?: string): void
 }
 
-function getElement<T extends Element>(selector: string) {
+function getElement<T extends HTMLElement>(selector: string) {
     const el: Optional<T> = document.querySelector(selector)
     if (!el) {
         throw new Error(`BUG: Could not find "${selector}" in the page`)
@@ -84,7 +84,8 @@ window.addEventListener('load', () => {
             })
             messageDialogText.textContent = msg
             messageDialog.showModal()
-            ;(messageDialogClose as any).focus()
+            messageDialogClose.focus()
+
             await pollingPromise<void>(10, () => {
                 // Wait until the dialog has closed (and no keys are pressed down)
                 return !messageDialog.open
@@ -101,7 +102,7 @@ window.addEventListener('load', () => {
             //     ]
             // }
             // return new Promise((resolve) => {
-            //     // Notification is not available on iOS 
+            //     // Notification is not available on iOS
             //     if (typeof Notification !== 'undefined') { // tslint:disable-line:strict-type-predicates
             //         Notification.requestPermission(async(result) => { // tslint:disable-line:no-floating-promises
             //             // Safari does not support registration.showNotification() so we fall back to new Notification()
