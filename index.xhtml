@@ -57,6 +57,21 @@
             opacity: .5;
         }
 
+        /* Style the message dialog */
+        dialog {
+            border-radius: 6px;
+            /* border: 1px solid rgba(0, 0, 0, 0.3); */
+            /* box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3); */
+        }
+        dialog::backdrop,
+        dialog + .backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.8);
+        }
     </style>
 
     <meta charset="utf-8"/>
@@ -72,6 +87,11 @@
 <script type="text/javascript" src="pwa-app.js" async="async"></script></head>
 
 <body>
+    <dialog id="messageDialog">
+        <p id="messageDialogText"></p>
+        <button id="messageDialogClose" title="Close this window">Close</button>
+    </dialog>
+        
     <h1 id="headingSection">Example <a href="https://github.com/philschatz/puzzlescript">PuzzleScript Games</a> using HTML Tables</h1>
 
     <p id="disableCssSection"><input id="disableCss" type="checkbox"/> <label for="disableCss"><strong>Check</strong> to see what a non-sighted user would experience (disables CSS)</label></p>
