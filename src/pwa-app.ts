@@ -2,11 +2,11 @@ import 'babel-polyfill' // tslint:disable-line:no-implicit-dependencies
 import * as dialogPolyfill from 'dialog-polyfill' // tslint:disable-line:no-implicit-dependencies
 import TimeAgo from 'javascript-time-ago' // tslint:disable-line:no-implicit-dependencies
 import TimeAgoEn from 'javascript-time-ago/locale/en' // tslint:disable-line
+import { BUTTON_TYPE } from './browser/controller/controller'
 import WebworkerTableEngine from './browser/WebworkerTableEngine'
 import { IGameTile } from './models/tile'
 import { Level } from './parser/astTypes'
 import { GameEngineHandlerOptional, Optional, pollingPromise } from './util'
-import { BUTTON_TYPE } from './browser/controller/controller';
 
 declare const ga: (a1: string, a2: string, a3: string, a4: string, a5?: string, a6?: number) => void
 
