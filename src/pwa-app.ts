@@ -1,10 +1,11 @@
 import 'babel-polyfill' // tslint:disable-line:no-implicit-dependencies
 import TimeAgo from 'javascript-time-ago' // tslint:disable-line:no-implicit-dependencies
 import TimeAgoEn from 'javascript-time-ago/locale/en' // tslint:disable-line
+import * as dialogPolyfill from 'dialog-polyfill'
 import WebworkerTableEngine from './browser/WebworkerTableEngine'
 import { IGameTile } from './models/tile'
 import { Level } from './parser/astTypes'
-import { GameEngineHandlerOptional, Optional } from './util'
+import { GameEngineHandlerOptional, pollingPromise, Optional } from './util'
 
 declare const ga: (a1: string, a2: string, a3: string, a4: string, a5?: string, a6?: number) => void
 
@@ -28,6 +29,13 @@ interface StorageGameInfo {
 
 interface Storage { [gameId: string]: StorageGameInfo }
 
+interface Dialog extends Element {
+    open: Optional<boolean>
+    show(): void
+    showModal(): void
+    close(returnValue?: string): void
+}
+
 function getElement<T extends Element>(selector: string) {
     const el: Optional<T> = document.querySelector(selector)
     if (!el) {
@@ -49,6 +57,10 @@ window.addEventListener('load', () => {
     const table: HTMLTableElement = getElement('#theGame')
     const gameSelection: HTMLSelectElement = getElement('#gameSelection')
     const loadingIndicator = getElement('#loadingIndicator')
+    const messageDialog = getElement<Dialog>('#messageDialog')
+    const messageDialogText = getElement('#messageDialogText')
+    const messageDialogClose = getElement('#messageDialogClose')
+    dialogPolyfill.registerDialog(messageDialog)
 
     TimeAgo.addLocale(TimeAgoEn)
     const timeAgo = new TimeAgo('en-US')
@@ -58,11 +70,25 @@ window.addEventListener('load', () => {
     if (!gameSelection) { throw new Error(`BUG: Could not find game selection dropdown`) }
     if (!loadingIndicator) { throw new Error(`BUG: Could not find loading indicator`) }
 
+    messageDialogClose.addEventListener('click', () => {
+        messageDialog.close()
+    })
+
     // Save when the user completes a level
     const handler: GameEngineHandlerOptional = {
-        onMessage(msg) {
-            alert(msg)
-            return Promise.resolve()
+        async onMessage(msg) {
+
+            // Wait for keys to stop being pressed, show the dialog, and then wait for the dialog to close
+            await pollingPromise<void>(10, () => {
+                return !tableEngine.inputWatcher.isSomethingPressed()
+            })
+            messageDialogText.textContent = msg
+            messageDialog.showModal()
+            ;(messageDialogClose as any).focus()
+            await pollingPromise<void>(10, () => {
+                // Wait until the dialog has closed (and no keys are pressed down)
+                return !messageDialog.open
+            })
             // // Show a phone notification rather than an alert (if notifications are granted)
             // // Just to show that notifications can be done and what they would look like
             // const notificationOptions = {
