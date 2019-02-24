@@ -7,6 +7,7 @@ import WebworkerTableEngine from './browser/WebworkerTableEngine'
 import { IGameTile } from './models/tile'
 import { Level } from './parser/astTypes'
 import { GameEngineHandlerOptional, Optional, pollingPromise } from './util'
+import { CellSaveState } from './engine';
 
 declare const ga: (a1: string, a2: string, a3: string, a4: string, a5?: string, a6?: number) => void
 
@@ -26,6 +27,7 @@ interface StorageGameInfo {
     lastPlayedAt: number
     levelMaps: boolean[]
     title: string
+    checkpoint: Optional<{levelNum: number, data: CellSaveState}>
 }
 
 interface Storage { [gameId: string]: StorageGameInfo }
@@ -146,6 +148,13 @@ window.addEventListener('load', () => {
         },
         onGameChange(gameData) {
             saveGameInfo(currentGameId, gameData.levels, gameData.title)
+        },
+        onTick(_changedCells, checkpoint) {
+            if (checkpoint) {
+                // Ideally, include the level number so we can verify the checkpoint applies to the level
+                // This might require creating an onCheckpoint(levelNum, checkpoint) event
+                saveCheckpoint(currentGameId, checkpoint)
+            }
         }
     }
 
@@ -177,7 +186,18 @@ window.addEventListener('load', () => {
             if (resp.ok) {
                 return resp.text().then((source) => {
                     // Load the game
-                    tableEngine.setGame(source, loadCurrentLevelNum(currentGameId) || 0)
+                    const levelNum = loadCurrentLevelNum(currentGameId)
+                    const checkpoint = loadCheckpoint(currentGameId)
+                    if (checkpoint) {
+                        // verify that the currentLevelNum is the same as the checkpoint level num
+                        const {levelNum: checkpointLevelNum, data: checkpointData} = checkpoint
+                        if (levelNum !== checkpointLevelNum) {
+                            throw new Error(`BUG: Checkpoint level number (${checkpointLevelNum}) does not match current level number (${levelNum})`)
+                        }
+                        tableEngine.setGame(source, loadCurrentLevelNum(currentGameId) || 0, checkpointData)
+                    } else {
+                        tableEngine.setGame(source, loadCurrentLevelNum(currentGameId) || 0, null)
+                    }
                 })
             } else {
                 alert(`Problem finding game file. Please choose another one`)
@@ -246,12 +266,18 @@ window.addEventListener('load', () => {
         const gameData = storage[gameId]
         return (gameData || null) && gameData.currentLevelNum
     }
+    function loadCheckpoint(gameId: string) {
+        const storage = loadStorage()
+        const gameData = storage[gameId]
+        return (gameData || null) && gameData.checkpoint
+    }
     function saveCurrentLevelNum(gameId: string, levelNum: number) {
         const storage = loadStorage()
         storage[gameId] = storage[gameId] || {}
         storage[gameId].currentLevelNum = levelNum
         storage[gameId].completedLevelAt = Date.now()
         storage[gameId].lastPlayedAt = Date.now()
+        // storage[gameId].checkpoint = null
         window.localStorage.setItem(GAME_STORAGE_ID, JSON.stringify(storage))
         ga && ga('send', 'event', 'game', 'level', gameId, levelNum)
     }
@@ -261,6 +287,12 @@ window.addEventListener('load', () => {
         storage[gameId].levelMaps = levels.map((l) => l.type === 'LEVEL_MAP')
         storage[gameId].title = title
         storage[gameId].lastPlayedAt = Date.now()
+        window.localStorage.setItem(GAME_STORAGE_ID, JSON.stringify(storage))
+    }
+    function saveCheckpoint(gameId: string, checkpoint: CellSaveState) {
+        const storage = loadStorage()
+        storage[gameId] = storage[gameId] || {}
+        storage[gameId].checkpoint = { levelNum: storage[gameId].currentLevelNum, data: checkpoint }
         window.localStorage.setItem(GAME_STORAGE_ID, JSON.stringify(storage))
     }
 

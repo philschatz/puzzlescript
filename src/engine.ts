@@ -17,7 +17,7 @@ interface ITickResult {
     changedCells: Set<Cell>,
     didWinGame: boolean,
     didLevelChange: boolean,
-    wasAgainTick: boolean
+    wasAgainTick: boolean,
 }
 
 type Snapshot = Array<Array<Set<GameSprite>>>
@@ -464,6 +464,7 @@ export class LevelEngine extends EventEmitter2 {
                     changedCells: new Set(this.getCells()),
                     soundToPlay: null,
                     messageToShow: null,
+                    hasCheckpoint: false,
                     hasRestart: false,
                     isWinning: false,
                     mutations: [],
@@ -476,6 +477,7 @@ export class LevelEngine extends EventEmitter2 {
                     changedCells: new Set(this.getCells()),
                     soundToPlay: null,
                     messageToShow: null,
+                    hasCheckpoint: false,
                     hasRestart: true,
                     isWinning: false,
                     mutations: [],
@@ -488,6 +490,7 @@ export class LevelEngine extends EventEmitter2 {
         // TODO: Handle the commands like RESTART, CANCEL, WIN at this point
         let soundToPlay: Optional<SoundItem<IGameTile>> = null
         let messageToShow: Optional<string> = null
+        let hasCheckpoint = false
         let hasWinCommand = false
         let hasRestart = false
         for (const command of ret.commands) {
@@ -505,9 +508,11 @@ export class LevelEngine extends EventEmitter2 {
                 case COMMAND_TYPE.WIN:
                     hasWinCommand = true
                     break
+                case COMMAND_TYPE.CHECKPOINT:
+                    hasCheckpoint = true
+                    break
                 case COMMAND_TYPE.AGAIN:
                 case COMMAND_TYPE.CANCEL:
-                case COMMAND_TYPE.CHECKPOINT:
                     break
                 default:
                     throw new Error(`BUG: Unsupported command "${command}"`)
@@ -520,6 +525,7 @@ export class LevelEngine extends EventEmitter2 {
 
         return {
             changedCells: new Set(ret.changedCells.keys()),
+            hasCheckpoint,
             soundToPlay,
             messageToShow,
             hasRestart,
@@ -776,16 +782,19 @@ export class LevelEngine extends EventEmitter2 {
             }
             return {
                 changedCells: new Set<Cell>(),
+                checkpoint: null,
                 commands: new Set<Command<SoundItem<IGameTile>>>(),
                 evaluatedRules,
                 mutations: new Set<IMutation>(),
                 a11yMessages: []
             }
         }
+        let checkpoint: Optional<Snapshot> = null
         const didCheckpoint = !!allCommands.find((c) => c.type === COMMAND_TYPE.CHECKPOINT)
         if (didCheckpoint) {
             this.undoStack = []
-            this.takeSnapshot(this.createSnapshot())
+            checkpoint = this.createSnapshot()
+            this.takeSnapshot(checkpoint)
         }
         // set this only if we did not CANCEL and if some cell changed
         const changedCells = setAddAll(setAddAll(changedCellMutations, changedCellsLate), movedCells)
@@ -813,7 +822,7 @@ export class LevelEngine extends EventEmitter2 {
     }
 
     // Used for UNDO and RESTART
-    private createSnapshot() {
+    public createSnapshot() {
         return this.getCurrentLevel().getCells().map((row) => row.map((cell) => cell.toSnapshot()))
     }
     private takeSnapshot(snapshot: Snapshot) {
@@ -900,12 +909,15 @@ export class GameEngine {
     public hasAgain() {
         return this.levelEngine.hasAgain()
     }
-    public setLevel(levelNum: number) {
+    public setLevel(levelNum: number, checkpoint: Optional<CellSaveState>) {
         this.levelEngine.hasAgainThatNeedsToRun = false
         this.currentLevelNum = levelNum
         const level = this.getGameData().levels[levelNum]
         if (level.type === LEVEL_TYPE.MAP) {
             this.levelEngine.setLevel(levelNum)
+            if (checkpoint) {
+                this.loadSnapshotFromJSON(checkpoint)
+            }
             this.handler.onLevelChange(this.currentLevelNum, this.levelEngine.getCurrentLevel().getCells(), null)
         } else {
             this.handler.onLevelChange(this.currentLevelNum, null, level.message)
@@ -921,7 +933,7 @@ export class GameEngine {
                 this.handler.onWin()
                 didWinGameInMessage = true
             } else {
-                this.setLevel(this.currentLevelNum + 1)
+                this.setLevel(this.currentLevelNum + 1, null/*no checkpoint*/)
             }
             // clear any keys that were pressed
             this.levelEngine.pendingPlayerWantsToMove = null
@@ -944,14 +956,16 @@ export class GameEngine {
         }
 
         const previousPending = this.levelEngine.pendingPlayerWantsToMove
-        const { changedCells, soundToPlay, messageToShow, isWinning, hasRestart, a11yMessages } = this.levelEngine.tick()
+        const { changedCells, hasCheckpoint, soundToPlay, messageToShow, isWinning, hasRestart, a11yMessages } = this.levelEngine.tick()
 
         if (previousPending && !this.levelEngine.pendingPlayerWantsToMove) {
             this.handler.onPress(previousPending)
         }
 
+        let checkpoint = hasCheckpoint ? this.saveSnapshotToJSON() : null
+
         if (hasRestart) {
-            this.handler.onTick(changedCells, hasAgain, a11yMessages)
+            this.handler.onTick(changedCells, checkpoint, hasAgain, a11yMessages)
             return {
                 changedCells,
                 didWinGame: false,
@@ -961,14 +975,14 @@ export class GameEngine {
         }
 
         hasAgain = this.levelEngine.hasAgain()
-        this.handler.onTick(changedCells, hasAgain, a11yMessages)
+        this.handler.onTick(changedCells, checkpoint, hasAgain, a11yMessages)
         let didWinGame = false
         if (isWinning) {
             if (this.currentLevelNum === this.levelEngine.gameData.levels.length - 1) {
                 didWinGame = true
                 this.handler.onWin()
             } else {
-                this.setLevel(this.currentLevelNum + 1)
+                this.setLevel(this.currentLevelNum + 1, null/*no checkpoint*/)
             }
         }
 

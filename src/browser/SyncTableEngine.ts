@@ -1,6 +1,6 @@
 import InputWatcher from '../browser/InputWatcher'
 import ResizeWatcher from '../browser/ResizeWatcher'
-import { GameEngine } from '../engine'
+import { GameEngine, CellSaveState } from '../engine'
 import { LEVEL_TYPE } from '../parser/astTypes'
 import Parser from '../parser/parser'
 import TableUI from '../ui/table'
@@ -43,12 +43,12 @@ class SubTableEngine {
 
         this.tableUI = new TableUI(table, handler)
     }
-    public setGame(code: string, levelNum: number) {
+    public setGame(code: string, levelNum: number, checkpoint: Optional<CellSaveState>) {
         const { data } = Parser.parse(code)
         this.engine = new GameEngine(data, this.tableUI)
 
         this.tableUI.onGameChange(data)
-        this.engine.setLevel(levelNum)
+        this.engine.setLevel(levelNum, checkpoint)
 
         if (data.metadata.keyRepeatInterval) {
             this.inputWatcher.setKeyRepeatInterval(data.metadata.keyRepeatInterval)
@@ -108,8 +108,8 @@ export default class SyncTableEngine implements Engineish {
         this.table.addEventListener('blur', this.boundPause)
         this.table.addEventListener('focus', this.boundResume)
     }
-    public setGame(source: string, level: number = 0) {
-        this.subEngine.setGame(source, level)
+    public setGame(source: string, level: number = 0, checkpoint: Optional<CellSaveState>) {
+        this.subEngine.setGame(source, level, checkpoint)
 
         const engine = this.subEngine.getEngine()
         if (engine.getCurrentLevel().type === LEVEL_TYPE.MAP) {
