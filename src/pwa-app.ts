@@ -281,9 +281,9 @@ window.addEventListener('load', () => {
             }
             const gameInfo = storage[gameId]
             if (gameInfo) {
-                const currentMapLevels = gameInfo.levelMaps.slice(0, gameInfo.currentLevelNum - 1).filter((b) => b).length
+                const completedMapLevels = gameInfo.levelMaps.slice(0, gameInfo.currentLevelNum - 1).filter((b) => b).length
                 const totalMapLevels = gameInfo.levelMaps.filter((b) => b).length
-                const percent = Math.floor(100 * currentMapLevels / totalMapLevels)
+                const percent = Math.floor(100 * completedMapLevels / totalMapLevels)
                 option.setAttribute('data-percent-complete', `${percent}`)
                 option.setAttribute('data-last-played-at', `${gameInfo.lastPlayedAt}`)
                 option.textContent = `${gameInfo.title} (${percent}% ${timeAgo.format(gameInfo.lastPlayedAt)})`

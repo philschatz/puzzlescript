@@ -45,9 +45,6 @@ export default class WebworkerTableEngine implements Engineish {
     private readonly table: HTMLTableElement
     private readonly ui: TableUI
     private readonly resizeWatcher: ResizeWatcher
-    private readonly boundPause: () => void
-    private readonly boundResume: () => void
-    private readonly boundMessageListener: ({ data }: {data: WorkerResponse}) => Promise<void>
     private inputInterval: number
 
     private cellCache: ProxyCellish[][]
@@ -81,20 +78,17 @@ export default class WebworkerTableEngine implements Engineish {
         this.resizeWatcher = new ResizeWatcher(table, this.handleResize.bind(this))
         this.inputWatcher = new InputWatcher(table)
 
-        this.boundPause = this.pause.bind(this)
-        this.boundResume = this.resume.bind(this)
-        this.boundMessageListener = this.messageListener.bind(this)
-        table.addEventListener('blur', this.boundPause)
-        table.addEventListener('focus', this.boundResume)
+        this.pause = this.pause.bind(this)
+        this.resume = this.resume.bind(this)
+        this.messageListener = this.messageListener.bind(this)
+        this.pollInputWatcher = this.pollInputWatcher.bind(this)
 
-        worker.addEventListener('message', this.boundMessageListener)
+        table.addEventListener('blur', this.pause)
+        table.addEventListener('focus', this.resume)
 
-        this.inputInterval = window.setInterval(() => {
-            const button = this.inputWatcher.pollControls()
-            if (button) {
-                this.press(button)
-            }
-        }, 10)
+        worker.addEventListener('message', this.messageListener)
+
+        this.inputInterval = window.setInterval(this.pollInputWatcher, 10)
     }
     public setGame(code: string, level: number) {
         this.worker.postMessage({ type: MESSAGE_TYPE.ON_GAME_CHANGE, code, level })
@@ -106,16 +100,28 @@ export default class WebworkerTableEngine implements Engineish {
         clearInterval(this.inputInterval)
     }
 
+    private pollInputWatcher() {
+        const button = this.inputWatcher.pollControls()
+        if (button) {
+            this.press(button)
+        }
+    }
+
     public press(button: INPUT_BUTTON) {
         this.worker.postMessage({ type: MESSAGE_TYPE.PRESS, button })
     }
 
     public pause() {
         this.worker.postMessage({ type: MESSAGE_TYPE.PAUSE })
+        this.inputInterval && clearInterval(this.inputInterval)
+        this.inputInterval = 0
     }
 
     public resume() {
         this.worker.postMessage({ type: MESSAGE_TYPE.RESUME })
+        if (!this.inputInterval) {
+            this.inputInterval = window.setInterval(this.pollInputWatcher, 10)
+        }
     }
     private async messageListener({ data }: {data: WorkerResponse}) {
         switch (data.type) {
