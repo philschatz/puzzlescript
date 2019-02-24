@@ -1,10 +1,12 @@
 import 'babel-polyfill' // tslint:disable-line:no-implicit-dependencies
+import * as dialogPolyfill from 'dialog-polyfill' // tslint:disable-line:no-implicit-dependencies
 import TimeAgo from 'javascript-time-ago' // tslint:disable-line:no-implicit-dependencies
 import TimeAgoEn from 'javascript-time-ago/locale/en' // tslint:disable-line
+import { BUTTON_TYPE } from './browser/controller/controller'
 import WebworkerTableEngine from './browser/WebworkerTableEngine'
 import { IGameTile } from './models/tile'
 import { Level } from './parser/astTypes'
-import { GameEngineHandlerOptional, Optional } from './util'
+import { GameEngineHandlerOptional, Optional, pollingPromise } from './util'
 
 declare const ga: (a1: string, a2: string, a3: string, a4: string, a5?: string, a6?: number) => void
 
@@ -28,7 +30,14 @@ interface StorageGameInfo {
 
 interface Storage { [gameId: string]: StorageGameInfo }
 
-function getElement<T extends Element>(selector: string) {
+interface Dialog extends HTMLElement {
+    open: Optional<boolean>
+    show(): void
+    showModal(): void
+    close(returnValue?: string): void
+}
+
+function getElement<T extends HTMLElement>(selector: string) {
     const el: Optional<T> = document.querySelector(selector)
     if (!el) {
         throw new Error(`BUG: Could not find "${selector}" in the page`)
@@ -49,6 +58,10 @@ window.addEventListener('load', () => {
     const table: HTMLTableElement = getElement('#theGame')
     const gameSelection: HTMLSelectElement = getElement('#gameSelection')
     const loadingIndicator = getElement('#loadingIndicator')
+    const messageDialog = getElement<Dialog>('#messageDialog')
+    const messageDialogText = getElement('#messageDialogText')
+    const messageDialogClose = getElement('#messageDialogClose')
+    dialogPolyfill.registerDialog(messageDialog)
 
     TimeAgo.addLocale(TimeAgoEn)
     const timeAgo = new TimeAgo('en-US')
@@ -58,11 +71,26 @@ window.addEventListener('load', () => {
     if (!gameSelection) { throw new Error(`BUG: Could not find game selection dropdown`) }
     if (!loadingIndicator) { throw new Error(`BUG: Could not find loading indicator`) }
 
+    messageDialogClose.addEventListener('click', () => {
+        messageDialog.close()
+    })
+
     // Save when the user completes a level
     const handler: GameEngineHandlerOptional = {
-        onMessage(msg) {
-            alert(msg)
-            return Promise.resolve()
+        async onMessage(msg) {
+
+            // Wait for keys to stop being pressed, show the dialog, and then wait for the dialog to close
+            await pollingPromise<void>(10, () => {
+                return !tableEngine.inputWatcher.isSomethingPressed()
+            })
+            messageDialogText.textContent = msg
+            messageDialog.showModal()
+            messageDialogClose.focus()
+
+            await pollingPromise<void>(10, () => {
+                // Wait until the dialog has closed (and no keys are pressed down)
+                return !messageDialog.open
+            })
             // // Show a phone notification rather than an alert (if notifications are granted)
             // // Just to show that notifications can be done and what they would look like
             // const notificationOptions = {
@@ -75,7 +103,7 @@ window.addEventListener('load', () => {
             //     ]
             // }
             // return new Promise((resolve) => {
-            //     // Notification is not available on iOS 
+            //     // Notification is not available on iOS
             //     if (typeof Notification !== 'undefined') { // tslint:disable-line:strict-type-predicates
             //         Notification.requestPermission(async(result) => { // tslint:disable-line:no-floating-promises
             //             // Safari does not support registration.showNotification() so we fall back to new Notification()
@@ -182,6 +210,11 @@ window.addEventListener('load', () => {
                     gamepadDisabled.classList.add('hidden')
                     gamepadRecognized.classList.remove('hidden')
                     gamepadNotRecognized.classList.add('hidden')
+
+                    // Dismiss dialogs via the gamepad
+                    if (messageDialog.open && tableEngine.inputWatcher.gamepad.isButtonPressed(BUTTON_TYPE.CLUSTER_BOTTOM)) {
+                        messageDialogClose.click()
+                    }
                 } else if (tableEngine.inputWatcher.gamepad.isSomethingConnected()) {
                     // Send GA when someone adds a gamepad
                     if (gamepadNotRecognized.classList.contains('hidden')) {
