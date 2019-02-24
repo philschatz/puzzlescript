@@ -3,7 +3,7 @@
 import fs from 'fs'
 import path from 'path'
 import puppeteer from 'puppeteer' // tslint:disable-line:no-implicit-dependencies
-import { browserAfterEach, browserBeforeEach, browserDismissedDialogs, getUrl } from './browserSpecUtils'
+import { browserAfterEach, browserBeforeEach, getUrl } from './browserSpecUtils'
 // import mapStackTrace from 'sourcemapped-stacktrace-node')
 
 // Defined via jest-puppeteer environment
@@ -23,8 +23,53 @@ async function getAttrs() {
     })
 }
 
-async function pressKeys(keys: string[]) {
-    for (const key of keys) {
+const dialogMessages: string[] = []
+
+async function closeDialog() {
+    const dialogMessage = await page.evaluate(() => {
+        function findEl(sel: string) {
+            const ret = window.document.querySelector(sel)
+            if (!ret) { throw new Error(`BUG: Could not find selector "${sel}". Maybe it was renamed?`) }
+            return ret as HTMLElement
+        }
+
+        const dialog = findEl('#messageDialog')
+        const dialogCloseButton = findEl('#messageDialogClose')
+        const dialogText = findEl('#messageDialogText')
+
+        if (dialog.hasAttribute('open')) {
+            dialogCloseButton.click()
+            const oldCount = parseInt(dialog.getAttribute('data-dismissed-count') || '0', 10)
+            dialog.setAttribute('data-dismissed-count', `${oldCount + 1}`)
+            return dialogText.textContent
+        } else {
+            throw new Error(`BUG: Dialog was not open`)
+        }
+    }) as string
+
+    dialogMessages.push(dialogMessage)
+
+    // Verify the dialog was closed before continuing
+    await sleep(100)
+    await page.evaluate(() => {
+        const dialog = window.document.querySelector('#messageDialog')
+        const dialogCloseButton = window.document.querySelector('#messageDialogClose')
+        if (dialog && dialogCloseButton && !dialog.hasAttribute('open')) {
+            return
+        } else {
+            throw new Error(`BUG: Dialog does not exist or is still open`)
+        }
+    })
+}
+
+async function waitForDialogAndClose() {
+    await page.waitForSelector(`#messageDialog[open]`)
+    await closeDialog()
+}
+
+async function pressKeys(keys: string[], isLastPressADialog: boolean) {
+    for (let index = 0; index < keys.length; index++) {
+        const key = keys[index]
         if (key === ',') { continue }
         await page.waitFor(`.ps-table[data-ps-accepting-input='true']`)
         if (key === '.') {
@@ -38,8 +83,12 @@ async function pressKeys(keys: string[]) {
         await sleep(100) // because alerts might show up and they take some time to pop open?
         await page.keyboard.up(`Key${key}`)
         await sleep(100)
-        // wait until the keypress was processed
-        await page.waitFor(`.ps-table:not([data-ps-last-input-processed='${count}'])`)
+        // wait until the keypress was processed (might need to dismiss a dialog)
+        if (isLastPressADialog && index === keys.length - 1) {
+            await waitForDialogAndClose()
+        } else {
+            await page.waitFor(`.ps-table:not([data-ps-last-input-processed='${count}'])`)
+        }
     }
 }
 
@@ -75,7 +124,7 @@ async function playLevel() {
         }
     }, { source, startLevel })
 
-    await pressKeys('SAAASASDDDWDDDDWDDSAAASASAW'.split(''))
+    await pressKeys('SAAASASDDDWDDDDWDDSAAASASAW'.split(''), false)
 }
 
 describe('Browser', () => {
@@ -98,41 +147,36 @@ describe('Browser', () => {
     })
 
     it('plays a couple levels using the demo page', async() => {
-        const waitForDialogAfter = async(fn: () => Promise<any>) => {
-            // page.once('dialog', dialogHandler)
-            const oldCount = browserDismissedDialogs().length
-            await fn()
-            // Keep checking for the dialog to be dismissed
-            if (browserDismissedDialogs().length > oldCount) {
-                return
-            }
-            await sleep(100) // wait a little bit
-            if (browserDismissedDialogs().length > oldCount) {
-                return
-            }
-            await sleep(1000) // wait for the dialog to open and be dismissed
-            if (browserDismissedDialogs().length > oldCount) {
-                return
-            }
-            await sleep(10000) // wait a long time
-            expect(browserDismissedDialogs().length).toBeGreaterThan(oldCount)
+        const jsDismissedDialogs = async() => {
+            const ret = await page.evaluate(() => {
+                const dialog = window.document.querySelector('#messageDialog')
+                if (dialog) {
+                    return parseInt(dialog.getAttribute('data-dismissed-count') || '0', 10)
+                } else {
+                    return -1
+                }
+            })
+            return ret as number
         }
 
         // The game shows a dialog immediately (uggh)
-        await waitForDialogAfter(async() => {
-            await page.goto(getUrl(`index.xhtml`))
-            await page.waitForSelector(`#loadingIndicator.hidden`)
-        })
+        await page.goto(getUrl(`index.xhtml`))
+        await page.waitForSelector(`#loadingIndicator.hidden`)
+        await waitForDialogAndClose()
 
         // play a level and then wait for the dialog to open
         await page.waitForSelector(`.ps-table[data-ps-current-level="${1}"]`)
-        await waitForDialogAfter(async() => pressKeys('.AWAW'.split('')))
+        await pressKeys('.AWAW'.split(''), true)
 
         await page.waitForSelector(`.ps-table[data-ps-current-level="${3}"]`)
-        await waitForDialogAfter(async() => pressKeys('.WASDW'.split('')))
+        await pressKeys('.WASDW'.split(''), true)
 
         await page.waitForSelector(`.ps-table[data-ps-current-level="${5}"]`)
 
-        expect(browserDismissedDialogs().length).toBe(5)
+        const dismissedCount = await jsDismissedDialogs()
+        // if (dismissedCount !== 3) {
+        //     throw new Error(`Dialog count mismatch. Expected ${3} but got these: ${JSON.stringify(dialogMessages)}`)
+        // }
+        expect(dismissedCount).toBe(3)
     })
 })
