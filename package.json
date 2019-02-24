@@ -83,7 +83,7 @@
     "javascript-time-ago": "^2.0.1",
     "jest": "^23.6.0",
     "jest-pnp-resolver": "^1.0.2",
-    "jest-puppeteer": "^3.7.0",
+    "jest-puppeteer": "^4.0.0",
     "jest-resolve": "^23.6.0",
     "lighthouse": "^4.0.0",
     "mkdirp": "^0.5.1",
