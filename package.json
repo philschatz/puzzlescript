@@ -82,9 +82,7 @@
     "istanbul": "^0.4.5",
     "javascript-time-ago": "^2.0.1",
     "jest": "^23.6.0",
-    "jest-pnp-resolver": "^1.0.2",
     "jest-puppeteer": "^4.0.0",
-    "jest-resolve": "^23.6.0",
     "lighthouse": "^4.0.0",
     "mkdirp": "^0.5.1",
     "node-fetch": "^2.3.0",
@@ -118,7 +116,6 @@
       "js",
       "json"
     ],
-    "resolver": "jest-pnp-resolver",
     "transform": {
       "^.+\\.(js|jsx|ts|tsx)$": "<rootDir>/node_modules/babel-jest"
     },

@@ -4538,11 +4538,6 @@ jest-mock@^23.2.0:
   resolved "https://registry.yarnpkg.com/jest-mock/-/jest-mock-23.2.0.tgz#ad1c60f29e8719d47c26e1138098b6d18b261134"
   integrity sha1-rRxg8p6HGdR8JuETgJi20YsmETQ=
 
-jest-pnp-resolver@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/jest-pnp-resolver/-/jest-pnp-resolver-1.0.2.tgz#470384ae9ea31f72136db52618aa4010ff23b715"
-  integrity sha512-H2DvUlwdMedNGv4FOliPDnxani6ATWy70xe2eckGJgkLoMaWzRPqpSlc5ShqX0Ltk5OhRQvPQY2LLZPOpgcc7g==
-
 jest-puppeteer@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/jest-puppeteer/-/jest-puppeteer-4.0.0.tgz#dd61e0f02a1585e87dca21532b19e46b5fb5150c"
