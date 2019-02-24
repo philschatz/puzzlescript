@@ -100,13 +100,6 @@ export default class WebworkerTableEngine implements Engineish {
         clearInterval(this.inputInterval)
     }
 
-    private pollInputWatcher() {
-        const button = this.inputWatcher.pollControls()
-        if (button) {
-            this.press(button)
-        }
-    }
-
     public press(button: INPUT_BUTTON) {
         this.worker.postMessage({ type: MESSAGE_TYPE.PRESS, button })
     }
@@ -121,6 +114,13 @@ export default class WebworkerTableEngine implements Engineish {
         this.worker.postMessage({ type: MESSAGE_TYPE.RESUME })
         if (!this.inputInterval) {
             this.inputInterval = window.setInterval(this.pollInputWatcher, 10)
+        }
+    }
+
+    private pollInputWatcher() {
+        const button = this.inputWatcher.pollControls()
+        if (button) {
+            this.press(button)
         }
     }
     private async messageListener({ data }: {data: WorkerResponse}) {
