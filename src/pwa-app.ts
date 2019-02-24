@@ -6,6 +6,7 @@ import WebworkerTableEngine from './browser/WebworkerTableEngine'
 import { IGameTile } from './models/tile'
 import { Level } from './parser/astTypes'
 import { GameEngineHandlerOptional, Optional, pollingPromise } from './util'
+import { BUTTON_TYPE } from './browser/controller/controller';
 
 declare const ga: (a1: string, a2: string, a3: string, a4: string, a5?: string, a6?: number) => void
 
@@ -209,6 +210,11 @@ window.addEventListener('load', () => {
                     gamepadDisabled.classList.add('hidden')
                     gamepadRecognized.classList.remove('hidden')
                     gamepadNotRecognized.classList.add('hidden')
+
+                    // Dismiss dialogs via the gamepad
+                    if (messageDialog.open && tableEngine.inputWatcher.gamepad.isButtonPressed(BUTTON_TYPE.CLUSTER_BOTTOM)) {
+                        messageDialogClose.click()
+                    }
                 } else if (tableEngine.inputWatcher.gamepad.isSomethingConnected()) {
                     // Send GA when someone adds a gamepad
                     if (gamepadNotRecognized.classList.contains('hidden')) {
