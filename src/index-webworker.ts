@@ -13,6 +13,7 @@ declare var postMessage: (msg: WorkerResponse) => void
 let currentEngine: Optional<GameEngine> = null
 let gameLoop: Optional<NodeJS.Timeout> = null
 let awaitingMessage = false
+let receivedMessage = false
 let lastTick = 0
 
 onmessage = (event: TypedMessageEvent<WorkerMessage>) => {
@@ -24,7 +25,7 @@ onmessage = (event: TypedMessageEvent<WorkerMessage>) => {
         case MESSAGE_TYPE.PRESS: postMessage({ type: msg.type, payload: press(msg.button) }); break
         case MESSAGE_TYPE.CLOSE: postMessage({ type: msg.type, payload: closeGame() }); break
         case MESSAGE_TYPE.ON_MESSAGE_DONE:
-            awaitingMessage = false
+            receivedMessage = true
             break
         default:
             throw new Error(`ERROR: Unsupported webworker message type "${JSON.stringify(event.data)}"`)
@@ -72,14 +73,17 @@ class Handler implements GameEngineHandler {
         }
         previousMessage = msg
 
-        pauseGame()
-        postMessage({ type: MESSAGE_TYPE.ON_MESSAGE, message: msg })
         // Wait until the user dismissed the message
         if (awaitingMessage) {
             throw new Error(`BUG: should not already be awaiting a message`)
         }
         awaitingMessage = true
-        await pollingPromise<boolean>(50, () => !awaitingMessage)
+        receivedMessage = false
+
+        pauseGame()
+        postMessage({ type: MESSAGE_TYPE.ON_MESSAGE, message: msg })
+        await pollingPromise<boolean>(50, () => receivedMessage)
+        awaitingMessage = false
         // resumeGame() No need to resume since we are inside a `await tick()` and at the end of it it will start back up (via a call to setTimeout)
     }
     public onLevelChange(level: number, cells: Optional<Cellish[][]>, message: Optional<string>) {
