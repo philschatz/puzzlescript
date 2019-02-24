@@ -4,10 +4,10 @@ import TimeAgo from 'javascript-time-ago' // tslint:disable-line:no-implicit-dep
 import TimeAgoEn from 'javascript-time-ago/locale/en' // tslint:disable-line
 import { BUTTON_TYPE } from './browser/controller/controller'
 import WebworkerTableEngine from './browser/WebworkerTableEngine'
+import { CellSaveState } from './engine'
 import { IGameTile } from './models/tile'
 import { Level } from './parser/astTypes'
 import { GameEngineHandlerOptional, Optional, pollingPromise } from './util'
-import { CellSaveState } from './engine';
 
 declare const ga: (a1: string, a2: string, a3: string, a4: string, a5?: string, a6?: number) => void
 
@@ -190,7 +190,7 @@ window.addEventListener('load', () => {
                     const checkpoint = loadCheckpoint(currentGameId)
                     if (checkpoint) {
                         // verify that the currentLevelNum is the same as the checkpoint level num
-                        const {levelNum: checkpointLevelNum, data: checkpointData} = checkpoint
+                        const { levelNum: checkpointLevelNum, data: checkpointData } = checkpoint
                         if (levelNum !== checkpointLevelNum) {
                             throw new Error(`BUG: Checkpoint level number (${checkpointLevelNum}) does not match current level number (${levelNum})`)
                         }

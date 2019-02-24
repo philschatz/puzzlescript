@@ -609,6 +609,11 @@ export class LevelEngine extends EventEmitter2 {
         return { movedCells, a11yMessages }
     }
 
+    // Used for UNDO and RESTART
+    public createSnapshot() {
+        return this.getCurrentLevel().getCells().map((row) => row.map((cell) => cell.toSnapshot()))
+    }
+
     private pressDir(direction: INPUT_BUTTON) {
         // Should disable keypresses if `AGAIN` is running.
         // It is commented because the didSpritesChange logic is not correct.
@@ -820,11 +825,6 @@ export class LevelEngine extends EventEmitter2 {
         })
         return conditionsSatisfied
     }
-
-    // Used for UNDO and RESTART
-    public createSnapshot() {
-        return this.getCurrentLevel().getCells().map((row) => row.map((cell) => cell.toSnapshot()))
-    }
     private takeSnapshot(snapshot: Snapshot) {
         this.undoStack.push(snapshot)
     }
@@ -962,7 +962,7 @@ export class GameEngine {
             this.handler.onPress(previousPending)
         }
 
-        let checkpoint = hasCheckpoint ? this.saveSnapshotToJSON() : null
+        const checkpoint = hasCheckpoint ? this.saveSnapshotToJSON() : null
 
         if (hasRestart) {
             this.handler.onTick(changedCells, checkpoint, hasAgain, a11yMessages)

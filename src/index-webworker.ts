@@ -1,5 +1,5 @@
 import 'babel-polyfill' // tslint:disable-line:no-implicit-dependencies
-import { Cell, GameEngine, CellSaveState } from './engine'
+import { Cell, CellSaveState, GameEngine } from './engine'
 import { GameData } from './models/game'
 import { A11Y_MESSAGE, A11Y_MESSAGE_TYPE } from './models/rule'
 import { GameSprite } from './models/tile'

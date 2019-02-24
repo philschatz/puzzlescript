@@ -1,3 +1,4 @@
+import { CellSaveState } from '../engine'
 import { IColor } from '../models/colors'
 import { GameData } from '../models/game'
 import { A11Y_MESSAGE, A11Y_MESSAGE_TYPE } from '../models/rule'
@@ -17,7 +18,6 @@ import {
     spritesThatInteractWithPlayer
 } from '../util'
 import BaseUI from './base'
-import { CellSaveState } from '../engine';
 
 interface ITableCell {
     td: HTMLTableCellElement,

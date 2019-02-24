@@ -1,6 +1,6 @@
 import InputWatcher from '../browser/InputWatcher'
 import ResizeWatcher from '../browser/ResizeWatcher'
-import { GameEngine, CellSaveState } from '../engine'
+import { CellSaveState, GameEngine } from '../engine'
 import { LEVEL_TYPE } from '../parser/astTypes'
 import Parser from '../parser/parser'
 import TableUI from '../ui/table'
