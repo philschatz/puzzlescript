@@ -90,7 +90,7 @@ async function run() {
             startTime = Date.now()
             const engine = new GameEngine(data, TerminalUI)
             const levelNum = data.levels.indexOf(currentLevel)
-            engine.setLevel(levelNum)
+            engine.setLevel(levelNum, null/*no checkpoint*/)
             logger.debug(() => `\n\nStart playing "${data.title}". Level ${levelNum}`)
 
             logger.info(() => `Loading Cells into the level took ${Date.now() - startTime}ms`)
