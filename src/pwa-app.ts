@@ -142,14 +142,16 @@ window.addEventListener('load', () => {
             gameSelection.removeAttribute('disabled')
 
             saveCurrentLevelNum(currentGameId, newLevelNum)
-            updateGameSelectionInfo()
+            updateGameSelectionInfo(false)
         },
         onGameChange(gameData) {
             saveGameInfo(currentGameId, gameData.levels, gameData.title)
         }
     }
 
-    updateGameSelectionInfo() // update the % complete in the dropdown
+    // update the % complete in the dropdown AND
+    // Select the first game (not IceCrates all the time)
+    updateGameSelectionInfo(true)
 
     // startTableEngine
     if (!table) { throw new Error(`BUG: Could not find table on the page`) }
@@ -269,7 +271,7 @@ window.addEventListener('load', () => {
         option.setAttribute('data-original-index', `${index}`)
     })
 
-    function updateGameSelectionInfo() {
+    function updateGameSelectionInfo(selectFirstGame: boolean) {
         const storage = loadStorage()
 
         // Update the last-updated time for all of the games and then sort them
@@ -281,9 +283,9 @@ window.addEventListener('load', () => {
             }
             const gameInfo = storage[gameId]
             if (gameInfo) {
-                const currentMapLevels = gameInfo.levelMaps.slice(0, gameInfo.currentLevelNum - 1).filter((b) => b).length
+                const completedMapLevels = gameInfo.levelMaps.slice(0, gameInfo.currentLevelNum).filter((b) => b).length
                 const totalMapLevels = gameInfo.levelMaps.filter((b) => b).length
-                const percent = Math.floor(100 * currentMapLevels / totalMapLevels)
+                const percent = Math.floor(100 * completedMapLevels / totalMapLevels)
                 option.setAttribute('data-percent-complete', `${percent}`)
                 option.setAttribute('data-last-played-at', `${gameInfo.lastPlayedAt}`)
                 option.textContent = `${gameInfo.title} (${percent}% ${timeAgo.format(gameInfo.lastPlayedAt)})`
@@ -350,8 +352,20 @@ window.addEventListener('load', () => {
         if (completedOptions.length > 0) {
             completedOptions.unshift(createSeparator('Completed'))
         }
-        gameSelection.append(...continuePlayingOptions, ...newGameOptions, ...uncompletedOptions, ...completedOptions)
+        const allOptions = [...continuePlayingOptions, ...newGameOptions, ...uncompletedOptions, ...completedOptions]
+        gameSelection.append(...allOptions)
+
         gameSelection.value = selectedGameId
+
+        // Select the 1st game so we can select it if this is the initial load
+        if (selectFirstGame) {
+            const firstOption = allOptions.find((option) => option.hasAttribute('value'))
+            if (firstOption) {
+                gameSelection.selectedIndex = allOptions.indexOf(firstOption)
+                const gameId = firstOption.getAttribute('value')
+                if (gameId) gameSelection.value = gameId
+            }
+        }
     }
 
     function createSeparator(textContent: string) {
