@@ -180,7 +180,9 @@ export default class InputWatcher {
     }
 
     private startTouchHoldInterval() {
-        this.touchHoldInterval = setInterval(() => this.polledInput = INPUT_BUTTON.UNDO, DURATION_TO_UNDO)
+        if (!this.touchHoldInterval) {
+            this.touchHoldInterval = setInterval(() => this.polledInput = INPUT_BUTTON.UNDO, DURATION_TO_UNDO)
+        }
     }
 
     private endTouchHoldInterval() {
