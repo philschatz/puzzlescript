@@ -58,6 +58,8 @@ window.addEventListener('load', () => {
     const table: HTMLTableElement = getElement('#theGame')
     const gameSelection: HTMLSelectElement = getElement('#gameSelection')
     const loadingIndicator = getElement('#loadingIndicator')
+    const authorSection = getElement('#authorSection')
+    const authorInfo = getElement('#authorInfo')
     const messageDialog = getElement<Dialog>('#messageDialog')
     const messageDialogText = getElement('#messageDialogText')
     const messageDialogClose = getElement('#messageDialogClose')
@@ -146,6 +148,20 @@ window.addEventListener('load', () => {
         },
         onGameChange(gameData) {
             saveGameInfo(currentGameId, gameData.levels, gameData.title)
+
+            function toUrl(homepage: string) {
+                return /^https?:\/\//.test(homepage) ? homepage : `http://${homepage}`
+            }
+            const {author, homepage} = gameData.metadata
+            if (author) {
+                authorInfo.textContent = author
+                if (homepage) {
+                    authorInfo.setAttribute('href', toUrl(homepage))
+                } else {
+                    authorInfo.removeAttribute('href')
+                }
+                authorSection.classList.remove('hidden')
+            }
         }
     }
 
@@ -166,6 +182,7 @@ window.addEventListener('load', () => {
 
     function playSelectedGame() {
         loadingIndicator.classList.remove('hidden') // Show the "Loading..." text
+        authorSection.classList.add('hidden')
         gameSelection.setAttribute('disabled', 'disabled')
 
         currentGameId = gameSelection.value
