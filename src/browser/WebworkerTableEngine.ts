@@ -1,4 +1,5 @@
 import { GameData } from '../models/game'
+import { Dimension } from '../models/metadata'
 import { A11Y_MESSAGE, A11Y_MESSAGE_TYPE } from '../models/rule'
 import { GameSprite } from '../models/tile'
 import { LEVEL_TYPE } from '../parser/astTypes'
@@ -116,12 +117,19 @@ export default class WebworkerTableEngine implements Engineish {
             this.inputInterval = window.setInterval(this.pollInputWatcher, 10)
         }
     }
+    public resize() {
+        this.resizeWatcher.trigger()
+    }
 
     private pollInputWatcher() {
         const button = this.inputWatcher.pollControls()
         if (button) {
             this.press(button)
         }
+    }
+    private getScreenDimensions(cells: any[][]) {
+        const { metadata } = this.getGameData()
+        return metadata.flickscreen || metadata.zoomscreen || new Dimension(cells[0].length, cells.length)
     }
     private async messageListener({ data }: {data: WorkerResponse}) {
         switch (data.type) {
@@ -135,6 +143,8 @@ export default class WebworkerTableEngine implements Engineish {
                 this.levelNum = data.level
                 if (data.cells) {
                     this.ui.onLevelChange(data.level, data.cells.map((row) => row.map((x) => this.convertToCellish(x))), null)
+                    const { width, height } = this.getScreenDimensions(data.cells)
+                    this.resizeWatcher.setLevel(height, width)
                 } else {
                     this.ui.onLevelChange(data.level, null, data.message)
                 }
