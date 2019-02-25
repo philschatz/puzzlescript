@@ -42,6 +42,7 @@
         /* When the CSS is disabled then show a plain table with borders */
         .ps-table.ps-ui-disabled {
             width: 100%;
+            background-color: white;
         }
         .ps-table.ps-ui-disabled td {
             border: 1px solid #ccc;
@@ -73,22 +74,83 @@
             background-color: rgba(0, 0, 0, 0.8);
         }
 
-        @media screen and (orientation:landscape) {
+        h1 { font-size: 1.5rem; }
+        .panel-header {
+            display: flex;
+            align-items: flex-start;
+            padding: .5rem .5rem;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .panel-header > .panel-title {
+            margin-top: 0;
+            margin-bottom: 0;
+            font-size: 1.25rem;
+            flex-grow: 1;
+        }
+        .panel-header > .close {
+            cursor: pointer;
+            /* padding: 1rem 1rem; */
+            margin: -1rem -1rem -1rem auto;
+            /* float: right; */
+            flex-grow: 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+            line-height: 1;
+            color: #000;
+            text-shadow: 0 1px 0 #fff;
+            opacity: .5;
+
+            background-color: transparent;
+            border: 0;
+        }
+
+        #infoContainer,
+        #instructionsContainer {
+            background-color: white;
+            padding: 1rem;
+            border-radius: 6px;
+            box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
+        }
+
+        @media screen and (orientation:portrait) {
             body {
                 display: flex;
-                flex-direction: row;
+                flex-direction: column;
+                align-items: center;
             }
             #infoContainer {
                 flex-grow: 1;
-                margin-right: 1rem;
             }
             #theGame {
                 /* Ensure the game is always big */
                 flex-shrink: 0;
+                margin-top: 1rem;
+                margin-bottom: 1rem;
             }
-            #extraContainer {
+            #instructionsContainer {
                 flex-grow: 1;
+            }
+        }
+
+        @media screen and (orientation:landscape) {
+            body {
+                display: flex;
+                flex-direction: row;
+                align-items: start;
+            }
+            #infoContainer {
+                flex-grow: 1;
+                max-width: 20rem;
+            }
+            #theGame {
+                /* Ensure the game is always big */
+                flex-shrink: 0;
                 margin-left: 1rem;
+                margin-right: 1rem;
+            }
+            #instructionsContainer {
+                flex-grow: 1;
+                max-width: 20rem;
             }
         }
     </style>
@@ -175,36 +237,43 @@
     </table>
 
 
-    <div id="extraContainer">
+    <div id="instructionsContainer">
+        <div class="panel-header">
+            <h2 class="panel-title">Instructions</h2>
+            <button id="closeInstructions" aria-label="Close" class="close">
+                <span aria-hidden="true">×</span>
+            </button>
+        </div>
+        
         <div id="gameInstructionsSection">
-                <p>To play:</p>
-                <ul>
-                    <li>Arrow keys or <kbd>W</kbd>, <kbd>S</kbd>, <kbd>A</kbd>, <kbd>D</kbd></li>
-                    <li><kbd>X</kbd> for Action</li>
-                    <li><kbd>Z</kbd> or <kbd>U</kbd> for Undo</li>
-                    <li><kbd>R</kbd> to Restart the current level</li>
-                </ul>
-            </div>
-        
-            <p id="gamepadSection">
-                <img id="gamepadIcon" alt="gamepad icon" width="42" height="42" src="./pwa-icon.svg"/>
-                <span id="gamepadDisabled" class="hidden"><strong>Tip:</strong> Connect a gamepad controller (XBOX/PS3/PS4/etc) to use it to play games. You might need to press some buttons so it is detected. Occasionally, a driver needs to be installed.</span>
-                <span id="gamepadRecognized" class="hidden">Gamepad is detected. You can play using it now. Just make sure the game is focused.</span>
-                <span id="gamepadNotRecognized" class="hidden">Gamepad is detected but not recognized. Please submit an Issue on the Repository and we will help get it added</span>
+            <p>To play:</p>
+            <ul>
+                <li>Arrow keys or <kbd>W</kbd>, <kbd>S</kbd>, <kbd>A</kbd>, <kbd>D</kbd></li>
+                <li><kbd>X</kbd> for Action</li>
+                <li><kbd>Z</kbd> or <kbd>U</kbd> for Undo</li>
+                <li><kbd>R</kbd> to Restart the current level</li>
+            </ul>
+        </div>
+    
+        <p id="gamepadSection">
+            <img id="gamepadIcon" alt="gamepad icon" width="42" height="42" src="./pwa-icon.svg"/>
+            <span id="gamepadDisabled" class="hidden"><strong>Tip:</strong> Connect a gamepad controller (XBOX/PS3/PS4/etc) to use it to play games. You might need to press some buttons so it is detected. Occasionally, a driver needs to be installed.</span>
+            <span id="gamepadRecognized" class="hidden">Gamepad is detected. You can play using it now. Just make sure the game is focused.</span>
+            <span id="gamepadNotRecognized" class="hidden">Gamepad is detected but not recognized. Please submit an Issue on the Repository and we will help get it added</span>
+        </p>
+    
+        <div id="gamepadSectionPWA">
+            <p>
+                <img alt="gamepad icon" width="42" height="42" src="./pwa-icon.svg"/>
+                <strong>Tip:</strong> Optionally, connect a gamepad controller (XBOX/PS3/PS4/etc) via BlueTooth to play games.
             </p>
+            <p>
+                Partial Gamepad support. Up/Down/Left/Right works but not Action/Undo. See this <a href="https://bugs.chromium.org/p/chromium/issues/detail?id=906347">Chrome Bug</a>
+            </p>
+        </div>
         
-            <div id="gamepadSectionPWA">
-                <p>
-                    <img alt="gamepad icon" width="42" height="42" src="./pwa-icon.svg"/>
-                    <strong>Tip:</strong> Optionally, connect a gamepad controller (XBOX/PS3/PS4/etc) via BlueTooth to play games.
-                </p>
-                <p>
-                    Partial Gamepad support. Up/Down/Left/Right works but not Action/Undo. See this <a href="https://bugs.chromium.org/p/chromium/issues/detail?id=906347">Chrome Bug</a>
-                </p>
-            </div>
-            
-            <p id="sourceSection"><a href="https://github.com/philschatz/puzzlescript">Source On GitHub</a></p>
-            
+        <p id="sourceSection"><a href="https://github.com/philschatz/puzzlescript">Source On GitHub</a></p>
+        
     </div>
 
     <script type="text/javascript">//<![CDATA[
