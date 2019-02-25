@@ -58,6 +58,8 @@ window.addEventListener('load', () => {
     const table: HTMLTableElement = getElement('#theGame')
     const gameSelection: HTMLSelectElement = getElement('#gameSelection')
     const loadingIndicator = getElement('#loadingIndicator')
+    const instructionsContainer = getElement('#instructionsContainer')
+    const closeInstructions = getElement('#closeInstructions')
     const messageDialog = getElement<Dialog>('#messageDialog')
     const messageDialogText = getElement('#messageDialogText')
     const messageDialogClose = getElement('#messageDialogClose')
@@ -73,6 +75,12 @@ window.addEventListener('load', () => {
 
     messageDialogClose.addEventListener('click', () => {
         messageDialog.close()
+    })
+
+    closeInstructions.addEventListener('click', () => {
+        instructionsContainer.classList.add('hidden')
+        // resize the game
+        tableEngine.resize()
     })
 
     // Save when the user completes a level
@@ -145,6 +153,10 @@ window.addEventListener('load', () => {
             updateGameSelectionInfo(false)
         },
         onGameChange(gameData) {
+            // Set the background color to be that of the game
+            const { backgroundColor } = gameData.metadata
+            window.document.body.style.backgroundColor = backgroundColor ? backgroundColor.toHex() : 'black'
+
             saveGameInfo(currentGameId, gameData.levels, gameData.title)
         }
     }
