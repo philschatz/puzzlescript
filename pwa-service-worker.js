@@ -30,3 +30,5 @@ workbox.precaching.suppressWarnings();
 workbox.precaching.precacheAndRoute(self.__precacheManifest, {
   "directoryIndex": "index.xhtml"
 });
+
+workbox.googleAnalytics.initialize({});
