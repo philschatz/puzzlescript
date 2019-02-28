@@ -65,6 +65,8 @@ window.addEventListener('load', () => {
     const table: HTMLTableElement = getElement('#theGame')
     const gameSelection: HTMLSelectElement = getElement('#gameSelection')
     const loadingIndicator = getElement('#loadingIndicator')
+    const instructionsContainer = getElement('#instructionsContainer')
+    const closeInstructions = getElement('#closeInstructions')
     const messageDialog = getElement<Dialog>('#messageDialog')
     const messageDialogText = getElement('#messageDialogText')
     const messageDialogClose = getElement('#messageDialogClose')
@@ -157,6 +159,12 @@ window.addEventListener('load', () => {
         }
     }()
 
+    closeInstructions.addEventListener('click', () => {
+        instructionsContainer.classList.add('hidden')
+        // resize the game
+        tableEngine.resize()
+    })
+
     // Save when the user completes a level
     const handler: GameEngineHandlerOptional = {
         async onMessage(msg) {
@@ -224,9 +232,13 @@ window.addEventListener('load', () => {
             gameSelection.removeAttribute('disabled')
 
             currentInfo.saveCurrentLevelNum(newLevelNum)
-            updateGameSelectionInfo()
+            updateGameSelectionInfo(false)
         },
         onGameChange(gameData) {
+            // Set the background color to be that of the game
+            const { backgroundColor } = gameData.metadata
+            window.document.body.style.backgroundColor = backgroundColor ? backgroundColor.toHex() : 'black'
+
             currentInfo.saveGameInfo(gameData.levels, gameData.title)
         },
         onTick(_changedCells, checkpoint) {
@@ -238,7 +250,9 @@ window.addEventListener('load', () => {
         }
     }
 
-    updateGameSelectionInfo() // update the % complete in the dropdown
+    // update the % complete in the dropdown AND
+    // Select the first game (not IceCrates all the time)
+    updateGameSelectionInfo(true)
 
     // startTableEngine
     if (!table) { throw new Error(`BUG: Could not find table on the page`) }
@@ -340,7 +354,7 @@ window.addEventListener('load', () => {
         option.setAttribute('data-original-index', `${index}`)
     })
 
-    function updateGameSelectionInfo() {
+    function updateGameSelectionInfo(selectFirstGame: boolean) {
         const storage = currentInfo.loadStorage()
 
         // Update the last-updated time for all of the games and then sort them
@@ -352,7 +366,7 @@ window.addEventListener('load', () => {
             }
             const gameInfo = storage[gameId]
             if (gameInfo) {
-                const completedMapLevels = gameInfo.levelMaps.slice(0, gameInfo.currentLevelNum - 1).filter((b) => b).length
+                const completedMapLevels = gameInfo.levelMaps.slice(0, gameInfo.currentLevelNum).filter((b) => b).length
                 const totalMapLevels = gameInfo.levelMaps.filter((b) => b).length
                 const percent = Math.floor(100 * completedMapLevels / totalMapLevels)
                 option.setAttribute('data-percent-complete', `${percent}`)
@@ -421,8 +435,20 @@ window.addEventListener('load', () => {
         if (completedOptions.length > 0) {
             completedOptions.unshift(createSeparator('Completed'))
         }
-        gameSelection.append(...continuePlayingOptions, ...newGameOptions, ...uncompletedOptions, ...completedOptions)
+        const allOptions = [...continuePlayingOptions, ...newGameOptions, ...uncompletedOptions, ...completedOptions]
+        gameSelection.append(...allOptions)
+
         gameSelection.value = selectedGameId
+
+        // Select the 1st game so we can select it if this is the initial load
+        if (selectFirstGame) {
+            const firstOption = allOptions.find((option) => option.hasAttribute('value'))
+            if (firstOption) {
+                gameSelection.selectedIndex = allOptions.indexOf(firstOption)
+                const gameId = firstOption.getAttribute('value')
+                if (gameId) gameSelection.value = gameId
+            }
+        }
     }
 
     function createSeparator(textContent: string) {
