@@ -9,7 +9,7 @@ import { IGameTile } from './models/tile'
 import { Level } from './parser/astTypes'
 import { GameEngineHandlerOptional, Optional, pollingPromise } from './util'
 
-declare const ga: (a1: string, a2: string, a3: string, a4: string, a5?: string, a6?: number) => void
+declare const ga: Optional<(a1: string, a2: string, a3?: string, a4?: string, a5?: string, a6?: number) => void>
 
 type PromptEvent = Event & {
     prompt: () => void
@@ -30,7 +30,7 @@ interface StorageGameInfo {
     currentLevelNum: number
     completedLevelAt: number
     lastPlayedAt: number
-    levelMaps: boolean[]
+    levelMaps?: boolean[]
     title: string
 }
 
@@ -231,6 +231,7 @@ window.addEventListener('load', () => {
             loadingIndicator.classList.add('hidden')
             gameSelection.removeAttribute('disabled')
 
+            changePage(currentInfo.getGameId(), newLevelNum)
             currentInfo.saveCurrentLevelNum(newLevelNum)
             updateGameSelectionInfo(false)
         },
@@ -365,7 +366,7 @@ window.addEventListener('load', () => {
                 continue
             }
             const gameInfo = storage[gameId]
-            if (gameInfo) {
+            if (gameInfo && gameInfo.levelMaps) {
                 const completedMapLevels = gameInfo.levelMaps.slice(0, gameInfo.currentLevelNum).filter((b) => b).length
                 const totalMapLevels = gameInfo.levelMaps.filter((b) => b).length
                 const percent = Math.floor(100 * completedMapLevels / totalMapLevels)
@@ -496,4 +497,12 @@ window.addEventListener('load', () => {
         })
     })
 
+    const changePage = (gameId: string, level: number) => {
+        if (ga) {
+            const { pathname, search } = window.location
+            ga('set', 'page', `${pathname}${search}#game=${gameId}&level=${level}`)
+            // ga('set', 'title', gameTitle)
+            ga('send', 'pageview')
+        }
+    }
 })
