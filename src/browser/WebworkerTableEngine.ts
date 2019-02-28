@@ -1,3 +1,4 @@
+import { CellSaveState } from '../engine'
 import { GameData } from '../models/game'
 import { Dimension } from '../models/metadata'
 import { A11Y_MESSAGE, A11Y_MESSAGE_TYPE } from '../models/rule'
@@ -15,7 +16,7 @@ import { Cellish,
     pollingPromise,
     PuzzlescriptWorker,
     RULE_DIRECTION,
-    WorkerResponse} from '../util'
+    WorkerResponse } from '../util'
 import InputWatcher from './InputWatcher'
 import ResizeWatcher from './ResizeWatcher'
 
@@ -91,8 +92,8 @@ export default class WebworkerTableEngine implements Engineish {
 
         this.inputInterval = window.setInterval(this.pollInputWatcher, 10)
     }
-    public setGame(code: string, level: number) {
-        this.worker.postMessage({ type: MESSAGE_TYPE.ON_GAME_CHANGE, code, level })
+    public setGame(code: string, level: number, checkpoint: Optional<CellSaveState>) {
+        this.worker.postMessage({ type: MESSAGE_TYPE.ON_GAME_CHANGE, code, level, checkpoint })
     }
 
     public dispose() {
@@ -160,7 +161,7 @@ export default class WebworkerTableEngine implements Engineish {
                 this.ui.onPress(data.direction)
                 break
             case MESSAGE_TYPE.ON_TICK:
-                this.ui.onTick(new Set(data.changedCells.map((x) => this.convertToCellish(x))), data.hasAgain, this.convertToA11yMessages(data.a11yMessages))
+                this.ui.onTick(new Set(data.changedCells.map((x) => this.convertToCellish(x))), data.checkpoint, data.hasAgain, this.convertToA11yMessages(data.a11yMessages))
                 break
             case MESSAGE_TYPE.ON_SOUND:
                 await this.ui.onSound({ soundCode: data.soundCode })
