@@ -90,7 +90,7 @@ export function createTests(moduloNumber: number, moduloTotal: number) {
 
                     numPlayed++
 
-                    engine.setLevel(index)
+                    engine.setLevel(index, null/*no checkpoint*/)
 
                     // UI.setGame(engine)
 

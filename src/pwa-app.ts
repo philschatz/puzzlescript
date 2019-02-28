@@ -4,6 +4,7 @@ import TimeAgo from 'javascript-time-ago' // tslint:disable-line:no-implicit-dep
 import TimeAgoEn from 'javascript-time-ago/locale/en' // tslint:disable-line
 import { BUTTON_TYPE } from './browser/controller/controller'
 import WebworkerTableEngine from './browser/WebworkerTableEngine'
+import { CellSaveState } from './engine'
 import { IGameTile } from './models/tile'
 import { Level } from './parser/astTypes'
 import { GameEngineHandlerOptional, Optional, pollingPromise } from './util'
@@ -19,6 +20,11 @@ type PromptEvent = Event & {
 //     action: Optional<string>
 //     notification: Notification
 // }
+
+interface StorageCheckpoint {
+    levelNum: number,
+    data: CellSaveState
+}
 
 interface StorageGameInfo {
     currentLevelNum: number
@@ -55,6 +61,7 @@ window.addEventListener('load', () => {
 
     const WEBWORKER_URL = './puzzlescript-webworker.js'
     const GAME_STORAGE_ID = 'puzzlescriptGameProgress'
+    const GAME_STORAGE_CHECKPOINT_PREFIX = 'puzzlescriptGameCheckpoint'
     const table: HTMLTableElement = getElement('#theGame')
     const gameSelection: HTMLSelectElement = getElement('#gameSelection')
     const loadingIndicator = getElement('#loadingIndicator')
@@ -68,14 +75,89 @@ window.addEventListener('load', () => {
     TimeAgo.addLocale(TimeAgoEn)
     const timeAgo = new TimeAgo('en-US')
 
-    let currentGameId = '' // used for loading and saving game progress
-
     if (!gameSelection) { throw new Error(`BUG: Could not find game selection dropdown`) }
     if (!loadingIndicator) { throw new Error(`BUG: Could not find loading indicator`) }
 
     messageDialogClose.addEventListener('click', () => {
         messageDialog.close()
     })
+
+    // Functions for loading/saving game progress
+    const currentInfo = new class {
+        private gameId: string
+        private levelNum: number
+
+        constructor() {
+            this.gameId = 'INVALID_GAME'
+            this.levelNum = -1
+        }
+
+        public setGameId(gameId: string) {
+            this.gameId = gameId
+            this.levelNum = -1
+        }
+        public getGameId() {
+            if (this.gameId === 'INVALID_GAME') {
+                throw new Error(`BUG: Did not set game id`)
+            }
+            return this.gameId
+        }
+        public getLevelNum() {
+            if (this.levelNum < 0) {
+                throw new Error(`BUG: Did not set level num`)
+            }
+            return this.levelNum
+        }
+        public loadStorage() {
+            const storage = this.loadJson(GAME_STORAGE_ID, { _version: 1 })
+            return storage as Storage
+        }
+        public loadCurrentLevelNum() {
+            const gameId = this.getGameId()
+            const storage = this.loadStorage()
+            const gameData = storage[gameId]
+            return (gameData || null) && gameData.currentLevelNum
+        }
+        public loadCheckpoint(): Optional<StorageCheckpoint> {
+            const gameId = this.getGameId()
+            return this.loadJson(`${GAME_STORAGE_CHECKPOINT_PREFIX}.${gameId}`, null)
+        }
+        public saveCurrentLevelNum(levelNum: number) {
+            const gameId = this.getGameId()
+            const storage = this.loadStorage()
+            storage[gameId] = storage[gameId] || {}
+            storage[gameId].currentLevelNum = levelNum
+            storage[gameId].completedLevelAt = Date.now()
+            storage[gameId].lastPlayedAt = Date.now()
+            // storage[gameId].checkpoint = null
+            this.saveJson(GAME_STORAGE_ID, storage)
+            ga && ga('send', 'event', 'game', 'level', gameId, levelNum)
+
+            currentInfo.levelNum = levelNum
+        }
+        public saveGameInfo(levels: Array<Level<IGameTile>>, title: string) {
+            const gameId = this.getGameId()
+            const storage = this.loadStorage()
+            storage[gameId] = storage[gameId] || {}
+            storage[gameId].levelMaps = levels.map((l) => l.type === 'LEVEL_MAP')
+            storage[gameId].title = title
+            storage[gameId].lastPlayedAt = Date.now()
+            this.saveJson(GAME_STORAGE_ID, storage)
+        }
+        public saveCheckpoint(checkpoint: CellSaveState) {
+            const gameId = this.getGameId()
+            const storage = { _version: 1, levelNum: this.getLevelNum(), data: checkpoint }
+            this.saveJson(`${GAME_STORAGE_CHECKPOINT_PREFIX}.${gameId}`, storage)
+        }
+
+        private loadJson<T>(key: string, defaultValue: T) {
+            const str = window.localStorage.getItem(key)
+            return str ? JSON.parse(str) : defaultValue
+        }
+        private saveJson<T>(key: string, value: T) {
+            window.localStorage.setItem(key, JSON.stringify(value))
+        }
+    }()
 
     closeInstructions.addEventListener('click', () => {
         instructionsContainer.classList.add('hidden')
@@ -149,8 +231,8 @@ window.addEventListener('load', () => {
             loadingIndicator.classList.add('hidden')
             gameSelection.removeAttribute('disabled')
 
-            changePage(currentGameId, newLevelNum)
-            saveCurrentLevelNum(currentGameId, newLevelNum)
+            changePage(currentInfo.getGameId(), newLevelNum)
+            currentInfo.saveCurrentLevelNum(newLevelNum)
             updateGameSelectionInfo(false)
         },
         onGameChange(gameData) {
@@ -158,7 +240,14 @@ window.addEventListener('load', () => {
             const { backgroundColor } = gameData.metadata
             window.document.body.style.backgroundColor = backgroundColor ? backgroundColor.toHex() : 'black'
 
-            saveGameInfo(currentGameId, gameData.levels, gameData.title)
+            currentInfo.saveGameInfo(gameData.levels, gameData.title)
+        },
+        onTick(_changedCells, checkpoint) {
+            if (checkpoint) {
+                // Ideally, include the level number so we can verify the checkpoint applies to the level
+                // This might require creating an onCheckpoint(levelNum, checkpoint) event
+                currentInfo.saveCheckpoint(checkpoint)
+            }
         }
     }
 
@@ -183,16 +272,27 @@ window.addEventListener('load', () => {
         loadingIndicator.classList.remove('hidden') // Show the "Loading..." text
         gameSelection.setAttribute('disabled', 'disabled')
 
-        currentGameId = gameSelection.value
-        if (!currentGameId) {
+        currentInfo.setGameId(gameSelection.value)
+        if (!currentInfo.getGameId()) {
             return
         }
-        fetch(`./games/${currentGameId}/script.txt`, { redirect: 'follow' })
+        fetch(`./games/${currentInfo.getGameId()}/script.txt`, { redirect: 'follow' })
         .then((resp) => {
             if (resp.ok) {
                 return resp.text().then((source) => {
                     // Load the game
-                    tableEngine.setGame(source, loadCurrentLevelNum(currentGameId) || 0)
+                    const levelNum = currentInfo.loadCurrentLevelNum()
+                    const checkpoint = currentInfo.loadCheckpoint()
+                    if (checkpoint) {
+                        // verify that the currentLevelNum is the same as the checkpoint level num
+                        const { levelNum: checkpointLevelNum, data: checkpointData } = checkpoint
+                        if (levelNum !== checkpointLevelNum) {
+                            throw new Error(`BUG: Checkpoint level number (${checkpointLevelNum}) does not match current level number (${levelNum})`)
+                        }
+                        tableEngine.setGame(source, currentInfo.loadCurrentLevelNum() || 0, checkpointData)
+                    } else {
+                        tableEngine.setGame(source, currentInfo.loadCurrentLevelNum() || 0, null)
+                    }
                 })
             } else {
                 alert(`Problem finding game file. Please choose another one`)
@@ -250,42 +350,13 @@ window.addEventListener('load', () => {
 
     }
 
-    // Functions for loading/saving game progress
-    function loadStorage() {
-        const storageStr = window.localStorage.getItem(GAME_STORAGE_ID)
-        const storage = storageStr ? JSON.parse(storageStr) : { _version: 1 }
-        return storage as Storage
-    }
-    function loadCurrentLevelNum(gameId: string) {
-        const storage = loadStorage()
-        const gameData = storage[gameId]
-        return (gameData || null) && gameData.currentLevelNum
-    }
-    function saveCurrentLevelNum(gameId: string, levelNum: number) {
-        const storage = loadStorage()
-        storage[gameId] = storage[gameId] || {}
-        storage[gameId].currentLevelNum = levelNum
-        storage[gameId].completedLevelAt = Date.now()
-        storage[gameId].lastPlayedAt = Date.now()
-        window.localStorage.setItem(GAME_STORAGE_ID, JSON.stringify(storage))
-        ga && ga('send', 'event', 'game', 'level', gameId, levelNum)
-    }
-    function saveGameInfo(gameId: string, levels: Array<Level<IGameTile>>, title: string) {
-        const storage = loadStorage()
-        storage[gameId] = storage[gameId] || {}
-        storage[gameId].levelMaps = levels.map((l) => l.type === 'LEVEL_MAP')
-        storage[gameId].title = title
-        storage[gameId].lastPlayedAt = Date.now()
-        window.localStorage.setItem(GAME_STORAGE_ID, JSON.stringify(storage))
-    }
-
     // store the original sort order so that we fall back to it.
     gameSelection.querySelectorAll('option').forEach((option, index) => {
         option.setAttribute('data-original-index', `${index}`)
     })
 
     function updateGameSelectionInfo(selectFirstGame: boolean) {
-        const storage = loadStorage()
+        const storage = currentInfo.loadStorage()
 
         // Update the last-updated time for all of the games and then sort them
         const gameOptions = getAllElements('option', gameSelection)

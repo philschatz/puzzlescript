@@ -1,3 +1,4 @@
+import { CellSaveState } from '../engine'
 import { IColor } from '../models/colors'
 import { GameData } from '../models/game'
 import { A11Y_MESSAGE, A11Y_MESSAGE_TYPE } from '../models/rule'
@@ -182,13 +183,13 @@ class TableUI extends BaseUI implements GameEngineHandler {
         playSound(sound.soundCode) // tslint:disable-line:no-floating-promises
         await this.handler.onSound(sound)
     }
-    public onTick(changedCells: Set<Cellish>, hasAgain: boolean, a11yMessages: Array<A11Y_MESSAGE<Cellish, GameSprite>>) {
+    public onTick(changedCells: Set<Cellish>, checkpoint: Optional<CellSaveState>, hasAgain: boolean, a11yMessages: Array<A11Y_MESSAGE<Cellish, GameSprite>>) {
         this.collectingTickCount++
         this.printMessageLog(a11yMessages, hasAgain)
         this.drawCells(changedCells, false)
         this.markAcceptingInput(!hasAgain)
         this.didPressCauseTick = false
-        this.handler.onTick(changedCells, hasAgain, a11yMessages)
+        this.handler.onTick(changedCells, checkpoint, hasAgain, a11yMessages)
     }
 
     public willAllLevelsFitOnScreen(gameData: GameData) {
