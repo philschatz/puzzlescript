@@ -1,5 +1,5 @@
 import 'babel-polyfill' // tslint:disable-line:no-implicit-dependencies
-import { Cell, GameEngine } from './engine'
+import { Cell, CellSaveState, GameEngine } from './engine'
 import { GameData } from './models/game'
 import { A11Y_MESSAGE, A11Y_MESSAGE_TYPE } from './models/rule'
 import { GameSprite } from './models/tile'
@@ -19,7 +19,7 @@ let lastTick = 0
 onmessage = (event: TypedMessageEvent<WorkerMessage>) => {
     const msg = event.data
     switch (msg.type) {
-        case MESSAGE_TYPE.ON_GAME_CHANGE: loadGame(msg.code, msg.level); break
+        case MESSAGE_TYPE.ON_GAME_CHANGE: loadGame(msg.code, msg.level, msg.checkpoint); break
         case MESSAGE_TYPE.PAUSE: postMessage({ type: msg.type, payload: pauseGame() }); break
         case MESSAGE_TYPE.RESUME: postMessage({ type: msg.type, payload: resumeGame() }); break
         case MESSAGE_TYPE.PRESS: postMessage({ type: msg.type, payload: press(msg.button) }); break
@@ -99,8 +99,8 @@ class Handler implements GameEngineHandler {
     public async onSound(sound: Soundish) {
         postMessage({ type: MESSAGE_TYPE.ON_SOUND, soundCode: sound.soundCode })
     }
-    public onTick(changedCells: Set<Cellish>, hasAgain: boolean, a11yMessages: Array<A11Y_MESSAGE<Cell, GameSprite>>) {
-        postMessage({ type: MESSAGE_TYPE.ON_TICK, changedCells: toCellsJson(changedCells), hasAgain, a11yMessages: a11yMessages.map(toA11yMessageJson) })
+    public onTick(changedCells: Set<Cellish>, checkpoint: Optional<CellSaveState>, hasAgain: boolean, a11yMessages: Array<A11Y_MESSAGE<Cell, GameSprite>>) {
+        postMessage({ type: MESSAGE_TYPE.ON_TICK, changedCells: toCellsJson(changedCells), checkpoint, hasAgain, a11yMessages: a11yMessages.map(toA11yMessageJson) })
     }
     public onPause() {
         postMessage({ type: MESSAGE_TYPE.ON_PAUSE })
@@ -110,13 +110,13 @@ class Handler implements GameEngineHandler {
     }
 }
 
-const loadGame = (code: string, level: number) => {
+const loadGame = (code: string, level: number, checkpoint: Optional<CellSaveState>) => {
     pauseGame()
     previousMessage = '' // clear this dev-invariant-tester field since it is a new game
     const { data } = Parser.parse(code)
     postMessage({ type: MESSAGE_TYPE.ON_GAME_CHANGE, payload: (new Serializer(data)).toJson() })
     currentEngine = new GameEngine(data, new Handler())
-    currentEngine.setLevel(level)
+    currentEngine.setLevel(level, checkpoint)
     runPlayLoop() // tslint:disable-line:no-floating-promises
 }
 

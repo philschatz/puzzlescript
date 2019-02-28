@@ -345,7 +345,8 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: ISa
         }
     })
     TerminalUI.clearScreen()
-    engine.setLevel(data.levels.indexOf(level))
+    // TODO: Support saving and loading checkpoints in the CLI
+    engine.setLevel(data.levels.indexOf(level), null/*no checkpoint*/)
 
     function restartLevel() {
         engine.press(INPUT_BUTTON.RESTART)
