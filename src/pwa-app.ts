@@ -457,7 +457,10 @@ window.addEventListener('load', () => {
             if (firstOption) {
                 gameSelection.selectedIndex = allOptions.indexOf(firstOption)
                 const gameId = firstOption.getAttribute('value')
-                if (gameId) gameSelection.value = gameId
+                if (gameId) {
+                    gameSelection.value = gameId
+                    currentInfo.setGameAndLevel(gameId, null)
+                }
             }
         }
     }
