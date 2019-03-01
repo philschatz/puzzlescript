@@ -48,7 +48,18 @@ module.exports = {
             skipWaiting: true,
             offlineGoogleAnalytics: true,
             directoryIndex: 'index.xhtml',
-            swDest: 'pwa-service-worker.js'
+            swDest: 'pwa-service-worker.js',
+            runtimeCaching: [{
+                urlPattern: /\/games\//,
+                handler: 'staleWhileRevalidate',
+                options: {
+                    cacheName: 'games-v1',
+                    cacheableResponse: {
+                        statuses: [0, 200]
+                    }
+                }
+            }]
+            
         })
     ],
     module: {
