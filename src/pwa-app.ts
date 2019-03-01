@@ -84,12 +84,12 @@ window.addEventListener('load', () => {
 
     // Functions for loading/saving game progress
     const currentInfo = new class {
+        public levelNum: Optional<number>
         private gameId: string
-        private levelNum: number
 
         constructor() {
-            this.gameId = 'INVALID_GAME'
-            this.levelNum = -1
+            this.gameId = ''
+            this.levelNum = null
         }
 
         public setGameId(gameId: string) {
@@ -97,16 +97,20 @@ window.addEventListener('load', () => {
             this.levelNum = -1
         }
         public getGameId() {
-            if (this.gameId === 'INVALID_GAME') {
+            if (this.gameId === '') {
                 throw new Error(`BUG: Did not set game id`)
             }
             return this.gameId
         }
         public getLevelNum() {
-            if (this.levelNum < 0) {
+            if (this.levelNum === null) {
                 throw new Error(`BUG: Did not set level num`)
             }
             return this.levelNum
+        }
+        public setGameAndLevel(gameId: string, levelNum: Optional<number>) {
+            this.gameId = gameId
+            this.levelNum = levelNum
         }
         public loadStorage() {
             const storage = this.loadJson(GAME_STORAGE_ID, { _version: 1 })
@@ -266,22 +270,21 @@ window.addEventListener('load', () => {
     playSelectedGame()
 
     // Load the new game when the dropdown changes
-    gameSelection.addEventListener('change', () => playSelectedGame())
+    gameSelection.addEventListener('change', () => {
+        currentInfo.setGameAndLevel(gameSelection.value, null)
+        playSelectedGame()
+    })
 
     function playSelectedGame() {
         loadingIndicator.classList.remove('hidden') // Show the "Loading..." text
         gameSelection.setAttribute('disabled', 'disabled')
 
-        currentInfo.setGameId(gameSelection.value)
-        if (!currentInfo.getGameId()) {
-            return
-        }
         fetch(`./games/${currentInfo.getGameId()}/script.txt`, { redirect: 'follow' })
         .then((resp) => {
             if (resp.ok) {
                 return resp.text().then((source) => {
                     // Load the game
-                    const levelNum = currentInfo.loadCurrentLevelNum()
+                    const levelNum = currentInfo.levelNum !== null ? currentInfo.levelNum : currentInfo.loadCurrentLevelNum()
                     const checkpoint = currentInfo.loadCheckpoint()
                     if (checkpoint) {
                         // verify that the currentLevelNum is the same as the checkpoint level num
@@ -289,9 +292,9 @@ window.addEventListener('load', () => {
                         if (levelNum !== checkpointLevelNum) {
                             throw new Error(`BUG: Checkpoint level number (${checkpointLevelNum}) does not match current level number (${levelNum})`)
                         }
-                        tableEngine.setGame(source, currentInfo.loadCurrentLevelNum() || 0, checkpointData)
+                        tableEngine.setGame(source, levelNum || 0, checkpointData)
                     } else {
-                        tableEngine.setGame(source, currentInfo.loadCurrentLevelNum() || 0, null)
+                        tableEngine.setGame(source, levelNum || 0, null)
                     }
                 })
             } else {
@@ -443,11 +446,21 @@ window.addEventListener('load', () => {
 
         // Select the 1st game so we can select it if this is the initial load
         if (selectFirstGame) {
-            const firstOption = allOptions.find((option) => option.hasAttribute('value'))
+            let firstOption: Element | undefined
+            if (window.location.hash) {
+                // try to select the game
+                const [ gameId, levelNum ] = window.location.hash.substring(1).split('|')
+                currentInfo.setGameAndLevel(gameId, levelNum ? Number.parseInt(levelNum, 10) : null)
+                firstOption = allOptions.find((option) => option.getAttribute('value') === gameId)
+            }
+            firstOption = firstOption || allOptions.find((option) => option.hasAttribute('value'))
             if (firstOption) {
                 gameSelection.selectedIndex = allOptions.indexOf(firstOption)
                 const gameId = firstOption.getAttribute('value')
-                if (gameId) gameSelection.value = gameId
+                if (gameId) {
+                    gameSelection.value = gameId
+                    currentInfo.setGameAndLevel(gameId, null)
+                }
             }
         }
     }
@@ -498,9 +511,10 @@ window.addEventListener('load', () => {
     })
 
     const changePage = (gameId: string, level: number) => {
+        window.location.hash = `#${gameId}|${level}`
         if (ga) {
             const { pathname, search } = window.location
-            ga('set', 'page', `${pathname}${search}#game=${gameId}&level=${level}`)
+            ga('set', 'page', `${pathname}${search}#${gameId}|${level}`)
             // ga('set', 'title', gameTitle)
             ga('send', 'pageview')
         }
