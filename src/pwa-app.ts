@@ -84,8 +84,8 @@ window.addEventListener('load', () => {
 
     // Functions for loading/saving game progress
     const currentInfo = new class {
-        private gameId: string
         public levelNum: Optional<number>
+        private gameId: string
 
         constructor() {
             this.gameId = ''
