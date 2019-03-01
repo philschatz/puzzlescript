@@ -31,4 +31,6 @@ workbox.precaching.precacheAndRoute(self.__precacheManifest, {
   "directoryIndex": "index.xhtml"
 });
 
+workbox.routing.registerRoute(/\/games\//, workbox.strategies.staleWhileRevalidate({ "cacheName":"games-v1", plugins: [new workbox.cacheableResponse.Plugin({"statuses":[0,200]})] }), 'GET');
+
 workbox.googleAnalytics.initialize({});
