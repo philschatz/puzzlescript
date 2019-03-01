@@ -46,8 +46,20 @@ module.exports = {
             // and not allow any straggling "old" SWs to hang around
             clientsClaim: true,
             skipWaiting: true,
+            offlineGoogleAnalytics: true,
             directoryIndex: 'index.xhtml',
-            swDest: 'pwa-service-worker.js'
+            swDest: 'pwa-service-worker.js',
+            runtimeCaching: [{
+                urlPattern: /\/games\//,
+                handler: 'staleWhileRevalidate',
+                options: {
+                    cacheName: 'games-v1',
+                    cacheableResponse: {
+                        statuses: [0, 200]
+                    }
+                }
+            }]
+            
         })
     ],
     module: {

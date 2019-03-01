@@ -1,4 +1,6 @@
+import { CellSaveState } from '../engine'
 import { GameData } from '../models/game'
+import { Dimension } from '../models/metadata'
 import { A11Y_MESSAGE, A11Y_MESSAGE_TYPE } from '../models/rule'
 import { GameSprite } from '../models/tile'
 import { LEVEL_TYPE } from '../parser/astTypes'
@@ -14,7 +16,7 @@ import { Cellish,
     pollingPromise,
     PuzzlescriptWorker,
     RULE_DIRECTION,
-    WorkerResponse} from '../util'
+    WorkerResponse } from '../util'
 import InputWatcher from './InputWatcher'
 import ResizeWatcher from './ResizeWatcher'
 
@@ -90,21 +92,14 @@ export default class WebworkerTableEngine implements Engineish {
 
         this.inputInterval = window.setInterval(this.pollInputWatcher, 10)
     }
-    public setGame(code: string, level: number) {
-        this.worker.postMessage({ type: MESSAGE_TYPE.ON_GAME_CHANGE, code, level })
+    public setGame(code: string, level: number, checkpoint: Optional<CellSaveState>) {
+        this.worker.postMessage({ type: MESSAGE_TYPE.ON_GAME_CHANGE, code, level, checkpoint })
     }
 
     public dispose() {
         this.inputWatcher.dispose()
         this.resizeWatcher.dispose()
         clearInterval(this.inputInterval)
-    }
-
-    private pollInputWatcher() {
-        const button = this.inputWatcher.pollControls()
-        if (button) {
-            this.press(button)
-        }
     }
 
     public press(button: INPUT_BUTTON) {
@@ -123,6 +118,20 @@ export default class WebworkerTableEngine implements Engineish {
             this.inputInterval = window.setInterval(this.pollInputWatcher, 10)
         }
     }
+    public resize() {
+        this.resizeWatcher.trigger()
+    }
+
+    private pollInputWatcher() {
+        const button = this.inputWatcher.pollControls()
+        if (button) {
+            this.press(button)
+        }
+    }
+    private getScreenDimensions(cells: any[][]) {
+        const { metadata } = this.getGameData()
+        return metadata.flickscreen || metadata.zoomscreen || new Dimension(cells[0].length, cells.length)
+    }
     private async messageListener({ data }: {data: WorkerResponse}) {
         switch (data.type) {
             case MESSAGE_TYPE.ON_GAME_CHANGE:
@@ -135,6 +144,8 @@ export default class WebworkerTableEngine implements Engineish {
                 this.levelNum = data.level
                 if (data.cells) {
                     this.ui.onLevelChange(data.level, data.cells.map((row) => row.map((x) => this.convertToCellish(x))), null)
+                    const { width, height } = this.getScreenDimensions(data.cells)
+                    this.resizeWatcher.setLevel(height, width)
                 } else {
                     this.ui.onLevelChange(data.level, null, data.message)
                 }
@@ -150,7 +161,7 @@ export default class WebworkerTableEngine implements Engineish {
                 this.ui.onPress(data.direction)
                 break
             case MESSAGE_TYPE.ON_TICK:
-                this.ui.onTick(new Set(data.changedCells.map((x) => this.convertToCellish(x))), data.hasAgain, this.convertToA11yMessages(data.a11yMessages))
+                this.ui.onTick(new Set(data.changedCells.map((x) => this.convertToCellish(x))), data.checkpoint, data.hasAgain, this.convertToA11yMessages(data.a11yMessages))
                 break
             case MESSAGE_TYPE.ON_SOUND:
                 await this.ui.onSound({ soundCode: data.soundCode })
