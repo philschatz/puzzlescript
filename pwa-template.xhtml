@@ -48,6 +48,9 @@
         .ps-table.ps-ui-disabled td {
             border: 1px solid #ccc;
         }
+        .ps-table.ps-ui-disabled caption {
+            background-color: white;
+        }
 
         /* When the CSS is disabled, still mark the player cell in bold */
         table.ps-table .ps-cell-label.ps-player {
@@ -227,6 +230,9 @@
     
             <span id="loadingIndicator" class="hidden">Loading...</span>
         </p>
+    
+        <p id="authorSection" class="hidden"><small>By <a id="authorInfo" target="_window"></a></small></p>
+
     </div>
     
     <table id="theGame" aria-labelledby="gameInstructionsSection">
