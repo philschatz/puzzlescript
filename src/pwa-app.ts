@@ -8,6 +8,7 @@ import { CellSaveState } from './engine'
 import { IGameTile } from './models/tile'
 import { Level } from './parser/astTypes'
 import { GameEngineHandlerOptional, Optional, pollingPromise } from './util'
+import SOLVED_GAMES from './cli/solvedGames'
 
 declare const ga: Optional<(a1: string, a2: string, a3?: string, a4?: string, a5?: string, a6?: number) => void>
 
@@ -269,10 +270,29 @@ window.addEventListener('load', () => {
     startGamepadDetection()
     playSelectedGame()
 
+    function loadMoreGames() {
+        const moreOption = gameSelection.querySelector(`[value='...more...']`)
+        if (moreOption) {
+            for (const [title, gameId] of SOLVED_GAMES.entries()) {
+                if (!gameSelection.querySelector(`[value='${gameId}']`)) {
+                    const child = document.createElement('option')
+                    child.setAttribute('value', gameId)
+                    child.textContent = title
+                    gameSelection.appendChild(child)
+                }
+            }
+            // delete the `...more...` entry
+            gameSelection.removeChild(moreOption)
+        }
+    }
     // Load the new game when the dropdown changes
     gameSelection.addEventListener('change', () => {
-        currentInfo.setGameAndLevel(gameSelection.value, null)
-        playSelectedGame()
+        if (gameSelection.value === '...more...') {
+            loadMoreGames()
+        } else if (gameSelection.value) {
+            currentInfo.setGameAndLevel(gameSelection.value, null)
+            playSelectedGame()
+        }
     })
 
     function playSelectedGame() {
@@ -452,6 +472,11 @@ window.addEventListener('load', () => {
                 const [ gameId, levelNum ] = window.location.hash.substring(1).split('|')
                 currentInfo.setGameAndLevel(gameId, levelNum ? Number.parseInt(levelNum, 10) : null)
                 firstOption = allOptions.find((option) => option.getAttribute('value') === gameId)
+
+                if (!firstOption) {
+                    loadMoreGames()
+                    firstOption = allOptions.find((option) => option.getAttribute('value') === gameId)
+                }
             }
             firstOption = firstOption || allOptions.find((option) => option.hasAttribute('value'))
             if (firstOption) {

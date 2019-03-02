@@ -20,9 +20,6 @@ import { _flatten, EmptyGameEngineHandler, INPUT_BUTTON } from '../util'
 import SOLVED_GAMES from './solvedGames'
 import TITLE_FONTS from './titleFonts'
 
-SOLVED_GAMES.add(`Skipping Stones to Lonely Homes`)
-SOLVED_GAMES.add(`Spikes 'n' Stuff`)
-
 export interface IGameRecording {
     version: number,
     solutions: ILevelRecording[]
