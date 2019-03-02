@@ -246,8 +246,8 @@ window.addEventListener('load', () => {
             const { backgroundColor } = gameData.metadata
             window.document.body.style.backgroundColor = backgroundColor ? backgroundColor.toHex() : 'black'
 
-            function toUrl(homepage: string) {
-                return /^https?:\/\//.test(homepage) ? homepage : `http://${homepage}`
+            function toUrl(url: string) {
+                return /^https?:\/\//.test(url) ? url : `http://${url}`
             }
             const {author, homepage} = gameData.metadata
             if (author) {
