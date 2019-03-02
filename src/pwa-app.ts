@@ -65,6 +65,8 @@ window.addEventListener('load', () => {
     const table: HTMLTableElement = getElement('#theGame')
     const gameSelection: HTMLSelectElement = getElement('#gameSelection')
     const loadingIndicator = getElement('#loadingIndicator')
+    const authorSection = getElement('#authorSection')
+    const authorInfo = getElement('#authorInfo')
     const instructionsContainer = getElement('#instructionsContainer')
     const closeInstructions = getElement('#closeInstructions')
     const messageDialog = getElement<Dialog>('#messageDialog')
@@ -244,6 +246,20 @@ window.addEventListener('load', () => {
             const { backgroundColor } = gameData.metadata
             window.document.body.style.backgroundColor = backgroundColor ? backgroundColor.toHex() : 'black'
 
+            function toUrl(url: string) {
+                return /^https?:\/\//.test(url) ? url : `http://${url}`
+            }
+            const {author, homepage} = gameData.metadata
+            if (author) {
+                authorInfo.textContent = author
+                if (homepage) {
+                    authorInfo.setAttribute('href', toUrl(homepage))
+                } else {
+                    authorInfo.removeAttribute('href')
+                }
+                authorSection.classList.remove('hidden')
+            }
+            
             currentInfo.saveGameInfo(gameData.levels, gameData.title)
         },
         onTick(_changedCells, checkpoint) {
@@ -277,6 +293,7 @@ window.addEventListener('load', () => {
 
     function playSelectedGame() {
         loadingIndicator.classList.remove('hidden') // Show the "Loading..." text
+        authorSection.classList.add('hidden')
         gameSelection.setAttribute('disabled', 'disabled')
 
         fetch(`./games/${currentInfo.getGameId()}/script.txt`, { redirect: 'follow' })
