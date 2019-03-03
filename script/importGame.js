@@ -29,10 +29,10 @@ async function doImport() {
         if (/puzzlescript\.net/.test(url.hostname)) {
             // It's a puzzlescript game. Just use the GIST query parameter
             const gistId = url.query['p']
-            const response = await fetch(`https://api.github.com/games/${gistId}`)
+            const response = await fetch(`https://api.github.com/gists/${gistId}`)
             const gist = await response.json()
 
-            dirName = gistId
+            dirName = `gist-${gistId}`
             const outDir = path.join(__dirname, `../games`, dirName)
             const outFile = path.join(outDir, `script.txt`)
 
