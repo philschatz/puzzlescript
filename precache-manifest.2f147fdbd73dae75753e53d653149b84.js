@@ -1,4 +1,4 @@
-self.__precacheManifest = [
+self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
     "revision": "b894fae3653c5f61f73c",
     "url": "pwa-app.js"
@@ -15,4 +15,4 @@ self.__precacheManifest = [
     "revision": "cf926a524b8f1f4bec773aa6a0c92bce",
     "url": "index.xhtml"
   }
-];
+]);
