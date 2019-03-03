@@ -4,11 +4,11 @@ import TimeAgo from 'javascript-time-ago' // tslint:disable-line:no-implicit-dep
 import TimeAgoEn from 'javascript-time-ago/locale/en' // tslint:disable-line
 import { BUTTON_TYPE } from './browser/controller/controller'
 import WebworkerTableEngine from './browser/WebworkerTableEngine'
+import SOLVED_GAMES from './cli/solvedGames'
 import { CellSaveState } from './engine'
 import { IGameTile } from './models/tile'
 import { Level } from './parser/astTypes'
 import { GameEngineHandlerOptional, Optional, pollingPromise } from './util'
-import SOLVED_GAMES from './cli/solvedGames'
 
 declare const ga: Optional<(a1: string, a2: string, a3?: string, a4?: string, a5?: string, a6?: number) => void>
 
@@ -95,13 +95,17 @@ window.addEventListener('load', () => {
 
         public setGameId(gameId: string) {
             this.gameId = gameId
-            this.levelNum = -1
+            this.levelNum = null
+            gameSelection.value = gameId
         }
         public getGameId() {
             if (this.gameId === '') {
                 throw new Error(`BUG: Did not set game id`)
             }
             return this.gameId
+        }
+        public hasGame() {
+            return !!this.gameId
         }
         public getLevelNum() {
             if (this.levelNum === null) {
@@ -112,6 +116,7 @@ window.addEventListener('load', () => {
         public setGameAndLevel(gameId: string, levelNum: Optional<number>) {
             this.gameId = gameId
             this.levelNum = levelNum
+            gameSelection.value = gameId
         }
         public loadStorage() {
             const storage = this.loadJson(GAME_STORAGE_ID, { _version: 1 })
@@ -238,7 +243,7 @@ window.addEventListener('load', () => {
 
             changePage(currentInfo.getGameId(), newLevelNum)
             currentInfo.saveCurrentLevelNum(newLevelNum)
-            updateGameSelectionInfo(false)
+            updateGameSelectionInfo()
         },
         onGameChange(gameData) {
             // Set the background color to be that of the game
@@ -246,6 +251,7 @@ window.addEventListener('load', () => {
             window.document.body.style.backgroundColor = backgroundColor ? backgroundColor.toHex() : 'black'
 
             currentInfo.saveGameInfo(gameData.levels, gameData.title)
+            gameSelection.value = currentInfo.getGameId()
         },
         onTick(_changedCells, checkpoint) {
             if (checkpoint) {
@@ -256,9 +262,52 @@ window.addEventListener('load', () => {
         }
     }
 
+    // store the original sort order so that we fall back to it.
+    gameSelection.querySelectorAll('option').forEach((option, index) => {
+        option.setAttribute('data-original-index', `${index}`)
+    })
+
+    // Populate the dropdown with any started games that are not in the original list
+    function addGame(gameId: string, title: string) {
+        const existingOption = gameSelection.querySelector(`option[value='${gameId}']`)
+        if (existingOption) {
+            // the text might just be the game id. In which case we should update it
+            existingOption.textContent = title
+        } else {
+            const option = document.createElement('option')
+            option.setAttribute('value', gameId)
+            option.textContent = title
+            gameSelection.appendChild(option)
+        }
+    }
+
+    {
+        const storage = currentInfo.loadStorage()
+        for (const gameId in storage) {
+            if (gameId !== '_version' && !gameSelection.querySelector(`option[value='${gameId}']`)) {
+                const title = SOLVED_GAMES.get(gameId)
+                addGame(gameId, title || gameId)
+            }
+        }
+    }
+
+    // Populate the dropdown with the current game in the hash
+    if (window.location.hash) {
+        // try to select the game
+        const [ gameId, levelNum ] = window.location.hash.substring(1).split('|')
+        const title = SOLVED_GAMES.get(gameId)
+        addGame(gameId, title || gameId)
+        currentInfo.setGameAndLevel(gameId, levelNum ? Number.parseInt(levelNum, 10) : null)
+    }
+
     // update the % complete in the dropdown AND
     // Select the first game (not IceCrates all the time)
-    updateGameSelectionInfo(true)
+    updateGameSelectionInfo()
+    if (!currentInfo.hasGame()) {
+        const firstGame = gameSelection.querySelector('option[value]')
+        const id = firstGame ? firstGame.getAttribute('value') : null
+        id && currentInfo.setGameId(id)
+    }
 
     // startTableEngine
     if (!table) { throw new Error(`BUG: Could not find table on the page`) }
@@ -274,17 +323,13 @@ window.addEventListener('load', () => {
         const moreOption = gameSelection.querySelector(`[value='...more...']`)
         if (moreOption) {
             for (const [title, gameId] of SOLVED_GAMES.entries()) {
-                if (!gameSelection.querySelector(`[value='${gameId}']`)) {
-                    const child = document.createElement('option')
-                    child.setAttribute('value', gameId)
-                    child.textContent = title
-                    gameSelection.appendChild(child)
-                }
+                addGame(gameId, title)
             }
             // delete the `...more...` entry
             gameSelection.removeChild(moreOption)
         }
     }
+
     // Load the new game when the dropdown changes
     gameSelection.addEventListener('change', () => {
         if (gameSelection.value === '...more...') {
@@ -316,6 +361,7 @@ window.addEventListener('load', () => {
                     } else {
                         tableEngine.setGame(source, levelNum || 0, null)
                     }
+                    gameSelection.value = currentInfo.getGameId()
                 })
             } else {
                 alert(`Problem finding game file. Please choose another one`)
@@ -373,12 +419,7 @@ window.addEventListener('load', () => {
 
     }
 
-    // store the original sort order so that we fall back to it.
-    gameSelection.querySelectorAll('option').forEach((option, index) => {
-        option.setAttribute('data-original-index', `${index}`)
-    })
-
-    function updateGameSelectionInfo(selectFirstGame: boolean) {
+    function updateGameSelectionInfo() {
         const storage = currentInfo.loadStorage()
 
         // Update the last-updated time for all of the games and then sort them
@@ -402,7 +443,7 @@ window.addEventListener('load', () => {
             }
         }
 
-        const selectedGameId = gameSelection.value
+        const originalSelection = gameSelection.value
         const continuePlayingOptions = []
         const newGameOptions = []
         const uncompletedOptions = []
@@ -436,12 +477,24 @@ window.addEventListener('load', () => {
         uncompletedOptions.sort(lastPlayedComparator)
         completedOptions.sort(lastPlayedComparator)
         newGameOptions.sort((a, b) => {
-            const aOriginalIndex = Number.parseInt(a.getAttribute('data-original-index') || `0`, 10)
-            const bOriginalIndex = Number.parseInt(b.getAttribute('data-original-index') || `0`, 10)
-            return aOriginalIndex - bOriginalIndex
+            const aStr = a.getAttribute('data-original-index')
+            const bStr = b.getAttribute('data-original-index')
+            const aOriginalIndex = aStr ? Number.parseInt(aStr, 10) : null
+            const bOriginalIndex = bStr ? Number.parseInt(bStr, 10) : null
+            if (aOriginalIndex !== null && bOriginalIndex !== null) {
+                return aOriginalIndex - bOriginalIndex
+            }
+            // Sort the *More Games* alphabetically
+            if (!a.textContent) {
+                return -1
+            }
+            if (!b.textContent) {
+                return 1
+            }
+            return a.textContent.toLowerCase() < b.textContent.toLowerCase() ? -1 : 1
         })
 
-        gameSelection.value = '' // clear the selection because we will be adding
+        // gameSelection.value = '' // clear the selection because we will be adding
 
         for (const option of gameOptions) {
             gameSelection.removeChild(option)
@@ -462,32 +515,7 @@ window.addEventListener('load', () => {
         const allOptions = [...continuePlayingOptions, ...newGameOptions, ...uncompletedOptions, ...completedOptions]
         gameSelection.append(...allOptions)
 
-        gameSelection.value = selectedGameId
-
-        // Select the 1st game so we can select it if this is the initial load
-        if (selectFirstGame) {
-            let firstOption: Element | undefined
-            if (window.location.hash) {
-                // try to select the game
-                const [ gameId, levelNum ] = window.location.hash.substring(1).split('|')
-                currentInfo.setGameAndLevel(gameId, levelNum ? Number.parseInt(levelNum, 10) : null)
-                firstOption = allOptions.find((option) => option.getAttribute('value') === gameId)
-
-                if (!firstOption) {
-                    loadMoreGames()
-                    firstOption = allOptions.find((option) => option.getAttribute('value') === gameId)
-                }
-            }
-            firstOption = firstOption || allOptions.find((option) => option.hasAttribute('value'))
-            if (firstOption) {
-                gameSelection.selectedIndex = allOptions.indexOf(firstOption)
-                const gameId = firstOption.getAttribute('value')
-                if (gameId) {
-                    gameSelection.value = gameId
-                    currentInfo.setGameAndLevel(gameId, null)
-                }
-            }
-        }
+        gameSelection.value = originalSelection
     }
 
     function createSeparator(textContent: string) {
