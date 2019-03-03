@@ -106,7 +106,7 @@ async function evaluateWithStackTrace(fn: puppeteer.EvaluateFn, ...args: any[]) 
 }
 
 async function playLevel() {
-    const source = fs.readFileSync(path.join(__dirname, '../../games/pot-wash-panic_itch/script.txt'), 'utf-8')
+    const source = fs.readFileSync(path.join(__dirname, '../../games/pot-wash-panic/script.txt'), 'utf-8')
     const startLevel = 3
 
     // This variable is _actually_ defined in the JS file, not here but it is in the body of page.evaluate
