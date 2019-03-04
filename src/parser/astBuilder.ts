@@ -121,7 +121,7 @@ export class AstBuilder {
             let value
             if (typeof pair.value === 'object' && pair.value.type) {
                 switch (pair.value.type) {
-                    case ast.COLOR_TYPE.HEX3:
+                    case ast.COLOR_TYPE.HEX8:
                     case ast.COLOR_TYPE.HEX6:
                     case ast.COLOR_TYPE.NAME:
                         {
@@ -194,8 +194,8 @@ export class AstBuilder {
         const source = this.toSource(node)
         const currentColorPalette = colorPalette || 'arnecolors'
         switch (node.type) {
+            case ast.COLOR_TYPE.HEX8:
             case ast.COLOR_TYPE.HEX6:
-            case ast.COLOR_TYPE.HEX3:
                 return new HexColor(source, node.value)
             case ast.COLOR_TYPE.NAME:
                 if (node.value.toUpperCase() === 'TRANSPARENT') {
