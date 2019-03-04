@@ -1,222 +1,224 @@
-1-2-3-ban_7997709 -> 1-2-3-ban
-alien-disco_itch -> alien-disco
-aunt-floras-mansion -> aunt-flora-s-mansion
-boxes-love-bloxing_c2d717a77f9aa02ecb1b793111f3a921 -> boxes-love-bloxing-gloves
-broken-airport-agression_bc929f97dfb013a5f62ab58ac2d117c0 -> airport-aggression
-chz.itch.io_punt-mazes -> punt-mazes
-cyber-lasso-e3e444f7c63fb21b6ec0 -> cyber-lasso
-easy-enigma-a95269130d520a58adf710b692d1e52e -> easy-enigma
-element-walkers_itch -> element-walkers
-entanglement -> entanglement-chapter-one
-finding-my-body-itch -> finding-my-body
-gist-0134940bf3e905b6a941c510e5c8ec7e -> drop-swap
-gist-08be4edbe4649b9cfbb37daec1264231 -> paralands
-gist-0b295ce04ed384e7119410495fe2afd7 -> i-herd-u-liek-water-templs
-gist-0c2625672bf47fcf728fe787a2630df6 -> season-finale
-gist-11e4b70206715622bc03cc5cae16e650 -> botsket-ball
-gist-149f97b5a78fa1d16870bd31fc070bfe -> cratopia
-gist-15d26446f96865a51ff886ba3a396b0f -> magnetic
-gist-169d7dd790d3dffc76ca55833a218599 -> heroes-of-sokoban-iii-the-bard-and-the-druid
-gist-16f94921962efc6a0f041e4a4f832850 -> slidings
-gist-181f370a15625905ca6e844a972a4abf -> miss-direction
-gist-1984823234d4d11bdf908b2c1eb2af60 -> pornography-for-beginners
-gist-1de0fbf0c0fcbcf00d163baac81e6fe9 -> aaaah-i-m-being-attacked-by-a-giant-tentacle
-gist-1f30ec05343d7bdba25f2baf19de2d87 -> 🍡-ooo-🍡
-gist-1fd6648425b42fb8ef911ead022a2e4f -> vines
-gist-22a8707b469222e4a7d5 -> slime-saga
-gist-2364a778ad57da6f781fc35876aa5802 -> dungeon-janitor
-gist-23eddce35df509020fa8bf055e69f6b6 -> liquid-war-alpha
-gist-24b22ced6f0eaec88a92a71e429e6f62 -> alternatey
-gist-2b9ece642cd7cdfb4a5f2c9fa8455e40 -> beam-islands
-gist-2dce07d164e63b7b5fa5ec211434e68f -> collapse
-gist-31284231cf0de7e92a601532cf5b4fc9 -> mc-escher-s-equestrian-armageddon
-gist-332c05c6247230db8b9367b66098bdc8 -> mowing
-gist-33fa37d571cabb2f0ce8621720654fee -> bal-ru-s-curse-cruelty-free-demake
-gist-372087f4734188ee8bc66acd1360b6e4 -> love-and-pieces
-gist-391852197b1aef15558342df2670d635 -> sok7
-gist-406fdfd9e17d9b39bf16f9b6f6071a97 -> midas
-gist-457c6d8be68ffb6d921211d40ca48c15 -> pants-shirt-cap
-gist-4e93280ee9933ea9a02caa0b38cc959a -> atlas-shrank
-gist-4f00d9a8a798fa2ebb0aae488df206a1 -> flying-kick
-gist-542b97948cb1d377dce6d276c0bcd9d5 -> sokoboros
-gist-5b51dfdb2f48ccedec33b0898e54f532 -> lime-rick
-gist-5e0b61a3d39bc91c597fdbc4d992976f -> ebony-and-ivory
-gist-5e841571fd059992949fe6940bc95475 -> fish-friend
-gist-5eda0138c3d852b27b9c5cd3ca11582e -> manic-ammo
-gist-5fa6a39d644ac0b4bffd8371b29a5c79 -> cute-train
-gist-6893137 -> tiny-treasure-hunt-1-0
-gist-6902186 -> take-heart-lass
-gist-6994394 -> atlas-shrank
-gist-69d053ed70273e3dc4bd5a8f684a6a66 -> microban
-gist-6a55dd397340b688cdbef660a253e277 -> pretender-to-the-crown
-gist-6a5f68904f1cdb4c91904754719d267e -> gobble-rush
-gist-6b958e449b7dcb2d1582fe4da343ca97 -> robot-repairs-1-2
-gist-6daa8b63cf79202cd085c1b168048c09 -> rock-paper-scissors
-gist-6dcb8b956d77a3a7dff4c129c58cfa1f -> hazard-golf
-gist-711d6220e4fe2a36254cc544c6ba4885 -> memories-of-castlemouse
-gist-7375ea35efdd23517a4588b9af589e5b -> mirror-mines
-gist-754f6de4a6e6dff47a5004ad40494f77 -> tidy-the-cafe
-gist-760067e42d4c6483e916f9bdc8a3211d -> magik
-gist-7b016ea800043746181f2752e709f452 -> life-is-hard
-gist-7c7981066d27c48a404f0f378f27aa4f -> tunnel-rat
-gist-7ea61f2862095950611d07cc27015851 -> marble-shoot
-gist-7f4470ab80d9f7ffe4b9e28c83b26adc -> push
-gist-8074d60a0af768f970ef055d4460414d -> bubble-butler-cmd-reorganize
-gist-839e07e805520591bc5e64c7ecf73409 -> the-saga-of-the-candy-scroll
-gist-84f7b9dee23e3a8de818f16697adaee5 -> esl-puzzle-game-challenge-mode-アダムのパズルゲーム
-gist-8645c163ff321d2fd1bad3fcaf48c107 -> ponies-jumping-synchronously
-gist-86bfa2b11d7b489dab4d410bdf245f49 -> smother
-gist-8a488a33aa103b51c1d5e6d893cef01b -> bouncers
-gist-957ca5368ce8c48852b6c353c60f22c0 -> rose
-gist-9675998 -> closure-demake
-gist-9a1172cfa00cfb1e932514b6f101ef6d -> stand-off
-gist-9e8176e9921983b0b091a6e9496289f3 -> collapsable-sokoban
-gist-9e9a2f35fb88e0ebc6bf4ab10c25799e -> net
-gist-9ebe1e5ad44ac22259343de170a3b337 -> coin-counter
-gist-a3fed21da070715a46661c355b4b3d7b -> 2d-whale-world
-gist-a4829564ab394e720a82cf25d6c9cd91 -> garten-der-medusen
-gist-a4a1c0b2927b6a9807ea1e80c4b5dc85 -> car-crash
-gist-a50bbd6c0fa497e0a83a0f863af47ffd -> modality
-gist-a55b1a0e2fde091cac69d4401e9f3396 -> n-little-indians
-gist-aadbd2316721d3b21e517ed5d6082de4 -> 9x9-go
-gist-ab33099802e0e151bbfd3861876da9cb -> newton-s-crates
-gist-ad997407b1fef4c3ecbea25295376f82 -> multi-word-dictionary-game
-gist-b21cd47f940494b35b84044f49abe188 -> explod
-gist-b24072bc0efe2647b03b67fccf0430d1 -> flower-dance
-gist-b5e53f43cdfa86f92270610cf616a483 -> it-dies-in-the-light
-gist-b6c8ba9363b4cca270d8ce5e88f79abf -> vacuum
-gist-b8cb7c315faf4b28601c7d411fe70993 -> spider-s-hollow
-gist-c2b1a17ffdab0969993336c643dafe6c -> dang-i-m-huge
-gist-c5ec035de4e0c145a85327942fb76098 -> some-lines-were-meant-to-be-crossed
-gist-c700c4711064b71e6b72c3f5e2dc67ad -> telefrag
-gist-c7bc452b629eb194ecf7a22665dc1fab -> stairways
-gist-cbdb2df1e843449b8aec56b7cdae036a -> dangerous-dungeon
-gist-ce287e54d968bd582d541b0a0044d61d -> freeform-bal-ru-s-curse
-gist-d7c7100e28c3cf0e60f8a5f56dabc457 -> kettle
-gist-d9b67d69437187ab3754a04f68c25b4e -> count-mover
-gist-dbf240983263bef164e1b5a9403ccc76 -> programaze
-gist-e13482e035a5f75e9b0e4d0b5f28f8b6 -> pushcat-jr
-gist-e1e49e5d33d077bb9865318bbd9857bb -> dharma-dojo-demake
-gist-e293906af7a3057b0f2a191d3e555b41 -> enqueue
-gist-e3436267894d2721d9b8ac7a583a5d3b -> zzz-swapbot-scratchwork
-gist-e56c0aa36987c678aa413dd6447642ee -> out-there
-gist-e84f79f2d1980c54149ab9511076367a -> esl-puzzle-game-アダムのパズルゲーム
-gist-e86e1d6cf24307499c1cd1aaaa733a91 -> swapbot
-gist-ee39bfe12012c774acfc5e3d32fb4f89 -> boxes-and-balloons
-gist-f0b9b8e95d0bc87c9fb9e411756daa23 -> icecrates
-gist-f0c040ee41c3bd3854ff50db8530355d -> unconventional-guns
-gist-f47cd8a5cb9288f6f2792d37e44c0bfc -> unclean-residues
-gist-f8a148456d4f050bf41837b6999852bf -> test-gist-script
-gist-fa83aa67f2c9fcf1d66200aaedbc762c -> colour-chained
-gist-fb4b0867bc3daa6835b9286e59cbcd2c -> out-there
-gist-fd771bca5a1f6b4023fd2e16811688be -> jam3-game
-gist-fdd2ede40de0a2877f291cfbc94cf802 -> mazezam
-gist-ff72f059a4b217d130e6ed5f9947646d -> singleton-traffic
-hack-the-net_8b5eb39cb825277832d261b3142f084b -> hack-the-net
-linked_4183971eb94557d86479d4cced4c3d24 -> linked
-maera-public-works_e3eb8a58787f1ac88cb37b6dbc5a292b -> maera-public-works
-marcosd.itch.io_feeling-like-filling -> feeling-like-filling
-mirror-isles_219a7db6511dad557b84 -> mirror-isles
-out-of-bounds_4b31e5425f31775057ec1003ff0b4271 -> out-of-bounds
-oveahlman.itch.io_fatigued-square-maze -> fatigued-square-maze
-pot-wash-panic_itch -> pot-wash-panic
-random-world-generation_itch -> world-generation-in-puzzlescript
-roll-those-sixes-itch -> roll-those-sixes
-rosden.itch.io_barrier-trail -> barrier-trail
-rosden.itch.io_block-touching -> block-touching
-rosden.itch.io_blocker-snake -> blocker-snake
-rosden.itch.io_bomb-n-grouping -> bomb-n-grouping
-rosden.itch.io_bomb-n-ice -> bomb-n-ice
-rosden.itch.io_bruised -> bruised
-rosden.itch.io_chasm -> chasm
-rosden.itch.io_climbing-cubes -> climbing-cubes
-rosden.itch.io_collapsing-tiles -> collapsing-tiles
-rosden.itch.io_colour-move -> colour-move
-rosden.itch.io_compressed -> compressed
-rosden.itch.io_consumed-to-1 -> consumed-to-1
-rosden.itch.io_copy-pellets -> copy-pellets
-rosden.itch.io_covering-holes -> covering-holes
-rosden.itch.io_cubes-barrier -> cubes-barrier
-rosden.itch.io_cubes-medusa -> cubes-medusa
-rosden.itch.io_dark-pellets -> dark-pellets
-rosden.itch.io_directional -> directional
-rosden.itch.io_duality -> duality
-rosden.itch.io_dup-block -> dup-block
-rosden.itch.io_electricwire -> electric-wire
-rosden.itch.io_enclosed -> enclosed
-rosden.itch.io_extra-lives -> extra-lives
-rosden.itch.io_extra-step -> extra-step
-rosden.itch.io_fire-in-winter -> fire-in-winter
-rosden.itch.io_fuse-to-green -> fuse-to-green
-rosden.itch.io_fused-copy -> fused-copy
-rosden.itch.io_fused-pieces -> fused-pieces
-rosden.itch.io_grouping -> grouping
-rosden.itch.io_guiding-blocks -> guiding-blocks
-rosden.itch.io_hue-change -> hue-change
-rosden.itch.io_ice-path -> ice-path
-rosden.itch.io_inbetween -> inbetween
-rosden.itch.io_infected -> infected
-rosden.itch.io_interconnection -> interconnection
-rosden.itch.io_islands -> islands
-rosden.itch.io_lights-down -> lights-down
-rosden.itch.io_magnetized -> magnetized
-rosden.itch.io_monster-mess -> monster-mess
-rosden.itch.io_moving-target -> moving-target
-rosden.itch.io_on-and-off -> on-and-off
-rosden.itch.io_outward-force -> outward-force
-rosden.itch.io_overstep -> overstep
-rosden.itch.io_path-lines -> path-lines
-rosden.itch.io_pathmaker -> pathmaker
-rosden.itch.io_pit-trails -> pit-trails
-rosden.itch.io_positional -> positional
-rosden.itch.io_pull-and-push -> pull-and-push
-rosden.itch.io_purple -> purple
-rosden.itch.io_rotaters-cause -> rotaters-cause
-rosden.itch.io_rows-and-columns -> rows-and-columns
-rosden.itch.io_scaling-walls -> scaling-walls
-rosden.itch.io_self-alteration -> self-alteration
-rosden.itch.io_shifting -> shifting
-rosden.itch.io_side-painting -> side-painting
-rosden.itch.io_skippa -> skippa
-rosden.itch.io_skyscraper -> skyscraper
-rosden.itch.io_sliding-ground -> sliding-ground
-rosden.itch.io_some-pits -> some-pits
-rosden.itch.io_square-colours -> square-colours
-rosden.itch.io_stalemate-yourself -> stalemate-yourself
-rosden.itch.io_sticky -> sticky
-rosden.itch.io_swap -> swap
-rosden.itch.io_symbols -> symbols
-rosden.itch.io_teleporters -> teleporters
-rosden.itch.io_the-art-of-cloning -> the-art-of-cloning
-rosden.itch.io_the-art-of-storage -> the-art-of-storage
-rosden.itch.io_the-big-dig -> the-big-dig
-rosden.itch.io_the-copying -> the-copying
-rosden.itch.io_the-fire-calls* -> the-fire-calls
-rosden.itch.io_the-laser -> the-laser
-rosden.itch.io_the-packing-crate -> the-packing-crate
-rosden.itch.io_the-switch -> the-switch
-rosden.itch.io_the-walls-you-leave-behind -> the-walls-you-leave-behind
-rosden.itch.io_theflames -> the-flames
-rosden.itch.io_then-another -> then-another
-rosden.itch.io_tile-step -> tile-step
-rosden.itch.io_to-nothing-and-back -> to-nothing-and-back
-rosden.itch.io_triple-match -> triple-match
-rosden.itch.io_using-pushers -> using-pushers
-rosden.itch.io_wall-bonding -> wall-bonding
-rosden.itch.io_wall-movement -> wall-movement
-rosden.itch.io_wall-shuffle -> wall-shuffle
-rosden.itch.io_wall-virus -> wall-virus
-rosden.itch.io_white-pillars -> white-pillars
-separation_itch -> separation
-skipping-stones_d6fd6fcf84de185e2584 -> skipping-stones-to-lonely-homes
-sleepy-player_itch -> sleepy-players
-slime-swap_9631285024cd2945014313840c7c3156 -> slime-swap
-sneeze-a-day_c06feb492ab44b937639 -> a-sneeze-a-day-keeps-the-crates-away
-sokobond -> sokobond-the-demake
-spacekoban_6a6c07f71d7039e4155e -> sokobond-the-demake
-spikes-n-stuff_dc5c4a669e362e389e994025075f7d0b -> spikes-n-stuff
-spooky-pumpkin_7242443 -> spooky-pumpkin-game
-stairs-2825915f92c5c3461a3b57e40099de35 -> stairs
-tiaradventur_04e9b3dc13d2708e64a0adc4ddb916a0 -> tiaradventur
-train_9bd3b639ce3fec9dc810eb03f4468e77 -> train
-two-and-a-half_newgrounds -> two-and-a-half
+These are the sources to all of the games:
+
+- [1-2-3-ban](http://www.draknek.org/games/puzzlescript/1-2-3-BAN.php)
+- [alien-disco](https://tophwells.itch.io/alien-disco)
+- [aunt-flora-s-mansion](https://web.archive.org/web/20150918163830/http://auntiepixelante.com/mansion/)
+- [boxes-love-bloxing-gloves](http://www.draknek.org/games/puzzlescript/boxing-gloves.php)
+- [airport-aggression](https://www.puzzlescript.net/play.html?p=bc929f97dfb013a5f62ab58ac2d117c0)
+- [punt-mazes](https://chz.itch.io/punt-mazes)
+- [cyber-lasso](http://www.draknek.org/games/puzzlescript/cyber-lasso.php)
+- [easy-enigma](https://www.puzzlescript.net/play.html?p=a95269130d520a58adf710b692d1e52e)
+- [element-walkers](https://oveahlman.itch.io/elementwalkers)
+- [entanglement-one](http://www.richardlocke.co.uk/release/entanglement/chapter-1/)
+- [finding-my-body](https://oveahlman.itch.io/finding-my-body)
+- [drop-swap](https://www.puzzlescript.net/play.html?p=0134940bf3e905b6a941c510e5c8ec7e)
+- [paralands](https://www.puzzlescript.net/play.html?p=08be4edbe4649b9cfbb37daec1264231)
+- [i-herd-u-liek-water-templs](https://www.puzzlescript.net/play.html?p=0b295ce04ed384e7119410495fe2afd7)
+- [season-finale](https://www.puzzlescript.net/play.html?p=0c2625672bf47fcf728fe787a2630df6)
+- [botsket-ball](https://www.puzzlescript.net/play.html?p=11e4b70206715622bc03cc5cae16e650)
+- [cratopia](https://www.puzzlescript.net/play.html?p=149f97b5a78fa1d16870bd31fc070bfe)
+- [magnetic](https://www.puzzlescript.net/play.html?p=15d26446f96865a51ff886ba3a396b0f)
+- [heroes-of-sokoban-iii-the-bard-and-the-druid](https://www.puzzlescript.net/play.html?p=169d7dd790d3dffc76ca55833a218599)
+- [slidings](https://www.puzzlescript.net/play.html?p=16f94921962efc6a0f041e4a4f832850)
+- [miss-direction](https://www.puzzlescript.net/play.html?p=181f370a15625905ca6e844a972a4abf)
+- [pornography-for-beginners](https://www.puzzlescript.net/play.html?p=1984823234d4d11bdf908b2c1eb2af60)
+- [aaaah-i-m-being-attacked-by-a-giant-tentacle](https://www.puzzlescript.net/play.html?p=1de0fbf0c0fcbcf00d163baac81e6fe9)
+- [ice-cream-stick](https://www.puzzlescript.net/play.html?p=1f30ec05343d7bdba25f2baf19de2d87)
+- [vines](https://www.puzzlescript.net/play.html?p=1fd6648425b42fb8ef911ead022a2e4f)
+- [slime-saga](https://www.puzzlescript.net/play.html?p=22a8707b469222e4a7d5)
+- [dungeon-janitor](https://www.puzzlescript.net/play.html?p=2364a778ad57da6f781fc35876aa5802)
+- [liquid-war-alpha](https://www.puzzlescript.net/play.html?p=23eddce35df509020fa8bf055e69f6b6)
+- [alternatey](https://www.puzzlescript.net/play.html?p=24b22ced6f0eaec88a92a71e429e6f62)
+- [beam-islands](https://www.puzzlescript.net/play.html?p=2b9ece642cd7cdfb4a5f2c9fa8455e40)
+- [collapse](https://www.puzzlescript.net/play.html?p=2dce07d164e63b7b5fa5ec211434e68f)
+- [mc-escher-s-equestrian-armageddon](https://www.puzzlescript.net/play.html?p=31284231cf0de7e92a601532cf5b4fc9)
+- [mowing](https://www.puzzlescript.net/play.html?p=332c05c6247230db8b9367b66098bdc8)
+- [bal-ru-s-curse-cruelty-free-demake](https://www.puzzlescript.net/play.html?p=33fa37d571cabb2f0ce8621720654fee)
+- [love-and-pieces](https://www.puzzlescript.net/play.html?p=372087f4734188ee8bc66acd1360b6e4)
+- [sok7](https://www.puzzlescript.net/play.html?p=391852197b1aef15558342df2670d635)
+- [midas](https://www.puzzlescript.net/play.html?p=406fdfd9e17d9b39bf16f9b6f6071a97)
+- [pants-shirt-cap](https://www.puzzlescript.net/play.html?p=457c6d8be68ffb6d921211d40ca48c15)
+- [atlas-shrank](https://www.puzzlescript.net/play.html?p=4e93280ee9933ea9a02caa0b38cc959a)
+- [flying-kick](https://www.puzzlescript.net/play.html?p=4f00d9a8a798fa2ebb0aae488df206a1)
+- [sokoboros](https://www.puzzlescript.net/play.html?p=542b97948cb1d377dce6d276c0bcd9d5)
+- [lime-rick](https://www.puzzlescript.net/play.html?p=5b51dfdb2f48ccedec33b0898e54f532)
+- [ebony-and-ivory](https://www.puzzlescript.net/play.html?p=5e0b61a3d39bc91c597fdbc4d992976f)
+- [fish-friend](https://www.puzzlescript.net/play.html?p=5e841571fd059992949fe6940bc95475)
+- [manic-ammo](https://www.puzzlescript.net/play.html?p=5eda0138c3d852b27b9c5cd3ca11582e)
+- [cute-train](https://www.puzzlescript.net/play.html?p=5fa6a39d644ac0b4bffd8371b29a5c79)
+- [tiny-treasure-hunt-1-0](https://www.puzzlescript.net/play.html?p=6893137)
+- [take-heart-lass](https://www.puzzlescript.net/play.html?p=6902186)
+- [atlas-shrank](https://www.puzzlescript.net/play.html?p=6994394)
+- [microban](https://www.puzzlescript.net/play.html?p=69d053ed70273e3dc4bd5a8f684a6a66)
+- [pretender-to-the-crown](https://www.puzzlescript.net/play.html?p=6a55dd397340b688cdbef660a253e277)
+- [gobble-rush](https://www.puzzlescript.net/play.html?p=6a5f68904f1cdb4c91904754719d267e)
+- [robot-repairs-1-2](https://www.puzzlescript.net/play.html?p=6b958e449b7dcb2d1582fe4da343ca97)
+- [rock-paper-scissors](https://www.puzzlescript.net/play.html?p=6daa8b63cf79202cd085c1b168048c09)
+- [hazard-golf](https://www.puzzlescript.net/play.html?p=6dcb8b956d77a3a7dff4c129c58cfa1f)
+- [memories-of-castlemouse](https://www.puzzlescript.net/play.html?p=711d6220e4fe2a36254cc544c6ba4885)
+- [mirror-mines](https://www.puzzlescript.net/play.html?p=7375ea35efdd23517a4588b9af589e5b)
+- [tidy-the-cafe](https://www.puzzlescript.net/play.html?p=754f6de4a6e6dff47a5004ad40494f77)
+- [magik](https://www.puzzlescript.net/play.html?p=760067e42d4c6483e916f9bdc8a3211d)
+- [life-is-hard](https://www.puzzlescript.net/play.html?p=7b016ea800043746181f2752e709f452)
+- [tunnel-rat](https://www.puzzlescript.net/play.html?p=7c7981066d27c48a404f0f378f27aa4f)
+- [marble-shoot](https://www.puzzlescript.net/play.html?p=7ea61f2862095950611d07cc27015851)
+- [push](https://www.puzzlescript.net/play.html?p=7f4470ab80d9f7ffe4b9e28c83b26adc)
+- [bubble-butler-cmd-reorganize](https://www.puzzlescript.net/play.html?p=8074d60a0af768f970ef055d4460414d)
+- [the-saga-of-the-candy-scroll](https://www.puzzlescript.net/play.html?p=839e07e805520591bc5e64c7ecf73409)
+- [esl-puzzle-game-challenge-mode-アダムのパズルゲーム](https://www.puzzlescript.net/play.html?p=84f7b9dee23e3a8de818f16697adaee5)
+- [ponies-jumping-synchronously](https://www.puzzlescript.net/play.html?p=8645c163ff321d2fd1bad3fcaf48c107)
+- [smother](https://www.puzzlescript.net/play.html?p=86bfa2b11d7b489dab4d410bdf245f49)
+- [bouncers](https://www.puzzlescript.net/play.html?p=8a488a33aa103b51c1d5e6d893cef01b)
+- [rose](https://www.puzzlescript.net/play.html?p=957ca5368ce8c48852b6c353c60f22c0)
+- [closure-demake](https://www.puzzlescript.net/play.html?p=9675998)
+- [stand-off](https://www.puzzlescript.net/play.html?p=9a1172cfa00cfb1e932514b6f101ef6d)
+- [collapsable-sokoban](https://www.puzzlescript.net/play.html?p=9e8176e9921983b0b091a6e9496289f3)
+- [net](https://www.puzzlescript.net/play.html?p=9e9a2f35fb88e0ebc6bf4ab10c25799e)
+- [coin-counter](https://www.puzzlescript.net/play.html?p=9ebe1e5ad44ac22259343de170a3b337)
+- [2d-whale-world](https://www.puzzlescript.net/play.html?p=a3fed21da070715a46661c355b4b3d7b)
+- [garten-der-medusen](https://www.puzzlescript.net/play.html?p=a4829564ab394e720a82cf25d6c9cd91)
+- [car-crash](https://www.puzzlescript.net/play.html?p=a4a1c0b2927b6a9807ea1e80c4b5dc85)
+- [modality](https://www.puzzlescript.net/play.html?p=a50bbd6c0fa497e0a83a0f863af47ffd)
+- [n-little-indians](https://www.puzzlescript.net/play.html?p=a55b1a0e2fde091cac69d4401e9f3396)
+- [9x9-go](https://www.puzzlescript.net/play.html?p=aadbd2316721d3b21e517ed5d6082de4)
+- [newton-s-crates](https://www.puzzlescript.net/play.html?p=ab33099802e0e151bbfd3861876da9cb)
+- [multi-word-dictionary-game](https://www.puzzlescript.net/play.html?p=ad997407b1fef4c3ecbea25295376f82)
+- [explod](https://www.puzzlescript.net/play.html?p=b21cd47f940494b35b84044f49abe188)
+- [flower-dance](https://www.puzzlescript.net/play.html?p=b24072bc0efe2647b03b67fccf0430d1)
+- [it-dies-in-the-light](https://www.puzzlescript.net/play.html?p=b5e53f43cdfa86f92270610cf616a483)
+- [vacuum](https://www.puzzlescript.net/play.html?p=b6c8ba9363b4cca270d8ce5e88f79abf)
+- [spider-s-hollow](https://www.puzzlescript.net/play.html?p=b8cb7c315faf4b28601c7d411fe70993)
+- [dang-i-m-huge](https://www.puzzlescript.net/play.html?p=c2b1a17ffdab0969993336c643dafe6c)
+- [some-lines-were-meant-to-be-crossed](https://www.puzzlescript.net/play.html?p=c5ec035de4e0c145a85327942fb76098)
+- [telefrag](https://www.puzzlescript.net/play.html?p=c700c4711064b71e6b72c3f5e2dc67ad)
+- [stairways](https://www.puzzlescript.net/play.html?p=c7bc452b629eb194ecf7a22665dc1fab)
+- [dangerous-dungeon](https://www.puzzlescript.net/play.html?p=cbdb2df1e843449b8aec56b7cdae036a)
+- [freeform-bal-ru-s-curse](https://www.puzzlescript.net/play.html?p=ce287e54d968bd582d541b0a0044d61d)
+- [kettle](https://www.puzzlescript.net/play.html?p=d7c7100e28c3cf0e60f8a5f56dabc457)
+- [count-mover](https://www.puzzlescript.net/play.html?p=d9b67d69437187ab3754a04f68c25b4e)
+- [programaze](https://www.puzzlescript.net/play.html?p=dbf240983263bef164e1b5a9403ccc76)
+- [pushcat-jr](https://www.puzzlescript.net/play.html?p=e13482e035a5f75e9b0e4d0b5f28f8b6)
+- [dharma-dojo-demake](https://www.puzzlescript.net/play.html?p=e1e49e5d33d077bb9865318bbd9857bb)
+- [enqueue](https://www.puzzlescript.net/play.html?p=e293906af7a3057b0f2a191d3e555b41)
+- [zzz-swapbot-scratchwork](https://www.puzzlescript.net/play.html?p=e3436267894d2721d9b8ac7a583a5d3b)
+- [out-there](https://www.puzzlescript.net/play.html?p=e56c0aa36987c678aa413dd6447642ee)
+- [esl-puzzle-game-アダムのパズルゲーム](https://www.puzzlescript.net/play.html?p=e84f79f2d1980c54149ab9511076367a)
+- [swapbot](https://www.puzzlescript.net/play.html?p=e86e1d6cf24307499c1cd1aaaa733a91)
+- [boxes-and-balloons](https://www.puzzlescript.net/play.html?p=ee39bfe12012c774acfc5e3d32fb4f89)
+- [icecrates](https://www.puzzlescript.net/play.html?p=f0b9b8e95d0bc87c9fb9e411756daa23)
+- [unconventional-guns](https://www.puzzlescript.net/play.html?p=f0c040ee41c3bd3854ff50db8530355d)
+- [unclean-residues](https://www.puzzlescript.net/play.html?p=f47cd8a5cb9288f6f2792d37e44c0bfc)
+- [test-gist-script](https://www.puzzlescript.net/play.html?p=f8a148456d4f050bf41837b6999852bf)
+- [colour-chained](https://www.puzzlescript.net/play.html?p=fa83aa67f2c9fcf1d66200aaedbc762c)
+- [out-there](https://www.puzzlescript.net/play.html?p=fb4b0867bc3daa6835b9286e59cbcd2c)
+- [jam3-game](https://www.puzzlescript.net/play.html?p=fd771bca5a1f6b4023fd2e16811688be)
+- [mazezam](https://www.puzzlescript.net/play.html?p=fdd2ede40de0a2877f291cfbc94cf802)
+- [singleton-traffic](https://www.puzzlescript.net/play.html?p=ff72f059a4b217d130e6ed5f9947646d)
+- [hack-the-net](http://www.draknek.org/games/puzzlescript/hack-the-net.php)
+- [linked](https://www.puzzlescript.net/play.html?p=4183971eb94557d86479d4cced4c3d24)
+- [maera-public-works](https://www.puzzlescript.net/play.html?p=e3eb8a58787f1ac88cb37b6dbc5a292b)
+- [feeling-like-filling](https://marcosd.itch.io/feeling-like-filling)
+- [mirror-isles](http://www.draknek.org/games/puzzlescript/mirrors.php)
+- [out-of-bounds](https://www.puzzlescript.net/play.html?p=4b31e5425f31775057ec1003ff0b4271)
+- [fatigued-square-maze](https://oveahlman.itch.io/fatigued-square-maze)
+- [pot-wash-panic](https://hauntpun.itch.io/pot-wash-panic)
+- [world-generation-in-puzzlescript](https://8bitllama.itch.io/world-generation-in-puzzlescript)
+- [roll-those-sixes](https://marcosd.itch.io/roll-those-sixes)
+- [barrier-trail](https://rosden.itch.io/barrier-trail)
+- [block-touching](https://rosden.itch.io/block-touching)
+- [blocker-snake](https://rosden.itch.io/blocker-snake)
+- [bomb-n-grouping](https://rosden.itch.io/bomb-n-grouping)
+- [bomb-n-ice](https://rosden.itch.io/bomb-n-ice)
+- [bruised](https://rosden.itch.io/bruised)
+- [chasm](https://rosden.itch.io/chasm)
+- [climbing-cubes](https://rosden.itch.io/climbing-cubes)
+- [collapsing-tiles](https://rosden.itch.io/collapsing-tiles)
+- [colour-move](https://rosden.itch.io/colour-move)
+- [compressed](https://rosden.itch.io/compressed)
+- [consumed-to-1](https://rosden.itch.io/consumed-to-1)
+- [copy-pellets](https://rosden.itch.io/copy-pellets)
+- [covering-holes](https://rosden.itch.io/covering-holes)
+- [cubes-barrier](https://rosden.itch.io/cubes-barrier)
+- [cubes-medusa](https://rosden.itch.io/cubes-medusa)
+- [dark-pellets](https://rosden.itch.io/dark-pellets)
+- [directional](https://rosden.itch.io/directional)
+- [duality](https://rosden.itch.io/duality)
+- [dup-block](https://rosden.itch.io/dup-block)
+- [electric-wire](https://rosden.itch.io/electricwire)
+- [enclosed](https://rosden.itch.io/enclosed)
+- [extra-lives](https://rosden.itch.io/extra-lives)
+- [extra-step](https://rosden.itch.io/extra-step)
+- [fire-in-winter](https://rosden.itch.io/fire-in-winter)
+- [fuse-to-green](https://rosden.itch.io/fuse-to-green)
+- [fused-copy](https://rosden.itch.io/fused-copy)
+- [fused-pieces](https://rosden.itch.io/fused-pieces)
+- [grouping](https://rosden.itch.io/grouping)
+- [guiding-blocks](https://rosden.itch.io/guiding-blocks)
+- [hue-change](https://rosden.itch.io/hue-change)
+- [ice-path](https://rosden.itch.io/ice-path)
+- [inbetween](https://rosden.itch.io/inbetween)
+- [infected](https://rosden.itch.io/infected)
+- [interconnection](https://rosden.itch.io/interconnection)
+- [islands](https://rosden.itch.io/islands)
+- [lights-down](https://rosden.itch.io/lights-down)
+- [magnetized](https://rosden.itch.io/magnetized)
+- [monster-mess](https://rosden.itch.io/monster-mess)
+- [moving-target](https://rosden.itch.io/moving-target)
+- [on-and-off](https://rosden.itch.io/on-and-off)
+- [outward-force](https://rosden.itch.io/outward-force)
+- [overstep](https://rosden.itch.io/overstep)
+- [path-lines](https://rosden.itch.io/path-lines)
+- [pathmaker](https://rosden.itch.io/pathmaker)
+- [pit-trails](https://rosden.itch.io/pit-trails)
+- [positional](https://rosden.itch.io/positional)
+- [pull-and-push](https://rosden.itch.io/pull-and-push)
+- [purple](https://rosden.itch.io/purple)
+- [rotaters-cause](https://rosden.itch.io/rotaters-cause)
+- [rows-and-columns](https://rosden.itch.io/rows-and-columns)
+- [scaling-walls](https://rosden.itch.io/scaling-walls)
+- [self-alteration](https://rosden.itch.io/self-alteration)
+- [shifting](https://rosden.itch.io/shifting)
+- [side-painting](https://rosden.itch.io/side-painting)
+- [skippa](https://rosden.itch.io/skippa)
+- [skyscraper](https://rosden.itch.io/skyscraper)
+- [sliding-ground](https://rosden.itch.io/sliding-ground)
+- [some-pits](https://rosden.itch.io/some-pits)
+- [square-colours](https://rosden.itch.io/square-colours)
+- [stalemate-yourself](https://rosden.itch.io/stalemate-yourself)
+- [sticky](https://rosden.itch.io/sticky)
+- [swap](https://rosden.itch.io/swap)
+- [symbols](https://rosden.itch.io/symbols)
+- [teleporters](https://rosden.itch.io/teleporters)
+- [the-art-of-cloning](https://rosden.itch.io/the-art-of-cloning)
+- [the-art-of-storage](https://rosden.itch.io/the-art-of-storage)
+- [the-big-dig](https://rosden.itch.io/the-big-dig)
+- [the-copying](https://rosden.itch.io/the-copying)
+- [the-fire-calls](https://rosden.itch.io/the-fire-calls*)
+- [the-laser](https://rosden.itch.io/the-laser)
+- [the-packing-crate](https://rosden.itch.io/the-packing-crate)
+- [the-switch](https://rosden.itch.io/the-switch)
+- [the-walls-you-leave-behind](https://rosden.itch.io/the-walls-you-leave-behind)
+- [the-flames](https://rosden.itch.io/theflames)
+- [then-another](https://rosden.itch.io/then-another)
+- [tile-step](https://rosden.itch.io/tile-step)
+- [to-nothing-and-back](https://rosden.itch.io/to-nothing-and-back)
+- [triple-match](https://rosden.itch.io/triple-match)
+- [using-pushers](https://rosden.itch.io/using-pushers)
+- [wall-bonding](https://rosden.itch.io/wall-bonding)
+- [wall-movement](https://rosden.itch.io/wall-movement)
+- [wall-shuffle](https://rosden.itch.io/wall-shuffle)
+- [wall-virus](https://rosden.itch.io/wall-virus)
+- [white-pillars](https://rosden.itch.io/white-pillars)
+- [separation](https://marcosd.itch.io/separation)
+- [skipping-stones](http://www.draknek.org/games/puzzlescript/skipping-stones.php)
+- [sleepy-players](https://marcosd.itch.io/sleepy-players)
+- [slime-swap](http://www.draknek.org/games/puzzlescript/slime-swap.php)
+- [a-sneeze-a-day](http://www.draknek.org/games/puzzlescript/sneezing.php)
+- [sokobond](http://www.sokobond.com/puzzlescript/)
+- [spacekoban](https://www.puzzlescript.net/play.html?p=6a6c07f71d7039e4155e)
+- [spikes-n-stuff](http://www.draknek.org/games/puzzlescript/spikes-n-stuff.php)
+- [spooky-pumpkin-game](http://www.draknek.org/games/puzzlescript/pumpkin.php)
+- [stairs](https://www.puzzlescript.net/play.html?p=2825915f92c5c3461a3b57e40099de35)
+- [tiaradventur](https://groups.google.com/forum/#!topic/puzzlescript/5wR8hvS5-UU)
+- [train](http://www.puzzlescript.net/play.html?p=9121824)
+- [two-and-a-half](https://igorsgames.itch.io/)
