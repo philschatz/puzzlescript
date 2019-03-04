@@ -1,0 +1,674 @@
+title Tetrastrophe
+author Pedro PSI
+homepage pedropsi.github.io
+(License: Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0))
+
+background_color Brown
+text_color yellow
+color_palette gameboycolour
+
+noundo
+realtime_interval 0.3
+
+youtube Fhm1uPLz66o
+(Arpology Frantic Sax Version by Longzijun)
+
+========
+OBJECTS
+========
+Background .
+DarkBrown
+
+Wall #
+Brown
+
+Floor
+Brown
+
+Gate
+Brown
+00000
+.0.0.
+00.00
+.000.
+.....
+
+
+Player
+#FF9703 (player orange) #FF8403 (pdayer orange)
+.000.
+00000
+10001
+.111.
+.1.1.
+
+PlayerLegs
+#FF9703 (player orange) #FF8403 (pdayer orange)
+.1.1.
+.1.1.
+.1.1.
+.1.1.
+.0.0.
+
+
+CopyStart
+Red
+00.00
+0...0
+..0..
+0...0
+00.00
+
+CopyStartSpawn
+Red
+.....
+.0.0.
+.....
+.0.0.
+.....
+
+
+CopyTarget
+darkgreen
+.....
+.....
+.....
+...0.
+.....
+
+CopyTargetSpawn
+Green
+.....
+.0...
+.....
+.....
+.....
+
+CopySource
+Brown
+.....
+.0...
+.....
+.....
+.....
+
+Fill
+Blue
+.....
+.....
+..0..
+.....
+.....
+
+FillV
+Blue
+.....
+.....
+..0..
+..0..
+..0..
+
+last
+Blue
+.....
+.0.0.
+..0..
+.0.0.
+.....
+
+Piece
+yellow
+
+PieceFixed
+orange
+
+Frozen
+white
+
+Begin
+pink
+.....
+..00.
+..00.
+.....
+.....
+
+Reference
+lightgreen
+.....
+.....
+..0..
+.....
+.....
+
+Rotate
+darkred
+.....
+..0..
+...0.
+.....
+.....
+
+touched
+Green
+.....
+..0..
+.0.0.
+..0..
+.....
+
+didnottouch
+Red
+.....
+.0.0.
+..0..
+.0.0.
+.....
+
+LineDetector
+transparent
+(darkbrown
+.....
+.....
+..0..
+.....
+.....)
+
+ToDelete
+Red
+....0
+.0.0.
+.....
+.0.0.
+0....
+
+Flag X
+brown red
+.....
+.011.
+.011.
+.0...
+.0...
+
+
+referenceDown 
+red
+..0..
+...0.
+....0
+.....
+.....
+
+referenceLeft 
+red
+.....
+.....
+....0
+...0.
+..0..
+
+referenceUp
+red
+.....
+.....
+0....
+.0...
+..0..
+
+referenceRight
+red
+..0..
+.0...
+0....
+.....
+.....
+
+
+=======
+LEGEND
+=======
+- = Gate
+W = Wall and Floor
+M = Wall and Floor and LineDetector
+» = Wall and LineDetector
+
+C = Copystart and CopySource 
+Ç = Copystart and CopyTarget and CopyStartSpawn
+: = CopyTarget and CopyTargetSpawn
+, = CopySource
+
++ = Piece and CopySource
+* = PieceFixed and floor
+
+T = Touched
+
+Copyable = Piece 
+CopyZone = CopyTarget or CopySource
+Spawner  = CopytargetSpawn or CopystartSpawn
+
+AnyTouch = Touched or DidNotTouch
+Obstacle = Wall or Floor or Player or PlayerLegs
+
+2 = C and referenceUp
+3 = C and referenceLeft
+4 = C and referenceDown
+5 = C and referenceRight
+
+ReferenceDir = referenceUp or referenceLeft or referenceDown or referenceRight
+
+CantRotate = Wall or Floor or PieceFixed or Player
+
+P = Player
+
+=======
+SOUNDS
+=======
+
+================
+COLLISIONLAYERS
+================
+Background
+Spawner, X
+CopySource, CopyTarget
+CopyStart
+Begin
+Rotate
+Floor
+Piece, Wall, AnyTouch, PieceFixed, Player, PlayerLegs
+Fill
+FillV
+Last 
+ToDelete
+Frozen,LineDetector
+Reference
+ReferenceDir, Gate
+
+======
+RULES
+======
+
+[frozen Player]-> restart
+
+
+(Pressing X to Start or Rotate)
+(»»»»»»»»»»»»»»»»»»»»»»»»»»»)
+[rotate]->[no rotate]
+[action player][X]-> [action player][X rotate begin]
+
+(Rotate Current Piece)
+(»»»»»»»»»»»»»»»»»»»»»»»»»»»)
+
+ horizontal[Reference 5|...|2][rotate]->[5|...| Reference 2][begin]
+ horizontal[Reference 2|...|3][rotate]->[2|...| Reference 3][begin]
+ horizontal[Reference 3|...|4][rotate]->[3|...| Reference 4][begin]
+ horizontal[Reference 4|...|5][rotate]->[4|...| Reference 5][begin]
+ (extras for less than 4 pieces)
+ horizontal[Reference 5|...|4][rotate]->[5|...| Reference 4][begin]
+  horizontal[Reference 3|...|5][rotate]->[3|...| Reference 5][begin]
+
+
+(Chosing Predicted Rotated Piece)
+(»»»»»»»»»»»»»»»»»»»»»»»»»»»)
+[Reference CopySource Copystart][ Copystart CopyTarget][begin] -> [Reference CopySource Copystart  Last Fill][Copystart CopyTarget Last Fill][no begin]
+
+(Chosing a New Piece Randomly)
+(»»»»»»»»»»»»»»»»»»»»»»»»»»»)
+random [ Copystart CopySource][ Copystart CopyTarget][begin] -> [Copystart Reference CopySource Last Fill][Copystart CopyTarget Last Fill][no begin]
+        
+       
+(Overwriting the New Piece - here is where the magic happens)
+(»»»»»»»»»»»»»»»»»»»»»»»»»»»)
+startloop
+horizontal [ Last Fill | no Fill CopyZone]-> [no Last Fill | Last Fill CopyZone]
+
++ horizontal [ Last Fill no FillV| no CopyZone]-> [ Last Fill FillV | no CopyZone ]
++ [ Last Fill CopySource no Copyable][ Last Fill CopyTarget Copyable]-> [ Last Fill CopySource no Copyable][ Last Fill CopyTarget no Copyable no CantRotate]
++ [ Last Fill CopySource Copyable][ Last Fill CopyTarget no Copyable no CantRotate]-> [ Last Fill CopySource Copyable][ Last Fill CopyTarget Copyable]
++ [ Last Fill CopySource Copyable][ Last Fill CopyTarget CantRotate][player]-> cancel
+
+vertical [ Last Fill FillV| no Fill CopyZone] -> [ no Last Fill no FillV| Last Fill CopyZone]
++ [ Last Fill CopySource no Copyable][ Last Fill CopyTarget Copyable]-> [ Last Fill CopySource no Copyable][ Last Fill CopyTarget no Copyable no CantRotate]
++ [ Last Fill CopySource Copyable][ Last Fill CopyTarget no Copyable no CantRotate]-> [ Last Fill CopySource Copyable][ Last Fill CopyTarget Copyable]
++ [ Last Fill CopySource Copyable][ Last Fill CopyTarget CantRotate][player]-> cancel
+endloop
+
+[Fill ]->[no fill ]
+[FillV]->[no fillV]
+[last ]->[no last ]
+
+
+(Gravity & Control)
+(»»»»»»»»»»»»»»»»»»»»»»»»»»»)     
+[stationary piece no CopySource]->[down piece]
+[moving player][piece no CopySource]-> [moving player][moving piece] 
+[moving player][moving piece]->[moving player][moving piece] (stop player)
+[up piece]-> [stationary piece]
+
+[action player][piece no CopySource]->[player][stationary piece]
+
+(player Giraffe)
+down [player| no cantrotate no playerlegs]->[down player| no cantrotate  no playerlegs]
+down [up player | playerlegs]->[stationary player| playerlegs] 
+down [down player | playerlegs]->[stationary player| no playerlegs] 
+down [horizontal player|playerlegs]->[horizontal player| no playerlegs]
+down [no cantrotate no Piece| up player|cantrotate]->[player| playerlegs|cantrotate]
+
+[stationary player]->[down player]
+
+(Avoid piece breakup on horizontal collision with walls/obstacles)
+horizontal [obstacle | < piece][no frozen piece no CopySource]->[ obstacle | < piece][ frozen piece]      
+           
+           [frozen moving piece]->[ stationary piece]
+
+(Move the area of rotation along)
+[moving piece][stationary CopyStart CopyTarget]->[moving piece][moving CopyStart moving CopyTarget]
+[moving piece][stationary CopyTarget]->[moving piece][moving CopyTarget]
+
+
+
+(Piece Touches the floor)
+(»»»»»»»»»»»»»»»»»»»»»»»»»»»)
+     [Touched]->[DidNotTouch]
+     
+down [down piece | Floor][AnyTouch]->[stationary PieceFixed| Floor][Touched]        
+     
+     [Touched] [piece no copysource]->[Touched] [stationary piecefixed stationary Floor]
+     
+     [piece | PieceFixed no Floor ]->[stationary PieceFixed | PieceFixed]
+     [Floor | PieceFixed no Floor ]->[stationary Floor | PieceFixed Floor]
+
+[Touched][CopyStart CopyTarget]->[Touched][no CopyStart no CopyTarget]
+[Touched][CopyTarget]->[Touched][no CopyTarget]
+
+
+           
+(Detect and delete complete lines)
+(»»»»»»»»»»»»»»»»»»»»»»»»»»»)
+      [LineDetector no wall] -> [no LineDetector no wall] 
+right [LineDetector| no LineDetector PieceFixed Floor ]->[LineDetector| Linedetector PieceFixed Floor]
+(right [LineDetector no wall| wall][numberstart]->[ToDelete LineDetector| wall][plus numberstart])
+right [LineDetector no wall| wall]->[ToDelete LineDetector| wall]
+
+right [LineDetector no wall| ToDelete LineDetector]->[ToDelete LineDetector| ToDelete LineDetector]
+
+      [ToDelete PieceFixed Floor] -> [ToDelete]
+up    [ToDelete no PieceFixed no Floor | PieceFixed Floor] -> [ToDelete PieceFixed Floor| ]
+up    [ToDelete |no PieceFixed no Floor |PieceFixed Floor] -> [ToDelete|PieceFixed Floor| ]
+up    [ToDelete |...|no PieceFixed no Floor |PieceFixed Floor] -> [ToDelete|...|PieceFixed Floor| ]
+
+      [LineDetector ToDelete] -> []
+              
+(What happens when a piece touches the ceiling)
+(»»»»»»»»»»»»»»»»»»»»»»»»»»»)
+[PieceFixed gate ][Player]->[PieceFixed gate ][frozen Player] message Retry Level?
+
+(respawn area around new piece to be copied)
+[Touched][no CopyStart CopyStartSpawn]->[Touched][ CopyTarget CopyStart CopyStartSpawn] 
+[Touched][no CopyTarget CopyTargetSpawn]->[Touched][ CopyTarget CopyTargetSpawn]
+
+[Touched][X]->[Touched][X Begin]  (draw new piece)
+[Touched][Reference]->[Touched][no Reference]
+
+
+(Player die)
+(»»»»»»»»»»»»»»»»»»»»»»»»»»»)
+down [down piece | Player no X]->[| Frozen Player] message You died. Retry?
+
+[Player X]->win
+
+
+==============
+WINCONDITIONS
+==============
+
+=======
+LEVELS
+=======
+
+message The red flag must be yours!                                 ''''''''''''''''''''''''''''''''''>Press X when ready to face the Catastrophe.
+message level 1                                   ''''''''''''''''''''''''''''''''''"The Basics"
+
+##################
+#...Ç::...###C,,##
+#...:::...###+++##
+#...:::...###,,,##
+#---------########
+»..........#######
+»..........#######
+»..........#######
+»..........#######
+».P.......X#######
+#WWM......W#######
+##T»......########
+###»......########
+###WWWWWWW########
+##################
+
+message You may have noticed that...                                  ''''''''''''''''''''''''''''''''''full horizontal lines disappear.
+message level 2                                   ''''''''''''''''''''''''''''''''''"Think twice"
+
+##################
+#...Ç::...###C,,##
+#...:::...###,++##
+#...:::...###,++##
+#---------########
+»..........#######
+»..........#######
+»..........#######
+»..........#######
+».P.......X#######
+#WWM......W#######
+##T»......########
+###»......########
+###WWWWWWW########
+##################
+
+
+message How about a little twist?                               ''''''''''''''''''''''''''''''''''>Press X to rotate any falling piece.
+message level 3                                   ''''''''''''''''''''''''''''''''''"A little twist"
+
+#########################
+##.Ç::::.####5,,,,#4,+,,#
+##.:::::.####,,,,,#,,+,,#
+##.:::::.####++++,#,,+,,#
+##.:::::.####,,,,,#,,+,,#
+##.:::::.####,,,,,#,,,,,#
+##-------################
+#»........###############
+#»........###############
+#»........###############
+#»........###############
+#»........###############
+#».......X###############
+#».PM....W###############
+##WW»....################
+###»......###############
+###»......###############
+###»......###############
+##T#M....W###############
+####WWWWW################
+#########################
+#########################
+
+
+message level 4                                   ''''''''''''''''''''''''''''''''''"The Great Wall"
+
+#############################
+##..Ç::..###5+,#2,,#3,,#4+,##
+##..:::..###++,#++,#,++#,++##
+##..:::..###,,,#,+,#,+,#,,,##
+##-------####################
+#».............###.........##
+#».............###.........##
+#».............###.........##
+#».............***.........##
+#».............***.........##
+#».............***.........##
+#»....P........***....X....##
+##WWWWWWWWM....***WWWWWWWWW##
+#########T»....**W###########
+##########»....*W############
+###########WWWWW#############
+#############################
+
+
+message Actually, "rotation" can be interpreted in a broader sense.                               ''''''''''''''''''''''''''''''''''>Press X to "rotate" any falling piece.
+message level 5                                   ''''''''''''''''''''''''''''''''''"Bridging the gap"
+
+#######################################
+###5++++#2,,++####Ç::::####3,+++#4++++#
+###+++++#,,,++####:::::####,,+,+#,++++#
+###++,++#,,,,,####:::::####,,+++#,++++#
+###+++++#,,,,,####:::::####,,,,,#,++++#
+###+++++#,,,,,####:::::####,,,,,#,,,,,#
+##################-----################
+##»...................................#
+##»...................................#
+##»...................................#
+##»...................................#
+##»...................................#
+##».P...............................X.#
+##»WWWWWWW»....................MWWWWWW#
+#########T»....................########
+##########»....................########
+##########»....................########
+##########»....................########
+######WWWWWWWWWWWWWWWWWWWWWWWWWWWWW####
+#######################################
+#######################################
+#######################################
+
+
+message You are on your own now. Good luck!                               '''''''''''''''''''''''''''''''''
+message level 6                                   ''''''''''''''''''''''''''''''''''"U2"
+
+#################################
+##5,,,,#2,,,,####Ç::::####3,,,,##
+##+,,,+#,+,+,####:::::####,,+,,##
+##+,,,+#,+,+,####:::::####,,,,,##
+##+,,,+#,+++,####:::::####,,,,,##
+##+,,,+#,,,,,####:::::####,,,,,##
+##+++++#,,,,,####:::::####,,,,,##
+#################-----###########
+#».............................##
+#».P...........................##
+#».............................##
+#».............................##
+#».............................##
+#».............................##
+#».............................##
+#»..........................X..##
+#»WWWWWWM...WWWWM.....WWWWWWWWW##
+########»...##T#».....###########
+########»...####».....###########
+#########WWW####».....###########
+################».....###########
+#################WWWWW###########
+#################################
+#################################
+#################################
+
+
+message level 7                                   ''''''''''''''''''''''''''''''''''"The Great Pyramid"
+
+###################
+#5++###.Ç::.###4+,#
+#++,###.:::.###,++#
+#5,,###.:::.###4,+#
+#######-----#######
+».................#
+».................#
+».................#
+».................#
+».................#
+»........P........#
+»........*........#
+».......***.......#
+»......**X**......#
+#WWWWWWWWWWWWWWWWW#
+#########T#########
+
+
+message level 8                                   ''''''''''''''''''''''''''''''''''"Entrapped"
+
+#########################
+#5,,,,####Ç::::####4,,,,#
+#,+++,####:::::####,+++,#
+#,+++,####:::::####,+++,#
+#,+++,####:::::####,+,+,#
+#,,,,,####:::::####,,,,,#
+##########-----##########
+###».................####
+###».................####
+###».................####
+###».................####
+###».................####
+###».................####
+###»......M...M......####
+###»......»...»......####
+###».P....».X.»......####
+#WWWWWWWWWWWWWWWWWWWWWWW#
+############T############
+
+
+message level 9                                   ''''''''''''''''''''''''''''''''''"Something Missing"
+
+###########
+#5#4#Ç#3#2#
+#+#+#:#+#+#
+#+#+#:#+#,#
+#+#+#:#,#,#
+#+#,#:#,#,#
+#####-#####
+#».......##
+#».......##
+#».......##
+#».......##
+#».......##
+#».......##
+#».......##
+#».......##
+#P.......X#
+#M.......W#
+#».......##
+#».......##
+#».......##
+#».......##
+#».......##
+#».......##
+#».......##
+##WWWWWWW##
+#####T#####
+
+
+message level 10 - last level                                  ''''''''''''''''''''''''''''''''''"Impossible Climb"
+
+#######################
+#4,,##Ç::##5+,#2+,#3+,#
+#+++##:::##++,#+++#,++#
+#,+,##:::##,+,#,,,#,+,#
+######---##############
+####».....#############
+####».....#############
+####.......############
+####M.....W############
+###».......############
+##»X.......############
+###M.......############
+####.......############
+####.......############
+###»........#T#########
+###».......W###########
+###».......############
+###»...P...############
+####WWWWWWW############
+#######################
+
+
+message Congratulations!
+
+message Coding & Design                                   ''''''''''''''''''''''''''''''''''Pedro PSI   2014
+ 
+message Music:                                   ''''''''''''''''''''''''''''''''''Arpology 1: Frantic Sax Version by Longzijun
+ 
+message Thank you for playing Tetrastrophe!                                    ''''''''''''''''''''''''''''''''''Inspired by Tetris
