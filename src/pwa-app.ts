@@ -60,6 +60,7 @@ function getAllElements<T extends Element>(selector: string, root: Element) {
 
 window.addEventListener('load', () => {
 
+    const CURRENT_STORAGE_VERSION = 2
     const WEBWORKER_URL = './puzzlescript-webworker.js'
     const GAME_STORAGE_ID = 'puzzlescriptGameProgress'
     const GAME_STORAGE_CHECKPOINT_PREFIX = 'puzzlescriptGameCheckpoint'
@@ -80,10 +81,6 @@ window.addEventListener('load', () => {
 
     if (!gameSelection) { throw new Error(`BUG: Could not find game selection dropdown`) }
     if (!loadingIndicator) { throw new Error(`BUG: Could not find loading indicator`) }
-
-    messageDialogClose.addEventListener('click', () => {
-        messageDialog.close()
-    })
 
     // Functions for loading/saving game progress
     const currentInfo = new class {
@@ -121,7 +118,7 @@ window.addEventListener('load', () => {
             gameSelection.value = gameId
         }
         public loadStorage() {
-            const storage = this.loadJson(GAME_STORAGE_ID, { _version: 1 })
+            const storage = this.loadJson(GAME_STORAGE_ID, { _version: CURRENT_STORAGE_VERSION })
             return storage as Storage
         }
         public loadCurrentLevelNum() {
@@ -158,18 +155,24 @@ window.addEventListener('load', () => {
         }
         public saveCheckpoint(checkpoint: CellSaveState) {
             const gameId = this.getGameId()
-            const storage = { _version: 1, levelNum: this.getLevelNum(), data: checkpoint }
+            const storage = { _version: CURRENT_STORAGE_VERSION, levelNum: this.getLevelNum(), data: checkpoint }
             this.saveJson(`${GAME_STORAGE_CHECKPOINT_PREFIX}.${gameId}`, storage)
         }
 
-        private loadJson<T>(key: string, defaultValue: T) {
+        public loadJson<T>(key: string, defaultValue: T) {
             const str = window.localStorage.getItem(key)
             return str ? JSON.parse(str) : defaultValue
         }
-        private saveJson<T>(key: string, value: T) {
+        public saveJson<T>(key: string, value: T) {
             window.localStorage.setItem(key, JSON.stringify(value))
         }
     }()
+
+    runMigrations()
+
+    messageDialogClose.addEventListener('click', () => {
+        messageDialog.close()
+    })
 
     closeInstructions.addEventListener('click', () => {
         instructionsContainer.classList.add('hidden')
@@ -255,7 +258,7 @@ window.addEventListener('load', () => {
             function toUrl(url: string) {
                 return /^https?:\/\//.test(url) ? url : `http://${url}`
             }
-            const {author, homepage} = gameData.metadata
+            const { author, homepage } = gameData.metadata
             if (author) {
                 authorInfo.textContent = author
                 if (homepage) {
@@ -265,7 +268,7 @@ window.addEventListener('load', () => {
                 }
                 authorSection.classList.remove('hidden')
             }
-            
+
             currentInfo.saveGameInfo(gameData.levels, gameData.title)
             gameSelection.value = currentInfo.getGameId()
         },
@@ -588,5 +591,62 @@ window.addEventListener('load', () => {
             // ga('set', 'title', gameTitle)
             ga('send', 'pageview')
         }
+    }
+
+    function runMigrations() {
+        const storage = currentInfo.loadStorage()
+        const storageVersion = storage as any as { _version: number }
+        if (storageVersion._version === 1) {
+            const gameMigration = new Map<string, string>()
+            gameMigration.set('gist-f0b9b8e95d0bc87c9fb9e411756daa23', 'icecrates')
+            gameMigration.set('gist-7f4470ab80d9f7ffe4b9e28c83b26adc', 'push')
+            gameMigration.set('pot-wash-panic_itch', 'pot-wash-panic')
+            gameMigration.set('gist-457c6d8be68ffb6d921211d40ca48c15', 'pants-shirt-cap⁣')
+            gameMigration.set('gist-e13482e035a5f75e9b0e4d0b5f28f8b6', 'pushcat-jr⁣')
+            gameMigration.set('separation_itch', 'separation⁣')
+            gameMigration.set('roll-those-sixes-itch', 'roll-those-sixes⁣')
+            gameMigration.set('gist-6daa8b63cf79202cd085c1b168048c09', 'rock-paper-scissors')
+            gameMigration.set('gist-c5ec035de4e0c145a85327942fb76098', 'some-lines-crossed⁣')
+            gameMigration.set('sleepy-player_itch', 'sleepy-players⁣')
+            gameMigration.set('skipping-stones_d6fd6fcf84de185e2584', 'skipping-stones')
+            gameMigration.set('gist-8074d60a0af768f970ef055d4460414d', 'bubble-butler')
+            gameMigration.set('gist-ee39bfe12012c774acfc5e3d32fb4f89', 'boxes-and-balloons⁣')
+            gameMigration.set('mirror-isles_219a7db6511dad557b84', 'mirror-isles⁣')
+            gameMigration.set('gist-e86e1d6cf24307499c1cd1aaaa733a91', 'swapbot⁣')
+            gameMigration.set('spikes-n-stuff_dc5c4a669e362e389e994025075f7d0b', 'spikes-n-stuff⁣')
+            gameMigration.set('aunt-floras-mansion', 'aunt-flora-s-mansion')
+            gameMigration.set('spacekoban_6a6c07f71d7039e4155e', 'spacekoban⁣')
+            gameMigration.set('gist-181f370a15625905ca6e844a972a4abf', 'miss-direction⁣')
+            gameMigration.set('gist-711d6220e4fe2a36254cc544c6ba4885', 'castlemouse⁣')
+            gameMigration.set('rosden.itch.io_islands', 'islands⁣')
+            gameMigration.set('rosden.itch.io_bomb-n-ice', 'bomb-n-ice⁣')
+            gameMigration.set('cyber-lasso-e3e444f7c63fb21b6ec0', 'cyber-lasso⁣')
+            gameMigration.set('boxes-love-bloxing_c2d717a77f9aa02ecb1b793111f3a921', 'boxes-love-bloxing-gloves⁣')
+            gameMigration.set('hack-the-net_8b5eb39cb825277832d261b3142f084b', 'hack-the-net⁣')
+            gameMigration.set('spooky-pumpkin_7242443', 'spooky-pumpkin-game⁣')
+            gameMigration.set('gist-b6c8ba9363b4cca270d8ce5e88f79abf', 'vacuum⁣')
+            gameMigration.set('gist-542b97948cb1d377dce6d276c0bcd9d5', 'sokoboros⁣')
+            gameMigration.set('gist-2b9ece642cd7cdfb4a5f2c9fa8455e40', 'beam-islands⁣')
+
+            for (const [oldGameId, newGameId] of gameMigration.entries()) {
+                const value = storage[oldGameId]
+                if (value) {
+                    delete storage[oldGameId]
+                    storage[newGameId] = value
+                }
+
+                // check if the checkpoint file needs to be migrated too
+                const checkpointKey = `${GAME_STORAGE_CHECKPOINT_PREFIX}.${oldGameId}`
+                const checkpointStr = window.localStorage.getItem(checkpointKey)
+                if (checkpointStr) {
+                    // const checkpoint = JSON.parse(checkpointStr) as StorageCheckpoint
+                    window.localStorage.setItem(`${GAME_STORAGE_CHECKPOINT_PREFIX}.${newGameId}`, checkpointStr)
+                    window.localStorage.removeItem(checkpointKey)
+                }
+            }
+            storageVersion._version = 2
+            currentInfo.saveJson(GAME_STORAGE_ID, storage)
+        }
+
     }
 })
