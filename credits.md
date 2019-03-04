@@ -222,5 +222,6 @@ These are the sources to all of the games:
 - [tiaradventur](https://groups.google.com/forum/#!topic/puzzlescript/5wR8hvS5-UU)
 - [train](http://www.puzzlescript.net/play.html?p=9121824)
 - [two-and-a-half](https://igorsgames.itch.io/)
-- [tetrastrophe](https://pedropsi.github.io/tetrastrophe.html)
 - [okosban](https://oveahlman.itch.io/okosban)
+- [train-braining](http://www.draknek.org/games/puzzlescript/train.php)
+- [tetrastrophe](https://pedropsi.github.io/tetrastrophe.html)
