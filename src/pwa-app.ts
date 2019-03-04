@@ -627,6 +627,7 @@ window.addEventListener('load', () => {
             gameMigration.set('gist-b6c8ba9363b4cca270d8ce5e88f79abf', 'vacuum⁣')
             gameMigration.set('gist-542b97948cb1d377dce6d276c0bcd9d5', 'sokoboros⁣')
             gameMigration.set('gist-2b9ece642cd7cdfb4a5f2c9fa8455e40', 'beam-islands⁣')
+            gameMigration.set('entanglement', 'entanglement-one')
 
             for (const [oldGameId, newGameId] of gameMigration.entries()) {
                 const value = storage[oldGameId]
