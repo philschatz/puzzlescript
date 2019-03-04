@@ -256,7 +256,7 @@ window.addEventListener('load', () => {
             function toUrl(url: string) {
                 return /^https?:\/\//.test(url) ? url : `http://${url}`
             }
-            const {author, homepage} = gameData.metadata
+            const { author, homepage } = gameData.metadata
             if (author) {
                 authorInfo.textContent = author
                 if (homepage) {
@@ -266,7 +266,7 @@ window.addEventListener('load', () => {
                 }
                 authorSection.classList.remove('hidden')
             }
-            
+
             currentInfo.saveGameInfo(gameData.levels, gameData.title)
             gameSelection.value = currentInfo.getGameId()
             htmlTitle.textContent = gameData.title
