@@ -222,4 +222,6 @@ These are the sources to all of the games:
 - [tiaradventur](https://groups.google.com/forum/#!topic/puzzlescript/5wR8hvS5-UU)
 - [train](http://www.puzzlescript.net/play.html?p=9121824)
 - [two-and-a-half](https://igorsgames.itch.io/)
+- [okosban](https://oveahlman.itch.io/okosban)
+- [train-braining](http://www.draknek.org/games/puzzlescript/train.php)
 - [entanglement-two](http://www.richardlocke.co.uk/release/entanglement/chapter-2/)
