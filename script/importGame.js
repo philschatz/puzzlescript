@@ -14,6 +14,7 @@ const URL_REGEXP = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}
 commander
 .version(require('../package.json').version)
 .usage('<url>')
+.option('--id <gameId>', 'specify game id to save as')
 .parse(process.argv)
 
 
@@ -40,11 +41,13 @@ async function doImport() {
             fs.writeFileSync(outFile, gist["files"]["script.txt"]["content"])
             continue
 
+        } else if (commander.id) {
+            dirName = commander.id
         } else if (/itch\.io/.test(url.hostname)) {
             const itchPath = url.pathname.split('/')[1] // since it begins with a '/'
             dirName = `_${url.hostname}_${itchPath}`
         } else {
-            throw new Error(`BUG: Unsupported URL. Unsure how to name the game file`)
+            throw new Error(`BUG: Unsupported URL. Unsure how to name the game file. Consider passing '--id game-id'`)
         }
         const outDir = path.join(__dirname, `../games`, dirName)
         const outFile = path.join(outDir, `script.txt`)
