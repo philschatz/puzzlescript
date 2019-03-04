@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
 
 <head>
-    <title>Puzzlescript Games using HTML Tables</title>
+    <title>Accessible PuzzleScript Games</title>
     <link rel="stylesheet" href="./style.css"/>
     <style>
         /* Progressive Web App (PWA) media query. 
@@ -86,6 +86,8 @@
             border-bottom: 1px solid #dee2e6;
         }
         .panel-header > .panel-title {
+            font-size: 1.25rem;
+            white-space: nowrap;
             margin-top: 0;
             margin-bottom: 0;
             font-size: 1.25rem;
@@ -160,9 +162,9 @@
     </style>
 
     <meta charset="utf-8"/>
-    <meta name="description" content="Sample Accessible videogames"/>
+    <meta name="description" content="Accessible Puzzle Videogames"/>
     <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no"/>
-    <meta name="theme-color" content="#000000"/>
+    <meta name="theme-color" content="#ffffff"/>
     <meta name="mobile-web-app-capable" content="yes"/>
     <meta name="apple-mobile-web-app-capable" content="yes"/>
     <link rel="preconnect" href="https://google-analytics.com"/>
@@ -178,7 +180,9 @@
     </dialog>
     
     <div id="infoContainer">
-        <h1 id="headingSection">Example <a href="https://github.com/philschatz/puzzlescript">PuzzleScript Games</a> using HTML Tables</h1>
+        <div class="panel-header">
+            <h1 id="headingSection" class="panel-title">Accessible <a href="https://github.com/philschatz/puzzlescript">Puzzle Games</a></h1>
+        </div>
 
         <p id="disableCssSection"><input id="disableCss" type="checkbox"/> <label for="disableCss"><strong>Check</strong> to see what a non-sighted user would experience (disables CSS)</label></p>
     

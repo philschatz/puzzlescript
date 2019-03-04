@@ -63,6 +63,7 @@ window.addEventListener('load', () => {
     const WEBWORKER_URL = './puzzlescript-webworker.js'
     const GAME_STORAGE_ID = 'puzzlescriptGameProgress'
     const GAME_STORAGE_CHECKPOINT_PREFIX = 'puzzlescriptGameCheckpoint'
+    const htmlTitle = getElement('title')
     const table: HTMLTableElement = getElement('#theGame')
     const gameSelection: HTMLSelectElement = getElement('#gameSelection')
     const loadingIndicator = getElement('#loadingIndicator')
@@ -268,6 +269,7 @@ window.addEventListener('load', () => {
             
             currentInfo.saveGameInfo(gameData.levels, gameData.title)
             gameSelection.value = currentInfo.getGameId()
+            htmlTitle.textContent = gameData.title
         },
         onTick(_changedCells, checkpoint) {
             if (checkpoint) {
