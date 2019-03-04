@@ -459,7 +459,12 @@ export class GameLegendTileSimple extends GameLegendTile {
 
 export class GameLegendTileAnd extends GameLegendTile {
     public matchesCell(cell: Cell): boolean {
-        throw new Error(`BUG: Unreachable code`)
+        for (const tile of this.tiles) {
+            if (!tile.matchesCell(cell)) {
+                return false
+            }
+        }
+        return true
     }
 
     public getSpritesThatMatch(cell: Cellish): Set<GameSprite> {
