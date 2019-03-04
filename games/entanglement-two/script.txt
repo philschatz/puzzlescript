@@ -3275,6 +3275,7 @@ o,,,,,,,,,,ϲ:e;,,,,,,,,,
 message Yep, just as unpleasant as last time.
 message I really need to get out of here.
 
+(
 ======
 TESTS
 ======
@@ -3563,7 +3564,7 @@ when right right right tick tick tick left tick tick tick
 expect right[tubein|tubein player]
 
 (Defect resolutions)
-test touching a player goal removes all others)
+test touching a player goal removes all others
 юююю
 opюю
 ю.ю.
@@ -3669,3 +3670,4 @@ test arrows aren't duplicated when passing quickly over factories
 oprϐ..
 when right right tick tick
 expect 1 [arrowmount]
+)
