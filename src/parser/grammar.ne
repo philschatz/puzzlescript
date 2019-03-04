@@ -208,10 +208,15 @@ decimalWithLeadingNumber -> digit:+ ("." digit:+):?     {% ([firstDigit, rest]) 
 } %}
 decimalWithLeadingPeriod -> "." digit:+                 {% ([_1, digits]) => { return Number.parseInt(digits.join(''), 10) } %}
 
-colorHex6 -> "#" hexDigit hexDigit hexDigit hexDigit hexDigit hexDigit  {% (a, _sourceOffset) => { return {type:ast.COLOR_TYPE.HEX6, value: a.join(''), _sourceOffset} } %}
-colorHex3 -> "#" hexDigit hexDigit hexDigit                             {% (a, _sourceOffset) => { return {type:ast.COLOR_TYPE.HEX3, value: a.join(''), _sourceOffset} } %}
+# Colors with alpha channels are treated as transparent (for now)
+colorHex8 -> "#" hexDigit hexDigit hexDigit hexDigit hexDigit hexDigit hexDigit hexDigit  {% (a, _sourceOffset)     => { return {type:ast.COLOR_TYPE.HEX8, value: a.join(''), _sourceOffset} } %}
+colorHex6 -> "#" hexDigit hexDigit hexDigit hexDigit hexDigit hexDigit  {% (a, _sourceOffset)                       => { return {type:ast.COLOR_TYPE.HEX6, value: a.join(''), _sourceOffset} } %}
+colorHex4 -> "#" hexDigit hexDigit hexDigit hexDigit                    {% ([hash, c1, c2, c3, c4], _sourceOffset)  => { return {type:ast.COLOR_TYPE.HEX8, value: `#${c1}${c1}${c2}${c2}${c3}${c3}${c4}${c4}`, _sourceOffset} } %}
+colorHex3 -> "#" hexDigit hexDigit hexDigit                             {% ([hash, c1, c2, c3], _sourceOffset)      => { return {type:ast.COLOR_TYPE.HEX6, value: `#${c1}${c1}${c2}${c2}${c3}${c3}`, _sourceOffset} } %}
 colorNameOrHex ->
-      colorHex6 {% id %}
+      colorHex8 {% id %}
+    | colorHex6 {% id %}
+    | colorHex4 {% id %}
     | colorHex3 {% id %}
     | colorName {% id %}
 # Exclude `#` to ensure it does not conflict with the hex colors
@@ -329,8 +334,11 @@ t_SFX7 -> "SFX7"i {% upperId %}
 t_SFX8 -> "SFX8"i {% upperId %}
 t_SFX9 -> "SFX9"i {% upperId %}
 t_SFX10 -> "SFX10"i {% upperId %}
+t_SFX_LETTERS -> "SFX_"i letter:+ {% (a, _sourceOffset) => { return a.join('') } %}
+
 t_SFX ->
-      t_SFX10 {% upperId %} # needs to go 1st because of t_SFX1
+      t_SFX_LETTERS {% upperId %}
+    | t_SFX10 {% upperId %} # needs to go 1st because of t_SFX1
     | t_SFX0 {% upperId %}
     | t_SFX1 {% upperId %}
     | t_SFX2 {% upperId %}

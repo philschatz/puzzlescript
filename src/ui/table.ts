@@ -1,5 +1,5 @@
 import { CellSaveState } from '../engine'
-import { IColor } from '../models/colors'
+import { hexToRgb, IColor } from '../models/colors'
 import { GameData } from '../models/game'
 import { A11Y_MESSAGE, A11Y_MESSAGE_TYPE } from '../models/rule'
 import { GameSprite } from '../models/tile'
@@ -248,8 +248,13 @@ class TableUI extends BaseUI implements GameEngineHandler {
         if (!onScreenPixel || onScreenPixel.hex !== hex || onScreenPixel.chars !== chars) {
             this.renderedPixels[y][x] = { hex, chars }
 
-            pixel.setAttribute('style', `background-color: ${hex}`)
-            // pixel.textContent = chars
+            const { r, g, b, a } = hexToRgb(hex)
+            if (a !== null) {
+                pixel.setAttribute('style', `background-color: rgba(${r},${g},${b},${a})`)
+            } else {
+                pixel.setAttribute('style', `background-color: ${hex}`)
+                // pixel.textContent = chars
+            }
         }
     }
 
@@ -392,7 +397,8 @@ class TableUI extends BaseUI implements GameEngineHandler {
         }
 
         // Remove any sprites that do not impact (transitively) the player
-        const spritesForDebugging = cell.getSprites().filter((s) => this.interactsWithPlayer.has(s))
+        const sprites = cell.getSprites()
+        const spritesForDebugging = sprites.filter((s) => this.interactsWithPlayer.has(s))
 
         const { isOnScreen, cellStartX, cellStartY } = this.cellPosToXY(cell)
 
@@ -412,6 +418,10 @@ class TableUI extends BaseUI implements GameEngineHandler {
         const cellLabel = tableCell.label
         if (!cellLabel) {
             throw new Error(`BUG: Could not find cell in the table: [${cell.rowIndex} - ${this.windowOffsetRowStart}][${cell.colIndex} - ${this.windowOffsetColStart}]`)
+        }
+
+        if (process.env.NODE_ENV !== 'production') {
+            cellLabel.setAttribute('data-debug-sprites', sprites.map((s) => s.getName()).join(' '))
         }
 
         if (spritesForDebugging.length > 0) {
@@ -451,7 +461,7 @@ class TableUI extends BaseUI implements GameEngineHandler {
                 }
 
                 if (color) {
-                    const { r, g, b } = color.toRgb()
+                    const { r, g, b /*,a*/ } = color.toRgb()
                     const hex = color.toHex()
                     let fgHex = null
 
