@@ -224,4 +224,5 @@ These are the sources to all of the games:
 - [two-and-a-half](https://igorsgames.itch.io/)
 - [okosban](https://oveahlman.itch.io/okosban)
 - [train-braining](http://www.draknek.org/games/puzzlescript/train.php)
+- [entanglement-two](http://www.richardlocke.co.uk/release/entanglement/chapter-2/)
 - [tetrastrophe](https://pedropsi.github.io/tetrastrophe.html)
