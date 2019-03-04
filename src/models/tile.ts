@@ -59,6 +59,7 @@ export abstract class GameSprite extends BaseForLines implements IGameTile {
     public abstract hasPixels(): boolean
     public abstract getPixels(spriteHeight: number, spriteWidth: number): IColor[][]
     public abstract isTransparent(): boolean
+    public abstract hasAlpha(): boolean
 
     public getName() {
         return this.name
@@ -209,6 +210,9 @@ export class GameSpriteSingleColor extends GameSprite {
     public isTransparent() {
         return this.color.isTransparent()
     }
+    public hasAlpha() {
+        return this.color.hasAlpha()
+    }
     public hasPixels() {
         return false
     }
@@ -228,6 +232,7 @@ export class GameSpriteSingleColor extends GameSprite {
 export class GameSpritePixels extends GameSprite {
     private readonly pixels: IColor[][]
     private readonly _isTransparent: boolean
+    private readonly _hasAlpha: boolean
 
     constructor(source: IGameCode, name: string, optionalLegendChar: Optional<string>, pixels: IColor[][]) {
         super(source, name, optionalLegendChar)
@@ -235,17 +240,23 @@ export class GameSpritePixels extends GameSprite {
 
         // Store for a11y (so we do not report the sprite) and for faster rendering
         this._isTransparent = true
+        this._hasAlpha = false
         for (const row of pixels) {
             for (const pixel of row) {
                 if (!pixel.isTransparent()) {
                     this._isTransparent = false
-                    break
+                }
+                if (pixel.hasAlpha()) {
+                    this._hasAlpha = true
                 }
             }
         }
     }
     public isTransparent() {
         return this._isTransparent
+    }
+    public hasAlpha() {
+        return this._hasAlpha
     }
     public getSprites() {
         // to match the signature of LegendTile

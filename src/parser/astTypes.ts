@@ -69,13 +69,13 @@ export interface IASTNode {
 }
 
 export enum COLOR_TYPE {
-    HEX3 = 'HEX3',
+    HEX8 = 'HEX8',
     HEX6 = 'HEX6',
     NAME = 'NAME'
 }
 
 export type IColor = IASTNode & ({
-    type: COLOR_TYPE.HEX3
+    type: COLOR_TYPE.HEX8
     value: string
 } | {
     type: COLOR_TYPE.HEX6

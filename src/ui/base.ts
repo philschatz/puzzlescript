@@ -1,4 +1,4 @@
-import { IColor } from '../models/colors'
+import { HexColor, IColor } from '../models/colors'
 import { GameData } from '../models/game'
 import { GameSprite } from '../models/tile'
 import { _flatten, Cellish, Optional } from '../util'
@@ -57,24 +57,65 @@ function collapseSpritesToPixels(spritesToDraw: GameSprite[],
     if (spritesToDraw.length === 1) {
         return spritesToDraw[0].getPixels(spriteHeight, spriteWidth)
     }
-    const sprite = spritesToDraw[0].getPixels(spriteHeight, spriteWidth)
-    spritesToDraw.slice(1).forEach((objectToDraw, spriteIndex) => {
-        if (process.env.NODE_ENV === 'development') {
-            objectToDraw.__incrementCoverage()
-        }
-        const pixels = objectToDraw.getPixels(spriteHeight, spriteWidth)
-        for (let y = 0; y < spriteHeight; y++) {
-            sprite[y] = sprite[y] || []
-            for (let x = 0; x < spriteWidth; x++) {
-                const pixel = pixels[y][x]
-                // try to pull it out of the current sprite
-                if ((!sprite[y][x] || sprite[y][x].isTransparent()) && pixel && !pixel.isTransparent()) {
-                    sprite[y][x] = pixel
+    // If any of the pixels have alpha transparency then we have to build the image up, rather than building it dow
+    const anySpriteHasAlpha = !!spritesToDraw.find((s) => s.hasAlpha())
+    if (anySpriteHasAlpha) {
+        spritesToDraw = spritesToDraw.reverse()
+        const sprite = spritesToDraw[0].getPixels(spriteHeight, spriteWidth)
+        spritesToDraw.slice(1).forEach((objectToDraw, spriteIndex) => {
+            if (process.env.NODE_ENV === 'development') {
+                objectToDraw.__incrementCoverage()
+            }
+            const pixels = objectToDraw.getPixels(spriteHeight, spriteWidth)
+            for (let y = 0; y < spriteHeight; y++) {
+                sprite[y] = sprite[y] || []
+                for (let x = 0; x < spriteWidth; x++) {
+                    const pixel = pixels[y][x]
+                    // try to pull it out of the current sprite
+                    if (pixel.hasAlpha() && !sprite[y][x].isTransparent()) {
+                        // Compute the transparency using the alpha channel
+                        const { r: oldR, g: oldG, b: oldB } = sprite[y][x].toRgb()
+                        const { r: newR, g: newG, b: newB, a: alpha } = pixel.toRgb()
+                        if (alpha !== null) {
+                            const r = Math.round(alpha * newR + (1 - alpha) * oldR)
+                            const g = Math.round(alpha * newG + (1 - alpha) * oldG)
+                            const b = Math.round(alpha * newB + (1 - alpha) * oldB)
+                            const rStr = `${r < 16 ? '0' : ''}${r.toString(16)}`
+                            const gStr = `${g < 16 ? '0' : ''}${g.toString(16)}`
+                            const bStr = `${b < 16 ? '0' : ''}${b.toString(16)}`
+                            sprite[y][x] = new HexColor(pixel.__source, `#${rStr}${gStr}${bStr}`)
+                        } else {
+                            throw new Error(`BUG: No alpha channel`)
+                        }
+                    } else {
+                        if (pixel && !pixel.isTransparent()) {
+                            sprite[y][x] = pixel
+                        }
+                    }
                 }
             }
-        }
-    })
-    return sprite
+        })
+        return sprite
+    } else {
+        const sprite = spritesToDraw[0].getPixels(spriteHeight, spriteWidth)
+        spritesToDraw.slice(1).forEach((objectToDraw, spriteIndex) => {
+            if (process.env.NODE_ENV === 'development') {
+                objectToDraw.__incrementCoverage()
+            }
+            const pixels = objectToDraw.getPixels(spriteHeight, spriteWidth)
+            for (let y = 0; y < spriteHeight; y++) {
+                sprite[y] = sprite[y] || []
+                for (let x = 0; x < spriteWidth; x++) {
+                    const pixel = pixels[y][x]
+                    // try to pull it out of the current sprite
+                    if ((!sprite[y][x] || sprite[y][x].isTransparent()) && pixel && !pixel.isTransparent()) {
+                        sprite[y][x] = pixel
+                    }
+                }
+            }
+        })
+        return sprite
+    }
 }
 
 abstract class BaseUI {
