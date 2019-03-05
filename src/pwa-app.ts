@@ -351,7 +351,7 @@ window.addEventListener('load', () => {
     }
 
     // Add 5 more than what has been played
-    for (const {id, title} of allGamesInOrder) {
+    for (const { id, title } of allGamesInOrder) {
         addGame(id, title)
         if (getUnplayedCount() >= 5) {
             break
@@ -360,7 +360,6 @@ window.addEventListener('load', () => {
 
     // add the "More Games..." option
     addGame('...more...', 'More Games...')
-
 
     // update the % complete in the dropdown AND
     // Select the first game (not IceCrates all the time)
