@@ -361,6 +361,7 @@ window.addEventListener('load', () => {
         }
     })
 
+    const textEncoder = new TextEncoder()
     function playSelectedGame() {
         loadingIndicator.classList.remove('hidden') // Show the "Loading..." text
         authorSection.classList.add('hidden')
@@ -379,9 +380,9 @@ window.addEventListener('load', () => {
                         if (levelNum !== checkpointLevelNum) {
                             throw new Error(`BUG: Checkpoint level number (${checkpointLevelNum}) does not match current level number (${levelNum})`)
                         }
-                        tableEngine.setGame(source, levelNum || 0, checkpointData)
+                        tableEngine.setGame(textEncoder.encode(source).buffer, levelNum || 0, checkpointData)
                     } else {
-                        tableEngine.setGame(source, levelNum || 0, null)
+                        tableEngine.setGame(textEncoder.encode(source).buffer, levelNum || 0, null)
                     }
                     gameSelection.value = currentInfo.getGameId()
                 })

@@ -4,7 +4,6 @@ import { GameMetadata } from './models/metadata'
 import { A11Y_MESSAGE } from './models/rule'
 import { GameSprite } from './models/tile'
 import { Soundish } from './parser/astTypes'
-import { IGraphJson } from './parser/serializer'
 
 export type Optional<T> = T | null
 
@@ -302,7 +301,7 @@ export interface SerializedTickResult {
 
 export type WorkerMessage = {
     type: MESSAGE_TYPE.ON_GAME_CHANGE
-    code: string
+    code: ArrayBuffer
     level: number
     checkpoint: Optional<CellSaveState>
 } | {
@@ -320,7 +319,7 @@ export type WorkerMessage = {
 
 export type WorkerResponse = {
     type: MESSAGE_TYPE.ON_GAME_CHANGE
-    payload: IGraphJson
+    payload: ArrayBuffer // IGraphJson
 } | {
     type: MESSAGE_TYPE.TICK
     payload: SerializedTickResult
@@ -365,7 +364,7 @@ export type WorkerResponse = {
 }
 
 export interface PuzzlescriptWorker {
-    postMessage(msg: WorkerMessage): void
+    postMessage(msg: WorkerMessage, transferrables?: Transferable[]): void
     addEventListener(type: 'message', handler: (msg: {data: WorkerResponse}) => void): void
 }
 
@@ -433,7 +432,7 @@ export class EmptyGameEngineHandler implements GameEngineHandler {
 }
 
 export interface Engineish {
-    setGame(code: string, level: number, checkpoint: Optional<CellSaveState>): void
+    setGame(code: ArrayBuffer, level: number, checkpoint: Optional<CellSaveState>): void
     dispose(): void
     pause?(): void
     resume?(): void

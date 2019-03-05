@@ -4,7 +4,7 @@ import { Dimension } from '../models/metadata'
 import { A11Y_MESSAGE, A11Y_MESSAGE_TYPE } from '../models/rule'
 import { GameSprite } from '../models/tile'
 import { LEVEL_TYPE } from '../parser/astTypes'
-import Serializer from '../parser/serializer'
+import Serializer, { IGraphJson } from '../parser/serializer'
 import TableUI from '../ui/table'
 import { Cellish,
     CellishJson,
@@ -40,6 +40,8 @@ class ProxyCellish implements Cellish {
         return RULE_DIRECTION.STATIONARY
     }
 }
+
+const textDecoder = new TextDecoder()
 
 export default class WebworkerTableEngine implements Engineish {
     public readonly inputWatcher: InputWatcher
@@ -92,8 +94,8 @@ export default class WebworkerTableEngine implements Engineish {
 
         this.inputInterval = window.setInterval(this.pollInputWatcher, 10)
     }
-    public setGame(code: string, level: number, checkpoint: Optional<CellSaveState>) {
-        this.worker.postMessage({ type: MESSAGE_TYPE.ON_GAME_CHANGE, code, level, checkpoint })
+    public setGame(code: ArrayBuffer, level: number, checkpoint: Optional<CellSaveState>) {
+        this.worker.postMessage({ type: MESSAGE_TYPE.ON_GAME_CHANGE, code, level, checkpoint }, [code])
     }
 
     public dispose() {
@@ -135,7 +137,7 @@ export default class WebworkerTableEngine implements Engineish {
     private async messageListener({ data }: {data: WorkerResponse}) {
         switch (data.type) {
             case MESSAGE_TYPE.ON_GAME_CHANGE:
-                const gameData = Serializer.fromJson(data.payload, '**source not included because of laziness**')
+                const gameData = Serializer.fromJson(JSON.parse(textDecoder.decode(data.payload)) as IGraphJson, '**source not included because of laziness**')
                 this.gameData = gameData
                 this.ui.onGameChange(gameData)
                 break

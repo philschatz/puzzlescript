@@ -94,6 +94,7 @@ interface IGraphSprite extends ISourceNode {
     // sounds: {}
 }
 
+
 enum TILE_TYPE {
     OR = 'OR',
     AND = 'AND',
@@ -245,28 +246,6 @@ export default class Serializer {
         for (const [key, val] of Object.entries(source.colors)) {
             colorMap.set(key, new HexColor({ code, sourceOffset: 0 }, val))
         }
-        for (const [key, val] of Object.entries(source.sounds)) {
-            soundMap.set(key, val)
-        }
-        for (const [key, val] of Object.entries(source.commands)) {
-            switch (val.type) {
-                case ast.COMMAND_TYPE.MESSAGE:
-                    commandMap.set(key, val)
-                    break
-                case ast.COMMAND_TYPE.SFX:
-                    commandMap.set(key, { ...val, sound: soundMap.get(val.sound) })
-                    break
-                case ast.COMMAND_TYPE.RESTART:
-                case ast.COMMAND_TYPE.AGAIN:
-                case ast.COMMAND_TYPE.CANCEL:
-                case ast.COMMAND_TYPE.CHECKPOINT:
-                case ast.COMMAND_TYPE.WIN:
-                    commandMap.set(key, val)
-                    break
-                default:
-                    throw new Error(`ERROR: Unsupported command type`)
-            }
-        }
         const layers: DefiniteMap<string, IGameTile[]> = new DefiniteMap()
         for (const [key] of Object.entries(source.collisionLayers)) {
             layers.set(key, [])
@@ -317,6 +296,39 @@ export default class Serializer {
             }
             tileMap.set(key, tile)
             // layers.get(val.collisionLayer).push(tile)
+        }
+
+        for (const [key, val] of Object.entries(source.sounds)) {
+            switch(val.type) {
+                case ast.SOUND_TYPE.SFX:
+                case ast.SOUND_TYPE.WHEN:
+                    soundMap.set(key, {...val})
+                    break
+                case ast.SOUND_TYPE.SPRITE_DIRECTION:
+                case ast.SOUND_TYPE.SPRITE_EVENT:
+                case ast.SOUND_TYPE.SPRITE_MOVE:
+                    soundMap.set(key, {...val, sprite: tileMap.get(val.sprite)})
+                    break
+            }
+        }
+        for (const [key, val] of Object.entries(source.commands)) {
+            switch (val.type) {
+                case ast.COMMAND_TYPE.MESSAGE:
+                    commandMap.set(key, val)
+                    break
+                case ast.COMMAND_TYPE.SFX:
+                    commandMap.set(key, { ...val, sound: soundMap.get(val.sound) })
+                    break
+                case ast.COMMAND_TYPE.RESTART:
+                case ast.COMMAND_TYPE.AGAIN:
+                case ast.COMMAND_TYPE.CANCEL:
+                case ast.COMMAND_TYPE.CHECKPOINT:
+                case ast.COMMAND_TYPE.WIN:
+                    commandMap.set(key, val)
+                    break
+                default:
+                    throw new Error(`ERROR: Unsupported command type`)
+            }
         }
 
         for (const [key, val] of Object.entries(source.collisionLayers)) {
@@ -433,7 +445,7 @@ export default class Serializer {
     private readonly game: GameData
     private readonly colorsMap: Map<string, ColorId>
     private readonly spritesMap: MapWithId<GameSprite, IGraphSprite>
-    private readonly soundMap: MapWithId<ast.SoundItem<IGameTile>, ast.SoundItem<IGameTile>>
+    private readonly soundMap: MapWithId<ast.SoundItem<IGameTile>, ast.SoundItem<string>>
     private readonly collisionLayerMap: MapWithId<CollisionLayer, ISourceNode>
     private readonly conditionsMap: MapWithId<ISimpleBracket, ast.Bracket<NeighborId>>
     private readonly neighborsMap: MapWithId<SimpleNeighbor, ast.Neighbor<TileWithModifierId>>
@@ -469,7 +481,7 @@ export default class Serializer {
         // Load up the colors and sprites
         this.game.collisionLayers.forEach((item) => this.buildCollisionLayer(item))
         this.game.sounds.forEach((item) => {
-            this.soundMap.set(item, item)
+            this.buildSound(item)
         })
         this.game.objects.forEach((sprite) => {
             this.buildSprite(sprite)
@@ -713,6 +725,17 @@ export default class Serializer {
         this.colorsMap.set(hex, hex)
         return hex
     }
+    private buildSound(sound: ast.SoundItem<IGameTile>) {
+        switch(sound.type) {
+            case ast.SOUND_TYPE.SFX:
+            case ast.SOUND_TYPE.WHEN:
+                return this.soundMap.set(sound, {...sound})
+            case ast.SOUND_TYPE.SPRITE_DIRECTION:
+            case ast.SOUND_TYPE.SPRITE_EVENT:
+            case ast.SOUND_TYPE.SPRITE_MOVE:
+                return this.soundMap.set(sound, {...sound, sprite: this.buildTile(sound.sprite)})
+        }
+    }
 }
 
 export interface IGraphJson {
@@ -720,7 +743,7 @@ export interface IGraphJson {
     title: string,
     metadata: IGraphGameMetadata,
     colors: {[key: string]: string},
-    sounds: {[key: string]: ast.SoundItem<IGameTile>},
+    sounds: {[key: string]: ast.SoundItem<string>},
     collisionLayers: {[key: string]: ISourceNode},
     commands: {[key: string]: ast.Command<SoundId>},
     sprites: {[key: string]: IGraphSprite},

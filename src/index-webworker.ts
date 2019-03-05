@@ -8,7 +8,7 @@ import Parser from './parser/parser'
 import Serializer from './parser/serializer'
 import { Cellish, CellishJson, GameEngineHandler, INPUT_BUTTON, MESSAGE_TYPE, Optional, pollingPromise, shouldTick, TypedMessageEvent, WorkerMessage, WorkerResponse } from './util'
 
-declare var postMessage: (msg: WorkerResponse) => void
+declare var postMessage: (msg: WorkerResponse, transferables?: Transferable[]) => void
 
 let currentEngine: Optional<GameEngine> = null
 let gameLoop: Optional<NodeJS.Timeout> = null
@@ -16,10 +16,13 @@ let awaitingMessage = false
 let receivedMessage = false
 let lastTick = 0
 
+const textEncoder = new TextEncoder()
+const textDecoder = new TextDecoder()
+
 onmessage = (event: TypedMessageEvent<WorkerMessage>) => {
     const msg = event.data
     switch (msg.type) {
-        case MESSAGE_TYPE.ON_GAME_CHANGE: loadGame(msg.code, msg.level, msg.checkpoint); break
+        case MESSAGE_TYPE.ON_GAME_CHANGE: loadGame(textDecoder.decode(msg.code), msg.level, msg.checkpoint); break
         case MESSAGE_TYPE.PAUSE: postMessage({ type: msg.type, payload: pauseGame() }); break
         case MESSAGE_TYPE.RESUME: postMessage({ type: msg.type, payload: resumeGame() }); break
         case MESSAGE_TYPE.PRESS: postMessage({ type: msg.type, payload: press(msg.button) }); break
@@ -59,7 +62,10 @@ let previousMessage = '' // a dev-invariant checker that ensures we do not show 
 
 class Handler implements GameEngineHandler {
     public onGameChange(gameData: GameData) {
-        postMessage({ type: MESSAGE_TYPE.ON_GAME_CHANGE, payload: (new Serializer(gameData)).toJson() })
+        const jsonStr = JSON.stringify((new Serializer(gameData)).toJson())
+        const encoder = new TextEncoder()
+        const transferableArray = encoder.encode(jsonStr).buffer
+        postMessage({ type: MESSAGE_TYPE.ON_GAME_CHANGE, payload: transferableArray }, [ transferableArray ])
     }
     public onPress(dir: INPUT_BUTTON) {
         if (!dir) {
@@ -114,7 +120,8 @@ const loadGame = (code: string, level: number, checkpoint: Optional<CellSaveStat
     pauseGame()
     previousMessage = '' // clear this dev-invariant-tester field since it is a new game
     const { data } = Parser.parse(code)
-    postMessage({ type: MESSAGE_TYPE.ON_GAME_CHANGE, payload: (new Serializer(data)).toJson() })
+    const jsonStr = JSON.stringify((new Serializer(data)).toJson())
+    postMessage({ type: MESSAGE_TYPE.ON_GAME_CHANGE, payload: textEncoder.encode(jsonStr).buffer })
     currentEngine = new GameEngine(data, new Handler())
     currentEngine.setLevel(level, checkpoint)
     runPlayLoop() // tslint:disable-line:no-floating-promises
