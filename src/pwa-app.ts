@@ -205,6 +205,7 @@ window.addEventListener('load', () => {
             el.msRequestFullscreen()
         }
         table.focus() // do not lose focus
+        tableEngine.resize()
     })
 
     exitFullscreen.addEventListener('click', () => {
@@ -219,6 +220,7 @@ window.addEventListener('load', () => {
             el.msExitFullscreen()
         }
         table.focus() // do not lose focus
+        tableEngine.resize()
     })
 
     // Save when the user completes a level

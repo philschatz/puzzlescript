@@ -26,8 +26,8 @@ export default class ResizeWatcher {
         // Resize the table so that it fits.
         const levelRatio = this.columns / this.rows
         // Figure out if the width or the height is the limiting factor
-        const availableWidth = window.innerWidth - this.table.offsetLeft
-        const availableHeight = window.innerHeight - this.table.offsetTop
+        const availableWidth = window.outerWidth - this.table.offsetLeft
+        const availableHeight = window.outerHeight - this.table.offsetTop
         let newWidth = 0
         if (availableWidth / levelRatio < availableHeight) {
             // Width is the limiting factor
