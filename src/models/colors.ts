@@ -14,6 +14,10 @@ export class RGB {
         this.b = b
         this.a = a
     }
+
+    public isDark() {
+        return this.r + this.g + this.b < 128 * 3
+    }
 }
 
 export interface IColor extends IGameNode {
