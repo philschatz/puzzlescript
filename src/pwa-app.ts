@@ -159,6 +159,10 @@ window.addEventListener('load', () => {
             const storage = { _version: CURRENT_STORAGE_VERSION, levelNum: this.getLevelNum(), data: checkpoint }
             this.saveJson(`${GAME_STORAGE_CHECKPOINT_PREFIX}.${gameId}`, storage)
         }
+        public getNumberOfPlayedGames() {
+            const storage = this.loadStorage()
+            return Object.keys(storage).length - 1 // for _version
+        }
 
         public loadJson<T>(key: string, defaultValue: T) {
             const str = window.localStorage.getItem(key)
@@ -302,6 +306,31 @@ window.addEventListener('load', () => {
         }
     }
 
+    const allGamesInOrder: Array<{id: string, title: string}> = []
+    {
+        const allGameIds = new Set<string>()
+
+        function addGameInOrder(id: string, title: string) {
+            allGamesInOrder.push({ id, title })
+            allGameIds.add(id)
+        }
+        // Populate it with the initial list on the page
+        // Then add all the other solved games
+        for (const option of Array.from(gameSelection.querySelectorAll(`option[value]:not([value='...more...'])`))) {
+
+            option.remove() // it will be added if the player has unlocked it
+
+            const id = option.getAttribute('value') || 'BUG:SHOULD_ALWAYS_HAVE_A_VALUE'
+            const title = option.textContent || 'BUG:SHOULD_ALWAYS_HAVE_A_TITLE'
+            addGameInOrder(id, title)
+        }
+        for (const [title, id] of SOLVED_GAMES.entries()) {
+            if (!allGameIds.has(id)) {
+                addGameInOrder(id, title)
+            }
+        }
+    }
+
     {
         const storage = currentInfo.loadStorage()
         for (const gameId in storage) {
@@ -320,6 +349,18 @@ window.addEventListener('load', () => {
         addGame(gameId, title || gameId)
         currentInfo.setGameAndLevel(gameId, levelNum ? Number.parseInt(levelNum, 10) : null)
     }
+
+    // Add 5 more than what has been played
+    for (const {id, title} of allGamesInOrder) {
+        addGame(id, title)
+        if (getUnplayedCount() >= 5) {
+            break
+        }
+    }
+
+    // add the "More Games..." option
+    addGame('...more...', 'More Games...')
+
 
     // update the % complete in the dropdown AND
     // Select the first game (not IceCrates all the time)
@@ -340,21 +381,34 @@ window.addEventListener('load', () => {
     startGamepadDetection()
     playSelectedGame()
 
+    function getUnplayedCount() {
+        return gameSelection.querySelectorAll(`option[value]:not([value='...more...'])`).length
+    }
+
     function loadMoreGames() {
-        const moreOption = gameSelection.querySelector(`[value='...more...']`)
-        if (moreOption) {
-            for (const [title, gameId] of SOLVED_GAMES.entries()) {
-                addGame(gameId, title)
-            }
-            // delete the `...more...` entry
-            gameSelection.removeChild(moreOption)
+        const playedCount = currentInfo.getNumberOfPlayedGames()
+        const unplayed = getUnplayedCount()
+        if (unplayed >= playedCount * 1.5) {
+            alert(`Try ${Math.ceil(unplayed - playedCount * 1.5)} more game(s) to unlock more`)
+            return
         }
+        for (const { id, title } of allGamesInOrder) {
+            addGame(id, title)
+            const unplayedCount = getUnplayedCount() - playedCount
+            if (unplayedCount >= playedCount * 1.5) {
+                break
+            }
+        }
+        updateGameSelectionInfo()
+        alert('Games unlocked!')
     }
 
     // Load the new game when the dropdown changes
-    gameSelection.addEventListener('change', () => {
+    gameSelection.addEventListener('change', (evt) => {
         if (gameSelection.value === '...more...') {
             loadMoreGames()
+            // revert the selection back to the selected game
+            gameSelection.value = currentInfo.getGameId()
         } else if (gameSelection.value) {
             currentInfo.setGameAndLevel(gameSelection.value, null)
             playSelectedGame()
@@ -536,6 +590,13 @@ window.addEventListener('load', () => {
         }
         const allOptions = [...continuePlayingOptions, ...newGameOptions, ...uncompletedOptions, ...completedOptions]
         gameSelection.append(...allOptions)
+
+        // remove the "More games..." and add it to the bottom
+        const moreGames = gameSelection.querySelector(`option[value='...more...']`)
+        if (moreGames) {
+            moreGames.remove()
+            gameSelection.appendChild(moreGames)
+        }
 
         gameSelection.value = originalSelection
     }
