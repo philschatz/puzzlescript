@@ -94,7 +94,6 @@ interface IGraphSprite extends ISourceNode {
     // sounds: {}
 }
 
-
 enum TILE_TYPE {
     OR = 'OR',
     AND = 'AND',
@@ -299,15 +298,15 @@ export default class Serializer {
         }
 
         for (const [key, val] of Object.entries(source.sounds)) {
-            switch(val.type) {
+            switch (val.type) {
                 case ast.SOUND_TYPE.SFX:
                 case ast.SOUND_TYPE.WHEN:
-                    soundMap.set(key, {...val})
+                    soundMap.set(key, { ...val })
                     break
                 case ast.SOUND_TYPE.SPRITE_DIRECTION:
                 case ast.SOUND_TYPE.SPRITE_EVENT:
                 case ast.SOUND_TYPE.SPRITE_MOVE:
-                    soundMap.set(key, {...val, sprite: tileMap.get(val.sprite)})
+                    soundMap.set(key, { ...val, sprite: tileMap.get(val.sprite) })
                     break
             }
         }
@@ -726,14 +725,14 @@ export default class Serializer {
         return hex
     }
     private buildSound(sound: ast.SoundItem<IGameTile>) {
-        switch(sound.type) {
+        switch (sound.type) {
             case ast.SOUND_TYPE.SFX:
             case ast.SOUND_TYPE.WHEN:
-                return this.soundMap.set(sound, {...sound})
+                return this.soundMap.set(sound, { ...sound })
             case ast.SOUND_TYPE.SPRITE_DIRECTION:
             case ast.SOUND_TYPE.SPRITE_EVENT:
             case ast.SOUND_TYPE.SPRITE_MOVE:
-                return this.soundMap.set(sound, {...sound, sprite: this.buildTile(sound.sprite)})
+                return this.soundMap.set(sound, { ...sound, sprite: this.buildTile(sound.sprite) })
         }
     }
 }

@@ -88,8 +88,6 @@ class SubTableEngine {
 
 }
 
-const textDecoder = new TextDecoder()
-
 export default class SyncTableEngine implements Engineish {
     private readonly table: HTMLTableElement
     private readonly resizeWatcher: ResizeWatcher
@@ -110,8 +108,8 @@ export default class SyncTableEngine implements Engineish {
         this.table.addEventListener('blur', this.boundPause)
         this.table.addEventListener('focus', this.boundResume)
     }
-    public setGame(source: ArrayBuffer, level: number = 0, checkpoint: Optional<CellSaveState>) {
-        this.subEngine.setGame(textDecoder.decode(source), level, checkpoint)
+    public setGame(source: string, level: number = 0, checkpoint: Optional<CellSaveState>) {
+        this.subEngine.setGame(source, level, checkpoint)
 
         const engine = this.subEngine.getEngine()
         if (engine.getCurrentLevel().type === LEVEL_TYPE.MAP) {

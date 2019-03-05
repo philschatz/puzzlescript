@@ -432,7 +432,7 @@ export class EmptyGameEngineHandler implements GameEngineHandler {
 }
 
 export interface Engineish {
-    setGame(code: ArrayBuffer, level: number, checkpoint: Optional<CellSaveState>): void
+    setGame(code: string, level: number, checkpoint: Optional<CellSaveState>): void
     dispose(): void
     pause?(): void
     resume?(): void

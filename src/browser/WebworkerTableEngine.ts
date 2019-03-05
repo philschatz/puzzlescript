@@ -42,6 +42,7 @@ class ProxyCellish implements Cellish {
 }
 
 const textDecoder = new TextDecoder()
+const textEncoder = new TextEncoder()
 
 export default class WebworkerTableEngine implements Engineish {
     public readonly inputWatcher: InputWatcher
@@ -94,8 +95,9 @@ export default class WebworkerTableEngine implements Engineish {
 
         this.inputInterval = window.setInterval(this.pollInputWatcher, 10)
     }
-    public setGame(code: ArrayBuffer, level: number, checkpoint: Optional<CellSaveState>) {
-        this.worker.postMessage({ type: MESSAGE_TYPE.ON_GAME_CHANGE, code, level, checkpoint }, [code])
+    public setGame(code: string, level: number, checkpoint: Optional<CellSaveState>) {
+        const encodedCode = textEncoder.encode(code).buffer
+        this.worker.postMessage({ type: MESSAGE_TYPE.ON_GAME_CHANGE, code: encodedCode, level, checkpoint }, [encodedCode])
     }
 
     public dispose() {
