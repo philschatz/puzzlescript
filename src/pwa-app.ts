@@ -6,6 +6,7 @@ import { BUTTON_TYPE } from './browser/controller/controller'
 import WebworkerTableEngine from './browser/WebworkerTableEngine'
 import SOLVED_GAMES from './cli/solvedGames'
 import { CellSaveState } from './engine'
+import { HexColor } from './models/colors'
 import { IGameTile } from './models/tile'
 import { Level } from './parser/astTypes'
 import { GameEngineHandlerOptional, Optional, pollingPromise } from './util'
@@ -72,6 +73,9 @@ window.addEventListener('load', () => {
     const authorInfo = getElement('#authorInfo')
     const instructionsContainer = getElement('#instructionsContainer')
     const closeInstructions = getElement('#closeInstructions')
+    const fullscreenRoot = getElement('#fullscreenRoot')
+    const enterFullscreen = getElement('#enterFullscreen')
+    const exitFullscreen = getElement('#exitFullscreen')
     const messageDialog = getElement<Dialog>('#messageDialog')
     const messageDialogText = getElement('#messageDialogText')
     const messageDialogClose = getElement('#messageDialogClose')
@@ -181,6 +185,42 @@ window.addEventListener('load', () => {
         tableEngine.resize()
     })
 
+    // Hide the fullscreen button if it is not available in the browser
+    {
+        const doc = document as any
+        const isFullscreenEnabled = document.fullscreenEnabled || doc.webkitFullscreenEnabled || doc.mozFullScreenEnabled || doc.msFullScreenEnabled
+        if (!isFullscreenEnabled) {
+            enterFullscreen.style.display = 'none'
+        }
+    }
+    enterFullscreen.addEventListener('click', () => {
+        const el = fullscreenRoot as any
+        if (el.requestFullscreen) {
+            el.requestFullscreen()
+        } else if (el.webkitRequestFullScreen) {
+            el.webkitRequestFullScreen()
+        } else if (el.mozRequestFullScreen) {
+            el.mozRequestFullScreen()
+        } else if (el.msRequestFullscreen) {
+            el.msRequestFullscreen()
+        }
+        table.focus() // do not lose focus
+    })
+
+    exitFullscreen.addEventListener('click', () => {
+        const el = document as any
+        if (el.exitFullscreen) {
+            el.exitFullscreen()
+        } else if (el.webkitExitFullscreen) {
+            el.webkitExitFullscreen()
+        } else if (el.mozCancelFullScreen) {
+            el.mozCancelFullScreen()
+        } else if (el.msExitFullscreen) {
+            el.msExitFullscreen()
+        }
+        table.focus() // do not lose focus
+    })
+
     // Save when the user completes a level
     const handler: GameEngineHandlerOptional = {
         async onMessage(msg) {
@@ -253,8 +293,15 @@ window.addEventListener('load', () => {
         },
         onGameChange(gameData) {
             // Set the background color to be that of the game
-            const { backgroundColor } = gameData.metadata
-            window.document.body.style.backgroundColor = backgroundColor ? backgroundColor.toHex() : 'black'
+            let { backgroundColor } = gameData.metadata
+            backgroundColor = backgroundColor || new HexColor({ code: '', sourceOffset: 0 }, '#000000')
+
+            if (backgroundColor.toRgb().isDark()) {
+                window.document.body.classList.add('is-background-dark')
+            } else {
+                window.document.body.classList.remove('is-background-dark')
+            }
+            window.document.body.style.backgroundColor = backgroundColor.toHex()
 
             function toUrl(url: string) {
                 return /^https?:\/\//.test(url) ? url : `http://${url}`
