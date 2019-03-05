@@ -307,27 +307,26 @@ window.addEventListener('load', () => {
     }
 
     const allGamesInOrder: Array<{id: string, title: string}> = []
-    {
-        const allGameIds = new Set<string>()
+    const allGameIds = new Set<string>()
 
-        function addGameInOrder(id: string, title: string) {
-            allGamesInOrder.push({ id, title })
-            allGameIds.add(id)
-        }
-        // Populate it with the initial list on the page
-        // Then add all the other solved games
-        for (const option of Array.from(gameSelection.querySelectorAll(`option[value]:not([value='...more...'])`))) {
+    function addGameInOrder(id: string, title: string) {
+        allGamesInOrder.push({ id, title })
+        allGameIds.add(id)
+    }
 
-            option.remove() // it will be added if the player has unlocked it
+    // Populate it with the initial list on the page
+    // Then add all the other solved games
+    for (const option of Array.from(gameSelection.querySelectorAll(`option[value]:not([value='...more...'])`))) {
 
-            const id = option.getAttribute('value') || 'BUG:SHOULD_ALWAYS_HAVE_A_VALUE'
-            const title = option.textContent || 'BUG:SHOULD_ALWAYS_HAVE_A_TITLE'
+        option.remove() // it will be added if the player has unlocked it
+
+        const id = option.getAttribute('value') || 'BUG:SHOULD_ALWAYS_HAVE_A_VALUE'
+        const title = option.textContent || 'BUG:SHOULD_ALWAYS_HAVE_A_TITLE'
+        addGameInOrder(id, title)
+    }
+    for (const [title, id] of SOLVED_GAMES.entries()) {
+        if (!allGameIds.has(id)) {
             addGameInOrder(id, title)
-        }
-        for (const [title, id] of SOLVED_GAMES.entries()) {
-            if (!allGameIds.has(id)) {
-                addGameInOrder(id, title)
-            }
         }
     }
 
