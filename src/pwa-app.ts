@@ -71,11 +71,11 @@ window.addEventListener('load', () => {
     const loadingIndicator = getElement('#loadingIndicator')
     const authorSection = getElement('#authorSection')
     const authorInfo = getElement('#authorInfo')
-    const instructionsContainer = getElement('#instructionsContainer')
-    const closeInstructions = getElement('#closeInstructions')
-    const fullscreenRoot = getElement('#fullscreenRoot')
+    // const fullscreenRoot = getElement('#fullscreenRoot')
     // Like full screen but keep the browser bar. Also, alerts break fullscreen but not zenscreen
     const enterFullscreen = getElement('#enterFullscreen')
+    const enterFullscreen2 = getElement('#enterFullscreen2')
+    const enterFullscreen3 = getElement('#enterFullscreen3')
     const exitFullscreen = getElement('#exitFullscreen')
     const messageDialog = getElement<Dialog>('#messageDialog')
     const messageDialogText = getElement('#messageDialogText')
@@ -184,12 +184,6 @@ window.addEventListener('load', () => {
         messageDialog.close()
     })
 
-    closeInstructions.addEventListener('click', () => {
-        instructionsContainer.classList.add('hidden')
-        // resize the game
-        tableEngine.resize()
-    })
-
     // // Hide the fullscreen button if it is not available in the browser
     // {
     //     const doc = document as any
@@ -198,7 +192,7 @@ window.addEventListener('load', () => {
     //         enterFullscreen.style.display = 'none'
     //     }
     // }
-    enterFullscreen.addEventListener('click', () => {
+    const enterFullscreenHandler = () => {
         document.body.classList.add('is-zen-screen')
         // const el = fullscreenRoot as any
         // if (el.requestFullscreen) {
@@ -212,7 +206,10 @@ window.addEventListener('load', () => {
         // }
         table.focus() // do not lose focus
         tableEngine.resize()
-    })
+    }
+    enterFullscreen.addEventListener('click', enterFullscreenHandler)
+    enterFullscreen2.addEventListener('click', enterFullscreenHandler)
+    enterFullscreen3.addEventListener('click', enterFullscreenHandler)
 
     exitFullscreen.addEventListener('click', () => {
         document.body.classList.remove('is-zen-screen')
