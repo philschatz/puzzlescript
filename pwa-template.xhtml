@@ -33,7 +33,10 @@
         
 
 
-        body { font-family: helvetica, arial, sans-serif; }
+        body {
+            font-size: 12px;
+            font-family: helvetica, arial, sans-serif; 
+        }
         .hidden { display: none; }
         .light { opacity: .5; }
         kbd {
@@ -49,6 +52,11 @@
             border-bottom-color: #959da5;
             border-radius: 3px;
             box-shadow: inset 0 -1px 0 #959da5;
+        }
+        hr {
+            border-style: solid;
+            border-top: 0;
+            border-bottom: 1px solid #ccc;
         }
 
         /* Decide whether to move the following (all) to the html-table.css file */
@@ -183,6 +191,21 @@
             background-color: rgba(90, 90, 238);
             box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
         }
+        #gameInstructionsButton {
+            float: right;
+            padding: 0.25rem;
+        }
+
+        .ui-features-list { 
+            list-style-type: none;
+            padding-inline-start: 0;
+        }
+
+        .ui-features-list li {
+            margin-bottom: 1rem;
+            border-left: 2px solid rgba(90, 90, 238);
+            padding-left: .5rem;
+        }
 
         /* =================================================
          * FullScreen controls and styles 
@@ -190,35 +213,32 @@
          */
 
         /* NOTE: Using a comma does not work in chrome, so they are enumerated */
-        :fullscreen #theGame { margin: auto; }
+        /* :fullscreen #theGame { margin: auto; }
         :-webkit-full-screen #theGame { margin: auto; }
         :-moz-full-screen #theGame { margin: auto; }
-        :-ms-fullscreen #theGame { margin: auto; }
+        :-ms-fullscreen #theGame { margin: auto; } */
         body.is-zen-screen #fullscreenRoot { margin: auto; }
 
-        #enterFullscreen,
-        #exitFullscreen {
+        #fullscreenButtons {
             position: fixed;
-            bottom: 0;
-            right: 0;
+            top: 0;
+            left: 0;
         }
 
+        body:not(.is-zen-screen) #fullscreenButtons { display: none; }
+
         #messageDialogClose,
-        #enterFullscreen,
         #exitFullscreen {
             margin: 0.5rem;
         }
 
-        #exitFullscreen { display: none; }
-
         /* NOTE: Using a comma does not work in chrome, so they are enumerated */
-        :fullscreen #exitFullscreen { display: block; }
+        /* :fullscreen #exitFullscreen { display: block; }
         :-webkit-full-screen #exitFullscreen { display: block; }
         :-moz-full-screen #exitFullscreen { display: block; }
         :-ms-fullscreen #exitFullscreen { display: block; }
-        body.is-zen-screen #exitFullscreen { display: block; }
+        body.is-zen-screen #exitFullscreen { display: block; } */
 
-        body.is-zen-screen #enterFullscreen,
         body.is-zen-screen #infoContainer,
         body.is-zen-screen #instructionsContainer { display: none; }
     </style>
@@ -238,15 +258,11 @@
 <body>
     <div id="infoContainer">
         <div class="panel-header">
-            <h1 id="headingSection" class="panel-title">Accessible <a href="https://github.com/philschatz/puzzlescript">Puzzle Games</a></h1>
-            <button id="enterFullscreen2" aria-label="Hide Game Selection Menu" class="close">
+            <h1 id="headingSection" class="panel-title">Accessible <a href="https://github.com/philschatz/puzzlescript" target="_window">Puzzle Games</a></h1>
+            <button id="enterFullscreen" aria-label="Hide Game Selection Menu" class="close">
                 <span aria-hidden="true">×</span>
             </button>
         </div>
-
-        <p id="disableCssSection"><input id="disableCss" type="checkbox"/> <label for="disableCss"><strong>Check</strong> to see what a non-sighted user would experience (disables CSS)</label></p>
-    
-        <p><button id="gameInstructionsButton" class="ui-button">Help</button></p>
 
         <p id="gameSelectionSection">
             <button id="btnAdd" class="hidden">Add to Homescreen?</button>
@@ -295,12 +311,21 @@
     
         <p id="authorSection" class="hidden"><small>By <a id="authorInfo" target="_window"></a></small></p>
 
-        <p id="gamepadSection">
-            <img id="gamepadIcon" alt="gamepad icon" width="42" height="42" src="./pwa-icon.svg"/>
-            <span id="gamepadDisabled" class="hidden"><strong>Tip:</strong> Connect a gamepad controller (XBOX/PS3/PS4/etc) to use it to play.</span>
-            <span id="gamepadRecognized" class="hidden">Gamepad is detected. You can play using it now. Just make sure the game is focused.</span>
-            <span id="gamepadNotRecognized" class="hidden">Gamepad is detected but not recognized. Please submit an Issue on the Repository and we will help get it added</span>
-        </p>
+        <hr/>
+        
+        <h3><button id="gameInstructionsButton" class="ui-button">Help</button> Features</h3>
+
+        <ul class="ui-features-list">
+            <li id="disableCssSection"><input id="disableCss" type="checkbox"/> <label for="disableCss"><strong>Check</strong> to see what a non-sighted user would experience (disables CSS)</label></li>
+            <li>Install as a mobile app by opening on a phone/tablet</li>
+            <li id="gamepadSection">
+                <img id="gamepadIcon" alt="gamepad icon" width="20" height="20" src="./pwa-icon.svg"/>
+                <span id="gamepadDisabled" class="hidden"><strong>Tip:</strong> Connect a gamepad controller (XBOX/PS3/PS4/etc) to use it to play.</span>
+                <span id="gamepadRecognized" class="hidden">Gamepad is detected. You can play using it now. Just make sure the game is focused.</span>
+                <span id="gamepadNotRecognized" class="hidden">Gamepad is detected but not recognized. Please submit an Issue on the Repository and we will help get it added</span>
+            </li>
+        </ul>
+
     
     </div>
     
@@ -317,14 +342,12 @@
                 <div role="log" aria-live="polite">The Game log</div>
             </caption>
         </table>
-        <button id="exitFullscreen" class="ui-button">
-            Exit Fullscreen
-        </button>
+        
+        <div id="fullscreenButtons">
+            <button id="exitFullscreen" class="ui-button">Show Menu</button>
+            <button id="gameInstructionsButton2" class="ui-button">Help</button>
+        </div>
     </div>
-
-    <button id="enterFullscreen" class="ui-button">
-        Fullscreen
-    </button>
 
 
     <dialog id="gameInstructionsDialog">
