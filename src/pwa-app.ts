@@ -71,15 +71,19 @@ window.addEventListener('load', () => {
     const loadingIndicator = getElement('#loadingIndicator')
     const authorSection = getElement('#authorSection')
     const authorInfo = getElement('#authorInfo')
-    const instructionsContainer = getElement('#instructionsContainer')
-    const closeInstructions = getElement('#closeInstructions')
-    const fullscreenRoot = getElement('#fullscreenRoot')
+    const gameInstructionsButton = getElement('#gameInstructionsButton')
+    const gameInstructionsButton2 = getElement('#gameInstructionsButton2')
+    const gameInstructionsDialog = getElement<Dialog>('#gameInstructionsDialog')
+    const gameInstructionsDialogClose = getElement('#gameInstructionsDialogClose')
+    // const fullscreenRoot = getElement('#fullscreenRoot')
+    // Like full screen but keep the browser bar. Also, alerts break fullscreen but not zenscreen
     const enterFullscreen = getElement('#enterFullscreen')
     const exitFullscreen = getElement('#exitFullscreen')
     const messageDialog = getElement<Dialog>('#messageDialog')
     const messageDialogText = getElement('#messageDialogText')
     const messageDialogClose = getElement('#messageDialogClose')
     dialogPolyfill.registerDialog(messageDialog)
+    dialogPolyfill.registerDialog(gameInstructionsDialog)
 
     TimeAgo.addLocale(TimeAgoEn)
     const timeAgo = new TimeAgo('en-US')
@@ -181,48 +185,57 @@ window.addEventListener('load', () => {
 
     messageDialogClose.addEventListener('click', () => {
         messageDialog.close()
+        table.focus()
     })
 
-    closeInstructions.addEventListener('click', () => {
-        instructionsContainer.classList.add('hidden')
-        // resize the game
-        tableEngine.resize()
+    gameInstructionsButton.addEventListener('click', () => {
+        gameInstructionsDialog.showModal()
+    })
+    gameInstructionsButton2.addEventListener('click', () => {
+        gameInstructionsDialog.showModal()
+    })
+    gameInstructionsDialogClose.addEventListener('click', () => {
+        gameInstructionsDialog.close()
+        table.focus()
     })
 
-    // Hide the fullscreen button if it is not available in the browser
-    {
-        const doc = document as any
-        const isFullscreenEnabled = document.fullscreenEnabled || doc.webkitFullscreenEnabled || doc.mozFullScreenEnabled || doc.msFullScreenEnabled
-        if (!isFullscreenEnabled) {
-            enterFullscreen.style.display = 'none'
-        }
-    }
+    // // Hide the fullscreen button if it is not available in the browser
+    // {
+    //     const doc = document as any
+    //     const isFullscreenEnabled = document.fullscreenEnabled || doc.webkitFullscreenEnabled || doc.mozFullScreenEnabled || doc.msFullScreenEnabled
+    //     if (!isFullscreenEnabled) {
+    //         enterFullscreen.style.display = 'none'
+    //     }
+    // }
+
     enterFullscreen.addEventListener('click', () => {
-        const el = fullscreenRoot as any
-        if (el.requestFullscreen) {
-            el.requestFullscreen()
-        } else if (el.webkitRequestFullScreen) {
-            el.webkitRequestFullScreen()
-        } else if (el.mozRequestFullScreen) {
-            el.mozRequestFullScreen()
-        } else if (el.msRequestFullscreen) {
-            el.msRequestFullscreen()
-        }
-        table.focus() // do not lose focus
+        document.body.classList.add('is-zen-screen')
+        // const el = fullscreenRoot as any
+        // if (el.requestFullscreen) {
+        //     el.requestFullscreen()
+        // } else if (el.webkitRequestFullScreen) {
+        //     el.webkitRequestFullScreen()
+        // } else if (el.mozRequestFullScreen) {
+        //     el.mozRequestFullScreen()
+        // } else if (el.msRequestFullscreen) {
+        //     el.msRequestFullscreen()
+        // }
         tableEngine.resize()
+        table.focus() // do not lose focus
     })
 
     exitFullscreen.addEventListener('click', () => {
-        const el = document as any
-        if (el.exitFullscreen) {
-            el.exitFullscreen()
-        } else if (el.webkitExitFullscreen) {
-            el.webkitExitFullscreen()
-        } else if (el.mozCancelFullScreen) {
-            el.mozCancelFullScreen()
-        } else if (el.msExitFullscreen) {
-            el.msExitFullscreen()
-        }
+        document.body.classList.remove('is-zen-screen')
+        // const el = document as any
+        // if (el.exitFullscreen) {
+        //     el.exitFullscreen()
+        // } else if (el.webkitExitFullscreen) {
+        //     el.webkitExitFullscreen()
+        // } else if (el.mozCancelFullScreen) {
+        //     el.mozCancelFullScreen()
+        // } else if (el.msExitFullscreen) {
+        //     el.msExitFullscreen()
+        // }
         table.focus() // do not lose focus
         tableEngine.resize()
     })

@@ -11,7 +11,7 @@
          */
         @media all and (display-mode: standalone) {
             /* #headingSection, Uncommenting this causes horizontal lines on Android */
-            #gameInstructionsSection,
+            #keyboardInstructionsSection,
             #disableCssSection,
             #instructionsContainer,
             #gamepadSection { display: none; }
@@ -20,7 +20,18 @@
         /* Hide by default */
         #gamepadSectionPWA { display: none; }
 
-        body { font-family: helvetica, arial, sans-serif; }
+        /* Show instructions depending on whether the user has a keyboard, touch screen, or both */
+        /* https://stackoverflow.com/a/52854585 */
+        #touchInstructionsSection { opacity: 0.25; }
+        @media (any-pointer: coarse) {
+            #touchInstructionsSection { opacity: 1; }
+            #keyboardInstructionsSection { display: none; }
+        }        
+
+        body {
+            font-size: 12px;
+            font-family: helvetica, arial, sans-serif; 
+        }
         .hidden { display: none; }
         .light { opacity: .5; }
         kbd {
@@ -36,6 +47,11 @@
             border-bottom-color: #959da5;
             border-radius: 3px;
             box-shadow: inset 0 -1px 0 #959da5;
+        }
+        hr {
+            border-style: solid;
+            border-top: 0;
+            border-bottom: 1px solid #ccc;
         }
 
         /* Decide whether to move the following (all) to the html-table.css file */
@@ -160,45 +176,66 @@
             }
         }
 
+        button.ui-button {
+            cursor: pointer;
+            padding: 0.5rem;
+            border: 1px solid #666;
+            border-radius: 6px;
+
+            color: white;
+            background-color: rgba(90, 90, 238);
+            box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
+        }
+        #gameInstructionsButton {
+            float: right;
+            padding: 0.25rem;
+        }
+
+        .ui-features-list { 
+            list-style-type: none;
+            padding-inline-start: 0;
+        }
+
+        .ui-features-list li {
+            margin-bottom: 1rem;
+            border-left: 2px solid rgba(90, 90, 238);
+            padding-left: .5rem;
+        }
+
         /* =================================================
          * FullScreen controls and styles 
          * =================================================
          */
 
         /* NOTE: Using a comma does not work in chrome, so they are enumerated */
-        :fullscreen #theGame { margin: auto; }
+        /* :fullscreen #theGame { margin: auto; }
         :-webkit-full-screen #theGame { margin: auto; }
         :-moz-full-screen #theGame { margin: auto; }
-        :-ms-fullscreen #theGame { margin: auto; }
+        :-ms-fullscreen #theGame { margin: auto; } */
+        body.is-zen-screen #fullscreenRoot { margin: auto; }
 
-        #enterFullscreen,
+        #fullscreenButtons {
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+
+        body:not(.is-zen-screen) #fullscreenButtons { display: none; }
+
+        #messageDialogClose,
         #exitFullscreen {
-            position: absolute;
-            bottom: 0;
-            right: 0;
-
-            cursor: pointer;
-            padding: 0.5rem;
             margin: 0.5rem;
-            border: 1px solid #666;
-            border-radius: 6px;
         }
-
-        #enterFullscreen,
-        #exitFullscreen { 
-            color: white;
-            background-color: rgba(90, 90, 238);
-            box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
-        }
-
-        #exitFullscreen { display: none; }
 
         /* NOTE: Using a comma does not work in chrome, so they are enumerated */
-        :fullscreen #exitFullscreen { display: block; }
+        /* :fullscreen #exitFullscreen { display: block; }
         :-webkit-full-screen #exitFullscreen { display: block; }
         :-moz-full-screen #exitFullscreen { display: block; }
         :-ms-fullscreen #exitFullscreen { display: block; }
+        body.is-zen-screen #exitFullscreen { display: block; } */
 
+        body.is-zen-screen #infoContainer,
+        body.is-zen-screen #instructionsContainer { display: none; }
     </style>
 
     <meta charset="utf-8"/>
@@ -216,11 +253,12 @@
 <body>
     <div id="infoContainer">
         <div class="panel-header">
-            <h1 id="headingSection" class="panel-title">Accessible <a href="https://github.com/philschatz/puzzlescript">Puzzle Games</a></h1>
+            <h1 id="headingSection" class="panel-title">Accessible <a href="https://github.com/philschatz/puzzlescript" target="_window">Puzzle Games</a></h1>
+            <button id="enterFullscreen" aria-label="Hide Game Selection Menu" class="close">
+                <span aria-hidden="true">×</span>
+            </button>
         </div>
 
-        <p id="disableCssSection"><input id="disableCss" type="checkbox"/> <label for="disableCss"><strong>Check</strong> to see what a non-sighted user would experience (disables CSS)</label></p>
-    
         <p id="gameSelectionSection">
             <button id="btnAdd" class="hidden">Add to Homescreen?</button>
             <label for="gameSelection">Currently playing:</label>
@@ -268,56 +306,70 @@
     
         <p id="authorSection" class="hidden"><small>By <a id="authorInfo" target="_window"></a></small></p>
 
+        <hr/>
+        
+        <h3><button id="gameInstructionsButton" class="ui-button">Help</button> Features</h3>
+
+        <ul class="ui-features-list">
+            <li id="disableCssSection"><input id="disableCss" type="checkbox"/> <label for="disableCss"><strong>Check</strong> to see what a non-sighted user would experience (disables CSS)</label></li>
+            <li>Install as a mobile app by opening on a phone/tablet</li>
+            <li id="gamepadSection">
+                <img id="gamepadIcon" alt="gamepad icon" width="20" height="20" src="./pwa-icon.svg"/>
+                <span id="gamepadDisabled" class="hidden"><strong>Tip:</strong> Connect a gamepad controller (XBOX/PS3/PS4/etc) to use it to play.</span>
+                <span id="gamepadRecognized" class="hidden">Gamepad is detected. You can play using it now. Just make sure the game is focused.</span>
+                <span id="gamepadNotRecognized" class="hidden">Gamepad is detected but not recognized. Please submit an Issue on the Repository and we will help get it added</span>
+            </li>
+        </ul>
+
+    
     </div>
     
     <div id="fullscreenRoot">
         <dialog id="messageDialog">
             <p id="messageDialogText"></p>
-            <button id="messageDialogClose" title="Close this window">Close</button>
+            <button id="messageDialogClose" title="Close this window" class="ui-button">Close</button>
         </dialog>
             
-        <table id="theGame" aria-labelledby="gameInstructionsSection">
+        <table id="theGame" aria-labelledby="keyboardInstructionsSection">
             <caption>
                 Game info goes here. like the current level, the goal, etc.
                 <!-- See https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Live_Regions -->
                 <div role="log" aria-live="polite">The Game log</div>
             </caption>
         </table>
-        <button id="exitFullscreen">
-            Exit Fullscreen
-        </button>
+        
+        <div id="fullscreenButtons">
+            <button id="exitFullscreen" class="ui-button">Show Menu</button>
+            <button id="gameInstructionsButton2" class="ui-button">Help</button>
+        </div>
     </div>
 
-    <button id="enterFullscreen">
-        Fullscreen
-    </button>
 
-
-    <div id="instructionsContainer">
+    <dialog id="gameInstructionsDialog">
         <div class="panel-header">
-            <h2 class="panel-title">Instructions</h2>
-            <button id="closeInstructions" aria-label="Close" class="close">
-                <span aria-hidden="true">×</span>
-            </button>
+            <h2 class="panel-title">How to Play</h2>
         </div>
         
-        <div id="gameInstructionsSection">
-            <p>To play:</p>
+        <div id="keyboardInstructionsSection">
+            <p>To play with a keyboard:</p>
             <ul>
-                <li>Arrow keys or <kbd>W</kbd>, <kbd>S</kbd>, <kbd>A</kbd>, <kbd>D</kbd></li>
-                <li><kbd>X</kbd> for Action</li>
+                <li>Arrow keys or <kbd>W</kbd>, <kbd>S</kbd>, <kbd>A</kbd>, <kbd>D</kbd> to move</li>
+                <li><kbd>X</kbd> to perform an Action</li>
                 <li><kbd>Z</kbd> or <kbd>U</kbd> for Undo</li>
                 <li><kbd>R</kbd> to Restart the current level</li>
             </ul>
         </div>
-    
-        <p id="gamepadSection">
-            <img id="gamepadIcon" alt="gamepad icon" width="42" height="42" src="./pwa-icon.svg"/>
-            <span id="gamepadDisabled" class="hidden"><strong>Tip:</strong> Connect a gamepad controller (XBOX/PS3/PS4/etc) to use it to play games. You might need to press some buttons so it is detected. Occasionally, a driver needs to be installed.</span>
-            <span id="gamepadRecognized" class="hidden">Gamepad is detected. You can play using it now. Just make sure the game is focused.</span>
-            <span id="gamepadNotRecognized" class="hidden">Gamepad is detected but not recognized. Please submit an Issue on the Repository and we will help get it added</span>
-        </p>
-    
+
+        <div id="touchInstructionsSection">
+            <p>To play with a touch screen:</p>
+            <ul>
+                <li><strong>Swipe</strong> up, down, left, or right to move</li>
+                <li><strong>Tap</strong> to perform an Action</li>
+                <li><strong>Touch and Hold</strong> to Undo</li>
+                <li><strong>Touch and Hold for a few seconds</strong> to Restart the current level</li>
+            </ul>
+        </div>
+        
         <div id="gamepadSectionPWA">
             <p>
                 <img alt="gamepad icon" width="42" height="42" src="./pwa-icon.svg"/>
@@ -327,10 +379,9 @@
                 Partial Gamepad support. Up/Down/Left/Right works but not Action/Undo. See this <a href="https://bugs.chromium.org/p/chromium/issues/detail?id=906347">Chrome Bug</a>
             </p>
         </div>
-        
-        <p id="sourceSection"><a href="https://github.com/philschatz/puzzlescript">Source On GitHub</a></p>
-        
-    </div>
+    
+        <button id="gameInstructionsDialogClose" title="Close" class="ui-button">Close</button>
+    </dialog>
 
     <script type="text/javascript">//<![CDATA[
         (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
