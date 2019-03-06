@@ -21,17 +21,12 @@
         #gamepadSectionPWA { display: none; }
 
         /* Show instructions depending on whether the user has a keyboard, touch screen, or both */
+        /* https://stackoverflow.com/a/52854585 */
         #touchInstructionsSection { opacity: 0.25; }
-        #keyboardInstructionsSection { display: none; }
-
         @media (any-pointer: coarse) {
             #touchInstructionsSection { opacity: 1; }
-        }
-        @media (any-hover: hover) {
-            #keyboardInstructionsSection { display: block; }
-        }
-        
-
+            #keyboardInstructionsSection { display: none; }
+        }        
 
         body {
             font-size: 12px;
