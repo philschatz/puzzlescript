@@ -183,22 +183,24 @@
         :-webkit-full-screen #theGame { margin: auto; }
         :-moz-full-screen #theGame { margin: auto; }
         :-ms-fullscreen #theGame { margin: auto; }
+        body.is-zen-screen #fullscreenRoot { margin: auto; }
 
         #enterFullscreen,
         #exitFullscreen {
-            position: absolute;
+            position: fixed;
             bottom: 0;
             right: 0;
+        }
 
+        #messageDialogClose,
+        #enterFullscreen,
+        #exitFullscreen {
             cursor: pointer;
             padding: 0.5rem;
             margin: 0.5rem;
             border: 1px solid #666;
             border-radius: 6px;
-        }
 
-        #enterFullscreen,
-        #exitFullscreen { 
             color: white;
             background-color: rgba(90, 90, 238);
             box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
@@ -211,7 +213,11 @@
         :-webkit-full-screen #exitFullscreen { display: block; }
         :-moz-full-screen #exitFullscreen { display: block; }
         :-ms-fullscreen #exitFullscreen { display: block; }
+        body.is-zen-screen #exitFullscreen { display: block; }
 
+        body.is-zen-screen #enterFullscreen,
+        body.is-zen-screen #infoContainer,
+        body.is-zen-screen #instructionsContainer { display: none; }
     </style>
 
     <meta charset="utf-8"/>
@@ -230,6 +236,9 @@
     <div id="infoContainer">
         <div class="panel-header">
             <h1 id="headingSection" class="panel-title">Accessible <a href="https://github.com/philschatz/puzzlescript">Puzzle Games</a></h1>
+            <button id="enterFullscreen2" aria-label="Hide Game Selection Menu" class="close">
+                <span aria-hidden="true">×</span>
+            </button>
         </div>
 
         <p id="disableCssSection"><input id="disableCss" type="checkbox"/> <label for="disableCss"><strong>Check</strong> to see what a non-sighted user would experience (disables CSS)</label></p>

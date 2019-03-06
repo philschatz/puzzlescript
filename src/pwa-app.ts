@@ -74,8 +74,10 @@ window.addEventListener('load', () => {
     const gameInstructionsButton = getElement('#gameInstructionsButton')
     const gameInstructionsDialog = getElement<Dialog>('#gameInstructionsDialog')
     const gameInstructionsDialogClose = getElement('#gameInstructionsDialogClose')
-    const fullscreenRoot = getElement('#fullscreenRoot')
+    // const fullscreenRoot = getElement('#fullscreenRoot')
+    // Like full screen but keep the browser bar. Also, alerts break fullscreen but not zenscreen
     const enterFullscreen = getElement('#enterFullscreen')
+    const enterFullscreen2 = getElement('#enterFullscreen2')
     const exitFullscreen = getElement('#exitFullscreen')
     const messageDialog = getElement<Dialog>('#messageDialog')
     const messageDialogText = getElement('#messageDialogText')
@@ -192,40 +194,44 @@ window.addEventListener('load', () => {
         gameInstructionsDialog.close()
     })
 
-    // Hide the fullscreen button if it is not available in the browser
-    {
-        const doc = document as any
-        const isFullscreenEnabled = document.fullscreenEnabled || doc.webkitFullscreenEnabled || doc.mozFullScreenEnabled || doc.msFullScreenEnabled
-        if (!isFullscreenEnabled) {
-            enterFullscreen.style.display = 'none'
-        }
-    }
-    enterFullscreen.addEventListener('click', () => {
-        const el = fullscreenRoot as any
-        if (el.requestFullscreen) {
-            el.requestFullscreen()
-        } else if (el.webkitRequestFullScreen) {
-            el.webkitRequestFullScreen()
-        } else if (el.mozRequestFullScreen) {
-            el.mozRequestFullScreen()
-        } else if (el.msRequestFullscreen) {
-            el.msRequestFullscreen()
-        }
+    // // Hide the fullscreen button if it is not available in the browser
+    // {
+    //     const doc = document as any
+    //     const isFullscreenEnabled = document.fullscreenEnabled || doc.webkitFullscreenEnabled || doc.mozFullScreenEnabled || doc.msFullScreenEnabled
+    //     if (!isFullscreenEnabled) {
+    //         enterFullscreen.style.display = 'none'
+    //     }
+    // }
+    const enterFullscreenHandler = () => {
+        document.body.classList.add('is-zen-screen')
+        // const el = fullscreenRoot as any
+        // if (el.requestFullscreen) {
+        //     el.requestFullscreen()
+        // } else if (el.webkitRequestFullScreen) {
+        //     el.webkitRequestFullScreen()
+        // } else if (el.mozRequestFullScreen) {
+        //     el.mozRequestFullScreen()
+        // } else if (el.msRequestFullscreen) {
+        //     el.msRequestFullscreen()
+        // }
         table.focus() // do not lose focus
         tableEngine.resize()
-    })
+    }
+    enterFullscreen.addEventListener('click', enterFullscreenHandler)
+    enterFullscreen2.addEventListener('click', enterFullscreenHandler)
 
     exitFullscreen.addEventListener('click', () => {
-        const el = document as any
-        if (el.exitFullscreen) {
-            el.exitFullscreen()
-        } else if (el.webkitExitFullscreen) {
-            el.webkitExitFullscreen()
-        } else if (el.mozCancelFullScreen) {
-            el.mozCancelFullScreen()
-        } else if (el.msExitFullscreen) {
-            el.msExitFullscreen()
-        }
+        document.body.classList.remove('is-zen-screen')
+        // const el = document as any
+        // if (el.exitFullscreen) {
+        //     el.exitFullscreen()
+        // } else if (el.webkitExitFullscreen) {
+        //     el.webkitExitFullscreen()
+        // } else if (el.mozCancelFullScreen) {
+        //     el.mozCancelFullScreen()
+        // } else if (el.msExitFullscreen) {
+        //     el.msExitFullscreen()
+        // }
         table.focus() // do not lose focus
         tableEngine.resize()
     })
