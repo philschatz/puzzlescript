@@ -185,6 +185,7 @@ window.addEventListener('load', () => {
 
     messageDialogClose.addEventListener('click', () => {
         messageDialog.close()
+        table.focus()
     })
 
     gameInstructionsButton.addEventListener('click', () => {
@@ -192,6 +193,7 @@ window.addEventListener('load', () => {
     })
     gameInstructionsDialogClose.addEventListener('click', () => {
         gameInstructionsDialog.close()
+        table.focus()
     })
 
     // // Hide the fullscreen button if it is not available in the browser
