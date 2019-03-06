@@ -71,8 +71,9 @@ window.addEventListener('load', () => {
     const loadingIndicator = getElement('#loadingIndicator')
     const authorSection = getElement('#authorSection')
     const authorInfo = getElement('#authorInfo')
-    const instructionsContainer = getElement('#instructionsContainer')
-    const closeInstructions = getElement('#closeInstructions')
+    const gameInstructionsButton = getElement('#gameInstructionsButton')
+    const gameInstructionsDialog = getElement<Dialog>('#gameInstructionsDialog')
+    const gameInstructionsDialogClose = getElement('#gameInstructionsDialogClose')
     const fullscreenRoot = getElement('#fullscreenRoot')
     const enterFullscreen = getElement('#enterFullscreen')
     const exitFullscreen = getElement('#exitFullscreen')
@@ -80,6 +81,7 @@ window.addEventListener('load', () => {
     const messageDialogText = getElement('#messageDialogText')
     const messageDialogClose = getElement('#messageDialogClose')
     dialogPolyfill.registerDialog(messageDialog)
+    dialogPolyfill.registerDialog(gameInstructionsDialog)
 
     TimeAgo.addLocale(TimeAgoEn)
     const timeAgo = new TimeAgo('en-US')
@@ -183,10 +185,11 @@ window.addEventListener('load', () => {
         messageDialog.close()
     })
 
-    closeInstructions.addEventListener('click', () => {
-        instructionsContainer.classList.add('hidden')
-        // resize the game
-        tableEngine.resize()
+    gameInstructionsButton.addEventListener('click', () => {
+        gameInstructionsDialog.showModal()
+    })
+    gameInstructionsDialogClose.addEventListener('click', () => {
+        gameInstructionsDialog.close()
     })
 
     // Hide the fullscreen button if it is not available in the browser

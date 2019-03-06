@@ -234,6 +234,8 @@
 
         <p id="disableCssSection"><input id="disableCss" type="checkbox"/> <label for="disableCss"><strong>Check</strong> to see what a non-sighted user would experience (disables CSS)</label></p>
     
+        <p><button id="gameInstructionsButton">Help</button></p>
+
         <p id="gameSelectionSection">
             <button id="btnAdd" class="hidden">Add to Homescreen?</button>
             <label for="gameSelection">Currently playing:</label>
@@ -281,6 +283,13 @@
     
         <p id="authorSection" class="hidden"><small>By <a id="authorInfo" target="_window"></a></small></p>
 
+        <p id="gamepadSection">
+            <img id="gamepadIcon" alt="gamepad icon" width="42" height="42" src="./pwa-icon.svg"/>
+            <span id="gamepadDisabled" class="hidden"><strong>Tip:</strong> Connect a gamepad controller (XBOX/PS3/PS4/etc) to use it to play.</span>
+            <span id="gamepadRecognized" class="hidden">Gamepad is detected. You can play using it now. Just make sure the game is focused.</span>
+            <span id="gamepadNotRecognized" class="hidden">Gamepad is detected but not recognized. Please submit an Issue on the Repository and we will help get it added</span>
+        </p>
+    
     </div>
     
     <div id="fullscreenRoot">
@@ -306,12 +315,9 @@
     </button>
 
 
-    <div id="instructionsContainer">
+    <dialog id="gameInstructionsDialog">
         <div class="panel-header">
-            <h2 class="panel-title">Instructions</h2>
-            <button id="closeInstructions" aria-label="Close" class="close">
-                <span aria-hidden="true">×</span>
-            </button>
+            <h2 class="panel-title">How to Play</h2>
         </div>
         
         <div id="touchInstructionsSection">
@@ -333,14 +339,7 @@
                 <li><kbd>R</kbd> to Restart the current level</li>
             </ul>
         </div>
-    
-        <p id="gamepadSection">
-            <img id="gamepadIcon" alt="gamepad icon" width="42" height="42" src="./pwa-icon.svg"/>
-            <span id="gamepadDisabled" class="hidden"><strong>Tip:</strong> Connect a gamepad controller (XBOX/PS3/PS4/etc) to use it to play.</span>
-            <span id="gamepadRecognized" class="hidden">Gamepad is detected. You can play using it now. Just make sure the game is focused.</span>
-            <span id="gamepadNotRecognized" class="hidden">Gamepad is detected but not recognized. Please submit an Issue on the Repository and we will help get it added</span>
-        </p>
-    
+        
         <div id="gamepadSectionPWA">
             <p>
                 <img alt="gamepad icon" width="42" height="42" src="./pwa-icon.svg"/>
@@ -350,10 +349,9 @@
                 Partial Gamepad support. Up/Down/Left/Right works but not Action/Undo. See this <a href="https://bugs.chromium.org/p/chromium/issues/detail?id=906347">Chrome Bug</a>
             </p>
         </div>
-        
-        <p id="sourceSection"><a href="https://github.com/philschatz/puzzlescript">Source On GitHub</a></p>
-        
-    </div>
+    
+        <button id="gameInstructionsDialogClose" title="Close">Close</button>
+    </dialog>
 
     <script type="text/javascript">//<![CDATA[
         (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
