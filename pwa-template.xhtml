@@ -11,7 +11,7 @@
          */
         @media all and (display-mode: standalone) {
             /* #headingSection, Uncommenting this causes horizontal lines on Android */
-            #gameInstructionsSection,
+            #keyboardInstructionsSection,
             #disableCssSection,
             #instructionsContainer,
             #gamepadSection { display: none; }
@@ -19,6 +19,19 @@
         }
         /* Hide by default */
         #gamepadSectionPWA { display: none; }
+
+        /* Show instructions depending on whether the user has a keyboard, touch screen, or both */
+        #touchInstructionsSection,
+        #keyboardInstructionsSection { display: none; }
+
+        @media (any-pointer: coarse) {
+            #touchInstructionsSection { display: block; }
+        }
+        @media (any-hover: hover) {
+            #keyboardInstructionsSection { display: block; }
+        }
+        
+
 
         body { font-family: helvetica, arial, sans-serif; }
         .hidden { display: none; }
@@ -276,7 +289,7 @@
             <button id="messageDialogClose" title="Close this window">Close</button>
         </dialog>
             
-        <table id="theGame" aria-labelledby="gameInstructionsSection">
+        <table id="theGame" aria-labelledby="keyboardInstructionsSection">
             <caption>
                 Game info goes here. like the current level, the goal, etc.
                 <!-- See https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Live_Regions -->
@@ -301,11 +314,21 @@
             </button>
         </div>
         
-        <div id="gameInstructionsSection">
-            <p>To play:</p>
+        <div id="touchInstructionsSection">
+            <p>To play with a touch screen:</p>
+            <ul>
+                <li><strong>Swipe</strong> up, down, left, or right to move</li>
+                <li><strong>Tap</strong> to perform an Action</li>
+                <li><strong>Touch and Hold</strong> to Undo</li>
+                <li><strong>Touch and Hold for a few seconds</strong> to Restart the current level</li>
+            </ul>
+        </div>
+
+        <div id="keyboardInstructionsSection">
+            <p>To play with a keyboard:</p>
             <ul>
                 <li>Arrow keys or <kbd>W</kbd>, <kbd>S</kbd>, <kbd>A</kbd>, <kbd>D</kbd></li>
-                <li><kbd>X</kbd> for Action</li>
+                <li><kbd>X</kbd> to perform an Action</li>
                 <li><kbd>Z</kbd> or <kbd>U</kbd> for Undo</li>
                 <li><kbd>R</kbd> to Restart the current level</li>
             </ul>
@@ -313,7 +336,7 @@
     
         <p id="gamepadSection">
             <img id="gamepadIcon" alt="gamepad icon" width="42" height="42" src="./pwa-icon.svg"/>
-            <span id="gamepadDisabled" class="hidden"><strong>Tip:</strong> Connect a gamepad controller (XBOX/PS3/PS4/etc) to use it to play games. You might need to press some buttons so it is detected. Occasionally, a driver needs to be installed.</span>
+            <span id="gamepadDisabled" class="hidden"><strong>Tip:</strong> Connect a gamepad controller (XBOX/PS3/PS4/etc) to use it to play.</span>
             <span id="gamepadRecognized" class="hidden">Gamepad is detected. You can play using it now. Just make sure the game is focused.</span>
             <span id="gamepadNotRecognized" class="hidden">Gamepad is detected but not recognized. Please submit an Issue on the Repository and we will help get it added</span>
         </p>
