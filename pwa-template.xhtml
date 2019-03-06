@@ -170,10 +170,11 @@
         :-webkit-full-screen #theGame { margin: auto; }
         :-moz-full-screen #theGame { margin: auto; }
         :-ms-fullscreen #theGame { margin: auto; }
+        body.is-zen-screen #fullscreenRoot { margin: auto; }
 
         #enterFullscreen,
         #exitFullscreen {
-            position: absolute;
+            position: fixed;
             bottom: 0;
             right: 0;
 
@@ -198,7 +199,11 @@
         :-webkit-full-screen #exitFullscreen { display: block; }
         :-moz-full-screen #exitFullscreen { display: block; }
         :-ms-fullscreen #exitFullscreen { display: block; }
+        body.is-zen-screen #exitFullscreen { display: block; }
 
+        body.is-zen-screen #enterFullscreen,
+        body.is-zen-screen #infoContainer,
+        body.is-zen-screen #instructionsContainer { display: none; }
     </style>
 
     <meta charset="utf-8"/>

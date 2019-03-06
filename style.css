@@ -10,6 +10,7 @@ table.ps-table:not(.ps-ui-disabled) {
 }
 table.ps-table:not(.ps-ui-disabled) tr td.ps-cell {
     position: relative;
+    padding: 0; /* it is 1px by default in Chromium */
 }
 table.ps-table:not(.ps-ui-disabled) td.ps-cell::after {
     content: '';
