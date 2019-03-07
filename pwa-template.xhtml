@@ -171,16 +171,23 @@
             }
         }
 
-        button.ui-button {
+        button.ui-button,
+        button.ui-button-secondary {
             cursor: pointer;
             padding: 0.5rem;
             border: 1px solid #666;
             border-radius: 6px;
-
-            color: white;
-            background-color: rgba(90, 90, 238, 1);
             box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
         }
+        button.ui-button {
+            color: white;
+            background-color: rgba(90, 90, 238, 1);
+        }
+        button.ui-button-secondary {
+            color: black;
+            background-color: white;
+        }
+
         #gameInstructionsButton {
             float: right;
             padding: 0.25rem;
@@ -415,6 +422,7 @@
         </div>
     
         <button id="gameInstructionsDialogClose" title="Close" class="ui-button">Close</button>
+        <button id="testShowNotificationButton" title="Show Browser Test Notification" class="ui-button-secondary">Test: Show Browser Notification</button>
     </dialog>
 
     <script type="text/javascript">//<![CDATA[
