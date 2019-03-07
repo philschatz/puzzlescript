@@ -84,15 +84,8 @@
             /* border: 1px solid rgba(0, 0, 0, 0.3); */
             /* box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3); */
         }
-        dialog::backdrop,
-        dialog + .backdrop {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.8);
-        }
+
+        label { cursor: pointer; }
 
         h1 { font-size: 1.5rem; }
         .panel-header {
@@ -183,7 +176,7 @@
             border-radius: 6px;
 
             color: white;
-            background-color: rgba(90, 90, 238);
+            background-color: rgba(90, 90, 238, 1);
             box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
         }
         #gameInstructionsButton {
@@ -219,6 +212,10 @@
             top: 0;
             left: 0;
         }
+        /* Make the background transparent in case the buttons cover the game */
+        #fullscreenButtons .ui-button {
+            background-color: rgba(90, 90, 238, 0.5);
+        }
 
         body:not(.is-zen-screen) #fullscreenButtons { display: none; }
 
@@ -236,6 +233,41 @@
 
         body.is-zen-screen #infoContainer,
         body.is-zen-screen #instructionsContainer { display: none; }
+
+
+        /* dialog-polyfill.css */
+        dialog {
+            position: absolute;
+            left: 0; right: 0;
+            width: -moz-fit-content;
+            width: -webkit-fit-content;
+            width: fit-content;
+            height: -moz-fit-content;
+            height: -webkit-fit-content;
+            height: fit-content;
+            margin: auto;
+            padding: 1em;
+            background: white;
+            color: black;
+            display: block;
+        }
+        dialog:not([open]) {
+            display: none;
+        }
+        dialog + .backdrop {
+            position: fixed;
+            top: 0; right: 0; bottom: 0; left: 0;
+            background: rgba(0,0,0,0.5);
+        }
+        ._dialog_overlay {
+            position: fixed;
+            top: 0; right: 0; bottom: 0; left: 0;
+        }
+        dialog.fixed {
+            position: fixed;
+            top: 50%;
+            transform: translate(0, -50%);
+        }
     </style>
 
     <meta charset="utf-8"/>
@@ -251,6 +283,11 @@
 </head>
 
 <body>
+    <dialog id="messageDialog">
+        <p id="messageDialogText"></p>
+        <button id="messageDialogClose" title="Close this window" class="ui-button">Close</button>
+    </dialog>
+    
     <div id="infoContainer">
         <div class="panel-header">
             <h1 id="headingSection" class="panel-title">Accessible <a href="https://github.com/philschatz/puzzlescript" target="_window">Puzzle Games</a></h1>
@@ -268,9 +305,9 @@
                 <option value="push">PUSH⁣</option>
                 <option value="pot-wash-panic">Pot Wash Panic</option>
                 <option value="sokobond">Sokobond: The Demake</option>
-                <option value="pants-shirt-cap">Pants, Shirt, Cap⁣</option>
-
                 <option value="pushcat-jr">Pushcat Jr⁣</option>
+
+                <option value="pants-shirt-cap">Pants, Shirt, Cap⁣</option>
                 <option value="hack-the-net">Hack the Net⁣</option>
                 <option value="mirror-isles">Mirror Isles⁣</option>
                 <option value="swapbot">SwapBot⁣</option>
@@ -324,12 +361,7 @@
     
     </div>
     
-    <div id="fullscreenRoot">
-        <dialog id="messageDialog">
-            <p id="messageDialogText"></p>
-            <button id="messageDialogClose" title="Close this window" class="ui-button">Close</button>
-        </dialog>
-            
+    <div id="fullscreenRoot">            
         <table id="theGame" aria-labelledby="keyboardInstructionsSection">
             <caption>
                 Game info goes here. like the current level, the goal, etc.
