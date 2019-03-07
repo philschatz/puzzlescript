@@ -11,16 +11,29 @@ This is a program that allows people to play [PuzzleScript](https://puzzlescript
 Also, it is **accessible**, meaning that [blind or visually impaired people can play these games](#video-games-that-blind-people-can-play) too! See [blog post](https://philschatz.com/2018/09/22/puzzlescript/) for more info or try the [demo](https://philschatz.com/puzzlescript/).
 
 
-## Play from the command line terminal
-
-1. Run `npm install -g puzzlescript` to install
-1. Run `puzzlescript` to start playing
-
 ## Play in a browser or on your mobile device
 
 This is also a [Progressive Web App](https://developer.mozilla.org/en-US/docs/Web/Apps/Progressive/Introduction), meaning that you can add it to your phone/tablet/browser and play games even when you are offline.
 
 Just visit the [demo site](https://philschatz.com/puzzlescript) and click the "Add" button at the bottom.
+
+<details>
+
+<summary>If you are using <strong>iOS (Apple phone or tablet)</strong> click here for instructions</summary>
+
+1. Visit https://philschatz.com/puzzlescript
+1. Click the Share button in Safari
+1. Scroll over and click "Add to Home Screen"
+
+![ios-install](https://user-images.githubusercontent.com/253202/53995149-c5bc5800-40f9-11e9-9e54-3f6a0e10b857.gif)
+
+</details>
+
+
+## Play from the command line terminal
+
+1. Run `npm install -g puzzlescript` to install
+1. Run `puzzlescript` to start playing
 
 
 ### Embed in a Browser
