@@ -71,6 +71,7 @@ window.addEventListener('load', () => {
     const loadingIndicator = getElement('#loadingIndicator')
     const authorSection = getElement('#authorSection')
     const authorInfo = getElement('#authorInfo')
+    const testShowNotificationButton = getElement('#testShowNotificationButton')
     const gameInstructionsButton = getElement('#gameInstructionsButton')
     const gameInstructionsButton2 = getElement('#gameInstructionsButton2')
     const gameInstructionsDialog = getElement<Dialog>('#gameInstructionsDialog')
@@ -94,7 +95,7 @@ window.addEventListener('load', () => {
     // Functions for loading/saving game progress
     const currentInfo = new class {
         public levelNum: Optional<number>
-        private gameId: string
+        public gameId: string
 
         constructor() {
             this.gameId = ''
@@ -256,50 +257,6 @@ window.addEventListener('load', () => {
                 // Wait until the dialog has closed (and no keys are pressed down)
                 return !messageDialog.open
             })
-            // // Show a phone notification rather than an alert (if notifications are granted)
-            // // Just to show that notifications can be done and what they would look like
-            // const notificationOptions = {
-            //     body: `${msg} (Just showing that notifications work. You can disable them)`,
-            //     icon: './pwa-icon.png',
-            //     badge: './pwa-icon.png',
-            //     vibrate: [200, 100, 200],
-            //     actions: [
-            //         { action: 'action-ok', title: 'ok' }
-            //     ]
-            // }
-            // return new Promise((resolve) => {
-            //     // Notification is not available on iOS
-            //     if (typeof Notification !== 'undefined') { // tslint:disable-line:strict-type-predicates
-            //         Notification.requestPermission(async(result) => { // tslint:disable-line:no-floating-promises
-            //             // Safari does not support registration.showNotification() so we fall back to new Notification()
-            //             const fallback = () => {
-            //                 new Notification('Annoying Test Message', notificationOptions) // tslint:disable-line:no-unused-expression
-            //                 resolve()
-            //             }
-            //             if (result === 'granted') {
-            //                 if (navigator.serviceWorker) {
-            //                     // Mobile notification (Android Chrome)
-            //                     const registration = await navigator.serviceWorker.ready
-            //                     if (registration.showNotification) {
-            //                         await registration.showNotification('Annoying Test Message', notificationOptions)
-            //                         resolve()
-            //                     } else {
-            //                         fallback()
-            //                     }
-            //                 } else {
-            //                     // Desktop notification Fallback (Firefox)
-            //                     fallback()
-            //                 }
-            //             } else {
-            //                 alert(msg)
-            //                 resolve()
-            //             }
-            //         })
-            //     } else {
-            //         alert(msg)
-            //         resolve()
-            //     }
-            // })
         },
         onLevelChange(newLevelNum) {
             // Hide the Loading text because the level loaded
@@ -771,6 +728,56 @@ window.addEventListener('load', () => {
             storageVersion._version = 2
             currentInfo.saveJson(GAME_STORAGE_ID, storage)
         }
-
     }
+
+    testShowNotificationButton.addEventListener('click', async() => {
+        const msg = `You are playing level ${(currentInfo.levelNum || 0) + 1} of ${currentInfo.gameId || 'unknown-game'}`
+
+        // Show a phone notification rather than an alert (if notifications are granted)
+        // Just to show that notifications can be done and what they would look like
+        const notificationOptions = {
+            body: msg,
+            icon: './pwa-icon.png',
+            badge: './pwa-icon.png',
+            vibrate: [200, 100, 200],
+            actions: [
+                { action: 'action-1', title: 'Option 1' },
+                { action: 'action-2', title: 'Option 2' }
+            ]
+        }
+        await new Promise((resolve) => {
+            // Notification is not available on iOS
+            if (typeof Notification !== 'undefined') { // tslint:disable-line:strict-type-predicates
+                Notification.requestPermission(async(result) => { // tslint:disable-line:no-floating-promises
+                    // Safari does not support registration.showNotification() so we fall back to new Notification()
+                    const fallback = () => {
+                        new Notification('Test Title', notificationOptions) // tslint:disable-line:no-unused-expression
+                        resolve()
+                    }
+                    if (result === 'granted') {
+                        if (navigator.serviceWorker) {
+                            // Mobile notification (Android Chrome)
+                            const registration = await navigator.serviceWorker.ready
+                            if (registration.showNotification) {
+                                await registration.showNotification('Test Title', notificationOptions)
+                                resolve()
+                            } else {
+                                fallback()
+                            }
+                        } else {
+                            // Desktop notification Fallback (Firefox)
+                            fallback()
+                        }
+                    } else {
+                        alert(msg)
+                        resolve()
+                    }
+                })
+            } else {
+                alert(msg)
+                resolve()
+            }
+        })
+
+    })
 })
