@@ -728,6 +728,14 @@ window.addEventListener('load', () => {
             storageVersion._version = 2
             currentInfo.saveJson(GAME_STORAGE_ID, storage)
         }
+
+        // Some games contained an extra character. Remove it.
+        // Object.keys(storage).forEach((name) => {
+        //     if (name.endsWith('\u2063')) { 
+        //         const fix = name.substring(0, name.length - 1)
+        //         storage[fix] = storage[name]
+        //     } 
+        // })
     }
 
     testShowNotificationButton.addEventListener('click', async() => {
@@ -737,8 +745,8 @@ window.addEventListener('load', () => {
         // Just to show that notifications can be done and what they would look like
         const notificationOptions = {
             body: msg,
-            icon: './pwa-icon.png',
-            badge: './pwa-icon.png',
+            icon: './pwa-icon-144.png',
+            badge: './pwa-icon-144.png',
             vibrate: [200, 100, 200],
             actions: [
                 { action: 'action-1', title: 'Option 1' },
