@@ -125,6 +125,7 @@
             padding: 1rem;
             border-radius: 6px;
             box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
+            margin-right: 1rem; /* Keep some room between the bubble and the game */
         }
 
         @media screen and (orientation:portrait) {
@@ -160,8 +161,9 @@
             #theGame {
                 /* Ensure the game is always big */
                 flex-shrink: 0;
-                margin-left: 1rem;
-                margin-right: 1rem;
+                
+                /* Important because the ResizeHandler does not know how to compute with margins yet */
+                margin: 0;
             }
             #instructionsContainer {
                 flex-grow: 1;
