@@ -74,6 +74,7 @@ window.addEventListener('load', () => {
     const testShowNotificationButton = getElement('#testShowNotificationButton')
     const gameInstructionsButton = getElement('#gameInstructionsButton')
     const gameInstructionsButton2 = getElement('#gameInstructionsButton2')
+    const iosInstallInstructions = getElement('#iosInstallInstructions')
     const gameInstructionsDialog = getElement<Dialog>('#gameInstructionsDialog')
     const gameInstructionsDialogClose = getElement('#gameInstructionsDialogClose')
     // const fullscreenRoot = getElement('#fullscreenRoot')
@@ -240,6 +241,10 @@ window.addEventListener('load', () => {
         table.focus() // do not lose focus
         tableEngine.resize()
     })
+
+    if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) { 
+        iosInstallInstructions.classList.remove('hidden')
+    }
 
     // Save when the user completes a level
     const handler: GameEngineHandlerOptional = {

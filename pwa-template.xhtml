@@ -14,6 +14,8 @@
             #keyboardInstructionsSection,
             #disableCssSection,
             #instructionsContainer,
+            #installOnMobile,
+            #iosInstallInstructions,
             #gamepadSection { display: none; }
             #gamepadSectionPWA { display: block; }
         }
@@ -289,6 +291,19 @@
     <link rel="manifest" href="./pwa-manifest.json"/>
     <link rel="preload" href="./puzzlescript-webworker.js" as="script"/>
     <script src="./pwa-sw-loader.js" async="async"></script>
+
+    <!-- These need to be in the root and are generated via 
+        declare -x ICON=180; inkscape -z -e $(pwd)/apple-touch-icon-_ICON_x_ICON_.png -w _ICON_ -h _ICON_ $(pwd)/pwa-icon.svg;
+    -->
+    <link rel="apple-touch-icon" sizes="57x57" href="apple-touch-icon-57x57.png"/>
+    <link rel="apple-touch-icon" sizes="60x60" href="apple-touch-icon-60x60.png"/>
+    <link rel="apple-touch-icon" sizes="72x72" href="apple-touch-icon-72x72.png"/>    
+    <link rel="apple-touch-icon" sizes="76x76" href="apple-touch-icon-76x76.png"/>
+    <link rel="apple-touch-icon" sizes="120x120" href="apple-touch-icon-120x120.png"/>
+    <link rel="apple-touch-icon" sizes="114x114" href="apple-touch-icon-114x114.png"/>
+    <link rel="apple-touch-icon" sizes="144x144" href="apple-touch-icon-144x144.png"/>
+    <link rel="apple-touch-icon" sizes="152x152" href="apple-touch-icon-152x152.png"/>
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon-180x180.png"/>
 </head>
 
 <body>
@@ -358,7 +373,8 @@
 
         <ul class="ui-features-list">
             <li id="disableCssSection"><input id="disableCss" type="checkbox"/> <label for="disableCss"><strong>Check</strong> to see what a non-sighted user would experience (disables CSS)</label></li>
-            <li>Install as a mobile app by opening on a phone/tablet</li>
+            <li id="installOnMobile">Install as a mobile app by opening on a phone/tablet</li>
+            <li id="iosInstallInstructions" class="hidden">For <strong>iOS users</strong>, click Share at the bottom, and then swipe over to <strong>Add to Home Screen</strong>. <a href="https://user-images.githubusercontent.com/253202/53995149-c5bc5800-40f9-11e9-9e54-3f6a0e10b857.gif" target="_window">Click here for video</a></li>
             <li id="gamepadSection">
                 <img id="gamepadIcon" alt="gamepad icon" width="20" height="20" src="./pwa-icon.svg"/>
                 <span id="gamepadDisabled" class="hidden"><strong>Tip:</strong> Connect a gamepad controller (XBOX/PS3/PS4/etc) to use it to play.</span>
