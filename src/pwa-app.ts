@@ -9,7 +9,7 @@ import { CellSaveState } from './engine'
 import { HexColor } from './models/colors'
 import { IGameTile } from './models/tile'
 import { Level } from './parser/astTypes'
-import { GameEngineHandlerOptional, Optional, pollingPromise } from './util'
+import { GameEngineHandlerOptional, INPUT_BUTTON, Optional, pollingPromise } from './util'
 
 declare const ga: Optional<(a1: string, a2: string, a3?: string, a4?: string, a5?: string, a6?: number) => void>
 
@@ -72,6 +72,8 @@ window.addEventListener('load', () => {
     const authorSection = getElement('#authorSection')
     const authorInfo = getElement('#authorInfo')
     const testShowNotificationButton = getElement('#testShowNotificationButton')
+    const gameButtonUndo = getElement('#gameButtonUndo')
+    const gameButtonRestart = getElement('#gameButtonRestart')
     const gameInstructionsButton = getElement('#gameInstructionsButton')
     const gameInstructionsButton2 = getElement('#gameInstructionsButton2')
     const iosInstallInstructions = getElement('#iosInstallInstructions')
@@ -242,7 +244,7 @@ window.addEventListener('load', () => {
         tableEngine.resize()
     })
 
-    if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) { 
+    if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) {
         iosInstallInstructions.classList.remove('hidden')
     }
 
@@ -435,6 +437,16 @@ window.addEventListener('load', () => {
             currentInfo.setGameAndLevel(gameSelection.value, null)
             playSelectedGame()
         }
+    })
+
+    gameButtonUndo.addEventListener('click', () => {
+        tableEngine.press(INPUT_BUTTON.UNDO)
+        table.focus()
+    })
+
+    gameButtonRestart.addEventListener('click', () => {
+        tableEngine.press(INPUT_BUTTON.RESTART)
+        table.focus()
     })
 
     function playSelectedGame() {
@@ -736,10 +748,10 @@ window.addEventListener('load', () => {
 
         // Some games contained an extra character. Remove it.
         // Object.keys(storage).forEach((name) => {
-        //     if (name.endsWith('\u2063')) { 
+        //     if (name.endsWith('\u2063')) {
         //         const fix = name.substring(0, name.length - 1)
         //         storage[fix] = storage[name]
-        //     } 
+        //     }
         // })
     }
 

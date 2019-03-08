@@ -5,22 +5,16 @@
     <title>Accessible PuzzleScript Games</title>
     <link rel="stylesheet" href="./style.css"/>
     <style>
+        /* Hide by default */
+        .ui-pwa-only { display: none; }
         /* Progressive Web App (PWA) media query. 
          * See https://stackoverflow.com/a/52695341
          * See https://developer.mozilla.org/en-US/docs/Web/CSS/@media/display-mode
          */
         @media all and (display-mode: standalone) {
-            /* #headingSection, Uncommenting this causes horizontal lines on Android */
-            #keyboardInstructionsSection,
-            #disableCssSection,
-            #instructionsContainer,
-            #installOnMobile,
-            #iosInstallInstructions,
-            #gamepadSection { display: none; }
-            #gamepadSectionPWA { display: block; }
+            .ui-pwa-disabled { display: none; }
+            .ui-pwa-only { display: block; }
         }
-        /* Hide by default */
-        #gamepadSectionPWA { display: none; }
 
         /* Show instructions depending on whether the user has a keyboard, touch screen, or both */
         /* https://stackoverflow.com/a/52854585 */
@@ -121,8 +115,7 @@
             opacity: .5;
         }
 
-        #infoContainer,
-        #instructionsContainer {
+        #infoContainer {
             background-color: white;
             padding: 1rem;
             border-radius: 6px;
@@ -145,9 +138,6 @@
                 margin-top: 1rem;
                 margin-bottom: 1rem;
             }
-            #instructionsContainer {
-                flex-grow: 1;
-            }
         }
 
         @media screen and (orientation:landscape) {
@@ -167,10 +157,6 @@
                 /* Important because the ResizeHandler does not know how to compute with margins yet */
                 margin: 0;
             }
-            #instructionsContainer {
-                flex-grow: 1;
-                max-width: 20rem;
-            }
         }
 
         button.ui-button,
@@ -188,11 +174,6 @@
         button.ui-button-secondary {
             color: black;
             background-color: white;
-        }
-
-        #gameInstructionsButton {
-            float: right;
-            padding: 0.25rem;
         }
 
         .ui-features-list { 
@@ -242,8 +223,7 @@
         :-ms-fullscreen #exitFullscreen { display: block; }
         body.is-zen-screen #exitFullscreen { display: block; } */
 
-        body.is-zen-screen #infoContainer,
-        body.is-zen-screen #instructionsContainer { display: none; }
+        body.is-zen-screen #infoContainer { display: none; }
 
 
         /* dialog-polyfill.css */
@@ -315,13 +295,9 @@
     <div id="infoContainer">
         <div class="panel-header">
             <h1 id="headingSection" class="panel-title">Accessible <a href="https://github.com/philschatz/puzzlescript" target="_window">Puzzle Games</a></h1>
-            <button id="enterFullscreen" aria-label="Hide Game Selection Menu" class="close">
-                <span aria-hidden="true">×</span>
-            </button>
         </div>
 
         <p id="gameSelectionSection">
-            <button id="btnAdd" class="hidden">Add to Homescreen?</button>
             <label for="gameSelection">Currently playing:</label>
             <select id="gameSelection">
 
@@ -367,23 +343,30 @@
     
         <p id="authorSection" class="hidden"><small>By <a id="authorInfo" target="_window"></a></small></p>
 
-        <hr/>
-        
-        <h3><button id="gameInstructionsButton" class="ui-button">Help</button> Features</h3>
 
-        <ul class="ui-features-list">
-            <li id="disableCssSection"><input id="disableCss" type="checkbox"/> <label for="disableCss"><strong>Check</strong> to see what a non-sighted user would experience (disables CSS)</label></li>
-            <li id="installOnMobile">Install as a mobile app by opening on a phone/tablet</li>
-            <li id="iosInstallInstructions" class="hidden">For <strong>iOS users</strong>, click Share at the bottom, and then swipe over to <strong>Add to Home Screen</strong>. <a href="https://user-images.githubusercontent.com/253202/53995149-c5bc5800-40f9-11e9-9e54-3f6a0e10b857.gif" target="_window">Click here for video</a></li>
-            <li id="gamepadSection">
-                <img id="gamepadIcon" alt="gamepad icon" width="20" height="20" src="./pwa-icon.svg"/>
-                <span id="gamepadDisabled" class="hidden"><strong>Tip:</strong> Connect a gamepad controller (XBOX/PS3/PS4/etc) to use it to play.</span>
-                <span id="gamepadRecognized" class="hidden">Gamepad is detected. You can play using it now. Just make sure the game is focused.</span>
-                <span id="gamepadNotRecognized" class="hidden">Gamepad is detected but not recognized. Please submit an Issue on the Repository and we will help get it added</span>
-            </li>
-        </ul>
+        <div class="ui-pwa-disabled">
 
+            <hr class="ui-pwa-disabled"/>
+            <h3 class="ui-pwa-disabled">Features</h3>
     
+            <ul class="ui-features-list ui-pwa-disabled">
+                <li id="disableCssSection"><input id="disableCss" type="checkbox"/> <label for="disableCss"><strong>Check</strong> to see what a non-sighted user would experience (disables CSS)</label></li>
+                <li id="installOnMobile">Install as a mobile app by opening on a phone/tablet. <button id="btnAdd" class="hidden ui-button">Add to Homescreen</button></li>
+                <li id="iosInstallInstructions" class="hidden">For <strong>iOS users</strong>, click Share at the bottom, and then swipe over to <strong>Add to Home Screen</strong>. <a href="https://user-images.githubusercontent.com/253202/53995149-c5bc5800-40f9-11e9-9e54-3f6a0e10b857.gif" target="_window">Not finding it?</a></li>
+                <li id="gamepadSection">
+                    <img id="gamepadIcon" alt="gamepad icon" width="20" height="20" src="./pwa-icon.svg"/>
+                    <span id="gamepadDisabled" class="hidden"><strong>Tip:</strong> Connect a gamepad controller (XBOX/PS3/PS4/etc) to use it to play.</span>
+                    <span id="gamepadRecognized" class="hidden">Gamepad is detected. You can play using it now. Just make sure the game is focused.</span>
+                    <span id="gamepadNotRecognized" class="hidden">Gamepad is detected but not recognized. Please submit an Issue on the Repository and we will help get it added</span>
+                </li>
+            </ul>
+        </div>
+
+        <p>
+            <button id="enterFullscreen" class="ui-button">Close</button>
+            <button id="gameInstructionsButton" class="ui-button-secondary">Help</button>
+        </p>
+        
     </div>
     
     <div id="fullscreenRoot">            
@@ -398,6 +381,8 @@
         <div id="fullscreenButtons">
             <button id="exitFullscreen" class="ui-button">Show Menu</button>
             <button id="gameInstructionsButton2" class="ui-button">Help</button>
+            <button id="gameButtonUndo" class="ui-button">Undo</button>
+            <button id="gameButtonRestart" class="ui-button">Restart</button>
         </div>
     </div>
 
@@ -407,7 +392,7 @@
             <h2 class="panel-title">How to Play</h2>
         </div>
         
-        <div id="keyboardInstructionsSection">
+        <div id="keyboardInstructionsSection" class="ui-pwa-disabled">
             <p>To play with a keyboard:</p>
             <ul>
                 <li>Arrow keys or <kbd>W</kbd>, <kbd>S</kbd>, <kbd>A</kbd>, <kbd>D</kbd> to move</li>
@@ -422,12 +407,12 @@
             <ul>
                 <li><strong>Swipe</strong> up, down, left, or right to move</li>
                 <li><strong>Tap</strong> to perform an Action</li>
-                <li><strong>Touch and Hold</strong> to Undo</li>
-                <li><strong>Touch and Hold for a few seconds</strong> to Restart the current level</li>
+                <li><strong>Touch and Hold</strong> to Undo (Chrome)</li>
+                <li><strong>Touch and Hold for a few seconds</strong> to Restart the current level (Chrome)</li>
             </ul>
         </div>
         
-        <div id="gamepadSectionPWA">
+        <div id="gamepadSectionPWA" class="ui-pwa-only">
             <p>
                 <img alt="gamepad icon" width="42" height="42" src="./pwa-icon.svg"/>
                 <strong>Tip:</strong> Optionally, connect a gamepad controller (XBOX/PS3/PS4/etc) via BlueTooth to play games.
