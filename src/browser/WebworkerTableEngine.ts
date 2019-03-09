@@ -143,6 +143,9 @@ export default class WebworkerTableEngine implements Engineish {
                 this.gameData = gameData
                 this.ui.onGameChange(gameData)
                 break
+            case MESSAGE_TYPE.ON_LEVEL_LOAD:
+                this.ui.onLevelLoad(data.level, data.levelSize)
+                break
             case MESSAGE_TYPE.ON_LEVEL_CHANGE:
                 this.cellCache = [] // clear the cache since the level dimensions are different
                 this.levelNum = data.level
