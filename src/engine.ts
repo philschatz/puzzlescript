@@ -914,7 +914,7 @@ export class GameEngine {
         this.currentLevelNum = levelNum
         const level = this.getGameData().levels[levelNum]
         if (level.type === LEVEL_TYPE.MAP) {
-            this.handler.onLevelLoad(levelNum, {rows: level.cells.length, cols: level.cells[0].length})
+            this.handler.onLevelLoad(levelNum, { rows: level.cells.length, cols: level.cells[0].length })
             this.levelEngine.setLevel(levelNum)
             if (checkpoint) {
                 this.loadSnapshotFromJSON(checkpoint)

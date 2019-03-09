@@ -93,7 +93,7 @@ class Handler implements GameEngineHandler {
         // resumeGame() No need to resume since we are inside a `await tick()` and at the end of it it will start back up (via a call to setTimeout)
     }
     public onLevelLoad(level: number, newLevelSize: Optional<{rows: number, cols: number}>) {
-        postMessage({ type: MESSAGE_TYPE.ON_LEVEL_LOAD, level, levelSize: newLevelSize})
+        postMessage({ type: MESSAGE_TYPE.ON_LEVEL_LOAD, level, levelSize: newLevelSize })
     }
     public onLevelChange(level: number, cells: Optional<Cellish[][]>, message: Optional<string>) {
         let newCells: Optional<CellishJson[][]> = null
