@@ -20,6 +20,7 @@ export class SvgIconUi extends BaseUI implements GameEngineHandler {
     public onResume() { throw new Error('BUG: Not implemented') }
 
     public getSvg() {
+        const colorCount = new Map<string, number>()
         const height = this.renderedPixels.length
         let width = 0
         for (const row of this.renderedPixels) {
@@ -32,6 +33,7 @@ export class SvgIconUi extends BaseUI implements GameEngineHandler {
             let x = 0
             for (const pixel of row) {
                 if (pixel) {
+                    colorCount.set(pixel.hex, colorCount.get(pixel.hex) || 0 + 1)
                     pixelStrs.push(`    <rect height="10" width="10" x="${x}0" y="${y}0" style="fill:${pixel.hex}"/>`)
                 }
 
@@ -41,7 +43,14 @@ export class SvgIconUi extends BaseUI implements GameEngineHandler {
             y += 1
         }
 
-        return `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+        const popularColors = [...colorCount.entries()]
+        .sort(([_A, countA], [_B, countB]) => countB - countA)
+        .slice(0, 3)
+        .map(([hex]) => hex)
+        
+        return {
+            popularColors,
+            svg: `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 
 <svg xmlns="http://www.w3.org/2000/svg"
     width="${width}0"
@@ -52,7 +61,7 @@ export class SvgIconUi extends BaseUI implements GameEngineHandler {
     ${pixelStrs.join('\n')}
     </g>
 </svg>
-        `
+        `}
 
     }
 

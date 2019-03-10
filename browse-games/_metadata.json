@@ -1,586 +1,1607 @@
 {
   "1-2-3-ban": {
     "title": "1-2-3-Ban",
-    "backgroundColor": "#697175"
+    "author": "Alan Hazelden",
+    "homepage": "www.draknek.org",
+    "backgroundColor": "#697175",
+    "popularColors": [
+      "#1d57f7",
+      "#FFFFFF",
+      "#9d9d9d"
+    ]
   },
   "2d-whale-world": {
     "title": "2D Whale World",
-    "backgroundColor": "#eb8931"
+    "author": "increpare",
+    "homepage": "www.increpare.com",
+    "backgroundColor": "#eb8931",
+    "popularColors": [
+      "#FF5500",
+      "#FFFF55",
+      "#000000"
+    ]
   },
   "a-sneeze-a-day": {
     "title": "A Sneeze A Day Keeps The Crates Away",
-    "backgroundColor": null
+    "author": "Alan Hazelden",
+    "homepage": "www.draknek.org",
+    "backgroundColor": null,
+    "popularColors": [
+      "#eb8931",
+      "#c4c692",
+      "#acad80"
+    ]
   },
   "aaaah-i-m-being-attacked": {
     "title": "Aaaah! I'm Being Attacked by a Giant Tentacle!",
-    "backgroundColor": null
+    "author": "Ricky Liu",
+    "homepage": "www.puzzlescript.net",
+    "backgroundColor": null,
+    "popularColors": [
+      "#a46422",
+      "#555555",
+      "#444444"
+    ]
   },
   "airport-aggression": {
     "title": "Airport Aggression",
-    "backgroundColor": null
+    "author": null,
+    "homepage": null,
+    "backgroundColor": null,
+    "popularColors": [
+      "#F3E6E0",
+      "#CCCCFF",
+      "#CCFFCC"
+    ]
   },
   "alien-disco": {
     "title": "Alien Disco",
-    "backgroundColor": null
+    "author": "Toph Wells",
+    "homepage": null,
+    "backgroundColor": null,
+    "popularColors": [
+      "#a00080",
+      "#501060",
+      "#103060"
+    ]
   },
   "atlas-shrank": {
     "title": "Atlas Shrank",
-    "backgroundColor": null
+    "author": "James Noeckel",
+    "homepage": null,
+    "backgroundColor": null,
+    "popularColors": [
+      "#8b4c42",
+      "#a7aae3",
+      "#697490"
+    ]
   },
   "barrier-trail": {
     "title": "Barrier Trail",
-    "backgroundColor": "#231F26"
+    "author": "Rosden Shadow [Mark Signorelli]",
+    "homepage": "rosden.itch.io",
+    "backgroundColor": "#231F26",
+    "popularColors": [
+      "#3B3942",
+      "#231F26",
+      "#D9FFDC"
+    ]
   },
   "beam-islands": {
     "title": "Beam Islands",
-    "backgroundColor": null
+    "author": "mjau",
+    "homepage": "http://twitter.com/kamjau",
+    "backgroundColor": null,
+    "popularColors": [
+      "#6719ac",
+      "#a13cb7",
+      "#a27d5b"
+    ]
   },
   "block-touching": {
     "title": "Block touching",
-    "backgroundColor": "#3B3942"
+    "author": "Rosden Shadow [Mark Signorelli]",
+    "homepage": "rosden.itch.io",
+    "backgroundColor": "#3B3942",
+    "popularColors": [
+      "#E0AAF2",
+      "#3B3942",
+      "#FFD9E0"
+    ]
   },
   "blocker-snake": {
     "title": "Blocker snake",
-    "backgroundColor": "#423D39"
+    "author": "Rosden Shadow [Mark Signorelli]",
+    "homepage": "rosden.itch.io",
+    "backgroundColor": "#423D39",
+    "popularColors": [
+      "#423D39",
+      "#E5C17E",
+      "#F2F2AA"
+    ]
   },
   "bomb-n-ice": {
     "title": "bomb n ice",
-    "backgroundColor": "#423D39"
+    "author": "Rosden Shadow [Mark Signorelli]",
+    "homepage": "rosden.itch.io",
+    "backgroundColor": "#423D39",
+    "popularColors": [
+      "#7EA1E5",
+      "#423D39",
+      "#E5C17E"
+    ]
   },
   "botsket-ball": {
     "title": "Botsket Ball",
-    "backgroundColor": null
+    "author": null,
+    "homepage": null,
+    "backgroundColor": null,
+    "popularColors": [
+      "#697175",
+      "#cccccc",
+      "#000000"
+    ]
   },
   "boxes-and-balloons": {
     "title": "Boxes & Balloons",
-    "backgroundColor": null
+    "author": "Ben Reilly",
+    "homepage": "ben-reilly.com",
+    "backgroundColor": null,
+    "popularColors": [
+      "#333333",
+      "#FFEEDD",
+      "#FF6644"
+    ]
   },
   "boxes-love-bloxing-gloves": {
     "title": "Boxes Love Bloxing Gloves",
-    "backgroundColor": null
+    "author": "Alan Hazelden",
+    "homepage": "www.draknek.org",
+    "backgroundColor": null,
+    "popularColors": [
+      "#d67823",
+      "#9d9d9d",
+      "#000000"
+    ]
   },
   "bubble-butler": {
     "title": "Bubble Butler: CMD REORGANIZE",
-    "backgroundColor": null
+    "author": "John M. Williams",
+    "homepage": "john.m.dubs@gmail.com",
+    "backgroundColor": null,
+    "popularColors": [
+      "#000000",
+      "#2f484e",
+      "#44891a"
+    ]
   },
   "castlemouse": {
     "title": "Memories Of Castlemouse",
-    "backgroundColor": null
+    "author": "Wayne Myers",
+    "homepage": "www.conniptions.org",
+    "backgroundColor": null,
+    "popularColors": [
+      "#cccccc",
+      "#000000",
+      "#493c2b"
+    ]
   },
   "climbing-cubes": {
     "title": "climbing cubes",
-    "backgroundColor": "#7EA1E5"
+    "author": "Rosden Shadow [Mark Signorelli]",
+    "homepage": "rosden.itch.io",
+    "backgroundColor": "#7EA1E5",
+    "popularColors": [
+      "#000000",
+      "#7EA1E5",
+      "#E5C17E"
+    ]
   },
   "closure-demake": {
     "title": "Closure Demake",
-    "backgroundColor": null
+    "author": "Tyler Glaiel",
+    "homepage": "www.closuregame.com",
+    "backgroundColor": null,
+    "popularColors": [
+      "#000000",
+      "#111111",
+      "#697175"
+    ]
   },
   "coin-counter": {
     "title": "Coin Counter",
-    "backgroundColor": null
+    "author": null,
+    "homepage": null,
+    "backgroundColor": null,
+    "popularColors": [
+      "#493c2b",
+      "#B2DCEF",
+      "#1d57f7"
+    ]
   },
   "collapsable-sokoban": {
     "title": "Collapsable Sokoban",
-    "backgroundColor": null
+    "author": "Franklin P. Dyer",
+    "homepage": null,
+    "backgroundColor": null,
+    "popularColors": [
+      "#44891a",
+      "#a3ce27",
+      "#eb8931"
+    ]
   },
   "collapse": {
     "title": "Collapse",
-    "backgroundColor": "#000000"
+    "author": "Terry Cavanagh",
+    "homepage": "www.distractionware.com",
+    "backgroundColor": "#000000",
+    "popularColors": [
+      "#FF0000",
+      "#ffa9cf",
+      "#992222"
+    ]
   },
   "covering-holes": {
     "title": "Covering holes",
-    "backgroundColor": "#3B3942"
+    "author": "Rosden Shadow [Mark Signorelli]",
+    "homepage": "rosden.itch.io",
+    "backgroundColor": "#3B3942",
+    "popularColors": [
+      "#E5C17E",
+      "#3B3942",
+      "#AAE0F2"
+    ]
   },
   "cubes-barrier": {
     "title": "Cubes barrier",
-    "backgroundColor": "#222533"
+    "author": "Rosden Shadow [Mark Signorelli]",
+    "homepage": "rosden.itch.io",
+    "backgroundColor": "#222533",
+    "popularColors": [
+      "#FFEB33",
+      "#222533",
+      "#FAFFFC"
+    ]
   },
   "cubes-medusa": {
     "title": "cubes medusa",
-    "backgroundColor": "#1F2526"
+    "author": "Rosden Shadow [Mark Signorelli]",
+    "homepage": "rosden.itch.io",
+    "backgroundColor": "#1F2526",
+    "popularColors": [
+      "#FFD9E0",
+      "#1F2526",
+      "#C1A2A5"
+    ]
   },
   "cyber-lasso": {
     "title": "Cyber-Lasso",
-    "backgroundColor": null
+    "author": "Alan Hazelden",
+    "homepage": "www.draknek.org",
+    "backgroundColor": null,
+    "popularColors": [
+      "#be2633",
+      "#000000",
+      "#697175"
+    ]
   },
   "dang-i-m-huge": {
     "title": "Dang I'm Huge",
-    "backgroundColor": null
+    "author": "Guilherme Tows",
+    "homepage": "zarat.us",
+    "backgroundColor": null,
+    "popularColors": [
+      "#A03C50",
+      "#000000",
+      "#1C3C88"
+    ]
   },
   "dangerous-dungeon": {
     "title": "Dangerous Dungeon",
-    "backgroundColor": null
+    "author": null,
+    "homepage": null,
+    "backgroundColor": null,
+    "popularColors": [
+      "#697175",
+      "#222222",
+      "#eeb62f"
+    ]
   },
   "directional": {
     "title": "Directional",
-    "backgroundColor": "#1F2526"
+    "author": "Rosden Shadow [Mark Signorelli]",
+    "homepage": "rosden.itch.io",
+    "backgroundColor": "#1F2526",
+    "popularColors": [
+      "#FFD9FC",
+      "#1F2526",
+      "#D9FFDC"
+    ]
   },
   "duality": {
     "title": "duality",
-    "backgroundColor": "#3B3942"
+    "author": "Rosden Shadow [Mark Signorelli]",
+    "homepage": "rosden.itch.io",
+    "backgroundColor": "#3B3942",
+    "popularColors": [
+      "#7EA1E5",
+      "#3B3942",
+      "#A17C8B"
+    ]
   },
   "dungeon-janitor": {
     "title": "Dungeon Janitor",
-    "backgroundColor": null
+    "author": "Farbs",
+    "homepage": "www.farbs.org",
+    "backgroundColor": null,
+    "popularColors": [
+      "#1B2632",
+      "#9d9d9d",
+      "#a46422"
+    ]
   },
   "dup-block": {
     "title": "dup-block",
-    "backgroundColor": "#423D39"
+    "author": "Rosden Shadow [Mark Signorelli]",
+    "homepage": "rosden.itch.io",
+    "backgroundColor": "#423D39",
+    "popularColors": [
+      "#FFD9E0",
+      "#423D39",
+      "#A2C1BE"
+    ]
   },
   "easy-enigma": {
     "title": "Easy Enigma",
-    "backgroundColor": "#000000"
+    "author": null,
+    "homepage": null,
+    "backgroundColor": "#000000",
+    "popularColors": [
+      "#FFFFFF",
+      "#000000"
+    ]
   },
   "electric-wire": {
     "title": "Electric wire",
-    "backgroundColor": "#231F26"
+    "author": "Rosden Shadow [Mark Signorelli]",
+    "homepage": "rosden.itch.io",
+    "backgroundColor": "#231F26",
+    "popularColors": [
+      "#E5C17E",
+      "#231F26",
+      "#FFD9FC"
+    ]
   },
   "element-walkers": {
     "title": "Element Walkers",
-    "backgroundColor": "#732930"
+    "author": "Ove Ahlman",
+    "homepage": "http://oveahlman.itch.io",
+    "backgroundColor": "#732930",
+    "popularColors": [
+      "#44891a",
+      "#9d9d9d",
+      "#cccccc"
+    ]
   },
   "enqueue": {
     "title": "Enqueue",
-    "backgroundColor": null
+    "author": "Allen Webster",
+    "homepage": "www.pushthegame.com",
+    "backgroundColor": null,
+    "popularColors": [
+      "#697175",
+      "#000000",
+      "#990000"
+    ]
   },
   "entanglement-one": {
     "title": "Entanglement - Chapter One",
-    "backgroundColor": "#9fd1ff"
+    "author": "Richard Locke",
+    "homepage": "www.richardlocke.co.uk",
+    "backgroundColor": "#9fd1ff",
+    "popularColors": [
+      "#9fd1ff",
+      "#6cb8ff",
+      "#c0e1ff"
+    ]
   },
   "entanglement-two": {
     "title": "Entanglement - Chapter Two",
-    "backgroundColor": "#4a6277"
+    "author": "Rich Locke",
+    "homepage": "www.richardlocke.co.uk",
+    "backgroundColor": "#4a6277",
+    "popularColors": [
+      "#bbdcf9",
+      "#4a6277",
+      "#8484ff"
+    ]
   },
   "esl-puzzle-game": {
     "title": "ESL Puzzle Game -- アダムのパズルゲーム",
-    "backgroundColor": null
+    "author": "A.R.Nakama",
+    "homepage": "www.puzzlescript.net",
+    "backgroundColor": null,
+    "popularColors": [
+      "#a46422",
+      "#493c2b",
+      "#44891a"
+    ]
   },
   "explod": {
     "title": "Explod",
-    "backgroundColor": null
+    "author": "CHz",
+    "homepage": "quiteajolt.com",
+    "backgroundColor": null,
+    "popularColors": [
+      "#44891a",
+      "#a46422",
+      "#493c2b"
+    ]
   },
   "extra-lives": {
     "title": "Extra lives",
-    "backgroundColor": "#231F26"
+    "author": "Rosden Shadow [Mark Signorelli]",
+    "homepage": "rosden.itch.io",
+    "backgroundColor": "#231F26",
+    "popularColors": [
+      "#4F5B46",
+      "#231F26",
+      "#F2F2AA"
+    ]
   },
   "fatigued-square-maze": {
     "title": "Fatigued square maze",
-    "backgroundColor": "#be2633"
+    "author": "Ove Ahlman",
+    "homepage": "http://oveahlman.itch.io",
+    "backgroundColor": "#be2633",
+    "popularColors": [
+      "#697175",
+      "#9d9d9d",
+      "#FFFFFF"
+    ]
   },
   "fire-in-winter": {
     "title": "fire in winter",
-    "backgroundColor": "#C3D3D9"
+    "author": "Rosden Shadow [Mark Signorelli]",
+    "homepage": "rosden.itch.io",
+    "backgroundColor": "#C3D3D9",
+    "popularColors": [
+      "#4D2E37",
+      "#C3D3D9",
+      "#A17C8B"
+    ]
   },
   "fish-friend": {
     "title": "Fish Friend",
-    "backgroundColor": null
+    "author": null,
+    "homepage": null,
+    "backgroundColor": null,
+    "popularColors": [
+      "#25c555",
+      "#99d9ea",
+      "#1876d6"
+    ]
   },
   "flying-kick": {
     "title": "Flying Kick",
-    "backgroundColor": "#000000"
+    "author": "Aaron Steed",
+    "homepage": "www.robotacid.com",
+    "backgroundColor": "#000000",
+    "popularColors": [
+      "#d32112",
+      "#820e00",
+      "#000000"
+    ]
   },
   "garten-der-medusen": {
     "title": "Garten der Medusen",
-    "backgroundColor": "#000000"
+    "author": "Stephen Lavelle",
+    "homepage": "www.increpare.com",
+    "backgroundColor": "#000000",
+    "popularColors": [
+      "#9d9d9d",
+      "#697175",
+      "#000000"
+    ]
   },
   "gobble-rush": {
     "title": "Gobble Rush!",
-    "backgroundColor": null
+    "author": "Mark Richardson",
+    "homepage": null,
+    "backgroundColor": null,
+    "popularColors": [
+      "#FF0000",
+      "#000000",
+      "#FFFFFF"
+    ]
   },
   "grouping": {
     "title": "Grouping",
-    "backgroundColor": "#3B3942"
+    "author": "Rosden Shadow [Mark Signorelli]",
+    "homepage": "rosden.itch.io",
+    "backgroundColor": "#3B3942",
+    "popularColors": [
+      "#705C84",
+      "#3B3942",
+      "#F2F2AA"
+    ]
   },
   "hack-the-net": {
     "title": "Hack the Net",
-    "backgroundColor": null
+    "author": "Alan Hazelden",
+    "homepage": "www.draknek.org",
+    "backgroundColor": null,
+    "popularColors": [
+      "#000000",
+      "#a3ce27",
+      "#1d57f7"
+    ]
   },
   "hue-change": {
     "title": "Hue change",
-    "backgroundColor": "#3B3942"
+    "author": "Rosden Shadow [Mark Signorelli]",
+    "homepage": "rosden.itch.io",
+    "backgroundColor": "#3B3942",
+    "popularColors": [
+      "#AAE0F2",
+      "#3B3942",
+      "#E0AAF2"
+    ]
   },
   "i-herd-u-liek-water-templs": {
     "title": "i herd u liek water templs",
-    "backgroundColor": null
+    "author": "Denis Prause",
+    "homepage": "https://twitter.com/zejety",
+    "backgroundColor": null,
+    "popularColors": [
+      "#a3ce27",
+      "#697175",
+      "#e06f8b"
+    ]
   },
   "ice-cream-stick": {
     "title": "🍡 -ooo- 🍡",
-    "backgroundColor": null
+    "author": "Baku",
+    "homepage": "http://baku89.com",
+    "backgroundColor": null,
+    "popularColors": [
+      "#000000",
+      "#d7b7a2",
+      "#EEEEEE"
+    ]
   },
   "ice-path": {
     "title": "Ice path",
-    "backgroundColor": "#231F26"
+    "author": "Rosden Shadow [Mark Signorelli]",
+    "homepage": "rosden.itch.io",
+    "backgroundColor": "#231F26",
+    "popularColors": [
+      "#5C6684",
+      "#231F26",
+      "#D9FFDC"
+    ]
   },
   "icecrates": {
     "title": "IceCrates",
-    "backgroundColor": null
+    "author": "Tyler Glaiel",
+    "homepage": "twitter.com/tylerglaiel",
+    "backgroundColor": null,
+    "popularColors": [
+      "#2f484e",
+      "#9d9d9d",
+      "#697175"
+    ]
   },
   "interconnection": {
     "title": "interconnection",
-    "backgroundColor": "#66CC52"
+    "author": "Rosden Shadow [Mark Signorelli]",
+    "homepage": "rosden.itch.io",
+    "backgroundColor": "#66CC52",
+    "popularColors": [
+      "#FFD9FC",
+      "#66CC52",
+      "#5C8484"
+    ]
   },
   "islands": {
     "title": "Islands",
-    "backgroundColor": "#AAE0F2"
+    "author": "Rosden Shadow [Mark Signorelli]",
+    "homepage": "rosden.itch.io",
+    "backgroundColor": "#AAE0F2",
+    "popularColors": [
+      "#AAE0F2",
+      "#FFD9E0",
+      "#E57ED5"
+    ]
   },
   "kettle": {
     "title": "Kettle",
-    "backgroundColor": null
+    "author": "stephen lavelle",
+    "homepage": "www.increpare.com",
+    "backgroundColor": null,
+    "popularColors": [
+      "#000000",
+      "#3E3E44",
+      "#5D6FA7"
+    ]
   },
   "life-is-hard": {
     "title": "Life is Hard",
-    "backgroundColor": null
+    "author": "Marcos Donnantuoni",
+    "homepage": "https://marcosd.itch.io",
+    "backgroundColor": null,
+    "popularColors": [
+      "#9d9d9d",
+      "#be2633",
+      "#ffff00"
+    ]
   },
   "lime-rick": {
     "title": "Lime Rick",
-    "backgroundColor": null
+    "author": "Tommi Tuovinen",
+    "homepage": "http://www.kissmaj7.com/",
+    "backgroundColor": null,
+    "popularColors": [
+      "#a46422",
+      "#000000",
+      "#be2633"
+    ]
   },
   "linked": {
     "title": "Linked",
-    "backgroundColor": "#000000"
+    "author": null,
+    "homepage": null,
+    "backgroundColor": "#000000",
+    "popularColors": [
+      "#9d9d9d",
+      "#697175",
+      "#000000"
+    ]
   },
   "maera-public-works": {
     "title": "Maera Public Works",
-    "backgroundColor": "#1B2632"
+    "author": "CHz",
+    "homepage": "quiteajolt.com",
+    "backgroundColor": "#1B2632",
+    "popularColors": [
+      "#777700",
+      "#222222",
+      "#555500"
+    ]
   },
   "magik": {
     "title": "Magik",
-    "backgroundColor": null
+    "author": null,
+    "homepage": null,
+    "backgroundColor": null,
+    "popularColors": [
+      "#493c2b",
+      "#44891a",
+      "#a3ce27"
+    ]
   },
   "magnetic": {
     "title": "magnetic",
-    "backgroundColor": "#1B2632"
+    "author": "nick cavazos",
+    "homepage": null,
+    "backgroundColor": "#1B2632",
+    "popularColors": [
+      "#1B2632",
+      "#000000",
+      "#697175"
+    ]
   },
   "magnetized": {
     "title": "Magnetized",
-    "backgroundColor": "#3B3942"
+    "author": "Rosden Shadow [Mark Signorelli]",
+    "homepage": "rosden.itch.io",
+    "backgroundColor": "#3B3942",
+    "popularColors": [
+      "#FFFFFF",
+      "#3B3942",
+      "#D9FFDC"
+    ]
   },
   "manic-ammo": {
     "title": "Manic Ammo",
-    "backgroundColor": null
+    "author": "David Eastman",
+    "homepage": "@eastmad",
+    "backgroundColor": null,
+    "popularColors": [
+      "#493c2b",
+      "#a46422",
+      "#B2DCEF"
+    ]
   },
   "mazezam": {
     "title": "MazezaM",
-    "backgroundColor": null
+    "author": "Malcolm Tyrrell",
+    "homepage": "https://sites.google.com/site/malcolmsprojects/",
+    "backgroundColor": null,
+    "popularColors": [
+      "#eb8931",
+      "#697175",
+      "#9d9d9d"
+    ]
   },
   "mc-escher-s-equestrian-armageddon": {
     "title": "MC Escher's Equestrian Armageddon",
-    "backgroundColor": null
+    "author": "Anna Clarke",
+    "homepage": "www.puzzlescript.net",
+    "backgroundColor": null,
+    "popularColors": [
+      "#a46422",
+      "#493c2b",
+      "#1B2632"
+    ]
   },
   "microban": {
     "title": "Microban",
-    "backgroundColor": null
+    "author": "David Skinner",
+    "homepage": "www.sneezingtiger.com/sokoban/levels/microbanText.html",
+    "backgroundColor": null,
+    "popularColors": [
+      "#a46422",
+      "#493c2b",
+      "#44891a"
+    ]
   },
   "midas": {
     "title": "Midas",
-    "backgroundColor": null
+    "author": "wanderlands",
+    "homepage": "www.wanderlands.org",
+    "backgroundColor": null,
+    "popularColors": [
+      "#9d9d9d",
+      "#FFFFFF",
+      "#eb8931"
+    ]
   },
   "mirror-isles": {
     "title": "Mirror Isles",
-    "backgroundColor": null
+    "author": "Alan Hazelden",
+    "homepage": "www.draknek.org",
+    "backgroundColor": null,
+    "popularColors": [
+      "#4e5159",
+      "#1d57f7",
+      "#FFFFFF"
+    ]
   },
   "miss-direction": {
     "title": "Miss Direction",
-    "backgroundColor": null
+    "author": "Malcolm Tyrrell",
+    "homepage": "https://sites.google.com/site/malcolmsprojects/miss-direction",
+    "backgroundColor": null,
+    "popularColors": [
+      "#f7e26b",
+      "#000000",
+      "#1d57f7"
+    ]
   },
   "modality": {
     "title": "Modality",
-    "backgroundColor": "#603060"
+    "author": "Sean Barrett",
+    "homepage": "www.silverspaceship.com",
+    "backgroundColor": "#603060",
+    "popularColors": [
+      "#202020",
+      "#FFFFFF",
+      "#000000"
+    ]
   },
   "monster-mess": {
     "title": "monster mess",
-    "backgroundColor": "#000000"
+    "author": "Rosden Shadow [Mark Signorelli]",
+    "homepage": "rosden.itch.io",
+    "backgroundColor": "#000000",
+    "popularColors": [
+      "#000000",
+      "#FFFFFF",
+      "#ff0000"
+    ]
   },
   "moving-target": {
     "title": "Moving target",
-    "backgroundColor": "#423D39"
+    "author": "Rosden Shadow [Mark Signorelli]",
+    "homepage": "rosden.itch.io",
+    "backgroundColor": "#423D39",
+    "popularColors": [
+      "#736053",
+      "#423D39",
+      "#7EA1E5"
+    ]
   },
   "mowing": {
     "title": "Mowing",
-    "backgroundColor": null
+    "author": null,
+    "homepage": null,
+    "backgroundColor": null,
+    "popularColors": [
+      "#00cc00",
+      "#1d57f7",
+      "#cccccc"
+    ]
   },
   "multi-word-dictionary-game": {
     "title": "Multi-word Dictionary Game",
-    "backgroundColor": null
+    "author": "Sarah Northway",
+    "homepage": "www.sarahnorthway.com",
+    "backgroundColor": null,
+    "popularColors": [
+      "#9d9d9d",
+      "#de65e2",
+      "#000000"
+    ]
   },
   "net": {
     "title": "Net",
-    "backgroundColor": null
+    "author": null,
+    "homepage": null,
+    "backgroundColor": null,
+    "popularColors": [
+      "#000000",
+      "#f7e26b",
+      "#FFFFFF"
+    ]
   },
   "newton-s-crates": {
     "title": "Newton's Crates",
-    "backgroundColor": "#493c2b"
+    "author": "Andrey Shevchuk",
+    "homepage": "shevchuk.net",
+    "backgroundColor": "#493c2b",
+    "popularColors": [
+      "#493c2b",
+      "#cccccc",
+      "#9d9d9d"
+    ]
   },
   "okosban": {
     "title": "Okosban",
-    "backgroundColor": null
+    "author": "Ove Ahlman",
+    "homepage": "oveahlman.itch.io",
+    "backgroundColor": null,
+    "popularColors": [
+      "#cccccc",
+      "#1B2632",
+      "#FFFFFF"
+    ]
   },
   "out-of-bounds": {
     "title": "out of bounds [lite demo]",
-    "backgroundColor": null
+    "author": "cyathea tree studio",
+    "homepage": "www.cyatheatree.com",
+    "backgroundColor": null,
+    "popularColors": [
+      "#161616",
+      "#FFFFFF",
+      "#cccccc"
+    ]
   },
   "out-there": {
     "title": "Out There",
-    "backgroundColor": "#303030"
+    "author": "CHz",
+    "homepage": "quiteajolt.com",
+    "backgroundColor": "#303030",
+    "popularColors": [
+      "#303030",
+      "#606060",
+      "#C0C0C0"
+    ]
   },
   "outward-force": {
     "title": "Outward force",
-    "backgroundColor": "#231F26"
+    "author": "Rosden Shadow [Mark Signorelli]",
+    "homepage": "rosden.itch.io",
+    "backgroundColor": "#231F26",
+    "popularColors": [
+      "#A87EE5",
+      "#231F26",
+      "#F2F2AA"
+    ]
   },
   "overstep": {
     "title": "Overstep",
-    "backgroundColor": "#191919"
+    "author": "Rosden Shadow [Mark Signorelli]",
+    "homepage": "rosden.itch.io",
+    "backgroundColor": "#191919",
+    "popularColors": [
+      "#F2F2AA",
+      "#191919",
+      "#E0AAF2"
+    ]
   },
   "pants-shirt-cap": {
     "title": "Pants, Shirt, Cap",
-    "backgroundColor": "#BA381F"
+    "author": "Jaewoong Hwang",
+    "homepage": "www.jaewoong.info",
+    "backgroundColor": "#BA381F",
+    "popularColors": [
+      "#BA4B32",
+      "#BA381F",
+      "#57381F"
+    ]
   },
   "path-lines": {
     "title": "Path lines",
-    "backgroundColor": "#423D39"
+    "author": "Rosden Shadow [Mark Signorelli]",
+    "homepage": "rosden.itch.io",
+    "backgroundColor": "#423D39",
+    "popularColors": [
+      "#E5C17E",
+      "#423D39",
+      "#E0AAF2"
+    ]
   },
   "pathmaker": {
     "title": "Pathmaker",
-    "backgroundColor": "#231F26"
+    "author": "Rosden Shadow [Mark Signorelli]",
+    "homepage": "rosden.itch.io",
+    "backgroundColor": "#231F26",
+    "popularColors": [
+      "#FFFFFF",
+      "#231F26",
+      "#E5C17E"
+    ]
   },
   "positional": {
     "title": "Positional",
-    "backgroundColor": "#1F2026"
+    "author": "Rosden Shadow [Mark Signorelli]",
+    "homepage": "rosden.itch.io",
+    "backgroundColor": "#1F2026",
+    "popularColors": [
+      "#999999",
+      "#1F2026",
+      "#D9FFF8"
+    ]
   },
   "pot-wash-panic": {
     "title": "Pot Wash Panic",
-    "backgroundColor": "#4B575D"
+    "author": "Dan Howard",
+    "homepage": "https://twitter.com/DanHowardGames",
+    "backgroundColor": "#4B575D",
+    "popularColors": [
+      "#8E634B",
+      "#A7120C",
+      "#7F7F7C"
+    ]
   },
   "pretender-to-the-crown": {
     "title": "pretender to the crown",
-    "backgroundColor": "#d7dbef"
+    "author": "colin thil",
+    "homepage": "http://pretendertothecrown.wordpress.com/",
+    "backgroundColor": "#d7dbef",
+    "popularColors": [
+      "#ead5a8",
+      "#0c6358",
+      "#225039"
+    ]
   },
   "programaze": {
     "title": "PrograMaze",
-    "backgroundColor": null
+    "author": "Adam Gashlin",
+    "homepage": "gashlin.net",
+    "backgroundColor": null,
+    "popularColors": [
+      "#697175",
+      "#9d9d9d",
+      "#f7e26b"
+    ]
   },
   "purple": {
     "title": "purple",
-    "backgroundColor": "#536673"
+    "author": "Rosden Shadow [Mark Signorelli]",
+    "homepage": "rosden.itch.io",
+    "backgroundColor": "#536673",
+    "popularColors": [
+      "#FFEED9",
+      "#536673",
+      "#C1A2BC"
+    ]
   },
   "push": {
     "title": "PUSH",
-    "backgroundColor": null
+    "author": "lonebot - demake by rmmh",
+    "homepage": "http://lonebot.net/games/push/",
+    "backgroundColor": null,
+    "popularColors": [
+      "#f7e26b",
+      "#635854",
+      "#969283"
+    ]
   },
   "pushcat-jr": {
     "title": "Pushcat Jr",
-    "backgroundColor": null
+    "author": "Zut!",
+    "homepage": "zutgames.com/pushcat",
+    "backgroundColor": null,
+    "popularColors": [
+      "#556a64",
+      "#70a169",
+      "#584a4e"
+    ]
   },
   "rock-paper-scissors": {
     "title": "Rock, Paper, Scissors",
-    "backgroundColor": null
+    "author": "chaotic_iak",
+    "homepage": "chaosatthesky.wordpress.com",
+    "backgroundColor": null,
+    "popularColors": [
+      "#eb8931",
+      "#2f484e",
+      "#a3ce27"
+    ]
   },
   "roll-those-sixes": {
     "title": "Roll those Sixes",
-    "backgroundColor": null
+    "author": "Marcos Donnantuoni",
+    "homepage": "https://marcosd.itch.io",
+    "backgroundColor": null,
+    "popularColors": [
+      "#697175",
+      "#444444",
+      "#9d9d9d"
+    ]
   },
   "rows-and-columns": {
     "title": "rows and columns",
-    "backgroundColor": "#3B3942"
+    "author": "Rosden Shadow [Mark Signorelli]",
+    "homepage": "rosden.itch.io",
+    "backgroundColor": "#3B3942",
+    "popularColors": [
+      "#D9FFDC",
+      "#3B3942",
+      "#E5C17E"
+    ]
   },
   "scaling-walls": {
     "title": "Scaling walls",
-    "backgroundColor": "#423D39"
+    "author": "Rosden Shadow [Mark Signorelli]",
+    "homepage": "rosden.itch.io",
+    "backgroundColor": "#423D39",
+    "popularColors": [
+      "#7EA1E5",
+      "#423D39",
+      "#F2F2AA"
+    ]
   },
   "season-finale": {
     "title": "Season Finale",
-    "backgroundColor": "#222222"
+    "author": null,
+    "homepage": null,
+    "backgroundColor": "#222222",
+    "popularColors": [
+      "#043804",
+      "#78D448",
+      "#109010"
+    ]
   },
   "separation": {
     "title": "Separation",
-    "backgroundColor": null
+    "author": "Marcos Donnantuoni",
+    "homepage": "https://marcosd.itch.io",
+    "backgroundColor": null,
+    "popularColors": [
+      "#777777",
+      "#666666",
+      "#555555"
+    ]
   },
   "skippa": {
     "title": "skippa",
-    "backgroundColor": "#1F2622"
+    "author": "Rosden Shadow [Mark Signorelli]",
+    "homepage": "rosden.itch.io",
+    "backgroundColor": "#1F2622",
+    "popularColors": [
+      "#B32D2D",
+      "#1F2622",
+      "#E5C17E"
+    ]
   },
   "skipping-stones": {
     "title": "Skipping Stones to Lonely Homes",
-    "backgroundColor": null
+    "author": "Alan Hazelden",
+    "homepage": "www.draknek.org",
+    "backgroundColor": null,
+    "popularColors": [
+      "#ffffff",
+      "#1d57f7",
+      "#B2DCEF"
+    ]
   },
   "skyscraper": {
     "title": "Skyscraper",
-    "backgroundColor": "#AAE0F2"
+    "author": "Rosden Shadow [Mark Signorelli]",
+    "homepage": "rosden.itch.io",
+    "backgroundColor": "#AAE0F2",
+    "popularColors": [
+      "#AAE0F2",
+      "#FFD9E0",
+      "#A87EE5"
+    ]
   },
   "sleepy-players": {
     "title": "Sleepy players",
-    "backgroundColor": null
+    "author": "Marcos Donnantuoni",
+    "homepage": "https://marcosd.itch.io",
+    "backgroundColor": null,
+    "popularColors": [
+      "#1d57f7",
+      "#777777",
+      "#555555"
+    ]
   },
   "slidings": {
     "title": "Slidings",
-    "backgroundColor": null
+    "author": "Alain Brobecker",
+    "homepage": "abrobecker.free.fr",
+    "backgroundColor": null,
+    "popularColors": [
+      "#777777",
+      "#448888",
+      "#FFFFFF"
+    ]
   },
   "slime-swap": {
     "title": "Slime Swap",
-    "backgroundColor": "#9d9d9d"
+    "author": "Alan Hazelden",
+    "homepage": "www.draknek.org",
+    "backgroundColor": "#9d9d9d",
+    "popularColors": [
+      "#495e2b",
+      "#444444",
+      "#9d9d9d"
+    ]
   },
   "sokobond": {
     "title": "Sokobond: The Demake",
-    "backgroundColor": "#FDFDFD"
+    "author": "Jonah Ostroff",
+    "homepage": "www.sokobond.com",
+    "backgroundColor": "#FDFDFD",
+    "popularColors": [
+      "#f7e26b",
+      "#FFFFFF",
+      "#cccccc"
+    ]
   },
   "sokoboros": {
     "title": "Sokoboros",
-    "backgroundColor": "#22170B"
+    "author": "Trevor Newton",
+    "homepage": "https://twitter.com/trevnewt",
+    "backgroundColor": "#22170B",
+    "popularColors": [
+      "#a46422",
+      "#493c2b",
+      "#eb8931"
+    ]
   },
   "some-lines-crossed": {
     "title": "Some lines were meant to be crossed",
-    "backgroundColor": "#1B2632"
+    "author": "Frpzzd",
+    "homepage": null,
+    "backgroundColor": "#1B2632",
+    "popularColors": [
+      "#1B2632",
+      "#1d57f7",
+      "#732930"
+    ]
   },
   "some-pits": {
     "title": "Some pits",
-    "backgroundColor": "#261F1F"
+    "author": "Rosden Shadow [Mark Signorelli]",
+    "homepage": "rosden.itch.io",
+    "backgroundColor": "#261F1F",
+    "popularColors": [
+      "#B32D2D",
+      "#261F1F",
+      "#E0AAF2"
+    ]
   },
   "spacekoban": {
     "title": "Spacekoban",
-    "backgroundColor": "#00001F"
+    "author": "Connorses [Loneship Games]",
+    "homepage": null,
+    "backgroundColor": "#00001F",
+    "popularColors": [
+      "#000000",
+      "#cccccc",
+      "#9d9d9d"
+    ]
   },
   "spider-s-hollow": {
     "title": "Spider's Hollow",
-    "backgroundColor": null
+    "author": "John Thyer",
+    "homepage": null,
+    "backgroundColor": null,
+    "popularColors": [
+      "#bdbdbd",
+      "#000000",
+      "#3f2a14"
+    ]
   },
   "spikes-n-stuff": {
     "title": "Spikes 'n' Stuff",
-    "backgroundColor": null
+    "author": "Alan Hazelden",
+    "homepage": null,
+    "backgroundColor": null,
+    "popularColors": [
+      "#767d80",
+      "#697175",
+      "#373c3f"
+    ]
   },
   "spooky-pumpkin-game": {
     "title": "Spooky Pumpkin Game",
-    "backgroundColor": null
+    "author": "Alan Hazelden",
+    "homepage": "www.draknek.org",
+    "backgroundColor": null,
+    "popularColors": [
+      "#1B2632",
+      "#9d9d9d",
+      "#000000"
+    ]
   },
   "square-colours": {
     "title": "square colours",
-    "backgroundColor": "#404239"
+    "author": "Rosden Shadow [Mark Signorelli]",
+    "homepage": "rosden.itch.io",
+    "backgroundColor": "#404239",
+    "popularColors": [
+      "#536673",
+      "#404239",
+      "#E5C17E"
+    ]
   },
   "stairs": {
     "title": "Stairs",
-    "backgroundColor": null
+    "author": null,
+    "homepage": null,
+    "backgroundColor": null,
+    "popularColors": [
+      "#2f484e",
+      "#000000",
+      "#493c2b"
+    ]
   },
   "stairways": {
     "title": "Stairways",
-    "backgroundColor": null
+    "author": "Franklin P. Dyer",
+    "homepage": null,
+    "backgroundColor": null,
+    "popularColors": [
+      "#697175",
+      "#9d9d9d",
+      "#cccccc"
+    ]
   },
   "stand-off": {
     "title": "Stand Off",
-    "backgroundColor": null
+    "author": "Mark Richardson",
+    "homepage": null,
+    "backgroundColor": null,
+    "popularColors": [
+      "#555555",
+      "#444444",
+      "#000000"
+    ]
   },
   "sticky": {
     "title": "sticky",
-    "backgroundColor": "#D9FFF8"
+    "author": "Rosden Shadow [Mark Signorelli]",
+    "homepage": "rosden.itch.io",
+    "backgroundColor": "#D9FFF8",
+    "popularColors": [
+      "#E57ED5",
+      "#D9FFF8",
+      "#F2F2AA"
+    ]
   },
   "swap": {
     "title": "swap",
-    "backgroundColor": "#465B4D"
+    "author": "Rosden Shadow [Mark Signorelli]",
+    "homepage": "rosden.itch.io",
+    "backgroundColor": "#465B4D",
+    "popularColors": [
+      "#F2F2AA",
+      "#465B4D",
+      "#CC7A52"
+    ]
   },
   "swapbot": {
     "title": "SwapBot",
-    "backgroundColor": null
+    "author": "John Williams",
+    "homepage": "john.m.dubs@gmail.com",
+    "backgroundColor": null,
+    "popularColors": [
+      "#eb8931",
+      "#000000",
+      "#be2633"
+    ]
   },
   "symbols": {
     "title": "Symbols",
-    "backgroundColor": "#423D39"
+    "author": "Rosden Shadow [Mark Signorelli]",
+    "homepage": "rosden.itch.io",
+    "backgroundColor": "#423D39",
+    "popularColors": [
+      "#B32D2D",
+      "#423D39",
+      "#736053"
+    ]
   },
   "take-heart-lass": {
     "title": "Take Heart Lass",
-    "backgroundColor": null
+    "author": "Kevin Zuhn",
+    "homepage": "www.kevinzuhn.com",
+    "backgroundColor": null,
+    "popularColors": [
+      "#a3ce27",
+      "#be2633",
+      "#44891a"
+    ]
   },
   "telefrag": {
     "title": "Telefrag",
-    "backgroundColor": null
+    "author": "CHz",
+    "homepage": "quiteajolt.com",
+    "backgroundColor": null,
+    "popularColors": [
+      "#003300",
+      "#7F552C",
+      "#555555"
+    ]
   },
   "teleporters": {
     "title": "Teleporters",
-    "backgroundColor": "#2E3E4D"
+    "author": "Rosden Shadow [Mark Signorelli]",
+    "homepage": "rosden.itch.io",
+    "backgroundColor": "#2E3E4D",
+    "popularColors": [
+      "#82A17C",
+      "#2E3E4D",
+      "#E5C17E"
+    ]
   },
   "the-art-of-cloning": {
     "title": "the art of cloning",
-    "backgroundColor": null
+    "author": "Rosden Shadow [Mark Signorelli]",
+    "homepage": "https://twitter.com/Rosden_Shadow",
+    "backgroundColor": null,
+    "popularColors": [
+      "#FFB37F",
+      "#1AB258",
+      "#0E664E"
+    ]
   },
   "the-art-of-storage": {
     "title": "The art of storage",
-    "backgroundColor": "#E5C17E"
+    "author": "Rosden Shadow [Mark Signorelli]",
+    "homepage": "rosden.itch.io",
+    "backgroundColor": "#E5C17E",
+    "popularColors": [
+      "#BF9269",
+      "#B32D2D",
+      "#D88D54"
+    ]
   },
   "the-big-dig": {
     "title": "the big dig",
-    "backgroundColor": "#52465B"
+    "author": "Rosden Shadow [Mark Signorelli]",
+    "homepage": "rosden.itch.io",
+    "backgroundColor": "#52465B",
+    "popularColors": [
+      "#A17C8B",
+      "#52465B",
+      "#E5C17E"
+    ]
   },
   "the-copying": {
     "title": "the copying",
-    "backgroundColor": "#5B4846"
+    "author": "Rosden Shadow [Mark Signorelli]",
+    "homepage": "rosden.itch.io",
+    "backgroundColor": "#5B4846",
+    "popularColors": [
+      "#82A17C",
+      "#5B4846",
+      "#AAAAF2"
+    ]
   },
   "the-fire-calls": {
     "title": "The fire calls",
-    "backgroundColor": "#231F26"
+    "author": "Rosden Shadow [Mark Signorelli]",
+    "homepage": "rosden.itch.io",
+    "backgroundColor": "#231F26",
+    "popularColors": [
+      "#D9FFDC",
+      "#231F26",
+      "#D9FFF8"
+    ]
   },
   "the-laser": {
     "title": "the laser",
-    "backgroundColor": "#3B3942"
+    "author": "Rosden Shadow [Mark Signorelli]",
+    "homepage": "rosden.itch.io",
+    "backgroundColor": "#3B3942",
+    "popularColors": [
+      "#E0AAF2",
+      "#3B3942",
+      "#AAE0F2"
+    ]
   },
   "the-packing-crate": {
     "title": "The packing crate",
-    "backgroundColor": "#231F26"
+    "author": "Rosden Shadow [Mark Signorelli]",
+    "homepage": "rosden.itch.io",
+    "backgroundColor": "#231F26",
+    "popularColors": [
+      "#D9FFF8",
+      "#231F26",
+      "#E5C17E"
+    ]
   },
   "the-switch": {
     "title": "the switch",
-    "backgroundColor": "#3B3942"
+    "author": "Rosden Shadow [Mark Signorelli]",
+    "homepage": "rosden.itch.io",
+    "backgroundColor": "#3B3942",
+    "popularColors": [
+      "#5C8466",
+      "#3B3942",
+      "#FFD9FC"
+    ]
   },
   "then-another": {
     "title": "Then another",
-    "backgroundColor": "#E5C17E"
+    "author": "Rosden Shadow [Mark Signorelli]",
+    "homepage": "rosden.itch.io",
+    "backgroundColor": "#E5C17E",
+    "popularColors": [
+      "#FFD9FC",
+      "#E5C17E",
+      "#C1A2A5"
+    ]
   },
   "tidy-the-cafe": {
     "title": "Tidy the Cafe!",
-    "backgroundColor": null
+    "author": "Sally Bridgwater",
+    "homepage": "http://sallyanne.itch.io",
+    "backgroundColor": null,
+    "popularColors": [
+      "#9d9d9d",
+      "#697175",
+      "#f7e26b"
+    ]
   },
   "tiny-treasure-hunt": {
     "title": "tiny treasure hunt 1.0",
-    "backgroundColor": null
+    "author": "Weeble",
+    "homepage": "www.twitter.com/weeble",
+    "backgroundColor": null,
+    "popularColors": [
+      "#111411",
+      "#cccccc",
+      "#FFFFFF"
+    ]
   },
   "to-nothing-and-back": {
     "title": "To nothing and back",
-    "backgroundColor": "#333333"
+    "author": "Rosden Shadow [Mark Signorelli]",
+    "homepage": "rosden.itch.io",
+    "backgroundColor": "#333333",
+    "popularColors": [
+      "#B32D2D",
+      "#333333",
+      "#FFFFFF"
+    ]
   },
   "train-braining": {
     "title": "Train Braining",
-    "backgroundColor": null
+    "author": "Alan Hazelden",
+    "homepage": "http://www.draknek.org",
+    "backgroundColor": null,
+    "popularColors": [
+      "#293a7b",
+      "#97c04f",
+      "#ffa9cf"
+    ]
   },
   "train": {
     "title": "Train",
-    "backgroundColor": "#000000"
+    "author": null,
+    "homepage": null,
+    "backgroundColor": "#000000",
+    "popularColors": [
+      "#000000",
+      "#9d9d9d",
+      "#be2633"
+    ]
   },
   "triple-match": {
     "title": "triple match",
-    "backgroundColor": "#3B3942"
+    "author": "Rosden Shadow [Mark Signorelli]",
+    "homepage": "rosden.itch.io",
+    "backgroundColor": "#3B3942",
+    "popularColors": [
+      "#B32D2D",
+      "#3B3942",
+      "#FFFFFF"
+    ]
   },
   "tunnel-rat": {
     "title": "Tunnel Rat",
-    "backgroundColor": null
+    "author": "James Noeckel",
+    "homepage": null,
+    "backgroundColor": null,
+    "popularColors": [
+      "#8a8a8a",
+      "#f7e26b",
+      "#eb8931"
+    ]
   },
   "unconventional-guns": {
     "title": "Unconventional Guns",
-    "backgroundColor": "#1B2632"
+    "author": "rectangular Tim",
+    "homepage": "http://ludumdare.com/compo/ludum-dare-32/?action=preview&uid=39396",
+    "backgroundColor": "#1B2632",
+    "popularColors": [
+      "#a46422",
+      "#1B2632",
+      "#cccccc"
+    ]
   },
   "vacuum": {
     "title": "Vacuum",
-    "backgroundColor": null
+    "author": "Mark Richardson",
+    "homepage": null,
+    "backgroundColor": null,
+    "popularColors": [
+      "#BBBBBB",
+      "#FFFFFF",
+      "#AAAAAA"
+    ]
   },
   "vines": {
     "title": "Vines",
-    "backgroundColor": null
+    "author": "Stefan Peeters",
+    "homepage": null,
+    "backgroundColor": null,
+    "popularColors": [
+      "#663300",
+      "#FFFFFF",
+      "#f7e26b"
+    ]
   },
   "wall-bonding": {
     "title": "Wall-bonding",
-    "backgroundColor": "#3B3942"
+    "author": "Rosden Shadow [Mark Signorelli]",
+    "homepage": "rosden.itch.io",
+    "backgroundColor": "#3B3942",
+    "popularColors": [
+      "#666666",
+      "#3B3942",
+      "#845C5C"
+    ]
   },
   "wall-shuffle": {
     "title": "wall shuffle",
-    "backgroundColor": "#231F26"
+    "author": "Rosden Shadow [Mark Signorelli]",
+    "homepage": "rosden.itch.io",
+    "backgroundColor": "#231F26",
+    "popularColors": [
+      "#FFD9FC",
+      "#231F26",
+      "#F2F2AA"
+    ]
   },
   "white-pillars": {
     "title": "White Pillars",
-    "backgroundColor": "#1F2026"
+    "author": "Rosden Shadow [Mark Signorelli]",
+    "homepage": "rosden.itch.io",
+    "backgroundColor": "#1F2026",
+    "popularColors": [
+      "#52465B",
+      "#1F2026",
+      "#F2F2AA"
+    ]
   }
 }

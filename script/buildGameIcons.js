@@ -19,6 +19,7 @@ module.exports = {
         const metadata = fs.existsSync(jsonMetadataPath) ? JSON.parse(fs.readFileSync(jsonMetadataPath, 'utf-8')) : {}
         const svgFilesToConvert = []
         let html = [`<html><head><style>
+        body { font-family: sans-serif; }
         figure {
             width: 150px;
             display: inline-block;
@@ -31,13 +32,15 @@ module.exports = {
             box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
 
         }
-        figcaption { 
+        figcaption .game-title,
+        figcaption .game-author { 
             width: 150px;
-            text-align: center;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
+        figcaption .game-title { color: black; text-align: center; font-weight: bold; }
+        figcaption .game-author { font-size: 80%; color: #ccc; }
         .thumbnail-wrapper {
             width: 150px;
             height: 150px;
@@ -66,9 +69,9 @@ module.exports = {
             if (!fs.existsSync(destPath) || !metadata[gameId]) {
                 try {
                     console.log(`${i}/${gists.length} ${gameId}`)
-                    const {svg, title, backgroundColor } = buildIcon(sourcePath)
+                    const {svg, title, author, homepage, backgroundColor, popularColors } = buildIcon(sourcePath)
 
-                    metadata[gameId] = {title, backgroundColor}
+                    metadata[gameId] = {title, author, homepage, backgroundColor, popularColors}
                 
                     fs.writeFileSync(destPath, svg)
 
@@ -81,7 +84,8 @@ module.exports = {
             }
 
             if (!didError) {
-                html.push(`<a href="../#${gameId}"><figure id="${gameId}"><div class="thumbnail-wrapper" style="background-color: ${metadata[gameId].backgroundColor}"><img src="./_placeholder.gif" data-src="./${gameId}.png"/></div><figcaption>${metadata[gameId].title}</figcaption></figure></a>`)
+                const authorMarkup = metadata[gameId].author ? `<div class="game-author">by ${metadata[gameId].author}</div>` : ''
+                html.push(`<a href="../#${gameId}"><figure id="${gameId}"><div class="thumbnail-wrapper" style="background-color: ${metadata[gameId].backgroundColor || metadata[gameId].popularColors[0]}"><img src="./_placeholder.gif" data-src="./${gameId}.png"/></div><figcaption><div class="game-title">${metadata[gameId].title}</div>${authorMarkup}</figcaption></figure></a>`)
             }
 
 

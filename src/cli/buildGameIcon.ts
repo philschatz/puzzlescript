@@ -26,9 +26,13 @@ export function buildIcon(sourcePath: string) {
     ui.onLevelChange(engine.getCurrentLevelNum(), engine.getCurrentLevelCells(), null)
     ui.renderScreen(false, 0) // forgot to run this
 
+    const {svg, popularColors} = ui.getSvg()
     return {
         title: data.title,
+        author: data.metadata.author,
+        homepage: data.metadata.homepage,
         backgroundColor: data.metadata.backgroundColor ? data.metadata.backgroundColor.toHex() : null,
-        svg: ui.getSvg()
+        popularColors,
+        svg
     }
 }
