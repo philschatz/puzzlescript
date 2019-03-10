@@ -1,0 +1,586 @@
+{
+  "1-2-3-ban": {
+    "title": "1-2-3-Ban",
+    "backgroundColor": "#697175"
+  },
+  "2d-whale-world": {
+    "title": "2D Whale World",
+    "backgroundColor": "#eb8931"
+  },
+  "a-sneeze-a-day": {
+    "title": "A Sneeze A Day Keeps The Crates Away",
+    "backgroundColor": null
+  },
+  "aaaah-i-m-being-attacked": {
+    "title": "Aaaah! I'm Being Attacked by a Giant Tentacle!",
+    "backgroundColor": null
+  },
+  "airport-aggression": {
+    "title": "Airport Aggression",
+    "backgroundColor": null
+  },
+  "alien-disco": {
+    "title": "Alien Disco",
+    "backgroundColor": null
+  },
+  "atlas-shrank": {
+    "title": "Atlas Shrank",
+    "backgroundColor": null
+  },
+  "barrier-trail": {
+    "title": "Barrier Trail",
+    "backgroundColor": "#231F26"
+  },
+  "beam-islands": {
+    "title": "Beam Islands",
+    "backgroundColor": null
+  },
+  "block-touching": {
+    "title": "Block touching",
+    "backgroundColor": "#3B3942"
+  },
+  "blocker-snake": {
+    "title": "Blocker snake",
+    "backgroundColor": "#423D39"
+  },
+  "bomb-n-ice": {
+    "title": "bomb n ice",
+    "backgroundColor": "#423D39"
+  },
+  "botsket-ball": {
+    "title": "Botsket Ball",
+    "backgroundColor": null
+  },
+  "boxes-and-balloons": {
+    "title": "Boxes & Balloons",
+    "backgroundColor": null
+  },
+  "boxes-love-bloxing-gloves": {
+    "title": "Boxes Love Bloxing Gloves",
+    "backgroundColor": null
+  },
+  "bubble-butler": {
+    "title": "Bubble Butler: CMD REORGANIZE",
+    "backgroundColor": null
+  },
+  "castlemouse": {
+    "title": "Memories Of Castlemouse",
+    "backgroundColor": null
+  },
+  "climbing-cubes": {
+    "title": "climbing cubes",
+    "backgroundColor": "#7EA1E5"
+  },
+  "closure-demake": {
+    "title": "Closure Demake",
+    "backgroundColor": null
+  },
+  "coin-counter": {
+    "title": "Coin Counter",
+    "backgroundColor": null
+  },
+  "collapsable-sokoban": {
+    "title": "Collapsable Sokoban",
+    "backgroundColor": null
+  },
+  "collapse": {
+    "title": "Collapse",
+    "backgroundColor": "#000000"
+  },
+  "covering-holes": {
+    "title": "Covering holes",
+    "backgroundColor": "#3B3942"
+  },
+  "cubes-barrier": {
+    "title": "Cubes barrier",
+    "backgroundColor": "#222533"
+  },
+  "cubes-medusa": {
+    "title": "cubes medusa",
+    "backgroundColor": "#1F2526"
+  },
+  "cyber-lasso": {
+    "title": "Cyber-Lasso",
+    "backgroundColor": null
+  },
+  "dang-i-m-huge": {
+    "title": "Dang I'm Huge",
+    "backgroundColor": null
+  },
+  "dangerous-dungeon": {
+    "title": "Dangerous Dungeon",
+    "backgroundColor": null
+  },
+  "directional": {
+    "title": "Directional",
+    "backgroundColor": "#1F2526"
+  },
+  "duality": {
+    "title": "duality",
+    "backgroundColor": "#3B3942"
+  },
+  "dungeon-janitor": {
+    "title": "Dungeon Janitor",
+    "backgroundColor": null
+  },
+  "dup-block": {
+    "title": "dup-block",
+    "backgroundColor": "#423D39"
+  },
+  "easy-enigma": {
+    "title": "Easy Enigma",
+    "backgroundColor": "#000000"
+  },
+  "electric-wire": {
+    "title": "Electric wire",
+    "backgroundColor": "#231F26"
+  },
+  "element-walkers": {
+    "title": "Element Walkers",
+    "backgroundColor": "#732930"
+  },
+  "enqueue": {
+    "title": "Enqueue",
+    "backgroundColor": null
+  },
+  "entanglement-one": {
+    "title": "Entanglement - Chapter One",
+    "backgroundColor": "#9fd1ff"
+  },
+  "entanglement-two": {
+    "title": "Entanglement - Chapter Two",
+    "backgroundColor": "#4a6277"
+  },
+  "esl-puzzle-game": {
+    "title": "ESL Puzzle Game -- アダムのパズルゲーム",
+    "backgroundColor": null
+  },
+  "explod": {
+    "title": "Explod",
+    "backgroundColor": null
+  },
+  "extra-lives": {
+    "title": "Extra lives",
+    "backgroundColor": "#231F26"
+  },
+  "fatigued-square-maze": {
+    "title": "Fatigued square maze",
+    "backgroundColor": "#be2633"
+  },
+  "fire-in-winter": {
+    "title": "fire in winter",
+    "backgroundColor": "#C3D3D9"
+  },
+  "fish-friend": {
+    "title": "Fish Friend",
+    "backgroundColor": null
+  },
+  "flying-kick": {
+    "title": "Flying Kick",
+    "backgroundColor": "#000000"
+  },
+  "garten-der-medusen": {
+    "title": "Garten der Medusen",
+    "backgroundColor": "#000000"
+  },
+  "gobble-rush": {
+    "title": "Gobble Rush!",
+    "backgroundColor": null
+  },
+  "grouping": {
+    "title": "Grouping",
+    "backgroundColor": "#3B3942"
+  },
+  "hack-the-net": {
+    "title": "Hack the Net",
+    "backgroundColor": null
+  },
+  "hue-change": {
+    "title": "Hue change",
+    "backgroundColor": "#3B3942"
+  },
+  "i-herd-u-liek-water-templs": {
+    "title": "i herd u liek water templs",
+    "backgroundColor": null
+  },
+  "ice-cream-stick": {
+    "title": "🍡 -ooo- 🍡",
+    "backgroundColor": null
+  },
+  "ice-path": {
+    "title": "Ice path",
+    "backgroundColor": "#231F26"
+  },
+  "icecrates": {
+    "title": "IceCrates",
+    "backgroundColor": null
+  },
+  "interconnection": {
+    "title": "interconnection",
+    "backgroundColor": "#66CC52"
+  },
+  "islands": {
+    "title": "Islands",
+    "backgroundColor": "#AAE0F2"
+  },
+  "kettle": {
+    "title": "Kettle",
+    "backgroundColor": null
+  },
+  "life-is-hard": {
+    "title": "Life is Hard",
+    "backgroundColor": null
+  },
+  "lime-rick": {
+    "title": "Lime Rick",
+    "backgroundColor": null
+  },
+  "linked": {
+    "title": "Linked",
+    "backgroundColor": "#000000"
+  },
+  "maera-public-works": {
+    "title": "Maera Public Works",
+    "backgroundColor": "#1B2632"
+  },
+  "magik": {
+    "title": "Magik",
+    "backgroundColor": null
+  },
+  "magnetic": {
+    "title": "magnetic",
+    "backgroundColor": "#1B2632"
+  },
+  "magnetized": {
+    "title": "Magnetized",
+    "backgroundColor": "#3B3942"
+  },
+  "manic-ammo": {
+    "title": "Manic Ammo",
+    "backgroundColor": null
+  },
+  "mazezam": {
+    "title": "MazezaM",
+    "backgroundColor": null
+  },
+  "mc-escher-s-equestrian-armageddon": {
+    "title": "MC Escher's Equestrian Armageddon",
+    "backgroundColor": null
+  },
+  "microban": {
+    "title": "Microban",
+    "backgroundColor": null
+  },
+  "midas": {
+    "title": "Midas",
+    "backgroundColor": null
+  },
+  "mirror-isles": {
+    "title": "Mirror Isles",
+    "backgroundColor": null
+  },
+  "miss-direction": {
+    "title": "Miss Direction",
+    "backgroundColor": null
+  },
+  "modality": {
+    "title": "Modality",
+    "backgroundColor": "#603060"
+  },
+  "monster-mess": {
+    "title": "monster mess",
+    "backgroundColor": "#000000"
+  },
+  "moving-target": {
+    "title": "Moving target",
+    "backgroundColor": "#423D39"
+  },
+  "mowing": {
+    "title": "Mowing",
+    "backgroundColor": null
+  },
+  "multi-word-dictionary-game": {
+    "title": "Multi-word Dictionary Game",
+    "backgroundColor": null
+  },
+  "net": {
+    "title": "Net",
+    "backgroundColor": null
+  },
+  "newton-s-crates": {
+    "title": "Newton's Crates",
+    "backgroundColor": "#493c2b"
+  },
+  "okosban": {
+    "title": "Okosban",
+    "backgroundColor": null
+  },
+  "out-of-bounds": {
+    "title": "out of bounds [lite demo]",
+    "backgroundColor": null
+  },
+  "out-there": {
+    "title": "Out There",
+    "backgroundColor": "#303030"
+  },
+  "outward-force": {
+    "title": "Outward force",
+    "backgroundColor": "#231F26"
+  },
+  "overstep": {
+    "title": "Overstep",
+    "backgroundColor": "#191919"
+  },
+  "pants-shirt-cap": {
+    "title": "Pants, Shirt, Cap",
+    "backgroundColor": "#BA381F"
+  },
+  "path-lines": {
+    "title": "Path lines",
+    "backgroundColor": "#423D39"
+  },
+  "pathmaker": {
+    "title": "Pathmaker",
+    "backgroundColor": "#231F26"
+  },
+  "positional": {
+    "title": "Positional",
+    "backgroundColor": "#1F2026"
+  },
+  "pot-wash-panic": {
+    "title": "Pot Wash Panic",
+    "backgroundColor": "#4B575D"
+  },
+  "pretender-to-the-crown": {
+    "title": "pretender to the crown",
+    "backgroundColor": "#d7dbef"
+  },
+  "programaze": {
+    "title": "PrograMaze",
+    "backgroundColor": null
+  },
+  "purple": {
+    "title": "purple",
+    "backgroundColor": "#536673"
+  },
+  "push": {
+    "title": "PUSH",
+    "backgroundColor": null
+  },
+  "pushcat-jr": {
+    "title": "Pushcat Jr",
+    "backgroundColor": null
+  },
+  "rock-paper-scissors": {
+    "title": "Rock, Paper, Scissors",
+    "backgroundColor": null
+  },
+  "roll-those-sixes": {
+    "title": "Roll those Sixes",
+    "backgroundColor": null
+  },
+  "rows-and-columns": {
+    "title": "rows and columns",
+    "backgroundColor": "#3B3942"
+  },
+  "scaling-walls": {
+    "title": "Scaling walls",
+    "backgroundColor": "#423D39"
+  },
+  "season-finale": {
+    "title": "Season Finale",
+    "backgroundColor": "#222222"
+  },
+  "separation": {
+    "title": "Separation",
+    "backgroundColor": null
+  },
+  "skippa": {
+    "title": "skippa",
+    "backgroundColor": "#1F2622"
+  },
+  "skipping-stones": {
+    "title": "Skipping Stones to Lonely Homes",
+    "backgroundColor": null
+  },
+  "skyscraper": {
+    "title": "Skyscraper",
+    "backgroundColor": "#AAE0F2"
+  },
+  "sleepy-players": {
+    "title": "Sleepy players",
+    "backgroundColor": null
+  },
+  "slidings": {
+    "title": "Slidings",
+    "backgroundColor": null
+  },
+  "slime-swap": {
+    "title": "Slime Swap",
+    "backgroundColor": "#9d9d9d"
+  },
+  "sokobond": {
+    "title": "Sokobond: The Demake",
+    "backgroundColor": "#FDFDFD"
+  },
+  "sokoboros": {
+    "title": "Sokoboros",
+    "backgroundColor": "#22170B"
+  },
+  "some-lines-crossed": {
+    "title": "Some lines were meant to be crossed",
+    "backgroundColor": "#1B2632"
+  },
+  "some-pits": {
+    "title": "Some pits",
+    "backgroundColor": "#261F1F"
+  },
+  "spacekoban": {
+    "title": "Spacekoban",
+    "backgroundColor": "#00001F"
+  },
+  "spider-s-hollow": {
+    "title": "Spider's Hollow",
+    "backgroundColor": null
+  },
+  "spikes-n-stuff": {
+    "title": "Spikes 'n' Stuff",
+    "backgroundColor": null
+  },
+  "spooky-pumpkin-game": {
+    "title": "Spooky Pumpkin Game",
+    "backgroundColor": null
+  },
+  "square-colours": {
+    "title": "square colours",
+    "backgroundColor": "#404239"
+  },
+  "stairs": {
+    "title": "Stairs",
+    "backgroundColor": null
+  },
+  "stairways": {
+    "title": "Stairways",
+    "backgroundColor": null
+  },
+  "stand-off": {
+    "title": "Stand Off",
+    "backgroundColor": null
+  },
+  "sticky": {
+    "title": "sticky",
+    "backgroundColor": "#D9FFF8"
+  },
+  "swap": {
+    "title": "swap",
+    "backgroundColor": "#465B4D"
+  },
+  "swapbot": {
+    "title": "SwapBot",
+    "backgroundColor": null
+  },
+  "symbols": {
+    "title": "Symbols",
+    "backgroundColor": "#423D39"
+  },
+  "take-heart-lass": {
+    "title": "Take Heart Lass",
+    "backgroundColor": null
+  },
+  "telefrag": {
+    "title": "Telefrag",
+    "backgroundColor": null
+  },
+  "teleporters": {
+    "title": "Teleporters",
+    "backgroundColor": "#2E3E4D"
+  },
+  "the-art-of-cloning": {
+    "title": "the art of cloning",
+    "backgroundColor": null
+  },
+  "the-art-of-storage": {
+    "title": "The art of storage",
+    "backgroundColor": "#E5C17E"
+  },
+  "the-big-dig": {
+    "title": "the big dig",
+    "backgroundColor": "#52465B"
+  },
+  "the-copying": {
+    "title": "the copying",
+    "backgroundColor": "#5B4846"
+  },
+  "the-fire-calls": {
+    "title": "The fire calls",
+    "backgroundColor": "#231F26"
+  },
+  "the-laser": {
+    "title": "the laser",
+    "backgroundColor": "#3B3942"
+  },
+  "the-packing-crate": {
+    "title": "The packing crate",
+    "backgroundColor": "#231F26"
+  },
+  "the-switch": {
+    "title": "the switch",
+    "backgroundColor": "#3B3942"
+  },
+  "then-another": {
+    "title": "Then another",
+    "backgroundColor": "#E5C17E"
+  },
+  "tidy-the-cafe": {
+    "title": "Tidy the Cafe!",
+    "backgroundColor": null
+  },
+  "tiny-treasure-hunt": {
+    "title": "tiny treasure hunt 1.0",
+    "backgroundColor": null
+  },
+  "to-nothing-and-back": {
+    "title": "To nothing and back",
+    "backgroundColor": "#333333"
+  },
+  "train-braining": {
+    "title": "Train Braining",
+    "backgroundColor": null
+  },
+  "train": {
+    "title": "Train",
+    "backgroundColor": "#000000"
+  },
+  "triple-match": {
+    "title": "triple match",
+    "backgroundColor": "#3B3942"
+  },
+  "tunnel-rat": {
+    "title": "Tunnel Rat",
+    "backgroundColor": null
+  },
+  "unconventional-guns": {
+    "title": "Unconventional Guns",
+    "backgroundColor": "#1B2632"
+  },
+  "vacuum": {
+    "title": "Vacuum",
+    "backgroundColor": null
+  },
+  "vines": {
+    "title": "Vines",
+    "backgroundColor": null
+  },
+  "wall-bonding": {
+    "title": "Wall-bonding",
+    "backgroundColor": "#3B3942"
+  },
+  "wall-shuffle": {
+    "title": "wall shuffle",
+    "backgroundColor": "#231F26"
+  },
+  "white-pillars": {
+    "title": "White Pillars",
+    "backgroundColor": "#1F2026"
+  }
+}

@@ -3,6 +3,7 @@ const fs = require('fs')
 const path = require('path')
 const glob = require('glob')
 const pify = require('pify')
+const { run: buildGameIcons } = require('./buildGameIcons')
 // const {default: Parser} = require('../lib/parser/parser')
 
 const SOLUTION_FILE = path.join(__dirname, `../src/cli/solvedGames.ts`)
@@ -49,4 +50,6 @@ async function run() {
     solutionsFileList.push(`export default solvedGames`)
 
     fs.writeFileSync(SOLUTION_FILE, solutionsFileList.join('\n') + '\n')
+
+    await buildGameIcons()
 }

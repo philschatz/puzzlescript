@@ -30,6 +30,8 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+/browse-games/*.svg
+
 # Runtime data
 pids
 *.pid
