@@ -47,7 +47,7 @@ export class SvgIconUi extends BaseUI implements GameEngineHandler {
         .sort(([_A, countA], [_B, countB]) => countB - countA)
         .slice(0, 3)
         .map(([hex]) => hex)
-        
+
         return {
             popularColors,
             svg: `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
