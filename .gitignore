@@ -19,6 +19,11 @@
 /pwa-app.js.map
 /pwa-service-worker.js
 
+/browse-games/*.svg
+/browse-games/*.png
+/browse-games/index.html
+/browse-games/_metadata.json
+
 # ---
 # Misc files
 # ---
@@ -29,6 +34,7 @@ logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
 
 # Runtime data
 pids
