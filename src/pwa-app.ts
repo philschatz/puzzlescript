@@ -383,8 +383,7 @@ window.addEventListener('load', () => {
         }
     }
 
-    // add the "More Games..." option
-    addGame('...more...', 'More Games...')
+    addGame('...more...', 'More games...')
 
     // update the % complete in the dropdown AND
     // Select the first game (not IceCrates all the time)
@@ -406,33 +405,13 @@ window.addEventListener('load', () => {
     playSelectedGame()
 
     function getUnplayedCount() {
-        return gameSelection.querySelectorAll(`option[value]:not([value='...more...'])`).length
-    }
-
-    function loadMoreGames() {
-        const playedCount = currentInfo.getNumberOfPlayedGames()
-        const unplayed = getUnplayedCount()
-        if (unplayed >= playedCount * 1.5) {
-            alert(`Try ${Math.ceil(unplayed - playedCount * 1.5)} more game(s) to unlock more`)
-            return
-        }
-        for (const { id, title } of allGamesInOrder) {
-            addGame(id, title)
-            const unplayedCount = getUnplayedCount() - playedCount
-            if (unplayedCount >= playedCount * 1.5) {
-                break
-            }
-        }
-        updateGameSelectionInfo()
-        alert('Games unlocked!')
+        return gameSelection.querySelectorAll(`option[value]:not([disabled])`).length
     }
 
     // Load the new game when the dropdown changes
     gameSelection.addEventListener('change', (evt) => {
         if (gameSelection.value === '...more...') {
-            loadMoreGames()
-            // revert the selection back to the selected game
-            gameSelection.value = currentInfo.getGameId()
+            window.location.href = './browse-games/'
         } else if (gameSelection.value) {
             currentInfo.setGameAndLevel(gameSelection.value, null)
             playSelectedGame()
