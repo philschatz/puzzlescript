@@ -33,6 +33,7 @@
     "test:server": "serve --listen 8000 .",
     "prebuild": "rimraf ./precache-manifest.*.js",
     "build": "webpack",
+    "postbuild": "npm run-script compile:browse-games",
     "build:dev": "webpack --mode development",
     "build:stats": "webpack --profile --json > ./webpack-stats.json",
     "watch": "jest --updateSnapshot --watch",
