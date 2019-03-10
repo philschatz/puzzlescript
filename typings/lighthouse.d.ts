@@ -13,7 +13,7 @@ declare module 'lighthouse' {
       'first-meaningful-paint': AuditResult
       'load-fast-enough-for-pwa': AuditResult
       'speed-index': AuditResult
-      'screenshot-browse-games': AuditResult
+      'screenshot-thumbnails': AuditResult
       'final-screenshot': AuditResult
       'estimated-input-latency': AuditResult
       'errors-in-console': AuditResult
