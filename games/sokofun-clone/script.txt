@@ -262,18 +262,18 @@ RayR
 RULES
 ======
 
-=========
+(=========)
 (BMISC)
-=========
+(=========)
 
 [> Player|Block no Pin] -> [> Player|> Block] (standard sokobanning... pin is usually only used on ane specific color of block in sokofun, but this opens up more design opportunities. artistic license? you can always just restrict yourself to placing pins only on blue sokolor blocks)
 
 late [CrateSpot no Crate] -> []
 late [Crate Target] -> [Crate Target CrateSpot] (render the inverted part of the crate)
 
-==========
+(=========)
 (HOLES)
-==========
+(=========)
 
 [> Player|Hole] -> [Player|Hole] (you don't get to go down there)
 
@@ -285,9 +285,9 @@ late [Laser Hole] -> [Hole] (laser emitters also fall into holes. it's important
 
 late [Large Hole] -> [] (large blocks turn holes into floor after falling in)
 
-=========
+(=========)
 (LASERS)
-=========
+(=========)
 
 [Laser > Midlayer] -> [> Laser > Midlayer] (lasers move with their mounts)
 
@@ -319,9 +319,9 @@ late right [no LaserR no RayR|RayR] -> [|] (clean up rays from destroyed laser e
 
 late [Player Ray] -> [Player Ray] sfx0 (sound plays if player moved into a ray)
 
-==========
+(=========)
 (SOKOLOR)
-==========
+(=========)
 
 [Flow] -> [] ("flow" is recalculated each turn)
 
