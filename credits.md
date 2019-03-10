@@ -225,3 +225,11 @@ These are the sources to all of the games:
 - [okosban](https://oveahlman.itch.io/okosban)
 - [train-braining](http://www.draknek.org/games/puzzlescript/train.php)
 - [entanglement-two](http://www.richardlocke.co.uk/release/entanglement/chapter-2/)
+
+
+- [extra-push](http://rosden.itch.io/extra-push)
+- [out-of-bounds-2](https://cyatheatree.github.io/PuzzleScript/play.html?p=4b31e5425f31775057ec1003ff0b4271)
+- [the-workshop](https://www.puzzlescript.net/play.html?p=05ae3176db4aa399973038a671ca7f73)
+- [becoming-one](http://rosden.itch.io/becoming-one)
+- [statues](http://rosden.itch.io/statues)
+- [sokofun-clone](https://www.puzzlescript.net/play.html?p=cb8800a16dd6f73012900953ebde3e4e)

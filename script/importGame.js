@@ -18,6 +18,18 @@ commander
 .parse(process.argv)
 
 
+function appendCredits(gameId, url) {
+    // Append to the credits.md file
+    console.log('Appending to credits.md file')
+    const creditsPath = path.join(__dirname, '../credits.md')
+    let credits = fs.readFileSync(creditsPath, 'utf-8')
+    if (credits[credits.length - 1] !== '\n') {
+        credits += '\n'
+    }
+    credits += `- [${gameId}](${url})\n`
+    fs.writeFileSync(creditsPath, credits)
+}
+
 async function doImport() {
     const browser = await puppeteer.launch({
         devtools: process.env.NODE_ENV === 'development'
@@ -27,18 +39,20 @@ async function doImport() {
     for (const gameUrl of commander.args) {
         const url = URL.parse(gameUrl, {parseQueryString: true})
         let dirName
+        console.log(`Loading ${gameUrl}`)
         if (/puzzlescript\.net/.test(url.hostname)) {
             // It's a puzzlescript game. Just use the GIST query parameter
             const gistId = url.query['p']
             const response = await fetch(`https://api.github.com/gists/${gistId}`)
             const gist = await response.json()
 
-            dirName = `gist-${gistId}`
+            dirName = commander.id ? commander.id : `gist-${gistId}`
             const outDir = path.join(__dirname, `../games`, dirName)
             const outFile = path.join(outDir, `script.txt`)
 
             mkdirp.sync(outDir)
             fs.writeFileSync(outFile, gist["files"]["script.txt"]["content"])
+            appendCredits(dirName, gameUrl)
             continue
 
         } else if (commander.id) {
@@ -56,6 +70,8 @@ async function doImport() {
 
         mkdirp.sync(outDir)
         fs.writeFileSync(outFile, sourceCode)
+
+        appendCredits(dirName, gameUrl)
     }
 
     await browser.close()
