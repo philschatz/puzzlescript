@@ -1,13 +1,13 @@
 // This generates SVG icons for each game
 import { existsSync, readFileSync, writeFileSync } from 'fs'
-import * as glob from 'glob'
+import glob from 'glob'
 import { basename, join } from 'path'
-import pify from 'pify'
 import * as svgToPng from 'svg-to-png' // tslint:disable-line:no-implicit-dependencies
 import { GameEngine } from '../engine'
 import { LEVEL_TYPE } from '../parser/astTypes'
 import Parser from '../parser/parser'
 import { SvgIconUi } from '../ui/svgIcon'
+const pify = require('pify') // tslint:disable-line:no-var-requires
 
 function buildIcon(sourcePath: string) {
 
@@ -42,14 +42,15 @@ function buildIcon(sourcePath: string) {
     }
 }
 
-const SOLUTIONS_GLOB = join(__dirname, '../game-solutions/*.json')
+const SOLUTIONS_GLOB = join(__dirname, '../../game-solutions/*.json') // relative to the lib/cli/ directory
+const BROWSE_GAMES_DIR = join(__dirname, '../../browse-games') // relative to the lib/cli/ directory
 
 run().then(null, (err) => console.error(err)) // tslint:disable-line:no-console
 
 async function run() {
     const gists = await pify(glob)(SOLUTIONS_GLOB)
 
-    const jsonMetadataPath = join(__dirname, '../browse-games/_metadata.json')
+    const jsonMetadataPath = join(BROWSE_GAMES_DIR, '_metadata.json')
 
     const metadata = existsSync(jsonMetadataPath) ? JSON.parse(readFileSync(jsonMetadataPath, 'utf-8')) : {}
     const svgFilesToConvert = []
@@ -92,9 +93,9 @@ async function run() {
     let i = 0
     for (const f of gists) {
         const gameId = basename(f).replace('.json', '')
-        const sourcePath = join(__dirname, `../games/${gameId}/script.txt`)
-        const destPath = join(__dirname, `../browse-games/${gameId}.svg`)
-        const pngPath = join(__dirname, `../browse-games/${gameId}.png`)
+        const sourcePath = join(__dirname, `../../games/${gameId}/script.txt`) // relative to lib/cli/
+        const destPath = join(BROWSE_GAMES_DIR, `${gameId}.svg`)
+        const pngPath = join(BROWSE_GAMES_DIR, `${gameId}.png`)
 
         if (!existsSync(pngPath)) {
             svgFilesToConvert.push(destPath)
@@ -187,13 +188,13 @@ async function run() {
 
     </body></html>`)
 
-    writeFileSync(join(__dirname, '../browse-games/index.html'), html.join('\n'))
+    writeFileSync(join(BROWSE_GAMES_DIR, 'index.html'), html.join('\n'))
     writeFileSync(jsonMetadataPath, JSON.stringify(metadata, null, 2))
 
     // Convert SVG images to PNG images
     console.log(`Generating ${svgFilesToConvert.length} PNG files...`) // tslint:disable-line:no-console
     if (svgFilesToConvert.length > 0) {
-        svgToPng.convert(svgFilesToConvert, join(__dirname, '../browse-games/'), {
+        svgToPng.convert(svgFilesToConvert, join(BROWSE_GAMES_DIR), {
             defaultWidth: 100,
             defaultHeight: 100
         })

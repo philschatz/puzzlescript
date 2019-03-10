@@ -384,7 +384,7 @@ window.addEventListener('load', () => {
     }
 
     addGame('...more...', 'More games...')
-    
+
     // update the % complete in the dropdown AND
     // Select the first game (not IceCrates all the time)
     updateGameSelectionInfo()
@@ -407,7 +407,6 @@ window.addEventListener('load', () => {
     function getUnplayedCount() {
         return gameSelection.querySelectorAll(`option[value]:not([disabled])`).length
     }
-
 
     // Load the new game when the dropdown changes
     gameSelection.addEventListener('change', (evt) => {
