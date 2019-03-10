@@ -159,19 +159,20 @@
             }
         }
 
-        button.ui-button,
-        button.ui-button-secondary {
+        .ui-button,
+        .ui-button-secondary {
             cursor: pointer;
+            text-decoration: none;
             padding: 0.5rem;
             border: 1px solid #666;
             border-radius: 6px;
             box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
         }
-        button.ui-button {
+        .ui-button {
             color: white;
             background-color: rgba(90, 90, 238, 1);
         }
-        button.ui-button-secondary {
+        .ui-button-secondary {
             color: black;
             background-color: white;
         }
@@ -364,6 +365,7 @@
 
         <p>
             <button id="enterFullscreen" class="ui-button">Close</button>
+            <a href="./browse-games/" class="ui-button-secondary">All Games</a>
             <button id="gameInstructionsButton" class="ui-button-secondary">Help</button>
         </p>
         
