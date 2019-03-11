@@ -234,3 +234,4 @@ These are the sources to all of the games:
 - [statues](http://rosden.itch.io/statues)
 - [sokofun-clone](https://www.puzzlescript.net/play.html?p=cb8800a16dd6f73012900953ebde3e4e)
 - [rainbow-keys-plus](https://gamejolt.com/games/RKplus/379822)
+- [sumoban](https://marcosd.itch.io/sumoban)
