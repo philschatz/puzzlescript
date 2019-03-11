@@ -275,6 +275,7 @@ export enum MESSAGE_TYPE {
     ON_PRESS = 'ON_PRESS',
     ON_MESSAGE = 'ON_MESSAGE',
     ON_MESSAGE_DONE = 'ON_MESSAGE_DONE',
+    ON_LEVEL_LOAD = 'ON_LEVEL_LOAD',
     ON_LEVEL_CHANGE = 'ON_LEVEL_CHANGE',
     ON_WIN = 'ON_WIN',
     ON_SOUND = 'ON_SOUND',
@@ -342,6 +343,10 @@ export type WorkerResponse = {
     type: MESSAGE_TYPE.ON_MESSAGE
     message: string
 } | {
+    type: MESSAGE_TYPE.ON_LEVEL_LOAD
+    level: number
+    levelSize: Optional<{rows: number, cols: number}>
+} | {
     type: MESSAGE_TYPE.ON_LEVEL_CHANGE
     level: number
     cells: Optional<CellishJson[][]>
@@ -390,6 +395,7 @@ export interface GameEngineHandler {
     onGameChange(gameData: GameData): void
     onPress(dir: INPUT_BUTTON): void
     onMessage(msg: string): Promise<void>
+    onLevelLoad(level: number, newLevelSize: Optional<{rows: number, cols: number}>): void
     onLevelChange(level: number, cells: Optional<Cellish[][]>, message: Optional<string>): void
     onWin(): void
     onSound(sound: Soundish): Promise<void>
@@ -403,6 +409,7 @@ export interface GameEngineHandlerOptional {
     onGameChange?(gameData: GameData): void
     onPress?(dir: INPUT_BUTTON): void
     onMessage?(msg: string): Promise<void>
+    onLevelLoad?(level: number, newLevelSize: Optional<{rows: number, cols: number}>): void
     onLevelChange?(level: number, cells: Optional<Cellish[][]>, message: Optional<string>): void
     onWin?(): void
     onSound?(sound: Soundish): Promise<void>
@@ -420,6 +427,7 @@ export class EmptyGameEngineHandler implements GameEngineHandler {
     public onGameChange(gameData: GameData) { for (const h of this.subHandlers) { h.onGameChange && h.onGameChange(gameData) } }
     public onPress(dir: INPUT_BUTTON) { for (const h of this.subHandlers) { h.onPress && h.onPress(dir) } }
     public async onMessage(msg: string) { for (const h of this.subHandlers) { h.onMessage && await h.onMessage(msg) } }
+    public onLevelLoad(level: number, newLevelSize: Optional<{rows: number, cols: number}>) { for (const h of this.subHandlers) { h.onLevelLoad && h.onLevelLoad(level, newLevelSize) } }
     public onLevelChange(level: number, cells: Optional<Cellish[][]>, message: Optional<string>) { for (const h of this.subHandlers) { h.onLevelChange && h.onLevelChange(level, cells, message) } }
     public onWin() { for (const h of this.subHandlers) { h.onWin && h.onWin() } }
     public async onSound(sound: Soundish) { for (const h of this.subHandlers) { h.onSound && h.onSound(sound) } }

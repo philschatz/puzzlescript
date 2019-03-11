@@ -65,6 +65,8 @@ window.addEventListener('load', () => {
     const WEBWORKER_URL = './puzzlescript-webworker.js'
     const GAME_STORAGE_ID = 'puzzlescriptGameProgress'
     const GAME_STORAGE_CHECKPOINT_PREFIX = 'puzzlescriptGameCheckpoint'
+    const LARGE_LEVEL_SIZE = 400 // if there are many cells it will likely take a long time to load
+    const LARGE_SOURCE_SIZE = 40000 // if there are many characters in the source it will likely take a long time to load
     const htmlTitle = getElement('title')
     const table: HTMLTableElement = getElement('#theGame')
     const gameSelection: HTMLSelectElement = getElement('#gameSelection')
@@ -265,6 +267,11 @@ window.addEventListener('load', () => {
                 return !messageDialog.open
             })
         },
+        onLevelLoad(level: number, newLevelSize: Optional<{rows: number, cols: number}>) {
+            const isLarge = newLevelSize && newLevelSize.rows * newLevelSize.cols > LARGE_LEVEL_SIZE
+            loadingIndicator.setAttribute('data-size', isLarge ? 'large' : 'small')
+            loadingIndicator.classList.remove('hidden')
+        },
         onLevelChange(newLevelNum) {
             // Hide the Loading text because the level loaded
             loadingIndicator.classList.add('hidden')
@@ -383,7 +390,8 @@ window.addEventListener('load', () => {
         }
     }
 
-    addGame('...more...', 'More games...')
+    // add the "More Games..." option
+    addGame('...more...', `More Games... (${allGamesInOrder.length} total)`)
 
     // update the % complete in the dropdown AND
     // Select the first game (not IceCrates all the time)
@@ -429,6 +437,7 @@ window.addEventListener('load', () => {
     })
 
     function playSelectedGame() {
+        loadingIndicator.setAttribute('data-size', 'small')
         loadingIndicator.classList.remove('hidden') // Show the "Loading..." text
         authorSection.classList.add('hidden')
         gameSelection.setAttribute('disabled', 'disabled')
@@ -437,6 +446,9 @@ window.addEventListener('load', () => {
         .then((resp) => {
             if (resp.ok) {
                 return resp.text().then((source) => {
+                    if (source.length > LARGE_SOURCE_SIZE) {
+                        loadingIndicator.setAttribute('data-size', 'large')
+                    }
                     // Load the game
                     const levelNum = currentInfo.levelNum !== null ? currentInfo.levelNum : currentInfo.loadCurrentLevelNum()
                     const checkpoint = currentInfo.loadCheckpoint()

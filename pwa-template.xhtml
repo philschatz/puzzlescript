@@ -50,6 +50,10 @@
             border-bottom: 1px solid #ccc;
         }
 
+        #loadingIndicator[data-size="large"]::after {
+            content: " this one is large";
+        }
+
         /* Decide whether to move the following (all) to the html-table.css file */
 
         /* When the CSS is disabled then show a plain table with borders */
@@ -339,7 +343,7 @@
     
             </select>
     
-            <span id="loadingIndicator" class="hidden">Loading...</span>
+            <span id="loadingIndicator" class="hidden" data-size="small">Loading...</span>
         </p>
     
         <p id="authorSection" class="hidden"><small>By <a id="authorInfo" target="_window"></a></small></p>
@@ -352,7 +356,7 @@
     
             <ul class="ui-features-list ui-pwa-disabled">
                 <li id="disableCssSection"><input id="disableCss" type="checkbox"/> <label for="disableCss"><strong>Check</strong> to see what a non-sighted user would experience (disables CSS)</label></li>
-                <li id="installOnMobile">Install as a mobile app by opening on a phone/tablet. <button id="btnAdd" class="hidden ui-button">Add to Homescreen</button></li>
+                <li id="installOnMobile">Install as a mobile app by opening on a phone/tablet. It works offline. <button id="btnAdd" class="hidden ui-button">Add to Homescreen</button></li>
                 <li id="iosInstallInstructions" class="hidden">For <strong>iOS users</strong>, click Share at the bottom, and then swipe over to <strong>Add to Home Screen</strong>. <a href="https://user-images.githubusercontent.com/253202/53995149-c5bc5800-40f9-11e9-9e54-3f6a0e10b857.gif" target="_window">Not finding it?</a></li>
                 <li id="gamepadSection">
                     <img id="gamepadIcon" alt="gamepad icon" width="20" height="20" src="./pwa-icon.svg"/>
