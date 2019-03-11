@@ -12,6 +12,7 @@ export class SvgIconUi extends BaseUI implements GameEngineHandler {
     // onGameChange(gameData: GameData) { throw new Error('BUG: Not implemented') }
     public onPress(dir: INPUT_BUTTON) { throw new Error('BUG: Not implemented') }
     public onMessage(msg: string): Promise<any> { throw new Error('BUG: Not implemented') }
+    public onLevelLoad(level: number, newLevelSize: Optional<{rows: number, cols: number}>) { }
     // onLevelChange(level: number, cells: Optional<Cellish[][]>, message: Optional<string>) { throw new Error('BUG: Not implemented') }
     public onWin(): Promise<any> { throw new Error('BUG: Not implemented') }
     public onSound(sound: Soundish): Promise<any> { throw new Error('BUG: Not implemented') }
