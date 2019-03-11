@@ -42,7 +42,10 @@ async function doImport() {
         console.log(`Loading ${gameUrl}`)
         if (/puzzlescript\.net/.test(url.hostname)) {
             // It's a puzzlescript game. Just use the GIST query parameter
-            const gistId = url.query['p']
+            const gistId = url.query['p'] || url.query['hack']
+            if (!gistId) {
+                throw new Error(`Could not determine gist id from the querystring`)
+            }
             const response = await fetch(`https://api.github.com/gists/${gistId}`)
             const gist = await response.json()
 
