@@ -180,12 +180,29 @@ gameInstructionsDialogClose.addEventListener('click', () => {
 })
 
 loadingDialogCancel.addEventListener('click', () => {
-    loadingDialog.close()
+    closeLoadingDialog()
 })
 
-function openDialog(dialog: Dialog) {
-    if (!dialog.open) {
-        dialog.showModal()
+let openTimeout: Optional<NodeJS.Timeout> = null
+
+function openLoadingDialog() {
+    const delayMs = 500
+    if (!loadingDialog.open) {
+        if (openTimeout) {
+            clearTimeout(openTimeout)
+        }
+        openTimeout = setTimeout(() => {
+            loadingDialog.showModal()
+        }, delayMs)
+    }
+}
+
+function closeLoadingDialog() {
+    if (openTimeout) {
+        clearTimeout(openTimeout)
+    }
+    if (loadingDialog.open) {
+        loadingDialog.close()
     }
 }
 
@@ -209,11 +226,11 @@ const handler: GameEngineHandlerOptional = {
     onLevelLoad(level: number, newLevelSize: Optional<{rows: number, cols: number}>) {
         const isLarge = newLevelSize && newLevelSize.rows * newLevelSize.cols > LARGE_LEVEL_SIZE
         loadingIndicator.setAttribute('data-size', isLarge ? 'large' : 'small')
-        openDialog(loadingDialog)
+        openLoadingDialog()
     },
     onLevelChange(newLevelNum) {
         // Hide the Loading text because the level loaded
-        loadingDialog.close()
+        closeLoadingDialog()
         table.focus()
 
         changePage(currentInfo.getGameId(), newLevelNum)
@@ -275,7 +292,7 @@ export function playGame(gameId: string, levelNum: Optional<number>) {
     currentInfo.setGameAndLevel(gameId, levelNum)
 
     loadingIndicator.setAttribute('data-size', 'small')
-    openDialog(loadingDialog)
+    openLoadingDialog()
 
     fetch(`./games/${currentInfo.getGameId()}/script.txt`, { redirect: 'follow' })
     .then((resp) => {
@@ -300,13 +317,13 @@ export function playGame(gameId: string, levelNum: Optional<number>) {
             })
         } else {
             alert(`Problem finding game file. Please choose another one`)
-            loadingDialog.close()
+            closeLoadingDialog()
         }
     },
     (err) => {
         alert('Could not download the game. Are you connected to the internet?')
         console.error(err) // tslint:disable-line:no-console
-        loadingDialog.close()
+        closeLoadingDialog()
     })
 }
 
