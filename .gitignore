@@ -19,10 +19,8 @@
 /pwa-app.js.map
 /pwa-service-worker.js
 
-/browse-games/*.svg
-/browse-games/*.png
-/browse-games/index.html
-/browse-games/_metadata.json
+/game-thumbnails/*.png
+/game-thumbnails/*.svg
 
 # ---
 # Misc files

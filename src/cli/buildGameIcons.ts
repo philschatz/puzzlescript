@@ -6,6 +6,7 @@ import * as svgToPng from 'svg-to-png' // tslint:disable-line:no-implicit-depend
 import { GameEngine } from '../engine'
 import { LEVEL_TYPE } from '../parser/astTypes'
 import Parser from '../parser/parser'
+import { ALL_GAMES } from '../pwa/allGames'
 import { SvgIconUi } from '../ui/svgIcon'
 const pify = require('pify') // tslint:disable-line:no-var-requires
 
@@ -18,6 +19,8 @@ function buildIcon(sourcePath: string) {
     const engine = new GameEngine(data, ui)
     ui.onGameChange(data) // trigger the UI to know that the gameData is available. TODO: GameEngine should do that
 
+    // Determine the size of the levels
+    const levelStats = data.levels.map((l) => l.type === LEVEL_TYPE.MAP ? { rows: l.cells.length, cols: l.cells[0].length } : null)
     // Find the middle level to use for the screenshot
     const maps = data.levels.filter((l) => l.type === LEVEL_TYPE.MAP)
     const middle = Math.floor(maps.length / 2)
@@ -38,57 +41,21 @@ function buildIcon(sourcePath: string) {
         homepage: data.metadata.homepage,
         backgroundColor: data.metadata.backgroundColor ? data.metadata.backgroundColor.toHex() : null,
         popularColors,
+        levels: levelStats,
         svg
     }
 }
 
 const SOLUTIONS_GLOB = join(__dirname, '../../game-solutions/*.json') // relative to the lib/cli/ directory
-const BROWSE_GAMES_DIR = join(__dirname, '../../browse-games') // relative to the lib/cli/ directory
+const BROWSE_GAMES_DIR = join(__dirname, '../../game-thumbnails') // relative to the lib/cli/ directory
+const allGamesPath = join(__dirname, '../../src/pwa/allGames.ts') // relative to the lib/cli/ directory
 
 run().then(null, (err) => console.error(err)) // tslint:disable-line:no-console
 
 async function run() {
     const gists = await pify(glob)(SOLUTIONS_GLOB)
 
-    const jsonMetadataPath = join(BROWSE_GAMES_DIR, '_metadata.json')
-
-    const metadata = existsSync(jsonMetadataPath) ? JSON.parse(readFileSync(jsonMetadataPath, 'utf-8')) : {}
     const svgFilesToConvert = []
-    const html = [`<html><head><style>
-    body { font-family: sans-serif; }
-    figure {
-        width: 150px;
-        display: inline-block;
-
-        /* look like a button */
-        cursor: pointer;
-        padding: 0.5rem;
-        border: 1px solid #666;
-        border-radius: 6px;
-        box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
-
-    }
-    figcaption .game-title,
-    figcaption .game-author {
-        width: 150px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    figcaption .game-title { color: black; text-align: center; font-weight: bold; }
-    figcaption .game-author { font-size: 80%; color: #ccc; }
-    .thumbnail-wrapper {
-        width: 150px;
-        height: 150px;
-        display: flex;
-    }
-
-    img {
-        max-width: 100px;
-        margin: auto;
-        max-height: 100px;
-    }
-    </style></head><body>`]
 
     let i = 0
     for (const f of gists) {
@@ -101,95 +68,47 @@ async function run() {
             svgFilesToConvert.push(destPath)
         }
 
-        let didError = false
-        if (!existsSync(destPath) || !metadata[gameId]) {
+        if (!existsSync(destPath) || !ALL_GAMES.get(gameId)) {
             try {
                 console.log(`${i}/${gists.length} ${gameId}`) // tslint:disable-line:no-console
-                const { svg, title, author, homepage, backgroundColor, popularColors } = buildIcon(sourcePath)
+                const { svg, title, author, homepage, backgroundColor, popularColors, levels } = buildIcon(sourcePath)
 
-                metadata[gameId] = { title, author, homepage, backgroundColor, popularColors }
+                ALL_GAMES.set(gameId, { id: gameId, title, author, homepage, backgroundColor, popularColors, levels })
 
                 writeFileSync(destPath, svg)
 
             } catch (err) {
-                didError = true
                 // problem loading the game
                 svgFilesToConvert.pop() // do not generate a PNG file of it.
                 console.error(`Problem building an SVG image for ${gameId}. ${err.message}`) // tslint:disable-line:no-console
             }
         }
 
-        if (!didError) {
-            const authorMarkup = metadata[gameId].author ? `<div class="game-author">by ${metadata[gameId].author}</div>` : ''
-            html.push(`
-<a href="../#${gameId}">
-    <figure id="${gameId}">
-        <div class="thumbnail-wrapper" style="background-color: ${metadata[gameId].backgroundColor || metadata[gameId].popularColors[0]}">
-            <img src="./_placeholder.gif" data-src="./${gameId}.png"/>
-        </div>
-        <figcaption>
-            <div class="game-title">${metadata[gameId].title}</div>
-            ${authorMarkup}
-        </figcaption>
-    </figure>
-</a>`)
-        }
-
         i++
     }
 
-    html.push(`
-    <script>
-    const images = Array.from(document.querySelectorAll('.thumbnail-wrapper img')).map(image => { return {image, isLoaded: false} })
+    const allGamesSource = [
+        `// This file is autogenerated. Do not edit it directly. See buildGameIcons.ts
+// tslint:disable:max-line-length
+import { Optional } from '../util'
 
+export interface GameInfo {
+    id: string
+    title: string
+    author: Optional<string>
+    homepage: Optional<string>
+    backgroundColor: Optional<string>
+    popularColors: string[]
+    levels: Array<Optional<{rows: number, cols: number}>>
+}
 
-    function scrollHandler() {
-        function isVisible(el) {
-            var rect = el.getBoundingClientRect()
-            const min = 150 * 4 // keep about 4 rows above
-            const max = 150 * 4 // keep about 4 rows below
-            return (
-                rect.top        >= -min
-                && rect.left    >= -min
-                && rect.top <= (window.innerHeight || document.documentElement.clientHeight) + max
-            )
-        }
-
-        for (const entry of images) {
-            const {image, isLoaded} = entry
-            const isVis = isVisible(image)
-            if (isVis && !isLoaded) {
-                // loadImage
-                image.setAttribute('data-placeholder', image.getAttribute('src'))
-                image.setAttribute('src', image.getAttribute('data-src'))
-                entry.isLoaded = true
-            } else if (!isVis && isLoaded) {
-                // hideImage
-                // image.setAttribute('src', image.getAttribute('data-placeholder'))
-            }
-        }
+export const ALL_GAMES: Map<string, GameInfo> = new Map()
+`
+    ]
+    for (const [key, value] of ALL_GAMES.entries()) {
+        allGamesSource.push(`ALL_GAMES.set(${JSON.stringify(key)}, ${JSON.stringify(value)})`)
     }
-
-    function _debounce(callback) {
-        let timeout
-        return () => {
-            if (timeout) {
-                clearTimeout(timeout)
-            }
-            timeout = setTimeout(() => {
-                callback()
-            }, 10)
-        }
-    }
-
-    window.addEventListener('scroll', _debounce(scrollHandler))
-    scrollHandler()
-    </script>
-
-    </body></html>`)
-
-    writeFileSync(join(BROWSE_GAMES_DIR, 'index.html'), html.join('\n'))
-    writeFileSync(jsonMetadataPath, JSON.stringify(metadata, null, 2))
+    writeFileSync(allGamesPath, allGamesSource.join('\n'))
 
     // Convert SVG images to PNG images
     console.log(`Generating ${svgFilesToConvert.length} PNG files...`) // tslint:disable-line:no-console
