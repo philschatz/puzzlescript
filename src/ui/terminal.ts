@@ -133,6 +133,9 @@ class TerminalUI extends BaseUI implements GameEngineHandler {
     public onResume() {
         // Don't need to do anything
     }
+    public onLevelLoad() {
+        // Don't need to do anything
+    }
     public onGameChange(gameData: GameData) {
         super.onGameChange(gameData)
     }

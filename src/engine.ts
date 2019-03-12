@@ -914,12 +914,14 @@ export class GameEngine {
         this.currentLevelNum = levelNum
         const level = this.getGameData().levels[levelNum]
         if (level.type === LEVEL_TYPE.MAP) {
+            this.handler.onLevelLoad(levelNum, { rows: level.cells.length, cols: level.cells[0].length })
             this.levelEngine.setLevel(levelNum)
             if (checkpoint) {
                 this.loadSnapshotFromJSON(checkpoint)
             }
             this.handler.onLevelChange(this.currentLevelNum, this.levelEngine.getCurrentLevel().getCells(), null)
         } else {
+            this.handler.onLevelLoad(levelNum, null)
             this.handler.onLevelChange(this.currentLevelNum, null, level.message)
         }
     }
