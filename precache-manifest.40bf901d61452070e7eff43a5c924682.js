@@ -12,7 +12,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "puzzlescript-webworker.js"
   },
   {
-    "revision": "52414f8297efeb97976cd8eda01443c3",
+    "revision": "73c3ab48be9ad95c8b87fa059be852a9",
     "url": "index.xhtml"
   }
 ]);
