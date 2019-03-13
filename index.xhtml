@@ -99,11 +99,14 @@
             }
         }
 
-        @media screen and (orientation:landscape) {
+        /* Chrome causes display quirks with fractional pixels
+         * so `margin: auto` is not sufficient
+         */
+        /* @media screen and (orientation:landscape) {
             #theGame {
                 margin: auto;
             }
-        }
+        } */
 
 
         .ui-button,
@@ -148,7 +151,12 @@
          * =================================================
          */
 
-        #fullscreenRoot { margin: auto; }
+        #fullscreenRoot { 
+            margin: auto;
+            position: fixed;
+            bottom: 0;
+            width: 100%; /* to horizontally center */
+        }
 
 
         #fullscreenButtons {
