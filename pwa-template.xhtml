@@ -208,6 +208,11 @@
             border-style: solid;
         }
 
+        .fullscreen-menu-arbitrary-text {
+            display: inline-block;
+            padding: 0.5rem;
+            border-radius: 6px;
+        }
         .fullscreen-menu-checkbox:checked ~ .fullscreen-menu-arbitrary-text { 
             display: none;
         }
@@ -215,14 +220,15 @@
         a.fullscreen-menu-button { text-decoration: none; }
         button.fullscreen-menu-button { background-color: transparent; }
 
-        /* Handle light and dark colors */
+        /* Handle light and dark mode */
 
         body.is-background-dark .fullscreen-menu,
         body.is-background-dark .fullscreen-menu a,
         body.is-background-dark .fullscreen-menu .octicon,
         body.is-background-dark .fullscreen-menu-button { color: white; }
         body.is-background-dark .fullscreen-menu-toggle-item,
-        body.is-background-dark .fullscreen-menu-button { border-color: rgba(255, 255, 255, 50%);; }
+        body.is-background-dark .fullscreen-menu-button { border-color: rgba(255, 255, 255, 50%); }
+        body.is-background-dark .fullscreen-menu-arbitrary-text { background-color: rgba(0, 0, 0, 25%); }
         body.is-background-dark .fullscreen-menu-button:hover,
         body.is-background-dark .fullscreen-menu-toggle-item:hover,
         body.is-background-dark .fullscreen-menu-checkbox:checked ~ .fullscreen-menu-toggle-item { background-color: rgba(255, 255, 255, 50%); }
@@ -232,7 +238,8 @@
         body:not(.is-background-dark) .fullscreen-menu .octicon,
         body:not(.is-background-dark) .fullscreen-menu-button { color: black; }
         body:not(.is-background-dark) .fullscreen-menu-toggle-item,
-        body:not(.is-background-dark) .fullscreen-menu-button { border-color: rgba(0, 0, 0, 15%);; }
+        body:not(.is-background-dark) .fullscreen-menu-button { border-color: rgba(0, 0, 0, 15%); }
+        body:not(.is-background-dark) .fullscreen-menu-arbitrary-text { background-color: rgba(255, 255, 255, 70%); }
         body:not(.is-background-dark) .fullscreen-menu-button:hover,
         body:not(.is-background-dark) .fullscreen-menu-toggle-item:hover,
         body:not(.is-background-dark) .fullscreen-menu-checkbox:checked ~ .fullscreen-menu-toggle-item { background-color: rgba(0, 0, 0, 15%); }
@@ -328,8 +335,6 @@
             height: fit-content;
             margin: auto;
             padding: 1em;
-            background: white;
-            color: black;
             display: block;
         }
         dialog:not([open]) {
@@ -348,6 +353,17 @@
             position: fixed;
             top: 50%;
             transform: translate(0, -50%);
+        }
+
+        /* Handle light and dark mode */
+
+        body.is-background-dark dialog {
+            background-color: rgba(0, 0, 0, 85%);
+            color: white;
+        }
+        body:not(.is-background-dark) dialog {
+            background-color: white;
+            color: black;
         }
     </style>
 
