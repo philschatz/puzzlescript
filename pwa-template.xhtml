@@ -29,8 +29,8 @@
             font-size: 12px;
             font-family: helvetica, arial, sans-serif; 
         }
-        body[data-mode="playingGame"] #browseGamesRoot { display: none; }
-        body:not([data-mode="playingGame"]) #playGameRoot { display: none; }
+        body[data-mode="playingGame"] #browseGamesRoot { display: none !important; }
+        body:not([data-mode="playingGame"]) #playGameRoot { display: none !important; }
 
         .hidden { display: none !important; }
 
@@ -151,11 +151,27 @@
          * =================================================
          */
 
+         body[data-ps-game-limited-by="WIDTH"] #playGameRoot {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            top: 0;
+            bottom: 0;
+            position: fixed;
+        }
+
+        body[data-ps-game-limited-by="HEIGHT"] #playGameRoot {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            left: 0;
+            right: 0;
+            position: fixed;
+        }
+
         #fullscreenRoot { 
             margin: auto;
-            position: fixed;
-            bottom: 0;
-            width: 100%; /* to horizontally center */
+            position: fixed; /* so we can left-shift to avoid the chrome fractional pixel problem */
         }
 
 
