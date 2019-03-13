@@ -13,7 +13,12 @@ const POPULAR_GAMES = [
     'swapbot',
     'bubble-butler',
     'flying-kick',
-    'pushcat-jr'
+    'beam-islands',
+    'pushcat-jr',
+    'icecrates',
+    'sokobond',
+    'spooky-pumpkin-game',
+    'spikes-n-stuff'
 ]
 
 const DEFINITELY_OTHER = [

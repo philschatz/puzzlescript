@@ -135,9 +135,11 @@ export default class SyncTableEngine implements Engineish {
         this.subEngine.start()
         this.handler.onResume()
     }
-    private handleResize(width: number) {
+    private handleResize(width: number, left: number) {
         if (!this.subEngine.getEngine().isCurrentLevelAMessage()) {
-            this.table.setAttribute('style', `width: ${width}px;`)
+            this.table.setAttribute('style', `width: ${width}px`)
+            // to fix chrome vertical lines because of fractional pixels
+            this.table.parentElement && this.table.parentElement.setAttribute('style', `left: ${left}px; /*chrome display quirk with fractional pixels*/`)
         }
     }
 }
