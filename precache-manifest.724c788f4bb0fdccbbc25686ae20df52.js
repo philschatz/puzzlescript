@@ -1,10 +1,10 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "d6dd1797c31b6ef88b92",
+    "revision": "1dd93872df69b3a4202d",
     "url": "pwa-app.js"
   },
   {
-    "revision": "266d74b526d26eceb0bc",
+    "revision": "8e2afea3ccd9f386b977",
     "url": "puzzlescript.js"
   },
   {
@@ -12,7 +12,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "puzzlescript-webworker.js"
   },
   {
-    "revision": "21896e86ed22e15640aed35d5608bd3b",
+    "revision": "b410575d0989bba67624967cc4c714cb",
     "url": "index.xhtml"
   }
 ]);
