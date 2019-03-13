@@ -12,6 +12,7 @@ type PromptEvent = Event & {
 
 window.addEventListener('load', () => {
 
+    const htmlTitle = getElement('title')
     const body = getElement('body')
     const testShowNotificationButton = getElement('#testShowNotificationButton')
     const iosInstallInstructions = getElement('#iosInstallInstructions')
@@ -25,16 +26,19 @@ window.addEventListener('load', () => {
     // Populate the dropdown with the current game in the hash
     let previousHash: Optional<string> = null
 
+    const originalTitle = htmlTitle.textContent
     function handleHashChange() {
         const { hash } = window.location
         if (previousHash !== hash) {
             if (!previousHash && hash) {
                 // Play a game!
-                const [ gameId, levelStr ] = window.location.hash.substring(1).split('|')
+                const [ gameId, levelStr, showTableStr ] = window.location.hash.substring(1).replace(/^\//, '').split('/')
                 body.setAttribute('data-mode', 'playingGame')
-                playGame(gameId, levelStr ? Number.parseInt(levelStr, 10) : null)
+                const showTable = !!showTableStr && showTableStr.toLowerCase() === 'true'
+                playGame(gameId, levelStr ? Number.parseInt(levelStr, 10) : null, showTable)
             } else if (!hash) {
                 // Browse the games
+                htmlTitle.textContent = originalTitle
                 body.setAttribute('data-mode', 'browseGames')
                 body.classList.remove('is-background-dark')
                 body.removeAttribute('style') // clear the background color
