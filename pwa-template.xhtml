@@ -63,19 +63,35 @@
         /* When the CSS is disabled then show a plain table with borders */
         .ps-table.ps-ui-disabled {
             width: 100%;
-            background-color: white;
-        }
-        .ps-table.ps-ui-disabled td {
-            border: 1px solid #ccc;
-        }
-        .ps-table.ps-ui-disabled caption {
-            background-color: white;
+            border-collapse: collapse;
+            /* compensate for the chrome `left: 1px` hack */
+            position: fixed;
+            left: 0;
+            top: 3rem; /* so the header bar does not overlap */
         }
 
         /* When the CSS is disabled, still mark the player cell in bold */
         table.ps-table .ps-cell-label.ps-player {
             font-weight: bold;
         }
+
+        /* Handle light and dark games */
+
+        body.is-background-dark .ps-table.ps-ui-disabled,
+        body.is-background-dark .ps-table.ps-ui-disabled caption { background-color: black; }
+        body.is-background-dark .ps-table.ps-ui-disabled td { border: 1px solid #999; }
+        body.is-background-dark .ps-table.ps-ui-disabled td { color: #999; }
+        body.is-background-dark .ps-table.ps-ui-disabled caption,
+        body.is-background-dark table.ps-table .ps-cell-label.ps-player { color: white; }
+
+        body:not(.is-background-dark) .ps-table.ps-ui-disabled,
+        body:not(.is-background-dark) .ps-table.ps-ui-disabled caption { background-color: white; }
+        body:not(.is-background-dark) .ps-table.ps-ui-disabled td { border: 1px solid #999; }
+        body:not(.is-background-dark) .ps-table.ps-ui-disabled td { color: #666; }
+        body:not(.is-background-dark) .ps-table.ps-ui-disabled caption
+        body:not(.is-background-dark) table.ps-table .ps-cell-label.ps-player { color: black; }
+
+
 
         #gamepadIcon:not(.enabled) {
             filter: grayscale(100%);
