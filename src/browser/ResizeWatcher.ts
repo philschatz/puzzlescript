@@ -34,8 +34,11 @@ export default class ResizeWatcher {
         const levelRatio = this.columns / this.rows
         // Figure out if the width or the height is the limiting factor
         const leftWithoutAutoMargins = this.leftWithoutAutoMargins()
-        const availableWidth = Math.min(window.outerWidth, window.innerWidth) - leftWithoutAutoMargins
-        const availableHeight = Math.min(window.outerHeight, window.innerHeight) - this.table.offsetTop
+        // iOS sets window.outerWidth to be 0
+        const windowWidth = window.outerWidth > 0 ? Math.min(window.outerWidth, window.innerWidth) : window.innerWidth
+        const windowHeight = window.outerHeight > 0 ? Math.min(window.outerHeight, window.innerHeight) : window.innerHeight
+        const availableWidth = windowWidth - leftWithoutAutoMargins
+        const availableHeight = windowHeight - this.table.offsetTop
         let newWidth = 0
         let limitedBy = LIMITED_BY.WIDTH
         if (availableWidth / levelRatio < availableHeight) {
