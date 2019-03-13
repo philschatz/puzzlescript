@@ -98,13 +98,6 @@
             opacity: .8;
         }
 
-        /* Style the message dialog */
-        dialog {
-            border-radius: 6px;
-            /* border: 1px solid rgba(0, 0, 0, 0.3); */
-            /* box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3); */
-        }
-
         label { cursor: pointer; }
 
         @media screen and (orientation:portrait) {
@@ -247,22 +240,22 @@
         body.is-background-dark .fullscreen-menu .ui-icon,
         body.is-background-dark .fullscreen-menu-button { color: white; }
         body.is-background-dark .fullscreen-menu-toggle-item,
-        body.is-background-dark .fullscreen-menu-button { border-color: rgba(255, 255, 255, 50%); }
-        body.is-background-dark .fullscreen-menu-arbitrary-text { background-color: rgba(0, 0, 0, 25%); }
+        body.is-background-dark .fullscreen-menu-button { border-color: rgba(255, 255, 255, 0.50); }
+        body.is-background-dark .fullscreen-menu-arbitrary-text { background-color: rgba(0, 0, 0, 0.25); }
         body.is-background-dark .fullscreen-menu-button:hover,
         body.is-background-dark .fullscreen-menu-toggle-item:hover,
-        body.is-background-dark .fullscreen-menu-checkbox:checked ~ .fullscreen-menu-toggle-item { background-color: rgba(255, 255, 255, 50%); }
+        body.is-background-dark .fullscreen-menu-checkbox:checked ~ .fullscreen-menu-toggle-item { background-color: rgba(255, 255, 255, 0.50); }
 
         body:not(.is-background-dark) .fullscreen-menu,
         body:not(.is-background-dark) .fullscreen-menu a,
         body:not(.is-background-dark) .fullscreen-menu .ui-icon,
         body:not(.is-background-dark) .fullscreen-menu-button { color: black; }
         body:not(.is-background-dark) .fullscreen-menu-toggle-item,
-        body:not(.is-background-dark) .fullscreen-menu-button { border-color: rgba(0, 0, 0, 15%); }
-        body:not(.is-background-dark) .fullscreen-menu-arbitrary-text { background-color: rgba(255, 255, 255, 70%); }
+        body:not(.is-background-dark) .fullscreen-menu-button { border-color: rgba(0, 0, 0, 0.15); }
+        body:not(.is-background-dark) .fullscreen-menu-arbitrary-text { background-color: rgba(255, 255, 255, 0.70); }
         body:not(.is-background-dark) .fullscreen-menu-button:hover,
         body:not(.is-background-dark) .fullscreen-menu-toggle-item:hover,
-        body:not(.is-background-dark) .fullscreen-menu-checkbox:checked ~ .fullscreen-menu-toggle-item { background-color: rgba(0, 0, 0, 15%); }
+        body:not(.is-background-dark) .fullscreen-menu-checkbox:checked ~ .fullscreen-menu-toggle-item { background-color: rgba(0, 0, 0, 0.15); }
 
 
 
@@ -356,6 +349,7 @@
             margin: auto;
             padding: 1em;
             display: block;
+            border-radius: 6px;
         }
         dialog:not([open]) {
             display: none;
@@ -378,10 +372,12 @@
         /* Handle light and dark mode */
 
         body.is-background-dark dialog {
-            background-color: rgba(0, 0, 0, 85%);
+            border: 2px solid white;
+            background-color: rgba(0, 0, 0, 0.85);
             color: white;
         }
         body:not(.is-background-dark) dialog {
+            border: 2px solid black;
             background-color: white;
             color: black;
         }

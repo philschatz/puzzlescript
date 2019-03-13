@@ -36,6 +36,7 @@ window.addEventListener('load', () => {
             } else if (!hash) {
                 // Browse the games
                 body.setAttribute('data-mode', 'browseGames')
+                body.classList.remove('is-background-dark')
                 body.removeAttribute('style') // clear the background color
                 browseGames()
             }
