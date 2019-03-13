@@ -2,12 +2,12 @@ import { _debounce } from '../util'
 
 export default class ResizeWatcher {
     private readonly table: HTMLTableElement
-    private readonly handler: (width: number) => void
+    private readonly handler: (width: number, left: number) => void
     private readonly boundResizeHandler: any
     private columns: number
     private rows: number
 
-    constructor(table: HTMLTableElement, handler: (width: number) => void) {
+    constructor(table: HTMLTableElement, handler: (width: number, left: number) => void) {
         this.table = table
         this.handler = handler
         this.columns = 1
@@ -26,7 +26,8 @@ export default class ResizeWatcher {
         // Resize the table so that it fits.
         const levelRatio = this.columns / this.rows
         // Figure out if the width or the height is the limiting factor
-        const availableWidth = Math.min(window.outerWidth, window.innerWidth) - this.leftWithoutAutoMargins()
+        const leftWithoutAutoMargins = this.leftWithoutAutoMargins()
+        const availableWidth = Math.min(window.outerWidth, window.innerWidth) - leftWithoutAutoMargins
         const availableHeight = Math.min(window.outerHeight, window.innerHeight) - this.table.offsetTop
         let newWidth = 0
         if (availableWidth / levelRatio < availableHeight) {
@@ -36,7 +37,8 @@ export default class ResizeWatcher {
             // Height is the limiting factor
             newWidth = Math.floor(availableHeight * levelRatio / this.rows / 5) * this.rows * 5
         }
-        this.handler(Math.floor(newWidth))
+        const leftOffset = availableWidth / 2 - newWidth / 2 - leftWithoutAutoMargins
+        this.handler(Math.floor(newWidth), Math.floor(leftOffset))
     }
 
     public dispose() {
