@@ -184,19 +184,8 @@
             margin: 0.5rem;
         }
 
-        .fullscreen-menu,
-        .fullscreen-menu a,
-        .fullscreen-menu .octicon { color: white; }
-
         .fullscreen-menu-toggle-item.ui-has-icon {
-            cursor: pointer;
-            display: inline-block;
-            text-decoration: none;
-            padding: 0.25rem;
-            border: 1px solid #666;
-            border-radius: 6px;
-            box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
-            background-color: rgba(90, 90, 238, 0.5);
+            padding-top: 0.25rem;
             padding-bottom: .5rem;
             padding-left: .5rem;
             padding-right: .5rem;
@@ -209,16 +198,48 @@
         }
         .octicon { fill: currentColor; }
 
-        /* Make the background transparent in case the buttons cover the game */
-        .fullscreen-menu-toggle-item {
+        .fullscreen-menu-toggle-item,
+        .fullscreen-menu-button {
             cursor: pointer;
             display: inline-block;
             padding: 0.5rem;
-            border: 1px solid #666;
             border-radius: 6px;
-            box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
-            background-color: rgba(90, 90, 238, 0.5);
+            border-width: 1px;
+            border-style: solid;
         }
+
+        .fullscreen-menu-checkbox:checked ~ .fullscreen-menu-arbitrary-text { 
+            display: none;
+        }
+
+        a.fullscreen-menu-button { text-decoration: none; }
+        button.fullscreen-menu-button { background-color: transparent; }
+
+        /* Handle light and dark colors */
+
+        body.is-background-dark .fullscreen-menu,
+        body.is-background-dark .fullscreen-menu a,
+        body.is-background-dark .fullscreen-menu .octicon,
+        body.is-background-dark .fullscreen-menu-button { color: white; }
+        body.is-background-dark .fullscreen-menu-toggle-item,
+        body.is-background-dark .fullscreen-menu-button { border-color: rgba(255, 255, 255, 50%);; }
+        body.is-background-dark .fullscreen-menu-button:hover,
+        body.is-background-dark .fullscreen-menu-toggle-item:hover,
+        body.is-background-dark .fullscreen-menu-checkbox:checked ~ .fullscreen-menu-toggle-item { background-color: rgba(255, 255, 255, 50%); }
+
+        body:not(.is-background-dark) .fullscreen-menu,
+        body:not(.is-background-dark) .fullscreen-menu a,
+        body:not(.is-background-dark) .fullscreen-menu .octicon,
+        body:not(.is-background-dark) .fullscreen-menu-button { color: black; }
+        body:not(.is-background-dark) .fullscreen-menu-toggle-item,
+        body:not(.is-background-dark) .fullscreen-menu-button { border-color: rgba(0, 0, 0, 15%);; }
+        body:not(.is-background-dark) .fullscreen-menu-button:hover,
+        body:not(.is-background-dark) .fullscreen-menu-toggle-item:hover,
+        body:not(.is-background-dark) .fullscreen-menu-checkbox:checked ~ .fullscreen-menu-toggle-item { background-color: rgba(0, 0, 0, 15%); }
+
+
+
+
         
         .fullscreen-menu-checkbox { display: none; }
         .fullscreen-menu-checkbox:not(:checked) ~ .fullscreen-menu-items {
@@ -384,45 +405,43 @@
             </table>
         </div>
 
-        <div id="fullscreenButtons">
-            <!-- needs to occur after the game so it appears on top of the game -->
-            <div id="fullscreenTopLeftButtons" class="fullscreen-menu">
-                <input id="menuTopLeft" type="checkbox" class="fullscreen-menu-checkbox"/>
-                <label for="menuTopLeft" class="fullscreen-menu-toggle-item ui-has-icon" aria-hidden="true">
-                    <svg aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" class="octicon octicon-three-bars" viewBox="0 0 12 16" version="1.1"><path fill-rule="evenodd" d="M11.41 9H.59C0 9 0 8.59 0 8c0-.59 0-1 .59-1H11.4c.59 0 .59.41.59 1 0 .59 0 1-.59 1h.01zm0-4H.59C0 5 0 4.59 0 4c0-.59 0-1 .59-1H11.4c.59 0 .59.41.59 1 0 .59 0 1-.59 1h.01zM.59 11H11.4c.59 0 .59.41.59 1 0 .59 0 1-.59 1H.59C0 13 0 12.59 0 12c0-.59 0-1 .59-1z"></path></svg>
-                </label>
-                <span class="fullscreen-menu-items">
-                    <a class="ui-button" href="#">Games</a>
-                    <button id="gameInstructionsButton2" class="ui-button">Help</button>
-                    <input id="disableCss" type="checkbox"/><label for="disableCss" class="ui-button" aria-hidden="true">Toggle UI</label>
-                </span>
+        <!-- needs to occur after the game so it appears on top of the game -->
+        <div id="fullscreenTopLeftButtons" class="fullscreen-menu">
+            <input id="menuTopLeft" type="checkbox" class="fullscreen-menu-checkbox"/>
+            <label for="menuTopLeft" class="fullscreen-menu-toggle-item ui-has-icon" aria-hidden="true">
+                <svg aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" class="octicon octicon-three-bars" viewBox="0 0 12 16" version="1.1"><path fill-rule="evenodd" d="M11.41 9H.59C0 9 0 8.59 0 8c0-.59 0-1 .59-1H11.4c.59 0 .59.41.59 1 0 .59 0 1-.59 1h.01zm0-4H.59C0 5 0 4.59 0 4c0-.59 0-1 .59-1H11.4c.59 0 .59.41.59 1 0 .59 0 1-.59 1h.01zM.59 11H11.4c.59 0 .59.41.59 1 0 .59 0 1-.59 1H.59C0 13 0 12.59 0 12c0-.59 0-1 .59-1z"></path></svg>
+            </label>
+            <span class="fullscreen-menu-items">
+                <a class="fullscreen-menu-button" href="#">Games</a>
+                <button id="gameInstructionsButton2" class="fullscreen-menu-button">Help</button>
+                <input id="disableCss" type="checkbox"/><label for="disableCss" class="fullscreen-menu-button" aria-hidden="true">Toggle UI</label>
+            </span>
+            <span class="fullscreen-menu-arbitrary-text">
                 <span id="fullscreenTitle"></span> <span id="fullscreenPercentage"></span> : by <a id="authorInfo" target="_window"></a>
-            </div>
-            <div id="fullscreenTopRightButtons" class="fullscreen-menu">
-                <input id="menuTopRight" type="checkbox" class="fullscreen-menu-checkbox"/>
-                <span class="fullscreen-menu-items">
-                    <button id="gameButtonUndo" class="ui-button">Undo</button>
-                    <button id="gameButtonRestart" class="ui-button">Restart</button>
-                </span>
-                <label for="menuTopRight" class="fullscreen-menu-toggle-item ui-has-icon" aria-hidden="true">
-                    <svg aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" class="octicon octicon-kebab-vertical" viewBox="0 0 3 16" version="1.1"><path fill-rule="evenodd" d="M0 2.5a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0zm0 5a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0zM1.5 14a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"></path></svg>
-                </label>
-            </div>
-
-            <div id="gamepadSection" class="fullscreen-menu">
-                <input id="menuBottomLeft" type="checkbox" class="fullscreen-menu-checkbox"/>
-                <label for="menuBottomLeft" class="fullscreen-menu-toggle-item ui-has-icon" aria-hidden="true">
-                    <svg id="gamepadIcon" aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" class="octicon octicon-gamepad" viewBox="0 0 640 512" version="1.1"><path fill-rule="evenodd" d="M480 96H160C71.6 96 0 167.6 0 256s71.6 160 160 160c44.8 0 85.2-18.4 114.2-48h91.5c29 29.6 69.5 48 114.2 48 88.4 0 160-71.6 160-160S568.4 96 480 96zM256 276c0 6.6-5.4 12-12 12h-52v52c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-52H76c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h52v-52c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h52c6.6 0 12 5.4 12 12v40zm184 68c-26.5 0-48-21.5-48-48s21.5-48 48-48 48 21.5 48 48-21.5 48-48 48zm80-80c-26.5 0-48-21.5-48-48s21.5-48 48-48 48 21.5 48 48-21.5 48-48 48z" class=""></path></svg>
-                </label>
-                <span class="fullscreen-menu-items">
-                    <span id="gamepadDisabled" class="hidden"><strong>Tip:</strong> Connect a gamepad controller (XBOX/PS3/PS4/etc) to use it to play.</span>
-                    <span id="gamepadRecognized" class="hidden">Gamepad is detected. You can play using it now. Just make sure the game is focused.</span>
-                    <span id="gamepadNotRecognized" class="hidden">Gamepad is detected but not recognized. Please submit an Issue on the Repository and we will help get it added</span>
-                </span>
-            </div>
-        
+            </span>
+        </div>
+        <div id="fullscreenTopRightButtons" class="fullscreen-menu">
+            <input id="menuTopRight" type="checkbox" class="fullscreen-menu-checkbox"/>
+            <span class="fullscreen-menu-items">
+                <button id="gameButtonUndo" class="fullscreen-menu-button">Undo</button>
+                <button id="gameButtonRestart" class="fullscreen-menu-button">Restart</button>
+            </span>
+            <label for="menuTopRight" class="fullscreen-menu-toggle-item ui-has-icon" aria-hidden="true">
+                <svg aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" class="octicon octicon-kebab-vertical" viewBox="0 0 3 16" version="1.1"><path fill-rule="evenodd" d="M0 2.5a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0zm0 5a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0zM1.5 14a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"></path></svg>
+            </label>
         </div>
 
+        <div id="gamepadSection" class="fullscreen-menu">
+            <input id="menuBottomLeft" type="checkbox" class="fullscreen-menu-checkbox"/>
+            <label for="menuBottomLeft" class="fullscreen-menu-toggle-item ui-has-icon" aria-hidden="true">
+                <svg id="gamepadIcon" aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" class="octicon octicon-gamepad" viewBox="0 0 640 512" version="1.1"><path fill-rule="evenodd" d="M480 96H160C71.6 96 0 167.6 0 256s71.6 160 160 160c44.8 0 85.2-18.4 114.2-48h91.5c29 29.6 69.5 48 114.2 48 88.4 0 160-71.6 160-160S568.4 96 480 96zM256 276c0 6.6-5.4 12-12 12h-52v52c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-52H76c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h52v-52c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h52c6.6 0 12 5.4 12 12v40zm184 68c-26.5 0-48-21.5-48-48s21.5-48 48-48 48 21.5 48 48-21.5 48-48 48zm80-80c-26.5 0-48-21.5-48-48s21.5-48 48-48 48 21.5 48 48-21.5 48-48 48z" class=""></path></svg>
+            </label>
+            <span class="fullscreen-menu-items">
+                <span id="gamepadDisabled" class="hidden">Connect a gamepad controller (XBOX/PS3/PS4/etc) and play.</span>
+                <span id="gamepadRecognized" class="hidden">Gamepad is detected. You can play using it now. Just make sure the game is focused.</span>
+                <span id="gamepadNotRecognized" class="hidden">Gamepad is detected but not recognized. Please submit an Issue so it can be added.</span>
+            </span>
+        </div>
         
     </div>
 
@@ -453,7 +472,7 @@
 
 
     <div id="fullscreenBottomRightButtons" class="fullscreen-menu">
-        <a class="fullscreen-menu-toggle-item" href="https://github.com/philschatz/puzzlescript" target="_window">Source Code</a>
+        <a class="fullscreen-menu-button" href="https://github.com/philschatz/puzzlescript" target="_window">Source Code</a>
     </div>
 
 

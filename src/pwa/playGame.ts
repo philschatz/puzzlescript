@@ -253,7 +253,7 @@ const handler: GameEngineHandlerOptional = {
         window.document.body.style.backgroundColor = backgroundColor.toHex()
 
         function toUrl(url: string) {
-            return /^https?:\/\//.test(url) ? url : `http://${url}`
+            return /^https?:\/\//.test(url) ? url : /@/.test(url) ? `mailto:${url}` : `http://${url}`
         }
         const { author, homepage } = gameData.metadata
         if (author) {
