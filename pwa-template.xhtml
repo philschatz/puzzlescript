@@ -206,13 +206,13 @@
             padding-left: .5rem;
             padding-right: .5rem;
         }
-        .fullscreen-menu-toggle-item.ui-has-icon .octicon { 
+        .fullscreen-menu-toggle-item.ui-has-icon .ui-icon { 
             width: 1rem;
             height: 1rem;
             position: relative;
             top: .25rem;
         }
-        .octicon { fill: currentColor; }
+        .ui-icon { fill: currentColor; }
 
         .fullscreen-menu-toggle-item,
         .fullscreen-menu-button {
@@ -222,6 +222,10 @@
             border-radius: 6px;
             border-width: 1px;
             border-style: solid;
+        }
+
+        .fullscreen-menu-button .ui-icon {
+            height: 0.75rem;
         }
 
         .fullscreen-menu-arbitrary-text {
@@ -240,7 +244,7 @@
 
         body.is-background-dark .fullscreen-menu,
         body.is-background-dark .fullscreen-menu a,
-        body.is-background-dark .fullscreen-menu .octicon,
+        body.is-background-dark .fullscreen-menu .ui-icon,
         body.is-background-dark .fullscreen-menu-button { color: white; }
         body.is-background-dark .fullscreen-menu-toggle-item,
         body.is-background-dark .fullscreen-menu-button { border-color: rgba(255, 255, 255, 50%); }
@@ -251,7 +255,7 @@
 
         body:not(.is-background-dark) .fullscreen-menu,
         body:not(.is-background-dark) .fullscreen-menu a,
-        body:not(.is-background-dark) .fullscreen-menu .octicon,
+        body:not(.is-background-dark) .fullscreen-menu .ui-icon,
         body:not(.is-background-dark) .fullscreen-menu-button { color: black; }
         body:not(.is-background-dark) .fullscreen-menu-toggle-item,
         body:not(.is-background-dark) .fullscreen-menu-button { border-color: rgba(0, 0, 0, 15%); }
@@ -441,12 +445,15 @@
         <div id="fullscreenTopLeftButtons" class="fullscreen-menu">
             <input id="menuTopLeft" type="checkbox" class="fullscreen-menu-checkbox"/>
             <label for="menuTopLeft" class="fullscreen-menu-toggle-item ui-has-icon" aria-hidden="true">
-                <svg aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" class="octicon octicon-three-bars" viewBox="0 0 12 16" version="1.1"><path fill-rule="evenodd" d="M11.41 9H.59C0 9 0 8.59 0 8c0-.59 0-1 .59-1H11.4c.59 0 .59.41.59 1 0 .59 0 1-.59 1h.01zm0-4H.59C0 5 0 4.59 0 4c0-.59 0-1 .59-1H11.4c.59 0 .59.41.59 1 0 .59 0 1-.59 1h.01zM.59 11H11.4c.59 0 .59.41.59 1 0 .59 0 1-.59 1H.59C0 13 0 12.59 0 12c0-.59 0-1 .59-1z"></path></svg>
+                <svg aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" class="ui-icon ui-icon-three-bars" viewBox="0 0 12 16" version="1.1"><path fill-rule="evenodd" d="M11.41 9H.59C0 9 0 8.59 0 8c0-.59 0-1 .59-1H11.4c.59 0 .59.41.59 1 0 .59 0 1-.59 1h.01zm0-4H.59C0 5 0 4.59 0 4c0-.59 0-1 .59-1H11.4c.59 0 .59.41.59 1 0 .59 0 1-.59 1h.01zM.59 11H11.4c.59 0 .59.41.59 1 0 .59 0 1-.59 1H.59C0 13 0 12.59 0 12c0-.59 0-1 .59-1z"></path></svg>
             </label>
             <span class="fullscreen-menu-items">
                 <a class="fullscreen-menu-button" href="#">Games</a>
                 <button id="gameInstructionsButton2" class="fullscreen-menu-button">Help</button>
-                <input id="disableCss" type="checkbox"/><label for="disableCss" class="fullscreen-menu-button" aria-hidden="true">Toggle UI</label>
+                <input id="disableCss" type="checkbox"/><label for="disableCss" class="fullscreen-menu-button" aria-hidden="true">
+                    <svg aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" class="ui-icon" viewBox="0 0 448 512" version="1.1"><path fill="currentColor" d="M423.9 255.8L411 413.1c-3.3 40.7-63.9 35.1-60.6-4.9l10-122.5-41.1 2.3c10.1 20.7 15.8 43.9 15.8 68.5 0 41.2-16.1 78.7-42.3 106.5l-39.3-39.3c57.9-63.7 13.1-167.2-74-167.2-25.9 0-49.5 9.9-67.2 26L73 243.2c22-20.7 50.1-35.1 81.4-40.2l75.3-85.7-42.6-24.8-51.6 46c-30 26.8-70.6-18.5-40.5-45.4l68-60.7c9.8-8.8 24.1-10.2 35.5-3.6 0 0 139.3 80.9 139.5 81.1 16.2 10.1 20.7 36 6.1 52.6L285.7 229l106.1-5.9c18.5-1.1 33.6 14.4 32.1 32.7zm-64.9-154c28.1 0 50.9-22.8 50.9-50.9C409.9 22.8 387.1 0 359 0c-28.1 0-50.9 22.8-50.9 50.9 0 28.1 22.8 50.9 50.9 50.9zM179.6 456.5c-80.6 0-127.4-90.6-82.7-156.1l-39.7-39.7C36.4 287 24 320.3 24 356.4c0 130.7 150.7 201.4 251.4 122.5l-39.7-39.7c-16 10.9-35.3 17.3-56.1 17.3z" class=""></path></svg>
+                    Toggle UI
+                </label>
             </span>
             <span class="fullscreen-menu-arbitrary-text">
                 <span id="fullscreenTitle"></span> <span id="fullscreenPercentage"></span> : by <a id="authorInfo" target="_window"></a>
@@ -459,14 +466,14 @@
                 <button id="gameButtonRestart" class="fullscreen-menu-button">Restart</button>
             </span>
             <label for="menuTopRight" class="fullscreen-menu-toggle-item ui-has-icon" aria-hidden="true">
-                <svg aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" class="octicon octicon-kebab-vertical" viewBox="0 0 3 16" version="1.1"><path fill-rule="evenodd" d="M0 2.5a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0zm0 5a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0zM1.5 14a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"></path></svg>
+                <svg aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" class="ui-icon ui-icon-kebab-vertical" viewBox="0 0 3 16" version="1.1"><path fill-rule="evenodd" d="M0 2.5a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0zm0 5a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0zM1.5 14a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"></path></svg>
             </label>
         </div>
 
         <div id="gamepadSection" class="fullscreen-menu">
             <input id="menuBottomLeft" type="checkbox" class="fullscreen-menu-checkbox"/>
             <label for="menuBottomLeft" class="fullscreen-menu-toggle-item ui-has-icon" aria-hidden="true">
-                <svg id="gamepadIcon" aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" class="octicon octicon-gamepad" viewBox="0 0 640 512" version="1.1"><path fill-rule="evenodd" d="M480 96H160C71.6 96 0 167.6 0 256s71.6 160 160 160c44.8 0 85.2-18.4 114.2-48h91.5c29 29.6 69.5 48 114.2 48 88.4 0 160-71.6 160-160S568.4 96 480 96zM256 276c0 6.6-5.4 12-12 12h-52v52c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-52H76c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h52v-52c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h52c6.6 0 12 5.4 12 12v40zm184 68c-26.5 0-48-21.5-48-48s21.5-48 48-48 48 21.5 48 48-21.5 48-48 48zm80-80c-26.5 0-48-21.5-48-48s21.5-48 48-48 48 21.5 48 48-21.5 48-48 48z" class=""></path></svg>
+                <svg id="gamepadIcon" aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" class="ui-icon ui-icon-gamepad" viewBox="0 0 640 512" version="1.1"><path fill-rule="evenodd" d="M480 96H160C71.6 96 0 167.6 0 256s71.6 160 160 160c44.8 0 85.2-18.4 114.2-48h91.5c29 29.6 69.5 48 114.2 48 88.4 0 160-71.6 160-160S568.4 96 480 96zM256 276c0 6.6-5.4 12-12 12h-52v52c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-52H76c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h52v-52c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h52c6.6 0 12 5.4 12 12v40zm184 68c-26.5 0-48-21.5-48-48s21.5-48 48-48 48 21.5 48 48-21.5 48-48 48zm80-80c-26.5 0-48-21.5-48-48s21.5-48 48-48 48 21.5 48 48-21.5 48-48 48z" class=""></path></svg>
             </label>
             <span class="fullscreen-menu-items">
                 <span id="gamepadDisabled" class="hidden">Connect a gamepad controller (XBOX/PS3/PS4/etc) and play.</span>
