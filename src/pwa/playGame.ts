@@ -228,13 +228,17 @@ const handler: GameEngineHandlerOptional = {
         loadingIndicator.setAttribute('data-size', isLarge ? 'large' : 'small')
         openLoadingDialog()
     },
-    onLevelChange(newLevelNum) {
+    onLevelChange(newLevelNum, cells) {
         // Hide the Loading text because the level loaded
         closeLoadingDialog()
         table.focus()
 
-        changePage(currentInfo.getGameId(), newLevelNum)
-        currentInfo.saveCurrentLevelNum(newLevelNum)
+        // Only change the hash when the user views a non-message level.
+        // That way the Back button works.
+        if (cells) {
+            changePage(currentInfo.getGameId(), newLevelNum)
+            currentInfo.saveCurrentLevelNum(newLevelNum)
+        }
     },
     onGameChange(gameData) {
         // Set the background color to be that of the game
@@ -249,7 +253,7 @@ const handler: GameEngineHandlerOptional = {
         window.document.body.style.backgroundColor = backgroundColor.toHex()
 
         function toUrl(url: string) {
-            return /^https?:\/\//.test(url) ? url : `http://${url}`
+            return /^https?:\/\//.test(url) ? url : /@/.test(url) ? `mailto:${url}` : `http://${url}`
         }
         const { author, homepage } = gameData.metadata
         if (author) {

@@ -1,13 +1,20 @@
 import { _debounce } from '../util'
 
+export enum LIMITED_BY {
+    WIDTH = 'WIDTH',
+    HEIGHT = 'HEIGHT'
+}
+
+export type ResizeHandler = (width: number, left: number, limitedBy: LIMITED_BY) => void
+
 export default class ResizeWatcher {
     private readonly table: HTMLTableElement
-    private readonly handler: (width: number, left: number) => void
+    private readonly handler: ResizeHandler
     private readonly boundResizeHandler: any
     private columns: number
     private rows: number
 
-    constructor(table: HTMLTableElement, handler: (width: number, left: number) => void) {
+    constructor(table: HTMLTableElement, handler: ResizeHandler) {
         this.table = table
         this.handler = handler
         this.columns = 1
@@ -30,15 +37,18 @@ export default class ResizeWatcher {
         const availableWidth = Math.min(window.outerWidth, window.innerWidth) - leftWithoutAutoMargins
         const availableHeight = Math.min(window.outerHeight, window.innerHeight) - this.table.offsetTop
         let newWidth = 0
+        let limitedBy = LIMITED_BY.WIDTH
         if (availableWidth / levelRatio < availableHeight) {
             // Width is the limiting factor
-            newWidth = Math.floor(availableWidth / this.columns / 5) * this.columns * 5
+            limitedBy = LIMITED_BY.WIDTH
+            newWidth = Math.floor(availableWidth)
         } else {
             // Height is the limiting factor
+            limitedBy = LIMITED_BY.HEIGHT
             newWidth = Math.floor(availableHeight * levelRatio / this.rows / 5) * this.rows * 5
         }
         const leftOffset = availableWidth / 2 - newWidth / 2 - leftWithoutAutoMargins
-        this.handler(Math.floor(newWidth), Math.floor(leftOffset))
+        this.handler(Math.floor(newWidth), Math.floor(leftOffset), limitedBy)
     }
 
     public dispose() {
