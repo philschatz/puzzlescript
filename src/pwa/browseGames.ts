@@ -81,7 +81,7 @@ export function browseGames() {
     for (const gameInfo of allGames.values()) {
         const { id: gameId, title, author, backgroundColor, popularColors, levels } = gameInfo
         const authorMarkup = author ? createEl('div', ['game-author'], null, [`by ${author}`]) : null
-        const htmlSnippet = createEl('a', null, { href: `#${gameId}`, title }, [
+        const htmlSnippet = createEl('a', null, { href: `#/${gameId}`, title }, [
             createEl('figure', null, { 'id': gameId, 'aria-hidden': 'true' }, [
                 createEl('div', ['thumbnail-wrapper'], { style: `background-color: ${backgroundColor || popularColors[0]}` }, [
                     createEl('img', ['game-thumbnail'], { src: `./game-thumbnails/${gameId}.png` })

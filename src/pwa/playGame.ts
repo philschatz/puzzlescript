@@ -267,7 +267,7 @@ const handler: GameEngineHandlerOptional = {
 
         currentInfo.saveGameInfo(gameData)
         fullscreenTitle.textContent = gameData.title
-        htmlTitle.textContent = gameData.title
+        htmlTitle.textContent = `Puzzle Games - ${gameData.title}`
     },
     onTick(_changedCells, checkpoint) {
         if (checkpoint) {
@@ -292,7 +292,7 @@ gameButtonRestart.addEventListener('click', () => {
     table.focus()
 })
 
-export function playGame(gameId: string, levelNum: Optional<number>) {
+export function playGame(gameId: string, levelNum: Optional<number>, showTable: boolean) {
     currentInfo.setGameAndLevel(gameId, levelNum)
 
     loadingIndicator.setAttribute('data-size', 'small')
@@ -318,6 +318,7 @@ export function playGame(gameId: string, levelNum: Optional<number>) {
                 } else {
                     tableEngine.setGame(source, levelNum || 0, null)
                 }
+                disableCss.checked = showTable
             })
         } else {
             alert(`Problem finding game file. Please choose another one`)

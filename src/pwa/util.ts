@@ -15,7 +15,7 @@ export function getElement<T extends HTMLElement>(selector: string) {
 }
 
 export const changePage = (gameId: string, level: number) => {
-    window.location.hash = `#${gameId}|${level}`
+    history.replaceState(undefined, undefined as any as string, `#/${gameId}/${level}`)
     if (ga) {
         const { pathname, search } = window.location
         ga('set', 'page', `${pathname}${search}#${gameId}|${level}`)
