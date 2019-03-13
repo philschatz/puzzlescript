@@ -741,10 +741,12 @@
   dependencies:
     "@types/node" "*"
 
-"@types/quick-lru@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@types/quick-lru/-/quick-lru-2.0.0.tgz#04b3a558d45533ceef1be33950b7ed7e1202cd2f"
-  integrity sha512-bQLWvCkzO4OFPUFAQH5Ql0K8Q+9XH0uGbsODUXQlv9PfT+1hMVB++XZpiLDTKad35hu0KB2e9sYop/jVnkosVg==
+"@types/quick-lru@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@types/quick-lru/-/quick-lru-3.0.0.tgz#60d006b19aba51017900ebc613cdf565e9f38d2c"
+  integrity sha512-ATV7WJp+SmwPhSgwkZJzYxoaJWtM7Wwa1EA7/RAPeNd68qnxs/juTvFvmFWaWJozdQetrC67sIao2N1vabnF4w==
+  dependencies:
+    quick-lru "*"
 
 "@types/rimraf@^0.0.28":
   version "0.0.28"
@@ -6412,6 +6414,11 @@ querystring@0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/querystring/-/querystring-0.2.0.tgz#b209849203bb25df820da756e747005878521620"
   integrity sha1-sgmEkgO7Jd+CDadW50cAWHhSFiA=
+
+quick-lru@*:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/quick-lru/-/quick-lru-3.0.0.tgz#2f96145481567e5bc442c6c4a66e86158405c696"
+  integrity sha512-WLzHLB/msD8Q/5jNh4LviurG896aIEJRS1M3gHz91nSmaXn8q+/q4yOQvNMIETl9f5pAu3igqexB62ARWOUoOg==
 
 quick-lru@^2.0.0:
   version "2.0.0"
