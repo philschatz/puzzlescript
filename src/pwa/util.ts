@@ -18,7 +18,7 @@ export const changePage = (gameId: string, level: number) => {
     history.replaceState(undefined, undefined as any as string, `#/${gameId}/${level}`)
     if (ga) {
         const { pathname, search } = window.location
-        ga('set', 'page', `${pathname}${search}#${gameId}|${level}`)
+        ga('set', 'page', `${pathname}${search}#/${gameId}/${level}`)
         // ga('set', 'title', gameTitle)
         ga('send', 'pageview')
     }
