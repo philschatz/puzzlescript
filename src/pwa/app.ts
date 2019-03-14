@@ -36,6 +36,13 @@ window.addEventListener('load', () => {
                 body.setAttribute('data-mode', 'playingGame')
                 const showTable = !!showTableStr && showTableStr.toLowerCase() === 'true'
                 playGame(gameId, levelStr ? Number.parseInt(levelStr, 10) : null, showTable)
+
+                // Send event when user is playing in standalone mode
+                const isInStandaloneMode = window.matchMedia('(display-mode: standalone)').matches || 'standalone' in window.navigator
+                if (isInStandaloneMode) {
+                    sendAnalytics('send', 'event', 'pwa', 'play')
+                }
+
             } else if (!hash) {
                 // Browse the games
                 htmlTitle.textContent = originalTitle
