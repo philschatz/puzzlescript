@@ -275,6 +275,12 @@ const handler: GameEngineHandlerOptional = {
             // This might require creating an onCheckpoint(levelNum, checkpoint) event
             currentInfo.saveCheckpoint(checkpoint)
         }
+    },
+    onPause() {
+        document.body.setAttribute('data-ps-state', 'paused')
+    },
+    onResume() {
+        document.body.setAttribute('data-ps-state', 'running')
     }
 }
 

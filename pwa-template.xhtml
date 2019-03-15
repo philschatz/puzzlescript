@@ -241,10 +241,16 @@
         body.is-background-dark .fullscreen-menu-button { color: white; }
         body.is-background-dark .fullscreen-menu-toggle-item,
         body.is-background-dark .fullscreen-menu-button { border-color: rgba(255, 255, 255, 0.50); }
-        body.is-background-dark .fullscreen-menu-arbitrary-text { background-color: rgba(0, 0, 0, 0.25); }
         body.is-background-dark .fullscreen-menu-button:hover,
         body.is-background-dark .fullscreen-menu-toggle-item:hover,
         body.is-background-dark .fullscreen-menu-checkbox:checked ~ .fullscreen-menu-toggle-item { background-color: rgba(255, 255, 255, 0.50); }
+
+        body.is-background-dark[data-ps-state="running"] .fullscreen-menu-toggle-item,
+        body.is-background-dark[data-ps-state="running"] .fullscreen-menu-button,
+        body.is-background-dark[data-ps-state="running"] .fullscreen-menu-arbitrary-text { background-color: rgba(0, 0, 0, 0.05); }
+        body.is-background-dark[data-ps-state="paused"] .fullscreen-menu-toggle-item,
+        body.is-background-dark[data-ps-state="paused"] .fullscreen-menu-button,
+        body.is-background-dark[data-ps-state="paused"] .fullscreen-menu-arbitrary-text { background-color: rgba(0, 0, 0, 0.25); }
 
         body:not(.is-background-dark) .fullscreen-menu,
         body:not(.is-background-dark) .fullscreen-menu a,
@@ -252,12 +258,16 @@
         body:not(.is-background-dark) .fullscreen-menu-button { color: black; }
         body:not(.is-background-dark) .fullscreen-menu-toggle-item,
         body:not(.is-background-dark) .fullscreen-menu-button { border-color: rgba(0, 0, 0, 0.15); }
-        body:not(.is-background-dark) .fullscreen-menu-arbitrary-text { background-color: rgba(255, 255, 255, 0.70); }
         body:not(.is-background-dark) .fullscreen-menu-button:hover,
         body:not(.is-background-dark) .fullscreen-menu-toggle-item:hover,
         body:not(.is-background-dark) .fullscreen-menu-checkbox:checked ~ .fullscreen-menu-toggle-item { background-color: rgba(0, 0, 0, 0.15); }
 
-
+        body:not(.is-background-dark)[data-ps-state="running"] .fullscreen-menu-toggle-item,
+        body:not(.is-background-dark)[data-ps-state="running"] .fullscreen-menu-button,
+        body:not(.is-background-dark)[data-ps-state="running"] .fullscreen-menu-arbitrary-text { background-color: rgba(255, 255, 255, 0.10); }
+        body:not(.is-background-dark)[data-ps-state="paused"] .fullscreen-menu-toggle-item,
+        body:not(.is-background-dark)[data-ps-state="paused"] .fullscreen-menu-button,
+        body:not(.is-background-dark)[data-ps-state="paused"] .fullscreen-menu-arbitrary-text { background-color: rgba(255, 255, 255, 0.50); }
 
 
         
@@ -459,8 +469,8 @@
         <div id="fullscreenTopRightButtons" class="fullscreen-menu">
             <input id="menuTopRight" type="checkbox" class="fullscreen-menu-checkbox"/>
             <span class="fullscreen-menu-items">
-                <button id="gameButtonUndo" class="fullscreen-menu-button">Undo</button>
-                <button id="gameButtonRestart" class="fullscreen-menu-button">Restart</button>
+                <button id="gameButtonUndo" class="fullscreen-menu-button" aria-label="Undo. Hotkey: U or Z">Undo</button>
+                <button id="gameButtonRestart" class="fullscreen-menu-button" aria-label="Restart. Hotkey: R">Restart</button>
             </span>
             <label for="menuTopRight" class="fullscreen-menu-toggle-item ui-has-icon" aria-hidden="true">
                 <svg aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" class="ui-icon ui-icon-kebab-vertical" viewBox="0 0 3 16" version="1.1"><path fill-rule="evenodd" d="M0 2.5a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0zm0 5a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0zM1.5 14a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"></path></svg>
