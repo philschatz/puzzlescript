@@ -59,7 +59,6 @@
     "inquirer-autocomplete-prompt": "^1.0.1",
     "nearley": "github:philschatz/nearley#24685991e203fd6645a6f687198687aa42b7d6f2",
     "pify": "^4.0.0",
-    "quick-lru": "^3.0.0",
     "supports-color": "^6.0.0",
     "update-notifier": "^2.5.0",
     "web-audio-api": "^0.2.2"
