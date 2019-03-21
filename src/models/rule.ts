@@ -13,7 +13,7 @@ import { GameSprite, IGameTile } from './tile'
 const BitSet2 = require('bitset') // tslint:disable-line:no-var-requires
 
 const MAX_ITERATIONS_IN_LOOP = 350 // Set by the Random World Generation game
-const LRU_CACHE_SIZE = 50 // 1000
+const LRU_CACHE_SIZE = 100 // 1000
 
 export const SIMPLE_DIRECTION_DIRECTIONS = [
     RULE_DIRECTION.RIGHT,
@@ -1601,7 +1601,7 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
     private spritesMissing: SpriteBitSet
     private spriteMovementsPresent: Map<CollisionLayer, RULE_DIRECTION>
     private orTileMovementsPresent: Map<IGameTile, RULE_DIRECTION>
-    private lruCache: LruCache<string, boolean>
+    private lruCache: LruCache<boolean>
     private trickleCells: Set<Cell>
 
     constructor(source: IGameCode, tilesWithModifier: Set<SimpleTileWithModifier>, debugFlag: Optional<DEBUG_FLAG>) {
@@ -1620,7 +1620,7 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
         this.spriteMovementsPresent = new Map()
         this.orTileMovementsPresent = new Map()
         this.trickleCells = new Set()
-        this.lruCache = new LruCache<string, boolean>(LRU_CACHE_SIZE)
+        this.lruCache = new LruCache<boolean>(LRU_CACHE_SIZE)
 
         // Build up the cache BitSet for each collisionLayer
         this.cacheYesBitSets = new Map()
@@ -1990,64 +1990,72 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
             }
         }
     }
+    private check1(cell: Cell) {
+        return cell.spriteBitSet.containsNone(this.spritesMissing)
+            && cell.spriteBitSet.containsAll(this.spritesPresent)
+    }
+    private check2(cell: Cell) {
+        for (const anySpritesPresent of this.anySpritesPresent) {
+            if (!cell.spriteBitSet.containsAny(anySpritesPresent)) {
+                return false
+            }
+        }
+        return true
+    }
+    private check3(cell: Cell) {
+        // Check CollisionLayers
+        // TODO: Move this into the Cell definition
+        for (const [collisionLayer, direction] of this.spriteMovementsPresent) {
+            const cellDir = cell.getCollisionLayerWantsToMove(collisionLayer)
+            if (direction !== cellDir) {
+                return false
+            }
+        }
+        return true
+    }
+    private check4(cell: Cell) {
+        for (const [orTile, direction] of this.orTileMovementsPresent) {
+            if (orTile.hasSingleCollisionLayer()) {
+                const cellDir = cell.getCollisionLayerWantsToMove(orTile.getCollisionLayer())
+                if (direction !== cellDir) {
+                    return false
+                }
+            } else {
+                // find which sprite in the OR tile matched and get its direction
+                let foundSprite = false
+                // the OR tile can match multiple sprites so make sure at least one matched (not all)
+                // e.g:
+                // Movable = Player OR Island
+                // Rule: [ LEFT Movable ]
+                // Cell: STATIONARY Player LEFT Island
+                let didMatch = false
+                for (const sprite of orTile.getSprites()) {
+                    if (cell.spriteBitSet.has(sprite)) {
+                        foundSprite = true
+                        const cellDir = cell.getCollisionLayerWantsToMove(sprite.getCollisionLayer())
+                        if (direction === cellDir) {
+                            didMatch = true
+                        }
+                    }
+                }
+                if (!didMatch) {
+                    return false
+                }
+                if (!foundSprite) {
+                    throw new Error(`BUG: Could not find sprite. One should have already been matched before`)
+                }
+            }
+        }
+        return true
+    }
     private matchesCell(cell: Cell, tileWithModifier: Optional<SimpleTileWithModifier>, wantsToMove: Optional<RULE_DIRECTION>) {
 
-        const valueFn = () => {
-            let doesMatch =
-                cell.spriteBitSet.containsAll(this.spritesPresent) &&
-                cell.spriteBitSet.containsNone(this.spritesMissing)
-            if (doesMatch) {
-                for (const anySpritesPresent of this.anySpritesPresent) {
-                    doesMatch = doesMatch && cell.spriteBitSet.containsAny(anySpritesPresent)
-                }
-            }
-            // Check CollisionLayers
-            // TODO: Move this into the Cell definition
-            if (doesMatch) {
-                for (const [collisionLayer, direction] of this.spriteMovementsPresent) {
-                    const cellDir = cell.getCollisionLayerWantsToMove(collisionLayer)
-                    if (direction !== cellDir) {
-                        doesMatch = false
-                    }
-                }
-            }
-
-            if (doesMatch) {
-                for (const [orTile, direction] of this.orTileMovementsPresent) {
-                    if (orTile.hasSingleCollisionLayer()) {
-                        const cellDir = cell.getCollisionLayerWantsToMove(orTile.getCollisionLayer())
-                        if (direction !== cellDir) {
-                            doesMatch = false
-                        }
-                    } else {
-                        // find which sprite in the OR tile matched and get its direction
-                        let foundSprite = false
-                        // the OR tile can match multiple sprites so make sure at least one matched (not all)
-                        // e.g:
-                        // Movable = Player OR Island
-                        // Rule: [ LEFT Movable ]
-                        // Cell: STATIONARY Player LEFT Island
-                        let didMatch = false
-                        for (const sprite of orTile.getSprites()) {
-                            if (cell.spriteBitSet.has(sprite)) {
-                                foundSprite = true
-                                const cellDir = cell.getCollisionLayerWantsToMove(sprite.getCollisionLayer())
-                                if (direction === cellDir) {
-                                    didMatch = true
-                                }
-                            }
-                        }
-                        doesMatch = doesMatch && didMatch
-                        if (!foundSprite) {
-                            throw new Error(`BUG: Could not find sprite. One should have already been matched before`)
-                        }
-                    }
-                }
-            }
-            return doesMatch
-        }
-
-        return this.lruCache.get(`[${cell.toKey()}]`, valueFn)
+        return this.lruCache.get(`[${cell.toKey()}]`, () =>
+            this.check1(cell) &&
+            this.check2(cell) &&
+            this.check3(cell) &&
+            this.check4(cell)
+        )
     }
 
     private matchesTiles(cell: Cell) {

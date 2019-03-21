@@ -1,5 +1,5 @@
 import InputWatcher from '../browser/InputWatcher'
-import ResizeWatcher from '../browser/ResizeWatcher'
+import ResizeWatcher, { LIMITED_BY } from '../browser/ResizeWatcher'
 import { CellSaveState, GameEngine } from '../engine'
 import { LEVEL_TYPE } from '../parser/astTypes'
 import Parser from '../parser/parser'
@@ -135,9 +135,12 @@ export default class SyncTableEngine implements Engineish {
         this.subEngine.start()
         this.handler.onResume()
     }
-    private handleResize(width: number) {
+    private handleResize(width: number, left: number, limitedBy: LIMITED_BY) {
         if (!this.subEngine.getEngine().isCurrentLevelAMessage()) {
-            this.table.setAttribute('style', `width: ${width}px;`)
+            this.table.setAttribute('style', `width: ${width}px`)
+            // to fix chrome vertical lines because of fractional pixels
+            this.table.parentElement && this.table.parentElement.setAttribute('style', `left: ${left}px; /*chrome display quirk with fractional pixels*/`)
+            document.body.setAttribute('data-ps-game-limited-by', limitedBy)
         }
     }
 }

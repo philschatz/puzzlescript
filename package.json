@@ -1,9 +1,9 @@
 {
   "scripts": {
     "lint": "tslint --fix --config ./tslint.json --project ./ --format stylish",
-    "compile": "npm run-script compile:grammar && npm run-script compile:browse-games",
-    "precompile:browse-games": "npm run-script compile:ts",
-    "compile:browse-games": "node ./lib/cli/buildGameIcons.js",
+    "compile": "npm run-script compile:grammar && npm run-script compile:thumbnail",
+    "precompile:thumbnail": "npm run-script compile:ts",
+    "compile:thumbnail": "node ./lib/cli/buildGameIcons.js",
     "compile:grammar": "nearleyc --minify-rule-names ./src/parser/grammar.ne > ./src/parser/grammar.ts",
     "compile:ts": "tsc && cp ./src/sound/sfxr.js ./lib/sound/ && cp ./src/sound/sfxr-browser.js ./lib/sound/",
     "ci": "npm run-script test",
@@ -23,7 +23,7 @@
     "pretest": "npm run-script compile:grammar && node ./script/doBatchStuff.js",
     "test": "npm run-script test:unit && npm run-script test:browser",
     "test:unit": "VERIFY_MATCHES=true NODE_ENV=development jest --coverage --updateSnapshot --verbose --detectLeaks --detectOpenHandles --testPathPattern '^((?!browser).)*\\.spec\\.ts'",
-    "pretest:browser": "npm run-script build && npm run-script compile:browse-games",
+    "pretest:browser": "npm run-script build && npm run-script compile:thumbnail",
     "test:browser": "NODE_ENV=development jest --updateSnapshot --verbose --detectOpenHandles --testPathPattern 'browser\\.spec\\.ts'",
     "posttest": "npm run-script test:cli && npm run-script coverage && npm run-script lint",
     "test:debug": "NODE_ENV=development node --inspect-brk -r source-map-support/register $(npm bin)/jest -i --updateSnapshot --detectLeaks --detectOpenHandles",
@@ -33,7 +33,7 @@
     "test:server": "serve --listen 8000 .",
     "prebuild": "rimraf ./precache-manifest.*.js",
     "build": "webpack",
-    "postbuild": "npm run-script compile:browse-games",
+    "postbuild": "npm run-script compile:thumbnail",
     "build:dev": "webpack --mode development",
     "build:stats": "webpack --profile --json > ./webpack-stats.json",
     "watch": "jest --updateSnapshot --watch",
@@ -45,7 +45,7 @@
   },
   "dependencies": {
     "@types/jest": "^24.0.0",
-    "ansi-escapes": "^3.1.0",
+    "ansi-escapes": "^4.0.0",
     "ansi-styles": "^3.2.1",
     "bitset": "^5.0.4",
     "chalk": "^2.4.1",
@@ -59,7 +59,6 @@
     "inquirer-autocomplete-prompt": "^1.0.1",
     "nearley": "github:philschatz/nearley#24685991e203fd6645a6f687198687aa42b7d6f2",
     "pify": "^4.0.0",
-    "quick-lru": "^2.0.0",
     "supports-color": "^6.0.0",
     "update-notifier": "^2.5.0",
     "web-audio-api": "^0.2.2"

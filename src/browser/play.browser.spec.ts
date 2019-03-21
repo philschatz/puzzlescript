@@ -160,8 +160,8 @@ describe('Browser', () => {
         }
 
         // The game shows a dialog immediately (uggh)
-        await page.goto(getUrl(`index.xhtml`))
-        await page.waitForSelector(`#loadingIndicator.hidden`)
+        await page.goto(getUrl(`index.xhtml#icecrates`))
+        await page.waitForSelector(`#loadingDialog:not([open])`)
         await waitForDialogAndClose()
 
         // play a level and then wait for the dialog to open
