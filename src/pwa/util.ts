@@ -16,10 +16,14 @@ export function getElement<T extends HTMLElement>(selector: string) {
     return el
 }
 
-export const changePage = (gameId: string, level: number) => {
-    history.replaceState(undefined, undefined as any as string, `#/${gameId}/${level}`)
-    const { pathname, search } = window.location
-    sendAnalytics('set', 'page', `${pathname}${search}#/${gameId}/${level}`)
+export const sendPageview = () => {
+    const { hash, pathname, search } = window.location
+    sendAnalytics('set', 'page', `${pathname}${search}${hash}`)
     // ga('set', 'title', gameTitle)
     sendAnalytics('send', 'pageview')
+}
+
+export const changePage = (gameId: string, level: number) => {
+    history.replaceState(undefined, undefined as any as string, `#/${gameId}/${level}`)
+    sendPageview()
 }
