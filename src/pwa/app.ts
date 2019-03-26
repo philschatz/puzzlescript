@@ -3,7 +3,7 @@ import { BUTTON_TYPE } from '../browser/controller/controller'
 import { Optional } from '../util'
 import { browseGames } from './browseGames'
 import { Dialog, playGame, runMigrations, tableEngine } from './playGame'
-import { getElement, sendAnalytics } from './util'
+import { getElement, sendAnalytics, sendPageview } from './util'
 
 type PromptEvent = Event & {
     prompt: () => void
@@ -52,6 +52,8 @@ window.addEventListener('load', () => {
                 browseGames()
             }
             previousHash = hash
+
+            sendPageview()
         }
     }
     window.addEventListener('hashchange', handleHashChange)
