@@ -45,7 +45,7 @@
   },
   "dependencies": {
     "@types/jest": "^24.0.0",
-    "ansi-escapes": "^3.1.0",
+    "ansi-escapes": "^4.0.0",
     "ansi-styles": "^3.2.1",
     "bitset": "^5.0.4",
     "chalk": "^2.4.1",
@@ -59,7 +59,6 @@
     "inquirer-autocomplete-prompt": "^1.0.1",
     "nearley": "github:philschatz/nearley#24685991e203fd6645a6f687198687aa42b7d6f2",
     "pify": "^4.0.0",
-    "quick-lru": "^2.0.0",
     "supports-color": "^6.0.0",
     "update-notifier": "^2.5.0",
     "web-audio-api": "^0.2.2"

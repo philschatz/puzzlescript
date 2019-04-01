@@ -52,8 +52,6 @@ table.ps-table.ps-ui-disabled tr td.ps-cell .ps-cell-label.ps-cell-empty {
 table.ps-table.ps-ui-disabled caption {
     caption-side: bottom;
     text-align: left;
-    font-size: 50%;
-    opacity: .5;
 }
 
 table.ps-table:not(.ps-ui-disabled) caption,

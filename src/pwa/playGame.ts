@@ -228,13 +228,17 @@ const handler: GameEngineHandlerOptional = {
         loadingIndicator.setAttribute('data-size', isLarge ? 'large' : 'small')
         openLoadingDialog()
     },
-    onLevelChange(newLevelNum) {
+    onLevelChange(newLevelNum, cells) {
         // Hide the Loading text because the level loaded
         closeLoadingDialog()
         table.focus()
 
-        changePage(currentInfo.getGameId(), newLevelNum)
-        currentInfo.saveCurrentLevelNum(newLevelNum)
+        // Only change the hash when the user views a non-message level.
+        // That way the Back button works.
+        if (cells) {
+            changePage(currentInfo.getGameId(), newLevelNum)
+            currentInfo.saveCurrentLevelNum(newLevelNum)
+        }
     },
     onGameChange(gameData) {
         // Set the background color to be that of the game
@@ -249,7 +253,7 @@ const handler: GameEngineHandlerOptional = {
         window.document.body.style.backgroundColor = backgroundColor.toHex()
 
         function toUrl(url: string) {
-            return /^https?:\/\//.test(url) ? url : `http://${url}`
+            return /^https?:\/\//.test(url) ? url : /@/.test(url) ? `mailto:${url}` : `http://${url}`
         }
         const { author, homepage } = gameData.metadata
         if (author) {
@@ -263,7 +267,7 @@ const handler: GameEngineHandlerOptional = {
 
         currentInfo.saveGameInfo(gameData)
         fullscreenTitle.textContent = gameData.title
-        htmlTitle.textContent = gameData.title
+        htmlTitle.textContent = `Puzzle Games - ${gameData.title}`
     },
     onTick(_changedCells, checkpoint) {
         if (checkpoint) {
@@ -271,6 +275,12 @@ const handler: GameEngineHandlerOptional = {
             // This might require creating an onCheckpoint(levelNum, checkpoint) event
             currentInfo.saveCheckpoint(checkpoint)
         }
+    },
+    onPause() {
+        document.body.setAttribute('data-ps-state', 'paused')
+    },
+    onResume() {
+        document.body.setAttribute('data-ps-state', 'running')
     }
 }
 
@@ -288,7 +298,7 @@ gameButtonRestart.addEventListener('click', () => {
     table.focus()
 })
 
-export function playGame(gameId: string, levelNum: Optional<number>) {
+export function playGame(gameId: string, levelNum: Optional<number>, showTable: boolean) {
     currentInfo.setGameAndLevel(gameId, levelNum)
 
     loadingIndicator.setAttribute('data-size', 'small')
@@ -314,6 +324,7 @@ export function playGame(gameId: string, levelNum: Optional<number>) {
                 } else {
                     tableEngine.setGame(source, levelNum || 0, null)
                 }
+                disableCss.checked = showTable
             })
         } else {
             alert(`Problem finding game file. Please choose another one`)

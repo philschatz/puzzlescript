@@ -5,6 +5,7 @@ import { GameData } from './models/game'
 import { A11Y_MESSAGE, A11Y_MESSAGE_TYPE, IMutation, SimpleRuleGroup } from './models/rule'
 import { GameSprite, IGameTile } from './models/tile'
 import { Command, COMMAND_TYPE, LEVEL_TYPE, SoundItem } from './parser/astTypes'
+import { Comparator } from './sortedList'
 import { SpriteBitSet } from './spriteBitSet'
 import { _flatten, Cellish, GameEngineHandler, INPUT_BUTTON, Optional, resetRandomSeed, RULE_DIRECTION, setAddAll, setDifference, setEquals } from './util'
 
@@ -22,6 +23,42 @@ interface ITickResult {
 
 type Snapshot = Array<Array<Set<GameSprite>>>
 
+class ArrayAndMap<K, V> {
+    private readonly comparator: Comparator<K>
+    private readonly map: Map<K, V>
+    private keysArray: K[]
+    constructor(comparator: Comparator<K>) {
+        this.comparator = comparator
+        this.keysArray = []
+        this.map = new Map()
+    }
+    public keys() { return this.keysArray }
+    public values() { return this.map.values() }
+    public set(key: K, value: V) {
+        if (!this.map.has(key)) {
+            this.insertSorted(key)
+        }
+        this.map.set(key, value)
+    }
+    public get(key: K) {
+        return this.map.get(key)
+    }
+    public delete(key: K) {
+        if (this.map.has(key)) {
+            const index = this.keysArray.indexOf(key)
+            if (index < 0) {
+                throw new Error(`BUG: Item not found`)
+            }
+            this.keysArray.splice(index, 1)
+        }
+        this.map.delete(key)
+    }
+    private insertSorted(key: K) {
+        this.keysArray.push(key)
+        this.keysArray = this.keysArray.sort(this.comparator)
+    }
+}
+
 /**
  * The state of sprites in one position of the current level being played.
  *
@@ -35,7 +72,7 @@ export class Cell implements Cellish {
     public readonly colIndex: number
     public readonly spriteBitSet: SpriteBitSet
     private readonly level: Optional<Level>
-    private readonly state: Map<CollisionLayer, ICollisionLayerState>
+    private readonly state: ArrayAndMap<CollisionLayer, ICollisionLayerState>
     private cacheCollisionLayers: CollisionLayer[]
     private cachedKeyValue: Optional<string>
 
@@ -43,7 +80,7 @@ export class Cell implements Cellish {
         this.level = level
         this.rowIndex = rowIndex
         this.colIndex = colIndex
-        this.state = new Map()
+        this.state = new ArrayAndMap((c1, c2) => c1.id - c2.id)
         this.cacheCollisionLayers = []
         this.spriteBitSet = new SpriteBitSet(sprites)
         this.cachedKeyValue = null
@@ -122,6 +159,7 @@ export class Cell implements Cellish {
         return sprites.reverse() // reversed so we render sprites properly
     }
     public getSpritesAsSet() {
+        // SLOW: Time sink
         // Just pull out the sprite, not the wantsToMoveDir
         const sprites = new Set<GameSprite>()
         for (const { sprite } of this.state.values()) {
@@ -214,8 +252,11 @@ export class Cell implements Cellish {
     }
     public toKey() {
         if (!this.cachedKeyValue) {
-            this.cachedKeyValue = [...this.state.values()].map(({ sprite, wantsToMove }) => `${wantsToMove} ${sprite.getName()}`).join(' ')
-            // this.cachedKeyValue = [...this.getSpriteAndWantsToMoves().entries()].map(([sprite, wantsToMove]) => `${wantsToMove} ${sprite.getName()}`).join(' ')
+            const strs = []
+            for (const { sprite, wantsToMove } of this.state.values()) {
+                strs.push(`${wantsToMove} ${sprite.getName()}`)
+            }
+            this.cachedKeyValue = strs.join(' ')
         }
         return this.cachedKeyValue
     }
@@ -247,8 +288,7 @@ export class Cell implements Cellish {
 
         if (needsToUpdateCache) {
             // Update the collisionLayer Cache
-            this.cacheCollisionLayers = [...this.state.keys()]
-            .sort((c1, c2) => c1.id - c2.id)
+            this.cacheCollisionLayers = this.state.keys()
         }
         this.invalidateKey()
     }
@@ -807,13 +847,38 @@ export class LevelEngine extends EventEmitter2 {
             // Compare all the cells to the top of the undo stack. If it does not differ
             this.hasAgainThatNeedsToRun = this.doSnapshotsDiffer(initialSnapshot, this.createSnapshot())
         }
+        // reduce the changedCells based on what was in the cell before the tick
+        const realChangedCells = this.getRealChangedCells(initialSnapshot, changedCells)
+        const realA11yMessages = this.getRealA11yMessages(realChangedCells, [...a11yMessages1, ...a11yMessages2, ...a11yMessages3])
         return {
-            changedCells,
+            changedCells: realChangedCells,
             evaluatedRules: evaluatedRules.concat(evaluatedRulesLate),
             commands: allCommands,
             mutations: new Set([...mutations, ...mutationsLate]),
-            a11yMessages: [...a11yMessages1, ...a11yMessages2, ...a11yMessages3]
+            a11yMessages: realA11yMessages
         }
+    }
+
+    private getRealA11yMessages(changedCells: Set<Cell>, a11yMessages: Array<A11Y_MESSAGE<Cell, GameSprite>>) {
+        return a11yMessages.filter((m) => {
+            switch (m.type) {
+                case A11Y_MESSAGE_TYPE.ADD:
+                case A11Y_MESSAGE_TYPE.REPLACE:
+                case A11Y_MESSAGE_TYPE.REMOVE:
+                    return changedCells.has(m.cell)
+                case A11Y_MESSAGE_TYPE.MOVE:
+                    return changedCells.has(m.oldCell) || changedCells.has(m.newCell)
+            }
+        })
+    }
+    private getRealChangedCells(initialSnapshot: Snapshot, changedCells: Set<Cell>) {
+        const realChangedCells = new Set<Cell>()
+        for (const cell of changedCells) {
+            if (!setEquals(cell.getSpritesAsSet(), initialSnapshot[cell.rowIndex][cell.colIndex])) {
+                realChangedCells.add(cell)
+            }
+        }
+        return realChangedCells
     }
 
     private isWinning() {
