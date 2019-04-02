@@ -246,4 +246,4 @@ These are the sources to all of the games:
 - [line-of-sight](https://joel-fox.itch.io/line-of-sight)
 - [always-magnets](https://marcosd.itch.io/always-with-the-magnets)
 - [baba-is-you](https://pyjamads.itch.io/baba-is-you-demake)
-- [yin-yang](https://www.puzzlescript.net/play.html?p=6f06832ddf2b5ae06fc0b56593d42b08)
+- [yin-yang](https://www.puzzlescript.net/play.html?p=7ecb41d970c1a553323726d2bea14935)

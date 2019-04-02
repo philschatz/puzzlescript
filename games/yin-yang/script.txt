@@ -2,6 +2,9 @@ title Yin Yang
 author Le Slo
 homepage www.puzzlescript.net
 
+
+norepeat_action
+
 ========
 OBJECTS
 ========
@@ -291,6 +294,8 @@ All Target on crate
 LEVELS
 =======
 
+MESSAGE Level 01/14
+
 MESSAGE Press x to change from Yin to Yang
 
 (First Level)
@@ -302,6 +307,8 @@ MESSAGE Press x to change from Yin to Yang
 ###########
 
 
+MESSAGE Level 02/14
+
 (Tutorial)
 
 ##########
@@ -310,6 +317,8 @@ MESSAGE Press x to change from Yin to Yang
 #1a11c222#
 #11111222#
 ##########
+
+MESSAGE Level 03/14
 
 (Yin Yang)
 
@@ -322,6 +331,8 @@ MESSAGE Press x to change from Yin to Yang
 ##1111##
 .######.
 
+MESSAGE Level 04/14
+
 (Passage)
 
 ...####...
@@ -332,6 +343,8 @@ MESSAGE Press x to change from Yin to Yang
 ####22####
 ...####...
 
+MESSAGE Level 05/14
+
 (Transport 1)
 
 ##########
@@ -340,6 +353,8 @@ MESSAGE Press x to change from Yin to Yang
 #9221122f#
 #22211222#
 ##########
+
+MESSAGE Level 06/14
 
 (Transport 2)
 
@@ -354,6 +369,8 @@ MESSAGE Press x to change from Yin to Yang
 #2221122#
 #########
 
+MESSAGE Level 07/14
+
 (Twins)
 
 ########
@@ -363,6 +380,7 @@ MESSAGE Press x to change from Yin to Yang
 #222111#
 ########
 
+MESSAGE Level 08/14
 
 (Push from the box)
 
@@ -371,6 +389,8 @@ MESSAGE Press x to change from Yin to Yang
 #1a1c2f2b2#
 #111112222#
 ###########
+
+MESSAGE Level 09/14
 
 (Three Lines) 
 
@@ -384,6 +404,8 @@ MESSAGE Press x to change from Yin to Yang
 #21c12#
 #######
 
+MESSAGE Level 10/14
+
 
 (Push more from the box.)
 
@@ -395,7 +417,7 @@ MESSAGE Press x to change from Yin to Yang
 #11#222#..
 ########..
 
-
+MESSAGE Level 11/14
 
 (Crack)
 
@@ -410,6 +432,8 @@ MESSAGE Press x to change from Yin to Yang
 #11111#
 #######
 
+MESSAGE Level 12/14
+
 (Isolated box)
 
 ##########
@@ -419,6 +443,8 @@ MESSAGE Press x to change from Yin to Yang
 #21111111#
 #f1111111#
 ##########
+
+MESSAGE Level 13/14
 
 
 (Parallels)
@@ -430,8 +456,10 @@ MESSAGE Press x to change from Yin to Yang
 #1111a1c18#
 ###########
 
+MESSAGE Level 14/14
 
-(Isolated boxes)
+
+(14 Isolated boxes)
 
 #########
 #22222f2#
@@ -440,6 +468,8 @@ MESSAGE Press x to change from Yin to Yang
 #118b811#
 #2222222#
 #########
+
+MESSAGE Yin and Yang are happy!
 
 
 
