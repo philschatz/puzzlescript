@@ -244,3 +244,4 @@ These are the sources to all of the games:
 - [lil-purple](https://www.puzzlescript.net/play.html?p=66a3fe32cd0c02188b502043c78f9899)
 - [snakehole](https://jackkutilek.itch.io/snakehole)
 - [line-of-sight](https://joel-fox.itch.io/line-of-sight)
+- [always-magnets](https://marcosd.itch.io/always-with-the-magnets)
