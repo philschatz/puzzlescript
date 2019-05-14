@@ -322,7 +322,7 @@ undo 96730907
 
 Player move 22092307
 Crate move 67381507
-cancel 79164307
+(cancel 79164307)
 
 b create  50973103 ( portal shoot - blue )
 o create  29354703 ( portal shoot - orange )
