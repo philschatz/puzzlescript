@@ -247,3 +247,4 @@ These are the sources to all of the games:
 - [always-magnets](https://marcosd.itch.io/always-with-the-magnets)
 - [baba-is-you](https://pyjamads.itch.io/baba-is-you-demake)
 - [yin-yang](https://www.puzzlescript.net/play.html?p=7ecb41d970c1a553323726d2bea14935)
+- [portal-ban](http://badoptics.co/interactive/portal-ban.html)
