@@ -681,10 +681,10 @@
   resolved "https://registry.yarnpkg.com/@types/highlight.js/-/highlight.js-9.12.3.tgz#b672cfaac25cbbc634a0fd92c515f66faa18dbca"
   integrity sha512-pGF/zvYOACZ/gLGWdQH8zSwteQS1epp68yRcVLJMgUck/MjEn/FBYmPub9pXT8C1e4a8YZfHo1CKyV8q1vKUnQ==
 
-"@types/inquirer@6.0.0":
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/@types/inquirer/-/inquirer-6.0.0.tgz#bbf3c915f9266e30adf78fc2f3df72f205287aca"
-  integrity sha512-4evhNF+xgdnXNBKouwlZl4JW7uhv9t6JSCOOEg1s61T4QP+UbvyGWTSxj2SjAXz61ZvohJkepHU6p8KzHAClbg==
+"@types/inquirer@6.0.2":
+  version "6.0.2"
+  resolved "https://registry.yarnpkg.com/@types/inquirer/-/inquirer-6.0.2.tgz#2a1fdc089cc65a485c7410bc32e3fc41afcfa2c7"
+  integrity sha512-2gCUmuV+jxyeiERJK2nP8+IqHV/QzonDW9bjzQUAaynK3e0pC9FvOC6e6eEq6qgFHgh42Cm63u3BnESht2ZsxA==
   dependencies:
     "@types/through" "*"
     rxjs ">=6.4.0"
