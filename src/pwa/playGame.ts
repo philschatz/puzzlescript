@@ -1,4 +1,4 @@
-import * as dialogPolyfill from 'dialog-polyfill' // tslint:disable-line:no-implicit-dependencies
+import dialogPolyfill from 'dialog-polyfill' // tslint:disable-line:no-implicit-dependencies
 import { GameData } from '..'
 // import TimeAgo from 'javascript-time-ago' // tslint:disable-line:no-implicit-dependencies
 // import TimeAgoEn from 'javascript-time-ago/locale/en' // tslint:disable-line
