@@ -248,3 +248,6 @@ These are the sources to all of the games:
 - [baba-is-you](https://pyjamads.itch.io/baba-is-you-demake)
 - [yin-yang](https://www.puzzlescript.net/play.html?p=7ecb41d970c1a553323726d2bea14935)
 - [portal-ban](http://badoptics.co/interactive/portal-ban.html)
+- [herding-hero](https://www.puzzlescript.net/play.html?p=134ec80673905d7b4eef543be2a774fc)
+- [baguettes](https://www.puzzlescript.net/play.html?p=acb8f759e725b2f0f879aee8a7c885bc)
+- [monkey-ruins](https://www.puzzlescript.net/play.html?p=aef004d4ddf1fbd66179c04a7a8fd3f5)
