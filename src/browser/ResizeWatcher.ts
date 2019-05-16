@@ -1,13 +1,20 @@
 import { _debounce } from '../util'
 
+export enum LIMITED_BY {
+    WIDTH = 'WIDTH',
+    HEIGHT = 'HEIGHT'
+}
+
+export type ResizeHandler = (width: number, left: number, limitedBy: LIMITED_BY) => void
+
 export default class ResizeWatcher {
     private readonly table: HTMLTableElement
-    private readonly handler: (width: number) => void
+    private readonly handler: ResizeHandler
     private readonly boundResizeHandler: any
     private columns: number
     private rows: number
 
-    constructor(table: HTMLTableElement, handler: (width: number) => void) {
+    constructor(table: HTMLTableElement, handler: ResizeHandler) {
         this.table = table
         this.handler = handler
         this.columns = 1
@@ -26,17 +33,25 @@ export default class ResizeWatcher {
         // Resize the table so that it fits.
         const levelRatio = this.columns / this.rows
         // Figure out if the width or the height is the limiting factor
-        const availableWidth = Math.min(window.outerWidth, window.innerWidth) - this.leftWithoutAutoMargins()
-        const availableHeight = Math.min(window.outerHeight, window.innerHeight) - this.table.offsetTop
+        const leftWithoutAutoMargins = this.leftWithoutAutoMargins()
+        // iOS sets window.outerWidth to be 0
+        const windowWidth = window.outerWidth > 0 ? Math.min(window.outerWidth, window.innerWidth) : window.innerWidth
+        const windowHeight = window.outerHeight > 0 ? Math.min(window.outerHeight, window.innerHeight) : window.innerHeight
+        const availableWidth = windowWidth - leftWithoutAutoMargins
+        const availableHeight = windowHeight - this.table.offsetTop
         let newWidth = 0
+        let limitedBy = LIMITED_BY.WIDTH
         if (availableWidth / levelRatio < availableHeight) {
             // Width is the limiting factor
-            newWidth = Math.floor(availableWidth / this.columns / 5) * this.columns * 5
+            limitedBy = LIMITED_BY.WIDTH
+            newWidth = Math.floor(availableWidth)
         } else {
             // Height is the limiting factor
+            limitedBy = LIMITED_BY.HEIGHT
             newWidth = Math.floor(availableHeight * levelRatio / this.rows / 5) * this.rows * 5
         }
-        this.handler(Math.floor(newWidth))
+        const leftOffset = availableWidth / 2 - newWidth / 2 - leftWithoutAutoMargins
+        this.handler(Math.floor(newWidth), Math.floor(leftOffset), limitedBy)
     }
 
     public dispose() {

@@ -105,6 +105,9 @@ class TableUI extends BaseUI implements GameEngineHandler {
         this.handler.onPress(dir)
     }
 
+    public onLevelLoad(level: number, newLevelSize: Optional<{rows: number, cols: number}>) {
+        this.handler.onLevelLoad(level, newLevelSize)
+    }
     public onLevelChange(levelNum: number, cells: Optional<Cellish[][]>, message: Optional<string>) {
         this.clearScreen()
         this.table.setAttribute('data-ps-current-level', `${levelNum}`)

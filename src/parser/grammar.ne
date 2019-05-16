@@ -372,6 +372,8 @@ t_NOUNDO -> "NOUNDO"i {% upperId %}
 t_NORESTART -> "NORESTART"i {% upperId %}
 t_THROTTLE_MOVEMENT -> "THROTTLE_MOVEMENT"i {% upperId %}
 t_NOREPEAT_ACTION -> "NOREPEAT_ACTION"i {% upperId %}
+t_SCANLINE -> "SCANLINE"i {% upperId %}
+
 t_VERBOSE_LOGGING -> "VERBOSE_LOGGING"i {% upperId %}
 
 
@@ -421,6 +423,7 @@ OptionalMetaDataItem ->
     | t_NOACTION                                {% () => { return {type:'NOACTION', value: true} } %}
     | t_NOUNDO                                  {% () => { return {type:'NOUNDO', value: true} } %}
     | t_NOREPEAT_ACTION                         {% () => { return {type:'NOREPEAT_ACTION', value: true} } %}
+    | t_SCANLINE                                {% () => { return {type:'SCANLINE', value: true} } %}
     | t_THROTTLE_MOVEMENT                       {% () => { return {type:'THROTTLE_MOVEMENT', value: true} } %}
     | t_NORESTART                               {% () => { return {type:'NORESTART', value: true} } %}
     | t_VERBOSE_LOGGING                         {% () => { return {type:'VERBOSE_LOGGING', value: true} } %}
@@ -510,6 +513,7 @@ SoundItemAction ->
       t_CREATE      {% upperId %}
     | t_DESTROY     {% upperId %}
     | t_CANTMOVE    {% upperId %}
+    | t_ACTION      {% upperId %}
 
 soundItemActionMoveArg ->
       t_UP          {% upperId %}

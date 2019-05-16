@@ -25,11 +25,15 @@
         }        
 
         body {
+            margin: 0;
             font-size: 12px;
             font-family: helvetica, arial, sans-serif; 
         }
-        .hidden { display: none; }
-        .light { opacity: .5; }
+        body[data-mode="playingGame"] #browseGamesRoot { display: none !important; }
+        body:not([data-mode="playingGame"]) #playGameRoot { display: none !important; }
+
+        .hidden { display: none !important; }
+
         kbd {
             font: 11px "SFMono-Regular",Consolas,"Liberation Mono",Menlo,Courier,monospace;
             display: inline-block;
@@ -50,18 +54,20 @@
             border-bottom: 1px solid #ccc;
         }
 
+        #loadingIndicator[data-size="large"]::after {
+            content: " this one is large";
+        }
+
         /* Decide whether to move the following (all) to the html-table.css file */
 
         /* When the CSS is disabled then show a plain table with borders */
         .ps-table.ps-ui-disabled {
             width: 100%;
-            background-color: white;
-        }
-        .ps-table.ps-ui-disabled td {
-            border: 1px solid #ccc;
-        }
-        .ps-table.ps-ui-disabled caption {
-            background-color: white;
+            border-collapse: collapse;
+            /* compensate for the chrome `left: 1px` hack */
+            position: fixed;
+            left: 0;
+            top: 3rem; /* so the header bar does not overlap */
         }
 
         /* When the CSS is disabled, still mark the player cell in bold */
@@ -69,99 +75,53 @@
             font-weight: bold;
         }
 
+        /* Handle light and dark games */
+
+        body.is-background-dark .ps-table.ps-ui-disabled,
+        body.is-background-dark .ps-table.ps-ui-disabled caption { background-color: black; }
+        body.is-background-dark .ps-table.ps-ui-disabled td { border: 1px solid #999; }
+        body.is-background-dark .ps-table.ps-ui-disabled td { color: #999; }
+        body.is-background-dark .ps-table.ps-ui-disabled caption,
+        body.is-background-dark table.ps-table .ps-cell-label.ps-player { color: white; }
+
+        body:not(.is-background-dark) .ps-table.ps-ui-disabled,
+        body:not(.is-background-dark) .ps-table.ps-ui-disabled caption { background-color: white; }
+        body:not(.is-background-dark) .ps-table.ps-ui-disabled td { border: 1px solid #999; }
+        body:not(.is-background-dark) .ps-table.ps-ui-disabled td { color: #666; }
+        body:not(.is-background-dark) .ps-table.ps-ui-disabled caption
+        body:not(.is-background-dark) table.ps-table .ps-cell-label.ps-player { color: black; }
+
+
+
         #gamepadIcon:not(.enabled) {
             filter: grayscale(100%);
-            opacity: .5;
-        }
-
-        /* Style the message dialog */
-        dialog {
-            border-radius: 6px;
-            /* border: 1px solid rgba(0, 0, 0, 0.3); */
-            /* box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3); */
+            opacity: .8;
         }
 
         label { cursor: pointer; }
 
-        h1 { font-size: 1.5rem; }
-        .panel-header {
-            display: flex;
-            align-items: flex-start;
-            padding: .5rem .5rem;
-            border-bottom: 1px solid #dee2e6;
-        }
-        .panel-header > .panel-title {
-            font-size: 1.25rem;
-            white-space: nowrap;
-            margin-top: 0;
-            margin-bottom: 0;
-            font-size: 1.25rem;
-            flex-grow: 1;
-        }
-        .panel-header > .close {
-            cursor: pointer;
-            background-color: transparent;
-            border: 0;
-
-            /* padding: 1rem 1rem; */
-            margin: -1rem -1rem -1rem auto;
-            /* float: right; */
-            flex-grow: 0;
-            font-size: 1.5rem;
-            font-weight: 700;
-            line-height: 1;
-            color: #000;
-            text-shadow: 0 1px 0 #fff;
-            opacity: .5;
-        }
-
-        #infoContainer {
-            background-color: white;
-            padding: 1rem;
-            border-radius: 6px;
-            box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
-            margin-right: 1rem; /* Keep some room between the bubble and the game */
-        }
-
         @media screen and (orientation:portrait) {
-            body {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-            }
-            #infoContainer {
-                flex-grow: 1;
-            }
             #theGame {
                 /* Ensure the game is always big */
-                flex-shrink: 0;
                 margin-top: 1rem;
                 margin-bottom: 1rem;
             }
         }
 
-        @media screen and (orientation:landscape) {
-            body {
-                display: flex;
-                flex-direction: row;
-                align-items: start;
-            }
-            #infoContainer {
-                flex-grow: 1;
-                max-width: 20rem;
-            }
+        /* Chrome causes display quirks with fractional pixels
+         * so `margin: auto` is not sufficient
+         */
+        /* @media screen and (orientation:landscape) {
             #theGame {
-                /* Ensure the game is always big */
-                flex-shrink: 0;
-                
-                /* Important because the ResizeHandler does not know how to compute with margins yet */
-                margin: 0;
+                margin: auto;
             }
-        }
+        } */
+
 
         .ui-button,
         .ui-button-secondary {
             cursor: pointer;
+            display: inline-block;
             text-decoration: none;
             padding: 0.5rem;
             border: 1px solid #666;
@@ -177,15 +137,22 @@
             background-color: white;
         }
 
-        .ui-features-list { 
-            list-style-type: none;
-            padding-inline-start: 0;
+        .ui-features-list {
+            margin-bottom: 30px;
         }
 
         .ui-features-list li {
             margin-bottom: 1rem;
-            border-left: 2px solid rgba(90, 90, 238);
-            padding-left: .5rem;
+            position: relative;
+        }
+
+        .ui-features-list #useGamepad img {
+            position: absolute;
+            top: -15px;
+        }
+
+        .ui-features-list #useGamepad span {
+            padding-left: 50px;
         }
 
         /* =================================================
@@ -193,39 +160,192 @@
          * =================================================
          */
 
-        /* NOTE: Using a comma does not work in chrome, so they are enumerated */
-        /* :fullscreen #theGame { margin: auto; }
-        :-webkit-full-screen #theGame { margin: auto; }
-        :-moz-full-screen #theGame { margin: auto; }
-        :-ms-fullscreen #theGame { margin: auto; } */
-        body.is-zen-screen #fullscreenRoot { margin: auto; }
-
-        #fullscreenButtons {
-            position: fixed;
+         body[data-ps-game-limited-by="WIDTH"] #playGameRoot {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
             top: 0;
+            bottom: 0;
+            position: fixed;
+        }
+
+        body[data-ps-game-limited-by="HEIGHT"] #playGameRoot {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
             left: 0;
-        }
-        /* Make the background transparent in case the buttons cover the game */
-        #fullscreenButtons .ui-button {
-            background-color: rgba(90, 90, 238, 0.5);
+            right: 0;
+            position: fixed;
         }
 
-        body:not(.is-zen-screen) #fullscreenButtons { display: none; }
+        #fullscreenRoot { 
+            margin: auto;
+            position: fixed; /* so we can left-shift to avoid the chrome fractional pixel problem */
+        }
 
-        #messageDialogClose,
-        #exitFullscreen {
+
+        #fullscreenTopLeftButtons       { top: 0; left: 0; }
+        #fullscreenTopRightButtons      { top: 0; right: 0; }
+        #gamepadSection                 { bottom: 0; left: 0; }
+        #fullscreenBottomRightButtons   { bottom: 0; right: 0; }
+        .fullscreen-menu {
+            position: fixed;
             margin: 0.5rem;
         }
 
-        /* NOTE: Using a comma does not work in chrome, so they are enumerated */
-        /* :fullscreen #exitFullscreen { display: block; }
-        :-webkit-full-screen #exitFullscreen { display: block; }
-        :-moz-full-screen #exitFullscreen { display: block; }
-        :-ms-fullscreen #exitFullscreen { display: block; }
-        body.is-zen-screen #exitFullscreen { display: block; } */
+        .fullscreen-menu-toggle-item.ui-has-icon {
+            padding-top: 0.25rem;
+            padding-bottom: .5rem;
+            padding-left: .5rem;
+            padding-right: .5rem;
+        }
+        .fullscreen-menu-toggle-item.ui-has-icon .ui-icon { 
+            width: 1rem;
+            height: 1rem;
+            position: relative;
+            top: .25rem;
+        }
+        .ui-icon { fill: currentColor; }
 
-        body.is-zen-screen #infoContainer { display: none; }
+        .fullscreen-menu-toggle-item,
+        .fullscreen-menu-button {
+            cursor: pointer;
+            display: inline-block;
+            padding: 0.5rem;
+            border-radius: 6px;
+            border-width: 1px;
+            border-style: solid;
+        }
 
+        .fullscreen-menu-button .ui-icon {
+            height: 0.75rem;
+        }
+
+        .fullscreen-menu-arbitrary-text {
+            display: inline-block;
+            padding: 0.5rem;
+            border-radius: 6px;
+        }
+        .fullscreen-menu-checkbox:checked ~ .fullscreen-menu-arbitrary-text { 
+            display: none;
+        }
+
+        a.fullscreen-menu-button { text-decoration: none; }
+        button.fullscreen-menu-button { background-color: transparent; }
+
+        /* Handle light and dark mode */
+
+        body.is-background-dark .fullscreen-menu,
+        body.is-background-dark .fullscreen-menu a,
+        body.is-background-dark .fullscreen-menu .ui-icon,
+        body.is-background-dark .fullscreen-menu-button { color: white; }
+        body.is-background-dark .fullscreen-menu-toggle-item,
+        body.is-background-dark .fullscreen-menu-button { border-color: rgba(255, 255, 255, 0.50); }
+        body.is-background-dark .fullscreen-menu-button:hover,
+        body.is-background-dark .fullscreen-menu-toggle-item:hover,
+        body.is-background-dark .fullscreen-menu-checkbox:checked ~ .fullscreen-menu-toggle-item { background-color: rgba(255, 255, 255, 0.50); }
+
+        body.is-background-dark[data-ps-state="running"] .fullscreen-menu-toggle-item,
+        body.is-background-dark[data-ps-state="running"] .fullscreen-menu-button,
+        body.is-background-dark[data-ps-state="running"] .fullscreen-menu-arbitrary-text { background-color: rgba(0, 0, 0, 0.05); }
+        body.is-background-dark[data-ps-state="paused"] .fullscreen-menu-toggle-item,
+        body.is-background-dark[data-ps-state="paused"] .fullscreen-menu-button,
+        body.is-background-dark[data-ps-state="paused"] .fullscreen-menu-arbitrary-text { background-color: rgba(0, 0, 0, 0.25); }
+
+        body:not(.is-background-dark) .fullscreen-menu,
+        body:not(.is-background-dark) .fullscreen-menu a,
+        body:not(.is-background-dark) .fullscreen-menu .ui-icon,
+        body:not(.is-background-dark) .fullscreen-menu-button { color: black; }
+        body:not(.is-background-dark) .fullscreen-menu-toggle-item,
+        body:not(.is-background-dark) .fullscreen-menu-button { border-color: rgba(0, 0, 0, 0.15); }
+        body:not(.is-background-dark) .fullscreen-menu-button:hover,
+        body:not(.is-background-dark) .fullscreen-menu-toggle-item:hover,
+        body:not(.is-background-dark) .fullscreen-menu-checkbox:checked ~ .fullscreen-menu-toggle-item { background-color: rgba(0, 0, 0, 0.15); }
+
+        body:not(.is-background-dark)[data-ps-state="running"] .fullscreen-menu-toggle-item,
+        body:not(.is-background-dark)[data-ps-state="running"] .fullscreen-menu-button,
+        body:not(.is-background-dark)[data-ps-state="running"] .fullscreen-menu-arbitrary-text { background-color: rgba(255, 255, 255, 0.10); }
+        body:not(.is-background-dark)[data-ps-state="paused"] .fullscreen-menu-toggle-item,
+        body:not(.is-background-dark)[data-ps-state="paused"] .fullscreen-menu-button,
+        body:not(.is-background-dark)[data-ps-state="paused"] .fullscreen-menu-arbitrary-text { background-color: rgba(255, 255, 255, 0.50); }
+
+
+        
+        .fullscreen-menu-checkbox { display: none; }
+        .fullscreen-menu-checkbox:not(:checked) ~ .fullscreen-menu-items {
+            position: absolute;
+            left: -1000rem;
+        }
+
+        #disableCss { display: none; }
+
+
+        #messageDialogClose {
+            margin: 0.5rem;
+        }
+        
+
+
+        /* *************************************
+         * Browse Games Styling
+         * ************************************/
+
+        #browseGamesAbout { padding: 0 1rem; }
+
+        figure {
+            width: 150px;
+            display: inline-block;
+            margin: .5rem;
+
+            /* look like a button */
+            cursor: pointer;
+            padding: 0.5rem;
+            border: 1px solid #bbb;
+            border-radius: 6px;
+            box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
+            vertical-align: top;
+        }
+        figcaption {
+            min-height: 42px;
+        }
+        figcaption .game-title,
+        figcaption .game-author {
+            width: 150px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-align: center;
+        }
+        figcaption .game-title { color: black; font-weight: bold; line-height: 30px; }
+        figcaption .game-author { font-size: 80%; color: #555; }
+        .thumbnail-wrapper {
+            width: 150px;
+            height: 150px;
+            /* vertically center the thumbnail */
+            display: flex;
+            flex-direction: column;
+        }
+
+        img.game-thumbnail {
+            max-width: 100px;
+            margin: auto;
+            max-height: 100px;
+        }
+
+        .category-title { 
+            /*sticky*/
+            position: -webkit-sticky;
+            position: sticky;
+            top: 0;
+            left: 0;
+            right: 0;
+            display: block;
+            z-index: 1;
+
+            background: #333;
+            color: #fff;
+            padding: 10px 20px;
+        }
 
         /* dialog-polyfill.css */
         dialog {
@@ -239,9 +359,8 @@
             height: fit-content;
             margin: auto;
             padding: 1em;
-            background: white;
-            color: black;
             display: block;
+            border-radius: 6px;
         }
         dialog:not([open]) {
             display: none;
@@ -260,135 +379,159 @@
             top: 50%;
             transform: translate(0, -50%);
         }
+
+        /* Handle light and dark mode */
+
+        body.is-background-dark dialog {
+            border: 2px solid white;
+            background-color: rgba(0, 0, 0, 0.85);
+            color: white;
+        }
+        body:not(.is-background-dark) dialog {
+            border: 2px solid black;
+            background-color: white;
+            color: black;
+        }
     </style>
 
-    <meta charset="utf-8"/>
-    <meta name="description" content="Accessible Puzzle Videogames"/>
-    <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no"/>
-    <meta name="theme-color" content="#ffffff"/>
-    <meta name="mobile-web-app-capable" content="yes"/>
-    <meta name="apple-mobile-web-app-capable" content="yes"/>
-    <link rel="preconnect" href="https://google-analytics.com"/>
-    <link rel="manifest" href="./pwa-manifest.json"/>
-    <link rel="preload" href="./puzzlescript-webworker.js" as="script"/>
+    <meta charset="utf-8" />
+    <meta name="description" content="Accessible Puzzle Videogames" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <link rel="preconnect" href="https://google-analytics.com" />
+    <link rel="manifest" href="./pwa-manifest.json" />
+    <link rel="preload" href="./puzzlescript-webworker.js" as="script" />
     <script src="./pwa-sw-loader.js" async="async"></script>
+
+    <link rel="icon" type="image/x-icon" href="https://philschatz.com/puzzlescript/favicon.ico" />
+
+    <meta property="og:title" content="Accessible PuzzleScript Games" />
+    <meta property="og:url" content="https://philschatz.com/puzzlescript/" />
+    <meta property="og:description" content="Play Accessible PuzzleScript video games in your browser or terminal." />
+    <meta property="og:image" content="https://philschatz.com/puzzlescript/pwa-icon-512.png" />
+    <meta property="og:site_name" content="Accessible PuzzleScript" />
+    <meta property="og:type" content="object" />
+
+    <meta property="twitter:card" name="twitter:card" content="summary" />
+    <meta property="twitter:creator" name="twitter:creator" content="@philipschatz" />
+    <meta property="twitter:description" name="twitter:description" content="Play Accessible PuzzleScript video games in your browser or terminal." />
+    <meta property="twitter:image" name="twitter:image" content="https://philschatz.com/puzzlescript/pwa-icon-512.png" />
+    <meta property="twitter:image:alt" name="twitter:image:alt" content="Video game controller icon" />
+    <meta property="twitter:title" name="twitter:title" content="Accessible PuzzleScript games - Play them" />
 
     <!-- These need to be in the root and are generated via 
         declare -x ICON=180; inkscape -z -e $(pwd)/apple-touch-icon-_ICON_x_ICON_.png -w _ICON_ -h _ICON_ $(pwd)/pwa-icon.svg;
     -->
-    <link rel="apple-touch-icon" sizes="57x57" href="apple-touch-icon-57x57.png"/>
-    <link rel="apple-touch-icon" sizes="60x60" href="apple-touch-icon-60x60.png"/>
-    <link rel="apple-touch-icon" sizes="72x72" href="apple-touch-icon-72x72.png"/>    
-    <link rel="apple-touch-icon" sizes="76x76" href="apple-touch-icon-76x76.png"/>
-    <link rel="apple-touch-icon" sizes="120x120" href="apple-touch-icon-120x120.png"/>
-    <link rel="apple-touch-icon" sizes="114x114" href="apple-touch-icon-114x114.png"/>
-    <link rel="apple-touch-icon" sizes="144x144" href="apple-touch-icon-144x144.png"/>
-    <link rel="apple-touch-icon" sizes="152x152" href="apple-touch-icon-152x152.png"/>
-    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon-180x180.png"/>
+    <link rel="apple-touch-icon" sizes="57x57" href="apple-touch-icon-57x57.png" />
+    <link rel="apple-touch-icon" sizes="60x60" href="apple-touch-icon-60x60.png" />
+    <link rel="apple-touch-icon" sizes="72x72" href="apple-touch-icon-72x72.png" />    
+    <link rel="apple-touch-icon" sizes="76x76" href="apple-touch-icon-76x76.png" />
+    <link rel="apple-touch-icon" sizes="120x120" href="apple-touch-icon-120x120.png" />
+    <link rel="apple-touch-icon" sizes="114x114" href="apple-touch-icon-114x114.png" />
+    <link rel="apple-touch-icon" sizes="144x144" href="apple-touch-icon-144x144.png" />
+    <link rel="apple-touch-icon" sizes="152x152" href="apple-touch-icon-152x152.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon-180x180.png" />
 </head>
 
 <body>
+    
+    <div id="playGameRoot">
+        <div id="fullscreenRoot">   
+            <table id="theGame" aria-labelledby="keyboardInstructionsSection">
+                <caption>
+                    Game info goes here. like the current level, the goal, etc.
+                    <!-- See https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Live_Regions -->
+                    <div role="log" aria-live="polite">The Game log</div>
+                </caption>
+            </table>
+        </div>
+
+        <!-- needs to occur after the game so it appears on top of the game -->
+        <div id="fullscreenTopLeftButtons" class="fullscreen-menu">
+            <input id="menuTopLeft" type="checkbox" class="fullscreen-menu-checkbox"/>
+            <label for="menuTopLeft" class="fullscreen-menu-toggle-item ui-has-icon" aria-hidden="true">
+                <svg aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" class="ui-icon ui-icon-three-bars" viewBox="0 0 12 16" version="1.1"><path fill-rule="evenodd" d="M11.41 9H.59C0 9 0 8.59 0 8c0-.59 0-1 .59-1H11.4c.59 0 .59.41.59 1 0 .59 0 1-.59 1h.01zm0-4H.59C0 5 0 4.59 0 4c0-.59 0-1 .59-1H11.4c.59 0 .59.41.59 1 0 .59 0 1-.59 1h.01zM.59 11H11.4c.59 0 .59.41.59 1 0 .59 0 1-.59 1H.59C0 13 0 12.59 0 12c0-.59 0-1 .59-1z"></path></svg>
+            </label>
+            <span class="fullscreen-menu-items">
+                <a class="fullscreen-menu-button" href="#">Games</a>
+                <button id="gameInstructionsButton2" class="fullscreen-menu-button">Help</button>
+                <input id="disableCss" type="checkbox"/><label for="disableCss" class="fullscreen-menu-button" aria-hidden="true">
+                    <svg aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" class="ui-icon" viewBox="0 0 448 512" version="1.1"><path fill="currentColor" d="M423.9 255.8L411 413.1c-3.3 40.7-63.9 35.1-60.6-4.9l10-122.5-41.1 2.3c10.1 20.7 15.8 43.9 15.8 68.5 0 41.2-16.1 78.7-42.3 106.5l-39.3-39.3c57.9-63.7 13.1-167.2-74-167.2-25.9 0-49.5 9.9-67.2 26L73 243.2c22-20.7 50.1-35.1 81.4-40.2l75.3-85.7-42.6-24.8-51.6 46c-30 26.8-70.6-18.5-40.5-45.4l68-60.7c9.8-8.8 24.1-10.2 35.5-3.6 0 0 139.3 80.9 139.5 81.1 16.2 10.1 20.7 36 6.1 52.6L285.7 229l106.1-5.9c18.5-1.1 33.6 14.4 32.1 32.7zm-64.9-154c28.1 0 50.9-22.8 50.9-50.9C409.9 22.8 387.1 0 359 0c-28.1 0-50.9 22.8-50.9 50.9 0 28.1 22.8 50.9 50.9 50.9zM179.6 456.5c-80.6 0-127.4-90.6-82.7-156.1l-39.7-39.7C36.4 287 24 320.3 24 356.4c0 130.7 150.7 201.4 251.4 122.5l-39.7-39.7c-16 10.9-35.3 17.3-56.1 17.3z" class=""></path></svg>
+                    Toggle UI
+                </label>
+            </span>
+            <span class="fullscreen-menu-arbitrary-text">
+                <span id="fullscreenTitle"></span> <span id="fullscreenPercentage"></span> : by <a id="authorInfo" target="_window"></a>
+            </span>
+        </div>
+        <div id="fullscreenTopRightButtons" class="fullscreen-menu">
+            <input id="menuTopRight" type="checkbox" class="fullscreen-menu-checkbox"/>
+            <span class="fullscreen-menu-items">
+                <button id="gameButtonUndo" class="fullscreen-menu-button" aria-label="Undo. Hotkey: U or Z">Undo</button>
+                <button id="gameButtonRestart" class="fullscreen-menu-button" aria-label="Restart. Hotkey: R">Restart</button>
+            </span>
+            <label for="menuTopRight" class="fullscreen-menu-toggle-item ui-has-icon" aria-hidden="true">
+                <svg aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" class="ui-icon ui-icon-kebab-vertical" viewBox="0 0 3 16" version="1.1"><path fill-rule="evenodd" d="M0 2.5a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0zm0 5a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0zM1.5 14a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"></path></svg>
+            </label>
+        </div>
+
+        <div id="gamepadSection" class="fullscreen-menu">
+            <input id="menuBottomLeft" type="checkbox" class="fullscreen-menu-checkbox"/>
+            <label for="menuBottomLeft" class="fullscreen-menu-toggle-item ui-has-icon" aria-hidden="true">
+                <svg id="gamepadIcon" aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" class="ui-icon ui-icon-gamepad" viewBox="0 0 640 512" version="1.1"><path fill-rule="evenodd" d="M480 96H160C71.6 96 0 167.6 0 256s71.6 160 160 160c44.8 0 85.2-18.4 114.2-48h91.5c29 29.6 69.5 48 114.2 48 88.4 0 160-71.6 160-160S568.4 96 480 96zM256 276c0 6.6-5.4 12-12 12h-52v52c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-52H76c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h52v-52c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h52c6.6 0 12 5.4 12 12v40zm184 68c-26.5 0-48-21.5-48-48s21.5-48 48-48 48 21.5 48 48-21.5 48-48 48zm80-80c-26.5 0-48-21.5-48-48s21.5-48 48-48 48 21.5 48 48-21.5 48-48 48z" class=""></path></svg>
+            </label>
+            <span class="fullscreen-menu-items">
+                <span id="gamepadDisabled" class="hidden">Connect a gamepad controller (XBOX/PS3/PS4/etc) and play.</span>
+                <span id="gamepadRecognized" class="hidden">Gamepad is detected. You can play using it now. Just make sure the game is focused.</span>
+                <span id="gamepadNotRecognized" class="hidden">Gamepad is detected but not recognized. Please submit an Issue so it can be added.</span>
+            </span>
+        </div>
+        
+    </div>
+
+    <div id="browseGamesRoot">
+        <div id="browseGamesAbout" class="ui-pwa-disabled">
+            <div id="site-heading">
+                <h1>Accessible Puzzle Games</h1>
+                <p>Welcome to this PuzzleScript game library.</p>
+                <p><a href="https://www.puzzlescript.net/" target="_window">PuzzleScript</a> games are a collection of open source, browser-friendly puzzle games. The engine for playing them has been rewritten to support accessibility features and make it easier to embed.</p>
+                <p>With these enhancements hopefully more people can enjoy these delightful games.</p>
+            </div>
+
+            <h2>Features</h2>
+    
+            <ul class="ui-features-list">
+                <li id="disableCssSection">When playing a game click <kbd>Toggle UI</kbd> to see what a non-sighted user would experience (disables CSS).</li>
+                <li id="installOnMobile">Install as a mobile app by opening on a phone/tablet. It works offline. <button id="btnAdd" class="hidden ui-button">Add to Homescreen</button></li>
+                <li id="iosInstallInstructions" class="hidden">For <strong>iOS users</strong>, click Share at the bottom, and then swipe over to <strong>Add to Home Screen</strong>. <a href="https://user-images.githubusercontent.com/253202/53995149-c5bc5800-40f9-11e9-9e54-3f6a0e10b857.gif" target="_window">Not finding it?</a></li>
+                <li id="useGamepad"><img alt="gamepad icon" width="42" height="42" src="./pwa-icon.svg"/> <span>Plug in a Gamepad to play instead of using a keyboard or touch screen.</span></li>
+            </ul>
+
+            <p>Visit the <a href="https://github.com/philschatz/puzzlescript" target="_window">Source code on GitHub</a> for more information.</p>
+        </div>
+
+        <div id="browseGamesList"></div>
+            
+    </div>
+
+
+    <div id="fullscreenBottomRightButtons" class="fullscreen-menu">
+        <a class="fullscreen-menu-button" href="https://github.com/philschatz/puzzlescript" target="_window">Source Code</a>
+    </div>
+
+
     <dialog id="messageDialog">
         <p id="messageDialogText"></p>
         <button id="messageDialogClose" title="Close this window" class="ui-button">Close</button>
     </dialog>
+
+    <dialog id="loadingDialog">
+        <p id="loadingIndicator" data-size="small">Loading level...</p>
+        <a id="loadingDialogCancel" title="Cancel loading the game" class="ui-button-secondary" href="#">Cancel</a>
+    </dialog>
     
-    <div id="infoContainer">
-        <div class="panel-header">
-            <h1 id="headingSection" class="panel-title">Accessible <a href="https://github.com/philschatz/puzzlescript" target="_window">Puzzle Games</a></h1>
-        </div>
-
-        <p id="gameSelectionSection">
-            <label for="gameSelection">Currently playing:</label>
-            <select id="gameSelection">
-
-                <option value="icecrates">IceCrates⁣</option>
-                <option value="push">PUSH⁣</option>
-                <option value="pot-wash-panic">Pot Wash Panic</option>
-                <option value="sokobond">Sokobond: The Demake</option>
-                <option value="pushcat-jr">Pushcat Jr⁣</option>
-
-                <option value="pants-shirt-cap">Pants, Shirt, Cap⁣</option>
-                <option value="hack-the-net">Hack the Net⁣</option>
-                <option value="mirror-isles">Mirror Isles⁣</option>
-                <option value="swapbot">SwapBot⁣</option>
-                <option value="spikes-n-stuff">Spikes 'n' Stuff⁣</option>
-
-                <option value="beam-islands">Beam Islands⁣</option>
-                <option value="entanglement-one">Entanglement - Chapter One⁣</option>
-                <option value="cyber-lasso">Cyber-Lasso⁣</option>
-                <option value="some-lines-crossed">Some lines were meant to be crossed⁣</option>
-
-                <option value="skipping-stones">Skipping Stones to Lonely Homes⁣</option>
-                <option value="bubble-butler">Bubble Butler: CMD REORGANIZE⁣</option>
-                <option value="roll-those-sixes">Roll those Sixes⁣</option>
-                <option value="rock-paper-scissors">Rock, Paper, Scissors (v0.90 = v1.alpha)⁣</option>
-                <option value="sleepy-players">Sleepy players⁣</option>
-    
-                <option value="boxes-and-balloons">Boxes &amp; Balloons⁣</option>
-                <option value="aunt-flora-s-mansion">Aunt Flora's Mansion</option>
-                <option value="separation">Separation⁣</option>
-                <option value="spacekoban">Spacekoban⁣</option>
-                <option value="castlemouse">Memories Of Castlemouse⁣</option>
-
-                <option value="spooky-pumpkin-game">Spooky Pumpkin Game⁣</option>
-                <option value="miss-direction">Miss Direction⁣</option>
-                <option value="boxes-love-bloxing-gloves">Boxes Love Bloxing Gloves⁣</option>
-                <option value="islands">Islands⁣</option>
-                <option value="sokoboros">Sokoboros⁣</option>
-    
-            </select>
-    
-            <span id="loadingIndicator" class="hidden">Loading...</span>
-        </p>
-    
-        <p id="authorSection" class="hidden"><small>By <a id="authorInfo" target="_window"></a></small></p>
-
-
-        <div class="ui-pwa-disabled">
-
-            <hr class="ui-pwa-disabled"/>
-            <h3 class="ui-pwa-disabled">Features</h3>
-    
-            <ul class="ui-features-list ui-pwa-disabled">
-                <li id="disableCssSection"><input id="disableCss" type="checkbox"/> <label for="disableCss"><strong>Check</strong> to see what a non-sighted user would experience (disables CSS)</label></li>
-                <li id="installOnMobile">Install as a mobile app by opening on a phone/tablet. <button id="btnAdd" class="hidden ui-button">Add to Homescreen</button></li>
-                <li id="iosInstallInstructions" class="hidden">For <strong>iOS users</strong>, click Share at the bottom, and then swipe over to <strong>Add to Home Screen</strong>. <a href="https://user-images.githubusercontent.com/253202/53995149-c5bc5800-40f9-11e9-9e54-3f6a0e10b857.gif" target="_window">Not finding it?</a></li>
-                <li id="gamepadSection">
-                    <img id="gamepadIcon" alt="gamepad icon" width="20" height="20" src="./pwa-icon.svg"/>
-                    <span id="gamepadDisabled" class="hidden"><strong>Tip:</strong> Connect a gamepad controller (XBOX/PS3/PS4/etc) to use it to play.</span>
-                    <span id="gamepadRecognized" class="hidden">Gamepad is detected. You can play using it now. Just make sure the game is focused.</span>
-                    <span id="gamepadNotRecognized" class="hidden">Gamepad is detected but not recognized. Please submit an Issue on the Repository and we will help get it added</span>
-                </li>
-            </ul>
-        </div>
-
-        <p>
-            <button id="enterFullscreen" class="ui-button">Close</button>
-            <a href="./browse-games/" class="ui-button-secondary">All Games</a>
-            <button id="gameInstructionsButton" class="ui-button-secondary">Help</button>
-        </p>
-        
-    </div>
-    
-    <div id="fullscreenRoot">            
-        <table id="theGame" aria-labelledby="keyboardInstructionsSection">
-            <caption>
-                Game info goes here. like the current level, the goal, etc.
-                <!-- See https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Live_Regions -->
-                <div role="log" aria-live="polite">The Game log</div>
-            </caption>
-        </table>
-        
-        <div id="fullscreenButtons">
-            <button id="exitFullscreen" class="ui-button">Show Menu</button>
-            <button id="gameInstructionsButton2" class="ui-button">Help</button>
-            <button id="gameButtonUndo" class="ui-button">Undo</button>
-            <button id="gameButtonRestart" class="ui-button">Restart</button>
-        </div>
-    </div>
-
-
     <dialog id="gameInstructionsDialog">
         <div class="panel-header">
             <h2 class="panel-title">How to Play</h2>
@@ -404,7 +547,7 @@
             </ul>
         </div>
 
-        <div id="touchInstructionsSection">
+        <div id="touchInstructionsSection" aria-hidden="true">
             <p>To play with a touch screen:</p>
             <ul>
                 <li><strong>Swipe</strong> up, down, left, or right to move</li>
@@ -412,6 +555,7 @@
                 <li><strong>Touch and Hold</strong> to Undo (Chrome)</li>
                 <li><strong>Touch and Hold for a few seconds</strong> to Restart the current level (Chrome)</li>
             </ul>
+            <p>Swipe <strong>anywhere on the game</strong> to move.</p>
         </div>
         
         <div id="gamepadSectionPWA" class="ui-pwa-only">
@@ -435,7 +579,6 @@
         })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
         ga('create', 'UA-48498113-4', 'philschatz.com');
-        ga('send', 'pageview');
 
         // Try to signal to Chrome that we are looking to use the real gamepad, not just up/down/left/right arrow keys mapped from a gamepad
         window.addEventListener("gamepadconnected", () => {})

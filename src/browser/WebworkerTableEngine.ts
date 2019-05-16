@@ -18,7 +18,7 @@ import { Cellish,
     RULE_DIRECTION,
     WorkerResponse } from '../util'
 import InputWatcher from './InputWatcher'
-import ResizeWatcher from './ResizeWatcher'
+import ResizeWatcher, { LIMITED_BY } from './ResizeWatcher'
 
 class ProxyCellish implements Cellish {
     public readonly rowIndex: number
@@ -143,6 +143,9 @@ export default class WebworkerTableEngine implements Engineish {
                 this.gameData = gameData
                 this.ui.onGameChange(gameData)
                 break
+            case MESSAGE_TYPE.ON_LEVEL_LOAD:
+                this.ui.onLevelLoad(data.level, data.levelSize)
+                break
             case MESSAGE_TYPE.ON_LEVEL_CHANGE:
                 this.cellCache = [] // clear the cache since the level dimensions are different
                 this.levelNum = data.level
@@ -237,9 +240,12 @@ export default class WebworkerTableEngine implements Engineish {
     private isCurrentLevelAMessage() {
         return this.getGameData().levels[this.levelNum].type === LEVEL_TYPE.MESSAGE
     }
-    private handleResize(width: number) {
+    private handleResize(width: number, left: number, limitedBy: LIMITED_BY) {
         if (!this.isCurrentLevelAMessage()) {
-            this.table.setAttribute('style', `width: ${width}px;`)
+            this.table.setAttribute('style', `width: ${width}px`)
+            // to fix chrome vertical lines because of fractional pixels
+            this.table.parentElement && this.table.parentElement.setAttribute('style', `left: ${left}px; /*chrome display quirk with fractional pixels*/`)
+            document.body.setAttribute('data-ps-game-limited-by', limitedBy)
         }
     }
 }

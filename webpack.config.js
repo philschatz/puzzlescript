@@ -6,7 +6,7 @@ const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin')
 module.exports = {
     mode: process.env['NODE_ENV'] || 'production',
     entry: {
-        'pwa-app': './src/pwa-app.ts',
+        'pwa-app': './src/pwa/app.ts',
         'puzzlescript-webworker': './src/index-webworker.ts',
         'puzzlescript': './src/index-browser.ts',
     },

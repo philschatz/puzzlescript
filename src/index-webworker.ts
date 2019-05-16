@@ -59,6 +59,7 @@ const runPlayLoop = async() => {
 }
 
 let previousMessage = '' // a dev-invariant checker that ensures we do not show the same message twice
+let previousMessageShownAt = Date.now()
 
 class Handler implements GameEngineHandler {
     public onGameChange(gameData: GameData) {
@@ -74,7 +75,7 @@ class Handler implements GameEngineHandler {
         postMessage({ type: MESSAGE_TYPE.ON_PRESS, direction: dir })
     }
     public async onMessage(msg: string) {
-        if (previousMessage === msg) {
+        if (previousMessage === msg && previousMessageShownAt + 2000 < Date.now()) {
             throw new Error(`BUG: Should not show the same message twice. "${msg}"`)
         }
         previousMessage = msg
@@ -90,7 +91,12 @@ class Handler implements GameEngineHandler {
         postMessage({ type: MESSAGE_TYPE.ON_MESSAGE, message: msg })
         await pollingPromise<boolean>(50, () => receivedMessage)
         awaitingMessage = false
+        previousMessageShownAt = Date.now()
+
         // resumeGame() No need to resume since we are inside a `await tick()` and at the end of it it will start back up (via a call to setTimeout)
+    }
+    public onLevelLoad(level: number, newLevelSize: Optional<{rows: number, cols: number}>) {
+        postMessage({ type: MESSAGE_TYPE.ON_LEVEL_LOAD, level, levelSize: newLevelSize })
     }
     public onLevelChange(level: number, cells: Optional<Cellish[][]>, message: Optional<string>) {
         let newCells: Optional<CellishJson[][]> = null
