@@ -8,19 +8,19 @@
       "solution": "!"
     },
     {
-      "solution": "W,W,W,W,,D,D,D,D,,.D,DS,S,S,S,A,,W,DW,A,A"
+      "solution": "W,W,W,W,,D,D,D,D,,.D,S,S,S,S,A,,W,DW,A,A"
     },
     {
       "solution": ",!"
     },
     {
-      "solution": ".A,A,,S,D,D,D,D,W,,A,A,,S,D,D,D,D,W,,S,D,D,D,D,W"
+      "solution": ".A,A,,A,A,,S,D,D,D,D,W,,A,A,,S,D,D,D,D,W,,S,D,D,D,D,W"
     },
     {
-      "solution": ",!"
+      "solution": "!"
     },
     {
-      "solution": ".D,S,S,A,S,,A,A,A,S,,S,,D,W,D,D,W,,W,W,W,W,A,A,A"
+      "solution": ".S,A,A,A,S,S,,S,D,D,.S,D,,D,W,D,D,W,,A,A,A,S,,D,D,D,W,W,W,A,A,A"
     },
     {
       "solution": ",!"
