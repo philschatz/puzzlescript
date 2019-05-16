@@ -27,6 +27,7 @@ export class GameMetadata {
     public noUndo: boolean
     public runRulesOnLevelStart: Optional<string>
     public noRepeatAction: boolean
+    public scanline: boolean
     public throttleMovement: boolean
     public noRestart: boolean
     public requirePlayerMovement: boolean
@@ -36,6 +37,7 @@ export class GameMetadata {
         this.noAction = false
         this.noUndo = false
         this.noRepeatAction = false
+        this.scanline = false
         this.throttleMovement = false
         this.noRestart = false
         this.requirePlayerMovement = false
@@ -80,6 +82,7 @@ export class GameMetadata {
             case 'run_rules_on_level_start': this.runRulesOnLevelStart = value as string; break
             case 'norepeataction':
             case 'norepeat_action': this.noRepeatAction = value as boolean; break
+            case 'scanline': this.scanline = value as boolean; break
             case 'throttlemovement':
             case 'throttle_movement': this.throttleMovement = value as boolean; break
             case 'norestart': this.noRestart = value as boolean; break
