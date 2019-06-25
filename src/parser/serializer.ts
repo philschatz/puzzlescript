@@ -794,9 +794,9 @@ export default class Serializer {
             })
         } else if (tile instanceof GameLegendTileSimple) {
             return this.tileMap.set(tile, {
-                type: TILE_TYPE.SIMPLE,
+                type: TILE_TYPE.AND,
                 name: tile.getName(),
-                sprite: this.buildSprite(tile.getSprites()[0]),
+                sprites: tile.getSprites().map((item) => this.buildSprite(item)),
                 collisionLayers: tile.getCollisionLayers().map((item) => this.buildCollisionLayer(item)),
                 _sourceOffset: tile.__source.sourceOffset
             })

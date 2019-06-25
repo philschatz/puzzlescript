@@ -21,7 +21,7 @@ glob('games/*/script.txt', (err, files) => {
     data = Parser.parse(source).data
     try {
       json = new Serializer(data).toJson()
-      fs.writeFileSync(`games/${gameName}.json`, JSON.stringify(json, null, 2))
+      fs.writeFileSync(`games/${gameName}.parsed.json`, JSON.stringify(json, null, 2))
     } catch (e) {
       console.error(e.message)
       // continue
