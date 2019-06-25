@@ -1489,7 +1489,7 @@ class ReplaceTile {
                 throw new Error(`BUG: No tile found`)
             }
             if (this.conditionSpritesToRemove) {
-                // For OR tiles we need to only remove one of the sprites, not ALL of the sprites
+                // For OR tiles we need to only remove one of the sprites, not ALL of the sprites (triple-match)
                 if (this.conditionSpritesToRemove._tile.isOr()) {
                     if (! orTilesRemoved.has(this.conditionSpritesToRemove._tile)) {
                         // only remove the sprites in the cell that match the condition... not all the sprites in a collisionLayer

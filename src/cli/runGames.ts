@@ -7,7 +7,7 @@ import pify from 'pify'
 import { GameEngine, Parser } from '..'
 import { logger } from '../logger'
 import { LEVEL_TYPE } from '../parser/astTypes'
-import Serializer from '../parser/serializer'
+// import Serializer from '../parser/serializer'
 import { saveCoverageFile } from '../recordCoverage'
 import { closeSounds } from '../sounds'
 import TerminalUI from '../ui/terminal'
@@ -34,8 +34,8 @@ async function run() {
         const { data: originalData } = Parser.parse(code)
 
         // Check that we can serialize the game out to JSON
-        const json = new Serializer(originalData).toJson()
-        const data2 = Serializer.fromJson(json, originalData.getPlayer().__source.code)
+        // const json = new Serializer(originalData).toJson()
+        // const data2 = Serializer.fromJson(json, originalData.getPlayer().__source.code)
 
         // // verify the toKey representation of all the rules is the same as before
         // if (originalData.rules.length !== data2.rules.length) {
@@ -49,7 +49,8 @@ async function run() {
         //     }
         // })
 
-        const data = data2
+        // const data = data2
+        const data = originalData
 
         if (!data) {
             throw new Error(`BUG: gameData was not set yet`)

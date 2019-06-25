@@ -5,8 +5,9 @@ import { GameData } from '../models/game'
 import { Dimension, GameMetadata } from '../models/metadata'
 import { IRule, ISimpleBracket, SimpleBracket, SimpleEllipsisBracket, SimpleNeighbor, SimpleRule, SimpleRuleGroup, SimpleRuleLoop, SimpleTileWithModifier } from '../models/rule'
 import { GameLegendTileAnd, GameLegendTileOr, GameLegendTileSimple, GameSprite, GameSpritePixels, IGameTile } from '../models/tile'
-import { WinConditionOn, WinConditionSimple } from '../models/winCondition'
+import { WinConditionOn, WinConditionSimple, WIN_QUALIFIER } from '../models/winCondition'
 import * as ast from './astTypes'
+import { getLineAndColumn } from '../models/BaseForLines';
 
 // const EXAMPLE = {
 //     metadata: { author: 'Phil' },
@@ -29,11 +30,11 @@ import * as ast from './astTypes'
 //     tiles: {
 //         345: { type: 'OR', sprites: [234, 234, 234], collisionLayer: 0}
 //     },
-//     tilesWithModifiers: {
+//     tiles_with_modifiers: {
 //         456: { direction: 'UP', negation: false, tile: 345}
 //     },
 //     neighbors: {
-//         567: { tilesWithModifiers: [456, 456]}
+//         567: { tiles_with_modifiers: [456, 456]}
 //     },
 //     conditions: {
 //         678: { type: 'NORMAL', direction: 'UP', neighbors: [567]}
@@ -154,11 +155,114 @@ function toRULE_DIRECTION(dir: RULE_DIRECTION): RULE_DIRECTION {
     return dir
 }
 
-class MapWithId<T, TJson> {
+const enums = new Map<string, string>();
+enums.set(ast.SOUND_TYPE.SFX, 'Sfx')
+enums.set(ast.SOUND_TYPE.SPRITE_DIRECTION, 'SpriteDirection')
+enums.set(ast.SOUND_TYPE.SPRITE_EVENT, 'SpriteEvent')
+enums.set(ast.SOUND_TYPE.SPRITE_MOVE, 'SpriteMove')
+enums.set(ast.SOUND_TYPE.WHEN, 'When')
+
+enums.set(ast.COMMAND_TYPE.AGAIN, 'Again')
+enums.set(ast.COMMAND_TYPE.CANCEL, 'Cancel')
+enums.set(ast.COMMAND_TYPE.CHECKPOINT, 'Checkpoint')
+enums.set(ast.COMMAND_TYPE.MESSAGE, 'Message')
+enums.set(ast.COMMAND_TYPE.RESTART, 'Restart')
+enums.set(ast.COMMAND_TYPE.SFX, 'Sfx')
+enums.set(ast.COMMAND_TYPE.WIN, 'Win')
+
+enums.set(ast.TILE_TYPE.AND, 'And')
+enums.set(ast.TILE_TYPE.OR, 'Or')
+enums.set(ast.TILE_TYPE.SIMPLE, 'Simple')
+
+enums.set(TILE_TYPE.OR, 'Or')
+enums.set(TILE_TYPE.AND, 'And')
+enums.set(TILE_TYPE.SIMPLE, 'Simple')
+enums.set(TILE_TYPE.SPRITE, 'Sprite')
+
+enums.set(ast.BRACKET_TYPE.SIMPLE, 'Simple')
+enums.set(ast.BRACKET_TYPE.ELLIPSIS, 'Ellipsis')
+
+enums.set(ast.RULE_TYPE.GROUP, 'Group')
+enums.set(ast.RULE_TYPE.LOOP, 'Loop')
+enums.set(ast.RULE_TYPE.SIMPLE, 'Simple')
+
+enums.set(ast.WIN_CONDITION_TYPE.ON, 'On')
+enums.set(ast.WIN_CONDITION_TYPE.SIMPLE, 'Simple')
+
+enums.set(ast.LEVEL_TYPE.MAP, 'Map')
+enums.set(ast.LEVEL_TYPE.MESSAGE, 'Message')
+
+function deType(value: any) {
+
+    value = {...value} // Clone it so we can delete things from it
+
+    // Translate the Direction to be an enum
+    switch (value.direction) {
+        case 'UP': value.direction = 'Up'; break
+        case 'DOWN': value.direction = 'Down'; break
+        case 'LEFT': value.direction = 'Left'; break
+        case 'RIGHT': value.direction = 'Right'; break
+        case 'STATIONARY': value.direction = 'Stationary'; break
+        case 'ACTION': value.direction = 'Action'; break
+        case 'RANDOMDIR': value.direction = 'RandomDir'; break
+        case null: break
+        case undefined : break
+        default:
+            throw new Error(`Direction not supported yet: "${value.direction}"`)
+    }
+
+    switch (value.qualifier) {
+        case WIN_QUALIFIER.ALL: value.qualifier = 'All'; break
+        case WIN_QUALIFIER.ANY: value.qualifier = 'Any'; break
+        case WIN_QUALIFIER.NO: value.qualifier = 'No'; break
+        case WIN_QUALIFIER.SOME: value.qualifier = 'Some'; break
+        case undefined: break
+        default:
+            throw new Error(`Unsupported win qualifier "${value.qualifier}"`)
+    }
+
+    function removeCamelCase(value: any, key: string, newKey: string) {
+        if (typeof value[key] !== 'undefined') {
+            value[newKey] = value[key]
+            delete value[key]
+        }
+    }
+    removeCamelCase(value, 'isRandom', 'random')
+    removeCamelCase(value, 'isLate', 'late')
+    removeCamelCase(value, 'isRigid', 'rigid')
+    removeCamelCase(value, 'isNegated', 'negated')
+    removeCamelCase(value, 'tileWithModifiers', 'tile_with_modifiers')
+    removeCamelCase(value, 'collisionLayer', 'collision_layer')
+    removeCamelCase(value, 'beforeNeighbors', 'before_neighbors')
+    removeCamelCase(value, 'afterNeighbors', 'after_neighbors')
+    removeCamelCase(value, 'onTile', 'on_tile')
+
+    delete value.debugFlag
+
+
+    const enumName = enums.get(value.type)
+    if (enumName) {
+        const ret: any = {}
+        delete value.type
+        ret[enumName] = value
+        return ret
+    } else {
+        return value
+    }
+}
+
+function unwrapArray(v: any) {
+    if (Array.isArray(v)) {
+        return v[0]
+    }
+    return v
+}
+
+class MapWithId<T> {
     private counter: number
     private prefix: string
     private idMap: Map<T, string>
-    private jsonMap: Map<T, TJson>
+    private jsonMap: Map<T, {}>
     constructor(prefix: string) {
         this.counter = 0
         this.prefix = prefix
@@ -166,11 +270,11 @@ class MapWithId<T, TJson> {
         this.jsonMap = new Map()
     }
 
-    public set(key: T, value: TJson, id?: string) {
+    public set(key: T, value: {}, id?: string) {
         if (!this.idMap.has(key)) {
             this.idMap.set(key, id || this.freshId())
         }
-        this.jsonMap.set(key, value)
+        this.jsonMap.set(key, deType(value))
         return this.getId(key)
     }
 
@@ -191,7 +295,7 @@ class MapWithId<T, TJson> {
     }
 
     public toJson() {
-        const ret: {[key: string]: TJson} = {}
+        const ret: {[key: string]: any} = {}
         for (const [obj, id] of this.idMap) {
             const json = this.jsonMap.get(obj)
             if (!json) {
@@ -246,7 +350,7 @@ export default class Serializer {
             colorMap.set(key, new HexColor({ code, sourceOffset: 0 }, val))
         }
         const layers: DefiniteMap<string, IGameTile[]> = new DefiniteMap()
-        for (const [key] of Object.entries(source.collisionLayers)) {
+        for (const [key] of Object.entries(source.collision_layers)) {
             layers.set(key, [])
         }
 
@@ -326,16 +430,16 @@ export default class Serializer {
                     commandMap.set(key, val)
                     break
                 default:
-                    throw new Error(`ERROR: Unsupported command type`)
+                    throw new Error(`ERROR: Unsupported command type "${(val as any).type}"`)
             }
         }
 
-        for (const [key, val] of Object.entries(source.collisionLayers)) {
+        for (const [key, val] of Object.entries(source.collision_layers)) {
             const { _sourceOffset: sourceOffset } = val
             collisionLayerMap.set(key, new CollisionLayer({ code, sourceOffset }, layers.get(key)))
         }
 
-        for (const [key, val] of Object.entries(source.tilesWithModifiers)) {
+        for (const [key, val] of Object.entries(source.tiles_with_modifiers)) {
             const { _sourceOffset: sourceOffset } = val
             tileWithModifierMap.set(key, new SimpleTileWithModifier({ code, sourceOffset }, val.isNegated, val.isRandom, val.direction, tileMap.get(val.tile), val.debugFlag))
         }
@@ -364,7 +468,7 @@ export default class Serializer {
             }
         }
 
-        for (const [key, val] of Object.entries(source.ruleDefinitions)) {
+        for (const [key, val] of Object.entries(source.rule_definitions)) {
             const { _sourceOffset: sourceOffset } = val
             switch (val.type) {
                 case ast.RULE_TYPE.SIMPLE:
@@ -399,7 +503,7 @@ export default class Serializer {
             }
         })
 
-        const winConditions = source.winConditions.map((item) => {
+        const winConditions = source.win_conditions.map((item) => {
             const { _sourceOffset: sourceOffset } = item
             switch (item.type) {
                 case ast.WIN_CONDITION_TYPE.SIMPLE:
@@ -443,15 +547,15 @@ export default class Serializer {
 
     private readonly game: GameData
     private readonly colorsMap: Map<string, ColorId>
-    private readonly spritesMap: MapWithId<GameSprite, IGraphSprite>
-    private readonly soundMap: MapWithId<ast.SoundItem<IGameTile>, ast.SoundItem<string>>
-    private readonly collisionLayerMap: MapWithId<CollisionLayer, ISourceNode>
-    private readonly conditionsMap: MapWithId<ISimpleBracket, ast.Bracket<NeighborId>>
-    private readonly neighborsMap: MapWithId<SimpleNeighbor, ast.Neighbor<TileWithModifierId>>
-    private readonly tileWithModifierMap: MapWithId<SimpleTileWithModifier, ast.TileWithModifier<RULE_DIRECTION, TileId>>
-    private readonly tileMap: MapWithId<IGameTile, GraphTile>
-    private readonly ruleMap: MapWithId<IRule, ast.Rule<RuleId, RuleId, BracketId, CommandId>>
-    private readonly commandMap: MapWithId<ast.Command<ast.SoundItem<IGameTile>>, ast.Command<SoundId>>
+    private readonly spritesMap: MapWithId<GameSprite>
+    private readonly soundMap: MapWithId<ast.SoundItem<IGameTile>>
+    private readonly collisionLayers: CollisionLayer[]
+    private readonly conditionsMap: MapWithId<ISimpleBracket>
+    private readonly neighborsMap: MapWithId<SimpleNeighbor>
+    private readonly tileWithModifierMap: MapWithId<SimpleTileWithModifier>
+    private readonly tileMap: MapWithId<IGameTile>
+    private readonly ruleMap: MapWithId<IRule>
+    private readonly commandMap: MapWithId<ast.Command<ast.SoundItem<IGameTile>>>
     private readonly winConditions: Array<ast.WinCondition<TileId>>
     private orderedRules: RuleId[]
     private levels: Array<ast.Level<TileId>>
@@ -461,7 +565,7 @@ export default class Serializer {
         this.colorsMap = new Map()
         this.spritesMap = new MapWithId('sprite')
         this.soundMap = new MapWithId('sound')
-        this.collisionLayerMap = new MapWithId('collision')
+        this.collisionLayers = []
         this.conditionsMap = new MapWithId('bracket')
         this.neighborsMap = new MapWithId('neighbor')
         this.tileWithModifierMap = new MapWithId('twm')
@@ -515,7 +619,10 @@ export default class Serializer {
         })
     }
     public buildCollisionLayer(item: CollisionLayer) {
-        return this.collisionLayerMap.set(item, { _sourceOffset: item.__source.sourceOffset })
+        if (this.collisionLayers.indexOf(item) < 0) {
+            this.collisionLayers.push(item)
+        }
+        return item.id
     }
     public metadataToJson(): IGraphGameMetadata {
         return {
@@ -527,9 +634,9 @@ export default class Serializer {
             colorPalette: this.game.metadata.colorPalette,
             backgroundColor: this.game.metadata.backgroundColor ? this.buildColor(this.game.metadata.backgroundColor) : null,
             textColor: this.game.metadata.textColor ? this.buildColor(this.game.metadata.textColor) : null,
-            realtimeInterval: this.game.metadata.realtimeInterval,
-            keyRepeatInterval: this.game.metadata.keyRepeatInterval,
-            againInterval: this.game.metadata.againInterval,
+            realtimeInterval: unwrapArray(this.game.metadata.realtimeInterval),
+            keyRepeatInterval: unwrapArray(this.game.metadata.keyRepeatInterval),
+            againInterval: unwrapArray(this.game.metadata.againInterval),
             noAction: this.game.metadata.noAction,
             noUndo: this.game.metadata.noUndo,
             runRulesOnLevelStart: this.game.metadata.runRulesOnLevelStart,
@@ -551,17 +658,17 @@ export default class Serializer {
             metadata: this.metadataToJson(),
             colors,
             sounds: this.soundMap.toJson(),
-            collisionLayers: this.collisionLayerMap.toJson(),
+            collision_layers: this.collisionLayers.map(c => { return {id: c.id, _sourceOffset: c.__source.sourceOffset} }),
             commands: this.commandMap.toJson(),
             sprites: this.spritesMap.toJson(),
             tiles: this.tileMap.toJson(),
-            tilesWithModifiers: this.tileWithModifierMap.toJson(),
+            tiles_with_modifiers: this.tileWithModifierMap.toJson(),
             neighbors: this.neighborsMap.toJson(),
             brackets: this.conditionsMap.toJson(),
-            ruleDefinitions: this.ruleMap.toJson(),
-            winConditions: this.winConditions,
+            rule_definitions: this.ruleMap.toJson(),
+            win_conditions: this.winConditions.map(deType),
             rules: this.orderedRules,
-            levels: this.levels
+            levels: this.levels.map(deType)
         }
     }
     private buildLevel(level: ast.Level<IGameTile>): ast.Level<TileId> {
@@ -588,14 +695,6 @@ export default class Serializer {
                 _sourceOffset: rule.__source.sourceOffset,
                 debugFlag: rule.debugFlag
             })
-        } else if (rule instanceof SimpleRuleGroup) {
-            return this.ruleMap.set(rule, {
-                type: ast.RULE_TYPE.GROUP,
-                isRandom: rule.isRandom,
-                rules: rule.getChildRules().map((item) => this.recBuildRule(item)),
-                _sourceOffset: rule.__source.sourceOffset,
-                debugFlag: null // TODO: Unhardcode me
-            })
         } else if (rule instanceof SimpleRuleLoop) {
             const x: ast.RuleLoop<string> = {
                 type: ast.RULE_TYPE.LOOP,
@@ -605,6 +704,14 @@ export default class Serializer {
                 debugFlag: null // TODO: unhardcode me
             }
             return this.ruleMap.set(rule, x)
+        } else if (rule instanceof SimpleRuleGroup) {
+            return this.ruleMap.set(rule, {
+                type: ast.RULE_TYPE.GROUP,
+                isRandom: rule.isRandom,
+                rules: rule.getChildRules().map((item) => this.recBuildRule(item)),
+                _sourceOffset: rule.__source.sourceOffset,
+                debugFlag: null // TODO: Unhardcode me
+            })
         } else {
             debugger; throw new Error(`BUG: Unsupported rule type`) // tslint:disable-line:no-debugger
         }
@@ -622,7 +729,8 @@ export default class Serializer {
             case ast.COMMAND_TYPE.WIN:
                 return this.commandMap.set(command, command)
             default:
-                debugger; throw new Error(`BUG: Unsupoprted command type`) // tslint:disable-line:no-debugger
+                const src = getLineAndColumn(this.game.source.code, (command as any)._sourceOffset)
+                debugger; throw new Error(`BUG: Unsupoprted command type "${JSON.stringify(command)}" ${JSON.stringify(src)}`) // tslint:disable-line:no-debugger
         }
     }
     private buildConditionBracket(bracket: ISimpleBracket): BracketId {
@@ -708,7 +816,7 @@ export default class Serializer {
         const { spriteHeight, spriteWidth } = this.game.getSpriteSize()
         return this.spritesMap.set(sprite, {
             name: sprite.getName(),
-            collisionLayer: this.collisionLayerMap.getId(sprite.getCollisionLayer()),
+            collisionLayer: this.buildCollisionLayer(sprite.getCollisionLayer()),
             pixels: sprite.getPixels(spriteHeight, spriteWidth).map((row) => row.map((pixel) => {
                 if (pixel.isTransparent()) {
                     return null
@@ -743,15 +851,15 @@ export interface IGraphJson {
     metadata: IGraphGameMetadata,
     colors: {[key: string]: string},
     sounds: {[key: string]: ast.SoundItem<string>},
-    collisionLayers: {[key: string]: ISourceNode},
+    collision_layers: Array<ISourceNode>,
     commands: {[key: string]: ast.Command<SoundId>},
     sprites: {[key: string]: IGraphSprite},
     tiles: {[key: string]: GraphTile},
-    winConditions: Array<ast.WinCondition<TileId>>,
-    tilesWithModifiers: {[key: string]: ast.TileWithModifier<RULE_DIRECTION, TileId>},
+    win_conditions: Array<ast.WinCondition<TileId>>,
+    tiles_with_modifiers: {[key: string]: ast.TileWithModifier<RULE_DIRECTION, TileId>},
     neighbors: {[key: string]: ast.Neighbor<TileWithModifierId>},
     brackets: {[key: string]: ast.Bracket<NeighborId>},
-    ruleDefinitions: {[key: string]: ast.Rule<RuleId, RuleId, BracketId, CommandId>},
+    rule_definitions: {[key: string]: ast.Rule<RuleId, RuleId, BracketId, CommandId>},
     rules: RuleId[],
     levels: Array<ast.Level<TileId>>
 }

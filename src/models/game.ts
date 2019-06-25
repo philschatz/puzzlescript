@@ -18,6 +18,7 @@ export interface IGameNode {
 }
 
 export class GameData {
+    public readonly source: IGameCode
     public readonly title: string
     public readonly metadata: GameMetadata
     public readonly objects: GameSprite[]
@@ -43,6 +44,7 @@ export class GameData {
         winConditions: WinConditionSimple[],
         levels: Array<Level<IGameTile>>
     ) {
+        this.source = source
         this.title = title
         this.metadata = metadata
         this.objects = objects
