@@ -135,20 +135,20 @@ interface IGraphGameMetadata {
     youtube: Optional<string>
     zoomscreen: Optional<Dimension>
     flickscreen: Optional<Dimension>
-    colorPalette: Optional<string>
-    backgroundColor: Optional<ColorId>
-    textColor: Optional<ColorId>
-    realtimeInterval: Optional<number>
-    keyRepeatInterval: Optional<number>
-    againInterval: Optional<number>
-    noAction: boolean
-    noUndo: boolean
-    runRulesOnLevelStart: Optional<string>
-    noRepeatAction: boolean
-    throttleMovement: boolean
-    noRestart: boolean
-    requirePlayerMovement: boolean
-    verboseLogging: boolean
+    color_palette: Optional<string>
+    background_color: Optional<ColorId>
+    text_color: Optional<ColorId>
+    realtime_interval: Optional<number>
+    key_repeat_interval: Optional<number>
+    again_interval: Optional<number>
+    no_action: boolean
+    no_undo: boolean
+    run_rules_on_level_start: Optional<string>
+    no_repeat_action: boolean
+    throttle_movement: boolean
+    no_restart: boolean
+    require_player_movement: boolean
+    verbose_logging: boolean
 }
 
 function toRULE_DIRECTION(dir: RULE_DIRECTION): RULE_DIRECTION {
@@ -631,20 +631,20 @@ export default class Serializer {
             youtube: this.game.metadata.youtube,
             zoomscreen: this.game.metadata.zoomscreen,
             flickscreen: this.game.metadata.flickscreen,
-            colorPalette: this.game.metadata.colorPalette,
-            backgroundColor: this.game.metadata.backgroundColor ? this.buildColor(this.game.metadata.backgroundColor) : null,
-            textColor: this.game.metadata.textColor ? this.buildColor(this.game.metadata.textColor) : null,
-            realtimeInterval: unwrapArray(this.game.metadata.realtimeInterval),
-            keyRepeatInterval: unwrapArray(this.game.metadata.keyRepeatInterval),
-            againInterval: unwrapArray(this.game.metadata.againInterval),
-            noAction: this.game.metadata.noAction,
-            noUndo: this.game.metadata.noUndo,
-            runRulesOnLevelStart: this.game.metadata.runRulesOnLevelStart,
-            noRepeatAction: this.game.metadata.noRepeatAction,
-            throttleMovement: this.game.metadata.throttleMovement,
-            noRestart: this.game.metadata.noRestart,
-            requirePlayerMovement: this.game.metadata.requirePlayerMovement,
-            verboseLogging: this.game.metadata.verboseLogging
+            color_palette: this.game.metadata.colorPalette,
+            background_color: this.game.metadata.backgroundColor ? this.buildColor(this.game.metadata.backgroundColor) : null,
+            text_color: this.game.metadata.textColor ? this.buildColor(this.game.metadata.textColor) : null,
+            realtime_interval: unwrapArray(this.game.metadata.realtimeInterval),
+            key_repeat_interval: unwrapArray(this.game.metadata.keyRepeatInterval),
+            again_interval: unwrapArray(this.game.metadata.againInterval),
+            no_action: this.game.metadata.noAction,
+            no_undo: this.game.metadata.noUndo,
+            run_rules_on_level_start: this.game.metadata.runRulesOnLevelStart,
+            no_repeat_action: this.game.metadata.noRepeatAction,
+            throttle_movement: this.game.metadata.throttleMovement,
+            no_restart: this.game.metadata.noRestart,
+            require_player_movement: this.game.metadata.requirePlayerMovement,
+            verbose_logging: this.game.metadata.verboseLogging
         }
     }
     public toJson(): IGraphJson {
@@ -793,13 +793,32 @@ export default class Serializer {
                 _sourceOffset: tile.__source.sourceOffset
             })
         } else if (tile instanceof GameLegendTileSimple) {
-            return this.tileMap.set(tile, {
-                type: TILE_TYPE.AND,
-                name: tile.getName(),
-                sprites: tile.getSprites().map((item) => this.buildSprite(item)),
-                collisionLayers: tile.getCollisionLayers().map((item) => this.buildCollisionLayer(item)),
-                _sourceOffset: tile.__source.sourceOffset
-            })
+            // Apply heuristics because some tiles are actually OR tiles
+            if (tile.getSprites().length == 1) {
+                return this.tileMap.set(tile, {
+                    type: TILE_TYPE.SIMPLE,
+                    name: tile.getName(),
+                    sprite: this.buildSprite(tile.getSprites()[0]),
+                    collisionLayers: tile.getCollisionLayers().map((item) => this.buildCollisionLayer(item)),
+                    source_line: tile.__getSourceLineAndColumn().lineNum
+                })
+            } else if (tile.getCollisionLayers().length == 1) {
+                return this.tileMap.set(tile, {
+                    type: TILE_TYPE.OR,
+                    name: tile.getName(),
+                    sprites: tile.getSprites().map((item) => this.buildSprite(item)),
+                    collisionLayers: tile.getCollisionLayers().map((item) => this.buildCollisionLayer(item)),
+                    source_line: tile.__getSourceLineAndColumn().lineNum
+                })
+            } else {
+                return this.tileMap.set(tile, {
+                    type: TILE_TYPE.AND,
+                    name: tile.getName(),
+                    sprites: tile.getSprites().map((item) => this.buildSprite(item)),
+                    collisionLayers: tile.getCollisionLayers().map((item) => this.buildCollisionLayer(item)),
+                    source_line: tile.__getSourceLineAndColumn().lineNum
+                })
+            }
         } else if (tile instanceof GameSprite) {
             return this.tileMap.set(tile, {
                 type: TILE_TYPE.SPRITE,
