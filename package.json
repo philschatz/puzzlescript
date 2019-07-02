@@ -46,7 +46,7 @@
   "dependencies": {
     "@types/jest": "^24.0.0",
     "ansi-escapes": "^4.0.0",
-    "ansi-styles": "^3.2.1",
+    "ansi-styles": "^4.0.0",
     "bitset": "^5.0.4",
     "chalk": "^2.4.1",
     "commander": "^2.19.0",
