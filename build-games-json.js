@@ -9,7 +9,7 @@ glob = require('glob')
 path = require('path')
 
 
-glob('games/*/script.txt', (err, files) => {
+glob('games/gravirinth/script.txt', (err, files) => {
 
   files.forEach(file => {
     gameName = path.basename(path.dirname(file))

@@ -656,7 +656,7 @@ late up [crate4| crate4] -> [crate4|crate4 desu]
 late down [crate4| crate4] -> [crate4|crate4 desd]
 
 (all)
-late [pushable des no may]->[pushable may]
+late [pushable des no may]->[pushable may] (Maybe this only removes 1 des tile, not all of them)
 (red)
 late [crate des may]->[Crate reddead]  sfx4
 (blue)

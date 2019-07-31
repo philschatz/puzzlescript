@@ -8,6 +8,18 @@
     },
     {
       "solution": ",!"
+    },
+    {
+      "solution": "..A,A,..W,W,W,W,D,.W,D,D,W,D,S,S,S,S,S,S,A,A"
+    },
+    {
+      "solution": ",!"
+    },
+    {
+      "solution": "..D,W,W,W,W,W,W,A,A,.AS,S,S,D,S,S,S"
+    },
+    {
+      "solution": ",!"
     }
   ],
   "title": "Collapsing tiles",

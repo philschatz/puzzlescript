@@ -605,6 +605,9 @@ white
 MyMistake
 transparent
 
+Initialize
+transparent
+
 =======
 LEGEND
 =======
@@ -657,6 +660,7 @@ RemoveLandR = RemoveLandRUD or RemoveLandRU or RemoveLandRD
 
 Ship = Ship_Left or Ship_Right1 or Ship_Right2
 
+~ = Initialize and Background
 
 =======
 SOUNDS
@@ -710,7 +714,7 @@ Direction
 Ship_Left, Ship_Right1, Ship_Right2, Ship_Sails, Light_trigger
 MyMistake
 Speedup, Death, Darkness, Light
-
+Initialize
 
 ======
 RULES
@@ -724,41 +728,43 @@ down [ MyMistake ] [ no Sand | . no Target|.|.|.|.|.|.|.|. no Target|.|.|no Sand
 
 (Island border)
 
-left [ no Sand no AddLandL | Sand ] -> [ no Sand AddLandLUD | Sand ]
-right [ no Sand no AddLandR | Sand ] -> [ no Sand AddLandRUD | Sand ]
+left [ Initialize ] [ no Sand no AddLandL | Sand ] -> [ Initialize ] [ no Sand AddLandLUD | Sand ]
+right [ Initialize ] [ no Sand no AddLandR | Sand ] -> [ Initialize ] [ no Sand AddLandRUD | Sand ]
 
-up [ AddLandLUD | no Sand ] -> [ AddLandLD | no Sand ]
-up [ AddLandRUD | no Sand ] -> [ AddLandRD | no Sand ]
+up [ Initialize ] [ AddLandLUD | no Sand ] -> [ Initialize ] [ AddLandLD | no Sand ]
+up [ Initialize ] [ AddLandRUD | no Sand ] -> [ Initialize ] [ AddLandRD | no Sand ]
 
-down [ AddLandLUD | no Sand ] -> [ AddLandLU | no Sand ]
-down [ AddLandRUD | no Sand ] -> [ AddLandRU | no Sand ]
+down [ Initialize ] [ AddLandLUD | no Sand ] -> [ Initialize ] [ AddLandLU | no Sand ]
+down [ Initialize ] [ AddLandRUD | no Sand ] -> [ Initialize ] [ AddLandRU | no Sand ]
 
-down [ AddLandLD | no Sand ] -> [ | no Sand ]
-down [ AddLandRD | no Sand ] -> [ | no Sand ]
+down [ Initialize ] [ AddLandLD | no Sand ] -> [ Initialize ] [ | no Sand ]
+down [ Initialize ] [ AddLandRD | no Sand ] -> [ Initialize ] [ | no Sand ]
 
-left [ Sand no RemoveLandL | no Sand ] -> [ Sand RemoveLandLUD | no Sand ]
-right [ Sand no RemoveLandR | no Sand ] -> [ Sand RemoveLandRUD | no Sand ]
+left [ Initialize ] [ Sand no RemoveLandL | no Sand ] -> [ Initialize ] [ Sand RemoveLandLUD | no Sand ]
+right [ Initialize ] [ Sand no RemoveLandR | no Sand ] -> [ Initialize ] [ Sand RemoveLandRUD | no Sand ]
 
-up [ RemoveLandLUD | Sand ] -> [ RemoveLandLD | Sand ]
-up [ RemoveLandRUD | Sand ] -> [ RemoveLandRD | Sand ]
+up [ Initialize ] [ RemoveLandLUD | Sand ] -> [ Initialize ] [ RemoveLandLD | Sand ]
+up [ Initialize ] [ RemoveLandRUD | Sand ] -> [ Initialize ] [ RemoveLandRD | Sand ]
 
-down [ RemoveLandLUD | Sand ] -> [ RemoveLandLU | Sand ]
-down [ RemoveLandRUD | Sand ] -> [ RemoveLandRU | Sand ]
+down [ Initialize ] [ RemoveLandLUD | Sand ] -> [ Initialize ] [ RemoveLandLU | Sand ]
+down [ Initialize ] [ RemoveLandRUD | Sand ] -> [ Initialize ] [ RemoveLandRU | Sand ]
 
-down [ RemoveLandLD | Sand ] -> [ | Sand ]
-down [ RemoveLandRD | Sand ] -> [ | Sand ]
+down [ Initialize ] [ RemoveLandLD | Sand ] -> [ Initialize ] [ | Sand ]
+down [ Initialize ] [ RemoveLandRD | Sand ] -> [ Initialize ] [ | Sand ]
 
-right [ RemoveLandRU | AddLandLU ] -> [ RemoveLandRU | ]
-right [ RemoveLandRD | AddLandLD ] -> [ RemoveLandRD | ]
+right [ Initialize ] [ RemoveLandRU | AddLandLU ] -> [ Initialize ] [ RemoveLandRU | ]
+right [ Initialize ] [ RemoveLandRD | AddLandLD ] -> [ Initialize ] [ RemoveLandRD | ]
 
-right [ RemoveLandRUD | AddLandLU ] -> [ RemoveLandRUD | ]
-right [ RemoveLandRUD | AddLandLD ] -> [ RemoveLandRUD | ]
+right [ Initialize ] [ RemoveLandRUD | AddLandLU ] -> [ Initialize ] [ RemoveLandRUD | ]
+right [ Initialize ] [ RemoveLandRUD | AddLandLD ] -> [ Initialize ] [ RemoveLandRUD | ]
 
-left [ RemoveLandLU | AddLandRU ] -> [ RemoveLandLU | ]
-left [ RemoveLandLD | AddLandRD ] -> [ RemoveLandLD | ]
+left [ Initialize ] [ RemoveLandLU | AddLandRU ] -> [ Initialize ] [ RemoveLandLU | ]
+left [ Initialize ] [ RemoveLandLD | AddLandRD ] -> [ Initialize ] [ RemoveLandLD | ]
 
-left [ RemoveLandLUD | AddLandRU ] -> [ RemoveLandLUD | ]
-left [ RemoveLandLUD | AddLandRD ] -> [ RemoveLandLUD | ]
+left [ Initialize ] [ RemoveLandLUD | AddLandRU ] -> [ Initialize ] [ RemoveLandLUD | ]
+left [ Initialize ] [ RemoveLandLUD | AddLandRD ] -> [ Initialize ] [ RemoveLandLUD | ]
+
+[ Initialize ] -> [ ]
 
 (water redirection)
 
@@ -1084,7 +1090,7 @@ WINCONDITIONS
 LEVELS
 =======
 
-wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww↓wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
+~wwwwwwwwwwwwwwwwwwwwwwwwwwwwwww↓wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
 www/wwwwwwwwwwwwwwwwwwwwwwwwwwww↓wwwwwwwwwww...wwwwwwwn@wwwwwwwwwwwwwwwwwwww
 wws2w..wwwwwwwwwwwww...wwwwwwwwo↓wwwwwwwwww.....w..ww.w%%%.wwwwww.wwwwwwwwww
 www......wwwwwwwwwwww....wwwowww↓wwwwwww.ww....↑wx....ww.%@.www...wwwwwwwwww
