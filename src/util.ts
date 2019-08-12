@@ -1,3 +1,4 @@
+import 'regenerator-runtime/runtime'
 import { GameData } from '.'
 import { Cell, CellSaveState } from './engine'
 import { GameMetadata } from './models/metadata'
