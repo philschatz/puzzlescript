@@ -4,7 +4,7 @@
     "compile": "npm run-script compile:grammar && npm run-script compile:thumbnail",
     "precompile:thumbnail": "npm run-script compile:ts",
     "compile:thumbnail": "node ./lib/cli/buildGameIcons.js",
-    "compile:grammar": "nearleyc --minify-rule-names ./src/parser/grammar.ne > ./src/parser/grammar.ts",
+    "compile:grammar": "nearleyc ./src/parser/grammar.ne > ./src/parser/grammar.ts",
     "compile:ts": "tsc && cp ./src/sound/sfxr.js ./lib/sound/ && cp ./src/sound/sfxr-browser.js ./lib/sound/",
     "ci": "npm run-script test",
     "postci": "npm run-script docs && codecov",
