@@ -102,7 +102,7 @@
     "typescript": "^3.2.2",
     "util-deprecate": "^1.0.2",
     "weak": "^1.0.1",
-    "webpack": "^4.27.1",
+    "webpack": "^4.39.2",
     "webpack-cli": "^3.1.2",
     "workbox-webpack-plugin": "^4.0.0"
   },
