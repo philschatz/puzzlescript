@@ -42,7 +42,7 @@
     "puzzlescript-demo": "./bin/puzzlescript-demo.js"
   },
   "dependencies": {
-    "@types/jest": "^24.0.0",
+    "@types/jest": "^24.0.17",
     "ansi-escapes": "^4.0.0",
     "ansi-styles": "^4.0.0",
     "bitset": "^5.0.4",
