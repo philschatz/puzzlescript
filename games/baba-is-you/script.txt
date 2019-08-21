@@ -1,7 +1,8 @@
 title BABA IS YOU demake
 author @pyjamads
 homepage www.puzzlescript.net
-(debug)
+(debug
+verbose_logging)
 noaction
 
 (zoomscreen 16x16)
@@ -17,6 +18,9 @@ darkbrown
 00000
 00000
 00000
+
+Player
+transparent
 
 Grass
 green
@@ -45,7 +49,7 @@ brown green
 (Objects and thier corresponding Texts)
 
 (Baba)
-Baba
+BabaPic
 White
 .000.
 000.0
@@ -79,7 +83,7 @@ Red
 .0.0.)
 
 (Skull)
-Skull
+SkullPic
 Red
 .000.
 0.0.0
@@ -96,7 +100,7 @@ Red
 .000.
 
 (Wall)
-Wall
+WallPic
 darkblue darkgray
 00010
 11111
@@ -113,7 +117,7 @@ darkgray
 .0.0.
 
 (Water)
-Water
+WaterPic
 Blue darkgray
 10010
 00000
@@ -130,7 +134,7 @@ Blue
 .0.0.
 
 (Rock)
-Rock
+RockPic
 orange yellow
 .010.
 01000
@@ -147,7 +151,7 @@ Brown
 .0.0.
 
 ((Door)
-Door
+DoorPic
 brown gray yellow
 .000.
 00000
@@ -164,7 +168,7 @@ darkbrown
 .00..)
 
 (Flag)
-Flag
+FlagPic
 yellow
 ..00.
 ..000
@@ -181,7 +185,7 @@ yellow
 .0...
 
 ((Key)
-Key
+KeyPic
 yellow
 .....
 .0...
@@ -219,9 +223,9 @@ White
 ..0..)
 
 
-(Properties: You, Push, Stop, Win, Sink, Defeat, Pull, Shut, Open [Tele, Melt])
+(Properties: You, Push, Stop,Goal, Sink, Defeat, Pull, Shut, Open [Tele, Melt])
 
-You
+YouText
 black #fc3468 
 10101
 10101
@@ -229,7 +233,7 @@ black #fc3468
 10101
 10001
 
-Push
+PushText
 black Brown 
 10011
 10101
@@ -237,7 +241,7 @@ black Brown
 10111
 10111
 
-Stop
+StopText
 black Green 
 10001
 10111
@@ -245,7 +249,7 @@ black Green
 11101
 10001
 
-Sink
+SinkText
 black Blue 
 10001
 10111
@@ -253,7 +257,7 @@ black Blue
 11101
 10001
 
-WinCondition
+GoalText
 black yellow
 01110
 01110
@@ -261,13 +265,14 @@ black yellow
 01010
 10101
 
-Defeat
+DefeatText
 black Red
 10011
 10101
 10101
 10101
 10011
+
 
 (Pull
 black orange
@@ -294,276 +299,128 @@ black Yellow
 11011)
 
 
-(Temporary Rule Placeholders, used to check if rules exist somewhere on the screen)
+(state)
 
-(Rock)
-RockIsPush
+BabaIsYou
 transparent
 
 RockIsYou
 transparent
 
-RockIsWin
-transparent
-
-RockIsStop
-transparent
-
-RockIsSink
-transparent
-
-RockIsPull
-transparent
-
-RockIsDefeat
-transparent
-
-RockIsOpen
-transparent
-
-RockIsShut
-transparent
-
-
-(Wall)
-WallIsPush
+FlagIsYou
 transparent
 
 WallIsYou
 transparent
 
-WallIsWin
-transparent
-
-WallIsStop
-transparent
-
-WallIsSink
-transparent
-
-WallIsPull
-transparent
-
-WallIsDefeat
-transparent
-
-WallIsOpen
-transparent
-
-WallIsShut
-transparent
-
-(Flag)
-FlagIsPush
-transparent
-
-FlagIsYou
-transparent
-
-FlagIsWin
-transparent
-
-FlagIsStop
-transparent
-
-FlagIsSink
-transparent
-
-FlagIsPull
-transparent
-
-FlagIsDefeat
-transparent
-
-FlagIsOpen
-transparent
-
-FlagIsShut
-transparent
-
-
-(Baba)
-BabaIsPush
-transparent
-
-BabaIsYou
-transparent
-
-BabaIsWin
-transparent
-
-BabaIsStop
-transparent
-
-BabaIsSink
-transparent
-
-BabaIsPull
-transparent
-
-BabaIsDefeat
-transparent
-
-BabaIsOpen
-transparent
-
-BabaIsShut
-transparent
-
-(Water)
-WaterIsPush
-transparent
-
 WaterIsYou
-transparent
-
-WaterIsWin
-transparent
-
-WaterIsStop
-transparent
-
-WaterIsSink
-transparent
-
-WaterIsPull
-transparent
-
-WaterIsDefeat
-transparent
-
-WaterIsOpen
-transparent
-
-WaterIsShut
-transparent
-
-((Keke)
-KekeIsPush
-transparent
-
-KekeIsYou
-transparent
-
-KekeIsWin
-transparent
-
-KekeIsStop
-transparent
-
-KekeIsSink
-transparent
-
-KekeIsPull
-transparent
-
-KekeIsDefeat
-transparent
-
-KekeIsOpen
-transparent
-
-KekeIsShut
-transparent
-
-(Key)
-KeyIsPush
-transparent
-
-KeyIsYou
-transparent
-
-KeyIsWin
-transparent
-
-KeyIsStop
-transparent
-
-KeyIsSink
-transparent
-
-KeyIsPull
-transparent
-
-KeyIsDefeat
-transparent
-
-KeyIsOpen
-transparent
-
-KeyIsShut
-transparent
-
-(Door)
-DoorIsPush
-transparent
-
-DoorIsYou
-transparent
-
-DoorIsWin
-transparent
-
-DoorIsStop
-transparent
-
-DoorIsSink
-transparent
-
-DoorIsPull
-transparent
-
-DoorIsDefeat
-transparent
-
-DoorIsOpen
-transparent
-
-DoorIsShut
-transparent)
-
-(Skull)
-SkullIsPush
 transparent
 
 SkullIsYou
 transparent
 
-SkullIsWin
+
+BabaIsPush
+transparent
+
+RockIsPush
+transparent
+
+FlagIsPush
+transparent
+
+WallIsPush
+transparent
+
+WaterIsPush
+transparent
+
+SkullIsPush
+transparent
+
+
+BabaIsStop
+transparent
+
+RockIsStop
+transparent
+
+FlagIsStop
+transparent
+
+WallIsStop
+transparent
+
+WaterIsStop
 transparent
 
 SkullIsStop
 transparent
 
+
+BabaIsGoal
+transparent
+
+RockIsGoal
+transparent
+
+FlagIsGoal
+transparent
+
+WallIsGoal
+transparent
+
+WaterIsGoal
+transparent
+
+SkullIsGoal
+transparent
+
+
+BabaIsSink
+transparent
+
+RockIsSink
+transparent
+
+FlagIsSink
+transparent
+
+WallIsSink
+transparent
+
+WaterIsSink
+transparent
+
 SkullIsSink
 transparent
 
-SkullIsPull
+
+BabaIsDefeat
+transparent
+
+RockIsDefeat
+transparent
+
+FlagIsDefeat
+transparent
+
+WallIsDefeat
+transparent
+
+WaterIsDefeat
 transparent
 
 SkullIsDefeat
 transparent
 
-SkullIsOpen
-transparent
-
-SkullIsShut
-transparent
-
-(Invisible Player Input Handler)
-player
-transparent
-
-(Movement killer, alternative to rigidbody handling)
-MovementKiller
-transparent
 
 =======
 LEGEND
 =======
 
 (Player :HACK:: for taking input without an actual Player)
-. = Background and player
+. = Background AND Player
 
 (*** Objects & Texts ***)
 (Unused Background Elements)
@@ -574,15 +431,15 @@ t = Tile
 BackgroundElements = g or t or 1
 
 (Wall)
-# = Wall
+# = WallPic
 Ŵ = Walltext
 
 (Wall)
-~ = Water
+~ = WaterPic
 ω = Watertext
 
 (Baba)
-B = Baba
+B = BabaPic
 Ɓ = Babatext
 
 (Keke)
@@ -594,7 +451,7 @@ B = Baba
 Ķ = Keytext)
 
 (Skull)
-ౚ = Skull
+ౚ = SkullPic
 Ș = Skulltext
 
 (Door)
@@ -602,11 +459,11 @@ B = Baba
 Đ = Doortext)
 
 (Flag)
-F = Flag
+F = FlagPic
 Ƒ = flagtext
 
 (Rock)
-R = Rock
+R = RockPic
 Ř = Rocktext
 
 (************************)
@@ -617,51 +474,47 @@ i = is
 (a = and)
 
 (****** Properties ******)
-W = WinCondition
-P = Push
-Y = You
-S = Stop
-Ş = Sink
-D = Defeat
+W =GoalText
+P = PushText
+Y = YouText
+S = StopText
+Ş = SinkText
+D = DefeatText
 (Ƨ = Shut
 O = Open
 Ƥ = Pull)
 
 (****** Collections ******)
-Object = Baba or Wall or Rock or Flag or Water or Skull (or Door or Key or Keke)
+Baba  =  BabaIsYou OR  BabaIsPush OR  BabaIsStop OR  BabaIsGoal OR  BabaIsSink OR  BabaIsDefeat
+Rock  =  RockIsYou OR  RockIsPush OR  RockIsStop OR  RockIsGoal OR  RockIsSink OR  RockIsDefeat
+Flag  =  FlagIsYou OR  FlagIsPush OR  FlagIsStop OR  FlagIsGoal OR  FlagIsSink OR  FlagIsDefeat
+Wall  =  WallIsYou OR  WallIsPush OR  WallIsStop OR  WallIsGoal OR  WallIsSink OR  WallIsDefeat
+Water = WaterIsYou OR WaterIsPush OR WaterIsStop OR WaterIsGoal OR WaterIsSink OR WaterIsDefeat
+Skull = SkullIsYou OR SkullIsPush OR SkullIsStop OR SkullIsGoal OR SkullIsSink OR SkullIsDefeat
+
+
+You  = BabaIsYou  OR RockIsYou  OR FlagIsYou  OR WallIsYou  OR WaterIsYou  OR SkullIsYou
+Push = BabaIsPush OR RockIsPush OR FlagIsPush OR WallIsPush OR WaterIsPush OR SkullIsPush
+Stop = BabaIsStop OR RockIsStop OR FlagIsStop OR WallIsStop OR WaterIsStop OR SkullIsStop
+Goal = BabaIsGoal OR RockIsGoal OR FlagIsGoal OR WallIsGoal OR WaterIsGoal OR SkullIsGoal
+Sink = BabaIsSink OR RockIsSink OR FlagIsSink OR WallIsSink OR WaterIsSink OR SkullIsSink
+Defeat = BabaIsDefeat OR RockIsDefeat OR FlagIsDefeat OR WallIsDefeat OR WaterIsDefeat OR SkullIsDefeat
+
+Pics = BabaPic OR RockPic OR FlagPic OR WallPic OR WaterPic OR SkullPic (OR DoorPic OR KeyPic OR KekePic)
+Object = Baba OR Rock OR Flag OR Wall OR Water OR Skull (OR Door OR Key OR Keke)
+
+Property = Goal or Push or You or Stop or Sink or Defeat (or Shut or Open or Pull)
 
 Operand = Flagtext or Rocktext or Walltext or Babatext or Watertext or Skulltext (or Doortext or Keketext or Keytext)
 
 Operator = is (or and)
 
-Property = WinCondition or Push or You or Stop or Sink or Defeat (or Shut or Open or Pull)
 
-Text = Operand or Operator or Property
+Text = Operator OR Operand OR GoalText OR PushText OR YouText OR StopText OR SinkText OR DefeatText
 
-Movable = Text or Object
+Movable = Text OR You OR Push
 
 
-(****** Rules ******)
-WallRules = WallIsPush or WallIsYou or WallIsWin or WallIsStop or WallIsSink or WallIsPull or WallIsDefeat or WallIsOpen or WallIsShut
-
-RockRules = RockIsPush or RockIsYou or RockIsWin or RockIsStop or RockIsSink or RockIsPull or RockIsDefeat or RockIsOpen or RockIsShut
-
-FlagRules = FlagIsPush or FlagIsYou or FlagIsWin or FlagIsStop or FlagIsSink or FlagIsPull or FlagIsDefeat or FlagIsOpen or FlagIsShut
-
-BabaRules = BabaIsPush or BabaIsYou or BabaIsWin or BabaIsStop or BabaIsSink or BabaIsPull or BabaIsDefeat or BabaIsOpen or BabaIsShut
-
-WaterRules = WaterIsPush or WaterIsYou or WaterIsWin or WaterIsStop or WaterIsSink or WaterIsPull or WaterIsDefeat or WaterIsOpen or WaterIsShut
-
-(KekeRules = KekeIsPush or KekeIsYou or KekeIsWin or KekeIsStop or KekeIsSink or KekeIsPull or KekeIsDefeat or KekeIsOpen or KekeIsShut
-
-KeyRules = KeyIsPush or KeyIsYou or KeyIsWin or KeyIsStop or KeyIsSink or KeyIsPull or KeyIsDefeat or KeyIsOpen or KeyIsShut
-
-DoorRules = DoorIsPush or DoorIsYou or DoorIsWin or DoorIsStop or DoorIsSink or DoorIsPull or DoorIsDefeat or DoorIsOpen or DoorIsShut)
-
-SkullRules = SkullIsPush or SkullIsYou or SkullIsWin or SkullIsStop or SkullIsSink or SkullIsPull or SkullIsDefeat or SkullIsOpen or SkullIsShut
-
-(Placeholder for nicer collision layer)
-RulePlaceholders = WallRules or RockRules or BabaRules or FlagRules or WaterRules or SkullRules or MovementKiller (KekeRules or KeyRules or DoorRules or)
 
 =======
 SOUNDS
@@ -680,505 +533,250 @@ COLLISIONLAYERS
 ================
 
 Player
-MovementKiller
 Background
 BackgroundElements
 
+(
+  Push
+  Stop
+  Sink
+  Goal
+  Defeat
+  You
+
+)
+
+
 (Objects and draw order)
-Water
-Wall
+WaterPic
+WallPic
 (Door)
-Rock
-Skull
-Flag
+RockPic
+SkullPic
+FlagPic
 (Key)
 
 (Keke)
-Baba
+BabaPic
 
 
 (Texts all collide!)
 Text
 
-(Temp Rule Placeholders)
-(These have to be on seperate layers to allow multiple rules to be spawned )
-(RulePlaceholders)
-(Baba)
-BabaIsPush
+(all the state sprites)
 BabaIsYou
-BabaIsWin
-BabaIsStop
-BabaIsSink
-BabaIsPull
-BabaIsDefeat
-BabaIsOpen
-BabaIsShut
-(Rock)
-RockIsPush
 RockIsYou
-RockIsWin
-RockIsStop
-RockIsSink
-RockIsPull
-RockIsDefeat
-RockIsOpen
-RockIsShut
-(Wall)
-WallIsPush
-WallIsYou
-WallIsWin
-WallIsStop
-WallIsSink
-WallIsPull
-WallIsDefeat
-WallIsOpen
-WallIsShut
-(Water)
-WaterIsPush
-WaterIsYou
-WaterIsWin
-WaterIsStop
-WaterIsSink
-WaterIsPull 
-WaterIsDefeat
-WaterIsOpen
-WaterIsShut
-(Flag)
-FlagIsPush
 FlagIsYou
-FlagIsWin
-FlagIsStop
-FlagIsSink 
-FlagIsPull
-FlagIsDefeat 
-FlagIsOpen
-FlagIsShut
-(Skull)
-SkullIsPush
+WallIsYou
+WaterIsYou
 SkullIsYou
-SkullIsWin
+BabaIsPush
+RockIsPush
+FlagIsPush
+WallIsPush
+WaterIsPush
+SkullIsPush
+BabaIsStop
+RockIsStop
+FlagIsStop
+WallIsStop
+WaterIsStop
 SkullIsStop
+BabaIsGoal
+RockIsGoal
+FlagIsGoal
+WallIsGoal
+WaterIsGoal
+SkullIsGoal
+BabaIsSink
+RockIsSink
+FlagIsSink
+WallIsSink
+WaterIsSink
 SkullIsSink
-SkullIsPull
+BabaIsDefeat
+RockIsDefeat
+FlagIsDefeat
+WallIsDefeat
+WaterIsDefeat
 SkullIsDefeat
-SkullIsOpen
-SkullIsShut
-
-(These should be expanded if/when they get implemented in the rules)
-(KekeRules
-DoorRules
-KeyRules)
-
 
 ======
 RULES
 ======
 
-(Detect Temp Movement Rules Rules)
-(HORIZONTAL)
-(You)
-right [Rocktext no RockIsYou | is | You] -> [Rocktext RockIsYou | is | You]
-right [Flagtext no FlagIsYou | is | You] -> [Flagtext FlagIsYou | is | You]
-right [Walltext no WallIsYou | is | You] -> [Walltext WallIsYou | is | You]
-right [Babatext no BabaIsYou | is | You] -> [Babatext BabaIsYou | is | You]
-right [Watertext no WaterIsYou | is | You] -> [Watertext WaterIsYou | is | You]
-right [Skulltext no SkullIsYou | is | You] -> [Skulltext SkullIsYou | is | You]
+[ Property ] -> [ NO Property ]
 
-(Push)
-right [Rocktext no RockIsPush | is | Push] -> [Rocktext RockIsPush | is | Push]
-right [Flagtext no FlagIsPush | is | Push] -> [Flagtext FlagIsPush | is | Push]
-right [Walltext no WallIsPush | is | Push] -> [Walltext WallIsPush | is | Push]
-right [Babatext no BabaIsPush | is | Push] -> [Babatext BabaIsPush | is | Push]
-right [Watertext no WaterIsPush | is | Push] -> [Watertext WaterIsPush | is | Push]
-right [Skulltext no SkullIsPush | is | Push] -> [Skulltext SkullIsPush | is | Push]
+[ BabaText | is |  YouText][ BabaPic NO  You] -> [ BabaText | is |  YouText] [ BabaIsYou]
+[ RockText | is |  YouText][ RockPic NO  You] -> [ RockText | is |  YouText] [ RockIsYou]
+[ FlagText | is |  YouText][ FlagPic NO  You] -> [ FlagText | is |  YouText] [ FlagIsYou]
+[ WallText | is |  YouText][ WallPic NO  You] -> [ WallText | is |  YouText] [ WallIsYou]
+[WaterText | is |  YouText][WaterPic NO  You] -> [WaterText | is |  YouText] [WaterIsYou]
+[SkullText | is |  YouText][SkullPic NO  You] -> [SkullText | is |  YouText] [SkullIsYou]
 
-(Stop)
-right [Rocktext no RockIsStop | is | Stop] -> [Rocktext RockIsStop | is | Stop]
-right [Flagtext no FlagIsStop | is | Stop] -> [Flagtext FlagIsStop | is | Stop]
-right [Walltext no WallIsStop | is | Stop] -> [Walltext WallIsStop | is | Stop]
-right [Babatext no BabaIsStop | is | Stop] -> [Babatext BabaIsStop | is | Stop]
-right [Watertext no WaterIsStop | is | Stop] -> [Watertext WaterIsStop | is | Stop]
-right [Skulltext no SkullIsStop | is | Stop] -> [Skulltext SkullIsStop | is | Stop]
+[ BabaText | is | PushText][ BabaPic NO Push] -> [ BabaText | is | PushText] [ BabaIsPush]
+[ RockText | is | PushText][ RockPic NO Push] -> [ RockText | is | PushText] [ RockIsPush]
+[ FlagText | is | PushText][ FlagPic NO Push] -> [ FlagText | is | PushText] [ FlagIsPush]
+[ WallText | is | PushText][ WallPic NO Push] -> [ WallText | is | PushText] [ WallIsPush]
+[WaterText | is | PushText][WaterPic NO Push] -> [WaterText | is | PushText] [WaterIsPush]
+[SkullText | is | PushText][SkullPic NO Push] -> [SkullText | is | PushText] [SkullIsPush]
 
-(VETICAL)
-(You)
-down [Rocktext no RockIsYou | is | You] -> [Rocktext RockIsYou | is | You]
-down [Flagtext no FlagIsYou | is | You] -> [Flagtext FlagIsYou | is | You]
-down [Walltext no WallIsYou | is | You] -> [Walltext WallIsYou | is | You]
-down [Babatext no BabaIsYou | is | You] -> [Babatext BabaIsYou | is | You]
-down [Watertext no WaterIsYou | is | You] -> [Watertext WaterIsYou | is | You]
-down [Skulltext no SkullIsYou | is | You] -> [Skulltext SkullIsYou | is | You]
+[ BabaText | is | StopText][ BabaPic NO Stop] -> [ BabaText | is | StopText] [ BabaIsStop]
+[ RockText | is | StopText][ RockPic NO Stop] -> [ RockText | is | StopText] [ RockIsStop]
+[ FlagText | is | StopText][ FlagPic NO Stop] -> [ FlagText | is | StopText] [ FlagIsStop]
+[ WallText | is | StopText][ WallPic NO Stop] -> [ WallText | is | StopText] [ WallIsStop]
+[WaterText | is | StopText][WaterPic NO Stop] -> [WaterText | is | StopText] [WaterIsStop]
+[SkullText | is | StopText][SkullPic NO Stop] -> [SkullText | is | StopText] [SkullIsStop]
 
-(Push)
-down [Rocktext no RockIsPush | is | Push] -> [Rocktext RockIsPush | is | Push]
-down [Flagtext no FlagIsPush | is | Push] -> [Flagtext FlagIsPush | is | Push]
-down [Walltext no WallIsPush | is | Push] -> [Walltext WallIsPush | is | Push]
-down [Babatext no BabaIsPush | is | Push] -> [Babatext BabaIsPush | is | Push]
-down [Watertext no WaterIsPush | is | Push] -> [Watertext WaterIsPush | is | Push]
-down [Skulltext no SkullIsPush | is | Push] -> [Skulltext SkullIsPush | is | Push]
+[ BabaText | is | GoalText][ BabaPic NO Goal] -> [ BabaText | is | GoalText] [ BabaIsGoal]
+[ RockText | is | GoalText][ RockPic NO Goal] -> [ RockText | is | GoalText] [ RockIsGoal]
+[ FlagText | is | GoalText][ FlagPic NO Goal] -> [ FlagText | is | GoalText] [ FlagIsGoal]
+[ WallText | is | GoalText][ WallPic NO Goal] -> [ WallText | is | GoalText] [ WallIsGoal]
+[WaterText | is | GoalText][WaterPic NO Goal] -> [WaterText | is | GoalText] [WaterIsGoal]
+[SkullText | is | GoalText][SkullPic NO Goal] -> [SkullText | is | GoalText] [SkullIsGoal]
 
-(Stop)
-down [Rocktext no RockIsStop | is | Stop] -> [Rocktext RockIsStop | is | Stop]
-down [Flagtext no FlagIsStop | is | Stop] -> [Flagtext FlagIsStop | is | Stop]
-down [Walltext no WallIsStop | is | Stop] -> [Walltext WallIsStop | is | Stop]
-down [Babatext no BabaIsStop | is | Stop] -> [Babatext BabaIsStop | is | Stop]
-down [Watertext no WaterIsStop | is | Stop] -> [Watertext WaterIsStop | is | Stop]
-down [Skulltext no SkullIsStop | is | Stop] -> [Skulltext SkullIsStop | is | Stop]
+[ BabaText | is | SinkText][ BabaPic NO Sink] -> [ BabaText | is | SinkText] [ BabaIsSink]
+[ RockText | is | SinkText][ RockPic NO Sink] -> [ RockText | is | SinkText] [ RockIsSink]
+[ FlagText | is | SinkText][ FlagPic NO Sink] -> [ FlagText | is | SinkText] [ FlagIsSink]
+[ WallText | is | SinkText][ WallPic NO Sink] -> [ WallText | is | SinkText] [ WallIsSink]
+[WaterText | is | SinkText][WaterPic NO Sink] -> [WaterText | is | SinkText] [WaterIsSink]
+[SkullText | is | SinkText][SkullPic NO Sink] -> [SkullText | is | SinkText] [SkullIsSink]
+
+[ BabaText | is | DefeatText][ BabaPic NO Defeat] -> [ BabaText | is | DefeatText] [ BabaIsDefeat]
+[ RockText | is | DefeatText][ RockPic NO Defeat] -> [ RockText | is | DefeatText] [ RockIsDefeat]
+[ FlagText | is | DefeatText][ FlagPic NO Defeat] -> [ FlagText | is | DefeatText] [ FlagIsDefeat]
+[ WallText | is | DefeatText][ WallPic NO Defeat] -> [ WallText | is | DefeatText] [ WallIsDefeat]
+[WaterText | is | DefeatText][WaterPic NO Defeat] -> [WaterText | is | DefeatText] [WaterIsDefeat]
+[SkullText | is | DefeatText][SkullPic NO Defeat] -> [SkullText | is | DefeatText] [SkullIsDefeat]
 
 
-(Apply Stop rules, by creating a MovementKiller)
-[Wall ] [WallIsStop] -> [ Wall MovementKiller ] [WallIsStop]
-[Rock ] [RockIsStop] -> [ Rock MovementKiller ] [RockIsStop]
-[Flag ] [FlagIsStop] -> [  Flag MovementKiller ] [FlagIsStop]
-[Baba ] [BabaIsStop] -> [ Baba MovementKiller ] [BabaIsStop]
-[Water ] [WaterIsStop] -> [ Water MovementKiller ] [WaterIsStop]
-[Skull ] [SkullIsStop] -> [  Skull MovementKiller] [SkullIsStop]
+[> Player] [You] -> [> Player] [> You]
 
-(Apply you rules)
-(NOTE THAT THIS RIGID BEHAVIOR MESSES SLIGHTLY WITH CONTROLLING MULTIPLE CHARACTERS)
-(First transfer movement to objects you control)
-[ > player ][Baba][BabaIsYou] -> [ player ][ > Baba][BabaIsYou]
-+[ > player ][Wall][WallIsYou] -> [ player ][ > Wall][WallIsYou]
-+[ > player ][Rock][RockIsYou] -> [ player ][ > Rock][RockIsYou]
-+[ > player ][Flag][FlagIsYou] -> [ player ][ > Flag][FlagIsYou]
-+[ > player ][Water][WaterIsYou] -> [ player ][ > Water][WaterIsYou]
-+[ > player ][Skull][SkullIsYou] -> [ player ][ > Skull][SkullIsYou]
+(Simple rules)
 
-(Re-apply movement to all things you control)
-+[ > Baba ][Baba][BabaIsYou] -> [ > Baba ][ > Baba][BabaIsYou]
-+[ > Wall ][Wall][WallIsYou] -> [ > Wall ][ > Wall][WallIsYou]
-+[ > Rock ][Rock][RockIsYou] -> [ > Rock ][ > Rock][RockIsYou]
-+[ > Flag ][Flag][FlagIsYou] -> [ > Flag ][ > Flag][FlagIsYou]
-+[ > Water ][Water][WaterIsYou] -> [ > Water ][ > Water][WaterIsYou]
-+[ > Skull ][Skull][SkullIsYou] -> [ > Skull ][ > Skull][SkullIsYou]
+[> Movable | STATIONARY Movable] -> [> Movable | > Movable]
 
-(Apply Push rules)
-+rigid[ >  Movable | Baba ] [BabaIsPush]  -> [  > Movable | > Baba ] [BabaIsPush]
-+rigid[ >  Movable | Wall ] [WallIsPush]  -> [  > Movable | > Wall ] [WallIsPush]
-+rigid[ >  Movable | Flag ] [FlagIsPush]  -> [  > Movable | > Flag ] [FlagIsPush]
-+rigid[ >  Movable | Rock ] [RockIsPush]  -> [  > Movable | > Rock ] [RockIsPush]
-+rigid[ >  Movable | Water ] [WaterIsPush]  -> [  > Movable | > Water ] [WaterIsPush]
-+rigid[ >  Movable | Skull ] [SkullIsPush]  -> [  > Movable | > Skull ] [SkullIsPush]
+[> You | Stop][You] -> [STATIONARY You | Stop][STATIONARY You] (stop all of you)
 
-(Text is always push (at least until implementing not), so any object will push it)
-+rigid[ >  Movable | Text ] -> [  > Movable | > Text ]
-
-(Stop all movement backwards from MovementKiller)
-startloop
-[ > Movable | Movable MovementKiller ] -> [ Movable MovementKiller | Movable MovementKiller ]
-endloop
-
-(Remove Temp Movement Rules)
-[RulePlaceholders] -> []
-
-(************************)
-(WE DETECT WIN AND OTHER ACTION CONDITIONS IN LATE UPDATE)
-(************************)
-
-(Transformation, TODO: disable these with BabaIsBaba or similar rule)
-(Horizontal)
-(Rock into stuff)
-late right [Rocktext | is | Babatext][Rock] -> [Rocktext | is | Babatext][Baba]
-late right [Rocktext | is | Walltext][Rock] -> [Rocktext | is | Walltext][Wall]
-late right [Rocktext | is | Flagtext][Rock] -> [Rocktext | is | Flagtext][Flag]
-late right [Rocktext | is | Watertext][Rock] -> [Rocktext | is | Watertext][Water]
-late right [Rocktext | is | Skulltext][Rock] -> [Rocktext | is | Skulltext][Skull]
-
-(BabaIntoStuff)
-late right [Babatext | is | Rocktext][Baba] -> [Babatext | is | Rocktext][Rock]
-late right [Babatext | is | Walltext][Baba] -> [Babatext | is | Walltext][Wall]
-late right [Babatext | is | Flagtext][Baba] -> [Babatext | is | Flagtext][Flag]
-late right [Babatext | is | Watertext][Baba] -> [Babatext | is | Watertext][Water]
-late right [Babatext | is | Skulltext][Baba] -> [Babatext | is | Skulltext][Skull]
-
-(WallIntoStuff)
-late right [Walltext | is | Rocktext][Wall] -> [Walltext | is | Rocktext][Rock]
-late right [Walltext | is | Babatext][Wall] -> [Walltext | is | Babatext][Baba]
-late right [Walltext | is | Flagtext][Wall] -> [Walltext | is | Flagtext][Flag]
-late right [Walltext | is | Watertext][Wall] -> [Walltext | is | Watertext][Water]
-late right [Walltext | is | Skulltext][Wall] -> [Walltext | is | Skulltext][Skull]
-
-(FlagIntoStuff)
-late right [Flagtext | is | Rocktext][Flag] -> [Flagtext | is | Rocktext][Rock]
-late right [Flagtext | is | Babatext][Flag] -> [Flagtext | is | Babatext][Baba]
-late right [Flagtext | is | Walltext][Flag] -> [Flagtext | is | Walltext][Wall]
-late right [Flagtext | is | Watertext][Flag] -> [Flagtext | is | Watertext][Water]
-late right [Flagtext | is | Skulltext][Flag] -> [Flagtext | is | Skulltext][Skull]
-
-(WaterIntoStuff)
-late right [Watertext | is | Rocktext][Water] -> [Watertext | is | Rocktext][Rock]
-late right [Watertext | is | Babatext][Water] -> [Watertext | is | Babatext][Baba]
-late right [Watertext | is | Walltext][Water] -> [Watertext | is | Walltext][Wall]
-late right [Watertext | is | Flagtext][Water] -> [Watertext | is | Flagtext][Flag]
-late right [Watertext | is | Skulltext][Water] -> [Watertext | is | Skulltext][Skull]
-
-(SkullIntoStuff)
-late right [Skulltext | is | Rocktext][Skull] -> [Skulltext | is | Rocktext][Rock]
-late right [Skulltext | is | Babatext][Skull] -> [Skulltext | is | Babatext][Baba]
-late right [Skulltext | is | Walltext][Skull] -> [Skulltext | is | Walltext][Wall]
-late right [Skulltext | is | Flagtext][Skull] -> [Skulltext | is | Flagtext][Flag]
-late right [Skulltext | is | Watertext][Skull] -> [Skulltext | is | Watertext][Water]
-
-(Vertical)
-(Rock into stuff)
-late down [Rocktext | is | Babatext][Rock] -> [Rocktext | is | Babatext][Baba]
-late down [Rocktext | is | Walltext][Rock] -> [Rocktext | is | Walltext][Wall]
-late down [Rocktext | is | Flagtext][Rock] -> [Rocktext | is | Flagtext][Flag]
-late down [Rocktext | is | Watertext][Rock] -> [Rocktext | is | Watertext][Water]
-late down [Rocktext | is | Skulltext][Rock] -> [Rocktext | is | Skulltext][Skull]
-
-(BabaIntoStuff)
-late down [Babatext | is | Rocktext][Baba] -> [Babatext | is | Rocktext][Rock]
-late down [Babatext | is | Walltext][Baba] -> [Babatext | is | Walltext][Wall]
-late down [Babatext | is | Flagtext][Baba] -> [Babatext | is | Flagtext][Flag]
-late down [Babatext | is | Watertext][Baba] -> [Babatext | is | Watertext][Water]
-late down [Babatext | is | Skulltext][Baba] -> [Babatext | is | Skulltext][Skull]
-
-(WallIntoStuff)
-late down [Walltext | is | Rocktext][Wall] -> [Walltext | is | Rocktext][Rock]
-late down [Walltext | is | Babatext][Wall] -> [Walltext | is | Babatext][Baba]
-late down [Walltext | is | Flagtext][Wall] -> [Walltext | is | Flagtext][Flag]
-late down [Walltext | is | Watertext][Wall] -> [Walltext | is | Watertext][Water]
-late down [Walltext | is | Skulltext][Wall] -> [Walltext | is | Skulltext][Skull]
-
-(FlagIntoStuff)
-late down [Flagtext | is | Rocktext][Flag] -> [Flagtext | is | Rocktext][Rock]
-late down [Flagtext | is | Babatext][Flag] -> [Flagtext | is | Babatext][Baba]
-late down [Flagtext | is | Walltext][Flag] -> [Flagtext | is | Walltext][Wall]
-late down [Flagtext | is | Watertext][Flag] -> [Flagtext | is | Watertext][Water]
-late down [Flagtext | is | Skulltext][Flag] -> [Flagtext | is | Skulltext][Skull]
-
-(WaterIntoStuff)
-late down [Watertext | is | Rocktext][Water] -> [Watertext | is | Rocktext][Rock]
-late down [Watertext | is | Babatext][Water] -> [Watertext | is | Babatext][Baba]
-late down [Watertext | is | Walltext][Water] -> [Watertext | is | Walltext][Wall]
-late down [Watertext | is | Flagtext][Water] -> [Watertext | is | Flagtext][Flag]
-late down [Watertext | is | Skulltext][Water] -> [Watertext | is | Skulltext][Skull]
-
-(SkullIntoStuff)
-late down [Skulltext | is | Rocktext][Skull] -> [Skulltext | is | Rocktext][Rock]
-late down [Skulltext | is | Babatext][Skull] -> [Skulltext | is | Babatext][Baba]
-late down [Skulltext | is | Walltext][Skull] -> [Skulltext | is | Walltext][Wall]
-late down [Skulltext | is | Flagtext][Skull] -> [Skulltext | is | Flagtext][Flag]
-late down [Skulltext | is | Watertext][Skull] -> [Skulltext | is | Watertext][Water]
-
-(Detect Temp Win and other Action Conditions)
-(HORIZONTAL)
-(You)
-late right [Rocktext no RockIsYou | is | You] -> [Rocktext RockIsYou | is | You]
-late right [Flagtext no FlagIsYou | is | You] -> [Flagtext FlagIsYou | is | You]
-late right [Walltext no WallIsYou | is | You] -> [Walltext WallIsYou | is | You]
-late right [Babatext no BabaIsYou | is | You] -> [Babatext BabaIsYou | is | You]
-late right [Watertext no WaterIsYou | is | You] -> [Watertext WaterIsYou | is | You]
-late right [Skulltext no SkullIsYou | is | You] -> [Skulltext SkullIsYou | is | You]
-(WinCondition)
-late right [Rocktext no RockIsWin | is | WinCondition] -> [Rocktext RockIsWin | is | WinCondition]
-late right [Flagtext no FlagIsWin | is | WinCondition] -> [Flagtext FlagIsWin | is | WinCondition]
-late right [Walltext no WallIsWin | is | WinCondition] -> [Walltext WallIsWin | is | WinCondition]
-late right [Babatext no BabaIsWin | is | WinCondition] -> [Babatext BabaIsWin | is | WinCondition]
-late right [Watertext no WaterIsWin | is | WinCondition] -> [Watertext WaterIsWin | is | WinCondition]
-late right [Skulltext no SkullIsWin | is | WinCondition] -> [Skulltext SkullIsWin | is | WinCondition]
-(Sink)
-late right [Rocktext no RockIsSink | is | Sink] -> [Rocktext RockIsSink | is | Sink]
-late right [Flagtext no FlagIsSink | is | Sink] -> [Flagtext FlagIsSink | is | Sink]
-late right [Walltext no WallIsSink | is | Sink] -> [Walltext WallIsSink | is | Sink]
-late right [Babatext no BabaIsSink | is | Sink] -> [Babatext BabaIsSink | is | Sink]
-late right [Watertext no WaterIsSink | is | Sink] -> [Watertext WaterIsSink | is | Sink]
-late right [Skulltext no SkullIsSink | is | Sink] -> [Skulltext SkullIsSink | is | Sink]
-(Defeat)
-late right [Rocktext no RockIsDefeat | is | Defeat] -> [Rocktext RockIsDefeat | is | Defeat]
-late right [Flagtext no FlagIsDefeat | is | Defeat] -> [Flagtext FlagIsDefeat | is | Defeat]
-late right [Walltext no WallIsDefeat | is | Defeat] -> [Walltext WallIsDefeat | is | Defeat]
-late right [Babatext no BabaIsDefeat | is | Defeat] -> [Babatext BabaIsDefeat | is | Defeat]
-late right [Watertext no WaterIsDefeat | is | Defeat] -> [Watertext WaterIsDefeat | is | Defeat]
-late right [Skulltext no SkullIsDefeat | is | Defeat] -> [Skulltext SkullIsDefeat | is | Defeat]
+[> Stop] -> [STATIONARY Stop]
 
 
-(vertical)
-(You)
-late down [Rocktext no RockIsYou | is | You] -> [Rocktext RockIsYou | is | You]
-late down [Flagtext no FlagIsYou | is | You] -> [Flagtext FlagIsYou | is | You]
-late down [Walltext no WallIsYou | is | You] -> [Walltext WallIsYou | is | You]
-late down [Babatext no BabaIsYou | is | You] -> [Babatext BabaIsYou | is | You]
-late down [Watertext no WaterIsYou | is | You] -> [Watertext WaterIsYou | is | You]
-late down [Skulltext no SkullIsYou | is | You] -> [Skulltext SkullIsYou | is | You]
-(WinCondition)
-late down [Rocktext no RockIsWin | is | WinCondition] -> [Rocktext RockIsWin | is | WinCondition]
-late down [Flagtext no FlagIsWin | is | WinCondition] -> [Flagtext FlagIsWin | is | WinCondition]
-late down [Walltext no WallIsWin | is | WinCondition] -> [Walltext WallIsWin | is | WinCondition]
-late down [Babatext no BabaIsWin | is | WinCondition] -> [Babatext BabaIsWin | is | WinCondition]
-late down [Watertext no WaterIsWin | is | WinCondition] -> [Watertext WaterIsWin | is | WinCondition]
-late down [Skulltext no SkullIsWin | is | WinCondition] -> [Skulltext SkullIsWin | is | WinCondition]
-(Sink)
-late down [Rocktext no RockIsSink | is | Sink] -> [Rocktext RockIsSink | is | Sink]
-late down [Flagtext no FlagIsSink | is | Sink] -> [Flagtext FlagIsSink | is | Sink]
-late down [Walltext no WallIsSink | is | Sink] -> [Walltext WallIsSink | is | Sink]
-late down [Babatext no BabaIsSink | is | Sink] -> [Babatext BabaIsSink | is | Sink]
-late down [Watertext no WaterIsSink | is | Sink] -> [Watertext WaterIsSink | is | Sink]
-late down [Skulltext no SkullIsSink | is | Sink] -> [Skulltext SkullIsSink | is | Sink]
-(Defeat)
-late down [Rocktext no RockIsDefeat | is | Defeat] -> [Rocktext RockIsDefeat | is | Defeat]
-late down [Flagtext no FlagIsDefeat | is | Defeat] -> [Flagtext FlagIsDefeat | is | Defeat]
-late down [Walltext no WallIsDefeat | is | Defeat] -> [Walltext WallIsDefeat | is | Defeat]
-late down [Babatext no BabaIsDefeat | is | Defeat] -> [Babatext BabaIsDefeat | is | Defeat]
-late down [Watertext no WaterIsDefeat | is | Defeat] -> [Watertext WaterIsDefeat | is | Defeat]
-late down [Skulltext no SkullIsDefeat | is | Defeat] -> [Skulltext SkullIsDefeat | is | Defeat]
-
-(Apply Action Rules)
-(Apply Sink Rule! ARGH Can't do: late [ Movable Wall ] [WallIsSink] -> [ ] [WallIsSink] :[ )
-(MISSING Interaction with Grass, Tree and Tile, but I won't bother because of the above issue)
+(Sink rules)
 (Wall)
-late [WallIsSink][Wall Text]  -> [WallIsSink][]sfx1
-late [WallIsSink][Wall Baba]  -> [WallIsSink][]sfx1
-late [WallIsSink][Wall Rock]  -> [WallIsSink][]sfx1
-late [WallIsSink][Wall Flag]  -> [WallIsSink][]sfx1
-late [WallIsSink][Wall Water]  -> [WallIsSink][]sfx1
-late [WallIsSink][Wall Skull]  -> [WallIsSink][]sfx1
+LATE [ WallIsSink  Text] -> [] SFX1
+LATE [ WallIsSink  Baba] -> [] SFX1
+LATE [ WallIsSink  Rock] -> [] SFX1
+LATE [ WallIsSink  Flag] -> [] SFX1
+LATE [ WallIsSink Water] -> [] SFX1
+LATE [ WallIsSink Skull] -> [] SFX1
 
 (Water)
-late [WaterIsSink][Water Text] -> [WaterIsSink][]sfx1
-late [WaterIsSink][Water Baba] -> [WaterIsSink][]sfx1
-late [WaterIsSink][Water Rock] -> [WaterIsSink][]sfx1
-late [WaterIsSink][Water Flag] -> [WaterIsSink][]sfx1
-late [WaterIsSink][Water Wall] -> [WaterIsSink][]sfx1
-late [WaterIsSink][Water Skull] -> [WaterIsSink][]sfx1
+LATE [WaterIsSink  Text] -> [] SFX1
+LATE [WaterIsSink  Baba] -> [] SFX1
+LATE [WaterIsSink  Rock] -> [] SFX1
+LATE [WaterIsSink  Flag] -> [] SFX1
+LATE [WaterIsSink  Wall] -> [] SFX1
+LATE [WaterIsSink Skull] -> [] SFX1
 
 (Baba)
-late [BabaIsSink][Baba Text] -> [BabaIsSink][]sfx1
-late [BabaIsSink][Baba Rock] -> [BabaIsSink][]sfx1
-late [BabaIsSink][Baba Flag] -> [BabaIsSink][]sfx1
-late [BabaIsSink][Baba Wall] -> [BabaIsSink][]sfx1
-late [BabaIsSink][Baba Water] -> [BabaIsSink][]sfx1
-late [BabaIsSink][Baba Skull] -> [BabaIsSink][]sfx1
+LATE [ BabaIsSink  Text] -> [] SFX1
+LATE [ BabaIsSink  Rock] -> [] SFX1
+LATE [ BabaIsSink  Flag] -> [] SFX1
+LATE [ BabaIsSink  Wall] -> [] SFX1
+LATE [ BabaIsSink Water] -> [] SFX1
+LATE [ BabaIsSink Skull] -> [] SFX1
 
 (Rock)
-late [RockIsSink][Rock Text ]  -> [RockIsSink][]sfx1
-late [RockIsSink][Rock Baba ]  -> [RockIsSink][]sfx1
-late [RockIsSink][Rock Flag ]  -> [RockIsSink][]sfx1
-late [RockIsSink][Rock Wall ]  -> [RockIsSink][]sfx1
-late [RockIsSink][Rock Water ]  -> [RockIsSink][]sfx1
-late [RockIsSink][Rock Skull ]  -> [RockIsSink][]sfx1
+LATE [ RockIsSink  Text] -> [] SFX1
+LATE [ RockIsSink  Baba] -> [] SFX1
+LATE [ RockIsSink  Flag] -> [] SFX1
+LATE [ RockIsSink  Wall] -> [] SFX1
+LATE [ RockIsSink Water] -> [] SFX1
+LATE [ RockIsSink Skull] -> [] SFX1
 
 (Flag)
-late [FlagIsSink][Flag Text]  -> [FlagIsSink][]sfx1
-late [FlagIsSink][Flag Baba]  -> [FlagIsSink][]sfx1
-late [FlagIsSink][Flag Rock]  -> [FlagIsSink][]sfx1
-late [FlagIsSink][Flag Wall]  -> [FlagIsSink][]sfx1
-late [FlagIsSink][Flag Water]  -> [FlagIsSink][]sfx1
-late [FlagIsSink][Flag Skull]  -> [FlagIsSink][]sfx1
+LATE [ FlagIsSink  Text] -> [] SFX1
+LATE [ FlagIsSink  Baba] -> [] SFX1
+LATE [ FlagIsSink  Rock] -> [] SFX1
+LATE [ FlagIsSink  Wall] -> [] SFX1
+LATE [ FlagIsSink Water] -> [] SFX1
+LATE [ FlagIsSink Skull] -> [] SFX1
 
 (Skull)
-late [SkullIsSink][Skull Text]  -> [SkullIsSink][]sfx1
-late [SkullIsSink][Skull Baba]  -> [SkullIsSink][]sfx1
-late [SkullIsSink][Skull Rock]  -> [SkullIsSink][]sfx1
-late [SkullIsSink][Skull Wall]  -> [SkullIsSink][]sfx1
-late [SkullIsSink][Skull Water]  -> [SkullIsSink][]sfx1
-late [SkullIsSink][Skull Flag]  -> [SkullIsSink][]sfx1
+LATE [SkullIsSink  Text] -> [] SFX1
+LATE [SkullIsSink  Baba] -> [] SFX1
+LATE [SkullIsSink  Flag] -> [] SFX1
+LATE [SkullIsSink  Rock] -> [] SFX1
+LATE [SkullIsSink  Wall] -> [] SFX1
+LATE [SkullIsSink Water] -> [] SFX1
 
-(Apply Defeat Rule! ARGH Can't do: late [SkullIsDefeat][ Skull Movable] -> [SkullIsDefeat][] :[ )
+
+
+
+(Defeat rules)
 (Wall)
-late [WallIsDefeat][BabaIsYou][Wall Baba]  -> [WallIsDefeat][BabaIsYou][Wall] sfx0
-late [WallIsDefeat][RockIsYou][Wall Rock]  -> [WallIsDefeat][RockIsYou][Wall] sfx0
-late [WallIsDefeat][FlagIsYou][Wall Flag]  -> [WallIsDefeat][FlagIsYou][Wall] sfx0
-late [WallIsDefeat][WaterIsYou][Wall Water]  -> [WallIsDefeat][WaterIsYou][Wall] sfx0
-late [WallIsDefeat][SkullIsYou][Wall Skull]  -> [WallIsDefeat][SkullIsYou][Wall] sfx0
+LATE [ WallIsDefeat  BabaIsYou] -> [ WallIsDefeat] SFX1
+LATE [ WallIsDefeat  RockIsYou] -> [ WallIsDefeat] SFX1
+LATE [ WallIsDefeat  FlagIsYou] -> [ WallIsDefeat] SFX1
+LATE [ WallIsDefeat WaterIsYou] -> [ WallIsDefeat] SFX1
+LATE [ WallIsDefeat SkullIsYou] -> [ WallIsDefeat] SFX1
 
 (Water)
-late [WaterIsDefeat][BabaIsYou][Water Baba] -> [WaterIsDefeat][BabaIsYou][Water]sfx0
-late [WaterIsDefeat][RockIsYou][Water Rock] -> [WaterIsDefeat][RockIsYou][Water]sfx0
-late [WaterIsDefeat][FlagIsYou][Water Flag] -> [WaterIsDefeat][FlagIsYou][Water]sfx0
-late [WaterIsDefeat][WallIsYou][Water Wall] -> [WaterIsDefeat][WallIsYou][Water]sfx0
-late [WaterIsDefeat][SkullIsYou][Water Skull] -> [WaterIsDefeat][SkullIsYou][Water]sfx0
+LATE [WaterIsDefeat  BabaIsYou] -> [WaterIsDefeat] SFX1
+LATE [WaterIsDefeat  RockIsYou] -> [WaterIsDefeat] SFX1
+LATE [WaterIsDefeat  FlagIsYou] -> [WaterIsDefeat] SFX1
+LATE [WaterIsDefeat  WallIsYou] -> [WaterIsDefeat] SFX1
+LATE [WaterIsDefeat SkullIsYou] -> [WaterIsDefeat] SFX1
 
 (Baba)
-late [BabaIsDefeat][RockIsYou][Baba Rock] -> [BabaIsDefeat][RockIsYou][Baba]sfx0
-late [BabaIsDefeat][FlagIsYou][Baba Flag] -> [BabaIsDefeat][FlagIsYou][Baba]sfx0
-late [BabaIsDefeat][WallIsYou][Baba Wall] -> [BabaIsDefeat][WallIsYou][Baba]sfx0
-late [BabaIsDefeat][WaterIsYou][Baba Water] -> [BabaIsDefeat][WaterIsYou][Baba]sfx0
-late [BabaIsDefeat][SkullIsYou][Baba Skull] -> [BabaIsDefeat][SkullIsYou][Baba]sfx0
+LATE [ BabaIsDefeat  RockIsYou] -> [ BabaIsDefeat] SFX1
+LATE [ BabaIsDefeat  FlagIsYou] -> [ BabaIsDefeat] SFX1
+LATE [ BabaIsDefeat  WallIsYou] -> [ BabaIsDefeat] SFX1
+LATE [ BabaIsDefeat WaterIsYou] -> [ BabaIsDefeat] SFX1
+LATE [ BabaIsDefeat SkullIsYou] -> [ BabaIsDefeat] SFX1
 
 (Rock)
-late [RockIsDefeat][BabaIsYou][Rock Baba ]  -> [RockIsDefeat][BabaIsYou][Rock]sfx0
-late [RockIsDefeat][FlagIsYou][Rock Flag ]  -> [RockIsDefeat][FlagIsYou][Rock]sfx0
-late [RockIsDefeat][WallIsYou][Rock Wall ]  -> [RockIsDefeat][WallIsYou][Rock]sfx0
-late [RockIsDefeat][WaterIsYou][Rock Water ] -> [RockIsDefeat][WaterIsYou][Rock]sfx0
-late [RockIsDefeat][SkullIsYou][Rock Skull ] -> [RockIsDefeat][SkullIsYou][Rock]sfx0
+LATE [ RockIsDefeat  BabaIsYou] -> [ RockIsDefeat] SFX1
+LATE [ RockIsDefeat  FlagIsYou] -> [ RockIsDefeat] SFX1
+LATE [ RockIsDefeat  WallIsYou] -> [ RockIsDefeat] SFX1
+LATE [ RockIsDefeat WaterIsYou] -> [ RockIsDefeat] SFX1
+LATE [ RockIsDefeat SkullIsYou] -> [ RockIsDefeat] SFX1
 
 (Flag)
-late [FlagIsDefeat][BabaIsYou][Flag Baba]  -> [FlagIsDefeat][BabaIsYou][Flag]sfx0
-late [FlagIsDefeat][RockIsYou][Flag Rock]  -> [FlagIsDefeat][RockIsYou][Flag]sfx0
-late [FlagIsDefeat][WallIsYou][Flag Wall]  -> [FlagIsDefeat][WallIsYou][Flag]sfx0
-late [FlagIsDefeat][WaterIsYou][Flag Water] -> [FlagIsDefeat][WaterIsYou][Flag]sfx0
-late [FlagIsDefeat][SkullIsYou][Flag Skull] -> [FlagIsDefeat][SkullIsYou][Flag]sfx0
+LATE [ FlagIsDefeat  BabaIsYou] -> [ FlagIsDefeat] SFX1
+LATE [ FlagIsDefeat  RockIsYou] -> [ FlagIsDefeat] SFX1
+LATE [ FlagIsDefeat  WallIsYou] -> [ FlagIsDefeat] SFX1
+LATE [ FlagIsDefeat WaterIsYou] -> [ FlagIsDefeat] SFX1
+LATE [ FlagIsDefeat SkullIsYou] -> [ FlagIsDefeat] SFX1
+
 (Skull)
-late [SkullIsDefeat][BabaIsYou][Skull Baba]  -> [SkullIsDefeat][BabaIsYou][Skull]sfx0
-late [SkullIsDefeat][RockIsYou][Skull Rock]  -> [SkullIsDefeat][RockIsYou][Skull]sfx0
-late [SkullIsDefeat][WallIsYou][Skull Wall]  -> [SkullIsDefeat][WallIsYou][Skull]sfx0
-late [SkullIsDefeat][WaterIsYou][Skull Water] -> [SkullIsDefeat][WaterIsYou][Skull]sfx0
-late [SkullIsDefeat][FlagIsYou][Skull Flag] -> [SkullIsDefeat][FlagIsYou][Skull]sfx0
-
-(Apply WinCondition rules)
-(First simple self win rules)
-late [RockIsWin][RockIsYou] -> [RockIsWin][RockIsYou] win
-late [FlagIsWin][FlagIsYou] -> [FlagIsWin][FlagIsYou] win
-late [WallIsWin][WallIsYou] -> [WallIsWin][WallIsYou] win
-late [BabaIsWin][BabaIsYou] -> [BabaIsWin][BabaIsYou] win
-late [WaterIsWin][WaterIsYou] -> [WaterIsWin][WaterIsYou] win
-late [SkullIsWin][SkullIsYou] -> [SkullIsWin][SkullIsYou] win
-
-(Then overlapping objects rules)
-(Flag is win)
-late [FlagIsWin][BabaIsYou][Flag Baba] -> [FlagIsWin][BabaIsYou][Flag Baba] win
-late [FlagIsWin][RockIsYou][Flag Rock] -> [FlagIsWin][RockIsYou][Flag Rock] win
-late [FlagIsWin][WallIsYou][Flag Wall] -> [FlagIsWin][WallIsYou][Flag Wall] win
-late [FlagIsWin][WaterIsYou][Flag Water] -> [FlagIsWin][WaterIsYou][Flag water] win
-late [FlagIsWin][SkullIsYou][Flag Skull] -> [FlagIsWin][SkullIsYou][Flag skull] win
-
-(Rock is win)
-late [RockIsWin][BabaIsYou][Rock Baba] -> [RockIsWin][BabaIsYou][Rock Baba] win
-late [RockIsWin][FlagIsYou][Rock Flag] -> [RockIsWin][FlagIsYou][Rock Flag] win
-late [RockIsWin][WallIsYou][Rock Wall] -> [RockIsWin][WallIsYou][Rock Wall] win
-late [RockIsWin][WaterIsYou][Rock Water] -> [RockIsWin][WaterIsYou][Rock water] win
-late [RockIsWin][SkullIsYou][Rock Skull] -> [RockIsWin][SkullIsYou][Rock skull] win
-
-(Wall is win)
-late [WallIsWin][BabaIsYou][Wall Baba] -> [WallIsWin][BabaIsYou][Wall Baba] win
-late [WallIsWin][FlagIsYou][Wall Flag] -> [WallIsWin][FlagIsYou][Wall Flag] win
-late [WallIsWin][RockIsYou][Wall Rock] -> [WallIsWin][RockIsYou][Wall Rock] win
-late [WallIsWin][WaterIsYou][Wall Water] -> [WallIsWin][WaterIsYou][Wall water] win
-late [WallIsWin][SkullIsYou][Wall Skull] -> [WallIsWin][SkullIsYou][Wall skull] win
-
-(Baba is win)
-late [BabaIsWin][WallIsYou][Baba Wall] -> [BabaIsWin][WallIsYou][Baba Wall] win
-late [BabaIsWin][FlagIsYou][Baba Flag] -> [BabaIsWin][FlagIsYou][Baba Flag] win
-late [BabaIsWin][RockIsYou][Baba Rock] -> [BabaIsWin][RockIsYou][Baba Rock] win
-late [BabaIsWin][WaterIsYou][Baba Water] -> [BabaIsWin][WaterIsYou][Baba water] win
-late [BabaIsWin][SkullIsYou][Baba Skull] -> [BabaIsWin][SkullIsYou][baba skull] win
-
-(Water is win)
-late [WaterIsWin][WallIsYou][Water Wall] -> [WaterIsWin][WallIsYou][Water Wall] win
-late [WaterIsWin][FlagIsYou][Water Flag] -> [WaterIsWin][FlagIsYou][Water Flag] win
-late [WaterIsWin][RockIsYou][Water Rock] -> [WaterIsWin][RockIsYou][Water Rock] win
-late [WaterIsWin][BabaIsYou][Water Baba] -> [WaterIsWin][BabaIsYou][Water Baba] win
-late [WaterIsWin][SkullIsYou][Water Skull] -> [WaterIsWin][SkullIsYou][Water skull] win
-
-(Skull is win)
-late [SkullIsWin][WallIsYou][Skull Wall] -> [SkullIsWin][WallIsYou][Skull Wall] win
-late [SkullIsWin][FlagIsYou][Skull Flag] -> [SkullIsWin][FlagIsYou][Skull Flag] win
-late [SkullIsWin][RockIsYou][Skull Rock] -> [SkullIsWin][RockIsYou][Skull Rock] win
-late [SkullIsWin][BabaIsYou][Skull Baba] -> [SkullIsWin][BabaIsYou][Skull Baba] win
-late [SkullIsWin][WaterIsYou][Skull Water] -> [SkullIsWin][WaterIsYou][Skull Water] win
+LATE [SkullIsDefeat  BabaIsYou] -> [SkullIsDefeat] SFX1
+LATE [SkullIsDefeat  FlagIsYou] -> [SkullIsDefeat] SFX1
+LATE [SkullIsDefeat  RockIsYou] -> [SkullIsDefeat] SFX1
+LATE [SkullIsDefeat  WallIsYou] -> [SkullIsDefeat] SFX1
+LATE [SkullIsDefeat WaterIsYou] -> [SkullIsDefeat] SFX1
 
 
-(Remove Temp WinCondition)
-[RulePlaceholders] -> []
 
+
+LATE [You Goal] -> WIN
+
+(restore the pics because we are done with logic)
+
+LATE [ Baba] -> [ Baba  BabaPic]
+LATE [ Rock] -> [ Rock  RockPic]
+LATE [ Flag] -> [ Flag  FlagPic]
+LATE [ Wall] -> [ Wall  WallPic]
+LATE [Water] -> [Water WaterPic]
+LATE [Skull] -> [Skull SkullPic]
+
+LATE [Property] -> []
 
 ==============
 WINCONDITIONS
 ==============
 
-(Win conditions are calculated during the late rule execution phase)
+(Win condition is determined in the RULES)
 
 =======
 LEVELS
