@@ -607,50 +607,62 @@ RULES
 
 [ Property ] -> [ NO Property ]
 
-[ BabaText | is |  YouText][ BabaPic NO  You] -> [ BabaText | is |  YouText] [ BabaIsYou]
-[ RockText | is |  YouText][ RockPic NO  You] -> [ RockText | is |  YouText] [ RockIsYou]
-[ FlagText | is |  YouText][ FlagPic NO  You] -> [ FlagText | is |  YouText] [ FlagIsYou]
-[ WallText | is |  YouText][ WallPic NO  You] -> [ WallText | is |  YouText] [ WallIsYou]
-[WaterText | is |  YouText][WaterPic NO  You] -> [WaterText | is |  YouText] [WaterIsYou]
-[SkullText | is |  YouText][SkullPic NO  You] -> [SkullText | is |  YouText] [SkullIsYou]
+[ BabaText | is |  YouText][ BabaPic NO  You] -> [ BabaText | is |  YouText] [ BabaPic  BabaIsYou]
+[ RockText | is |  YouText][ RockPic NO  You] -> [ RockText | is |  YouText] [ RockPic  RockIsYou]
+[ FlagText | is |  YouText][ FlagPic NO  You] -> [ FlagText | is |  YouText] [ FlagPic  FlagIsYou]
+[ WallText | is |  YouText][ WallPic NO  You] -> [ WallText | is |  YouText] [ WallPic  WallIsYou]
+[WaterText | is |  YouText][WaterPic NO  You] -> [WaterText | is |  YouText] [WaterPic WaterIsYou]
+[SkullText | is |  YouText][SkullPic NO  You] -> [SkullText | is |  YouText] [SkullPic SkullIsYou]
 
-[ BabaText | is | PushText][ BabaPic NO Push] -> [ BabaText | is | PushText] [ BabaIsPush]
-[ RockText | is | PushText][ RockPic NO Push] -> [ RockText | is | PushText] [ RockIsPush]
-[ FlagText | is | PushText][ FlagPic NO Push] -> [ FlagText | is | PushText] [ FlagIsPush]
-[ WallText | is | PushText][ WallPic NO Push] -> [ WallText | is | PushText] [ WallIsPush]
-[WaterText | is | PushText][WaterPic NO Push] -> [WaterText | is | PushText] [WaterIsPush]
-[SkullText | is | PushText][SkullPic NO Push] -> [SkullText | is | PushText] [SkullIsPush]
+[ BabaText | is | PushText][ BabaPic NO Push] -> [ BabaText | is | PushText] [ BabaPic  BabaIsPush]
+[ RockText | is | PushText][ RockPic NO Push] -> [ RockText | is | PushText] [ RockPic  RockIsPush]
+[ FlagText | is | PushText][ FlagPic NO Push] -> [ FlagText | is | PushText] [ FlagPic  FlagIsPush]
+[ WallText | is | PushText][ WallPic NO Push] -> [ WallText | is | PushText] [ WallPic  WallIsPush]
+[WaterText | is | PushText][WaterPic NO Push] -> [WaterText | is | PushText] [WaterPic WaterIsPush]
+[SkullText | is | PushText][SkullPic NO Push] -> [SkullText | is | PushText] [SkullPic SkullIsPush]
 
-[ BabaText | is | StopText][ BabaPic NO Stop] -> [ BabaText | is | StopText] [ BabaIsStop]
-[ RockText | is | StopText][ RockPic NO Stop] -> [ RockText | is | StopText] [ RockIsStop]
-[ FlagText | is | StopText][ FlagPic NO Stop] -> [ FlagText | is | StopText] [ FlagIsStop]
-[ WallText | is | StopText][ WallPic NO Stop] -> [ WallText | is | StopText] [ WallIsStop]
-[WaterText | is | StopText][WaterPic NO Stop] -> [WaterText | is | StopText] [WaterIsStop]
-[SkullText | is | StopText][SkullPic NO Stop] -> [SkullText | is | StopText] [SkullIsStop]
+[ BabaText | is | StopText][ BabaPic NO Stop] -> [ BabaText | is | StopText] [ BabaPic  BabaIsStop]
+[ RockText | is | StopText][ RockPic NO Stop] -> [ RockText | is | StopText] [ RockPic  RockIsStop]
+[ FlagText | is | StopText][ FlagPic NO Stop] -> [ FlagText | is | StopText] [ FlagPic  FlagIsStop]
+[ WallText | is | StopText][ WallPic NO Stop] -> [ WallText | is | StopText] [ WallPic  WallIsStop]
+[WaterText | is | StopText][WaterPic NO Stop] -> [WaterText | is | StopText] [WaterPic WaterIsStop]
+[SkullText | is | StopText][SkullPic NO Stop] -> [SkullText | is | StopText] [SkullPic SkullIsStop]
 
-[ BabaText | is | GoalText][ BabaPic NO Goal] -> [ BabaText | is | GoalText] [ BabaIsGoal]
-[ RockText | is | GoalText][ RockPic NO Goal] -> [ RockText | is | GoalText] [ RockIsGoal]
-[ FlagText | is | GoalText][ FlagPic NO Goal] -> [ FlagText | is | GoalText] [ FlagIsGoal]
-[ WallText | is | GoalText][ WallPic NO Goal] -> [ WallText | is | GoalText] [ WallIsGoal]
-[WaterText | is | GoalText][WaterPic NO Goal] -> [WaterText | is | GoalText] [WaterIsGoal]
-[SkullText | is | GoalText][SkullPic NO Goal] -> [SkullText | is | GoalText] [SkullIsGoal]
+[ BabaText | is | GoalText][ BabaPic NO Goal] -> [ BabaText | is | GoalText] [ BabaPic  BabaIsGoal]
+[ RockText | is | GoalText][ RockPic NO Goal] -> [ RockText | is | GoalText] [ RockPic  RockIsGoal]
+[ FlagText | is | GoalText][ FlagPic NO Goal] -> [ FlagText | is | GoalText] [ FlagPic  FlagIsGoal]
+[ WallText | is | GoalText][ WallPic NO Goal] -> [ WallText | is | GoalText] [ WallPic  WallIsGoal]
+[WaterText | is | GoalText][WaterPic NO Goal] -> [WaterText | is | GoalText] [WaterPic WaterIsGoal]
+[SkullText | is | GoalText][SkullPic NO Goal] -> [SkullText | is | GoalText] [SkullPic SkullIsGoal]
 
-[ BabaText | is | SinkText][ BabaPic NO Sink] -> [ BabaText | is | SinkText] [ BabaIsSink]
-[ RockText | is | SinkText][ RockPic NO Sink] -> [ RockText | is | SinkText] [ RockIsSink]
-[ FlagText | is | SinkText][ FlagPic NO Sink] -> [ FlagText | is | SinkText] [ FlagIsSink]
-[ WallText | is | SinkText][ WallPic NO Sink] -> [ WallText | is | SinkText] [ WallIsSink]
-[WaterText | is | SinkText][WaterPic NO Sink] -> [WaterText | is | SinkText] [WaterIsSink]
-[SkullText | is | SinkText][SkullPic NO Sink] -> [SkullText | is | SinkText] [SkullIsSink]
+[ BabaText | is | SinkText][ BabaPic NO Sink] -> [ BabaText | is | SinkText] [ BabaPic  BabaIsSink]
+[ RockText | is | SinkText][ RockPic NO Sink] -> [ RockText | is | SinkText] [ RockPic  RockIsSink]
+[ FlagText | is | SinkText][ FlagPic NO Sink] -> [ FlagText | is | SinkText] [ FlagPic  FlagIsSink]
+[ WallText | is | SinkText][ WallPic NO Sink] -> [ WallText | is | SinkText] [ WallPic  WallIsSink]
+[WaterText | is | SinkText][WaterPic NO Sink] -> [WaterText | is | SinkText] [WaterPic WaterIsSink]
+[SkullText | is | SinkText][SkullPic NO Sink] -> [SkullText | is | SinkText] [SkullPic SkullIsSink]
 
-[ BabaText | is | DefeatText][ BabaPic NO Defeat] -> [ BabaText | is | DefeatText] [ BabaIsDefeat]
-[ RockText | is | DefeatText][ RockPic NO Defeat] -> [ RockText | is | DefeatText] [ RockIsDefeat]
-[ FlagText | is | DefeatText][ FlagPic NO Defeat] -> [ FlagText | is | DefeatText] [ FlagIsDefeat]
-[ WallText | is | DefeatText][ WallPic NO Defeat] -> [ WallText | is | DefeatText] [ WallIsDefeat]
-[WaterText | is | DefeatText][WaterPic NO Defeat] -> [WaterText | is | DefeatText] [WaterIsDefeat]
-[SkullText | is | DefeatText][SkullPic NO Defeat] -> [SkullText | is | DefeatText] [SkullIsDefeat]
+[ BabaText | is | DefeatText][ BabaPic NO Defeat] -> [ BabaText | is | DefeatText] [ BabaPic  BabaIsDefeat]
+[ RockText | is | DefeatText][ RockPic NO Defeat] -> [ RockText | is | DefeatText] [ RockPic  RockIsDefeat]
+[ FlagText | is | DefeatText][ FlagPic NO Defeat] -> [ FlagText | is | DefeatText] [ FlagPic  FlagIsDefeat]
+[ WallText | is | DefeatText][ WallPic NO Defeat] -> [ WallText | is | DefeatText] [ WallPic  WallIsDefeat]
+[WaterText | is | DefeatText][WaterPic NO Defeat] -> [WaterText | is | DefeatText] [WaterPic WaterIsDefeat]
+[SkullText | is | DefeatText][SkullPic NO Defeat] -> [SkullText | is | DefeatText] [SkullPic SkullIsDefeat]
 
+(first place we check for WIN)
+[You Goal] -> WIN
+
+
+(remove any pics that are mapped to state)
+[ Baba  BabaPic] -> [ Baba]
+[ Rock  RockPic] -> [ Rock]
+[ Flag  FlagPic] -> [ Flag]
+[ Wall  WallPic] -> [ Wall]
+[Water WaterPic] -> [Water]
+[Skull SkullPic] -> [Skull]
 
 [> Player] [You] -> [> Player] [> You]
+[> Player] -> [Player]
 
 (Simple rules)
 
@@ -758,7 +770,7 @@ LATE [SkullIsDefeat WaterIsYou] -> [SkullIsDefeat] SFX1
 
 
 
-
+(the other time we check for WIN)
 LATE [You Goal] -> WIN
 
 (restore the pics because we are done with logic)
