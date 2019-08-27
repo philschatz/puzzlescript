@@ -3,5 +3,5 @@ declare module "dialog-polyfill" {
         registerDialog(el: Element): void
     }
     var dialogPolyfill: DialogPolyfill
-    export = dialogPolyfill
+    export default dialogPolyfill
 }

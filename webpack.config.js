@@ -58,7 +58,49 @@ module.exports = {
                         statuses: [0, 200]
                     }
                 }
-            }]
+            },
+            {
+                urlPattern: /\/game-thumbnails\//,
+                handler: 'staleWhileRevalidate',
+                options: {
+                    cacheName: 'game-thumbnails-v1',
+                    cacheableResponse: {
+                        statuses: [0, 200]
+                    }
+                }
+            },
+            {
+                urlPattern: /\/style\.css/,
+                handler: 'staleWhileRevalidate',
+                options: {
+                    cacheName: 'app-v1',
+                    cacheableResponse: {
+                        statuses: [0, 200]
+                    }
+                }
+            },
+            {
+                urlPattern: /\/favicon\.ico/,
+                handler: 'staleWhileRevalidate',
+                options: {
+                    cacheName: 'app-icons-v1',
+                    cacheableResponse: {
+                        statuses: [0, 200]
+                    }
+                }
+            },
+            {
+                urlPattern: /\/apple-.*\.png/,
+                handler: 'staleWhileRevalidate',
+                options: {
+                    cacheName: 'app-icons-v1',
+                    cacheableResponse: {
+                        statuses: [0, 200]
+                    }
+                }
+            },
+
+        ]
             
         })
     ],
