@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.0.0/workbox-sw.js");
 
 importScripts(
-  "precache-manifest.50222ea25399c6db52037b4cd08fc2ef.js"
+  "precache-manifest.23e30bb4e6df54257cdb72ce4c3700d7.js"
 );
 
 workbox.core.skipWaiting();
@@ -31,5 +31,9 @@ workbox.precaching.precacheAndRoute(self.__precacheManifest, {
 });
 
 workbox.routing.registerRoute(/\/games\//, new workbox.strategies.StaleWhileRevalidate({ "cacheName":"games-v1", plugins: [new workbox.cacheableResponse.Plugin({ statuses: [ 0, 200 ] })] }), 'GET');
+workbox.routing.registerRoute(/\/game-thumbnails\//, new workbox.strategies.StaleWhileRevalidate({ "cacheName":"game-thumbnails-v1", plugins: [new workbox.cacheableResponse.Plugin({ statuses: [ 0, 200 ] })] }), 'GET');
+workbox.routing.registerRoute(/\/style\.css/, new workbox.strategies.StaleWhileRevalidate({ "cacheName":"app-v1", plugins: [new workbox.cacheableResponse.Plugin({ statuses: [ 0, 200 ] })] }), 'GET');
+workbox.routing.registerRoute(/\/favicon\.ico/, new workbox.strategies.StaleWhileRevalidate({ "cacheName":"app-icons-v1", plugins: [new workbox.cacheableResponse.Plugin({ statuses: [ 0, 200 ] })] }), 'GET');
+workbox.routing.registerRoute(/\/apple-.*\.png/, new workbox.strategies.StaleWhileRevalidate({ "cacheName":"app-icons-v1", plugins: [new workbox.cacheableResponse.Plugin({ statuses: [ 0, 200 ] })] }), 'GET');
 
 workbox.googleAnalytics.initialize({});

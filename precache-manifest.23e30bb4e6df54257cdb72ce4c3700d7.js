@@ -1,14 +1,14 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "70ac05427ae6b2db698a",
+    "revision": "8d5f4c9a3423933befeb",
     "url": "pwa-app.js"
   },
   {
-    "revision": "ce74fa30ce5d577d42c6",
+    "revision": "5d32fb678d20f8f877e0",
     "url": "puzzlescript.js"
   },
   {
-    "revision": "18e60e09955c9c5c1a35",
+    "revision": "dc119cc8771c8949afa3",
     "url": "puzzlescript-webworker.js"
   },
   {
