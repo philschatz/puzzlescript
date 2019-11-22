@@ -6,7 +6,7 @@
 [![Dev dependency status][dev-dependency-image]][dev-dependency-url]
 [![Code coverage][coverage-image]][coverage-url]
 
-This is a program that allows people to play [PuzzleScript](https://puzzlescript.net) games in a browser **or** in a terminal.
+This is a program that allows people to play [PuzzleScript](https://www.puzzlescript.net) games in a browser **or** in a terminal.
 
 Also, it is **accessible**, meaning that [blind or visually impaired people can play these games](#video-games-that-blind-people-can-play) too! See [blog post](https://philschatz.com/2018/09/22/puzzlescript/) for more info or try the [demo](https://philschatz.com/puzzlescript/).
 
