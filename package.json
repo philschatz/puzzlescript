@@ -104,7 +104,7 @@
     "weak": "^1.0.1",
     "webpack": "^4.39.2",
     "webpack-cli": "^3.1.2",
-    "workbox-webpack-plugin": "^4.3.1"
+    "workbox-webpack-plugin": "^5.0.0"
   },
   "optionalDependencies": {
     "speaker": "github:philschatz/node-speaker#cac7c5b7c434b52619bfbbd9530ab0871156e815"
