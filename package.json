@@ -83,7 +83,7 @@
     "javascript-time-ago": "^2.0.1",
     "jest": "^23.6.0",
     "jest-puppeteer": "^4.0.0",
-    "lighthouse": "^5.0.0",
+    "lighthouse": "^6.0.0",
     "mkdirp": "^0.5.1",
     "node-fetch": "^2.3.0",
     "nyc": "^14.1.1",
