@@ -86,7 +86,7 @@
     "lighthouse": "^5.0.0",
     "mkdirp": "^0.5.1",
     "node-fetch": "^2.3.0",
-    "nyc": "^14.1.1",
+    "nyc": "^15.1.0",
     "process-nextick-args": "^2.0.0",
     "puppeteer": "^1.11.0",
     "remap-istanbul": "^0.13.0",
