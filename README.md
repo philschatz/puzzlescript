@@ -8,14 +8,14 @@
 
 This is a program that allows people to play [PuzzleScript](https://puzzlescript.net) games in a browser **or** in a terminal.
 
-Also, it is **accessible**, meaning that [blind or visually impaired people can play these games](#video-games-that-blind-people-can-play) too! See [blog post](https://philschatz.com/2018/09/22/puzzlescript/) for more info or try the [demo](https://philschatz.com/puzzlescript/).
+Also, it is **accessible**, meaning that [blind or visually impaired people can play these games](#video-games-that-blind-people-can-play) too! See [blog post](https://philschatz.com/2018/09/22/puzzlescript/) for more info or **[try the demo](https://philschatz.com/puzzlescript/)**.
 
 
 ## Play in a browser or on your mobile device
 
-This is also a [Progressive Web App](https://developer.mozilla.org/en-US/docs/Web/Apps/Progressive/Introduction), meaning that you can add it to your phone/tablet/browser and play games even when you are offline.
-
-Just visit the [demo site](https://philschatz.com/puzzlescript) and click the "Add" button at the bottom.
+1. Visit the [demo site](https://philschatz.com/puzzlescript)
+1. Click the "Add" button at the bottom to keep playing even without an internet connection
+1. Plug in a :video_game: controller! (tested with PS3/4/XBox)
 
 <details>
 
@@ -36,55 +36,37 @@ Just visit the [demo site](https://philschatz.com/puzzlescript) and click the "A
 1. Run `puzzlescript` to start playing
 
 
-### Embed in a Browser
-
-See [./src/browser/spec/html-table.xhtml](./src/browser/spec/html-table.xhtml) for an example of embedding in a browser.
-
-```js
-// Include <script src="node_modules/puzzlescript/puzzlescript.js"></script>
-// and then the following:
-table = document.querySelector('table') // selector to the <table> that will be used
-engine = new PuzzleScript.SyncTableEngine(table, optionalEventHandler)
-engine.setGame(gameSourceString, 0 /*startLevel*/)
-```
-
-Or, if the game is slow, it can be played using a [Webworker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers):
-
-```js
-worker = new Worker('path/from/browser/to/puzzlescript-webworker.js')
-engine = new PuzzleScript.WebworkerTableEngine(worker, table, optionalEventHandler)
-...
-```
-
 # Screencaps
 
 Here are some screencaps of games being played.
 
-### Mirror Isles ([original](http://www.draknek.org/games/puzzlescript/mirrors.php))
-
-This screencast shows playing the game in a terminal using ASCII and ANSI colors.
-
-![mirror-isles](https://user-images.githubusercontent.com/253202/47133542-ce0d1700-d26e-11e8-851f-233d27aaf0b8.gif)
-
-
-### Pot Wash Panic! ([original](https://hauntpun.itch.io/pot-wash-panic))
+### [Pot Wash Panic!](https://philschatz.com/puzzlescript/#/pot-wash-panic) ([source](https://hauntpun.itch.io/pot-wash-panic))
 
 (click to see the ascii screencast)
 
 <a href="https://asciinema.org/a/188014?t=25"><img width="300" alt="video of install and a couple games" src="https://asciinema.org/a/188014.png"/></a>
 
 
-### Hack the Net ([original](http://www.draknek.org/games/puzzlescript/hack-the-net.php))
-
-<a href="https://asciinema.org/a/188016"><img width="300" alt="video of a couple levels of Hack-the-Net" src="https://asciinema.org/a/188016.png"/></a>
-
-### Skipping Stones to Lonely Homes ([original](http://www.draknek.org/games/puzzlescript/skipping-stones.php))
+### [Skipping Stones to Lonely Homes](https://philschatz.com/puzzlescript/#/skipping-stones) ([source](http://www.draknek.org/games/puzzlescript/skipping-stones.php))
 
 <a href="https://asciinema.org/a/189279?t=20"><img width="300" alt="video of the beginning of Skipping Stones (BIG)" src="https://asciinema.org/a/189279.png"/></a>
 
-### Entanglement ([original](http://www.richardlocke.co.uk/release/entanglement/chapter-1/))
+
+### [Hack the Net](https://philschatz.com/puzzlescript/#/hack-the-net) ([source](http://www.draknek.org/games/puzzlescript/hack-the-net.php))
+
+<a href="https://asciinema.org/a/188016"><img width="300" alt="video of a couple levels of Hack-the-Net" src="https://asciinema.org/a/188016.png"/></a>
+
+
+### [Entanglement](https://philschatz.com/puzzlescript/#/entanglement-one) ([source](http://www.richardlocke.co.uk/release/entanglement/chapter-1/))
 
 <a href="https://asciinema.org/a/212372?t=18"><img width="300" alt="video of the beginning of Entanglement" src="https://asciinema.org/a/212372.png"/></a>
+
+
+### [Mirror Isles](https://philschatz.com/puzzlescript/#/mirror-isles/0) ([source](http://www.draknek.org/games/puzzlescript/mirrors.php))
+
+This screencast shows playing the game in a terminal using ASCII and ANSI colors.
+
+![mirror-isles](https://user-images.githubusercontent.com/253202/47133542-ce0d1700-d26e-11e8-851f-233d27aaf0b8.gif)
 
 
 # Video games that blind people can play?
@@ -152,6 +134,27 @@ const reparsedData = Serializer.fromJson(json, gameSource)
 - `npm test; open coverage/lcov-report/index.html` to see test coverage
 - `npm run coverage` generates a coverage report which includes the JS code as well as any games that you ran in dev mode (using `npm run dev`)
 - See the module dependency tree by running `npm run build:stats` and then uploading `webpack-stats.json` to https://webpack.github.io/analyse/#modules
+
+
+## Embed in a Browser
+
+See [./src/browser/spec/html-table.xhtml](./src/browser/spec/html-table.xhtml) for an example of embedding in a browser.
+
+```js
+// Include <script src="node_modules/puzzlescript/puzzlescript.js"></script>
+// and then the following:
+table = document.querySelector('table') // selector to the <table> that will be used
+engine = new PuzzleScript.SyncTableEngine(table, optionalEventHandler)
+engine.setGame(gameSourceString, 0 /*startLevel*/)
+```
+
+Or, if the game is slow, it can be played using a [Webworker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers):
+
+```js
+worker = new Worker('path/from/browser/to/puzzlescript-webworker.js')
+engine = new PuzzleScript.WebworkerTableEngine(worker, table, optionalEventHandler)
+...
+```
 
 ## Objects
 
