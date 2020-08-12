@@ -105,7 +105,7 @@ export abstract class GameSprite extends BaseForLines implements IGameTile {
         return cell.getSpritesAsSet().has(this)
         // because of Webworkers, we cannot perform equality tests (unless the sprites match exactly what comes out of gamedata... hmm, maybe that's the way to do it?)
     }
-    public getSpritesThatMatch(cell: Cellish) {
+    public getSpritesThatMatch(cell: Cellish): Set<GameSprite> {
         if (cell.getSpritesAsSet().has(this)) {
             return new Set([this])
         } else {
@@ -187,7 +187,7 @@ export abstract class GameSprite extends BaseForLines implements IGameTile {
         }
         return false
     }
-    public getCellsThatMatch<T extends Cellish>(cells?: Iterable<T>) {
+    public getCellsThatMatch<T extends Cellish>(cells?: Iterable<T>): Set<T> {
         if (this.trickleCells.size > 0) {
             return (this.trickleCells as unknown) as Set<T>
         } else if (cells) {
@@ -345,15 +345,15 @@ export abstract class GameLegendTile extends BaseForLines implements IGameTile {
         return firstCollisionLayer
     }
     public getCollisionLayers() {
-        const layers = new Set()
+        const layers = new Set<CollisionLayer>()
         for (const sprite of this.getSprites()) {
             layers.add(sprite.getCollisionLayer())
         }
         return [...layers]
     }
 
-    public getCellsThatMatch(cells?: Iterable<Cellish>) {
-        const matches = new Set()
+    public getCellsThatMatch<T extends Cellish>(cells?: Iterable<T>): Set<T> {
+        const matches = new Set<T>()
         for (const sprite of this.getSprites()) {
             for (const cell of sprite.getCellsThatMatch(cells)) {
                 matches.add(cell)
@@ -448,7 +448,7 @@ export class GameLegendTileSimple extends GameLegendTile {
         return true
     }
 
-    public getSpritesThatMatch(cell: Cellish) {
+    public getSpritesThatMatch(cell: Cellish): Set<GameSprite> {
         return setIntersection(new Set(this.getSprites()), cell.getSpritesAsSet())
     }
 
