@@ -1891,7 +1891,7 @@ export class SimpleNeighbor extends BaseForLines implements ICacheable {
 
         let didChangeSprites = false
         let didChangeDirection = false
-        const orTilesRemoved = new Set()
+        const orTilesRemoved = new Set<IGameTile>()
         let allMessages: Array<A11Y_MESSAGE<Cell, GameSprite>> = []
         for (const replaceTile of replaceTiles) {
             const { didActuallyChange, messages } = replaceTile.replace(cell, magicOrTiles, orTilesRemoved)
