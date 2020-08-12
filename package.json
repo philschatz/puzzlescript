@@ -102,8 +102,7 @@
     "typedoc": ">=0.14",
     "typescript": ">=3",
     "util-deprecate": ">=1",
-    "weak": ">=1",
-    "weak-napi": "*",
+    "weak-napi": ">=2",
     "webpack": ">=4",
     "webpack-cli": ">=3",
     "workbox-webpack-plugin": ">=4"
