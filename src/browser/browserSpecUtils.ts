@@ -33,7 +33,7 @@ export const consoleHandler = (message: puppeteer.ConsoleMessage) => {
         case 'trace': console.trace(text); break // tslint:disable-line:no-console
         case 'assert': console.assert(text); break // tslint:disable-line:no-console
         case 'profile': console.profile(text); break // tslint:disable-line:no-console
-        case 'profileEnd': console.profileEnd(text); break // tslint:disable-line:no-console
+        case 'profileEnd': console.profileEnd(); break // tslint:disable-line:no-console
         case 'count': console.count(text); break // tslint:disable-line:no-console
         case 'timeEnd': console.timeEnd(text); break // tslint:disable-line:no-console
 
