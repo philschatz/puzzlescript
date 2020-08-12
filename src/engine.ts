@@ -1,4 +1,4 @@
-import { EventEmitter2, Listener } from 'eventemitter2'
+import { EventEmitter2 } from 'eventemitter2'
 import { logger } from './logger'
 import { CollisionLayer } from './models/collisionLayer'
 import { GameData } from './models/game'
@@ -925,9 +925,7 @@ export interface ILoadingCellsEvent {
     cellTotal: number,
     key: string
 }
-export interface ILoadingProgressHandler extends Listener {
-    (info: ILoadingCellsEvent): void
-}
+export type ILoadingProgressHandler = (info: ILoadingCellsEvent) => void
 
 export type CellSaveState = string[][][]
 
