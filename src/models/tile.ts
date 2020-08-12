@@ -107,9 +107,9 @@ export abstract class GameSprite extends BaseForLines implements IGameTile {
     }
     public getSpritesThatMatch(cell: Cellish) {
         if (cell.getSpritesAsSet().has(this)) {
-            return new Set([this])
+            return new Set<GameSprite>([this])
         } else {
-            return new Set()
+            return new Set<GameSprite>()
         }
     }
 
@@ -193,9 +193,9 @@ export abstract class GameSprite extends BaseForLines implements IGameTile {
         } else if (cells) {
             // The Tile might just be an empty object (because of webworkers)
             // So check all the cells
-            return new Set([...cells].filter((cell) => this.matchesCell(cell)))
+            return new Set<T>([...cells].filter((cell) => this.matchesCell(cell)))
         } else {
-            return new Set()
+            return new Set<T>()
         }
     }
 }
@@ -345,15 +345,15 @@ export abstract class GameLegendTile extends BaseForLines implements IGameTile {
         return firstCollisionLayer
     }
     public getCollisionLayers() {
-        const layers = new Set()
+        const layers = new Set<CollisionLayer>()
         for (const sprite of this.getSprites()) {
             layers.add(sprite.getCollisionLayer())
         }
         return [...layers]
     }
 
-    public getCellsThatMatch(cells?: Iterable<Cellish>) {
-        const matches = new Set()
+    public getCellsThatMatch<T extends Cellish>(cells?: Iterable<T>) {
+        const matches = new Set<T>()
         for (const sprite of this.getSprites()) {
             for (const cell of sprite.getCellsThatMatch(cells)) {
                 matches.add(cell)

@@ -118,7 +118,7 @@ export function setAddAll<T>(setA: Set<T>, iterable: Iterable<T>) {
 }
 
 export function setIntersection<T>(setA: Set<T>, setB: Iterable<T>) {
-    const intersection = new Set()
+    const intersection = new Set<T>()
     for (const elem of setB) {
         if (setA.has(elem)) {
             intersection.add(elem)
