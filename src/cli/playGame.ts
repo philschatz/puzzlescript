@@ -37,7 +37,7 @@ enum CLI_SPRITE_SIZE {
     SMALL = 'small'
 }
 interface IGameInfo { id: string, title: string, filePath: string }
-interface ISaveFile { version: number, solutions: Array<{ solution?: string, partial?: string, snapshot?: {tickNum: number, cellState: string[][][]} }> }
+interface ISaveFile { version: number, solutions: { solution?: string, partial?: string, snapshot?: {tickNum: number, cellState: string[][][]} }[] }
 interface ICliOptions {
     version: string,
     ui: boolean,
