@@ -1,0 +1,12 @@
+{
+  "scripts": {
+    "prebuild": "cp node_modules/puzzlescript/style.css style.css",
+    "build": "esbuild --bundle --sourcemap --outfile=bundle.js index.js"
+  },
+  "dependencies": {
+    "puzzlescript": "^5.3.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.13.4"
+  }
+}
