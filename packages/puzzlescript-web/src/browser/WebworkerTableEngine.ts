@@ -62,6 +62,7 @@ export default class WebworkerTableEngine implements Engineish {
                         return false
                     }
                     alert(msg)
+                    table.focus()
                     return true
                 })
             },

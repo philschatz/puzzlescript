@@ -35,9 +35,8 @@ export { TableUI }
 import { Engineish, GameEngineHandlerOptional } from './util'
 export { Engineish, GameEngineHandlerOptional }
 
-
+import { HexColor } from './models/colors'
 import { Dimension } from './models/metadata'
 import { IGraphJson } from './parser/serializer'
 import { PuzzlescriptWorker } from './util'
-import { HexColor } from './models/colors'
 export { Dimension, IGraphJson, PuzzlescriptWorker, HexColor }

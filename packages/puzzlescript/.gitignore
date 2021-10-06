@@ -6,23 +6,6 @@
 /lib/
 
 # ---
-# ProgressiveWebApp (PWA) files. built using `yarn build`
-# ---
-
-/index.xhtml
-/precache-manifest.*.js
-/puzzlescript.js
-/puzzlescript.js.map
-/puzzlescript-webworker.js
-/puzzlescript-webworker.js.map
-/pwa-app.js
-/pwa-app.js.map
-/pwa-service-worker.js
-
-/game-thumbnails/*.png
-/game-thumbnails/*.svg
-
-# ---
 # Misc files
 # ---
 

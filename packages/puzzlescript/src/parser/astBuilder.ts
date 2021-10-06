@@ -327,8 +327,7 @@ export class AstBuilder {
 
         const source = this.toSource(node)
         switch (node.type) {
-            case ast.RULE_TYPE.LOOP:
-                {
+            case ast.RULE_TYPE.LOOP: {
                     const subRules = node.rules.map((n) => this.simplifyRule(n, ruleCache, bracketCache, neighborCache, tileCache))
                     return new SimpleRuleLoop(source, false/*isRandom*/, subRules)
                 }
@@ -345,8 +344,7 @@ export class AstBuilder {
                     return new SimpleRuleGroup(source, isRandom, subRules)
                 }
                 throw new Error(`BUG!!!!!!`)
-            case ast.RULE_TYPE.SIMPLE:
-                {
+            case ast.RULE_TYPE.SIMPLE: {
                     /**
                      * Expands this Rule into multiple `SimpleRule` objects.
                      *

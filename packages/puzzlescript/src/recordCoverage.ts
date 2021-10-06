@@ -29,7 +29,7 @@ interface ICoverageEntry {
     b: object
 }
 
-export function saveCoverageFile(data: GameData, absPath: string, coverageFilenameSuffix: string, pathRelative: (p: string) => string ) {
+export function saveCoverageFile(data: GameData, absPath: string, coverageFilenameSuffix: string, pathRelative: (p: string) => string) {
     // record the appliedRules in a coverage.json file
     // key = Line number, value = count of times the rule executed
     const codeCoverageTemp = new Map<string, {count: number, node: IGameNode}>()

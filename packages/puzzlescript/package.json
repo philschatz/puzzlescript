@@ -34,8 +34,7 @@
   "dependencies": {
     "bitset": "^5.0.4",
     "eventemitter2": "^6.4.3",
-    "nearley": "^2.20.1",
-    "supports-color": "^7.0.0"
+    "nearley": "^2.20.1"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0-0",
