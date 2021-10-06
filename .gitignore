@@ -1,1 +1,5 @@
 node_modules
+/lerna-debug.log
+/lib
+/packages/puzzlescript/lib
+/packages/puzzlescript-cli/lib

@@ -3,14 +3,14 @@ import ansiStyles from 'ansi-styles'
 import chalk from 'chalk'
 import * as supportsColor from 'supports-color'
 
-import { CollisionLayer } from '../models/collisionLayer'
-import { IColor } from '../models/colors'
-import { GameData } from '../models/game'
-import { GameSprite } from '../models/tile'
-import { LEVEL_TYPE, Soundish } from '../parser/astTypes'
-import { playSound } from '../sound/sfxr'
-import { _debounce, _flatten, Cellish, GameEngineHandler, Optional, RULE_DIRECTION, spritesThatInteractWithPlayer } from '../util'
-import BaseUI from './base'
+import { CollisionLayer } from '../../../puzzlescript/src/models/collisionLayer'
+import { IColor } from '../../../puzzlescript/src/models/colors'
+import { GameData } from '../../../puzzlescript/src/models/game'
+import { GameSprite } from '../../../puzzlescript/src/models/tile'
+import { LEVEL_TYPE, Soundish } from '../../../puzzlescript/src/parser/astTypes'
+import { playSound } from '../../../puzzlescript/src/sound/sfxr'
+import { _debounce, _flatten, Cellish, GameEngineHandler, Optional, RULE_DIRECTION, spritesThatInteractWithPlayer } from '../../../puzzlescript/src/util'
+import BaseUI from '../../../puzzlescript/src/ui/base'
 
 // Determine if this
 // 'truecolor' if this terminal supports 16m colors. 256 colors otherwise

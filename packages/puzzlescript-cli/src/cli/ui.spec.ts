@@ -1,10 +1,10 @@
 /* eslint-env jasmine */
-import { lookupColorPalette } from './colors'
-import { GameEngine } from './engine'
-import { RGB } from './models/colors'
-import Parser from './parser/parser'
-import UI from './ui/terminal'
-import { EmptyGameEngineHandler } from './util'
+import { lookupColorPalette } from '../../../puzzlescript/src/colors'
+import { GameEngine } from '../../../puzzlescript/src/engine'
+import { RGB } from '../../../puzzlescript/src/models/colors'
+import Parser from '../../../puzzlescript/src/parser/parser'
+import UI from './terminal'
+import { EmptyGameEngineHandler } from '../../../puzzlescript/src/util'
 
 const C_WHITE = new RGB(255, 255, 255, null)
 const C_BLACK = new RGB(0, 0, 0, null)

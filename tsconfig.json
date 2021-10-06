@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "target": "es2015",
+    "lib": ["es2017", "dom"],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "sourceMap": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "removeComments": false,
+    "alwaysStrict": true,
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": false,
+    "typeRoots": [ "./node_modules/@types", "./typings", "packages/puzzlescript-cli/typings"],
+    "outDir": "lib"
+  },
+  "exclude": [
+    "node_modules",
+    ".npm"
+  ]
+}

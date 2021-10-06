@@ -1,6 +1,6 @@
 // tslint:disable:no-console
 import chalk from 'chalk'
-import commander from 'commander'
+import { Command } from 'commander'
 import fontAscii from 'font-ascii'
 import { createReadStream, existsSync, readFileSync, writeFileSync } from 'fs'
 import glob from 'glob'
@@ -11,12 +11,12 @@ import pify from 'pify'
 import * as supportsColor from 'supports-color'
 
 import { ensureDir, ensureDirSync } from 'fs-extra'
-import { closeSounds, GameData, GameEngine, ILoadingCellsEvent, Optional, Parser, RULE_DIRECTION } from '..'
-import { logger } from '../logger'
-import { LEVEL_TYPE } from '../parser/astTypes'
-import { saveCoverageFile } from '../recordCoverage'
-import TerminalUI, { getTerminalSize } from '../ui/terminal'
-import { _flatten, EmptyGameEngineHandler, INPUT_BUTTON } from '../util'
+import { closeSounds, GameData, GameEngine, ILoadingCellsEvent, Optional, Parser, RULE_DIRECTION } from '../../../puzzlescript/src'
+import { logger } from '../../../puzzlescript/src/logger'
+import { LEVEL_TYPE } from '../../../puzzlescript/src/parser/astTypes'
+import { saveCoverageFile } from '../../../puzzlescript/src/recordCoverage'
+import { _flatten, EmptyGameEngineHandler, INPUT_BUTTON } from '../../../puzzlescript/src/util'
+import TerminalUI, { getTerminalSize } from './terminal'
 import SOLVED_GAMES from './solvedGames'
 import TITLE_FONTS from './titleFonts'
 
@@ -48,6 +48,8 @@ interface ICliOptions {
     resume: boolean | undefined,
 }
 
+const commander = new Command()
+
 // Use require instead of import so we can load JSON files
 const pkg: IPackage = require('../../package.json') as IPackage // tslint:disable-line:no-var-requires
 
@@ -71,7 +73,7 @@ function first2Lines(filePath: string) {
         lineEnding: '\n'
     }
     return new Promise<string>((resolve, reject) => {
-        const rs = createReadStream(filePath, { encoding: opts.encoding })
+        const rs = createReadStream(filePath, { encoding: 'utf8' })
         let acc = ''
         let pos = 0
         let index
