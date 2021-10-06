@@ -3,10 +3,10 @@
     "lint": "tslint --fix --config ./tslint.json --project ./ --format stylish",
     "compile": "npm run-script compile:grammar && npm run-script compile:ts",
     "compile:grammar": "nearleyc --minify-rule-names ./src/parser/grammar.ne > ./src/parser/grammar.ts",
-    "compile:ts": "tsc && cp ./src/sound/sfxr.* ./lib/sound/ && cp ./src/sound/sfxr-browser.js ./lib/sound/",
+    "compile:ts": "tsc",
     "ci": "npm run-script test",
     "postci": "npm run-script docs && codecov",
-    "tsc:watch": "cp ./src/sound/sfxr.js ./lib/sound/ && cp ./src/sound/sfxr-browser.js ./lib/sound/ && tsc --watch",
+    "tsc:watch": "tsc --watch",
     "docs": "typedoc --ignoreCompilerErrors --mode modules --excludePrivate --excludeExternals --theme minimal --readme ./README.md --out ./docs/ ./src/",
     "start": "NODE_ENV=production node -r source-map-support/register ./bin/puzzlescript.js",
     "start:only": "NODE_ENV=production node -r source-map-support/register ./bin/puzzlescript.js",
@@ -78,9 +78,6 @@
     "webpack": "^4.39.2",
     "webpack-cli": "^3.1.2",
     "workbox-webpack-plugin": "^4.3.1"
-  },
-  "optionalDependencies": {
-    "speaker": "github:philschatz/node-speaker#cac7c5b7c434b52619bfbbd9530ab0871156e815"
   },
   "jest": {
     "preset": "jest-puppeteer",

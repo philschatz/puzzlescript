@@ -3,14 +3,8 @@ import ansiStyles from 'ansi-styles'
 import chalk from 'chalk'
 import * as supportsColor from 'supports-color'
 
-import { CollisionLayer } from 'puzzlescript'
-import { IColor } from 'puzzlescript'
-import { GameData } from 'puzzlescript'
-import { GameSprite } from 'puzzlescript'
-import { LEVEL_TYPE, Soundish } from 'puzzlescript'
-import { playSound } from 'puzzlescript'
-import { _debounce, _flatten, Cellish, GameEngineHandler, Optional, RULE_DIRECTION, spritesThatInteractWithPlayer } from 'puzzlescript'
-import { BaseUI } from 'puzzlescript'
+import { CollisionLayer, IColor, GameData, GameSprite, LEVEL_TYPE, Soundish, _debounce, _flatten, Cellish, GameEngineHandler, Optional, RULE_DIRECTION, spritesThatInteractWithPlayer, BaseUI } from 'puzzlescript'
+import { playSound } from '../sounds-copypasta/sounds'
 
 // Determine if this
 // 'truecolor' if this terminal supports 16m colors. 256 colors otherwise
@@ -134,9 +128,6 @@ class TerminalUI extends BaseUI implements GameEngineHandler {
         // Don't need to do anything
     }
     public onLevelLoad() {
-        // Don't need to do anything
-    }
-    public onLevelChange() {
         // Don't need to do anything
     }
     public onGameChange(gameData: GameData) {

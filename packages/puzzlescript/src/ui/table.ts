@@ -4,7 +4,7 @@ import { GameData } from '../models/game'
 import { A11Y_MESSAGE, A11Y_MESSAGE_TYPE } from '../models/rule'
 import { GameSprite } from '../models/tile'
 import { Soundish } from '../parser/astTypes'
-import { playSound } from '../sound/sfxr'
+// import { playSound } from '../sound/sfxr'
 import {
     _flatten,
     Cellish,
@@ -183,7 +183,7 @@ class TableUI extends BaseUI implements GameEngineHandler {
         this.handler.onWin()
     }
     public async onSound(sound: Soundish) {
-        playSound(sound.soundCode) // tslint:disable-line:no-floating-promises
+        // playSound(sound.soundCode) // tslint:disable-line:no-floating-promises
         await this.handler.onSound(sound)
     }
     public onTick(changedCells: Set<Cellish>, checkpoint: Optional<CellSaveState>, hasAgain: boolean, a11yMessages: Array<A11Y_MESSAGE<Cellish, GameSprite>>) {

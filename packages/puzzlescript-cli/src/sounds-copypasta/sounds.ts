@@ -1,5 +1,8 @@
-import { Soundish } from './parser/astTypes'
-import { closeSounds, playSound as playSoundCode } from './sound/sfxr'
+import { closeSounds, playSound as playSoundCode } from './sfxr'
+
+type Soundish = {
+    soundCode: number
+}
 
 async function playSound(sound: Soundish) {
     return playSoundCode(sound.soundCode)

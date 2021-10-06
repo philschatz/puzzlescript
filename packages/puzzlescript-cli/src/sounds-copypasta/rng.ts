@@ -1,4 +1,4 @@
-import { Optional } from '../util'
+type Optional<T> = T | null
 
 /**
  * Seedable random number generator functions.

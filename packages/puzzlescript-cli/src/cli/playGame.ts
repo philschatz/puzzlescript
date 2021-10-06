@@ -11,25 +11,15 @@ import pify from 'pify'
 import * as supportsColor from 'supports-color'
 
 import { ensureDir, ensureDirSync } from 'fs-extra'
-import { closeSounds, GameData, GameEngine, ILoadingCellsEvent, Optional, Parser, RULE_DIRECTION } from 'puzzlescript'
-import { logger } from 'puzzlescript'
-import { LEVEL_TYPE } from 'puzzlescript'
-import { saveCoverageFile } from 'puzzlescript'
-import { _flatten, EmptyGameEngineHandler, INPUT_BUTTON } from 'puzzlescript'
+import { GameData, GameEngine, ILoadingCellsEvent, Optional, Parser, RULE_DIRECTION, logger, LEVEL_TYPE, saveCoverageFile, _flatten, EmptyGameEngineHandler, INPUT_BUTTON } from 'puzzlescript'
+import { closeSounds } from '../sounds-copypasta/sounds'
 import TerminalUI, { getTerminalSize } from './terminal'
 import SOLVED_GAMES from './solvedGames'
 import TITLE_FONTS from './titleFonts'
 
-// Hack to get the sounds to build. This should go away when we import puzzlescript package directly instead of ../../../puzzlescript/src
-// import { closeSounds as closeSoundsHack } from '../../../puzzlescript/src/sound/sfxr' 
-// import { FastBase64_Encode } from '../../../puzzlescript/src/sound/riffwave' 
-// import { RNG } from '../../../puzzlescript/src/sound/rng'
-// new RNG(123456)
-// FastBase64_Encode([1])
-// closeSoundsHack()
-
-const GAMES_PATTERN = path.join(__dirname, '../../../../../puzzlescript/games/*/script.txt')
-let SOLUTION_ROOT = path.join(__dirname, '../../../../../puzzlescript/game-solutions/')
+const PACKAGE_JSON_PATH = '../../package.json'
+const GAMES_PATTERN = path.join(__dirname, '../../../puzzlescript/games/*/script.txt')
+let SOLUTION_ROOT = path.join(__dirname, '../../../puzzlescript/game-solutions/')
 const HOMEDIR_SOLUTION_ROOT = '.local/puzzlescript/solutions'
 
 export interface IGameRecording {
@@ -63,7 +53,7 @@ interface ICliOptions {
 const commander = new Command()
 
 // Use require instead of import so we can load JSON files
-const pkg: IPackage = require('../../../../package.json') as IPackage // tslint:disable-line:no-var-requires
+const pkg: IPackage = require(PACKAGE_JSON_PATH) as IPackage // tslint:disable-line:no-var-requires
 
 
 if (!existsSync(SOLUTION_ROOT)) {
