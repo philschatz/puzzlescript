@@ -20,6 +20,18 @@ import TerminalUI, { getTerminalSize } from './terminal'
 import SOLVED_GAMES from './solvedGames'
 import TITLE_FONTS from './titleFonts'
 
+// Hack to get the sounds to build. This should go away when we import puzzlescript package directly instead of ../../../puzzlescript/src
+import { closeSounds as closeSoundsHack } from '../../../puzzlescript/src/sound/sfxr' 
+import { FastBase64_Encode } from '../../../puzzlescript/src/sound/riffwave' 
+import { RNG } from '../../../puzzlescript/src/sound/rng'
+new RNG(123456)
+FastBase64_Encode([1])
+closeSoundsHack()
+
+const GAMES_PATTERN = path.join(__dirname, '../../../../../puzzlescript/games/*/script.txt')
+let SOLUTION_ROOT = path.join(__dirname, '../../../../../puzzlescript/game-solutions/')
+const HOMEDIR_SOLUTION_ROOT = '.local/puzzlescript/solutions'
+
 export interface IGameRecording {
     version: number,
     solutions: ILevelRecording[]
@@ -51,15 +63,15 @@ interface ICliOptions {
 const commander = new Command()
 
 // Use require instead of import so we can load JSON files
-const pkg: IPackage = require('../../package.json') as IPackage // tslint:disable-line:no-var-requires
+const pkg: IPackage = require('../../../../package.json') as IPackage // tslint:disable-line:no-var-requires
 
-let SOLUTION_ROOT = path.join(__dirname, '../../game-solutions/')
+
 if (!existsSync(SOLUTION_ROOT)) {
     const homeDir = process.env.HOME
     if (!homeDir) {
         throw new Error(`BUG: Could not determine home directory to save game solutions to`)
     }
-    SOLUTION_ROOT = path.join(homeDir, '.local/puzzlescript/solutions')
+    SOLUTION_ROOT = path.join(homeDir, HOMEDIR_SOLUTION_ROOT)
 }
 
 async function sleep(ms: number) {
@@ -136,7 +148,7 @@ run().then(() => { process.exit(0) }, (err) => {
 
 async function run() {
     inquirer.registerPrompt('autocomplete', PromptModule)
-    const gists = await pify(glob)(path.join(__dirname, '../../games/*/script.txt'))
+    const gists = await pify(glob)(GAMES_PATTERN)
     const cliOptions: ICliOptions = commander.opts() as ICliOptions
     const { ui: cliUi, game: cliGameTitle } = cliOptions
     let { level: cliLevel, resume: cliResume } = cliOptions
