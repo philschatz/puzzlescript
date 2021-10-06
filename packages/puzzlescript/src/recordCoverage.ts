@@ -1,5 +1,3 @@
-import { existsSync, writeFileSync } from 'fs'
-import * as path from 'path'
 import { GameData, IGameNode } from './models/game'
 import { IRule } from './models/rule'
 
@@ -31,7 +29,7 @@ interface ICoverageEntry {
     b: object
 }
 
-export function saveCoverageFile(data: GameData, absPath: string, coverageFilenameSuffix: string) {
+export function saveCoverageFile(data: GameData, absPath: string, coverageFilenameSuffix: string, pathRelative: (p: string) => string ) {
     // record the appliedRules in a coverage.json file
     // key = Line number, value = count of times the rule executed
     const codeCoverageTemp = new Map<string, {count: number, node: IGameNode}>()
@@ -135,7 +133,7 @@ export function saveCoverageFile(data: GameData, absPath: string, coverageFilena
         }
     })
 
-    const relPath = path.relative(process.cwd(), absPath)
+    const relPath = pathRelative(absPath)
 
     const codeCoverageEntry: ICoverageEntry = {
         b: {},
@@ -148,8 +146,5 @@ export function saveCoverageFile(data: GameData, absPath: string, coverageFilena
     }
     const codeCoverageObj: { [path: string]: ICoverageEntry } = {}
     codeCoverageObj[relPath] = codeCoverageEntry
-    if (existsSync(`coverage`)) {
-        writeFileSync(`coverage/coverage-${coverageFilenameSuffix}.json`,
-            JSON.stringify(codeCoverageObj, null, 2)) // indent by 2 chars
-    }
+    return { coverageFilenameSuffix, codeCoverageObj }
 }

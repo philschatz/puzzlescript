@@ -1,4 +1,4 @@
-import { Optional } from '../util'
+import { Optional } from 'puzzlescript'
 import { ALL_GAMES, GameInfo } from './allGames'
 import { currentInfo, StorageGameInfo } from './playGame'
 import { getElement } from './util'

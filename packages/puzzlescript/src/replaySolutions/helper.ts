@@ -1,5 +1,5 @@
 /* eslint-env jasmine */
-import fs from 'fs'
+import fs, { existsSync, writeFileSync } from 'fs'
 import path from 'path'
 import { GameEngine } from '../../src/engine'
 import Parser from '../../src/parser/parser'
@@ -151,7 +151,11 @@ export function createTests(moduloNumber: number, moduloTotal: number) {
                     expect(numPlayed).toBeGreaterThanOrEqual(1)
                 }
 
-                saveCoverageFile(data, gistFilename, `${GIST_ID}-playgame`)
+                const { coverageFilenameSuffix, codeCoverageObj } = saveCoverageFile(data, gistFilename, `${GIST_ID}-playgame`, (absPath) => path.relative(process.cwd(), absPath))
+                if (existsSync(`coverage`)) {
+                    writeFileSync(`coverage/coverage-${coverageFilenameSuffix}.json`,
+                        JSON.stringify(codeCoverageObj, null, 2)) // indent by 2 chars
+                }
             })
         })
     })

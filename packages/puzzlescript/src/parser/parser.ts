@@ -2,7 +2,7 @@ import * as nearley from 'nearley'
 import { RULE_DIRECTION_WITH_RELATIVE } from '../util'
 import { AstBuilder } from './astBuilder'
 import * as ast from './astTypes'
-import * as compiledGrammar from './grammar'
+import compiledGrammar from './grammar'
 
 export enum ValidationLevel {
     ERROR,

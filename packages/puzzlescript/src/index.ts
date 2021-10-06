@@ -21,3 +21,23 @@ import { GameSprite } from './models/tile'
 import { Soundish } from './parser/astTypes'
 import { _debounce, Cellish, GameEngineHandler, spritesThatInteractWithPlayer } from './util'
 export { _debounce, CollisionLayer, IColor, GameSprite, Soundish, Cellish, GameEngineHandler, spritesThatInteractWithPlayer }
+
+import { CellSaveState } from './engine'
+import { A11Y_MESSAGE, A11Y_MESSAGE_TYPE } from './models/rule'
+export { CellSaveState, A11Y_MESSAGE, A11Y_MESSAGE_TYPE }
+
+import { CellishJson, MESSAGE_TYPE, pollingPromise, shouldTick, TypedMessageEvent, WorkerMessage, WorkerResponse } from './util'
+export { CellishJson, MESSAGE_TYPE, pollingPromise, shouldTick, TypedMessageEvent, WorkerMessage, WorkerResponse }
+
+import TableUI from './ui/table'
+export { TableUI }
+
+import { Engineish, GameEngineHandlerOptional } from './util'
+export { Engineish, GameEngineHandlerOptional }
+
+
+import { Dimension } from './models/metadata'
+import { IGraphJson } from './parser/serializer'
+import { PuzzlescriptWorker } from './util'
+import { HexColor } from './models/colors'
+export { Dimension, IGraphJson, PuzzlescriptWorker, HexColor }

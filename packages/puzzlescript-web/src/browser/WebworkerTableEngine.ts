@@ -1,12 +1,4 @@
-import { CellSaveState } from '../engine'
-import { GameData } from '../models/game'
-import { Dimension } from '../models/metadata'
-import { A11Y_MESSAGE, A11Y_MESSAGE_TYPE } from '../models/rule'
-import { GameSprite } from '../models/tile'
-import { LEVEL_TYPE } from '../parser/astTypes'
-import Serializer, { IGraphJson } from '../parser/serializer'
-import TableUI from '../ui/table'
-import { Cellish,
+import { CellSaveState, GameData, Dimension, A11Y_MESSAGE, A11Y_MESSAGE_TYPE, GameSprite, LEVEL_TYPE, Serializer, IGraphJson, TableUI, Cellish,
     CellishJson,
     Engineish,
     GameEngineHandlerOptional,
@@ -16,7 +8,9 @@ import { Cellish,
     pollingPromise,
     PuzzlescriptWorker,
     RULE_DIRECTION,
-    WorkerResponse } from '../util'
+    WorkerResponse, 
+    Soundish} from 'puzzlescript'
+import { playSound } from '../sounds-copypasta/sfxr'
 import InputWatcher from './InputWatcher'
 import ResizeWatcher, { LIMITED_BY } from './ResizeWatcher'
 
@@ -60,26 +54,30 @@ export default class WebworkerTableEngine implements Engineish {
         this.worker = worker
         this.table = table
 
-        const defaultOnMessage = (msg: string) => {
-            return pollingPromise<void>(10, () => {
-                // Using a pollingPromise is only necessary for alert() because of the keyUp event not firing
-                if (this.inputWatcher.isSomethingPressed()) {
-                    return false
-                }
-                alert(msg)
-                return true
-            })
+        const defaults = {
+            onMessage: (msg: string) => {
+                return pollingPromise<void>(10, () => {
+                    // Using a pollingPromise is only necessary for alert() because of the keyUp event not firing
+                    if (this.inputWatcher.isSomethingPressed()) {
+                        return false
+                    }
+                    alert(msg)
+                    return true
+                })
+            },
+            async onSound(sound: Soundish) {
+                debugger
+                await playSound(sound.soundCode)
+            },
         }
-        if (!handler || !handler.onMessage) {
-            handler = { ...handler, onMessage: defaultOnMessage }
-        }
+        const h = {...defaults, ...(handler ?? {})}
 
         // cache
         this.cellCache = []
         this.levelNum = -123456
         this.gameData = null
 
-        this.ui = new TableUI(table, handler)
+        this.ui = new TableUI(table, h)
         this.resizeWatcher = new ResizeWatcher(table, this.handleResize.bind(this))
         this.inputWatcher = new InputWatcher(table)
 

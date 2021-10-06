@@ -1,6 +1,6 @@
 import 'babel-polyfill' // tslint:disable-line:no-implicit-dependencies
+import { Optional } from 'puzzlescript'
 import { BUTTON_TYPE } from '../browser/controller/controller'
-import { Optional } from '../util'
 import { browseGames } from './browseGames'
 import { Dialog, playGame, runMigrations, tableEngine } from './playGame'
 import { getElement, sendAnalytics, sendPageview } from './util'

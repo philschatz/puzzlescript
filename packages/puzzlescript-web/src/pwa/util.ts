@@ -1,4 +1,4 @@
-import { Optional } from '../util'
+import { Optional } from 'puzzlescript'
 
 declare const ga: Optional<(a1: string, a2: string, a3?: string, a4?: string, a5?: string, a6?: number) => void>
 

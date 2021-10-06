@@ -1,11 +1,9 @@
 import dialogPolyfill from 'dialog-polyfill' // tslint:disable-line:no-implicit-dependencies
-import { GameData } from '..'
+import { GameData } from 'puzzlescript'
 // import TimeAgo from 'javascript-time-ago' // tslint:disable-line:no-implicit-dependencies
 // import TimeAgoEn from 'javascript-time-ago/locale/en' // tslint:disable-line
 import WebworkerTableEngine from '../browser/WebworkerTableEngine'
-import { CellSaveState } from '../engine'
-import { HexColor } from '../models/colors'
-import { GameEngineHandlerOptional, INPUT_BUTTON, Optional, pollingPromise } from '../util'
+import { CellSaveState, HexColor, GameEngineHandlerOptional, INPUT_BUTTON, Optional, pollingPromise } from 'puzzlescript'
 import { changePage, getElement, sendAnalytics } from './util'
 
 interface StorageCheckpoint {

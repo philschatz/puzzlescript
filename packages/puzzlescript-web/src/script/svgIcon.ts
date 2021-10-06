@@ -1,11 +1,4 @@
-import { Cell } from '..'
-import { CellSaveState } from '../engine'
-import { IColor } from '../models/colors'
-import { A11Y_MESSAGE } from '../models/rule'
-import { GameSprite } from '../models/tile'
-import { Soundish } from '../parser/astTypes'
-import { _flatten, Cellish, GameEngineHandler, INPUT_BUTTON, Optional } from '../util'
-import BaseUI from './base'
+import { Cell, CellSaveState, IColor, A11Y_MESSAGE, GameSprite, Soundish, _flatten, Cellish, GameEngineHandler, INPUT_BUTTON, Optional, BaseUI } from 'puzzlescript'
 
 export class SvgIconUi extends BaseUI implements GameEngineHandler {
 

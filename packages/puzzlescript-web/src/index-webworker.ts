@@ -1,12 +1,5 @@
 import 'babel-polyfill' // tslint:disable-line:no-implicit-dependencies
-import { Cell, CellSaveState, GameEngine } from './engine'
-import { GameData } from './models/game'
-import { A11Y_MESSAGE, A11Y_MESSAGE_TYPE } from './models/rule'
-import { GameSprite } from './models/tile'
-import { Soundish } from './parser/astTypes'
-import Parser from './parser/parser'
-import Serializer from './parser/serializer'
-import { Cellish, CellishJson, GameEngineHandler, INPUT_BUTTON, MESSAGE_TYPE, Optional, pollingPromise, shouldTick, TypedMessageEvent, WorkerMessage, WorkerResponse } from './util'
+import { Cell, CellSaveState, GameEngine, GameData, A11Y_MESSAGE, A11Y_MESSAGE_TYPE, GameSprite, Soundish, Parser, Serializer, Cellish, CellishJson, GameEngineHandler, INPUT_BUTTON, MESSAGE_TYPE, Optional, pollingPromise, shouldTick, TypedMessageEvent, WorkerMessage, WorkerResponse } from 'puzzlescript'
 
 declare var postMessage: (msg: WorkerResponse, transferables?: Transferable[]) => void
 

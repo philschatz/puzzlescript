@@ -11,7 +11,7 @@ module.exports = {
         'puzzlescript': './src/index-browser.ts',
     },
     output: {
-        path: path.resolve(__dirname, './'),
+        path: path.resolve(__dirname, './static'),
         filename: '[name].js',
     },
     devtool: 'source-map',
@@ -28,7 +28,7 @@ module.exports = {
     plugins: [
         new HtmlWebpackPlugin({
             xhtml: true,
-            template: 'pwa-template.xhtml',
+            template: 'static/pwa-template.xhtml',
             filename: 'index.xhtml',
             inject: 'head',
             chunks: ['pwa-app']

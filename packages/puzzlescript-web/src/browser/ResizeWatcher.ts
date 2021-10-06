@@ -1,4 +1,4 @@
-import { _debounce } from '../util'
+import { _debounce } from 'puzzlescript'
 
 export enum LIMITED_BY {
     WIDTH = 'WIDTH',

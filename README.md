@@ -9,6 +9,11 @@
 1. `lerna run start`
 
 
+lerna bootstrap
+lerna run compile:grammar
+lerna run compile:ts
+lerna run build
+
 # TODO
 
 - [x] Move to a monorepo

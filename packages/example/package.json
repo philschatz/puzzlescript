@@ -2,7 +2,7 @@
   "private": true,
   "name": "example",
   "scripts": {
-    "prebuild": "cp node_modules/puzzlescript/style.css style.css",
+    "prebuild": "cp ../puzzlescript-web/static/style.css style.css",
     "build": "esbuild --bundle --sourcemap --outfile=bundle.js index.js"
   },
   "dependencies": {

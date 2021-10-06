@@ -1,10 +1,7 @@
 import InputWatcher from '../browser/InputWatcher'
 import ResizeWatcher, { LIMITED_BY } from '../browser/ResizeWatcher'
-import { CellSaveState, GameEngine } from '../engine'
-import { LEVEL_TYPE } from '../parser/astTypes'
-import Parser from '../parser/parser'
-import TableUI from '../ui/table'
-import { EmptyGameEngineHandler, Engineish, GameEngineHandler, GameEngineHandlerOptional, Optional, pollingPromise } from '../util'
+import { CellSaveState, GameEngine, LEVEL_TYPE, Parser, TableUI, EmptyGameEngineHandler, Engineish, GameEngineHandler, GameEngineHandlerOptional, Optional, pollingPromise, Soundish } from 'puzzlescript'
+import { playSound } from '../sounds-copypasta/sfxr'
 
 class SubTableEngine {
     public readonly tableUI: TableUI
@@ -27,6 +24,9 @@ class SubTableEngine {
             onWin() {
                 alert('You won the game! Congratulations!')
             },
+            async onSound(sound: Soundish) {
+                await playSound(sound.soundCode)
+            },
             onMessage: async(msg: string) => {
                 return pollingPromise<void>(10, () => {
                     if (this.inputWatcher.isSomethingPressed()) {
@@ -39,7 +39,7 @@ class SubTableEngine {
             }
         }
 
-        const handler = optionalHandler ? new EmptyGameEngineHandler([optionalHandler, messageHandler]) : new EmptyGameEngineHandler([messageHandler])
+        const handler = optionalHandler ? new EmptyGameEngineHandler([{...messageHandler, ...optionalHandler}]) : new EmptyGameEngineHandler([messageHandler])
 
         this.tableUI = new TableUI(table, handler)
     }

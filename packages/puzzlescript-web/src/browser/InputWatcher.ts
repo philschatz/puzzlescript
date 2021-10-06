@@ -1,4 +1,4 @@
-import { INPUT_BUTTON, Optional } from '../util'
+import { INPUT_BUTTON, Optional } from 'puzzlescript'
 import { BUTTON_TYPE, Controllers, IButton, IGamepad, IKeyboardButton, IStick, STICK_TYPE } from './controller/controller'
 
 interface Control<T> {
