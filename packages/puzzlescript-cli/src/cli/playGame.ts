@@ -11,22 +11,22 @@ import pify from 'pify'
 import * as supportsColor from 'supports-color'
 
 import { ensureDir, ensureDirSync } from 'fs-extra'
-import { closeSounds, GameData, GameEngine, ILoadingCellsEvent, Optional, Parser, RULE_DIRECTION } from '../../../puzzlescript/src'
-import { logger } from '../../../puzzlescript/src/logger'
-import { LEVEL_TYPE } from '../../../puzzlescript/src/parser/astTypes'
-import { saveCoverageFile } from '../../../puzzlescript/src/recordCoverage'
-import { _flatten, EmptyGameEngineHandler, INPUT_BUTTON } from '../../../puzzlescript/src/util'
+import { closeSounds, GameData, GameEngine, ILoadingCellsEvent, Optional, Parser, RULE_DIRECTION } from 'puzzlescript'
+import { logger } from 'puzzlescript'
+import { LEVEL_TYPE } from 'puzzlescript'
+import { saveCoverageFile } from 'puzzlescript'
+import { _flatten, EmptyGameEngineHandler, INPUT_BUTTON } from 'puzzlescript'
 import TerminalUI, { getTerminalSize } from './terminal'
 import SOLVED_GAMES from './solvedGames'
 import TITLE_FONTS from './titleFonts'
 
 // Hack to get the sounds to build. This should go away when we import puzzlescript package directly instead of ../../../puzzlescript/src
-import { closeSounds as closeSoundsHack } from '../../../puzzlescript/src/sound/sfxr' 
-import { FastBase64_Encode } from '../../../puzzlescript/src/sound/riffwave' 
-import { RNG } from '../../../puzzlescript/src/sound/rng'
-new RNG(123456)
-FastBase64_Encode([1])
-closeSoundsHack()
+// import { closeSounds as closeSoundsHack } from '../../../puzzlescript/src/sound/sfxr' 
+// import { FastBase64_Encode } from '../../../puzzlescript/src/sound/riffwave' 
+// import { RNG } from '../../../puzzlescript/src/sound/rng'
+// new RNG(123456)
+// FastBase64_Encode([1])
+// closeSoundsHack()
 
 const GAMES_PATTERN = path.join(__dirname, '../../../../../puzzlescript/games/*/script.txt')
 let SOLUTION_ROOT = path.join(__dirname, '../../../../../puzzlescript/game-solutions/')

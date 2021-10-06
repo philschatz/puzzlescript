@@ -3,14 +3,14 @@ import ansiStyles from 'ansi-styles'
 import chalk from 'chalk'
 import * as supportsColor from 'supports-color'
 
-import { CollisionLayer } from '../../../puzzlescript/src/models/collisionLayer'
-import { IColor } from '../../../puzzlescript/src/models/colors'
-import { GameData } from '../../../puzzlescript/src/models/game'
-import { GameSprite } from '../../../puzzlescript/src/models/tile'
-import { LEVEL_TYPE, Soundish } from '../../../puzzlescript/src/parser/astTypes'
-import { playSound } from '../../../puzzlescript/src/sound/sfxr'
-import { _debounce, _flatten, Cellish, GameEngineHandler, Optional, RULE_DIRECTION, spritesThatInteractWithPlayer } from '../../../puzzlescript/src/util'
-import BaseUI from '../../../puzzlescript/src/ui/base'
+import { CollisionLayer } from 'puzzlescript'
+import { IColor } from 'puzzlescript'
+import { GameData } from 'puzzlescript'
+import { GameSprite } from 'puzzlescript'
+import { LEVEL_TYPE, Soundish } from 'puzzlescript'
+import { playSound } from 'puzzlescript'
+import { _debounce, _flatten, Cellish, GameEngineHandler, Optional, RULE_DIRECTION, spritesThatInteractWithPlayer } from 'puzzlescript'
+import { BaseUI } from 'puzzlescript'
 
 // Determine if this
 // 'truecolor' if this terminal supports 16m colors. 256 colors otherwise
@@ -136,11 +136,14 @@ class TerminalUI extends BaseUI implements GameEngineHandler {
     public onLevelLoad() {
         // Don't need to do anything
     }
+    public onLevelChange() {
+        // Don't need to do anything
+    }
     public onGameChange(gameData: GameData) {
         super.onGameChange(gameData)
     }
     public async onSound(sound: Soundish) {
-        /*await*/ playSound(sound.soundCode) // tslint:disable-line:no-floating-promises
+        /*await*/ playSound(sound) // tslint:disable-line:no-floating-promises
     }
     public onTick(changedCells: Set<Cellish>) {
         this.drawCells(changedCells, false)

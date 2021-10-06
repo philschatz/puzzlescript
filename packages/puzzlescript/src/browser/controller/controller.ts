@@ -217,7 +217,7 @@ class AnyGamepad implements IGamepad {
     }
 }
 
-export const Controllers = new (class ControllersSingleton {
+export class ControllersSingleton {
     private readonly cache: IGamepad[]
     private any: IGamepad | null
     constructor() {
@@ -345,7 +345,8 @@ export const Controllers = new (class ControllersSingleton {
             }
         }
     }
-})() // new Singleton
+}
+export const Controllers = new ControllersSingleton() // new Singleton
 
 export const arrowKeysAsStick = (root?: Element) => Controllers.asStick(
     Controllers.key('ArrowUp', root),

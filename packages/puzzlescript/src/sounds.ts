@@ -1,8 +1,7 @@
-import { IGameTile } from './models/tile'
-import { SoundItem } from './parser/astTypes'
+import { Soundish } from './parser/astTypes'
 import { closeSounds, playSound as playSoundCode } from './sound/sfxr'
 
-async function playSound(sound: SoundItem<IGameTile>) {
+async function playSound(sound: Soundish) {
     return playSoundCode(sound.soundCode)
 }
 

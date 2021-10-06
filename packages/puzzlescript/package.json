@@ -3,7 +3,7 @@
     "lint": "tslint --fix --config ./tslint.json --project ./ --format stylish",
     "compile": "npm run-script compile:grammar && npm run-script compile:ts",
     "compile:grammar": "nearleyc --minify-rule-names ./src/parser/grammar.ne > ./src/parser/grammar.ts",
-    "compile:ts": "tsc && cp ./src/sound/sfxr.js ./lib/sound/ && cp ./src/sound/sfxr-browser.js ./lib/sound/",
+    "compile:ts": "tsc && cp ./src/sound/sfxr.* ./lib/sound/ && cp ./src/sound/sfxr-browser.js ./lib/sound/",
     "ci": "npm run-script test",
     "postci": "npm run-script docs && codecov",
     "tsc:watch": "cp ./src/sound/sfxr.js ./lib/sound/ && cp ./src/sound/sfxr-browser.js ./lib/sound/ && tsc --watch",

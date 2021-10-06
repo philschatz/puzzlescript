@@ -2,8 +2,7 @@
     "version": "0.0.0",
     "name": "puzzlescript-cli",
     "scripts": {
-        "build-cli": "tsc",
-        "postbuild-cli": "cp -R ../puzzlescript/src/sound/sfxr.js lib/puzzlescript/src/sound/sfxr.js"
+        "build-cli": "tsc"
     },
     "bin": {
         "puzzlescript": "./bin/puzzlescript.js",
