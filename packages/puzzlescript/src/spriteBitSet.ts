@@ -1,4 +1,4 @@
-import BitSet from 'bitset'
+import { BitSet } from 'bitset'
 import { GameData } from './models/game'
 import { GameSprite } from './models/tile'
 // BitSet does not export a default so import does not work in webpack-built file

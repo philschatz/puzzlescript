@@ -1,9 +1,7 @@
 {
   "scripts": {
     "lint": "tslint --fix --config ./tslint.json --project ./ --format stylish",
-    "compile": "npm run-script compile:grammar && npm run-script compile:thumbnail",
-    "precompile:thumbnail": "npm run-script compile:ts",
-    "compile:thumbnail": "node ./lib/cli/buildGameIcons.js",
+    "compile": "npm run-script compile:grammar && npm run-script compile:ts",
     "compile:grammar": "nearleyc --minify-rule-names ./src/parser/grammar.ne > ./src/parser/grammar.ts",
     "compile:ts": "tsc && cp ./src/sound/sfxr.js ./lib/sound/ && cp ./src/sound/sfxr-browser.js ./lib/sound/",
     "ci": "npm run-script test",
@@ -31,15 +29,10 @@
     "test:server": "serve --listen 8000 .",
     "prebuild": "rimraf ./precache-manifest.*.js",
     "build": "webpack",
-    "postbuild": "npm run-script compile:thumbnail",
     "build:dev": "webpack --mode development",
     "build:stats": "webpack --profile --json > ./webpack-stats.json",
     "watch": "jest --updateSnapshot --watch",
     "debug": "VERIFY_MATCHES=true LOG_LEVEL=debug NODE_ENV=development node --inspect -r source-map-support/register ./bin/puzzlescript.js 2> ./play.log"
-  },
-  "bin": {
-    "puzzlescript": "./bin/puzzlescript.js",
-    "puzzlescript-demo": "./bin/puzzlescript-demo.js"
   },
   "dependencies": {
     "bitset": "^5.0.4",
@@ -53,7 +46,6 @@
     "@babel/core": "^7.0.0-0",
     "@babel/preset-env": "^7.2.0",
     "@babel/preset-typescript": "^7.1.0",
-    "@types/inquirer": "6.0.2",
     "@types/jest": "^24.0.17",
     "@types/nearley": "^2.11.0",
     "@types/puppeteer": "^1.11.1",
@@ -62,7 +54,7 @@
     "babel-loader": "^8.0.4",
     "babel-polyfill": "^6.26.0",
     "codecov": "^3.1.0",
-    "dialog-polyfill": "^0.5.0",
+    "dialog-polyfill": "^0.5.2",
     "html-webpack-plugin": "^3.2.0",
     "javascript-time-ago": "^2.0.1",
     "jest": "^23.6.0",
@@ -83,7 +75,7 @@
     "tslint-config-prettier": "^1.17.0",
     "tslint-config-standard": "^9.0.0",
     "typedoc": "^0.14.0",
-    "typescript": "^3.2.2",
+    "typescript": "^3.9.10",
     "util-deprecate": "^1.0.2",
     "webpack": "^4.39.2",
     "webpack-cli": "^3.1.2",

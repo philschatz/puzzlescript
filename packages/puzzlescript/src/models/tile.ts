@@ -1,4 +1,4 @@
-import BitSet from 'bitset'
+import { BitSet } from 'bitset'
 import { Cell } from '../engine'
 import { _flatten, Cellish, Optional, RULE_DIRECTION, setDifference, setIntersection } from '../util'
 import { BaseForLines, IGameCode } from './BaseForLines'

@@ -3,6 +3,7 @@
   "private": true,
   "devDependencies": {
     "@types/jest": "^24.0.17",
+    "@types/node": "^12.20.28",
     "lerna": "^4.0.0",
     "typescript": "^3.9.10"
   }

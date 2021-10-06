@@ -14,7 +14,7 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": false,
-    "typeRoots": [ "./node_modules/@types", "./typings", "packages/puzzlescript-cli/typings"],
+    "typeRoots": [ "./node_modules/@types", "./typings", "packages/puzzlescript/typings", "packages/puzzlescript-cli/typings"],
     "outDir": "lib"
   },
   "exclude": [

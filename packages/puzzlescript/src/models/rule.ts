@@ -1,4 +1,4 @@
-import BitSet from 'bitset'
+import { BitSet } from 'bitset'
 import { Cell, Level } from '../engine'
 import { LOG_LEVEL, logger } from '../logger'
 import LruCache from '../lruCache'

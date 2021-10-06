@@ -3,6 +3,8 @@
 1. Install [lerna](https://lerna.js.org)
 1. `lerna bootstrap`
 1. `lerna run test`
+1. `lerna run test:unit`
+1. `lerna run compile`
 1. `lerna run build`
 1. `lerna run start`
 
