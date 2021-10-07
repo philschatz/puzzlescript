@@ -1,4 +1,5 @@
 {
+    "name": "puzzlescript-web",
     "scripts": {
         "clean": "rimraf ./static/games ./static/index.xhtml ./static/precache-manifest.*.js ./static/puzzlescript-webworker.js* ./static/puzzlescript.js* ./static/pwa-app.js* ./static/pwa-service-worker.js",
 

@@ -2,9 +2,10 @@
 
 1. Install [lerna](https://lerna.js.org)
 1. `lerna bootstrap`
-1. `lerna run test`
-    - you can run `test:unit` or `test:web` to just run tests specific to a package
 1. `lerna run compile`
+1. `lerna run test --stream`
+    - you can run `test:unit` or `test:web` to just run tests specific to a package
+1. `lerna run test:integration --stream` (this runs several games and takes about 30min)
 1. `lerna run start`
 
 

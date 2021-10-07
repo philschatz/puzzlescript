@@ -272,7 +272,7 @@ async function startPromptsAndPlayGame(gamePath: string, gistId: Optional<string
     if (process.stdin.setRawMode) {
         process.stdin.setRawMode(true)
     } else {
-        throw new Error(`ERROR: stdin does not allow setting setRawMode (we need that for keyboard input`)
+        console.error(`ERROR: stdin does not allow setting setRawMode (we need that for keyboard input`)
     }
     process.stdin.resume()
     process.stdin.setEncoding('utf8')
@@ -435,7 +435,12 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: ISa
                 closeSounds()
                 return process.exit(1)
             case '\u001B': // Escape
-                saveCoverageFile(data, absPath, `${path.basename(path.dirname(absPath))}-playgame`)
+                const coverageFilenameSuffix = `${path.basename(path.dirname(absPath))}-playgame`
+                const codeCoverageObj = saveCoverageFile(data, absPath, (absPath) => path.relative(process.cwd(), absPath))
+                if (existsSync(`coverage`)) {
+                    writeFileSync(`coverage/coverage-${coverageFilenameSuffix}.json`,
+                        JSON.stringify(codeCoverageObj, null, 2)) // indent by 2 chars
+                }
                 // Save the partially-completed steps
                 if (keypresses.join('').replace(/\./g, '').length > 0) { // skip just empty ticks
                     recordings.solutions[currentLevelNum] = recordings.solutions[currentLevelNum] || {}

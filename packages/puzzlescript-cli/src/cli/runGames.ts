@@ -1,5 +1,5 @@
 // tslint:disable:no-console
-import { existsSync, readFileSync } from 'fs'
+import { existsSync, readFileSync, writeFileSync } from 'fs'
 import glob from 'glob'
 import * as path from 'path'
 import pify from 'pify'
@@ -151,7 +151,12 @@ async function run() {
 
             const absPath = path.resolve(filename)
             const gistName = path.basename(path.dirname(filename))
-            saveCoverageFile(data, absPath, `gists-${gistName}`)
+            const coverageFilenameSuffix = `gists-${gistName}`
+            const codeCoverageObj = saveCoverageFile(data, absPath, (absPath) => path.relative(process.cwd(), absPath))
+            if (existsSync(`coverage`)) {
+                writeFileSync(`coverage/coverage-${coverageFilenameSuffix}.json`,
+                    JSON.stringify(codeCoverageObj, null, 2)) // indent by 2 chars
+            }
         }
     }
 

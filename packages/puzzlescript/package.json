@@ -9,8 +9,8 @@
     "docs": "typedoc --ignoreCompilerErrors --mode modules --excludePrivate --excludeExternals --theme minimal --readme ./README.md --out ./docs/ ./src/",
     "pretest": "npm run-script compile:grammar",
     "test": "npm run-script test:unit",
-    "test:unit": "VERIFY_MATCHES=true NODE_ENV=development jest --coverage --updateSnapshot --verbose --detectOpenHandles",
-    "posttest": "npm run-script lint && npm run docs"
+    "test:integration": "VERIFY_MATCHES=true NODE_ENV=development jest --coverage --updateSnapshot --verbose --detectOpenHandles --testPathPattern 'replay\\.spec\\.ts' --rootDir",
+    "test:unit":        "VERIFY_MATCHES=true NODE_ENV=development jest --coverage --updateSnapshot --verbose --detectOpenHandles --testPathPattern '^((?!replay).)*\\.spec\\.ts'"
   },
   "dependencies": {
     "bitset": "^5.0.4",
@@ -27,7 +27,6 @@
     "jest": "^23.6.0",    
     "mkdirp": "^0.5.1",
     "node-fetch": "^2.3.0",
-    "nyc": "^15.1.0",
     "tslint": "^5.11.0",
     "tslint-config-prettier": "^1.17.0",
     "tslint-config-standard": "^9.0.0",

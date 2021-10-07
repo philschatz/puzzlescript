@@ -151,7 +151,8 @@ export function createTests(moduloNumber: number, moduloTotal: number) {
                     expect(numPlayed).toBeGreaterThanOrEqual(1)
                 }
 
-                const { coverageFilenameSuffix, codeCoverageObj } = saveCoverageFile(data, gistFilename, `${GIST_ID}-playgame`, (absPath) => path.relative(process.cwd(), absPath))
+                const coverageFilenameSuffix = `${GIST_ID}-playgame`
+                const codeCoverageObj = saveCoverageFile(data, gistFilename, (absPath) => path.relative(process.cwd(), absPath))
                 if (existsSync(`coverage`)) {
                     writeFileSync(`coverage/coverage-${coverageFilenameSuffix}.json`,
                         JSON.stringify(codeCoverageObj, null, 2)) // indent by 2 chars

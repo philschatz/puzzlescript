@@ -15,12 +15,13 @@
         "demo:debug-cli": "LOG_LEVEL=debug NODE_ENV=development node inspect ./bin/puzzlescript-demo.js 2> ./start.log",
         "debug": "VERIFY_MATCHES=true LOG_LEVEL=debug NODE_ENV=development node --inspect -r source-map-support/register ./bin/puzzlescript.js 2> ./play.log",
 
-        "pretest:cli": "npm run-script compile:ts",
+        "test": "npm run-script test:cli",
         "test:cli": "nyc --all -x '**/node_modules/**' -x 'lib/sound/sfxr.js' ./bin/puzzlescript.js --no-ui --game 'Beam Islands' --level 1 --size small --resume",
 
-        "prebuild-cli": "node ./doBatchStuff.js",
-        "build-cli": "tsc",
-        "postbuild-cli": "cp ./src/sounds-copypasta/sfxr.js ./lib/sounds-copypasta/"
+        "compile:ts": "tsc",
+        "precompile": "node ./doBatchStuff.js",
+        "compile": "npm run compile:ts",
+        "postcompile": "cp ./src/sounds-copypasta/sfxr.js ./lib/sounds-copypasta/"
     },
     "bin": {
         "puzzlescript": "./bin/puzzlescript.js",
@@ -35,6 +36,7 @@
         "@types/jest": "^24.0.17",
         "@types/pify": "^3.0.2",
         "@types/supports-color": "^5.3.0",
+        "nyc": "^15.1.0",
         "rimraf": "^3.0.2",
         "source-map-support": "^0.5.9",
         "typescript": "^3.9.10"
