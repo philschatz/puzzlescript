@@ -1,12 +1,37 @@
 {
     "scripts": {
+        "clean": "rimraf ./static/games ./static/index.xhtml ./static/precache-manifest.*.js ./static/puzzlescript-webworker.js* ./static/puzzlescript.js* ./static/pwa-app.js* ./static/pwa-service-worker.js",
+
         "build": "webpack",
         "postbuild": "cp -R ../puzzlescript/games ./static/games",
         "build:dev": "webpack --mode development",
         "build:stats": "webpack --profile --json > ./webpack-stats.json",    
-        "compile:icons": "node ./lib/script/buildGameIcons.js",
-        "compile:ts": "tsc"
+        "compile:ts": "tsc",
+        "postecompile:ts": "node ./lib/script/buildGameIcons.js",
+        "compile": "npm run-script compile:ts && npm run build",
+
+        "test": "npm run-script test:web",
+        "test:web": "NODE_ENV=development jest --updateSnapshot --verbose --detectOpenHandles",
+        "start:server": "serve --listen ${PORT:-12490} ./static",
+        "prebuild": "rimraf ./static/precache-manifest.*.js"    
     },
+    "jest": {
+        "preset": "jest-puppeteer",
+        "testEnvironment": "node",
+        "moduleFileExtensions": [
+          "ts",
+          "tsx",
+          "js",
+          "json"
+        ],
+        "transform": {
+          "^.+\\.(js|jsx|ts|tsx)$": "<rootDir>/node_modules/babel-jest"
+        },
+        "transformIgnorePatterns": [
+          "[/\\\\]node_modules[/\\\\].+\\.(js|jsx|ts|tsx)$"
+        ],
+        "testRegex": "(\\.|/)?spec\\.tsx?$"
+      },    
     "babel": {
         "presets": [
           "@babel/preset-env",
@@ -22,6 +47,11 @@
         "babel-loader": "^8.0.4",
         "babel-polyfill": "^6.26.0",
     
+        "jest": "^23.6.0",    
+        "rimraf": "^3.0.2",
+        "lighthouse": "^5.0.0",
+        "sourcemapped-stacktrace-node": "github:philschatz/sourcemapped-stacktrace-node#2a76787b5f9356b3798788942947e05a5bc8ecc2",
+        "serve": "^11.1.0",
         "html-webpack-plugin": "^3.2.0",
         "script-ext-html-webpack-plugin": "^2.1.3",
         "webpack": "^4.39.2",

@@ -2,8 +2,8 @@
 
 <head>
     <title>Game running in an HTML Table</title>
-    <script src="../../../puzzlescript.js"></script>
-    <link rel="stylesheet" href="../../../style.css"/>
+    <script src="../puzzlescript.js"></script>
+    <link rel="stylesheet" href="../style.css"/>
 </head>
 
 <body>
@@ -12,13 +12,14 @@
             <div role="log" aria-live="polite">The Game log</div>
         </caption>
     </table>
-    
+        
     <script type="text/javascript">//<![CDATA[
         /* eslint-env browser */
         const { PuzzleScript } = window
 
         const table = document.querySelector('#the-game')
-        const tableEngine = new PuzzleScript.SyncTableEngine(table)
+        const worker = new Worker('../puzzlescript-webworker.js')
+        const tableEngine = new PuzzleScript.WebworkerTableEngine(worker, table)
 
         window.HackTableStart = (source, initialLevel) => {
             tableEngine.setGame(source, initialLevel)

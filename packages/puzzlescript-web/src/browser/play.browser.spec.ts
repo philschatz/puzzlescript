@@ -106,16 +106,13 @@ async function evaluateWithStackTrace(fn: puppeteer.EvaluateFn, ...args: any[]) 
 }
 
 async function playLevel() {
-    const source = fs.readFileSync(path.join(__dirname, '../../games/pot-wash-panic/script.txt'), 'utf-8')
+    const source = fs.readFileSync(path.join(__dirname, '../../../puzzlescript/games/pot-wash-panic/script.txt'), 'utf-8')
     const startLevel = 3
 
-    // This variable is _actually_ defined in the JS file, not here but it is in the body of page.evaluate
-    const HackTableStart = (sourceBrowser: string, startLevelBrowser: number) => 'actually implemented in the browser'
-
     await evaluateWithStackTrace(({ source, startLevel }) => { // tslint:disable-line:no-shadowed-variable
-        if (HackTableStart) {
+        if ((window as any).HackTableStart) {
             if (source && typeof startLevel === 'number') {
-                HackTableStart(source, startLevel)
+                (window as any).HackTableStart(source, startLevel)
             } else {
                 throw new Error(`BUG: Source was not a string or startLevel was not a number`)
             }
@@ -135,14 +132,14 @@ describe('Browser', () => {
     it('plays a game in the browser using the SyncTableEngine', async() => {
         // browser tests are slow. Headless is slower it seems (from jest watch mode)
         jest.setTimeout(process.env.NODE_ENV === 'development' ? 90 * 1000 : 90 * 1000)
-        await page.goto(getUrl(`/src/browser/spec/html-table.xhtml`))
+        await page.goto(getUrl(`/_test-html-table.xhtml`))
         return playLevel()
     })
 
     it('plays a game in the browser using the WebworkerTableEngine', async() => {
         // browser tests are slow. Headless is slower it seems (from jest watch mode)
         jest.setTimeout(process.env.NODE_ENV === 'development' ? 90 * 1000 : 90 * 1000)
-        await page.goto(getUrl(`/src/browser/spec/html-table-webworker.xhtml`))
+        await page.goto(getUrl(`/_test-html-table-webworker.xhtml`))
         return playLevel()
     })
 

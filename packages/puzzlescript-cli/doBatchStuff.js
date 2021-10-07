@@ -5,8 +5,8 @@ const glob = require('glob')
 const pify = require('pify')
 // const {default: Parser} = require('../lib/parser/parser')
 
-const SOLUTION_FILE = path.join(__dirname, `../src/cli/solvedGames.ts`)
-const SOLUTIONS_GLOB = path.join(__dirname, '../game-solutions/*.json')
+const SOLUTION_FILE = path.join(__dirname, `./src/cli/solvedGames.ts`)
+const SOLUTIONS_GLOB = path.join(__dirname, '../puzzlescript/game-solutions/*.json')
 // const readFile = pify(fs.readFile)
 
 run()

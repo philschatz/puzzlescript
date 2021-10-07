@@ -1,35 +1,16 @@
 {
   "scripts": {
+    "clean": "rimraf ./coverage ./docs ./lib ./src/parser/grammar.ts",
     "lint": "tslint --fix --config ./tslint.json --project ./ --format stylish",
     "compile": "npm run-script compile:grammar && npm run-script compile:ts",
     "compile:grammar": "nearleyc ./src/parser/grammar.ne > ./src/parser/grammar.ts",
     "compile:ts": "tsc",
-    "ci": "npm run-script test",
-    "postci": "npm run-script docs && codecov",
     "tsc:watch": "tsc --watch",
     "docs": "typedoc --ignoreCompilerErrors --mode modules --excludePrivate --excludeExternals --theme minimal --readme ./README.md --out ./docs/ ./src/",
-    "start": "NODE_ENV=production node -r source-map-support/register ./bin/puzzlescript.js",
-    "start:only": "NODE_ENV=production node -r source-map-support/register ./bin/puzzlescript.js",
-    "start:debug": "node --inspect -r source-map-support/register ./bin/puzzlescript.js 2> ./play.log",
-    "start:dev": "LOG_LEVEL=debug NODE_ENV=development node -r source-map-support/register ./bin/puzzlescript.js 2> ./play.log",
-    "demo": "NODE_ENV=production node -r source-map-support/register ./bin/puzzlescript-demo.js",
-    "demo:dev": "LOG_LEVEL=debug NODE_ENV=development node -r source-map-support/register ./bin/puzzlescript-demo.js 2> ./start.log",
-    "demo:coverage": "LOG_LEVEL=debug NODE_ENV=development nyc --all -x '**/node_modules/**' ./bin/puzzlescript-demo.js 2> ./start.log",
-    "demo:debug": "LOG_LEVEL=debug NODE_ENV=development node --inspect-brk ./bin/puzzlescript-demo.js 2> ./start.log",
-    "demo:debug-cli": "LOG_LEVEL=debug NODE_ENV=development node inspect ./bin/puzzlescript-demo.js 2> ./start.log",
-    "pretest": "npm run-script compile:grammar && node ./script/doBatchStuff.js",
-    "test": "npm run-script test:unit && npm run-script test:browser",
-    "test:unit": "VERIFY_MATCHES=true NODE_ENV=development jest --coverage --updateSnapshot --verbose --detectOpenHandles --testPathPattern '^((?!browser).)*\\.spec\\.ts'",
-    "pretest:browser": "npm run-script build && npm run-script compile:thumbnail",
-    "test:browser": "NODE_ENV=development jest --updateSnapshot --verbose --detectOpenHandles --testPathPattern 'browser\\.spec\\.ts'",
-    "posttest": "npm run-script test:cli && npm run-script lint",
-    "test:debug": "NODE_ENV=development node --inspect-brk -r source-map-support/register $(npm bin)/jest -i --updateSnapshot --detectOpenHandles",
-    "pretest:cli": "npm run-script compile:ts",
-    "test:cli": "nyc --all -x '**/node_modules/**' -x 'lib/sound/sfxr.js' ./bin/puzzlescript.js --no-ui --game 'Beam Islands' --level 1 --size small --resume",
-    "test:server": "serve --listen 8000 .",
-    "prebuild": "rimraf ./precache-manifest.*.js",
-    "watch": "jest --updateSnapshot --watch",
-    "debug": "VERIFY_MATCHES=true LOG_LEVEL=debug NODE_ENV=development node --inspect -r source-map-support/register ./bin/puzzlescript.js 2> ./play.log"
+    "pretest": "npm run-script compile:grammar",
+    "test": "npm run-script test:unit",
+    "test:unit": "VERIFY_MATCHES=true NODE_ENV=development jest --coverage --updateSnapshot --verbose --detectOpenHandles",
+    "posttest": "npm run-script lint && npm run docs"
   },
   "dependencies": {
     "bitset": "^5.0.4",
@@ -37,38 +18,29 @@
     "nearley": "^2.20.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.0.0-0",
     "@babel/preset-env": "^7.2.0",
-    "@babel/preset-typescript": "^7.1.0",
+    "@babel/preset-typescript": "^7.1.0",    
     "@types/jest": "^24.0.17",
     "@types/nearley": "^2.11.0",
-    "babel-core": "7.0.0-bridge.0",
-    "babel-jest": "^23.6.0",
-    "babel-loader": "^8.0.4",
-    "babel-polyfill": "^6.26.0",
-    "codecov": "^3.1.0",
-    "dialog-polyfill": "^0.5.2",
+    "rimraf": "^3.0.2",
     "glob": "^7.1.3",
-    "javascript-time-ago": "^2.0.1",
-    "jest": "^23.6.0",
-    "lighthouse": "^5.0.0",
+    "jest": "^23.6.0",    
     "mkdirp": "^0.5.1",
     "node-fetch": "^2.3.0",
     "nyc": "^15.1.0",
-    "process-nextick-args": "^2.0.0",
-    "remap-istanbul": "^0.13.0",
-    "serve": "^11.1.0",
-    "source-map-support": "^0.5.9",
-    "sourcemapped-stacktrace-node": "github:philschatz/sourcemapped-stacktrace-node#2a76787b5f9356b3798788942947e05a5bc8ecc2",
     "tslint": "^5.11.0",
     "tslint-config-prettier": "^1.17.0",
     "tslint-config-standard": "^9.0.0",
     "typedoc": "^0.14.0",
-    "typescript": "^3.9.10",
-    "util-deprecate": "^1.0.2"
+    "typescript": "^3.9.10"
+  },
+  "babel": {
+    "presets": [
+      "@babel/preset-env",
+      "@babel/preset-typescript"
+    ]
   },
   "jest": {
-    "preset": "jest-puppeteer",
     "testEnvironment": "node",
     "moduleFileExtensions": [
       "ts",
@@ -83,12 +55,6 @@
       "[/\\\\]node_modules[/\\\\].+\\.(js|jsx|ts|tsx)$"
     ],
     "testRegex": "(\\.|/)?spec\\.tsx?$"
-  },
-  "babel": {
-    "presets": [
-      "@babel/preset-env",
-      "@babel/preset-typescript"
-    ]
   },
   "standard": {
     "parser": "typescript-eslint-parser",

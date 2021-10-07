@@ -138,7 +138,7 @@ const reparsedData = Serializer.fromJson(json, gameSource)
 
 ## Embed in a Browser
 
-See [./src/browser/spec/html-table.xhtml](./src/browser/spec/html-table.xhtml) for an example of embedding in a browser.
+See [./static/spec/html-table.xhtml](./static/spec/html-table.xhtml) for an example of embedding in a browser.
 
 ```js
 // Include <script src="node_modules/puzzlescript/puzzlescript.js"></script>

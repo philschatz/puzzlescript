@@ -1,3 +1,4 @@
+const PORT = process.env.PORT || 12490
 module.exports = {
     launch: {
       executablePath: process.env.PUPPETEER_CHROME_PATH,
@@ -7,7 +8,7 @@ module.exports = {
       devtools: process.env.PUPPETEER_DEBUG === 'true'
     },
     server: {
-      command: 'yarn run test:server',
-      port: 8000,
+      command: 'yarn run start:server',
+      port: PORT,
     },
   }
