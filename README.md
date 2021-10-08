@@ -9,7 +9,7 @@
 1. `lerna run start`
 
 
-lerna clean && lerna bootstrap && lerna run clean && lerna bootstrap && lerna run compile && lerna run test --stream
+lerna run clean && lerna clean && lerna bootstrap && lerna run compile && lerna run test --stream
 
 lerna bootstrap
 lerna run compile:grammar

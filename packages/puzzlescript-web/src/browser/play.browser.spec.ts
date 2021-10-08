@@ -173,5 +173,5 @@ describe('Browser', () => {
         //     throw new Error(`Dialog count mismatch. Expected ${3} but got these: ${JSON.stringify(dialogMessages)}`)
         // }
         expect(dismissedCount).toBe(3)
-    })
+    }, process.env.NODE_ENV === 'development' ? 90 * 1000 : 90 * 1000)
 })
