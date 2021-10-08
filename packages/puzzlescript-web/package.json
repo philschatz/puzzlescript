@@ -37,18 +37,20 @@
         "presets": [
           "@babel/preset-env",
           "@babel/preset-typescript"
-        ]
+        ],
+        "plugins": ["@babel/plugin-transform-runtime"]
     },    
     "devDependencies": {
         "@babel/core": "^7.0.0-0",
         "@babel/preset-env": "^7.2.0",
-        "@babel/preset-typescript": "^7.1.0",    
+        "@babel/preset-typescript": "^7.1.0",
+        "@babel/plugin-transform-runtime": "^7.15.8",   
         "babel-core": "7.0.0-bridge.0",
-        "babel-jest": "^23.6.0",
+        "babel-jest": "^27.2.5",
         "babel-loader": "^8.0.4",
         "babel-polyfill": "^6.26.0",
     
-        "jest": "^23.6.0",    
+        "jest": "^27.2.5",    
         "rimraf": "^3.0.2",
         "lighthouse": "^5.0.0",
         "sourcemapped-stacktrace-node": "github:philschatz/sourcemapped-stacktrace-node#2a76787b5f9356b3798788942947e05a5bc8ecc2",

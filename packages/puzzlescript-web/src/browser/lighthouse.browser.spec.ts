@@ -37,8 +37,7 @@ describe('Browser', () => {
     afterEach(browserAfterEach)
 
     it('runs a Lighthouse Audit', async() => {
-        jest.setTimeout(60 * 1000)
         await checkLighthouse('/index.xhtml')
-    })
+    }, 60 * 1000)
 
 })

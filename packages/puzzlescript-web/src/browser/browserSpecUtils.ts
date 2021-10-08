@@ -8,6 +8,10 @@ declare var puppeteerConfig: {
     server: { port: number }
 }
 
+const ignoredMessages = [
+    'The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://goo.gl/7K7WLu'
+]
+
 const dismissedCount: string[] = []
 
 const dialogHandler = async(dialog: puppeteer.Dialog) => {
@@ -22,6 +26,7 @@ export const consoleHandler = (message: puppeteer.ConsoleMessage) => {
     const type = message.type()
     const text = message.text()
 
+    if (ignoredMessages.indexOf(text) >= 0) return
     switch (type) {
         case 'log': console.log(text); break // tslint:disable-line:no-console
         case 'debug': console.debug(text); break // tslint:disable-line:no-console
