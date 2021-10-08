@@ -21,7 +21,7 @@ export interface StorageGameInfo {
 
 interface Storage { [gameId: string]: StorageGameInfo }
 
-export interface Dialog extends HTMLElement {
+export interface Dialog extends HTMLDialogElement {
     open: Optional<boolean>
     show(): void
     showModal(): void
@@ -36,7 +36,7 @@ const LARGE_LEVEL_SIZE = 400 // if there are many cells it will likely take a lo
 const LARGE_SOURCE_SIZE = 40000 // if there are many characters in the source it will likely take a long time to load
 const htmlTitle = getElement('title')
 const table: HTMLTableElement = getElement('#theGame')
-const loadingDialog = getElement<HTMLDialogElement>('#loadingDialog')
+const loadingDialog = getElement<Dialog>('#loadingDialog')
 const loadingDialogCancel = getElement('#loadingDialogCancel')
 const loadingIndicator = getElement('#loadingIndicator')
 const fullscreenTitle = getElement('#fullscreenTitle')
@@ -45,9 +45,9 @@ const authorInfo = getElement('#authorInfo')
 const gameButtonUndo = getElement('#gameButtonUndo')
 const gameButtonRestart = getElement('#gameButtonRestart')
 const gameInstructionsButton2 = getElement('#gameInstructionsButton2')
-const gameInstructionsDialog = getElement<HTMLDialogElement>('#gameInstructionsDialog')
+const gameInstructionsDialog = getElement<Dialog>('#gameInstructionsDialog')
 const gameInstructionsDialogClose = getElement('#gameInstructionsDialogClose')
-const messageDialog = getElement<HTMLDialogElement>('#messageDialog')
+const messageDialog = getElement<Dialog>('#messageDialog')
 const messageDialogText = getElement('#messageDialogText')
 const messageDialogClose = getElement('#messageDialogClose')
 dialogPolyfill.registerDialog(loadingDialog)

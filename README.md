@@ -9,17 +9,11 @@
 1. `lerna run start`
 
 
-lerna run clean && lerna clean && lerna bootstrap && lerna run compile && lerna run test --stream
-
-lerna bootstrap
-lerna run compile:grammar
-lerna run compile:ts
-lerna run build
-
 # TODO
 
 - [x] Move to a monorepo
 - [x] Add embedding example
+- [ ] Upgrade dependencies
 - [ ] Move CLI code into a separate package
 - [ ] Maybe move games into a separate package
 - [ ] Update so that the puzzlescript package (or puzzlescript-embed package) has 0 dependencies

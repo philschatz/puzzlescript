@@ -145,7 +145,7 @@ window.addEventListener('load', () => {
                     // Safari does not support registration.showNotification() so we fall back to new Notification()
                     const fallback = () => {
                         new Notification('Test Title', notificationOptions) // tslint:disable-line:no-unused-expression
-                        resolve()
+                        resolve(msg)
                     }
                     if (result === 'granted') {
                         if (navigator.serviceWorker) {
@@ -153,7 +153,7 @@ window.addEventListener('load', () => {
                             const registration = await navigator.serviceWorker.ready
                             if (registration.showNotification) {
                                 await registration.showNotification('Test Title', notificationOptions)
-                                resolve()
+                                resolve(msg)
                             } else {
                                 fallback()
                             }
@@ -163,12 +163,12 @@ window.addEventListener('load', () => {
                         }
                     } else {
                         alert(msg)
-                        resolve()
+                        resolve(msg)
                     }
                 })
             } else {
                 alert(msg)
-                resolve()
+                resolve(msg)
             }
         })
 

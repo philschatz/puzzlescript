@@ -82,7 +82,7 @@ async function run() {
             } catch (err) {
                 // problem loading the game
                 svgFilesToConvert.pop() // do not generate a PNG file of it.
-                console.error(`Problem building an SVG image for ${gameId}. ${err.message}`) // tslint:disable-line:no-console
+                console.error(`Problem building an SVG image for ${gameId}. ${(err as Error).message}`) // tslint:disable-line:no-console
             }
         }
 
