@@ -9,7 +9,8 @@ declare var puppeteerConfig: {
 }
 
 const ignoredMessages = [
-    'The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://goo.gl/7K7WLu'
+    'The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://goo.gl/7K7WLu',
+    "The resource http://localhost:12490/puzzlescript-webworker.js was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally."
 ]
 
 const dismissedCount: string[] = []

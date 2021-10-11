@@ -2,7 +2,6 @@
 /* eslint-env jasmine */
 import { existsSync, writeFileSync } from 'fs'
 import lighthouse from 'lighthouse' // tslint:disable-line:no-implicit-dependencies
-import reporter from 'lighthouse/lighthouse-core/report/report-generator' // tslint:disable-line:no-implicit-dependencies no-submodule-imports
 import { join } from 'path'
 import puppeteer from 'puppeteer' // tslint:disable-line:no-implicit-dependencies
 import { URL } from 'url'
@@ -15,15 +14,15 @@ declare var browser: puppeteer.Browser
 export const checkLighthouse = async(urlPath: string) => {
 
     const { port } = (new URL(browser.wsEndpoint()))
-    const { lhr } = await lighthouse(getUrl(urlPath), { port })
+    const { lhr, report: json } = await lighthouse(getUrl(urlPath), { port, output: 'html' })
 
     // Save the report so it can be viewed. Because running it in a browser yields different results
     const coveragePath = join(__dirname, '../../coverage/')
     if (existsSync(coveragePath)) {
-        const html = reporter.generateReportHtml(lhr)
-        writeFileSync(join(coveragePath, 'lighthouse-report.html'), html, { encoding: 'utf-8' })
+        writeFileSync(join(coveragePath, 'lighthouse-report.json'), json, { encoding: 'utf-8' })
     }
 
+    expect(lhr.runtimeError).toBe(undefined)
     expect(lhr.categories.accessibility.score).toBeGreaterThanOrEqual(1)
     expect(lhr.categories.seo.score).toBeGreaterThanOrEqual(1)
     expect(lhr.categories.pwa.score).toBeGreaterThanOrEqual(0.73) // since it is not https

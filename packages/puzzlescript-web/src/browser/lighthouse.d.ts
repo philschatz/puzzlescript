@@ -194,6 +194,7 @@ declare module 'lighthouse' {
     }
   
     interface LighthouseResult {
+      report: string;
       lhr: LighthouseReport;
       artifacts: NotYetTyped;
     }
@@ -203,6 +204,7 @@ declare module 'lighthouse' {
       // Signature for the main function
       (url: string,
        flags?: {
+          output?: 'html';
           port?: number | string;
           disableCpuThrottling?: boolean;
           disableDeviceEmulation?: boolean;

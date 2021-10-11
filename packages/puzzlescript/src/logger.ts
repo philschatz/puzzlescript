@@ -18,17 +18,15 @@ function toNum(level: LOG_LEVEL) {
     return LEVELS.indexOf(level)
 }
 
-function toLevel(level?: string) {
-    if (level) {
-        switch (level.toUpperCase()) {
-            case LOG_LEVEL.SEVERE: return LOG_LEVEL.SEVERE
-            case LOG_LEVEL.DEBUG: return LOG_LEVEL.DEBUG
-            case LOG_LEVEL.TRACE: return LOG_LEVEL.TRACE
-            default:
-                throw new Error(`ERROR: Invalid log level. valid levels are ${JSON.stringify(LEVELS)}`)
-        }
-    } else {
-        return LOG_LEVEL.SEVERE
+function toLevel(level: string) {
+    switch (level.toUpperCase()) {
+        case LOG_LEVEL.SEVERE: return LOG_LEVEL.SEVERE
+        case LOG_LEVEL.WARN: return LOG_LEVEL.WARN
+        case LOG_LEVEL.INFO: return LOG_LEVEL.INFO
+        case LOG_LEVEL.DEBUG: return LOG_LEVEL.DEBUG
+        case LOG_LEVEL.TRACE: return LOG_LEVEL.TRACE
+        default:
+            throw new Error(`ERROR: Invalid log level. valid levels are ${JSON.stringify(LEVELS)} but was given '${level}'`)
     }
 }
 
@@ -37,7 +35,7 @@ type LogMessage = (() => any) | any
 class Logger {
     private readonly currentLevelNum: number
     constructor() {
-        this.currentLevelNum = toNum(toLevel(process.env.LOG_LEVEL))
+        this.currentLevelNum = toNum(toLevel(process.env.LOG_LEVEL ?? LOG_LEVEL.SEVERE))
     }
     public isLevel(level: LOG_LEVEL) {
         return toNum(level) <= this.currentLevelNum

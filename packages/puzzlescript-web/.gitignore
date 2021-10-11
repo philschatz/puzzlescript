@@ -18,6 +18,13 @@
 /static/pwa-app.js
 /static/pwa-app.js.map
 /static/pwa-service-worker.js
+/static/pwa-service-worker.js.map
+/static/puzzlescript-webworker.js.LICENSE.txt
+/static/puzzlescript.js.LICENSE.txt
+/static/pwa-app.js.LICENSE.txt
+/static/workbox-*.js
+/static/workbox-*.js.map
+
 
 /static/games/
 /static/game-thumbnails/*.png

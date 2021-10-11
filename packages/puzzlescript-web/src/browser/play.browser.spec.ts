@@ -2,7 +2,7 @@
 /* eslint-env jasmine */
 import fs from 'fs'
 import path from 'path'
-import puppeteer from 'puppeteer' // tslint:disable-line:no-implicit-dependencies
+import puppeteer, { KeyInput } from 'puppeteer' // tslint:disable-line:no-implicit-dependencies
 import { browserAfterEach, browserBeforeEach, getUrl } from './browserSpecUtils'
 // import mapStackTrace from 'sourcemapped-stacktrace-node')
 
@@ -71,23 +71,30 @@ async function pressKeys(keys: string[], isLastPressADialog: boolean) {
     for (let index = 0; index < keys.length; index++) {
         const key = keys[index]
         if (key === ',') { continue }
-        await page.waitFor(`.ps-table[data-ps-accepting-input='true']`)
+        await page.waitForSelector(`.ps-table[data-ps-accepting-input='true']`)
         if (key === '.') {
             // wait long enough for a tick to occur
             await sleep(100)
             continue
         }
+        let k: KeyInput = 'Power'
+        if (key === 'W') { k = 'KeyW'}
+        else if (key === 'A') { k = 'KeyA'}
+        else if (key === 'S') { k = 'KeyS'}
+        else if (key === 'D') { k = 'KeyD'}
+        else { throw new Error(`Unsupported key '${key}'`)}
+
         const { count } = await getAttrs()
-        // await page.keyboard.press(`Key${key}`)
-        await page.keyboard.down(`Key${key}`)
+        // await page.keyboard.press(k)
+        await page.keyboard.down(k)
         await sleep(100) // because alerts might show up and they take some time to pop open?
-        await page.keyboard.up(`Key${key}`)
+        await page.keyboard.up(k)
         await sleep(100)
         // wait until the keypress was processed (might need to dismiss a dialog)
         if (isLastPressADialog && index === keys.length - 1) {
             await waitForDialogAndClose()
         } else {
-            await page.waitFor(`.ps-table:not([data-ps-last-input-processed='${count}'])`)
+            await page.waitForSelector(`.ps-table:not([data-ps-last-input-processed='${count}'])`)
         }
     }
 }

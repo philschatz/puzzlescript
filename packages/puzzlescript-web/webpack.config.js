@@ -2,6 +2,7 @@ const path = require('path')
 const WorkboxPlugin = require('workbox-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin')
+const { DefinePlugin } = require('webpack')
 
 module.exports = {
     mode: process.env['NODE_ENV'] || 'production',
@@ -25,7 +26,17 @@ module.exports = {
             '../ui/terminal': path.resolve(__dirname, './src/ui/terminalBrowserShim.js')
         }
     },
+    optimization: {
+        minimize: false
+    },
     plugins: [
+        new DefinePlugin({
+            'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+            'process.env.PUZZLESCRIPT_METHOD': JSON.stringify(''), // 'ondemand',
+            'process.env.LOG_LEVEL': JSON.stringify(process.env.LOG_LEVEL ?? 'INFO'),
+            'process.env.VERIFY_MATCHES': JSON.stringify(false),
+            'process.stdout': JSON.stringify(false),
+        }),
         new HtmlWebpackPlugin({
             xhtml: true,
             template: 'static/pwa-template.xhtml',
@@ -51,7 +62,7 @@ module.exports = {
             swDest: 'pwa-service-worker.js',
             runtimeCaching: [{
                 urlPattern: /\/games\//,
-                handler: 'staleWhileRevalidate',
+                handler: 'StaleWhileRevalidate',
                 options: {
                     cacheName: 'games-v1',
                     cacheableResponse: {
@@ -61,7 +72,7 @@ module.exports = {
             },
             {
                 urlPattern: /\/game-thumbnails\//,
-                handler: 'staleWhileRevalidate',
+                handler: 'StaleWhileRevalidate',
                 options: {
                     cacheName: 'game-thumbnails-v1',
                     cacheableResponse: {
@@ -71,7 +82,7 @@ module.exports = {
             },
             {
                 urlPattern: /\/style\.css/,
-                handler: 'staleWhileRevalidate',
+                handler: 'StaleWhileRevalidate',
                 options: {
                     cacheName: 'app-v1',
                     cacheableResponse: {
@@ -81,7 +92,7 @@ module.exports = {
             },
             {
                 urlPattern: /\/favicon\.ico/,
-                handler: 'staleWhileRevalidate',
+                handler: 'StaleWhileRevalidate',
                 options: {
                     cacheName: 'app-icons-v1',
                     cacheableResponse: {
@@ -91,7 +102,7 @@ module.exports = {
             },
             {
                 urlPattern: /\/apple-.*\.png/,
-                handler: 'staleWhileRevalidate',
+                handler: 'StaleWhileRevalidate',
                 options: {
                     cacheName: 'app-icons-v1',
                     cacheableResponse: {

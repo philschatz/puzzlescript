@@ -67,7 +67,6 @@ export default class WebworkerTableEngine implements Engineish {
                 })
             },
             async onSound(sound: Soundish) {
-                debugger
                 await playSound(sound.soundCode)
             },
         }
