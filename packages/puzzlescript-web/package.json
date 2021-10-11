@@ -1,11 +1,11 @@
 {
     "name": "puzzlescript-web",
+    "main": "./lib/browser.js",
     "scripts": {
         "clean": "rimraf ./static/games ./static/index.xhtml ./static/precache-manifest.*.js ./static/puzzlescript-webworker.js* ./static/puzzlescript.js* ./static/pwa-app.js* ./static/pwa-service-worker.js",
 
         "build": "webpack",
-        "postbuild": "node ./uppercase-doctype.js && cp -R ../puzzlescript/games ./static/games",
-        "build:dev": "webpack --mode development",
+        "postbuild": "node ./uppercase-doctype.js && cp ./src/sounds-copypasta/sfxr.js ./lib/sounds-copypasta/ && cp -R ../puzzlescript/games ./static/games",
         "build:stats": "webpack --profile --json > ./webpack-stats.json",    
         "compile:ts": "tsc",
         "postecompile:ts": "node ./lib/script/buildGameIcons.js",
@@ -13,6 +13,7 @@
 
         "test": "npm run-script test:web",
         "test:web": "NODE_ENV=development jest --updateSnapshot --verbose --detectOpenHandles",
+        "start": "npm run-script start:server",
         "start:server": "serve --listen ${PORT:-12490} ./static",
         "prebuild": "rimraf ./static/precache-manifest.*.js"    
     },

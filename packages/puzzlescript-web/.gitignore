@@ -2,6 +2,7 @@
 # Start: Node-built files and documentation
 # ---
 
+/coverage/
 /docs/
 /lib/
 

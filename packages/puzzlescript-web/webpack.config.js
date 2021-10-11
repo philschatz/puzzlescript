@@ -5,11 +5,11 @@ const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin')
 const { DefinePlugin } = require('webpack')
 
 module.exports = {
-    mode: process.env['NODE_ENV'] || 'production',
+    mode: 'development', // Projects that include this library can minify if they want. We will not minify and include sourcemaps
     entry: {
         'pwa-app': './src/pwa/app.ts',
-        'puzzlescript-webworker': './src/index-webworker.ts',
-        'puzzlescript': './src/index-browser.ts',
+        'puzzlescript-webworker': './src/webworker.ts',
+        'puzzlescript': './src/browser.ts',
     },
     output: {
         path: path.resolve(__dirname, './static'),

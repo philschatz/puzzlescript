@@ -8,6 +8,11 @@ import WebworkerTableEngine from './browser/WebworkerTableEngine'
     SyncTableEngine
 }
 
+export default {
+    WebworkerTableEngine,
+    SyncTableEngine
+}
+
 export {
     WebworkerTableEngine,
     SyncTableEngine

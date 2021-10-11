@@ -3,3 +3,5 @@ node_modules
 /lib
 /packages/puzzlescript/lib
 /packages/puzzlescript-cli/lib
+
+yarn-error.log

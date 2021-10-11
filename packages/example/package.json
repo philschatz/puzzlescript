@@ -2,11 +2,13 @@
   "private": true,
   "name": "example",
   "scripts": {
+    "clean": "rm ./bundle.js ./bundle.js.map",
     "prebuild": "cp ../puzzlescript-web/static/style.css style.css",
-    "build": "esbuild --bundle --sourcemap --outfile=bundle.js index.js"
+    "build": "esbuild --bundle --sourcemap --outfile=bundle.js index.js '--define:process.env.NODE_ENV=\"production\"' '--define:process.env.PUZZLESCRIPT_METHOD=\"\"' '--define:process.env.LOG_LEVEL=\"INFO\"' '--define:process.env.VERIFY_MATCHES=false' '--define:process.stdout=false'"
   },
   "dependencies": {
-    "puzzlescript": "^5.3.0"
+    "puzzlescript": "*",
+    "puzzlescript-web": "*"
   },
   "devDependencies": {
     "esbuild": "^0.13.4"
