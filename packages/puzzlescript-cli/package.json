@@ -1,9 +1,8 @@
 {
-    "version": "0.0.0",
+    "version": "6.0.0-alpha.0",
     "name": "puzzlescript-cli",
     "scripts": {
         "clean": "rimraf ./lib ./src/cli/solvedGames.ts",
-
         "start": "NODE_ENV=production node -r source-map-support/register ./bin/puzzlescript.js",
         "start:only": "NODE_ENV=production node -r source-map-support/register ./bin/puzzlescript.js",
         "start:debug": "node --inspect -r source-map-support/register ./bin/puzzlescript.js 2> ./play.log",
@@ -14,10 +13,8 @@
         "demo:debug": "LOG_LEVEL=debug NODE_ENV=development node --inspect-brk ./bin/puzzlescript-demo.js 2> ./start.log",
         "demo:debug-cli": "LOG_LEVEL=debug NODE_ENV=development node inspect ./bin/puzzlescript-demo.js 2> ./start.log",
         "debug": "VERIFY_MATCHES=true LOG_LEVEL=debug NODE_ENV=development node --inspect -r source-map-support/register ./bin/puzzlescript.js 2> ./play.log",
-
         "test": "npm run-script test:cli",
         "test:cli": "nyc --all -x '**/node_modules/**' -x 'lib/sound/sfxr.js' ./bin/puzzlescript.js --no-ui --game 'Beam Islands' --level 1 --size small --resume",
-
         "compile:ts": "tsc",
         "precompile": "node ./doBatchStuff.js",
         "compile": "npm run compile:ts",
@@ -26,7 +23,7 @@
     "bin": {
         "puzzlescript": "./bin/puzzlescript.js",
         "puzzlescript-demo": "./bin/puzzlescript-demo.js"
-    },    
+    },
     "devDependencies": {
         "@types/ansi-escapes": "^4.0.0",
         "@types/ansi-styles": "^3.2.1",
@@ -55,10 +52,10 @@
         "inquirer": "8.0.0",
         "inquirer-autocomplete-prompt": "^1.0.1",
         "pify": "^4.0.0",
-        "puzzlescript": "^5.3.0",
+        "puzzlescript": "^6.0.0-alpha.0",
         "speaker": "0.5.3",
         "supports-color": "^7.0.0",
         "update-notifier": "^3.0.1",
         "web-audio-api": "^0.2.2"
-    }    
+    }
 }
