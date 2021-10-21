@@ -1,5 +1,5 @@
 {
-    "version": "6.0.0-alpha.0",
+    "version": "6.0.0-alpha.2",
     "name": "puzzlescript-cli",
     "files": [
         "lib/",
@@ -56,7 +56,7 @@
         "inquirer": "8.0.0",
         "inquirer-autocomplete-prompt": "^1.0.1",
         "pify": "^4.0.0",
-        "puzzlescript": "^6.0.0-alpha.0",
+        "puzzlescript": "^6.0.0-alpha.2",
         "speaker": "0.5.3",
         "supports-color": "^7.0.0",
         "update-notifier": "^3.0.1",

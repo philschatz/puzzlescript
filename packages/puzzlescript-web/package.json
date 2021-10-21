@@ -1,5 +1,5 @@
 {
-  "version": "6.0.0-alpha.1",
+  "version": "6.0.0-alpha.2",
   "name": "puzzlescript-web",
   "main": "./lib/browser.js",
   "files": [
@@ -64,7 +64,7 @@
     "jest-puppeteer": "^6.0.0",
     "lighthouse": "^5",
     "puppeteer": "^10.4.0",
-    "puzzlescript": "^6.0.0-alpha.0",
+    "puzzlescript": "^6.0.0-alpha.2",
     "rimraf": "^3.0.2",
     "script-ext-html-webpack-plugin": "^2.1.5",
     "serve": "^12.0.1",
