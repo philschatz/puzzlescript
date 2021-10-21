@@ -30,16 +30,16 @@ function isShort() {
 
 export function createTests(moduloNumber: number, moduloTotal: number) {
     if (process.env.SKIP_SOLUTIONS) {
-        describe.skip('Skipping replay tests', () => {
-            it.skip('skiping test')
+        describe.skip('Skipping ALL replay tests because SKIP_SOLUTIONS is set', () => {
+            it.skip('skiping test', () => { /* no-op */ })
         })
         console.log('Skipping Replay tests') // tslint:disable-line:no-console
         return
     }
 
     if (isShort() && (moduloNumber === 7 || moduloNumber === 8)) {
-        describe.skip(`Skipping replaySolutions/${moduloNumber}.test because it causes Travis to time out`, () => {
-            it.skip('skipping tests')
+        describe.skip(`Skipping replaySolutions/${moduloNumber}.test because it causes CI to time out`, () => {
+            it.skip('skipping tests', () => { /* no-op */ })
         })
         return
     }

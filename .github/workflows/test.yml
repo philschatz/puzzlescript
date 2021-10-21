@@ -32,9 +32,10 @@ jobs:
         run: ./node_modules/.bin/lerna run compile
       - name: Test
         run: ./node_modules/.bin/lerna run test --stream
-      # - name: Integration Tests
-      #   run: ./node_modules/.bin/lerna run test:integration --stream
       - name: Upload Code Coverage
         uses: codecov/codecov-action@v2
       - name: Lint
         run: ./node_modules/.bin/lerna run lint
+      - name: Integration Tests
+        # if: github.ref == 'refs/heads/main'
+        run: ./node_modules/.bin/lerna run test:integration --stream
