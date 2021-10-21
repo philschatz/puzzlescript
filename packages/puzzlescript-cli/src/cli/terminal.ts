@@ -81,6 +81,7 @@ class TerminalUI extends BaseUI implements GameEngineHandler {
     protected inspectorRow: number
     private resizeHandler: Optional<() => void>
     private debugCategoryMessages: string[]
+    private playSounds = true
 
     constructor() {
         super()
@@ -105,6 +106,10 @@ class TerminalUI extends BaseUI implements GameEngineHandler {
             })
             process.stdout.on('resize', this.resizeHandler)
         }
+    }
+
+    public enableSounds(flag: boolean) {
+        this.playSounds = flag
     }
 
     public destroy() {
@@ -134,7 +139,9 @@ class TerminalUI extends BaseUI implements GameEngineHandler {
         super.onGameChange(gameData)
     }
     public async onSound(sound: Soundish) {
-        /*await*/ playSound(sound) // tslint:disable-line:no-floating-promises
+        if (this.playSounds) {
+            /*await*/ playSound(sound) // tslint:disable-line:no-floating-promises
+        }
     }
     public onTick(changedCells: Set<Cellish>) {
         this.drawCells(changedCells, false)

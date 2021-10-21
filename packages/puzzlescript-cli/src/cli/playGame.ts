@@ -48,6 +48,7 @@ interface ICliOptions {
     new: true | undefined,
     level: number | undefined,
     resume: boolean | undefined,
+    mute: boolean | undefined,
 }
 
 const commander = new Command()
@@ -124,6 +125,7 @@ commander
 .option('-n, --new', 'start a new game')
 .option('-l, --level <num>', 'play a specific level', ((arg) => parseInt(arg, 10)))
 .option('-r, --resume', 'resume the level from last save')
+.option('-m, --mute', 'do not attempt to play sounds')
 .on('--help', () => {
     console.log('')
     console.log('Note: saved game state is stored in ~/.local/puzzlescript/solutions/')
@@ -277,6 +279,7 @@ async function startPromptsAndPlayGame(gamePath: string, gistId: Optional<string
     process.stdin.resume()
     process.stdin.setEncoding('utf8')
 
+    TerminalUI.enableSounds(!cliOptions.mute)
     TerminalUI.clearScreen()
 
     await playGame(data, currentLevelNum, recordings, ticksToRunFirst, absPath, solutionPath, cliUi, cliLevel !== undefined /*only run one level if specified*/)
