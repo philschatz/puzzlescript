@@ -8,6 +8,13 @@
 1. `lerna run test:integration --stream` (this runs several games and takes about 30min)
 1. `lerna run start:server --stream` to start up a server
 
+# Maintainer Instructions
+
+To publish a new version of the packages:
+
+```sh
+lerna publish
+```
 
 # TODO
 

@@ -1,8 +1,0 @@
-/node_modules/
-/coverage/
-/script/
-/game-solutions/
-/webpack-stats.json
-/.*
-*.log
-*.spec.*

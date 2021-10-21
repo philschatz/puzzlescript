@@ -1,5 +1,11 @@
 {
   "version": "6.0.0-alpha.0",
+  "files": [
+    "games/",
+    "game-solutions/",
+    "lib/",
+    "src/"
+  ],
   "scripts": {
     "clean": "rimraf ./coverage ./docs ./lib ./src/parser/grammar.ts",
     "lint": "tslint --fix --config ./tslint.json --project ./ --format stylish",

@@ -14,12 +14,12 @@ declare var browser: puppeteer.Browser
 export const checkLighthouse = async(urlPath: string) => {
 
     const { port } = (new URL(browser.wsEndpoint()))
-    const { lhr, report: json } = await lighthouse(getUrl(urlPath), { port, output: 'html' })
+    const { lhr, report: html } = await lighthouse(getUrl(urlPath), { port, output: 'html' })
 
     // Save the report so it can be viewed. Because running it in a browser yields different results
     const coveragePath = join(__dirname, '../../coverage/')
     if (existsSync(coveragePath)) {
-        writeFileSync(join(coveragePath, 'lighthouse-report.json'), json, { encoding: 'utf-8' })
+        writeFileSync(join(coveragePath, 'lighthouse-report.html'), html, { encoding: 'utf-8' })
     }
 
     expect(lhr.runtimeError).toBe(undefined)

@@ -2,6 +2,10 @@
   "version": "6.0.0-alpha.1",
   "name": "puzzlescript-web",
   "main": "./lib/browser.js",
+  "files": [
+    "lib/",
+    "src/"
+  ],
   "scripts": {
     "clean": "rimraf ./static/games ./static/index.xhtml ./static/precache-manifest.*.js ./static/puzzlescript-webworker.js* ./static/puzzlescript.js* ./static/pwa-app.js* ./static/pwa-service-worker.js",
     "build": "webpack",

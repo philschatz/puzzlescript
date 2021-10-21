@@ -1,6 +1,10 @@
 {
     "version": "6.0.0-alpha.0",
     "name": "puzzlescript-cli",
+    "files": [
+        "lib/",
+        "src/"
+    ],
     "scripts": {
         "clean": "rimraf ./lib ./src/cli/solvedGames.ts",
         "start": "NODE_ENV=production node -r source-map-support/register ./bin/puzzlescript.js",
@@ -14,7 +18,7 @@
         "demo:debug-cli": "LOG_LEVEL=debug NODE_ENV=development node inspect ./bin/puzzlescript-demo.js 2> ./start.log",
         "debug": "VERIFY_MATCHES=true LOG_LEVEL=debug NODE_ENV=development node --inspect -r source-map-support/register ./bin/puzzlescript.js 2> ./play.log",
         "test": "npm run-script test:cli",
-        "test:cli": "nyc --all -x '**/node_modules/**' -x 'lib/sound/sfxr.js' ./bin/puzzlescript.js --no-ui --game 'Beam Islands' --level 1 --size small --resume",
+        "test:cli": "nyc --reporter html --reporter text --reporter json --all -x '**/node_modules/**' -x 'lib/sound/sfxr.js' ./bin/puzzlescript.js --no-ui --game 'Beam Islands' --level 1 --size small --resume",
         "compile:ts": "tsc",
         "precompile": "node ./doBatchStuff.js",
         "compile": "npm run compile:ts",
