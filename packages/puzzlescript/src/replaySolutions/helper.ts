@@ -59,7 +59,7 @@ export function createTests(moduloNumber: number, moduloTotal: number) {
 
             const testTitle = `plays ${isShort() ? '*a single level*' : '_the solved levels_'} of ${GIST_ID}`
             if (SKIP_GAMES.indexOf(GIST_ID) >= 0) {
-                it.skip(testTitle, () => {})
+                it.skip(testTitle, () => { /* no-op */ })
                 return
             }
 

@@ -13,7 +13,7 @@
 To publish a new version of the packages:
 
 ```sh
-lerna publish
+lerna publish prerelease
 ```
 
 # TODO
