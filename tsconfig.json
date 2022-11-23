@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "declaration": true,
     "target": "es2015",
     "lib": ["es2017", "dom"],
     "module": "commonjs",
@@ -14,8 +15,7 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": false,
-    "outDir": "lib",
-    "rootDir": "src"
+    "outDir": "lib"
   },
   "exclude": [
     "node_modules",

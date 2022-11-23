@@ -1,0 +1,41 @@
+---
+name: tests
+on:
+  pull_request:
+jobs:
+  tests:
+    timeout-minutes: 30
+    runs-on: ubuntu-18.04
+    steps:
+      - name: System dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt update
+          sudo apt-get update
+          sudo apt-get -y install libasound2-dev
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
+          # See https://github.com/lerna/lerna/issues/2542
+          # pulls all commits (needed for lerna / semantic release to correctly version)
+          # fetch-depth: "0"
+      # pulls all tags (needed for lerna / semantic release to correctly version)
+      # - run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      - name: Prerequisites
+        run: npm install
+      - name: Setup
+        run: ./node_modules/.bin/lerna bootstrap --force-local
+      - name: Compile
+        run: ./node_modules/.bin/lerna run compile
+      - name: Test
+        run: ./node_modules/.bin/lerna run test --stream
+      - name: Upload Code Coverage
+        uses: codecov/codecov-action@v2
+      - name: Lint
+        run: ./node_modules/.bin/lerna run lint
+      - name: Integration Tests
+        # if: github.ref == 'refs/heads/main'
+        run: ./node_modules/.bin/lerna run test:integration --stream

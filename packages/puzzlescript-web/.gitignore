@@ -1,0 +1,32 @@
+# ---
+# Start: Node-built files and documentation
+# ---
+
+/coverage/
+/docs/
+/lib/
+
+# ---
+# ProgressiveWebApp (PWA) files. built using `yarn build`
+# ---
+
+/static/index.xhtml
+/static/precache-manifest.*.js
+/static/puzzlescript.js
+/static/puzzlescript.js.map
+/static/puzzlescript-webworker.js
+/static/puzzlescript-webworker.js.map
+/static/pwa-app.js
+/static/pwa-app.js.map
+/static/pwa-service-worker.js
+/static/pwa-service-worker.js.map
+/static/puzzlescript-webworker.js.LICENSE.txt
+/static/puzzlescript.js.LICENSE.txt
+/static/pwa-app.js.LICENSE.txt
+/static/workbox-*.js
+/static/workbox-*.js.map
+
+
+/static/games/
+/static/game-thumbnails/*.png
+/static/game-thumbnails/*.svg

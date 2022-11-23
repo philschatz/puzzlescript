@@ -1,0 +1,34 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <title>Game running in an HTML Table</title>
+    <script src="../puzzlescript.js"></script>
+    <link rel="stylesheet" href="../style.css"/>
+</head>
+
+<body>
+    <table id="the-game">
+        <caption>
+            <div role="log" aria-live="polite">The Game log</div>
+        </caption>
+    </table>
+        
+    <script type="text/javascript">//<![CDATA[
+        /* eslint-env browser */
+        const { PuzzleScript } = window
+
+        const table = document.querySelector('#the-game')
+        const worker = new Worker('../puzzlescript-webworker.js')
+        const tableEngine = new PuzzleScript.WebworkerTableEngine(worker, table)
+
+        window.HackTableStart = (source, initialLevel) => {
+            tableEngine.setGame(source, initialLevel)
+        }
+        window.HackTableStop = () => {
+            tableEngine.dispose()
+        }
+
+    // ]]></script>
+</body>
+
+</html>

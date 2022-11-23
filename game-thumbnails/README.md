@@ -1,1 +1,0 @@
-This directory is populated with thumbnails of games by running `npm run-script compile:thumbnail`

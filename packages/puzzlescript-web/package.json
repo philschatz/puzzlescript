@@ -1,0 +1,78 @@
+{
+  "version": "6.0.0-alpha.2",
+  "name": "puzzlescript-web",
+  "main": "./lib/browser.js",
+  "files": [
+    "lib/",
+    "src/"
+  ],
+  "scripts": {
+    "clean": "rimraf ./static/games ./static/index.xhtml ./static/precache-manifest.*.js ./static/puzzlescript-webworker.js* ./static/puzzlescript.js* ./static/pwa-app.js* ./static/pwa-service-worker.js",
+    "build": "webpack",
+    "postbuild": "node ./uppercase-doctype.js && cp ./src/sounds-copypasta/sfxr.js ./lib/sounds-copypasta/ && cp -R ../puzzlescript/games ./static/games",
+    "build:stats": "webpack --profile --json > ./webpack-stats.json",
+    "compile:ts": "tsc",
+    "postecompile:ts": "node ./lib/script/buildGameIcons.js",
+    "compile": "npm run-script compile:ts && npm run build",
+    "test": "npm run-script test:web",
+    "test:web": "NODE_ENV=development jest --updateSnapshot --verbose --detectOpenHandles",
+    "start": "npm run-script start:server",
+    "start:server": "serve --listen ${PORT:-12490} ./static",
+    "prebuild": "rimraf ./static/precache-manifest.*.js"
+  },
+  "jest": {
+    "preset": "jest-puppeteer",
+    "testEnvironment": "node",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "json"
+    ],
+    "transform": {
+      "^.+\\.(js|jsx|ts|tsx)$": "<rootDir>/node_modules/babel-jest"
+    },
+    "transformIgnorePatterns": [
+      "[/\\\\]node_modules[/\\\\].+\\.(js|jsx|ts|tsx)$"
+    ],
+    "testRegex": "(\\.|/)?spec\\.tsx?$"
+  },
+  "babel": {
+    "presets": [
+      "@babel/preset-env",
+      "@babel/preset-typescript"
+    ],
+    "plugins": [
+      "@babel/plugin-transform-runtime"
+    ]
+  },
+  "devDependencies": {
+    "@babel/core": "^7.15.8",
+    "@babel/plugin-transform-runtime": "^7.15.8",
+    "@babel/preset-env": "^7.15.8",
+    "@babel/preset-typescript": "^7.15.0",
+    "@types/glob": "^7.1.4",
+    "@types/jest": "^27.0.2",
+    "@types/puppeteer": "^5.4.4",
+    "babel-core": "7.0.0-bridge.0",
+    "babel-jest": "^27.2.5",
+    "babel-loader": "^8.2.2",
+    "babel-polyfill": "^6.26.0",
+    "dialog-polyfill": "^0.5.6",
+    "html-webpack-plugin": "^5.3.2",
+    "jest": "^27.2.5",
+    "jest-puppeteer": "^6.0.0",
+    "lighthouse": "^5",
+    "puppeteer": "^10.4.0",
+    "puzzlescript": "^6.0.0-alpha.2",
+    "rimraf": "^3.0.2",
+    "script-ext-html-webpack-plugin": "^2.1.5",
+    "serve": "^12.0.1",
+    "sourcemapped-stacktrace-node": "github:philschatz/sourcemapped-stacktrace-node#2a76787b5f9356b3798788942947e05a5bc8ecc2",
+    "svg-to-png": "^4.0.0",
+    "typescript": "^4.4",
+    "webpack": "^5.58.1",
+    "webpack-cli": "^4.9.0",
+    "workbox-webpack-plugin": "^6.3.0"
+  }
+}

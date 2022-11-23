@@ -1,19 +1,11 @@
 # Accessible PuzzleScript
 [![NPM version][npm-image]][npm-url]
 [![Downloads][downloads-image]][downloads-url]
-[![Build status][travis-image]][travis-url]
-[![Dependency status][dependency-image]][dependency-url]
-[![Dev dependency status][dev-dependency-image]][dev-dependency-url]
 [![Code coverage][coverage-image]][coverage-url]
-
-This is a program that allows people to play [PuzzleScript](https://www.puzzlescript.net) games in a browser **or** in a terminal.
-
-Also, it is **accessible**, meaning that [blind or visually impaired people can play these games](#video-games-that-blind-people-can-play) too! See [blog post](https://philschatz.com/2018/09/22/puzzlescript/) for more info or **[try the demo](https://philschatz.com/puzzlescript/)**.
-
 
 ## Play in a browser or on your mobile device
 
-1. Visit the [demo site](https://philschatz.com/puzzlescript)
+1. Visit the [website](https://philschatz.com/puzzlescript)
 1. Click the "Add" button at the bottom to keep playing even without an internet connection
 1. Plug in a :video_game: controller! (tested with PS3/4/XBox)
 
@@ -21,7 +13,7 @@ Also, it is **accessible**, meaning that [blind or visually impaired people can 
 
 <summary>If you are using <strong>iOS (Apple phone or tablet)</strong> click here for instructions</summary>
 
-1. Visit https://philschatz.com/puzzlescript
+1. Visit the [website](https://philschatz.com/puzzlescript)
 1. Click the Share button in Safari
 1. Scroll over and click "Add to Home Screen"
 
@@ -32,9 +24,7 @@ Also, it is **accessible**, meaning that [blind or visually impaired people can 
 
 ## Play from the command line terminal
 
-1. Run `npm install -g puzzlescript` to install
-1. Run `puzzlescript` to start playing
-
+1. Run `npx puzzlescript-cli` to start playing!
 
 # Screencaps
 
@@ -108,91 +98,47 @@ The goal of this project is to do 3 things:
 To use https://chromevox.com, table navigation keys on the Mac are <kbd>Ctrl</kbd> + <kbd>Command</kbd> + <kbd>Up</kbd>.
 
 
-# Research
+# Development Instructions
 
-To convert a game to JSON, run the following:
+1. Install [lerna](https://lerna.js.org)
+1. `lerna bootstrap --force-local`
+1. `lerna run compile`
+1. `lerna run test --stream`
+    - you can run `test:unit` or `test:web` to just run tests specific to a package
+1. `lerna run test:integration --stream` (this runs several games and takes about 30min)
+1. `lerna run start:server --stream` to start up a server
 
-```js
-import { Parser } from 'puzzlescript'
-import Serializer from 'puzzlescript/lib/parser/serializer'
+## Maintainer Instructions
 
-const { data } = Parser.parse(gameSource)
-const json = new Serializer(data).toJson()
-const reparsedData = Serializer.fromJson(json, gameSource)
+To publish a new version of the packages:
+
+```sh
+lerna publish prerelease
 ```
 
-## Commands
+## TODO
 
-- `npm run docs` generates docs in the `./docs/` directory
-- `npm start` runs a game in the [./games/](./games/) directory without debugging info (10x faster) (uses `NODE_ENV=production`)
-- `npm run start:dev` runs a game in the [./games/](./games/) directory with sprite info (useful for debugging)
-- `npm run start:debug` runs a game in the [./games/](./games/) directory with a Chrome Debugger open so you can set breakpoints
-- `npm demo` runs all of the games in the [./games/](./games/) directory with a few sample moves (up/down/left/right/action)
-- `npm test` runs all of the unit tests (including solutions in the [./game-solutions/](./game-solutions/) directory)
-- `npm run watch` Run the tests and when you update the source, it re-runs the tests
-- `npm run test:debug` Run the tests but opens a debugger (remember to add a `debugger` line into the JavaScript)
-- `npm test; open coverage/lcov-report/index.html` to see test coverage
-- `npm run coverage` generates a coverage report which includes the JS code as well as any games that you ran in dev mode (using `npm run dev`)
-- See the module dependency tree by running `npm run build:stats` and then uploading `webpack-stats.json` to https://webpack.github.io/analyse/#modules
-
-
-## Embed in a Browser
-
-See [./src/browser/spec/html-table.xhtml](./src/browser/spec/html-table.xhtml) for an example of embedding in a browser.
-
-```js
-// Include <script src="node_modules/puzzlescript/puzzlescript.js"></script>
-// and then the following:
-table = document.querySelector('table') // selector to the <table> that will be used
-engine = new PuzzleScript.SyncTableEngine(table, optionalEventHandler)
-engine.setGame(gameSourceString, 0 /*startLevel*/)
-```
-
-Or, if the game is slow, it can be played using a [Webworker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers):
-
-```js
-worker = new Worker('path/from/browser/to/puzzlescript-webworker.js')
-engine = new PuzzleScript.WebworkerTableEngine(worker, table, optionalEventHandler)
-...
-```
-
-## Objects
-
-- **Level** contains a table of Cells which contain a set of Sprites that should be rendered
-- **Rule** contains the conditions and actions to be executed.
-  - It also contains methods for checking if the Rule matches a Cell and methods for how to change the Cell
-- **Cell** contains a set of Sprites and is used to represent the current state of the Game
-
-
-# TODO
-
-Want to help? Here is a roadmap of things that need to be implemented:
-
-- [ ] support tabbing through the sprites to say where they are and how many of them are in the puzzle
-- [ ] output which sprites changed when the player moves or presses undo
-- [ ] improve the sound effects (needs an implementation of [BiquadFilter](https://developer.mozilla.org/en-US/docs/Web/API/BiquadFilterNode) in NodeJS)
-- [ ] support the `RIGID` keyword
-- [x] output a simple `BEL` (ASCII character 7) when the `speaker` package is not installed
-- [ ] output sound effects when any of the following occur:
-    - a sprite is `CREATE`, `DESTROY`, `CANTMOVE`
-    - a sprite is moved
-    - `RESTART`, `UNDO`, `TITLESCREEN`, `STARTGAME`, `STARTLEVEL`, `ENDLEVEL`, `ENDGAME`, `SHOWMESSAGE`, `CLOSEMESSAGE`
-- [x] use HTML Tables to render in the browser
-- [x] Cache Improvements
-    - [x] cache the `SimpleNeighbor.matchesCell()` function so we do not have to recompute if a cell matches a Neighbor
-    - [x] de-duplicate `SimpleNeighbor` that have a direction but none of the tiles depend on the direction (causes fewer caches to be updated)
-    - [x] improve `getMatches(level)` by storing a cache of all the sprites in each row/column so we can skip the row/column entirely if the necessary sprites are not available
+- [x] Move to a monorepo
+- [x] Add embedding example
+- [ ] Upgrade dependencies
+- [x] Move CLI code into a separate package
+- [x] Update so that the puzzlescript package (or puzzlescript-web package) has 0 dependencies
+- [x] Get CI tests running again
+- [x] get Codecov reporting
+- [x] Lint again
+- [ ] Support when `<table>` does not have an aria-live caption (by adding one)
+- [ ] change the web handler to create a different event when a checkpoint occurs (so saving is easier)
+- [ ] change the CLI so that you can specify the path to a puzzlescript game.
+- [ ] get code coverage up to 100% by skipping untested code
+- [ ] Generate ESModules and CJS: https://www.sensedeep.com/blog/posts/2021/how-to-create-single-source-npm-module.html
+- [ ] convert puzzlescript-web to use Cypress and sourcemaps
+- [ ] move the games and solutions into a separate package (`puzzlescript-games`)
+- [ ] :fire: default exports because they are hard on IDEs and make for a confusing API
 
 
 [npm-image]: https://img.shields.io/npm/v/puzzlescript.svg
 [npm-url]: https://npmjs.org/package/puzzlescript
 [downloads-image]: https://img.shields.io/npm/dm/puzzlescript.svg
 [downloads-url]: https://npmjs.org/package/puzzlescript
-[travis-image]: https://img.shields.io/travis/philschatz/puzzlescript.svg
-[travis-url]: https://travis-ci.org/philschatz/puzzlescript
-[dependency-image]: https://img.shields.io/david/philschatz/puzzlescript.svg
-[dependency-url]: https://david-dm.org/philschatz/puzzlescript
-[dev-dependency-image]: https://img.shields.io/david/dev/philschatz/puzzlescript.svg
-[dev-dependency-url]: https://david-dm.org/philschatz/puzzlescript?type=dev
 [coverage-image]: https://img.shields.io/codecov/c/github/philschatz/puzzlescript.svg
 [coverage-url]: https://codecov.io/gh/philschatz/puzzlescript
