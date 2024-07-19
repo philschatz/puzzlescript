@@ -27,15 +27,15 @@ jobs:
       - name: Prerequisites
         run: npm install
       - name: Setup
-        run: ./node_modules/.bin/lerna bootstrap --force-local
+        run: npm run bootstrap
       - name: Compile
-        run: ./node_modules/.bin/lerna run compile
+        run: npm run compile
       - name: Test
-        run: ./node_modules/.bin/lerna run test --stream
+        run: npm run test
       - name: Upload Code Coverage
         uses: codecov/codecov-action@v2
       - name: Lint
-        run: ./node_modules/.bin/lerna run lint
+        run: npm run lint
       - name: Integration Tests
         # if: github.ref == 'refs/heads/main'
-        run: ./node_modules/.bin/lerna run test:integration --stream
+        run: npm run test:integration

@@ -1,6 +1,13 @@
 {
   "name": "root",
   "private": true,
+  "scripts": {
+    "bootstrap": "lerna bootstrap --force-local",
+    "compile": "lerna run compile",
+    "lint": "lerna run lint",
+    "test": "lerna run test --stream",
+    "test:integration": "lerna run test:integration --stream"
+  },
   "devDependencies": {
     "lerna": "^4.0.0",
     "yarn": "^1.22.17"
