@@ -2,12 +2,12 @@
 /* eslint-env jasmine */
 import fs from 'fs'
 import path from 'path'
-import puppeteer, { KeyInput } from 'puppeteer' // tslint:disable-line:no-implicit-dependencies
+import { EvaluateFunc, KeyInput, Page } from 'puppeteer'
 import { browserAfterEach, browserBeforeEach, getUrl } from './browserSpecUtils'
 // import mapStackTrace from 'sourcemapped-stacktrace-node')
 
 // Defined via jest-puppeteer environment
-declare var page: puppeteer.Page
+declare var page: Page
 
 async function sleep(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms))
@@ -99,7 +99,7 @@ async function pressKeys(keys: string[], isLastPressADialog: boolean) {
     }
 }
 
-async function evaluateWithStackTrace(fn: puppeteer.EvaluateFn, ...args: any[]) {
+async function evaluateWithStackTrace(fn: EvaluateFunc<{ source: string, startLevel: number }[]>, ...args: any[]) {
     // try {
     return page.evaluate(fn, ...args)
     // } catch (e) {

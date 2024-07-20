@@ -22,7 +22,7 @@
   "dependencies": {
     "bitset": "*",
     "eventemitter2": "*",
-    "nearley": "*1"
+    "nearley": "*"
   },
   "devDependencies": {
     "@babel/core": "*",

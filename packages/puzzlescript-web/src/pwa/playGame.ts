@@ -22,7 +22,7 @@ export interface StorageGameInfo {
 interface Storage { [gameId: string]: StorageGameInfo }
 
 export interface Dialog extends HTMLDialogElement {
-    open: Optional<boolean>
+    open: boolean
     show(): void
     showModal(): void
     close(returnValue?: string): void

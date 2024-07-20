@@ -1,9 +1,9 @@
 /* eslint-env jasmine */
-import puppeteer from 'puppeteer' // tslint:disable-line:no-implicit-dependencies
+import type {Page, Browser, Dialog, ConsoleMessage} from 'puppeteer' // tslint:disable-line:no-implicit-dependencies
 
 // Defined via jest-puppeteer environment
-declare var page: puppeteer.Page
-declare var browser: puppeteer.Browser
+declare var page: Page
+declare var browser: Browser
 declare var puppeteerConfig: {
     server: { port: number }
 }
@@ -15,7 +15,7 @@ const ignoredMessages = [
 
 const dismissedCount: string[] = []
 
-const dialogHandler = async(dialog: puppeteer.Dialog) => {
+const dialogHandler = async(dialog: Dialog) => {
     dismissedCount.push(dialog.message())
     await dialog.dismiss()
 }
@@ -23,7 +23,7 @@ const dialogHandler = async(dialog: puppeteer.Dialog) => {
 export const getUrl = (path: string) => `http://localhost:${puppeteerConfig.server.port}/${path.replace(/^\/+/, '')}`
 
 // redirect browser console messages to the terminal
-export const consoleHandler = (message: puppeteer.ConsoleMessage) => {
+export const consoleHandler = (message: ConsoleMessage) => {
     const type = message.type()
     const text = message.text()
 
@@ -44,7 +44,7 @@ export const consoleHandler = (message: puppeteer.ConsoleMessage) => {
         case 'timeEnd': console.timeEnd(text); break // tslint:disable-line:no-console
 
         case 'clear': console.clear(); break // tslint:disable-line:no-console
-        case 'warning': console.warn(text); break // tslint:disable-line:no-console
+        case 'warn': console.warn(text); break // tslint:disable-line:no-console
         case 'startGroup':
         case 'startGroupCollapsed':
         case 'endGroup':
@@ -69,9 +69,8 @@ export const browserBeforeEach = () => {
 
 export const browserAfterEach = () => {
     if (!page.isClosed()) {
-        // Node 8 does not have EventListener.off(...)
-        page.removeListener('console', consoleHandler)
-        page.removeListener('dialog', dialogHandler)
+        page.off('console', consoleHandler)
+        page.off('dialog', dialogHandler)
     }
 }
 

@@ -15,7 +15,7 @@
     "postecompile:ts": "node ./lib/script/buildGameIcons.js",
     "compile": "npm run-script compile:ts && npm run build",
     "test": "npm run-script test:web",
-    "test:web": "NODE_ENV=development jest --updateSnapshot --verbose --detectOpenHandles",
+    "test:web": "PUPPETEER_EXECUTABLE_PATH=$(which chrome 2> /dev/null || which chromium) NODE_ENV=development NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules\" jest --updateSnapshot --verbose --detectOpenHandles",
     "start": "npm run-script start:server",
     "start:server": "serve --listen ${PORT:-12490} ./static",
     "prebuild": "rimraf ./static/precache-manifest.*.js"

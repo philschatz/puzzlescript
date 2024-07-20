@@ -1,15 +1,15 @@
 /** @jest-environment puppeteer */
 /* eslint-env jasmine */
 import { existsSync, writeFileSync } from 'fs'
-import lighthouse from 'lighthouse' // tslint:disable-line:no-implicit-dependencies
 import { join } from 'path'
-import puppeteer from 'puppeteer' // tslint:disable-line:no-implicit-dependencies
+import { Browser } from 'puppeteer' // tslint:disable-line:no-implicit-dependencies
+import lighthouse from 'lighthouse'
 import { URL } from 'url'
 import { browserAfterEach, browserBeforeEach, getUrl } from './browserSpecUtils'
 // import mapStackTrace from 'sourcemapped-stacktrace-node')
 
 // Defined via jest-puppeteer environment
-declare var browser: puppeteer.Browser
+declare var browser: Browser
 
 export const checkLighthouse = async(urlPath: string) => {
 
