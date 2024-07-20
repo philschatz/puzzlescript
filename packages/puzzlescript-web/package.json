@@ -62,7 +62,6 @@
     "html-webpack-plugin": "*",
     "jest": "*",
     "jest-puppeteer": "*",
-    "lighthouse": "*",
     "puppeteer": "*",
     "puzzlescript": "*",
     "rimraf": "*",
