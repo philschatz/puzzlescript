@@ -83,16 +83,16 @@ type SoundId = string
 // type ActionMutationsId = string
 // type BracketPairId = string
 
-interface ISourceNode {
+type ISourceNode = {
     _sourceOffset: number
 }
 
-interface IGraphSprite extends ISourceNode {
+type IGraphSprite = {
     name: string,
     pixels: Array<Array<Optional<ColorId>>>,
     collisionLayer: CollisionId,
     // sounds: {}
-}
+} & ISourceNode
 
 enum TILE_TYPE {
     OR = 'OR',
@@ -128,7 +128,7 @@ type GraphTile = ISourceNode & ({
 //     commands: CommandId[]
 // }
 
-interface IGraphGameMetadata {
+type IGraphGameMetadata = {
     author: Optional<string>
     homepage: Optional<string>
     youtube: Optional<string>
@@ -737,7 +737,7 @@ export default class Serializer {
     }
 }
 
-export interface IGraphJson {
+export type IGraphJson = {
     version: number,
     title: string,
     metadata: IGraphGameMetadata,

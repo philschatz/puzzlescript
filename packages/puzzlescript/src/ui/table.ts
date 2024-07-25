@@ -19,7 +19,7 @@ import {
 } from '../util'
 import BaseUI from './base'
 
-interface ITableCell {
+type ITableCell = {
     td: HTMLTableCellElement,
     label: HTMLSpanElement,
     pixels: HTMLSpanElement[][]

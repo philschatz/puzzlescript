@@ -9,7 +9,7 @@ import { SimpleTileWithModifier } from './rule'
 // BitSet does not export a default so import does not work in webpack-built file
 const BitSet2 = require('bitset') // tslint:disable-line:no-var-requires
 
-export interface IGameTile extends IGameNode {
+export type IGameTile = {
     subscribeToCellChanges(t: SimpleTileWithModifier): void
     hasNegationTileWithModifier(): boolean
     addCells(sprite: GameSprite, cells: Cell[], wantsToMove: Optional<RULE_DIRECTION>): void
@@ -27,7 +27,7 @@ export interface IGameTile extends IGameNode {
     getName(): string
     equals(t: IGameTile): boolean
     hasCell(cell: Cell): boolean
-}
+} & IGameNode
 
 export abstract class GameSprite extends BaseForLines implements IGameTile {
     public allSpritesBitSetIndex: number // set onde all the sprites have been determined

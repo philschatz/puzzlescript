@@ -20,12 +20,12 @@ export class RGB {
     }
 }
 
-export interface IColor extends IGameNode {
+export type IColor = {
     isTransparent: () => boolean
     hasAlpha: () => boolean
     toRgb: () => RGB
     toHex: () => string
-}
+} & IGameNode
 
 export class HexColor extends BaseForLines implements IColor {
     private hex: string

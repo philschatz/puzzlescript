@@ -1,11 +1,11 @@
 import { Optional } from '../util'
 
-export interface IGameCode {
+export type IGameCode = {
     code: string
     sourceOffset: number
 }
 
-export interface IGameCodeWithSource {
+export type IGameCodeWithSource = {
     sourceString: string
 }
 // Return an object with the line and column information for the given
