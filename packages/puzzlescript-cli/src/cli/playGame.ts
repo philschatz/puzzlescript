@@ -3,11 +3,9 @@ import chalk from 'chalk'
 import { Command } from 'commander'
 import fontAscii from 'font-ascii'
 import { createReadStream, existsSync, readFileSync, writeFileSync } from 'fs'
-import glob from 'glob'
-import * as inquirer from 'inquirer'
-import PromptModule from 'inquirer-autocomplete-prompt'
+import { glob } from 'glob'
+import { select, search, confirm, Separator } from '@inquirer/prompts';
 import * as path from 'path'
-import pify from 'pify'
 import * as supportsColor from 'supports-color'
 
 import { ensureDir, ensureDirSync } from 'fs-extra'
@@ -139,8 +137,7 @@ run().then(() => { process.exit(0) }, (err) => {
 })
 
 async function run() {
-    inquirer.registerPrompt('autocomplete', PromptModule)
-    const gists = await pify(glob)(GAMES_PATTERN)
+    const gists = await glob(GAMES_PATTERN)
     const cliOptions: ICliOptions = commander.opts() as ICliOptions
     const { ui: cliUi, game: cliGameTitle } = cliOptions
     let { level: cliLevel, resume: cliResume } = cliOptions
@@ -259,11 +256,7 @@ async function startPromptsAndPlayGame(gamePath: string, gistId: Optional<string
         if (cliResume !== undefined) {
             shouldResume = cliResume
         } else {
-            shouldResume = (await inquirer.prompt<{ shouldResume: boolean }>({
-                type: 'confirm',
-                name: 'shouldResume',
-                message: 'Would you like to resume where you left off?'
-            })).shouldResume
+            shouldResume = await confirm({message: 'Would you like to resume where you left off?'})
         }
         if (shouldResume) {
             ticksToRunFirst = recordings.solutions[currentLevelNum].partial || recordings.solutions[currentLevelNum].solution || ''
@@ -611,14 +604,7 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: ISa
 }
 
 async function promptPlayAnother() {
-    const { playAnotherGame } = await inquirer.prompt<{
-        playAnotherGame: boolean;
-    }>({
-        type: 'confirm',
-        name: 'playAnotherGame',
-        message: 'Would you like to play another game?'
-    })
-    return playAnotherGame
+    return await confirm({message: 'Would you like to play another game?'})
 }
 
 enum START_MODE {
@@ -643,17 +629,10 @@ async function promptChooseLevel(recordings: ISaveFile, data: GameData, cliLevel
         startModeOptions.push(START_MODE.CONTINUE)
     }
     startModeOptions.push(START_MODE.NEW_GAME)
-    startModeOptions.push(new inquirer.Separator())
+    startModeOptions.push(new Separator())
     startModeOptions.push(START_MODE.CHOOSE_LEVEL)
 
-    const { startMode } = await inquirer.prompt<{
-        startMode: START_MODE;
-    }>([{
-        type: 'list',
-        name: 'startMode',
-        message: 'What would you like to do?',
-        choices: startModeOptions
-    }])
+    const startMode = await select({message: 'What would you like to do?', choices: startModeOptions})
 
     if (startMode === START_MODE.NEW_GAME) {
         return 0
@@ -663,74 +642,66 @@ async function promptChooseLevel(recordings: ISaveFile, data: GameData, cliLevel
         throw new Error(`BUG: Invalid startMode: ${startMode}`)
     }
 
-    const { currentLevelNum } = await inquirer.prompt<{
-        currentLevelNum: number;
-    }>([{
-        type: 'list',
-        name: 'currentLevelNum',
-        message: 'Which Level would you like to play?',
-        default: firstUncompletedLevel,
-        pageSize: Math.max(15, getTerminalSize().rows - 15),
-        choices: levels.map((levelMap, index) => {
-            const hasSolution = recordings.solutions[index] && recordings.solutions[index].solution
-            if (levelMap.type === LEVEL_TYPE.MAP) {
-                const levelRows = levelMap.cells
-                const cols = levelRows[0]
-                let width = cols.length
-                let height = levelRows.length
-                // If flickscreen or zoomscreen is enabled, then change the level size
-                // that is reported
-                const { zoomscreen, flickscreen } = data.metadata
-                if (flickscreen) {
-                    height = flickscreen.height
-                    width = flickscreen.width
+    const levelChoices = levels.map((levelMap, index) => {
+        const hasSolution = recordings.solutions[index] && recordings.solutions[index].solution
+        if (levelMap.type === LEVEL_TYPE.MAP) {
+            const levelRows = levelMap.cells
+            const cols = levelRows[0]
+            let width = cols.length
+            let height = levelRows.length
+            // If flickscreen or zoomscreen is enabled, then change the level size
+            // that is reported
+            const { zoomscreen, flickscreen } = data.metadata
+            if (flickscreen) {
+                height = flickscreen.height
+                width = flickscreen.width
+            }
+            if (zoomscreen) {
+                height = zoomscreen.height
+                width = zoomscreen.width
+            }
+            const { columns, rows } = getTerminalSize()
+            const isTooWide = columns < width * 5 * TerminalUI.PIXEL_WIDTH
+            const isTooTall = rows < height * 5 * TerminalUI.PIXEL_HEIGHT
+            let message = ''
+            if (isTooWide && isTooTall) {
+                message = `(too tall & wide for your terminal)`
+            } else if (isTooWide) {
+                message = `(too wide for your terminal)`
+            } else if (isTooTall) {
+                message = `(too tall for your terminal)`
+            }
+            if (hasSolution) {
+                return {
+                    name: `${chalk.green(`${index}`)} ${chalk.dim(`(${width} x ${height}) ${chalk.green('(SOLVED)')}`)} ${chalk.yellowBright(message)}`,
+                    value: index
                 }
-                if (zoomscreen) {
-                    height = zoomscreen.height
-                    width = zoomscreen.width
-                }
-                const { columns, rows } = getTerminalSize()
-                const isTooWide = columns < width * 5 * TerminalUI.PIXEL_WIDTH
-                const isTooTall = rows < height * 5 * TerminalUI.PIXEL_HEIGHT
-                let message = ''
-                if (isTooWide && isTooTall) {
-                    message = `(too tall & wide for your terminal)`
-                } else if (isTooWide) {
-                    message = `(too wide for your terminal)`
-                } else if (isTooTall) {
-                    message = `(too tall for your terminal)`
-                }
-                if (hasSolution) {
+            } else {
+                if (message) {
                     return {
-                        name: `${chalk.green(`${index}`)} ${chalk.dim(`(${width} x ${height}) ${chalk.green('(SOLVED)')}`)} ${chalk.yellowBright(message)}`,
+                        name: `${chalk.whiteBright(`${index}`)} ${chalk.red(`(${width} x ${height})`)} ${chalk.yellowBright(message)}`,
                         value: index
                     }
                 } else {
-                    if (message) {
-                        return {
-                            name: `${chalk.whiteBright(`${index}`)} ${chalk.red(`(${width} x ${height})`)} ${chalk.yellowBright(message)}`,
-                            value: index
-                        }
-                    } else {
-                        return {
-                            name: `${chalk.whiteBright(`${index}`)} ${chalk.green(`(${width} x ${height})`)}`,
-                            value: index
-                        }
+                    return {
+                        name: `${chalk.whiteBright(`${index}`)} ${chalk.green(`(${width} x ${height})`)}`,
+                        value: index
                     }
                 }
-            } else {
-                const message = levelMap.message
-                let snippet = message.split('\n')[0] // just use the 1st line
-                if (snippet.length > 40) {
-                    snippet = `${snippet.substring(0, 40)}...`
-                }
-                return {
-                    name: chalk.dim(`... "${snippet}"`),
-                    value: index
-                }
             }
-        })
-    }])
+        } else {
+            const message = levelMap.message
+            let snippet = message.split('\n')[0] // just use the 1st line
+            if (snippet.length > 40) {
+                snippet = `${snippet.substring(0, 40)}...`
+            }
+            return {
+                name: chalk.dim(`... "${snippet}"`),
+                value: index
+            }
+        }
+    })
+    const currentLevelNum = await select({message:'Which Level would you like to play?', default: firstUncompletedLevel, pageSize: Math.max(15, getTerminalSize().rows - 15), choices: levelChoices })
 
     return currentLevelNum
 }
@@ -768,14 +739,7 @@ async function promptPixelSize(data: GameData, cliSpriteSize: Optional<CLI_SPRIT
         console.log(b + yk + ky + y + ky + yk + b)
         console.log(b + yb + ky + ky + ky + yb + b)
         console.log(bk + bk + bk + bk + bk + bk + bk)
-        const { useCompressedCharacters } = await inquirer.prompt<{
-            useCompressedCharacters: boolean;
-        }>({
-            type: 'confirm',
-            name: 'useCompressedCharacters',
-            default: process.env.NODE_ENV !== 'development',
-            message: 'Would you like to use small characters when rendering the game?'
-        })
+        const useCompressedCharacters = await confirm({message: 'Would you like to use small characters when rendering the game?', default: process.env.NODE_ENV !== 'development'})
         if (useCompressedCharacters) {
             TerminalUI.setSmallTerminal(true)
         }
@@ -905,45 +869,6 @@ async function promptGame(games: IGameInfo[], cliGameTitle: string | undefined) 
         return getGameIndexForSort(a) - getGameIndexForSort(b)
     })
 
-    const question: inquirer.Question = {
-        type: 'autocomplete',
-        name: 'selectedGameId',
-        message: 'Which game would you like to play?',
-        pageSize: Math.max(15, getTerminalSize().rows - 15),
-        source: async(answers: void, input: string) => {
-            let filteredGames
-            if (!input) {
-                filteredGames = games
-            } else {
-                filteredGames = games.filter(({ id, title, filePath }) => {
-                    return title.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                })
-            }
-            return Promise.resolve(filteredGames.map((game) => {
-                // dim the games that are not recommended
-                const index = firstGames.indexOf(game.title)
-                if (index <= 10) {
-                    return {
-                        name: chalk.bold.whiteBright(`${game.title} ${percentComplete(game)}`),
-                        value: game.id
-                    }
-                } else if (SOLVED_GAMES.has(game.title)) {
-                    return {
-                        name: chalk.white(`${game.title} ${percentComplete(game)}`),
-                        value: game.id
-                    }
-                } else {
-                    return {
-                        name: chalk.dim(`${game.title} ${percentComplete(game)}`),
-                        value: game.id
-                    }
-                }
-            }))
-        }
-
-    // coercing because we use the autcomplete plugin and it defines a `source:` object
-    } as inquirer.Question // tslint:disable-line:no-object-literal-type-assertion
-
     let chosenGame
     if (cliGameTitle) {
         if (cliGameTitle.toUpperCase() === 'RANDOM') {
@@ -966,7 +891,42 @@ async function promptGame(games: IGameInfo[], cliGameTitle: string | undefined) 
             throw new Error('Could not find game')
         }
     } else {
-        const { selectedGameId } = (await inquirer.prompt<{ selectedGameId: string }>([question]))
+        const selectedGameId = await search({
+            message: 'Which game would you like to play?',
+            pageSize: Math.max(15, getTerminalSize().rows - 15),
+            source: async(input: string | undefined) => {
+                let filteredGames
+                if (!input) {
+                    filteredGames = games
+                } else {
+                    filteredGames = games.filter(({ id, title, filePath }) => {
+                        return title.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                    })
+                }
+                return Promise.resolve(filteredGames.map((game) => {
+                    // dim the games that are not recommended
+                    const index = firstGames.indexOf(game.title)
+                    if (index <= 10) {
+                        return {
+                            name: chalk.bold.whiteBright(`${game.title} ${percentComplete(game)}`),
+                            value: game.id
+                        }
+                    } else if (SOLVED_GAMES.has(game.title)) {
+                        return {
+                            name: chalk.white(`${game.title} ${percentComplete(game)}`),
+                            value: game.id
+                        }
+                    } else {
+                        return {
+                            name: chalk.dim(`${game.title} ${percentComplete(game)}`),
+                            value: game.id
+                        }
+                    }
+                }))
+            }
+    
+        // coercing because we use the autcomplete plugin and it defines a `source:` object
+        })
         chosenGame = games.filter((game) => game.id === selectedGameId)[0]
         if (!chosenGame) {
             throw new Error(`BUG: Could not find game "${selectedGameId}"`)

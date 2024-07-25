@@ -1,10 +1,13 @@
 const path = require('path')
 const WorkboxPlugin = require('workbox-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin')
 const { DefinePlugin } = require('webpack')
 
 module.exports = {
+    stats: {
+        children: true, 
+        errorDetails: true
+    },
     mode: 'development', // Projects that include this library can minify if they want. We will not minify and include sourcemaps
     entry: {
         'pwa-app': './src/pwa/app.ts',
@@ -42,15 +45,18 @@ module.exports = {
             template: 'static/pwa-template.xhtml',
             filename: 'index.xhtml',
             inject: 'head',
-            chunks: ['pwa-app']
-        }),
-        new ScriptExtHtmlWebpackPlugin({
-            // defaultAttribute: 'async' // Does not work for XHTML files
-            custom: {
-                test: /pwa-app/,
-                attribute: 'async',
-                value: 'async'
-            }
+            chunks: ['pwa-app'],
+            // Inject the async tag:
+            templateParameters: (compilation, assets, tags, options) => {
+                tags.headTags.forEach((tag) => {
+                    if (tag.tagName === 'script') {
+                        tag.attributes.async = true;
+                    }
+                });
+                return {
+                    htmlWebpackPlugin: { options }
+                }
+            },
         }),
         new WorkboxPlugin.GenerateSW({
             // these options encourage the ServiceWorkers to get in there fast 

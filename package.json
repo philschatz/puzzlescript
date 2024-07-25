@@ -8,8 +8,14 @@
     "test": "lerna run test --stream",
     "test:integration": "lerna run test:integration --stream"
   },
+  "workspaces": [
+    "packages/example",
+    "packages/puzzlescript",
+    "packages/puzzlescript-cli",
+    "packages/puzzlescript-web"
+  ],
   "devDependencies": {
-    "lerna": "^4.0.0",
-    "yarn": "^1.22.17"
+    "lerna": "*",
+    "yarn": "*"
   }
 }

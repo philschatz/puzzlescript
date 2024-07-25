@@ -29,9 +29,6 @@
       "js",
       "json"
     ],
-    "transform": {
-      "^.+\\.(js|jsx|ts|tsx)$": "<rootDir>/node_modules/babel-jest"
-    },
     "transformIgnorePatterns": [
       "[/\\\\]node_modules[/\\\\].+\\.(js|jsx|ts|tsx)$"
     ],
@@ -53,9 +50,7 @@
     "@babel/preset-typescript": "*",
     "@types/glob": "*",
     "@types/jest": "*",
-    "@types/puppeteer": "*",
     "babel-core": "*",
-    "babel-jest": "*",
     "babel-loader": "*",
     "babel-polyfill": "*",
     "dialog-polyfill": "*",
@@ -65,7 +60,7 @@
     "puppeteer": "*",
     "puzzlescript": "*",
     "rimraf": "*",
-    "script-ext-html-webpack-plugin": "*",
+    "html-bundler-webpack-plugin": "*",
     "serve": "*",
     "sourcemapped-stacktrace-node": "*",
     "svg-to-png": "*",

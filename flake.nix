@@ -15,6 +15,7 @@
             nodejs
             python3
             alsa-oss
+            alsa-lib
             chromium
           ];
         };

@@ -26,8 +26,6 @@ jobs:
           node-version: '20'
       - name: Prerequisites
         run: npm install
-      - name: Setup
-        run: npm run bootstrap
       - name: Compile
         run: npm run compile
       - name: Test

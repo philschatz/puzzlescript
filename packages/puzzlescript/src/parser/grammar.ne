@@ -96,8 +96,8 @@ Section[Name, ItemExpr] ->
     _ "=":+ lineTerminator
     _ $Name lineTerminator
     _ "=":+ lineTerminator:+
-    ($ItemExpr):*           {% toDebug('Section', function ([_0, _1, _2, _3, name, _5, _6, _7, _8, items]) { return {type: 'SECTION', name: name, items: extractFirst(extractFirst(items)) } }) ||
-                                                  function ([_0, _1, _2, _3, name, _5, _6, _7, _8, items]) { return extractFirst(extractFirst(items)) } %}
+    ($ItemExpr):*           {% toDebug('Section', function ([_0, _1, _2, _3, name, _5, _6, _7, _8, items]) { return {type: 'SECTION', name: name, items: extractFirst(extractFirst(items as any[][][])) } }) ||
+                                                  function ([_0, _1, _2, _3, name, _5, _6, _7, _8, items]) { return extractFirst(extractFirst(items as any[][][])) } %}
 
 # Levels start with multiple linebreaks to handle end-of-file case when we don't have 2 linefeeds
 # So we need to remove linefeeds from the section to remove ambiguity
@@ -105,8 +105,8 @@ SectionSingleTerminator[Name, ItemExpr] ->
     _ "=":+ lineTerminator
     _ $Name lineTerminator
     _ "=":+ lineTerminator
-    ($ItemExpr):*           {% toDebug('Section', function ([_0, _1, _2, _3, name, _5, _6, _7, _8, items]) { return {type: 'SECTION', name: name, items: extractFirst(extractFirst(items)) } }) ||
-                                                  function ([_0, _1, _2, _3, name, _5, _6, _7, _8, items]) { return extractFirst(extractFirst(items)) } %}
+    ($ItemExpr):*           {% toDebug('Section', function ([_0, _1, _2, _3, name, _5, _6, _7, _8, items]) { return {type: 'SECTION', name: name, items: extractFirst(extractFirst(items as any[][][])) } }) ||
+                                                  function ([_0, _1, _2, _3, name, _5, _6, _7, _8, items]) { return extractFirst(extractFirst(items as any[][][])) } %}
 
 
 main ->
