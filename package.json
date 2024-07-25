@@ -2,9 +2,9 @@
   "name": "root",
   "private": true,
   "scripts": {
+    "lint": "eslint --fix --ext .js,.ts ./packages/example/ ./packages/puzzlescript/src/ ./packages/puzzlescript-cli/ ./packages/puzzlescript-web/",
     "bootstrap": "lerna bootstrap --force-local",
     "compile": "lerna run compile",
-    "lint": "lerna run lint",
     "test": "lerna run test --stream",
     "test:integration": "lerna run test:integration --stream"
   },
@@ -15,6 +15,11 @@
     "packages/puzzlescript-web"
   ],
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "*",
+    "@typescript-eslint/parser": "*",
+    "eslint": "*",
+    "eslint-config-standard": "*",
+    "eslint-config-prettier": "*",
     "lerna": "*",
     "yarn": "*"
   }
