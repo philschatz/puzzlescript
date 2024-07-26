@@ -421,7 +421,7 @@ export default class Serializer {
                         break
                     case 'zoomScreen':
                     case 'flickScreen':
-                        const { width, height } = val
+                        const { width, height } = val as unknown as Dimension
                         metadata._setValue(key, new Dimension(width, height))
                         break
                     default:

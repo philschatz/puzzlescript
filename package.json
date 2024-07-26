@@ -15,11 +15,12 @@
     "packages/puzzlescript-web"
   ],
   "devDependencies": {
+    "@types/figlet": "^1.5.8",
     "@typescript-eslint/eslint-plugin": "*",
     "@typescript-eslint/parser": "*",
     "eslint": "*",
-    "eslint-config-standard": "*",
     "eslint-config-prettier": "*",
+    "eslint-config-standard": "*",
     "lerna": "*",
     "yarn": "*"
   }

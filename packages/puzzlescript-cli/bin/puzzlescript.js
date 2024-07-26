@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-const updateNotifier = require('update-notifier')
-const pkg = require('../package.json')
-updateNotifier({pkg}).notify()
+// const updateNotifier = require('update-notifier')
+// const pkg = require('../package.json')
+// updateNotifier({pkg}).notify()
 
-const playGame = require('../lib/cli/playGame')
+const playGame = import('../lib/cli/playGame.js')

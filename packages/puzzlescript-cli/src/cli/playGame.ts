@@ -1,7 +1,7 @@
 // tslint:disable:no-console
 import chalk from 'chalk'
 import { Command } from 'commander'
-import fontAscii from 'font-ascii'
+import figlet from 'figlet'
 import { createReadStream, existsSync, readFileSync, writeFileSync } from 'fs'
 import { glob } from 'glob'
 import { select, search, confirm, Separator } from '@inquirer/prompts';
@@ -13,7 +13,6 @@ import { GameData, GameEngine, ILoadingCellsEvent, Optional, Parser, RULE_DIRECT
 import { closeSounds } from '../sounds-copypasta/sounds'
 import TerminalUI, { getTerminalSize } from './terminal'
 import SOLVED_GAMES from './solvedGames'
-import TITLE_FONTS from './titleFonts'
 
 const PACKAGE_JSON_PATH = '../../package.json'
 const GAMES_PATTERN = path.join(__dirname, '../../../puzzlescript/games/*/script.txt')
@@ -171,16 +170,11 @@ async function run() {
     }
 
     if (!cliGameTitle) {
-        const possibleFonts = TITLE_FONTS.filter(({ minWidth }) => minWidth <= (process.stdout.columns || 80))
-        const font = possibleFonts[Math.floor(Math.random() * possibleFonts.length)] // pick a random one
         console.log(``)
         console.log(`Let's play some`)
         console.log(``)
-        if (font) {
-            fontAscii('Puzzle Games', { typeface: font.name })
-        } else {
-            console.log('Puzzle Games')
-        }
+        const allFonts = figlet.fontsSync()
+        console.log(figlet.textSync('Puzzle Games', { font: allFonts[Math.floor(Math.random() * allFonts.length)] }))
         console.log(``)
         console.log(`(${chalk.bold.whiteBright(`${games.length}`)} games to choose from)`)
         console.log(``)
@@ -624,13 +618,13 @@ async function promptChooseLevel(recordings: ISaveFile, data: GameData, cliLevel
         return cliLevel
     }
     // First ask if they want to Continue, Start a new Game, or Choose a Level
-    const startModeOptions: any[] = []
+    const startModeOptions: (Separator | {value: string})[] = []
     if (firstUncompletedLevel > 0) {
-        startModeOptions.push(START_MODE.CONTINUE)
+        startModeOptions.push({value: START_MODE.CONTINUE})
     }
-    startModeOptions.push(START_MODE.NEW_GAME)
+    startModeOptions.push({value: START_MODE.NEW_GAME})
     startModeOptions.push(new Separator())
-    startModeOptions.push(START_MODE.CHOOSE_LEVEL)
+    startModeOptions.push({value: START_MODE.CHOOSE_LEVEL})
 
     const startMode = await select({message: 'What would you like to do?', choices: startModeOptions})
 
