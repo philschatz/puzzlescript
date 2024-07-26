@@ -2,9 +2,9 @@
 import type {Page, Browser, Dialog, ConsoleMessage} from 'puppeteer' // tslint:disable-line:no-implicit-dependencies
 
 // Defined via jest-puppeteer environment
-declare var page: Page
-declare var browser: Browser
-declare var puppeteerConfig: {
+declare let page: Page
+declare let browser: Browser
+declare let puppeteerConfig: {
     server: { port: number }
 }
 

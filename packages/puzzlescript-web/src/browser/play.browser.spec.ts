@@ -7,7 +7,7 @@ import { browserAfterEach, browserBeforeEach, getUrl } from './browserSpecUtils'
 // import mapStackTrace from 'sourcemapped-stacktrace-node')
 
 // Defined via jest-puppeteer environment
-declare var page: Page
+declare let page: Page
 
 async function sleep(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms))
