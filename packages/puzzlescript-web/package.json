@@ -51,7 +51,6 @@
     "@resvg/resvg-js": "*",
     "@types/glob": "*",
     "@types/jest": "*",
-    "babel-core": "*",
     "babel-loader": "*",
     "babel-polyfill": "*",
     "dialog-polyfill": "*",

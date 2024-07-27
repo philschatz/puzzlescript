@@ -11,6 +11,6 @@
     "puzzlescript-web": "*"
   },
   "devDependencies": {
-    "esbuild": "^0.13.4"
+    "esbuild": "*"
   }
 }
