@@ -438,7 +438,6 @@ async function playGame(data: GameData, currentLevelNum: number, recordings: ISa
                     await ensureDir(path.dirname(solutionPath))
                     writeFileSync(solutionPath, JSON.stringify(recordings, null, 2))
                 }
-                closeSounds()
                 shouldExitGame = true
                 return
             case '1':

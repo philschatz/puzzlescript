@@ -1,6 +1,6 @@
 const {RNG} = require('./rng')
 const {MakeRiff, FastBase64_Encode} = require('./riffwave')
-const {AudioContext} = require('web-audio-api')
+const {StreamAudioContext: AudioContext} = require('@descript/web-audio-js')
 
 let Speaker = null
 if (!process.env.CONTINUOUS_INTEGRATION && !process.env.CI) {
@@ -691,11 +691,11 @@ function generateFromSeed(seed) {
 
   // Disable speaker for Travis
   if (Speaker) {
-    AUDIO_CONTEXT.outStream = new Speaker({
-        channels: AUDIO_CONTEXT.format.numberOfChannels,
+    AUDIO_CONTEXT.pipe(new Speaker({
+        channels: AUDIO_CONTEXT.format.channels,
         bitDepth: AUDIO_CONTEXT.format.bitDepth,
         sampleRate: AUDIO_CONTEXT.sampleRate
-    })
+    }))
   }
 
   SoundEffect.prototype.play = async function() {
@@ -746,6 +746,7 @@ function generateFromSeed(seed) {
             bufferNode.buffer = audioBuffer
             bufferNode.loop = false
             bufferNode.start(0)
+            AUDIO_CONTEXT.resume()
 
             // if (CURERNT_SILENTBUFFER) {
             //     CURERNT_SILENTBUFFER.stop(0)
@@ -1127,7 +1128,7 @@ function closeSounds() {
         return
     }
 
-    AUDIO_CONTEXT.outStream._flush() // End the speaker
+    AUDIO_CONTEXT._stream._flush() // End the speaker
     AUDIO_CONTEXT._playing = false // So we do not continue outputing sound (since onended did not actually work) ... maybe we should do bufferNode.on('kill', ...)
     AUDIO_CONTEXT._kill()
 }

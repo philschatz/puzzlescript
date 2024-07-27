@@ -38,7 +38,11 @@
         "source-map-support": "*",
         "typescript": "*"
     },
+    "optionalDependencies": {
+        "speaker": "*"
+    },
     "dependencies": {
+        "@descript/web-audio-js": "*",
         "ansi-escapes": "*",
         "ansi-styles": "*",
         "bitset": "*",
@@ -52,8 +56,6 @@
         "@inquirer/prompts": "*",
         "puzzlescript": "*",
         "speaker": "*",
-        "supports-color": "*",
-        "update-notifier": "*",
-        "web-audio-api": "*"
+        "supports-color": "*"
     }
 }
