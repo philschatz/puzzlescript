@@ -8,7 +8,7 @@ import { SimpleRuleGroup } from './rule'
 import { GameSprite, IGameTile } from './tile'
 import { WinConditionSimple } from './winCondition'
 
-export interface IGameNode {
+export type IGameNode = {
     __source: {code: string, sourceOffset: number}
     __coverageCount: Optional<number>
     __getSourceLineAndColumn(): { lineNum: number, colNum: number }

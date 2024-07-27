@@ -64,7 +64,7 @@ export enum SOUND_SPRITE_EVENT {
     CANTMOVE = 'CANTMOVE'
 }
 
-export interface IASTNode {
+export type IASTNode = {
     _sourceOffset: number // | undefined
 }
 
@@ -125,12 +125,12 @@ export enum SOUND_TYPE {
     SPRITE_EVENT = 'SOUND_SPRITE_EVENT'
 }
 
-export interface SfxSoundItem<TileRef> {
+export type SfxSoundItem<TileRef> = {
     type: SOUND_TYPE.SFX
     soundEffect: string
 }
 
-export interface Soundish {soundCode: number}
+export type Soundish = {soundCode: number}
 export type SoundItem<TileRef> = IASTNode & Soundish & ({
     type: SOUND_TYPE.WHEN
     when: SOUND_WHEN
@@ -282,7 +282,7 @@ export type Level<TileRef> = IASTNode & ({
     cells: TileRef[][]
 })
 
-export interface IDimension {
+export type IDimension = {
     type: 'WIDTH_AND_HEIGHT'
     width: number
     height: number
@@ -290,7 +290,7 @@ export interface IDimension {
 
 type B1<TileDirections, TileRef> = Bracket<Neighbor<TileWithModifier<TileDirections, TileRef>>>
 
-export interface IASTGame<TileDirections, TileRef, SoundRef, PixelRef> {
+export type IASTGame<TileDirections, TileRef, SoundRef, PixelRef> = {
     title: string
     metadata: Array<{type: string, value: string | boolean | IDimension | IColor}>
     sprites: Array<Sprite<PixelRef>>

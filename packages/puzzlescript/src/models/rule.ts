@@ -39,7 +39,7 @@ class ExtraPair<A> extends BracketPair<A> {
     }
 }
 
-export interface IRule extends IGameNode {
+export type IRule = {
     hasMatches: (level: Level) => boolean
     evaluate: (level: Level, onlyEvaluateFirstMatch: boolean) => IMutation[]
     getChildRules: () => IRule[]
@@ -53,9 +53,9 @@ export interface IRule extends IGameNode {
     a11yGetConditionSprites(): Array<Set<GameSprite>>
     toKey(): string
 
-}
+} & IGameNode
 
-export interface IMutation {
+export type IMutation = {
     messages: Array<A11Y_MESSAGE<Cell, GameSprite>>
     hasCell: () => boolean
     getCell: () => Cell
@@ -690,7 +690,7 @@ export abstract class ISimpleBracket extends BaseForLines implements ICacheable 
 
 }
 
-interface IMatchedCellAndCorrespondingNeighbors {
+type IMatchedCellAndCorrespondingNeighbors = {
     cell: Cell,
     condition: SimpleNeighbor,
     action: Optional<SimpleNeighbor>

@@ -9,12 +9,12 @@ import { Comparator } from './sortedList'
 import { SpriteBitSet } from './spriteBitSet'
 import { _flatten, Cellish, GameEngineHandler, INPUT_BUTTON, Optional, resetRandomSeed, RULE_DIRECTION, setAddAll, setDifference, setEquals } from './util'
 
-interface ICollisionLayerState {
+type ICollisionLayerState = {
     readonly wantsToMove: Optional<RULE_DIRECTION>
     readonly sprite: GameSprite
 }
 
-interface ITickResult {
+type ITickResult = {
     changedCells: Set<Cell>,
     didWinGame: boolean,
     didLevelChange: boolean,
@@ -919,7 +919,7 @@ export class LevelEngine extends EventEmitter2 {
     }
 }
 
-export interface ILoadingCellsEvent {
+export type ILoadingCellsEvent = {
     cellStart: number,
     cellEnd: number,
     cellTotal: number,

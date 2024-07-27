@@ -19,7 +19,7 @@ import {
 } from '../util'
 import BaseUI from './base'
 
-interface ITableCell {
+type ITableCell = {
     td: HTMLTableCellElement,
     label: HTMLSpanElement,
     pixels: HTMLSpanElement[][]
@@ -195,11 +195,7 @@ class TableUI extends BaseUI implements GameEngineHandler {
         this.handler.onTick(changedCells, checkpoint, hasAgain, a11yMessages)
     }
 
-    public willAllLevelsFitOnScreen(gameData: GameData) {
-        return true
-    }
-
-    public _drawPixel(x: number, y: number, fgHex: string, bgHex: Optional<string>, chars: string) {
+    public _drawPixel(x: number, y: number, fgHex: string, bgHex: Optional<string>) {
         const rowIndex = Math.floor(y / this.SPRITE_HEIGHT)
         const colIndex = Math.floor(x / this.SPRITE_WIDTH)
         const pixelY = y % this.SPRITE_HEIGHT
@@ -261,14 +257,10 @@ class TableUI extends BaseUI implements GameEngineHandler {
         }
     }
 
-    protected drawCellsAfterRecentering(cells: Iterable<Cellish>, renderScreenDepth: number) {
+    protected drawCellsAfterRecentering(cells: Iterable<Cellish>) {
         for (const cell of cells) {
-            this._drawCell(cell, renderScreenDepth)
+            this._drawCell(cell)
         }
-    }
-
-    protected checkIfCellCanBeDrawnOnScreen(cellStartX: number, cellStartY: number) {
-        return true
     }
 
     protected getMaxSize() {
@@ -391,7 +383,7 @@ class TableUI extends BaseUI implements GameEngineHandler {
         this.table.setAttribute('data-ps-last-input-processed', `${this.inputsProcessed}`)
     }
 
-    private _drawCell(cell: Cellish, renderScreenDepth: number = 0) {
+    private _drawCell(cell: Cellish) {
         if (!this.gameData) {
             throw new Error(`BUG: gameData was not set yet`)
         }

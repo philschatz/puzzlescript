@@ -3,8 +3,8 @@ module.exports = {
     launch: {
       // dumpio: true,
       // product: 'chrome',
-      executablePath: process.env.PUPPETEER_CHROME_PATH,
-      // headless: process.env.HEADLESS !== 'false',
+      // executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
+      headless: process.env.HEADLESS !== 'false',
       args: [
         '--disable-dev-shm-usage',
       ],

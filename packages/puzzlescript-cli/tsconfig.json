@@ -1,6 +1,7 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
+    "strict": false, // because "type-fest" package is old for some reason
     "outDir": "./lib"
   },
   "include": [

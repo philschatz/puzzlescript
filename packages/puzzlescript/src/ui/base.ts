@@ -403,8 +403,6 @@ abstract class BaseUI {
 
     protected abstract setPixel(x: number, y: number, hex: string, fgHex: Optional<string>, chars: string): void
 
-    protected abstract checkIfCellCanBeDrawnOnScreen(cellStartX: number, cellStartY: number): boolean
-
     protected cellPosToXY(cell: Cellish) {
         const { colIndex, rowIndex } = cell
         let isOnScreen = true // can be set to false for many reasons
@@ -422,10 +420,6 @@ abstract class BaseUI {
         }
         cellStartX = (colIndex - this.windowOffsetColStart) * this.SPRITE_WIDTH
         cellStartY = (rowIndex - this.windowOffsetRowStart) * this.SPRITE_HEIGHT /*pixels*/
-
-        if (isOnScreen) {
-            isOnScreen = this.checkIfCellCanBeDrawnOnScreen(cellStartX, cellStartY)
-        }
 
         if (cellStartX < 0 || cellStartY < 0) {
             isOnScreen = false

@@ -2,24 +2,24 @@ import { GameData, IGameNode } from './models/game'
 import { IRule } from './models/rule'
 
 // These types are just so that the Code Coverage JSON objects are strongly-typed
-interface ICoverageLocation {
+type ICoverageLocation = {
     line: number
     col: number
 }
-interface ICoverageLocationRange {
+type ICoverageLocationRange = {
     start: ICoverageLocation
     end: ICoverageLocation
 }
-interface ICoverageFunction {
+type ICoverageFunction = {
     name: string,
     decl: ICoverageLocationRange,
     loc: ICoverageLocationRange,
     line: number
 }
-interface ICoverageCount { [id: string]: number }
-interface ICoverageStatements { [id: string]: ICoverageLocationRange }
-interface ICoverageFunctions { [id: string]: ICoverageFunction }
-interface ICoverageEntry {
+type ICoverageCount = { [id: string]: number }
+type ICoverageStatements = { [id: string]: ICoverageLocationRange }
+type ICoverageFunctions = { [id: string]: ICoverageFunction }
+type ICoverageEntry = {
     path: string
     s: ICoverageCount
     f: ICoverageCount

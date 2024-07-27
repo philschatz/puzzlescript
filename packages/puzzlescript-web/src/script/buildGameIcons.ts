@@ -1,12 +1,11 @@
 // This generates SVG icons for each game
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs'
-import glob from 'glob'
+import { glob } from 'glob'
 import { basename, join } from 'path'
-import * as svgToPng from 'svg-to-png' // tslint:disable-line:no-implicit-dependencies
+import { Resvg } from '@resvg/resvg-js'
 import { GameEngine, LEVEL_TYPE, Parser } from 'puzzlescript'
 import { ALL_GAMES } from '../pwa/allGames'
 import { SvgIconUi } from './svgIcon'
-const pify = require('pify') // tslint:disable-line:no-var-requires
 
 function buildIcon(sourcePath: string) {
 
@@ -52,7 +51,7 @@ const allGamesPath = join(__dirname, '../../src/pwa/allGames.ts') // relative to
 run().then(null, (err) => console.error(err)) // tslint:disable-line:no-console
 
 async function run() {
-    const gists = await pify(glob)(SOLUTIONS_GLOB)
+    const gists = await glob(SOLUTIONS_GLOB)
 
     const svgFilesToConvert = []
 
@@ -114,10 +113,12 @@ export const ALL_GAMES: Map<string, GameInfo> = new Map()
 
     // Convert SVG images to PNG images
     console.log(`Generating ${svgFilesToConvert.length} PNG files... to ${BROWSE_GAMES_DIR}`) // tslint:disable-line:no-console
-    if (svgFilesToConvert.length > 0) {
-        svgToPng.convert(svgFilesToConvert, BROWSE_GAMES_DIR, {
-            defaultWidth: 100,
-            defaultHeight: 100
-        })
+    for (const svgPath of svgFilesToConvert) {
+        const svg = readFileSync(svgPath, 'utf-8')
+        const resvg = new Resvg(svg, { fitTo: { mode: 'width', value: 100 } })
+        const pngData = resvg.render()
+        const pngBuffer = pngData.asPng()
+        const baseName = basename(svgPath).replace('.svg', '.png')
+        writeFileSync(join(BROWSE_GAMES_DIR, baseName), pngBuffer)
     }
 }

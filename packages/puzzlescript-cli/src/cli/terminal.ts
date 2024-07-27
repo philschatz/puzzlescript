@@ -88,7 +88,7 @@ class TerminalUI extends BaseUI implements GameEngineHandler {
         this.debugCategoryMessages = []
         this.resizeHandler = null
         this.setSmallTerminal(false) // use really big (but cleaner) characters
-        this.hasVisualUi = supportsColor.stdout
+        this.hasVisualUi = !!supportsColor.stdout
 
         // This is the "inspector" cursor that allows a11y
         this.inspectorCol = 0

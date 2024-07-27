@@ -1,8 +1,7 @@
 // tslint:disable:no-console
 import { existsSync, readFileSync, writeFileSync } from 'fs'
-import glob from 'glob'
+import { glob } from 'glob'
 import * as path from 'path'
-import pify from 'pify'
 
 import { GameEngine, Parser, logger, LEVEL_TYPE, Serializer, saveCoverageFile, INPUT_BUTTON } from 'puzzlescript'
 import { closeSounds } from '../sounds-copypasta/sounds'
@@ -16,7 +15,7 @@ async function sleep(ms: number) {
 async function run() {
     TerminalUI.setSmallTerminal(true)
 
-    const files = await pify(glob)('./games/*/script.txt')
+    const files = await glob('./games/*/script.txt')
     console.log(`Looping over ${files.length} games...`)
     console.log(`Screen size is ${process.stdout.columns} wide and ${process.stdout.rows} high`)
 

@@ -1,6 +1,6 @@
 const {RNG} = require('./rng')
 const {MakeRiff, FastBase64_Encode} = require('./riffwave')
-const {AudioContext} = require('web-audio-api')
+const {StreamAudioContext: AudioContext} = require('@descript/web-audio-js')
 
 let Speaker = null
 if (!process.env.CONTINUOUS_INTEGRATION && !process.env.CI) {
@@ -142,7 +142,7 @@ function pickupCoin() {
     result.p_arp_mod = (+num) / (+den); //0.2 + frnd(0.4);
   }
   return result;
-};
+}
 
 
 function laserShoot() {
@@ -190,7 +190,7 @@ function laserShoot() {
     result.p_hpf_freq = frnd(0.3);
 
   return result;
-};
+}
 
 function explosion() {
   var result=Params();
@@ -225,7 +225,7 @@ function explosion() {
   }
 
   return result;
-};
+}
 //9675111
 function birdSound() {
   var result=Params();
@@ -416,7 +416,7 @@ return result;
   result.p_hpf_ramp = Math.pow(frnd(2.0) - 1.0, 5.0);
 
   return result;
-};
+}
 
 
 function pushSound() {
@@ -443,7 +443,7 @@ function pushSound() {
   result.p_arp_mod = 0.8 - frnd(1.6);
 
   return result;
-};
+}
 
 
 
@@ -478,7 +478,7 @@ function powerUp() {
   result.p_env_decay = 0.1 + frnd(0.4);
 
   return result;
-};
+}
 
 function hitHurt() {
   result = Params();
@@ -496,7 +496,7 @@ function hitHurt() {
   if (rnd(1))
     result.p_hpf_freq = frnd(0.3);
   return result;
-};
+}
 
 
 function jump() {
@@ -517,7 +517,7 @@ function jump() {
   if (rnd(1))
     result.p_lpf_freq = 1.0 - frnd(0.6);
   return result;
-};
+}
 
 function blipSelect() {
   result = Params();
@@ -534,7 +534,7 @@ function blipSelect() {
   result.p_env_decay = frnd(0.2);
   result.p_hpf_freq = 0.1;
   return result;
-};
+}
 
 function random() {
   result = Params();
@@ -574,7 +574,7 @@ function random() {
   result.p_arp_speed = frnd(2.0) - 1.0;
   result.p_arp_mod = frnd(2.0) - 1.0;
   return result;
-};
+}
 
 var generators = [
 pickupCoin,
@@ -614,7 +614,7 @@ function generateFromSeed(seed) {
   result.seed = seed;
   seeded = false;
   return result;
-};
+}
 
 // function SoundEffect(length, sample_rate) {
 //   this._buffer = AUDIO_CONTEXT.createBuffer(1, length, sample_rate);
@@ -691,11 +691,11 @@ function generateFromSeed(seed) {
 
   // Disable speaker for Travis
   if (Speaker) {
-    AUDIO_CONTEXT.outStream = new Speaker({
-        channels: AUDIO_CONTEXT.format.numberOfChannels,
+    AUDIO_CONTEXT.pipe(new Speaker({
+        channels: AUDIO_CONTEXT.format.channels,
         bitDepth: AUDIO_CONTEXT.format.bitDepth,
         sampleRate: AUDIO_CONTEXT.sampleRate
-    })
+    }))
   }
 
   SoundEffect.prototype.play = async function() {
@@ -746,6 +746,7 @@ function generateFromSeed(seed) {
             bufferNode.buffer = audioBuffer
             bufferNode.loop = false
             bufferNode.start(0)
+            AUDIO_CONTEXT.resume()
 
             // if (CURERNT_SILENTBUFFER) {
             //     CURERNT_SILENTBUFFER.stop(0)
@@ -821,7 +822,7 @@ window.console.log(psstring);*/
     arp_limit = Math.floor(Math.pow(1.0 - ps.p_arp_speed, 2.0) * 20000 + 32);
     if (ps.p_arp_speed == 1.0)
       arp_limit = 0;
-  };
+  }
 
   var rep_time;
   var fperiod, period, fmaxperiod;
@@ -1127,7 +1128,7 @@ function closeSounds() {
         return
     }
 
-    AUDIO_CONTEXT.outStream._flush() // End the speaker
+    AUDIO_CONTEXT._stream._flush() // End the speaker
     AUDIO_CONTEXT._playing = false // So we do not continue outputing sound (since onended did not actually work) ... maybe we should do bufferNode.on('kill', ...)
     AUDIO_CONTEXT._kill()
 }

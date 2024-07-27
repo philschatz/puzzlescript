@@ -5,3 +5,5 @@ node_modules
 /packages/puzzlescript-cli/lib
 
 yarn-error.log
+
+/.direnv/

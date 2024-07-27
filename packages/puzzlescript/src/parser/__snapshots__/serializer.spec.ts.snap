@@ -1,53 +1,53 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`serializer parses a game with RANDOM, loops, and debug statements 1`] = `
-Object {
-  "brackets": Object {
-    "bracket-0": Object {
+{
+  "brackets": {
+    "bracket-0": {
       "_sourceOffset": 202,
       "debugFlag": null,
       "direction": "UP",
-      "neighbors": Array [
+      "neighbors": [
         "neighbor-0",
       ],
       "type": "BRACKET_SIMPLE",
     },
-    "bracket-1": Object {
+    "bracket-1": {
       "_sourceOffset": 217,
       "debugFlag": "DEBUGGER",
       "direction": "UP",
-      "neighbors": Array [
+      "neighbors": [
         "neighbor-1",
       ],
       "type": "BRACKET_SIMPLE",
     },
   },
-  "collisionLayers": Object {
-    "collision-0": Object {
+  "collisionLayers": {
+    "collision-0": {
       "_sourceOffset": 136,
     },
-    "collision-1": Object {
+    "collision-1": {
       "_sourceOffset": 147,
     },
-    "collision-2": Object {
+    "collision-2": {
       "_sourceOffset": 0,
     },
   },
-  "colors": Object {
+  "colors": {
     "#000000": "#000000",
     "#f7e26b": "#f7e26b",
   },
-  "commands": Object {},
-  "levels": Array [
-    Object {
+  "commands": {},
+  "levels": [
+    {
       "_sourceOffset": 271,
       "message": "hello",
       "type": "LEVEL_MESSAGE",
     },
-    Object {
+    {
       "_sourceOffset": 286,
-      "cells": Array [
-        Array [
+      "cells": [
+        [
           "tile-1",
           "tile-2",
         ],
@@ -55,7 +55,7 @@ Object {
       "type": "LEVEL_MAP",
     },
   ],
-  "metadata": Object {
+  "metadata": {
     "againInterval": null,
     "author": null,
     "backgroundColor": null,
@@ -76,106 +76,106 @@ Object {
     "youtube": null,
     "zoomscreen": null,
   },
-  "neighbors": Object {
-    "neighbor-0": Object {
+  "neighbors": {
+    "neighbor-0": {
       "_sourceOffset": 203,
       "debugFlag": null,
-      "tileWithModifiers": Array [
+      "tileWithModifiers": [
         "twm-0",
       ],
     },
-    "neighbor-1": Object {
+    "neighbor-1": {
       "_sourceOffset": 219,
       "debugFlag": null,
-      "tileWithModifiers": Array [
+      "tileWithModifiers": [
         "twm-1",
       ],
     },
   },
-  "ruleDefinitions": Object {
-    "rule-0": Object {
+  "ruleDefinitions": {
+    "rule-0": {
       "_sourceOffset": 181,
-      "actions": Array [
+      "actions": [
         "bracket-1",
       ],
-      "commands": Array [],
-      "conditions": Array [
+      "commands": [],
+      "conditions": [
         "bracket-0",
       ],
       "debugFlag": undefined,
-      "directions": Array [],
+      "directions": [],
       "isLate": true,
       "isRandom": null,
       "isRigid": true,
       "type": "RULE_SIMPLE",
     },
-    "rule-1": Object {
+    "rule-1": {
       "_sourceOffset": 181,
       "debugFlag": null,
       "isRandom": true,
-      "rules": Array [
+      "rules": [
         "rule-0",
       ],
       "type": "RULE_GROUP",
     },
-    "rule-2": Object {
+    "rule-2": {
       "_sourceOffset": undefined,
       "debugFlag": null,
       "isRandom": false,
-      "rules": Array [
+      "rules": [
         "rule-1",
       ],
       "type": "RULE_GROUP",
     },
   },
-  "rules": Array [
+  "rules": [
     "rule-2",
   ],
-  "sounds": Object {},
-  "sprites": Object {
-    "sprite-0": Object {
+  "sounds": {},
+  "sprites": {
+    "sprite-0": {
       "_sourceOffset": 33,
       "collisionLayer": "collision-0",
       "name": "background",
-      "pixels": Array [
-        Array [
+      "pixels": [
+        [
           "#000000",
         ],
       ],
     },
-    "sprite-1": Object {
+    "sprite-1": {
       "_sourceOffset": 53,
       "collisionLayer": "collision-1",
       "name": "player",
-      "pixels": Array [
-        Array [
+      "pixels": [
+        [
           "#f7e26b",
         ],
       ],
     },
   },
-  "tiles": Object {
-    "tile-0": Object {
+  "tiles": {
+    "tile-0": {
       "_sourceOffset": 53,
       "collisionLayer": "collision-1",
       "name": "player",
       "sprite": "sprite-1",
       "type": "SPRITE",
     },
-    "tile-1": Object {
+    "tile-1": {
       "_sourceOffset": 84,
-      "collisionLayers": Array [
+      "collisionLayers": [
         "collision-1",
         "collision-0",
       ],
       "name": "P",
-      "sprites": Array [
+      "sprites": [
         "sprite-1",
         "sprite-0",
       ],
       "type": "AND",
     },
-    "tile-2": Object {
+    "tile-2": {
       "_sourceOffset": 33,
       "collisionLayer": "collision-0",
       "name": "background",
@@ -183,8 +183,8 @@ Object {
       "type": "SPRITE",
     },
   },
-  "tilesWithModifiers": Object {
-    "twm-0": Object {
+  "tilesWithModifiers": {
+    "twm-0": {
       "_sourceOffset": 204,
       "debugFlag": undefined,
       "direction": "UP",
@@ -192,7 +192,7 @@ Object {
       "isRandom": false,
       "tile": "tile-0",
     },
-    "twm-1": Object {
+    "twm-1": {
       "_sourceOffset": 220,
       "debugFlag": undefined,
       "direction": null,
@@ -203,120 +203,120 @@ Object {
   },
   "title": "Test Game",
   "version": 1,
-  "winConditions": Array [],
+  "winConditions": [],
 }
 `;
 
 exports[`serializer parses a simple game 1`] = `
-Object {
-  "brackets": Object {
-    "bracket-0": Object {
+{
+  "brackets": {
+    "bracket-0": {
       "_sourceOffset": 129,
       "debugFlag": null,
       "direction": "UP",
-      "neighbors": Array [
+      "neighbors": [
         "neighbor-0",
         "neighbor-1",
       ],
       "type": "BRACKET_SIMPLE",
     },
-    "bracket-1": Object {
+    "bracket-1": {
       "_sourceOffset": 158,
       "debugFlag": null,
       "direction": "UP",
-      "neighbors": Array [
+      "neighbors": [
         "neighbor-2",
         "neighbor-3",
       ],
       "type": "BRACKET_SIMPLE",
     },
-    "bracket-2": Object {
+    "bracket-2": {
       "_sourceOffset": 129,
       "debugFlag": null,
       "direction": "DOWN",
-      "neighbors": Array [
+      "neighbors": [
         "neighbor-0",
         "neighbor-1",
       ],
       "type": "BRACKET_SIMPLE",
     },
-    "bracket-3": Object {
+    "bracket-3": {
       "_sourceOffset": 158,
       "debugFlag": null,
       "direction": "DOWN",
-      "neighbors": Array [
+      "neighbors": [
         "neighbor-2",
         "neighbor-4",
       ],
       "type": "BRACKET_SIMPLE",
     },
-    "bracket-4": Object {
+    "bracket-4": {
       "_sourceOffset": 129,
       "debugFlag": null,
       "direction": "LEFT",
-      "neighbors": Array [
+      "neighbors": [
         "neighbor-0",
         "neighbor-1",
       ],
       "type": "BRACKET_SIMPLE",
     },
-    "bracket-5": Object {
+    "bracket-5": {
       "_sourceOffset": 158,
       "debugFlag": null,
       "direction": "LEFT",
-      "neighbors": Array [
+      "neighbors": [
         "neighbor-2",
         "neighbor-5",
       ],
       "type": "BRACKET_SIMPLE",
     },
-    "bracket-6": Object {
+    "bracket-6": {
       "_sourceOffset": 129,
       "debugFlag": null,
       "direction": "RIGHT",
-      "neighbors": Array [
+      "neighbors": [
         "neighbor-0",
         "neighbor-1",
       ],
       "type": "BRACKET_SIMPLE",
     },
-    "bracket-7": Object {
+    "bracket-7": {
       "_sourceOffset": 158,
       "debugFlag": null,
       "direction": "RIGHT",
-      "neighbors": Array [
+      "neighbors": [
         "neighbor-2",
         "neighbor-6",
       ],
       "type": "BRACKET_SIMPLE",
     },
   },
-  "collisionLayers": Object {
-    "collision-0": Object {
+  "collisionLayers": {
+    "collision-0": {
       "_sourceOffset": 95,
     },
-    "collision-1": Object {
+    "collision-1": {
       "_sourceOffset": 106,
     },
-    "collision-2": Object {
+    "collision-2": {
       "_sourceOffset": 0,
     },
   },
-  "colors": Object {
+  "colors": {
     "#000000": "#000000",
     "#f7e26b": "#f7e26b",
   },
-  "commands": Object {},
-  "levels": Array [
-    Object {
+  "commands": {},
+  "levels": [
+    {
       "_sourceOffset": 209,
       "message": "hello",
       "type": "LEVEL_MESSAGE",
     },
-    Object {
+    {
       "_sourceOffset": 224,
-      "cells": Array [
-        Array [
+      "cells": [
+        [
           "tile-1",
           "tile-1",
           "tile-0",
@@ -327,7 +327,7 @@ Object {
       "type": "LEVEL_MAP",
     },
   ],
-  "metadata": Object {
+  "metadata": {
     "againInterval": null,
     "author": null,
     "backgroundColor": null,
@@ -348,127 +348,127 @@ Object {
     "youtube": null,
     "zoomscreen": null,
   },
-  "neighbors": Object {
-    "neighbor-0": Object {
+  "neighbors": {
+    "neighbor-0": {
       "_sourceOffset": 130,
       "debugFlag": null,
-      "tileWithModifiers": Array [
+      "tileWithModifiers": [
         "twm-0",
       ],
     },
-    "neighbor-1": Object {
+    "neighbor-1": {
       "_sourceOffset": 142,
       "debugFlag": null,
-      "tileWithModifiers": Array [
+      "tileWithModifiers": [
         "twm-1",
       ],
     },
-    "neighbor-2": Object {
+    "neighbor-2": {
       "_sourceOffset": 160,
       "debugFlag": null,
-      "tileWithModifiers": Array [
+      "tileWithModifiers": [
         "twm-2",
       ],
     },
-    "neighbor-3": Object {
+    "neighbor-3": {
       "_sourceOffset": 176,
       "debugFlag": null,
-      "tileWithModifiers": Array [
+      "tileWithModifiers": [
         "twm-3",
       ],
     },
-    "neighbor-4": Object {
+    "neighbor-4": {
       "_sourceOffset": 176,
       "debugFlag": null,
-      "tileWithModifiers": Array [
+      "tileWithModifiers": [
         "twm-4",
       ],
     },
-    "neighbor-5": Object {
+    "neighbor-5": {
       "_sourceOffset": 176,
       "debugFlag": null,
-      "tileWithModifiers": Array [
+      "tileWithModifiers": [
         "twm-5",
       ],
     },
-    "neighbor-6": Object {
+    "neighbor-6": {
       "_sourceOffset": 176,
       "debugFlag": null,
-      "tileWithModifiers": Array [
+      "tileWithModifiers": [
         "twm-6",
       ],
     },
   },
-  "ruleDefinitions": Object {
-    "rule-0": Object {
+  "ruleDefinitions": {
+    "rule-0": {
       "_sourceOffset": 129,
-      "actions": Array [
+      "actions": [
         "bracket-1",
       ],
-      "commands": Array [],
-      "conditions": Array [
+      "commands": [],
+      "conditions": [
         "bracket-0",
       ],
       "debugFlag": undefined,
-      "directions": Array [],
+      "directions": [],
       "isLate": false,
       "isRandom": null,
       "isRigid": false,
       "type": "RULE_SIMPLE",
     },
-    "rule-1": Object {
+    "rule-1": {
       "_sourceOffset": 129,
-      "actions": Array [
+      "actions": [
         "bracket-3",
       ],
-      "commands": Array [],
-      "conditions": Array [
+      "commands": [],
+      "conditions": [
         "bracket-2",
       ],
       "debugFlag": undefined,
-      "directions": Array [],
+      "directions": [],
       "isLate": false,
       "isRandom": null,
       "isRigid": false,
       "type": "RULE_SIMPLE",
     },
-    "rule-2": Object {
+    "rule-2": {
       "_sourceOffset": 129,
-      "actions": Array [
+      "actions": [
         "bracket-5",
       ],
-      "commands": Array [],
-      "conditions": Array [
+      "commands": [],
+      "conditions": [
         "bracket-4",
       ],
       "debugFlag": undefined,
-      "directions": Array [],
+      "directions": [],
       "isLate": false,
       "isRandom": null,
       "isRigid": false,
       "type": "RULE_SIMPLE",
     },
-    "rule-3": Object {
+    "rule-3": {
       "_sourceOffset": 129,
-      "actions": Array [
+      "actions": [
         "bracket-7",
       ],
-      "commands": Array [],
-      "conditions": Array [
+      "commands": [],
+      "conditions": [
         "bracket-6",
       ],
       "debugFlag": undefined,
-      "directions": Array [],
+      "directions": [],
       "isLate": false,
       "isRandom": null,
       "isRigid": false,
       "type": "RULE_SIMPLE",
     },
-    "rule-4": Object {
+    "rule-4": {
       "_sourceOffset": 129,
       "debugFlag": null,
       "isRandom": false,
-      "rules": Array [
+      "rules": [
         "rule-0",
         "rule-1",
         "rule-2",
@@ -477,41 +477,41 @@ Object {
       "type": "RULE_GROUP",
     },
   },
-  "rules": Array [
+  "rules": [
     "rule-4",
   ],
-  "sounds": Object {},
-  "sprites": Object {
-    "sprite-0": Object {
+  "sounds": {},
+  "sprites": {
+    "sprite-0": {
       "_sourceOffset": 33,
       "collisionLayer": "collision-0",
       "name": "background",
-      "pixels": Array [
-        Array [
+      "pixels": [
+        [
           "#000000",
         ],
       ],
     },
-    "sprite-1": Object {
+    "sprite-1": {
       "_sourceOffset": 53,
       "collisionLayer": "collision-1",
       "name": "player",
-      "pixels": Array [
-        Array [
+      "pixels": [
+        [
           "#f7e26b",
         ],
       ],
     },
   },
-  "tiles": Object {
-    "tile-0": Object {
+  "tiles": {
+    "tile-0": {
       "_sourceOffset": 53,
       "collisionLayer": "collision-1",
       "name": "player",
       "sprite": "sprite-1",
       "type": "SPRITE",
     },
-    "tile-1": Object {
+    "tile-1": {
       "_sourceOffset": 33,
       "collisionLayer": "collision-0",
       "name": "background",
@@ -519,8 +519,8 @@ Object {
       "type": "SPRITE",
     },
   },
-  "tilesWithModifiers": Object {
-    "twm-0": Object {
+  "tilesWithModifiers": {
+    "twm-0": {
       "_sourceOffset": 131,
       "debugFlag": undefined,
       "direction": null,
@@ -528,7 +528,7 @@ Object {
       "isRandom": false,
       "tile": "tile-0",
     },
-    "twm-1": Object {
+    "twm-1": {
       "_sourceOffset": 143,
       "debugFlag": undefined,
       "direction": null,
@@ -536,7 +536,7 @@ Object {
       "isRandom": false,
       "tile": "tile-1",
     },
-    "twm-2": Object {
+    "twm-2": {
       "_sourceOffset": 161,
       "debugFlag": undefined,
       "direction": null,
@@ -544,7 +544,7 @@ Object {
       "isRandom": true,
       "tile": "tile-0",
     },
-    "twm-3": Object {
+    "twm-3": {
       "_sourceOffset": 177,
       "debugFlag": undefined,
       "direction": "UP",
@@ -552,7 +552,7 @@ Object {
       "isRandom": false,
       "tile": "tile-1",
     },
-    "twm-4": Object {
+    "twm-4": {
       "_sourceOffset": 177,
       "debugFlag": undefined,
       "direction": "DOWN",
@@ -560,7 +560,7 @@ Object {
       "isRandom": false,
       "tile": "tile-1",
     },
-    "twm-5": Object {
+    "twm-5": {
       "_sourceOffset": 177,
       "debugFlag": undefined,
       "direction": "LEFT",
@@ -568,7 +568,7 @@ Object {
       "isRandom": false,
       "tile": "tile-1",
     },
-    "twm-6": Object {
+    "twm-6": {
       "_sourceOffset": 177,
       "debugFlag": undefined,
       "direction": "RIGHT",
@@ -579,22 +579,22 @@ Object {
   },
   "title": "Test Game",
   "version": 1,
-  "winConditions": Array [],
+  "winConditions": [],
 }
 `;
 
 exports[`serializer parses an empty game 1`] = `
-Object {
-  "brackets": Object {},
-  "collisionLayers": Object {
-    "collision-0": Object {
+{
+  "brackets": {},
+  "collisionLayers": {
+    "collision-0": {
       "_sourceOffset": 0,
     },
   },
-  "colors": Object {},
-  "commands": Object {},
-  "levels": Array [],
-  "metadata": Object {
+  "colors": {},
+  "commands": {},
+  "levels": [],
+  "metadata": {
     "againInterval": null,
     "author": null,
     "backgroundColor": null,
@@ -615,15 +615,15 @@ Object {
     "youtube": null,
     "zoomscreen": null,
   },
-  "neighbors": Object {},
-  "ruleDefinitions": Object {},
-  "rules": Array [],
-  "sounds": Object {},
-  "sprites": Object {},
-  "tiles": Object {},
-  "tilesWithModifiers": Object {},
+  "neighbors": {},
+  "ruleDefinitions": {},
+  "rules": [],
+  "sounds": {},
+  "sprites": {},
+  "tiles": {},
+  "tilesWithModifiers": {},
   "title": "Test Game",
   "version": 1,
-  "winConditions": Array [],
+  "winConditions": [],
 }
 `;

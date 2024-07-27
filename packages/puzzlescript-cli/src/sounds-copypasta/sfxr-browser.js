@@ -699,7 +699,7 @@ window.console.log(psstring);*/
     arp_limit = Math.floor(Math.pow(1.0 - ps.p_arp_speed, 2.0) * 20000 + 32);
     if (ps.p_arp_speed == 1.0)
       arp_limit = 0;
-  };
+  }
 
   var rep_time;
   var fperiod, period, fmaxperiod;

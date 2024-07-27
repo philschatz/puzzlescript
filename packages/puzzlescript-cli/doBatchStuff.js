@@ -1,18 +1,16 @@
 // This updates the set of Playtested files (so they show up white in the list of games)
 const fs = require('fs')
 const path = require('path')
-const glob = require('glob')
-const pify = require('pify')
+const { glob } = require('glob')
 // const {default: Parser} = require('../lib/parser/parser')
 
 const SOLUTION_FILE = path.join(__dirname, `./src/cli/solvedGames.ts`)
 const SOLUTIONS_GLOB = path.join(__dirname, '../puzzlescript/game-solutions/*.json')
-// const readFile = pify(fs.readFile)
 
 run()
 
 async function run() {
-    const gists = await pify(glob)(SOLUTIONS_GLOB)
+    const gists = await glob(SOLUTIONS_GLOB)
 
     const solutionsFileList = [
         `//`,
